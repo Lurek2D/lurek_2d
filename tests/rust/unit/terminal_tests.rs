@@ -129,7 +129,9 @@ mod widget_tests {
 // â”€â”€ terminal_state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 mod terminal_state_tests {
-    use lurek2d::terminal::{Terminal, Widget};
+    use lurek2d::terminal::{
+        Terminal, TerminalError, TerminalLimits, TerminalWidgetValidationError, Widget, WidgetKind,
+    };
 
     #[test]
     fn textbox_backspace_removes_whole_unicode_character() {
@@ -179,6 +181,151 @@ mod terminal_state_tests {
         assert!(terminal.keypressed("ctrl+delete"));
         let textbox = terminal.get_widget(textbox_index).unwrap();
         assert_eq!(textbox.get_text().unwrap(), " beta ");
+    }
+
+    #[test]
+    fn textbox_partial_paste_to_max_length() {
+        let mut terminal = Terminal::new(20, 4);
+        let source_index = terminal.add_widget(Widget::new_text_box(1, 1, 8));
+        let target_index = terminal.add_widget(Widget::new_text_box(1, 2, 8));
+        terminal
+            .get_widget_mut(target_index)
+            .unwrap()
+            .set_max_length(5)
+            .unwrap();
+
+        terminal.set_focus(Some(source_index));
+        assert!(terminal.textinput("WXYZ"));
+        assert!(terminal.keypressed("ctrl+a"));
+        assert!(terminal.keypressed("ctrl+c"));
+
+        terminal.set_focus(Some(target_index));
+        assert!(terminal.textinput("abc"));
+        assert!(terminal.keypressed("ctrl+v"));
+
+        let textbox = terminal.get_widget(target_index).unwrap();
+        assert_eq!(textbox.get_text().unwrap(), "abcWX");
+    }
+
+    #[test]
+    fn terminal_try_set_rejects_invalid_codepoint_and_nan_color() {
+        let mut terminal = Terminal::new(8, 4);
+        assert!(matches!(
+            terminal.try_set(1, 1, 0xD800, [1.0, 1.0, 1.0, 1.0], [0.0, 0.0, 0.0, 0.0]),
+            Err(TerminalError::InvalidCodepoint { .. })
+        ));
+        assert!(matches!(
+            terminal.try_set(
+                1,
+                1,
+                b'A' as u32,
+                [f32::NAN, 1.0, 1.0, 1.0],
+                [0.0, 0.0, 0.0, 0.0]
+            ),
+            Err(TerminalError::InvalidColor)
+        ));
+    }
+
+    #[test]
+    fn terminal_oob_try_set_reports_error() {
+        let mut terminal = Terminal::new(4, 2);
+        assert!(matches!(
+            terminal.try_set(
+                9,
+                1,
+                b'A' as u32,
+                [1.0, 1.0, 1.0, 1.0],
+                [0.0, 0.0, 0.0, 0.0]
+            ),
+            Err(TerminalError::OutOfBoundsCell { col: 9, row: 1 })
+        ));
+    }
+
+    #[test]
+    fn panel_child_cycle_detected() {
+        let mut terminal = Terminal::new(20, 8);
+        let parent = terminal.add_widget(Widget::new_panel(1, 1, 10, 4));
+        let child = terminal.add_widget(Widget::new_panel(2, 2, 8, 3));
+
+        if let WidgetKind::Panel { children } = &mut terminal.get_widget_mut(parent).unwrap().kind {
+            children.push(child);
+        }
+        if let WidgetKind::Panel { children } = &mut terminal.get_widget_mut(child).unwrap().kind {
+            children.push(parent);
+        }
+
+        let errors = terminal.validate_widgets();
+        assert!(errors.iter().any(|error| matches!(
+            error,
+            TerminalWidgetValidationError::Cycle {
+                panel_index,
+                child_index
+            } if *panel_index == parent && *child_index == child
+        )));
+    }
+
+    #[test]
+    fn focus_skips_hidden_disabled_widgets() {
+        let mut terminal = Terminal::new(20, 6);
+        let first = terminal.add_widget(Widget::new_button(1, 1, 6, 1, "One"));
+        let hidden = terminal.add_widget(Widget::new_button(1, 2, 6, 1, "Two"));
+        let disabled = terminal.add_widget(Widget::new_button(1, 3, 6, 1, "Three"));
+        let last = terminal.add_widget(Widget::new_button(1, 4, 6, 1, "Four"));
+
+        terminal.get_widget_mut(hidden).unwrap().base.visible = false;
+        terminal.get_widget_mut(disabled).unwrap().base.enabled = false;
+        terminal.set_focus(Some(first));
+
+        assert!(terminal.keypressed("tab"));
+        assert_eq!(terminal.get_focused(), Some(last));
+        assert!(terminal.keypressed("shift+tab"));
+        assert_eq!(terminal.get_focused(), Some(first));
+    }
+
+    #[test]
+    fn clipboard_limit_enforced() {
+        let mut terminal = Terminal::new(20, 6);
+        let mut limits = TerminalLimits::default();
+        limits.max_clipboard_chars = 4;
+        terminal.set_limits(limits);
+
+        let source = terminal.add_widget(Widget::new_text_box(1, 1, 12));
+        let target = terminal.add_widget(Widget::new_text_box(1, 2, 12));
+
+        terminal.set_focus(Some(source));
+        assert!(terminal.textinput("alphabet"));
+        assert!(terminal.keypressed("ctrl+a"));
+        assert!(terminal.keypressed("ctrl+c"));
+        assert!(terminal.keypressed("ctrl+x"));
+
+        terminal.set_focus(Some(target));
+        assert!(terminal.keypressed("ctrl+v"));
+
+        let textbox = terminal.get_widget(target).unwrap();
+        assert_eq!(textbox.get_text().unwrap(), "alph");
+    }
+
+    #[test]
+    fn terminal_rejects_or_truncates_giant_line() {
+        let mut terminal = Terminal::new(20, 6);
+        let mut limits = TerminalLimits::default();
+        limits.max_line_chars = 4;
+        limits.max_history_entry_chars = 5;
+        terminal.set_limits(limits);
+
+        terminal.push_scrollback("abcdef");
+        assert_eq!(terminal.get_scrollback(0, 1), vec!["abcd"]);
+        assert!(matches!(
+            terminal.try_push_scrollback("abcdef"),
+            Err(TerminalError::TextTooLong { len: 6, limit: 4 })
+        ));
+
+        terminal.push_cmd_history("history!");
+        assert_eq!(terminal.prev_cmd(), Some("histo"));
+        assert!(matches!(
+            terminal.try_push_cmd_history("history!"),
+            Err(TerminalError::HistoryEntryTooLong { len: 8, limit: 5 })
+        ));
     }
 }
 
@@ -329,6 +476,22 @@ mod render_tests {
                 assert_eq!(first_image.get_pixel(x, y), second_image.get_pixel(x, y));
             }
         }
+    }
+
+    #[test]
+    fn large_list_renders_visible_rows_only() {
+        let mut terminal = Terminal::new(16, 6);
+        let mut list = Widget::new_list(1, 1, 12, 2);
+        for item in ["one", "two", "three", "four", "five"] {
+            list.add_item(item.to_string()).unwrap();
+        }
+        terminal.add_widget(list);
+
+        let _ = terminal.build_render_commands(0.0, 0.0, 8.0, 16.0, dummy_font());
+        let stats = terminal.render_stats();
+
+        assert_eq!(stats.list_items_drawn, 2);
+        assert_eq!(stats.list_items_skipped, 3);
     }
 }
 

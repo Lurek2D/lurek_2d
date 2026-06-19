@@ -425,6 +425,27 @@ describe("text box callbacks", function()
         expect_equal(true, term:keypressed("ctrl+delete"))
         expect_equal(" beta ", input:getText())
     end)
+
+    -- @covers LTerminal:textinput
+    it("partially pastes text into a textbox when maxLength leaves only partial room", function()
+        local term = lurek.terminal.newTerminal(30, 10)
+        local source = lurek.terminal.newTextBox(1, 1, 8)
+        local target = lurek.terminal.newTextBox(1, 2, 8)
+
+        target:setMaxLength(5)
+        term:addWidget(source)
+        term:addWidget(target)
+
+        term:setFocus(source)
+        expect_equal(true, term:textinput("WXYZ"))
+        expect_equal(true, term:keypressed("ctrl+a"))
+        expect_equal(true, term:keypressed("ctrl+c"))
+
+        term:setFocus(target)
+        expect_equal(true, term:textinput("abc"))
+        expect_equal(true, term:keypressed("ctrl+v"))
+        expect_equal("abcWX", target:getText())
+    end)
 end)
 
 -- @describe list callbacks
@@ -1010,6 +1031,28 @@ describe("focus behaviour: mouse and widget removal", function()
         term:removeWidget(currently_focused)
         expect_true(term:getFocused() == nil)
     end)
+
+    -- @covers LTerminal:keypressed
+    it("tab focus traversal skips hidden and disabled widgets", function()
+        local term = lurek.terminal.newTerminal(30, 12)
+        local first = lurek.terminal.newButton(1, 1, 8, 1, "One")
+        local hidden = lurek.terminal.newButton(1, 2, 8, 1, "Two")
+        local disabled = lurek.terminal.newButton(1, 3, 8, 1, "Three")
+        local last = lurek.terminal.newButton(1, 4, 8, 1, "Four")
+
+        hidden:setVisible(false)
+        disabled:setEnabled(false)
+        term:addWidget(first)
+        term:addWidget(hidden)
+        term:addWidget(disabled)
+        term:addWidget(last)
+        term:setFocus(first)
+
+        expect_equal(true, term:keypressed("tab"))
+        expect_true(term:getFocused() == last)
+        expect_equal(true, term:keypressed("shift+tab"))
+        expect_true(term:getFocused() == first)
+    end)
 end)
 end
 -- END test_terminal_core_unit.lua
@@ -1225,6 +1268,70 @@ describe("terminal explicit owner coverage", function()
     it("returns a panel child widget by index", function()
         local _, panel = attached_panel_with_children()
         expect_equal("One", panel:getChild(1):getText())
+    end)
+end)
+
+-- @describe terminal strict safety helpers
+describe("terminal strict safety helpers", function()
+    -- @covers LTerminal:trySet
+    it("trySet rejects invalid codepoints and out-of-bounds writes", function()
+        local term = lurek.terminal.newTerminal(10, 5)
+        local ok_codepoint, err_codepoint = term:trySet(1, 1, 0xD800, 1, 1, 1, 1, 0, 0, 0, 0)
+        expect_equal(false, ok_codepoint)
+        expect_type("string", err_codepoint)
+
+        local ok_oob, err_oob = term:trySet(99, 1, string.byte("A"), 1, 1, 1, 1, 0, 0, 0, 0)
+        expect_equal(false, ok_oob)
+        expect_type("string", err_oob)
+    end)
+
+    -- @covers LTerminal:getDiagnostics
+    -- @covers LTerminal:clearDiagnostics
+    it("reports and clears diagnostics for permissive writes and clipped textbox input", function()
+        local term = lurek.terminal.newTerminal(10, 5)
+        local input = lurek.terminal.newTextBox(1, 1, 5)
+
+        input:setMaxLength(3)
+        term:addWidget(input)
+        term:setFocus(input)
+        term:clearDiagnostics()
+
+        term:set(0, 1, string.byte("A"), 1, 1, 1, 1, 0, 0, 0, 0)
+        expect_equal(true, term:textinput("abcdef"))
+
+        local diagnostics = term:getDiagnostics()
+        expect_true(diagnostics.out_of_bounds_writes >= 1)
+        expect_true(diagnostics.clipped_text >= 3)
+
+        term:clearDiagnostics()
+        diagnostics = term:getDiagnostics()
+        expect_equal(0, diagnostics.out_of_bounds_writes)
+        expect_equal(0, diagnostics.clipped_text)
+    end)
+
+    -- @covers LTerminal:validateWidgets
+    it("validateWidgets reports invalid focus and graph errors", function()
+        local term = lurek.terminal.newTerminal(20, 10)
+        local panel_a = lurek.terminal.newPanel(1, 1, 10, 4)
+        local panel_b = lurek.terminal.newPanel(2, 2, 8, 3)
+        local hidden = lurek.terminal.newButton(1, 5, 8, 1, "Hidden")
+
+        hidden:setVisible(false)
+        term:addWidget(panel_a)
+        term:addWidget(panel_b)
+        term:addWidget(hidden)
+        term:setFocus(hidden)
+
+        panel_a:addChild(panel_b)
+        local ok_cycle = pcall(function()
+            panel_b:addChild(panel_a)
+        end)
+        expect_equal(false, ok_cycle)
+
+        local valid, errors = term:validateWidgets()
+        expect_equal(false, valid)
+        expect_type("table", errors)
+        expect_true(#errors >= 1)
     end)
 end)
 end

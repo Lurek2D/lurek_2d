@@ -27336,6 +27336,30 @@
           "objectType": null
         },
         {
+          "name": "tryPushScrollback",
+          "fullPath": "lurek.terminal.tryPushScrollback",
+          "signature": "(term_ud, line)",
+          "description": "Strictly appends a line of text to the terminal scrollback buffer.",
+          "parameters": [
+            {
+              "name": "terminal",
+              "type": "LTerminal",
+              "description": "The terminal to push to.",
+              "optional": false
+            },
+            {
+              "name": "line",
+              "type": "string",
+              "description": "The text line to append.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean, string?",
+          "returnType": "boolean, string?",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
           "name": "getScrollback",
           "fullPath": "lurek.terminal.getScrollback",
           "signature": "(term_ud, offset, count)",
@@ -27428,6 +27452,30 @@
           ],
           "returns": "nil",
           "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "tryPushCmdHistory",
+          "fullPath": "lurek.terminal.tryPushCmdHistory",
+          "signature": "(term_ud, cmd)",
+          "description": "Strictly appends a command string to the terminal command history.",
+          "parameters": [
+            {
+              "name": "terminal",
+              "type": "LTerminal",
+              "description": "The terminal to push to.",
+              "optional": false
+            },
+            {
+              "name": "cmd",
+              "type": "string",
+              "description": "The command string to store.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean, string?",
+          "returnType": "boolean, string?",
           "isMethod": false,
           "objectType": null
         },
@@ -95885,6 +95933,53 @@
           "objectType": "LMod"
         },
         {
+          "name": "setSandbox",
+          "fullPath": "LMod:setSandbox",
+          "signature": "(sandbox)",
+          "description": "Sets the sandbox policy used by `runHook`.",
+          "parameters": [
+            {
+              "name": "sandbox",
+              "type": "table",
+              "description": "Sandbox configuration table.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LMod"
+        },
+        {
+          "name": "getSandbox",
+          "fullPath": "LMod:getSandbox",
+          "signature": "()",
+          "description": "Returns the configured sandbox policy.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LMod"
+        },
+        {
+          "name": "runHook",
+          "fullPath": "LMod:runHook",
+          "signature": "(...)",
+          "description": "Executes one registered hook under the mod's configured sandbox policy.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Hook name.",
+              "optional": false
+            }
+          ],
+          "returns": "any",
+          "returnType": "any",
+          "isMethod": true,
+          "objectType": "LMod"
+        },
+        {
           "name": "setConfig",
           "fullPath": "LMod:setConfig",
           "signature": "(value)",
@@ -119135,7 +119230,7 @@
             {
               "name": "slot",
               "type": "string",
-              "description": "The slot name to auto-save into (e.g. \"autosave\").",
+              "description": "The validated slot name to auto-save into (e.g. \"autosave\").",
               "optional": false
             }
           ],
@@ -142259,6 +142354,84 @@
           "objectType": "LTerminal"
         },
         {
+          "name": "trySet",
+          "fullPath": "LTerminal:trySet",
+          "signature": "(...)",
+          "description": "Strictly writes a character with colors to a specific cell and returns an explicit error string on invalid input.",
+          "parameters": [
+            {
+              "name": "col",
+              "type": "integer",
+              "description": "Column index (1-based).",
+              "optional": false
+            },
+            {
+              "name": "row",
+              "type": "integer",
+              "description": "Row index (1-based).",
+              "optional": false
+            },
+            {
+              "name": "ch",
+              "type": "string|number",
+              "description": "Character as a string or Unicode codepoint.",
+              "optional": false
+            },
+            {
+              "name": "fr",
+              "type": "number",
+              "description": "Foreground red (0-1, default 1).",
+              "optional": true
+            },
+            {
+              "name": "fg",
+              "type": "number",
+              "description": "Foreground green (0-1, default 1).",
+              "optional": true
+            },
+            {
+              "name": "fb",
+              "type": "number",
+              "description": "Foreground blue (0-1, default 1).",
+              "optional": true
+            },
+            {
+              "name": "fa",
+              "type": "number",
+              "description": "Foreground alpha (0-1, default 1).",
+              "optional": true
+            },
+            {
+              "name": "br",
+              "type": "number",
+              "description": "Background red (0-1, default 0).",
+              "optional": true
+            },
+            {
+              "name": "bg",
+              "type": "number",
+              "description": "Background green (0-1, default 0).",
+              "optional": true
+            },
+            {
+              "name": "bb",
+              "type": "number",
+              "description": "Background blue (0-1, default 0).",
+              "optional": true
+            },
+            {
+              "name": "ba",
+              "type": "number",
+              "description": "Background alpha (0-1, default 0).",
+              "optional": true
+            }
+          ],
+          "returns": "boolean, string?",
+          "returnType": "boolean, string?",
+          "isMethod": true,
+          "objectType": "LTerminal"
+        },
+        {
           "name": "get",
           "fullPath": "LTerminal:get",
           "signature": "(col, row)",
@@ -142418,6 +142591,50 @@
           "parameters": [],
           "returns": "LWidget",
           "returnType": "LWidget",
+          "isMethod": true,
+          "objectType": "LTerminal"
+        },
+        {
+          "name": "validateWidgets",
+          "fullPath": "LTerminal:validateWidgets",
+          "signature": "()",
+          "description": "Validates panel child ownership, stale references, cycles, and the current focus target.",
+          "parameters": [],
+          "returns": "boolean, string[]?",
+          "returnType": "boolean, string[]?",
+          "isMethod": true,
+          "objectType": "LTerminal"
+        },
+        {
+          "name": "getDiagnostics",
+          "fullPath": "LTerminal:getDiagnostics",
+          "signature": "()",
+          "description": "Returns the current terminal diagnostics counters.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LTerminal"
+        },
+        {
+          "name": "clearDiagnostics",
+          "fullPath": "LTerminal:clearDiagnostics",
+          "signature": "()",
+          "description": "Clears all terminal diagnostics counters.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTerminal"
+        },
+        {
+          "name": "getRenderStats",
+          "fullPath": "LTerminal:getRenderStats",
+          "signature": "()",
+          "description": "Returns the most recent render composition stats gathered by terminal render helpers.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LTerminal"
         },
@@ -160081,6 +160298,24 @@
           ],
           "returns": "nil",
           "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LWidget"
+        },
+        {
+          "name": "trySetText",
+          "fullPath": "LWidget:trySetText",
+          "signature": "(text)",
+          "description": "Strictly sets widget text and returns an explicit error string instead of silently truncating.",
+          "parameters": [
+            {
+              "name": "text",
+              "type": "string",
+              "description": "The new text content.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean, string?",
+          "returnType": "boolean, string?",
           "isMethod": true,
           "objectType": "LWidget"
         },

@@ -7,6 +7,7 @@
 use crate::repl::commands::ReplCommand;
 use crate::repl::completer::complete_prefix;
 use crate::repl::value::value_to_string;
+use crate::runtime::{eval_chunk_with_policy, exec_chunk_with_policy, LuaExecutionPolicy};
 use mlua::prelude::*;
 use std::collections::VecDeque;
 
@@ -42,6 +43,8 @@ pub struct ReplSession {
     history: VecDeque<String>,
     /// Maximum number of history entries retained.
     max_history: usize,
+    /// Shared Lua execution policy used by expression, statement, and file evaluation.
+    execution_policy: LuaExecutionPolicy,
 }
 
 /// Provides a 200-entry history capacity as the sensible startup default.
@@ -58,7 +61,19 @@ impl ReplSession {
         Self {
             history: VecDeque::with_capacity(capacity.min(64)),
             max_history: capacity,
+            execution_policy: LuaExecutionPolicy::default(),
         }
+    }
+
+    /// Replace the Lua execution policy used for later evaluation.
+    pub fn with_execution_policy(mut self, execution_policy: LuaExecutionPolicy) -> Self {
+        self.execution_policy = execution_policy;
+        self
+    }
+
+    /// Replace the Lua execution policy used for later evaluation in place.
+    pub fn set_execution_policy(&mut self, execution_policy: LuaExecutionPolicy) {
+        self.execution_policy = execution_policy;
     }
 
     /// Evaluate one line as a command, expression, or statement.
@@ -72,12 +87,19 @@ impl ReplSession {
             return command;
         }
         let expression = format!("return {}", input);
-        match lua.load(&expression).eval::<mlua::MultiValue>() {
+        match eval_chunk_with_policy::<mlua::MultiValue>(
+            lua,
+            "repl expression",
+            &expression,
+            self.execution_policy,
+        ) {
             Ok(values) => values_to_result(values),
-            Err(_) => match lua.load(input).exec() {
-                Ok(()) => ReplResult::Ok,
-                Err(error) => ReplResult::Error(error.to_string()),
-            },
+            Err(_) => {
+                match exec_chunk_with_policy(lua, "repl statement", input, self.execution_policy) {
+                    Ok(()) => ReplResult::Ok,
+                    Err(error) => ReplResult::Error(error.to_string()),
+                }
+            }
         }
     }
 
@@ -138,7 +160,7 @@ impl ReplSession {
             Ok(code) => code,
             Err(error) => return ReplResult::Error(format!("{}: {}", path, error)),
         };
-        match lua.load(&code).set_name(path).exec() {
+        match exec_chunk_with_policy(lua, path, &code, self.execution_policy) {
             Ok(()) => ReplResult::Command(ReplCommand::Load {
                 path: path.to_string(),
             }),

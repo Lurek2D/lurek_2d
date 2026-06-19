@@ -8,7 +8,8 @@
 use crate::lua_api::create_headless_vm;
 use crate::repl::value_to_string;
 use crate::runtime::{
-    call_function_with_policy, Config, EngineError, EngineResult, LuaExecutionPolicy, SharedState,
+    call_function_with_policy, exec_chunk_with_policy, is_lua_timeout_error, Config, EngineError,
+    EngineResult, LuaExecutionPolicy, SharedState,
 };
 use mlua::prelude::*;
 use std::cell::RefCell;
@@ -44,19 +45,20 @@ pub fn run_headless(config: Config, options: HeadlessOptions) -> ExitCode {
 /// Run the headless runtime and preserve structured engine errors for tests.
 pub fn run_headless_checked(config: Config, options: HeadlessOptions) -> EngineResult<()> {
     crate::runtime::messages::init();
-    let state = create_headless_state(&config, &options.game_dir);
+    let game_dir = canonicalize_game_dir(&options.game_dir)?;
+    let state = create_headless_state(&config, &game_dir);
     let lua = create_headless_vm(state.clone(), &config.modules)
         .map_err(|error| EngineError::LuaError(format!("headless VM init: {}", error)))?;
     install_stdout_print(&lua)?;
-    install_game_package_path(&lua, &options.game_dir)?;
-    load_main_if_present(&lua, &options)?;
+    install_game_package_path(&lua, &game_dir)?;
+    let execution_policy =
+        LuaExecutionPolicy::with_timeout(config.performance.lua_callback_timeout_ms);
+    load_main_if_present(&lua, &game_dir, options.explicit_game_dir, execution_policy)?;
     for code in &options.eval {
-        lua.load(code)
-            .set_name("--eval")
-            .exec()
-            .map_err(|error| EngineError::LuaError(format!("--eval: {}", error)))?;
+        exec_chunk_with_policy(&lua, "--eval", code, execution_policy)
+            .map_err(|error| map_lua_execution_error("--eval", error))?;
     }
-    let timeout_ms = config.performance.lua_callback_timeout_ms;
+    let timeout_ms = execution_policy.timeout_ms;
     call_lurek_callback(&lua, "init", (), timeout_ms)?;
     call_lurek_callback(&lua, "ready", (), timeout_ms)?;
 
@@ -78,6 +80,16 @@ pub fn run_headless_checked(config: Config, options: HeadlessOptions) -> EngineR
         call_lurek_callback(&lua, "process_late", dt, timeout_ms)?;
     }
     Ok(())
+}
+
+fn canonicalize_game_dir(game_dir: &Path) -> EngineResult<PathBuf> {
+    std::fs::canonicalize(game_dir).map_err(|error| {
+        EngineError::FileSystemError(format!(
+            "failed to canonicalize game directory '{}': {}",
+            game_dir.display(),
+            error
+        ))
+    })
 }
 
 /// Build the initial `SharedState` for a headless run and configure physics tick rates.
@@ -118,7 +130,7 @@ fn install_stdout_print(lua: &Lua) -> EngineResult<()> {
         .map_err(|error| EngineError::LuaError(format!("headless print: {}", error)))
 }
 
-/// Prepend the game directory to `package.path` so `require` resolves game scripts.
+/// Prepend the canonical game roots to `package.path` so `require` resolves game scripts.
 fn install_game_package_path(lua: &Lua, game_dir: &Path) -> EngineResult<()> {
     let package: LuaTable = lua
         .globals()
@@ -138,21 +150,24 @@ fn install_game_package_path(lua: &Lua, game_dir: &Path) -> EngineResult<()> {
 }
 
 /// Load and execute `main.lua` when an explicit game directory was supplied.
-fn load_main_if_present(lua: &Lua, options: &HeadlessOptions) -> EngineResult<()> {
-    if !options.explicit_game_dir {
+fn load_main_if_present(
+    lua: &Lua,
+    game_dir: &Path,
+    explicit_game_dir: bool,
+    policy: LuaExecutionPolicy,
+) -> EngineResult<()> {
+    if !explicit_game_dir {
         return Ok(());
     }
-    let main_lua = options.game_dir.join("main.lua");
+    let main_lua = game_dir.join("main.lua");
     if !main_lua.exists() {
         return Ok(());
     }
     let code = std::fs::read_to_string(&main_lua).map_err(|error| {
         EngineError::FileSystemError(format!("failed to read main.lua: {}", error))
     })?;
-    lua.load(&code)
-        .set_name("main.lua")
-        .exec()
-        .map_err(|error| EngineError::LuaError(format!("main.lua: {}", error)))
+    exec_chunk_with_policy(lua, "main.lua", &code, policy)
+        .map_err(|error| map_lua_execution_error("main.lua", error))
 }
 
 /// Invoke a named `lurek.*` callback if it exists; skip silently when absent.
@@ -179,5 +194,12 @@ where
         args,
         LuaExecutionPolicy::with_timeout(timeout_ms),
     );
-    result.map_err(|error| EngineError::LuaError(format!("lurek.{}: {}", name, error)))
+    result.map_err(|error| map_lua_execution_error(&format!("lurek.{name}"), error))
+}
+
+fn map_lua_execution_error(scope: &str, error: LuaError) -> EngineError {
+    if is_lua_timeout_error(&error) {
+        return EngineError::LuaTimeout(format!("{scope}: {error}"));
+    }
+    EngineError::LuaError(format!("{scope}: {}", error))
 }

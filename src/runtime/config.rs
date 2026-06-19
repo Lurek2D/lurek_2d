@@ -12,9 +12,22 @@ use crate::log_msg;
 use crate::runtime::log_messages::{
     L050_MODULE_DEP_DISABLED, L051_CONF_READ_ERR, L052_CONF_PARSE_ERR,
 };
+use crate::runtime::lua_execution::MAX_LUA_EXECUTION_TIMEOUT_MS;
 use crate::runtime::mode::RuntimeMode;
+use crate::runtime::{EngineError, EngineResult};
 use serde::{Deserialize, Serialize};
+use std::fs::File;
+use std::io::Read;
 use std::path::Path;
+
+const DEFAULT_CONF_MAX_BYTES: u64 = 256 * 1024;
+const CURRENT_CONFIG_SCHEMA_VERSION: u32 = 1;
+const MAX_WINDOW_DIMENSION: u32 = 16_384;
+const MAX_GAME_DIMENSION: u32 = 16_384;
+const MAX_TERMINAL_DIMENSION: u32 = 4_096;
+const MAX_FONT_SIZE: u32 = 512;
+const MAX_HISTORY_ENTRIES: usize = 100_000;
+const MAX_TICK_RATE: u32 = 1_000;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Top-level runtime configuration consumed during engine startup.
 /// # Fields
@@ -142,6 +155,91 @@ pub struct HeadlessConfig {
     pub frames: Option<u32>,
     /// Delta time passed to headless frame callbacks.
     pub dt: f64,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+/// Validation mode applied when config values are outside supported bounds.
+pub enum ConfigValidationMode {
+    /// Reject invalid values instead of correcting them.
+    Strict,
+    #[default]
+    /// Clamp or reset invalid values back into the supported range.
+    Permissive,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+/// Options controlling bounded `conf.toml` loading and validation behavior.
+pub struct ConfigLoadOptions {
+    /// Maximum accepted file size in bytes for `conf.toml`.
+    pub max_bytes: u64,
+    /// Reject unknown keys instead of only reporting them.
+    pub strict_unknown_keys: bool,
+    /// Optional expected schema version from the top-level `schema_version` field.
+    pub schema_version: Option<u32>,
+    /// Validation behavior for known fields with unsupported values.
+    pub validation_mode: ConfigValidationMode,
+}
+
+impl Default for ConfigLoadOptions {
+    fn default() -> Self {
+        Self {
+            max_bytes: DEFAULT_CONF_MAX_BYTES,
+            strict_unknown_keys: false,
+            schema_version: Some(CURRENT_CONFIG_SCHEMA_VERSION),
+            validation_mode: ConfigValidationMode::Permissive,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+/// Structured report describing ignored keys, deprecated keys, corrected values, and errors.
+pub struct ConfigReport {
+    /// Unknown keys present in `conf.toml`.
+    pub ignored_keys: Vec<String>,
+    /// Deprecated keys accepted for compatibility.
+    pub deprecated_keys: Vec<String>,
+    /// Corrected values applied during permissive validation.
+    pub corrected_values: Vec<String>,
+    /// Hard validation failures.
+    pub errors: Vec<String>,
+}
+
+impl ConfigReport {
+    /// Return `true` when the report contains hard failures.
+    pub fn has_errors(&self) -> bool {
+        !self.errors.is_empty()
+    }
+
+    fn push_error(&mut self, message: String) {
+        self.errors.push(message);
+    }
+
+    fn push_correction(&mut self, message: String) {
+        self.corrected_values.push(message);
+    }
+
+    fn summary(&self) -> String {
+        let mut parts = Vec::new();
+        if !self.errors.is_empty() {
+            parts.push(format!("errors: {}", self.errors.join("; ")));
+        }
+        if !self.ignored_keys.is_empty() {
+            parts.push(format!("ignored keys: {}", self.ignored_keys.join(", ")));
+        }
+        if !self.deprecated_keys.is_empty() {
+            parts.push(format!(
+                "deprecated keys: {}",
+                self.deprecated_keys.join(", ")
+            ));
+        }
+        if !self.corrected_values.is_empty() {
+            parts.push(format!(
+                "corrected values: {}",
+                self.corrected_values.join("; ")
+            ));
+        }
+        parts.join(" | ")
+    }
 }
 
 fn default_true() -> bool {
@@ -497,52 +595,649 @@ impl Config {
         }
         (Config::default(), None)
     }
+
     /// Parse `conf.toml`, merge it over defaults, and return config with optional parse error.
     pub fn load_from_conf_toml(game_dir: &Path) -> (Self, Option<String>) {
+        match Self::load_from_conf_toml_with_options(game_dir, ConfigLoadOptions::default()) {
+            Ok((config, report)) => {
+                log_config_report(&report);
+                (config, None)
+            }
+            Err(error) => {
+                log_msg!(warn, L052_CONF_PARSE_ERR, "{}", error);
+                (Config::default(), Some(error.to_string()))
+            }
+        }
+    }
+
+    /// Parse `conf.toml` with explicit loading and validation options.
+    pub fn load_from_conf_toml_with_options(
+        game_dir: &Path,
+        options: ConfigLoadOptions,
+    ) -> EngineResult<(Self, ConfigReport)> {
         let conf_path = game_dir.join("conf.toml");
         let default = Config::default();
         if !conf_path.exists() {
-            return (default, None);
+            return Ok((default, ConfigReport::default()));
         }
-        let text = match std::fs::read_to_string(&conf_path) {
-            Ok(c) => c,
-            Err(e) => {
-                log_msg!(warn, L051_CONF_READ_ERR, "{}", e);
-                return (default, Some(format!("Failed to read conf.toml: {}", e)));
+        let text = read_conf_toml_bounded(&conf_path, options.max_bytes)?;
+        let override_val = toml::from_str::<toml::Value>(&text)
+            .map_err(|error| EngineError::ConfigError(format!("Error in conf.toml: {}", error)))?;
+        let schema = config_as_toml_value(&default)?;
+        let mut report = ConfigReport::default();
+        inspect_config_keys(&schema, &override_val, "", &mut report);
+        validate_schema_version(&override_val, &options, &mut report);
+        if options.strict_unknown_keys && !report.ignored_keys.is_empty() {
+            report.push_error(format!(
+                "unknown keys are not allowed in strict mode: {}",
+                report.ignored_keys.join(", ")
+            ));
+        }
+        let mut merged = schema;
+        merge_toml_values(&mut merged, override_val);
+        let mut config = merged
+            .try_into::<Config>()
+            .map_err(|error| EngineError::ConfigError(format!("Error in conf.toml: {}", error)))?;
+        let validation_report = config.validate_with_mode(options.validation_mode);
+        report
+            .corrected_values
+            .extend(validation_report.corrected_values);
+        report.errors.extend(validation_report.errors);
+        if report.has_errors() {
+            return Err(EngineError::ConfigError(report.summary()));
+        }
+        Ok((config, report))
+    }
+
+    /// Validate the current configuration in strict mode.
+    pub fn validate(&mut self) -> ConfigReport {
+        self.validate_with_mode(ConfigValidationMode::Strict)
+    }
+
+    /// Validate the current configuration and optionally clamp invalid values.
+    pub fn validate_with_mode(&mut self, mode: ConfigValidationMode) -> ConfigReport {
+        let defaults = Config::default();
+        let mut report = ConfigReport::default();
+
+        validate_bounded_u32(
+            "window.width",
+            &mut self.window.width,
+            defaults.window.width,
+            1,
+            MAX_WINDOW_DIMENSION,
+            mode,
+            &mut report,
+        );
+        validate_bounded_u32(
+            "window.height",
+            &mut self.window.height,
+            defaults.window.height,
+            1,
+            MAX_WINDOW_DIMENSION,
+            mode,
+            &mut report,
+        );
+        validate_optional_u32(
+            "window.min_width",
+            &mut self.window.min_width,
+            1,
+            MAX_WINDOW_DIMENSION,
+            mode,
+            &mut report,
+        );
+        validate_optional_u32(
+            "window.min_height",
+            &mut self.window.min_height,
+            1,
+            MAX_WINDOW_DIMENSION,
+            mode,
+            &mut report,
+        );
+        validate_optional_u32(
+            "window.game_width",
+            &mut self.window.game_width,
+            1,
+            MAX_GAME_DIMENSION,
+            mode,
+            &mut report,
+        );
+        validate_optional_u32(
+            "window.game_height",
+            &mut self.window.game_height,
+            1,
+            MAX_GAME_DIMENSION,
+            mode,
+            &mut report,
+        );
+        validate_scale_mode(
+            "window.scale_mode",
+            &mut self.window.scale_mode,
+            &defaults.window.scale_mode,
+            mode,
+            &mut report,
+        );
+        validate_bounded_u32(
+            "render.default_font_size",
+            &mut self.render.default_font_size,
+            defaults.render.default_font_size,
+            1,
+            MAX_FONT_SIZE,
+            mode,
+            &mut report,
+        );
+        validate_bounded_u32(
+            "performance.target_fps",
+            &mut self.performance.target_fps,
+            defaults.performance.target_fps,
+            1,
+            MAX_TICK_RATE,
+            mode,
+            &mut report,
+        );
+        validate_bounded_u32(
+            "performance.physics_tick_rate",
+            &mut self.performance.physics_tick_rate,
+            defaults.performance.physics_tick_rate,
+            1,
+            MAX_TICK_RATE,
+            mode,
+            &mut report,
+        );
+        validate_optional_u32(
+            "performance.fixed_update_tick_rate",
+            &mut self.performance.fixed_update_tick_rate,
+            1,
+            MAX_TICK_RATE,
+            mode,
+            &mut report,
+        );
+        validate_optional_f32(
+            "performance.frame_budget_warn_ms",
+            &mut self.performance.frame_budget_warn_ms,
+            None,
+            0.0,
+            f32::MAX,
+            mode,
+            &mut report,
+        );
+        validate_optional_f32(
+            "performance.lua_callback_timeout_ms",
+            &mut self.performance.lua_callback_timeout_ms,
+            defaults.performance.lua_callback_timeout_ms,
+            0.0,
+            MAX_LUA_EXECUTION_TIMEOUT_MS,
+            mode,
+            &mut report,
+        );
+        validate_bounded_u32(
+            "tui.cols",
+            &mut self.tui.cols,
+            defaults.tui.cols,
+            1,
+            MAX_TERMINAL_DIMENSION,
+            mode,
+            &mut report,
+        );
+        validate_bounded_u32(
+            "tui.rows",
+            &mut self.tui.rows,
+            defaults.tui.rows,
+            1,
+            MAX_TERMINAL_DIMENSION,
+            mode,
+            &mut report,
+        );
+        validate_bounded_u32(
+            "tui.cell_width",
+            &mut self.tui.cell_width,
+            defaults.tui.cell_width,
+            1,
+            MAX_TERMINAL_DIMENSION,
+            mode,
+            &mut report,
+        );
+        validate_bounded_u32(
+            "tui.cell_height",
+            &mut self.tui.cell_height,
+            defaults.tui.cell_height,
+            1,
+            MAX_TERMINAL_DIMENSION,
+            mode,
+            &mut report,
+        );
+        validate_bounded_u32(
+            "tui.font_size",
+            &mut self.tui.font_size,
+            defaults.tui.font_size,
+            1,
+            MAX_FONT_SIZE,
+            mode,
+            &mut report,
+        );
+        validate_bounded_u32(
+            "cli.cols",
+            &mut self.cli.cols,
+            defaults.cli.cols,
+            1,
+            MAX_TERMINAL_DIMENSION,
+            mode,
+            &mut report,
+        );
+        validate_bounded_u32(
+            "cli.rows",
+            &mut self.cli.rows,
+            defaults.cli.rows,
+            1,
+            MAX_TERMINAL_DIMENSION,
+            mode,
+            &mut report,
+        );
+        validate_bounded_u32(
+            "cli.cell_width",
+            &mut self.cli.cell_width,
+            defaults.cli.cell_width,
+            1,
+            MAX_TERMINAL_DIMENSION,
+            mode,
+            &mut report,
+        );
+        validate_bounded_u32(
+            "cli.cell_height",
+            &mut self.cli.cell_height,
+            defaults.cli.cell_height,
+            1,
+            MAX_TERMINAL_DIMENSION,
+            mode,
+            &mut report,
+        );
+        validate_bounded_usize(
+            "cli.max_history",
+            &mut self.cli.max_history,
+            defaults.cli.max_history,
+            1,
+            MAX_HISTORY_ENTRIES,
+            mode,
+            &mut report,
+        );
+        validate_optional_u32(
+            "headless.frames",
+            &mut self.headless.frames,
+            0,
+            u32::MAX,
+            mode,
+            &mut report,
+        );
+        validate_f64(
+            "headless.dt",
+            &mut self.headless.dt,
+            defaults.headless.dt,
+            0.0,
+            f64::MAX,
+            mode,
+            &mut report,
+        );
+        validate_log_level(&mut self.log_level, mode, &mut report);
+
+        if let Some(min_width) = self.window.min_width {
+            if min_width > self.window.width {
+                apply_relation_error(
+                    "window.min_width",
+                    format!(
+                        "window.min_width ({min_width}) must be <= window.width ({})",
+                        self.window.width
+                    ),
+                    mode,
+                    &mut report,
+                    || self.window.min_width = Some(self.window.width),
+                );
             }
-        };
-        let override_val = match toml::from_str::<toml::Value>(&text) {
-            Ok(v) => v,
-            Err(e) => {
-                log_msg!(warn, L052_CONF_PARSE_ERR, "{}", e);
-                return (default, Some(format!("Error in conf.toml: {}", e)));
+        }
+        if let Some(min_height) = self.window.min_height {
+            if min_height > self.window.height {
+                apply_relation_error(
+                    "window.min_height",
+                    format!(
+                        "window.min_height ({min_height}) must be <= window.height ({})",
+                        self.window.height
+                    ),
+                    mode,
+                    &mut report,
+                    || self.window.min_height = Some(self.window.height),
+                );
             }
+        }
+        report
+    }
+}
+
+fn read_conf_toml_bounded(conf_path: &Path, max_bytes: u64) -> EngineResult<String> {
+    let mut file = File::open(conf_path).map_err(|error| {
+        log_msg!(warn, L051_CONF_READ_ERR, "{}", error);
+        EngineError::ConfigError(format!("Failed to read conf.toml: {}", error))
+    })?;
+    let metadata = file.metadata().map_err(|error| {
+        log_msg!(warn, L051_CONF_READ_ERR, "{}", error);
+        EngineError::ConfigError(format!("Failed to stat conf.toml: {}", error))
+    })?;
+    if metadata.len() > max_bytes {
+        return Err(EngineError::ConfigError(format!(
+            "conf.toml exceeds max size of {} bytes (got {})",
+            max_bytes,
+            metadata.len()
+        )));
+    }
+    let mut text = String::with_capacity(metadata.len() as usize);
+    file.read_to_string(&mut text).map_err(|error| {
+        log_msg!(warn, L051_CONF_READ_ERR, "{}", error);
+        EngineError::ConfigError(format!("Failed to read conf.toml: {}", error))
+    })?;
+    if text.len() as u64 > max_bytes {
+        return Err(EngineError::ConfigError(format!(
+            "conf.toml exceeds max size of {} bytes after read",
+            max_bytes
+        )));
+    }
+    Ok(text)
+}
+
+fn config_as_toml_value(config: &Config) -> EngineResult<toml::Value> {
+    let text = toml::to_string(config).map_err(|error| {
+        EngineError::ConfigError(format!("Failed to serialize defaults: {}", error))
+    })?;
+    toml::from_str(&text).map_err(|error| {
+        EngineError::ConfigError(format!("Failed to parse default config: {}", error))
+    })
+}
+
+fn inspect_config_keys(
+    schema: &toml::Value,
+    value: &toml::Value,
+    path: &str,
+    report: &mut ConfigReport,
+) {
+    let (toml::Value::Table(schema_table), toml::Value::Table(value_table)) = (schema, value)
+    else {
+        return;
+    };
+    for (key, child) in value_table {
+        let full_path = dotted_path(path, key);
+        if full_path == "schema_version" {
+            continue;
+        }
+        if full_path == "modules.graph" {
+            report
+                .deprecated_keys
+                .push("modules.graph -> modules.flownet".to_string());
+            continue;
+        }
+        let Some(schema_child) = schema_table.get(key) else {
+            report.ignored_keys.push(full_path);
+            continue;
         };
-        let default_text = match toml::to_string(&default) {
-            Ok(s) => s,
-            Err(_) => return (default, None),
-        };
-        let mut merged: toml::Value =
-            toml::from_str(&default_text).unwrap_or(toml::Value::Table(toml::Table::new()));
-        if let (toml::Value::Table(base), toml::Value::Table(over_)) = (&mut merged, override_val) {
-            for (k, v) in over_ {
-                if let (Some(toml::Value::Table(base_tbl)), toml::Value::Table(over_tbl)) =
-                    (base.get_mut(&k), v.clone())
-                {
-                    for (sk, sv) in over_tbl {
-                        base_tbl.insert(sk, sv);
+        inspect_config_keys(schema_child, child, &full_path, report);
+    }
+}
+
+fn validate_schema_version(
+    value: &toml::Value,
+    options: &ConfigLoadOptions,
+    report: &mut ConfigReport,
+) {
+    let Some(expected) = options.schema_version else {
+        return;
+    };
+    let toml::Value::Table(table) = value else {
+        return;
+    };
+    let Some(schema_value) = table.get("schema_version") else {
+        return;
+    };
+    match schema_value.as_integer() {
+        Some(found) if found >= 0 && found as u32 == expected => {}
+        Some(found) => report.push_error(format!(
+            "schema_version {} does not match expected version {}",
+            found, expected
+        )),
+        None => report.push_error("schema_version must be an integer".to_string()),
+    }
+}
+
+fn merge_toml_values(base: &mut toml::Value, override_value: toml::Value) {
+    match (base, override_value) {
+        (toml::Value::Table(base_table), toml::Value::Table(override_table)) => {
+            for (key, value) in override_table {
+                match base_table.get_mut(&key) {
+                    Some(base_value) => merge_toml_values(base_value, value),
+                    None => {
+                        base_table.insert(key, value);
                     }
-                } else {
-                    base.insert(k, v);
                 }
             }
         }
-        match merged.try_into::<Config>() {
-            Ok(cfg) => (cfg, None),
-            Err(e) => {
-                log_msg!(warn, L052_CONF_PARSE_ERR, "{}", e);
-                (default, Some(format!("Error in conf.toml: {}", e)))
-            }
+        (base_slot, value) => *base_slot = value,
+    }
+}
+
+fn dotted_path(prefix: &str, key: &str) -> String {
+    if prefix.is_empty() {
+        key.to_string()
+    } else {
+        format!("{prefix}.{key}")
+    }
+}
+
+fn log_config_report(report: &ConfigReport) {
+    for key in &report.ignored_keys {
+        log::warn!("conf.toml ignored unknown key: {}", key);
+    }
+    for key in &report.deprecated_keys {
+        log::warn!("conf.toml used deprecated key: {}", key);
+    }
+    for correction in &report.corrected_values {
+        log::warn!("conf.toml corrected value: {}", correction);
+    }
+}
+
+fn validate_bounded_u32(
+    name: &str,
+    value: &mut u32,
+    default: u32,
+    min: u32,
+    max: u32,
+    mode: ConfigValidationMode,
+    report: &mut ConfigReport,
+) {
+    if *value >= min && *value <= max {
+        return;
+    }
+    let original = *value;
+    match mode {
+        ConfigValidationMode::Strict => report.push_error(format!(
+            "{}={} is outside the supported range {}..={}",
+            name, original, min, max
+        )),
+        ConfigValidationMode::Permissive => {
+            let corrected = default.clamp(min, max);
+            *value = corrected;
+            report.push_correction(format!("{name}: {original} -> {corrected}"));
+        }
+    }
+}
+
+fn validate_bounded_usize(
+    name: &str,
+    value: &mut usize,
+    default: usize,
+    min: usize,
+    max: usize,
+    mode: ConfigValidationMode,
+    report: &mut ConfigReport,
+) {
+    if *value >= min && *value <= max {
+        return;
+    }
+    let original = *value;
+    match mode {
+        ConfigValidationMode::Strict => report.push_error(format!(
+            "{}={} is outside the supported range {}..={}",
+            name, original, min, max
+        )),
+        ConfigValidationMode::Permissive => {
+            let corrected = default.clamp(min, max);
+            *value = corrected;
+            report.push_correction(format!("{name}: {original} -> {corrected}"));
+        }
+    }
+}
+
+fn validate_optional_u32(
+    name: &str,
+    value: &mut Option<u32>,
+    min: u32,
+    max: u32,
+    mode: ConfigValidationMode,
+    report: &mut ConfigReport,
+) {
+    let Some(current) = *value else {
+        return;
+    };
+    if current >= min && current <= max {
+        return;
+    }
+    match mode {
+        ConfigValidationMode::Strict => report.push_error(format!(
+            "{}={} is outside the supported range {}..={}",
+            name, current, min, max
+        )),
+        ConfigValidationMode::Permissive => {
+            *value = None;
+            report.push_correction(format!("{name}: {current} -> nil"));
+        }
+    }
+}
+
+fn validate_optional_f32(
+    name: &str,
+    value: &mut Option<f32>,
+    default: Option<f32>,
+    min: f32,
+    max: f32,
+    mode: ConfigValidationMode,
+    report: &mut ConfigReport,
+) {
+    let Some(current) = *value else {
+        return;
+    };
+    if current.is_finite() && current >= min && current <= max {
+        return;
+    }
+    match mode {
+        ConfigValidationMode::Strict => {
+            report.push_error(format!("{name}={} is outside the supported range", current))
+        }
+        ConfigValidationMode::Permissive => {
+            *value = default;
+            report.push_correction(format!("{name}: {current} -> {:?}", default));
+        }
+    }
+}
+
+fn validate_f64(
+    name: &str,
+    value: &mut f64,
+    default: f64,
+    min: f64,
+    max: f64,
+    mode: ConfigValidationMode,
+    report: &mut ConfigReport,
+) {
+    if value.is_finite() && *value >= min && *value <= max {
+        return;
+    }
+    let original = *value;
+    match mode {
+        ConfigValidationMode::Strict => report.push_error(format!(
+            "{name}={} is outside the supported range",
+            original
+        )),
+        ConfigValidationMode::Permissive => {
+            *value = default;
+            report.push_correction(format!("{name}: {original} -> {default}"));
+        }
+    }
+}
+
+fn validate_scale_mode(
+    name: &str,
+    value: &mut String,
+    default: &str,
+    mode: ConfigValidationMode,
+    report: &mut ConfigReport,
+) {
+    let normalized = value.to_lowercase();
+    if matches!(
+        normalized.as_str(),
+        "none" | "letterbox" | "stretch" | "pixel"
+    ) {
+        if *value != normalized {
+            report.push_correction(format!("{name}: {} -> {}", value, normalized));
+            *value = normalized;
+        }
+        return;
+    }
+    let original = value.clone();
+    match mode {
+        ConfigValidationMode::Strict => report.push_error(format!(
+            "{name}='{}' is not one of: none, letterbox, stretch, pixel",
+            original
+        )),
+        ConfigValidationMode::Permissive => {
+            *value = default.to_string();
+            report.push_correction(format!("{name}: {original} -> {default}"));
+        }
+    }
+}
+
+fn validate_log_level(
+    value: &mut Option<String>,
+    mode: ConfigValidationMode,
+    report: &mut ConfigReport,
+) {
+    let Some(current) = value.clone() else {
+        return;
+    };
+    let normalized = current.to_lowercase();
+    if matches!(
+        normalized.as_str(),
+        "off" | "none" | "error" | "warn" | "warning" | "info" | "debug" | "trace"
+    ) {
+        *value = Some(normalized);
+        return;
+    }
+    match mode {
+        ConfigValidationMode::Strict => report.push_error(format!(
+            "log_level='{}' is not one of: off, error, warn, info, debug, trace",
+            current
+        )),
+        ConfigValidationMode::Permissive => {
+            *value = None;
+            report.push_correction(format!("log_level: {} -> nil", current));
+        }
+    }
+}
+
+fn apply_relation_error(
+    name: &str,
+    error: String,
+    mode: ConfigValidationMode,
+    report: &mut ConfigReport,
+    correct: impl FnOnce(),
+) {
+    match mode {
+        ConfigValidationMode::Strict => report.push_error(error),
+        ConfigValidationMode::Permissive => {
+            correct();
+            report.push_correction(format!("{name}: clamped to owning window dimension"));
         }
     }
 }

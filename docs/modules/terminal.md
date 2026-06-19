@@ -969,6 +969,54 @@ end
 
 ---
 
+### `lurek.terminal.tryPushCmdHistory`
+
+Strictly appends a command string to the terminal command history.
+
+```lua
+lurek.terminal.tryPushCmdHistory(terminal, cmd)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `terminal` | [LTerminal](#lterminal) | The terminal to push to. |
+| `cmd` | string | The command string to store. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True on success; otherwise false and a reason string. (value 1). |
+| string? | True on success; otherwise false and a reason string. (value 2). |
+
+---
+
+### `lurek.terminal.tryPushScrollback`
+
+Strictly appends a line of text to the terminal scrollback buffer.
+
+```lua
+lurek.terminal.tryPushScrollback(terminal, line)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `terminal` | [LTerminal](#lterminal) | The terminal to push to. |
+| `line` | string | The text line to append. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True on success; otherwise false and a reason string. (value 1). |
+| string? | True on success; otherwise false and a reason string. (value 2). |
+
+---
+
 ## Module Fields
 
 *No module-level fields documented.*
@@ -1491,6 +1539,16 @@ end
 
 ---
 
+#### `LTerminal:clearDiagnostics`
+
+Clears all terminal diagnostics counters.
+
+```lua
+LTerminal:clearDiagnostics()
+```
+
+---
+
 #### `LTerminal:clearWidgets`
 
 Removes all attached widgets from this terminal at once.
@@ -1587,6 +1645,22 @@ end
 
 ---
 
+#### `LTerminal:getDiagnostics`
+
+Returns the current terminal diagnostics counters.
+
+```lua
+LTerminal:getDiagnostics()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Diagnostic counters keyed by counter name. |
+
+---
+
 #### `LTerminal:getDimensions`
 
 Returns the number of columns and rows in the terminal grid.
@@ -1643,6 +1717,22 @@ do
     terminal_log("getFocused type=" .. focused_type)
 end
 ```
+
+---
+
+#### `LTerminal:getRenderStats`
+
+Returns the most recent render composition stats gathered by terminal render helpers.
+
+```lua
+LTerminal:getRenderStats()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Render stats keyed by stat name. |
 
 ---
 
@@ -2014,6 +2104,39 @@ end
 
 ---
 
+#### `LTerminal:trySet`
+
+Strictly writes a character with colors to a specific cell and returns an explicit error string on invalid input.
+
+```lua
+LTerminal:trySet(col, row, ch, fr, fg, fb, fa, br, bg, bb, ba)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `col` | number | Column index (1-based). |
+| `row` | number | Row index (1-based). |
+| `ch` | string|number | Character as a string or Unicode codepoint. |
+| `fr?` | number | Foreground red (0-1, default 1). |
+| `fg?` | number | Foreground green (0-1, default 1). |
+| `fb?` | number | Foreground blue (0-1, default 1). |
+| `fa?` | number | Foreground alpha (0-1, default 1). |
+| `br?` | number | Background red (0-1, default 0). |
+| `bg?` | number | Background green (0-1, default 0). |
+| `bb?` | number | Background blue (0-1, default 0). |
+| `ba?` | number | Background alpha (0-1, default 0). |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True on success; otherwise false and a reason string. (value 1). |
+| string? | True on success; otherwise false and a reason string. (value 2). |
+
+---
+
 #### `LTerminal:type`
 
 Returns the type name string "[LTerminal](#lterminal)".
@@ -2073,6 +2196,23 @@ do
     terminal_log("typeOf LTerminal=" .. tostring(is_terminal) .. " LObject=" .. tostring(is_object) .. " grid=" .. cols .. "x" .. rows)
 end
 ```
+
+---
+
+#### `LTerminal:validateWidgets`
+
+Validates panel child ownership, stale references, cycles, and the current focus target.
+
+```lua
+LTerminal:validateWidgets()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when valid; otherwise false plus an array of validation messages. (value 1). |
+| string[]? | True when valid; otherwise false plus an array of validation messages. (value 2). |
 
 ---
 
@@ -3083,6 +3223,29 @@ do
     terminal_log("setVisible hidden_state=" .. tostring(hidden) .. " restored=" .. tostring(label:isVisible()))
 end
 ```
+
+---
+
+#### `LWidget:trySetText`
+
+Strictly sets widget text and returns an explicit error string instead of silently truncating.
+
+```lua
+LWidget:trySetText(text)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `text` | string | The new text content. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True on success; otherwise false and a reason string. (value 1). |
+| string? | True on success; otherwise false and a reason string. (value 2). |
 
 ---
 

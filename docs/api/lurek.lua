@@ -18845,6 +18845,10 @@ function LMod:getName() end
 ---@return number Mod priority.
 function LMod:getPriority() end
 
+--- Returns the configured sandbox policy.
+---@return table Sandbox configuration table, or nil when unset.
+function LMod:getSandbox() end
+
 --- Returns the mod version. This method is available to Lua scripts.
 ---@return string Mod version.
 function LMod:getVersion() end
@@ -18864,6 +18868,11 @@ function LMod:isLoaded() end
 
 --- Releases stored Lua registry references for hooks and config.
 function LMod:releaseRefs() end
+
+--- Executes one registered hook under the mod's configured sandbox policy.
+---@param name string Hook name.
+---@return any Hook return values.
+function LMod:runHook(name) end
 
 --- Sets the required API version string.
 ---@param api_version string API version string.
@@ -18889,6 +18898,10 @@ function LMod:setEnabled(enabled) end
 ---@param name string Hook name.
 ---@param func function Hook callback function.
 function LMod:setHook(name, func) end
+
+--- Sets the sandbox policy used by `runHook`.
+---@param sandbox table Sandbox configuration table.
+function LMod:setSandbox(sandbox) end
 
 --- Returns the Lua-visible type name for this mod handle.
 ---@return string The string `LMod`.
@@ -26664,7 +26677,7 @@ function LSaveManager:disableAutoSave() end
 
 --- Enable periodic auto-saving: when the dirty flag is set, the system writes to the target slot every interval seconds.
 ---@param interval number Time in seconds between auto-save checks (e.g. 30.0 for every 30 seconds).
----@param slot string The slot name to auto-save into (e.g. "autosave").
+---@param slot string The validated slot name to auto-save into (e.g. "autosave").
 function LSaveManager:enableAutoSave(interval, slot) end
 
 --- Check whether a save slot file exists on disk without reading its contents.
@@ -27977,6 +27990,9 @@ function LTerminal:autoResize() end
 --- Clears all cells in the terminal grid, resetting characters and colors to defaults.
 function LTerminal:clear() end
 
+--- Clears all terminal diagnostics counters.
+function LTerminal:clearDiagnostics() end
+
 --- Removes all attached widgets from this terminal at once.
 function LTerminal:clearWidgets() end
 
@@ -27999,6 +28015,10 @@ function LTerminal:get(col, row) end
 ---@return number Cell width and height in pixels. (value 2).
 function LTerminal:getCellSize() end
 
+--- Returns the current terminal diagnostics counters.
+---@return table Diagnostic counters keyed by counter name.
+function LTerminal:getDiagnostics() end
+
 --- Returns the number of columns and rows in the terminal grid.
 ---@return number Column count; row count. (value 1).
 ---@return number Column count; row count. (value 2).
@@ -28007,6 +28027,10 @@ function LTerminal:getDimensions() end
 --- Returns the widget that currently has keyboard focus, or nil if no widget is focused.
 ---@return LWidget The focused widget, or nil.
 function LTerminal:getFocused() end
+
+--- Returns the most recent render composition stats gathered by terminal render helpers.
+---@return table Render stats keyed by stat name.
+function LTerminal:getRenderStats() end
 
 --- Returns the number of widgets currently attached to this terminal.
 ---@return number Widget count.
@@ -28073,6 +28097,22 @@ function LTerminal:setFont(height) end
 ---@return boolean True if the terminal consumed the text input.
 function LTerminal:textinput(text) end
 
+--- Strictly writes a character with colors to a specific cell and returns an explicit error string on invalid input.
+---@param col number Column index (1-based).
+---@param row number Row index (1-based).
+---@param ch string|number Character as a string or Unicode codepoint.
+---@param fr? number Foreground red (0-1, default 1).
+---@param fg? number Foreground green (0-1, default 1).
+---@param fb? number Foreground blue (0-1, default 1).
+---@param fa? number Foreground alpha (0-1, default 1).
+---@param br? number Background red (0-1, default 0).
+---@param bg? number Background green (0-1, default 0).
+---@param bb? number Background blue (0-1, default 0).
+---@param ba? number Background alpha (0-1, default 0).
+---@return boolean True on success; otherwise false and a reason string. (value 1).
+---@return string? True on success; otherwise false and a reason string. (value 2).
+function LTerminal:trySet(col, row, ch, fr, fg, fb, fa, br, bg, bb, ba) end
+
 --- Returns the type name string "LTerminal".
 ---@return string Always "LTerminal".
 function LTerminal:type() end
@@ -28081,6 +28121,11 @@ function LTerminal:type() end
 ---@param name string Type name to test against.
 ---@return boolean True if the name matches.
 function LTerminal:typeOf(name) end
+
+--- Validates panel child ownership, stale references, cycles, and the current focus target.
+---@return boolean True when valid; otherwise false plus an array of validation messages. (value 1).
+---@return string[]? True when valid; otherwise false plus an array of validation messages. (value 2).
+function LTerminal:validateWidgets() end
 
 --- Adds a child widget to a panel widget. The child becomes part of the panel layout and rendering.
 ---@param child LWidget The child widget to add.
@@ -28231,6 +28276,12 @@ function LWidget:setTitle(title) end
 --- Controls whether the widget is drawn and receives input events.
 ---@param visible boolean True to show, false to hide.
 function LWidget:setVisible(visible) end
+
+--- Strictly sets widget text and returns an explicit error string instead of silently truncating.
+---@param text string The new text content.
+---@return boolean True on success; otherwise false and a reason string. (value 1).
+---@return string? True on success; otherwise false and a reason string. (value 2).
+function LWidget:trySetText(text) end
 
 --- Returns the type name string "LWidget".
 ---@return string Always "LWidget".
@@ -28401,6 +28452,20 @@ lurek.terminal.setScrollbackCap = function(terminal, cap) end
 ---@param text string Input string with ANSI codes.
 ---@return string Clean text without escape sequences.
 lurek.terminal.stripAnsi = function(text) end
+
+--- Strictly appends a command string to the terminal command history.
+---@param terminal LTerminal The terminal to push to.
+---@param cmd string The command string to store.
+---@return boolean True on success; otherwise false and a reason string. (value 1).
+---@return string? True on success; otherwise false and a reason string. (value 2).
+lurek.terminal.tryPushCmdHistory = function(terminal, cmd) end
+
+--- Strictly appends a line of text to the terminal scrollback buffer.
+---@param terminal LTerminal The terminal to push to.
+---@param line string The text line to append.
+---@return boolean True on success; otherwise false and a reason string. (value 1).
+---@return string? True on success; otherwise false and a reason string. (value 2).
+lurek.terminal.tryPushScrollback = function(terminal, line) end
 
 --- Removes all pending values from the channel.
 function LChannel:clear() end

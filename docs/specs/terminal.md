@@ -270,4 +270,11 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 
 ## Notes
 
-- No additional module-specific notes.
+- Grid coordinates exposed to Lua stay 1-based. `get` remains permissive for convenience, while `tryGet`/`trySet`-style strict helpers are the path for tooling and assertions that must distinguish out-of-bounds access from an empty cell.
+- Terminal text is bounded. Grid-print payloads, scrollback lines, command-history entries, clipboard contents, widget text, list items, and border titles are truncated or rejected according to `TerminalLimits`.
+- Clipboard policy is internal-only by default. Ctrl+C/X/V operate on the terminal-owned clipboard buffer, which is length-limited and participates in diagnostics.
+- Text-box paste is partial by design. When a widget `maxLength` leaves only partial capacity, paste inserts the longest prefix that fits instead of rejecting the whole operation.
+- Widget focus traversal is keyboard-defined. Tab and Shift+Tab skip hidden or disabled widgets, and stale/hidden/disabled focus targets are cleared predictably.
+- Panel ownership is validated. A child widget may not belong to multiple panels, stale child references are invalid, and cycles are rejected before traversal.
+- Cell colors must be finite and are clamped to `0..1`. Invalid codepoints are rejected by strict setters and sanitized to a safe fallback by permissive setters.
+- Render helpers record composition stats including visible list rows, skipped rows, drawn widgets, and clipped characters so large-list behavior is observable instead of implicit.

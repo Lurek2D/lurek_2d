@@ -3,6 +3,7 @@
 // TODO(lua-first): public Rust API coverage in this file should live in tests/lua/unit/; keep only private/internal seams here.
 
 use lurek2d::repl::{ReplCommand, ReplResult, ReplSession};
+use lurek2d::runtime::LuaExecutionPolicy;
 
 #[test]
 fn eval_expression_returns_value_variant() {
@@ -69,9 +70,25 @@ fn load_command_returns_load_variant_for_valid_file() {
 }
 
 #[test]
+fn repl_eval_timeout_uses_shared_runtime_policy() {
+    let lua = mlua::Lua::new();
+    let mut session = ReplSession::new(8).with_execution_policy(LuaExecutionPolicy {
+        timeout_ms: Some(1.0),
+        hook_instruction_interval: 1,
+    });
+
+    let result = session.eval_line("while true do end", &lua);
+
+    match result {
+        ReplResult::Error(error) => assert!(error.contains("exceeded Lua execution timeout")),
+        other => panic!("expected timeout error, got {other:?}"),
+    }
+}
+
+#[test]
 fn complete_includes_dynamic_top_level_globals() {
     let lua = mlua::Lua::new();
-    let session = ReplSession::new(8);
+    let mut session = ReplSession::new(8);
 
     lua.globals()
         .set("custom_runtime_symbol", 7)
@@ -81,4 +98,9 @@ fn complete_includes_dynamic_top_level_globals() {
     assert!(completions
         .iter()
         .any(|item| item == "custom_runtime_symbol"));
+
+    assert_eq!(
+        session.eval_line("1 + 1", &lua),
+        ReplResult::Value("2".to_string())
+    );
 }

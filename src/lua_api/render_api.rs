@@ -200,12 +200,7 @@ impl LuaUserData for LuaImage {
         /// @return | boolean | True if the image was still valid and was released.
         methods.add_method("release", |_, this, ()| {
             let mut st = this.state.borrow_mut();
-            if st.textures.remove(this.key).is_some() {
-                st.released_texture_handles.insert(this.key.data().as_ffi());
-                Ok(true)
-            } else {
-                Ok(false)
-            }
+            Ok(st.release_texture(this.key))
         });
         // -- typeOf --
         /// Checks whether this object matches the given type name.
@@ -2826,7 +2821,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 let full_path = st.game_dir.join(path);
                 match Texture::load_with_color_space(&full_path, &mut st.textures, color_space) {
                     Ok(tex) => {
-                        st.released_texture_handles.remove(&tex.key.data().as_ffi());
+                        st.clear_released_texture_handle(tex.key.data().as_ffi());
                         Ok(LuaImage {
                             state: s.clone(),
                             key: tex.key,
@@ -2851,7 +2846,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                     color_space,
                 ) {
                     Ok(tex) => {
-                        st.released_texture_handles.remove(&tex.key.data().as_ffi());
+                        st.clear_released_texture_handle(tex.key.data().as_ffi());
                         Ok(LuaImage {
                             state: s.clone(),
                             key: tex.key,
@@ -4552,7 +4547,7 @@ impl LuaUserData for LuaObjModel {
                 let mut st = this.state.borrow_mut();
                 let tex = Texture::from_rgba(width, height, pixels, &mut st.textures)
                     .map_err(|e| LuaError::RuntimeError(format!("renderToImage: {}", e)))?;
-                st.released_texture_handles.remove(&tex.key.data().as_ffi());
+                st.clear_released_texture_handle(tex.key.data().as_ffi());
                 this.sprite_cache.insert(cache_key, tex.key);
                 Ok(LuaImage {
                     state: this.state.clone(),

@@ -23,10 +23,13 @@ mod widget;
 
 /// Re-export cell type used by consumers building custom terminal UIs.
 pub use cell::TCell;
-/// Re-export the main terminal state machine.
-pub use terminal_state::Terminal;
 /// Internal event type produced by `Terminal` for engine dispatch.
 pub(crate) use terminal_state::TerminalEvent;
+/// Re-export the main terminal state machine.
+pub use terminal_state::{
+    Terminal, TerminalDiagnostics, TerminalError, TerminalInputPolicy, TerminalLimits,
+    TerminalRenderStats, TerminalWidgetValidationError,
+};
 /// Grid size caps shared with render and widget layers.
 pub(crate) use terminal_state::{MAX_COLS, MAX_ROWS};
 /// Re-export widget primitives for callers composing terminal UIs.

@@ -58,6 +58,9 @@ pub enum EngineError {
     #[error("Lua error: {0}")]
     /// Failure raised from Lua execution.
     LuaError(String),
+    #[error("Lua timeout: {0}")]
+    /// Failure raised when guarded Lua execution exceeds the configured timeout.
+    LuaTimeout(String),
     #[error("Window error: {0}")]
     /// Failure while creating or managing window state.
     WindowError(String),
@@ -85,11 +88,12 @@ impl EngineError {
             Self::PhysicsError(_) => "E1005",
             Self::FileSystemError(_) => "E1006",
             Self::LuaError(_) => "E1007",
-            Self::WindowError(_) => "E1008",
-            Self::ConfigError(_) => "E1009",
-            Self::ResourceNotFound(_) => "E1010",
-            Self::ResourceNotLoaded(_) => "E1011",
-            Self::IoError(_) => "E1012",
+            Self::LuaTimeout(_) => "E1008",
+            Self::WindowError(_) => "E1009",
+            Self::ConfigError(_) => "E1010",
+            Self::ResourceNotFound(_) => "E1011",
+            Self::ResourceNotLoaded(_) => "E1012",
+            Self::IoError(_) => "E1013",
         }
     }
     /// Return high-level category used for diagnostics grouping.
@@ -103,7 +107,7 @@ impl EngineError {
             | Self::AudioError(_)
             | Self::PhysicsError(_) => ErrorCategory::Runtime,
             Self::ResourceNotFound(_) | Self::ResourceNotLoaded(_) => ErrorCategory::Resource,
-            Self::LuaError(_) => ErrorCategory::Script,
+            Self::LuaError(_) | Self::LuaTimeout(_) => ErrorCategory::Script,
             Self::FileSystemError(_) => ErrorCategory::Filesystem,
             Self::IoError(_) => ErrorCategory::System,
         }
@@ -122,6 +126,9 @@ impl EngineError {
                 "Ensure the file path is correct and within the game directory."
             }
             Self::LuaError(_) => "Check the Lua script for syntax errors or undefined variables.",
+            Self::LuaTimeout(_) => {
+                "Reduce script work or raise the configured Lua execution timeout."
+            }
             Self::WindowError(_) => "Try running with a different display backend.",
             Self::ConfigError(_) => "Review conf.toml for syntax errors or invalid values.",
             Self::ResourceNotFound(_) => {

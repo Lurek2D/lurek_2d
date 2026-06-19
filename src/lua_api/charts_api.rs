@@ -62,9 +62,7 @@ impl ChartTextureCache {
         .map_err(|err| {
             LuaError::RuntimeError(format!("{api_name}: failed to upload chart texture: {err}"))
         })?;
-        state
-            .released_texture_handles
-            .remove(&texture.key.data().as_ffi());
+        state.clear_released_texture_handle(texture.key.data().as_ffi());
         *self.key.borrow_mut() = Some(texture.key);
         dirty.set(false);
         Ok(texture.key)
@@ -207,10 +205,7 @@ fn palette_color(index: usize) -> [f32; 4] {
 }
 
 fn release_texture(state: &mut SharedState, key: TextureKey) {
-    if state.textures.remove(key).is_some() {
-        state.released_texture_handles.insert(key.data().as_ffi());
-    }
-    state.texture_last_used.remove(&key);
+    state.release_texture(key);
 }
 
 fn queue_draw_image(

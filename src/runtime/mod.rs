@@ -25,13 +25,17 @@ pub mod os;
 pub mod resource_keys;
 /// Shared mutable runtime state consumed by app and Lua callbacks.
 pub mod shared_state;
-pub use config::Config;
+pub use config::{Config, ConfigLoadOptions, ConfigReport, ConfigValidationMode};
 pub use error::{EngineError, EngineResult, ErrorCategory, ErrorSnapshot};
 pub use headless::{run_headless, run_headless_checked, HeadlessOptions};
-pub use lua_execution::{call_function_with_policy, LuaExecutionPolicy};
+pub use lua_execution::{
+    call_function_with_policy, eval_chunk_with_policy, exec_chunk_with_policy,
+    is_lua_timeout_error, LuaExecutionPolicy, MAX_LUA_EXECUTION_TIMEOUT_MS,
+};
 pub use messages::MessageCatalog;
 pub use mode::{RuntimeMode, RuntimeModeParseError};
 pub use shared_state::{
-    ErrorInfo, FrameProfile, FullscreenType, PhysicsRunConfig, RendererStats, ResourceMemoryStats,
-    ScreenshotRequest, SharedState, WindowState,
+    ErrorInfo, FrameProfile, FullscreenType, PhysicsRunConfig, ReleasedTextureHandle,
+    RendererStats, ResourceBudgetReport, ResourceMemoryStats, ScreenshotRequest, SharedState,
+    SharedStateValidationReport, WindowState,
 };

@@ -8,6 +8,11 @@ use mlua::prelude::*;
 use mlua::HookTriggers;
 use std::time::{Duration, Instant};
 
+/// Upper bound applied to configured Lua execution timeouts.
+pub const MAX_LUA_EXECUTION_TIMEOUT_MS: f32 = 300_000.0;
+
+const LUA_TIMEOUT_MARKER: &str = "exceeded Lua execution timeout";
+
 /// Shared execution policy for guarded host-side Lua calls.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct LuaExecutionPolicy {
@@ -24,6 +29,13 @@ impl LuaExecutionPolicy {
             timeout_ms,
             ..Self::default()
         }
+    }
+
+    /// Normalize the configured timeout to a finite positive value when present.
+    pub fn normalized_timeout_ms(self) -> Option<f32> {
+        self.timeout_ms
+            .filter(|value| value.is_finite() && *value > 0.0)
+            .map(|value| value.min(MAX_LUA_EXECUTION_TIMEOUT_MS))
     }
 }
 
@@ -49,10 +61,58 @@ where
     Args: IntoLuaMulti<'lua>,
     Return: FromLuaMulti<'lua>,
 {
-    if let Some(timeout_ms) = policy.timeout_ms.filter(|value| *value > 0.0) {
-        return call_with_timeout(lua, name, function, args, timeout_ms, policy);
+    if let Some(timeout_ms) = policy.normalized_timeout_ms() {
+        return with_timeout(
+            lua,
+            &format!("lurek.{}()", name),
+            timeout_ms,
+            policy,
+            || function.call::<_, Return>(args),
+        );
     }
     function.call::<_, Return>(args)
+}
+
+/// Evaluate a Lua expression or chunk under the shared execution policy.
+pub fn eval_chunk_with_policy<'lua, Return>(
+    lua: &'lua Lua,
+    label: &str,
+    code: &str,
+    policy: LuaExecutionPolicy,
+) -> LuaResult<Return>
+where
+    Return: FromLuaMulti<'lua>,
+{
+    if let Some(timeout_ms) = policy.normalized_timeout_ms() {
+        return with_timeout(lua, label, timeout_ms, policy, || {
+            lua.load(code).set_name(label).eval::<Return>()
+        });
+    }
+    lua.load(code).set_name(label).eval::<Return>()
+}
+
+/// Execute a Lua chunk under the shared execution policy.
+pub fn exec_chunk_with_policy(
+    lua: &Lua,
+    label: &str,
+    code: &str,
+    policy: LuaExecutionPolicy,
+) -> LuaResult<()> {
+    if let Some(timeout_ms) = policy.normalized_timeout_ms() {
+        return with_timeout(lua, label, timeout_ms, policy, || {
+            lua.load(code).set_name(label).exec()
+        });
+    }
+    lua.load(code).set_name(label).exec()
+}
+
+/// Return `true` when the supplied error came from the shared timeout hook.
+pub fn is_lua_timeout_error(error: &LuaError) -> bool {
+    match error {
+        LuaError::CallbackError { cause, .. } => is_lua_timeout_error(cause),
+        LuaError::WithContext { cause, .. } => is_lua_timeout_error(cause),
+        other => other.to_string().contains(LUA_TIMEOUT_MARKER),
+    }
 }
 
 struct LuaHookGuard<'lua> {
@@ -65,21 +125,33 @@ impl Drop for LuaHookGuard<'_> {
     }
 }
 
-fn call_with_timeout<'lua, Args, Return>(
+struct LuaJitGuard<'lua> {
     lua: &'lua Lua,
-    name: &str,
-    function: LuaFunction<'lua>,
-    args: Args,
+}
+
+impl LuaJitGuard<'_> {
+    fn new<'lua>(lua: &'lua Lua) -> LuaJitGuard<'lua> {
+        set_luajit_enabled(lua, false);
+        LuaJitGuard { lua }
+    }
+}
+
+impl Drop for LuaJitGuard<'_> {
+    fn drop(&mut self) {
+        set_luajit_enabled(self.lua, true);
+    }
+}
+
+fn with_timeout<'lua, Return>(
+    lua: &'lua Lua,
+    label: &str,
     timeout_ms: f32,
     policy: LuaExecutionPolicy,
-) -> LuaResult<Return>
-where
-    Args: IntoLuaMulti<'lua>,
-    Return: FromLuaMulti<'lua>,
-{
+    run: impl FnOnce() -> LuaResult<Return>,
+) -> LuaResult<Return> {
     let timeout = Duration::from_secs_f64((timeout_ms as f64 / 1000.0).max(0.000_001));
     let deadline = Instant::now() + timeout;
-    let callback_name = name.to_string();
+    let timeout_label = label.to_string();
     lua.set_hook(
         HookTriggers {
             on_calls: false,
@@ -90,13 +162,25 @@ where
         move |_, _| {
             if Instant::now() >= deadline {
                 return Err(mlua::Error::RuntimeError(format!(
-                    "lurek.{}() exceeded callback timeout ({:.2} ms)",
-                    callback_name, timeout_ms
+                    "{} {} ({:.2} ms)",
+                    timeout_label, LUA_TIMEOUT_MARKER, timeout_ms
                 )));
             }
             Ok(())
         },
     );
     let _guard = LuaHookGuard { lua };
-    function.call::<_, Return>(args)
+    let _jit_guard = LuaJitGuard::new(lua);
+    run()
+}
+
+fn set_luajit_enabled(lua: &Lua, enabled: bool) {
+    let Ok(jit) = lua.globals().get::<_, LuaTable>("jit") else {
+        return;
+    };
+    let method = if enabled { "on" } else { "off" };
+    let Ok(function) = jit.get::<_, LuaFunction>(method) else {
+        return;
+    };
+    let _ = function.call::<_, ()>(());
 }

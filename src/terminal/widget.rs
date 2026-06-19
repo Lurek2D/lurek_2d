@@ -8,7 +8,10 @@
 //! Open it when terminal UI object semantics change; event dispatch and rendering integration live in state.
 
 use super::cell::DEFAULT_FG;
-use super::terminal_state::{MAX_COLS, MAX_ROWS};
+use super::terminal_state::{
+    TerminalError, DEFAULT_MAX_ITEM_CHARS, DEFAULT_MAX_LIST_ITEMS, DEFAULT_MAX_WIDGET_TEXT_CHARS,
+    MAX_COLS, MAX_ROWS,
+};
 use super::text_utils::{char_count, text_width_at_least_one, truncate_chars};
 
 /// Border drawing style used by `WidgetKind::Border`.
@@ -140,6 +143,14 @@ pub struct Widget {
     pub kind: WidgetKind,
 }
 impl Widget {
+    fn sanitize_color(new_color: [f32; 4]) -> Result<[f32; 4], TerminalError> {
+        if new_color.iter().all(|value| value.is_finite()) {
+            Ok(new_color.map(|value| value.clamp(0.0, 1.0)))
+        } else {
+            Err(TerminalError::InvalidColor)
+        }
+    }
+
     /// Create a `Label` widget at 1-based `(col, row)` with auto-sized width.
     pub fn new_label(col: usize, row: usize, text: impl Into<String>) -> Self {
         let text = text.into();
@@ -240,6 +251,57 @@ impl Widget {
     pub fn set_text(&mut self, new_text: String) -> Result<bool, &'static str> {
         match &mut self.kind {
             WidgetKind::Label { text, .. } => {
+                *text = truncate_chars(&new_text, DEFAULT_MAX_WIDGET_TEXT_CHARS);
+                self.base.width = text_width_at_least_one(text);
+                Ok(false)
+            }
+            WidgetKind::Button { text } => {
+                *text = truncate_chars(&new_text, DEFAULT_MAX_WIDGET_TEXT_CHARS);
+                Ok(false)
+            }
+            WidgetKind::TextBox {
+                text,
+                max_length,
+                cursor_pos,
+            } => {
+                let limit = if *max_length > 0 {
+                    DEFAULT_MAX_WIDGET_TEXT_CHARS.min(*max_length)
+                } else {
+                    DEFAULT_MAX_WIDGET_TEXT_CHARS
+                };
+                let final_text = truncate_chars(&new_text, limit);
+                let changed = *text != final_text;
+                *text = final_text;
+                *cursor_pos = char_count(text);
+                Ok(changed)
+            }
+            _ => Err("expected label, button, or text box"),
+        }
+    }
+
+    /// Strictly set the display text for `Label`, `Button`, or `TextBox` using the provided terminal text limit.
+    pub fn try_set_text_with_limit(
+        &mut self,
+        new_text: String,
+        text_limit: usize,
+    ) -> Result<bool, TerminalError> {
+        self.set_text_with_limit(new_text, text_limit)
+    }
+
+    fn set_text_with_limit(
+        &mut self,
+        new_text: String,
+        text_limit: usize,
+    ) -> Result<bool, TerminalError> {
+        let text_len = char_count(&new_text);
+        if text_len > text_limit {
+            return Err(TerminalError::TextTooLong {
+                len: text_len,
+                limit: text_limit,
+            });
+        }
+        match &mut self.kind {
+            WidgetKind::Label { text, .. } => {
                 *text = new_text;
                 self.base.width = text_width_at_least_one(text);
                 Ok(false)
@@ -253,17 +315,26 @@ impl Widget {
                 max_length,
                 cursor_pos,
             } => {
-                let final_text = if *max_length > 0 {
-                    truncate_chars(&new_text, *max_length)
+                let effective_limit = if *max_length > 0 {
+                    text_limit.min(*max_length)
                 } else {
-                    new_text
+                    text_limit
                 };
+                if text_len > effective_limit {
+                    return Err(TerminalError::TextTooLong {
+                        len: text_len,
+                        limit: effective_limit,
+                    });
+                }
+                let final_text = new_text;
                 let changed = *text != final_text;
                 *text = final_text;
                 *cursor_pos = char_count(text);
                 Ok(changed)
             }
-            _ => Err("expected label, button, or text box"),
+            _ => Err(TerminalError::InvalidWidgetKind {
+                expected: "label, button, or text box",
+            }),
         }
     }
     /// Return the display text for `Label`, `Button`, or `TextBox`; errors on other kinds.
@@ -277,12 +348,31 @@ impl Widget {
     }
     /// Set the foreground color on `Label` or `Border`; errors on other kinds.
     pub fn set_color(&mut self, new_color: [f32; 4]) -> Result<(), &'static str> {
+        let new_color = if new_color.iter().all(|value| value.is_finite()) {
+            new_color.map(|value| value.clamp(0.0, 1.0))
+        } else {
+            DEFAULT_FG
+        };
         match &mut self.kind {
             WidgetKind::Label { color, .. } | WidgetKind::Border { color, .. } => {
                 *color = new_color;
                 Ok(())
             }
             _ => Err("expected label or border"),
+        }
+    }
+
+    /// Strictly set the foreground color on `Label` or `Border`.
+    pub fn try_set_color(&mut self, new_color: [f32; 4]) -> Result<(), TerminalError> {
+        let new_color = Self::sanitize_color(new_color)?;
+        match &mut self.kind {
+            WidgetKind::Label { color, .. } | WidgetKind::Border { color, .. } => {
+                *color = new_color;
+                Ok(())
+            }
+            _ => Err(TerminalError::InvalidWidgetKind {
+                expected: "label or border",
+            }),
         }
     }
     /// Return the foreground color of `Label` or `Border`; errors on other kinds.
@@ -321,10 +411,38 @@ impl Widget {
     pub fn add_item(&mut self, item: String) -> Result<(), &'static str> {
         match &mut self.kind {
             WidgetKind::List { items, .. } => {
-                items.push(item);
+                if items.len() < DEFAULT_MAX_LIST_ITEMS {
+                    items.push(truncate_chars(&item, DEFAULT_MAX_ITEM_CHARS));
+                }
                 Ok(())
             }
             _ => Err("expected list"),
+        }
+    }
+
+    /// Strictly append `item` to the `List` with the provided limits.
+    pub fn try_add_item_with_limits(
+        &mut self,
+        item: String,
+        max_items: usize,
+        item_limit: usize,
+    ) -> Result<(), TerminalError> {
+        let item_len = char_count(&item);
+        if item_len > item_limit {
+            return Err(TerminalError::TextTooLong {
+                len: item_len,
+                limit: item_limit,
+            });
+        }
+        match &mut self.kind {
+            WidgetKind::List { items, .. } => {
+                if items.len() >= max_items {
+                    return Err(TerminalError::ListItemLimitReached { limit: max_items });
+                }
+                items.push(item);
+                Ok(())
+            }
+            _ => Err(TerminalError::InvalidWidgetKind { expected: "list" }),
         }
     }
     /// Remove the item at 1-based `index` from a `List`, adjusting selection and scroll; errors on other kinds.
@@ -444,10 +562,32 @@ impl Widget {
     pub fn set_title(&mut self, new_title: String) -> Result<(), &'static str> {
         match &mut self.kind {
             WidgetKind::Border { title, .. } => {
-                *title = new_title;
+                *title = truncate_chars(&new_title, DEFAULT_MAX_WIDGET_TEXT_CHARS);
                 Ok(())
             }
             _ => Err("expected border"),
+        }
+    }
+
+    /// Strictly set the title string on a `Border` widget using the provided limit.
+    pub fn try_set_title_with_limit(
+        &mut self,
+        new_title: String,
+        text_limit: usize,
+    ) -> Result<(), TerminalError> {
+        let title_len = char_count(&new_title);
+        if title_len > text_limit {
+            return Err(TerminalError::TextTooLong {
+                len: title_len,
+                limit: text_limit,
+            });
+        }
+        match &mut self.kind {
+            WidgetKind::Border { title, .. } => {
+                *title = new_title;
+                Ok(())
+            }
+            _ => Err(TerminalError::InvalidWidgetKind { expected: "border" }),
         }
     }
     /// Return the title string of a `Border` widget; errors on other kinds.
@@ -475,6 +615,142 @@ impl Widget {
     /// Return `true` when this widget is a `Panel`.
     pub fn is_panel(&self) -> bool {
         matches!(self.kind, WidgetKind::Panel { .. })
+    }
+
+    /// Apply terminal limits permissively and return the number of clipped characters.
+    pub fn apply_limits(
+        &mut self,
+        text_limit: usize,
+        max_items: usize,
+        item_limit: usize,
+    ) -> usize {
+        let mut clipped = 0;
+        match &mut self.kind {
+            WidgetKind::Label { text, .. } => {
+                let text_len = char_count(text);
+                if text_len > text_limit {
+                    *text = truncate_chars(text, text_limit);
+                    clipped += text_len - text_limit;
+                }
+                self.base.width = text_width_at_least_one(text);
+            }
+            WidgetKind::Button { text } => {
+                let text_len = char_count(text);
+                if text_len > text_limit {
+                    *text = truncate_chars(text, text_limit);
+                    clipped += text_len - text_limit;
+                }
+            }
+            WidgetKind::TextBox {
+                text,
+                max_length,
+                cursor_pos,
+            } => {
+                let limit = if *max_length > 0 {
+                    text_limit.min(*max_length)
+                } else {
+                    text_limit
+                };
+                let text_len = char_count(text);
+                if text_len > limit {
+                    *text = truncate_chars(text, limit);
+                    clipped += text_len - limit;
+                }
+                *cursor_pos = (*cursor_pos).min(char_count(text));
+            }
+            WidgetKind::List {
+                items,
+                selected,
+                scroll_offset,
+            } => {
+                if items.len() > max_items {
+                    items.truncate(max_items);
+                }
+                for item in items.iter_mut() {
+                    let item_len = char_count(item);
+                    if item_len > item_limit {
+                        *item = truncate_chars(item, item_limit);
+                        clipped += item_len - item_limit;
+                    }
+                }
+                if let Some(current) = *selected {
+                    if current >= items.len() {
+                        *selected = None;
+                    }
+                }
+                *scroll_offset = (*scroll_offset).min(items.len().saturating_sub(1));
+            }
+            WidgetKind::Border { title, .. } => {
+                let title_len = char_count(title);
+                if title_len > text_limit {
+                    *title = truncate_chars(title, text_limit);
+                    clipped += title_len - text_limit;
+                }
+            }
+            WidgetKind::Panel { .. } => {}
+        }
+        clipped
+    }
+
+    /// Validate this widget against terminal limits without mutating it.
+    pub fn try_apply_limits(
+        &self,
+        text_limit: usize,
+        max_items: usize,
+        item_limit: usize,
+    ) -> Result<(), TerminalError> {
+        match &self.kind {
+            WidgetKind::Label { text, .. } | WidgetKind::Button { text } => {
+                let text_len = char_count(text);
+                if text_len > text_limit {
+                    return Err(TerminalError::TextTooLong {
+                        len: text_len,
+                        limit: text_limit,
+                    });
+                }
+            }
+            WidgetKind::TextBox {
+                text, max_length, ..
+            } => {
+                let limit = if *max_length > 0 {
+                    text_limit.min(*max_length)
+                } else {
+                    text_limit
+                };
+                let text_len = char_count(text);
+                if text_len > limit {
+                    return Err(TerminalError::TextTooLong {
+                        len: text_len,
+                        limit,
+                    });
+                }
+            }
+            WidgetKind::List { items, .. } => {
+                if items.len() > max_items {
+                    return Err(TerminalError::ListItemLimitReached { limit: max_items });
+                }
+                for item in items {
+                    let item_len = char_count(item);
+                    if item_len > item_limit {
+                        return Err(TerminalError::TextTooLong {
+                            len: item_len,
+                            limit: item_limit,
+                        });
+                    }
+                }
+            }
+            WidgetKind::Border { title, .. } => {
+                let title_len = char_count(title);
+                if title_len > text_limit {
+                    return Err(TerminalError::TextTooLong {
+                        len: title_len,
+                        limit: text_limit,
+                    });
+                }
+            }
+            WidgetKind::Panel { .. } => {}
+        }
+        Ok(())
     }
 }
 #[cfg(test)]

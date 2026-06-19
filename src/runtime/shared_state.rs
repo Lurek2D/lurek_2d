@@ -36,7 +36,7 @@ use crate::ui::GuiContext;
 use slotmap::Key as SlotmapKey;
 use slotmap::SlotMap;
 use std::cell::RefCell;
-use std::collections::{HashMap, HashSet};
+use std::collections::{HashMap, HashSet, VecDeque};
 use std::path::PathBuf;
 use std::rc::Weak;
 use std::sync::Arc;
@@ -181,7 +181,7 @@ pub struct ScreenshotRequest {
     /// Stores path state.
     pub path: String,
 }
-#[derive(Debug, Clone, Copy, Default)]
+#[derive(Debug, Clone, Copy, Default, PartialEq)]
 /// Runtime data model for per-frame timing buckets captured by the runtime.
 /// # Fields
 pub struct FrameProfile {
@@ -208,7 +208,46 @@ pub struct FrameProfile {
     /// Stores callback_total_ms state.
     pub callback_total_ms: f32,
 }
-#[derive(Debug, Clone, Copy, Default)]
+
+impl FrameProfile {
+    /// Normalize invalid timing values and return warning messages describing corrections.
+    pub fn sanitize_in_place(&mut self) -> Vec<String> {
+        let mut corrections = Vec::new();
+        sanitize_frame_value("app_tick_ms", &mut self.app_tick_ms, &mut corrections);
+        sanitize_frame_value("app_update_ms", &mut self.app_update_ms, &mut corrections);
+        sanitize_frame_value("app_render_ms", &mut self.app_render_ms, &mut corrections);
+        sanitize_frame_value(
+            "app_frame_total_ms",
+            &mut self.app_frame_total_ms,
+            &mut corrections,
+        );
+        sanitize_frame_value(
+            "process_physics_ms",
+            &mut self.process_physics_ms,
+            &mut corrections,
+        );
+        sanitize_frame_value(
+            "fixed_update_ms",
+            &mut self.fixed_update_ms,
+            &mut corrections,
+        );
+        sanitize_frame_value("process_ms", &mut self.process_ms, &mut corrections);
+        sanitize_frame_value(
+            "process_late_ms",
+            &mut self.process_late_ms,
+            &mut corrections,
+        );
+        sanitize_frame_value("draw_ms", &mut self.draw_ms, &mut corrections);
+        sanitize_frame_value("draw_ui_ms", &mut self.draw_ui_ms, &mut corrections);
+        sanitize_frame_value(
+            "callback_total_ms",
+            &mut self.callback_total_ms,
+            &mut corrections,
+        );
+        corrections
+    }
+}
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
 /// Runtime data model for aggregate resource memory and object-count statistics.
 /// # Fields
 pub struct ResourceMemoryStats {
@@ -220,6 +259,10 @@ pub struct ResourceMemoryStats {
     pub canvas_bytes: u64,
     /// Stores shader_bytes state.
     pub shader_bytes: u64,
+    /// Stores evictable_bytes state.
+    pub evictable_bytes: u64,
+    /// Stores non_evictable_bytes state.
+    pub non_evictable_bytes: u64,
     /// Stores total_bytes state.
     pub total_bytes: u64,
     /// Stores budget_bytes state.
@@ -232,6 +275,54 @@ pub struct ResourceMemoryStats {
     pub canvas_count: u64,
     /// Stores shader_count state.
     pub shader_count: u64,
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+/// Summary of one resource-budget enforcement pass.
+pub struct ResourceBudgetReport {
+    /// Resource stats before evictions started.
+    pub before: ResourceMemoryStats,
+    /// Resource stats after evictions completed.
+    pub after: ResourceMemoryStats,
+    /// Texture bytes evicted during the pass.
+    pub evicted_texture_bytes: u64,
+    /// Texture count evicted during the pass.
+    pub evicted_texture_count: u64,
+    /// Canvas bytes evicted during the pass.
+    pub evicted_canvas_bytes: u64,
+    /// Canvas count evicted during the pass.
+    pub evicted_canvas_count: u64,
+    /// Bytes still over budget after the pass.
+    pub remaining_over_budget_bytes: u64,
+    /// Non-evictable bytes that still keep the runtime over budget.
+    pub non_evictable_over_budget_bytes: u64,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+/// Deferred texture release tracked until a later acknowledgement.
+pub struct ReleasedTextureHandle {
+    /// Texture handle scheduled for cleanup acknowledgement.
+    pub handle: u64,
+    /// Frame number when the release was queued.
+    pub queued_frame: u64,
+    /// Config revision visible when the release was queued.
+    pub queued_revision: u64,
+}
+
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+/// Diagnostics produced by `SharedState::validate_frame_state`.
+pub struct SharedStateValidationReport {
+    /// Hard invariant violations.
+    pub errors: Vec<String>,
+    /// Soft warnings such as budget pressure or pending cleanup.
+    pub warnings: Vec<String>,
+}
+
+impl SharedStateValidationReport {
+    /// Return `true` when no errors or warnings were recorded.
+    pub fn is_clean(&self) -> bool {
+        self.errors.is_empty() && self.warnings.is_empty()
+    }
 }
 #[derive(Debug, Clone)]
 /// Runtime data model for fixed-step physics and fixed-update scheduling.
@@ -271,6 +362,8 @@ pub struct SharedState {
     pub textures: SlotMap<TextureKey, TextureData>,
     /// Stores released_texture_handles state.
     pub released_texture_handles: HashSet<u64>,
+    /// Stores pending_texture_releases state.
+    pub pending_texture_releases: VecDeque<ReleasedTextureHandle>,
     /// Stores keys_down state.
     pub keys_down: HashSet<String>,
     /// Stores mouse state.
@@ -455,6 +548,7 @@ impl SharedState {
             background_color: [0.15, 0.12, 0.25, 1.0],
             textures: SlotMap::with_key(),
             released_texture_handles: HashSet::new(),
+            pending_texture_releases: VecDeque::new(),
             keys_down: HashSet::new(),
             mouse: MouseState::new(),
             delta_time: 0.0,
@@ -563,33 +657,119 @@ impl SharedState {
     pub fn touch_canvas(&mut self, key: CanvasKey) {
         self.canvas_last_used.insert(key, self.frame_counter);
     }
-    /// Evict least-recently-used textures until memory usage is within budget.
-    pub fn evict_lru_resources(&mut self) {
-        let stats = self.resource_memory_stats();
-        if stats.total_bytes <= self.resource_budget_bytes {
-            return;
+
+    /// Queue a released texture handle until the host acknowledges cleanup.
+    pub fn queue_released_texture_handle(&mut self, handle: u64) {
+        if self.released_texture_handles.insert(handle) {
+            self.pending_texture_releases
+                .push_back(ReleasedTextureHandle {
+                    handle,
+                    queued_frame: self.frame_counter,
+                    queued_revision: self.config_reload_revision,
+                });
         }
-        let mut over = stats.total_bytes - self.resource_budget_bytes;
-        let tex_count = self.textures.len();
-        let mut candidates: Vec<(TextureKey, u64)> = Vec::with_capacity(tex_count);
-        for k in self.textures.keys() {
-            let last = self.texture_last_used.get(&k).copied().unwrap_or(0);
-            candidates.push((k, last));
+    }
+
+    /// Remove a queued release when the handle is recreated or otherwise becomes valid again.
+    pub fn clear_released_texture_handle(&mut self, handle: u64) {
+        self.released_texture_handles.remove(&handle);
+        self.pending_texture_releases
+            .retain(|entry| entry.handle != handle);
+    }
+
+    /// Acknowledge a pending release after renderer-side cleanup.
+    pub fn ack_released_texture_handle(&mut self, handle: u64) -> bool {
+        let before = self.pending_texture_releases.len();
+        self.pending_texture_releases
+            .retain(|entry| entry.handle != handle);
+        let removed = before != self.pending_texture_releases.len();
+        if removed {
+            self.released_texture_handles.remove(&handle);
         }
-        candidates.sort_unstable_by_key(|(_, last)| *last);
-        for (key, _) in candidates {
+        removed
+    }
+
+    /// Return the number of texture releases waiting for acknowledgement.
+    pub fn pending_texture_release_count(&self) -> usize {
+        self.pending_texture_releases.len()
+    }
+
+    /// Release a texture and queue its handle for later cleanup acknowledgement.
+    pub fn release_texture(&mut self, key: TextureKey) -> bool {
+        if self.textures.remove(key).is_some() {
+            self.texture_last_used.remove(&key);
+            self.queue_released_texture_handle(key.data().as_ffi());
+            return true;
+        }
+        false
+    }
+
+    /// Evict least-recently-used textures and canvases until memory usage is within budget.
+    pub fn evict_lru_resources(&mut self) -> ResourceBudgetReport {
+        let before = self.resource_memory_stats();
+        let mut report = ResourceBudgetReport {
+            before,
+            after: before,
+            ..ResourceBudgetReport::default()
+        };
+        if self.resource_budget_bytes == 0 || before.total_bytes <= self.resource_budget_bytes {
+            return report.finalize(self.resource_budget_bytes);
+        }
+        let mut over = before.total_bytes - self.resource_budget_bytes;
+        let mut texture_candidates: Vec<(TextureKey, u64, u64)> = self
+            .textures
+            .iter()
+            .map(|(key, texture)| {
+                (
+                    key,
+                    self.texture_last_used.get(&key).copied().unwrap_or(0),
+                    (texture.width as u64) * (texture.height as u64) * 4,
+                )
+            })
+            .collect();
+        texture_candidates.sort_unstable_by_key(|(_, last_used, _)| *last_used);
+        for (key, _, size) in texture_candidates {
             if over == 0 {
                 break;
             }
-            if let Some(tex) = self.textures.get(key) {
-                let size = (tex.width as u64) * (tex.height as u64) * 4;
-                self.released_texture_handles.insert(key.data().as_ffi());
-                self.textures.remove(key);
-                self.texture_last_used.remove(&key);
+            if self.release_texture(key) {
+                report.evicted_texture_count += 1;
+                report.evicted_texture_bytes += size;
                 over = over.saturating_sub(size);
             }
         }
+        if over > 0 {
+            let mut canvas_candidates: Vec<(CanvasKey, u64, u64)> = self
+                .canvases
+                .iter()
+                .map(|(key, canvas)| {
+                    (
+                        key,
+                        self.canvas_last_used.get(&key).copied().unwrap_or(0),
+                        (canvas.width as u64) * (canvas.height as u64) * 4,
+                    )
+                })
+                .collect();
+            canvas_candidates.sort_unstable_by_key(|(_, last_used, _)| *last_used);
+            for (key, _, size) in canvas_candidates {
+                if over == 0 {
+                    break;
+                }
+                if self.canvases.remove(key).is_some() {
+                    self.canvas_last_used.remove(&key);
+                    if self.active_canvas == Some(key) {
+                        self.active_canvas = None;
+                    }
+                    report.evicted_canvas_count += 1;
+                    report.evicted_canvas_bytes += size;
+                    over = over.saturating_sub(size);
+                }
+            }
+        }
+        report.after = self.resource_memory_stats();
+        report.finalize(self.resource_budget_bytes)
     }
+
     /// Compute current resource memory usage across all asset types.
     pub fn resource_memory_stats(&self) -> ResourceMemoryStats {
         let texture_bytes: u64 = self
@@ -617,18 +797,119 @@ impl SharedState {
                 src + wrapper + uniforms_overhead
             })
             .sum();
-        let total_bytes = texture_bytes + font_bytes + canvas_bytes + shader_bytes;
+        let evictable_bytes = texture_bytes + canvas_bytes;
+        let non_evictable_bytes = font_bytes + shader_bytes;
+        let total_bytes = evictable_bytes + non_evictable_bytes;
         ResourceMemoryStats {
             texture_bytes,
             font_bytes,
             canvas_bytes,
             shader_bytes,
+            evictable_bytes,
+            non_evictable_bytes,
             total_bytes,
             budget_bytes: self.resource_budget_bytes,
             texture_count: self.textures.len() as u64,
             font_count: self.fonts.len() as u64,
             canvas_count: self.canvases.len() as u64,
             shader_count: self.shaders.len() as u64,
+        }
+    }
+
+    /// Validate high-risk runtime invariants for diagnostics and tests.
+    pub fn validate_frame_state(&self) -> SharedStateValidationReport {
+        let mut report = SharedStateValidationReport::default();
+        validate_color_state("current_color", self.current_color, &mut report);
+        validate_color_state("background_color", self.background_color, &mut report);
+        if self.window_width == 0 || self.window_height == 0 {
+            report.errors.push(format!(
+                "window dimensions must be non-zero (got {}x{})",
+                self.window_width, self.window_height
+            ));
+        }
+        if let Some(key) = self.active_canvas {
+            if !self.canvases.contains_key(key) {
+                report
+                    .errors
+                    .push("active_canvas references a stale canvas handle".to_string());
+            }
+        }
+        if let Some(key) = self.active_shader {
+            if !self.shaders.contains_key(key) {
+                report
+                    .errors
+                    .push("active_shader references a stale shader handle".to_string());
+            }
+        }
+        if let Some(key) = self.active_font {
+            if !self.fonts.contains_key(key) {
+                report
+                    .errors
+                    .push("active_font references a stale font handle".to_string());
+            }
+        }
+        if !self.delta_time.is_finite() || self.delta_time < 0.0 {
+            report.errors.push(format!(
+                "delta_time must be finite and non-negative (got {})",
+                self.delta_time
+            ));
+        }
+        if !self.total_time.is_finite() || self.total_time < 0.0 {
+            report.errors.push(format!(
+                "total_time must be finite and non-negative (got {})",
+                self.total_time
+            ));
+        }
+        let mut sanitized_profile = self.frame_profile;
+        for correction in sanitized_profile.sanitize_in_place() {
+            report.warnings.push(correction);
+        }
+        if let Some(budget_ms) = self.frame_budget_warn_ms {
+            if sanitized_profile.app_frame_total_ms > budget_ms {
+                report.warnings.push(format!(
+                    "app_frame_total_ms {:.3} exceeded frame budget {:.3} ms",
+                    sanitized_profile.app_frame_total_ms, budget_ms
+                ));
+            }
+        }
+        let budget_report = self.resource_budget_report();
+        if self.resource_budget_bytes > 0 && budget_report.non_evictable_over_budget_bytes > 0 {
+            report.warnings.push(format!(
+                "resource budget exceeded by {} non-evictable bytes",
+                budget_report.non_evictable_over_budget_bytes
+            ));
+        }
+        if !self.pending_texture_releases.is_empty() {
+            report.warnings.push(format!(
+                "{} texture releases are still pending acknowledgement",
+                self.pending_texture_releases.len()
+            ));
+        }
+        report
+    }
+
+    /// Return a current budget report without mutating resource ownership.
+    pub fn resource_budget_report(&self) -> ResourceBudgetReport {
+        let before = self.resource_memory_stats();
+        let (remaining_over_budget_bytes, non_evictable_over_budget_bytes) =
+            if self.resource_budget_bytes == 0 {
+                (0, 0)
+            } else {
+                (
+                    before
+                        .total_bytes
+                        .saturating_sub(self.resource_budget_bytes),
+                    before
+                        .non_evictable_bytes
+                        .saturating_sub(self.resource_budget_bytes),
+                )
+            };
+        ResourceBudgetReport {
+            before,
+            after: before,
+            remaining_over_budget_bytes,
+            non_evictable_over_budget_bytes,
+            ..ResourceBudgetReport::default()
         }
     }
     /// Submit an asynchronous file read and return a poll handle.
@@ -853,6 +1134,42 @@ impl SharedState {
             ));
         }
         Ok(())
+    }
+}
+
+impl ResourceBudgetReport {
+    fn finalize(mut self, budget_bytes: u64) -> Self {
+        if budget_bytes == 0 {
+            self.remaining_over_budget_bytes = 0;
+            self.non_evictable_over_budget_bytes = 0;
+            return self;
+        }
+        self.remaining_over_budget_bytes = self.after.total_bytes.saturating_sub(budget_bytes);
+        self.non_evictable_over_budget_bytes =
+            self.after.non_evictable_bytes.saturating_sub(budget_bytes);
+        self
+    }
+}
+
+fn sanitize_frame_value(name: &str, value: &mut f32, corrections: &mut Vec<String>) {
+    if value.is_finite() && *value >= 0.0 {
+        return;
+    }
+    let original = *value;
+    *value = 0.0;
+    corrections.push(format!(
+        "frame_profile.{name} was invalid ({original}) and was normalized to 0"
+    ));
+}
+
+fn validate_color_state(name: &str, color: [f32; 4], report: &mut SharedStateValidationReport) {
+    for (index, component) in color.into_iter().enumerate() {
+        if component.is_finite() && (0.0..=1.0).contains(&component) {
+            continue;
+        }
+        report.errors.push(format!(
+            "{name}[{index}] must be finite and within 0..=1 (got {component})"
+        ));
     }
 }
 

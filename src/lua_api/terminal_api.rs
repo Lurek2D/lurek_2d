@@ -308,7 +308,11 @@ fn attach_widget(
         WidgetAttachSnapshot::AlreadyAttached(index) => return Ok(index),
         WidgetAttachSnapshot::Detached(widget, children) => (widget, children),
     };
-    let index = terminal.terminal.borrow_mut().add_widget(widget);
+    let index = terminal
+        .terminal
+        .borrow_mut()
+        .try_add_widget(widget)
+        .map_err(|err| runtime_error("Terminal:addWidget", &err.to_string()))?;
     terminal
         .widget_handles
         .borrow_mut()
@@ -356,10 +360,11 @@ fn attach_child_widget(
     child: Rc<RefCell<WidgetBinding>>,
 ) -> LuaResult<()> {
     let child_index = attach_widget(terminal, &child)?;
-    let _ = terminal
+    terminal
         .terminal
         .borrow_mut()
-        .add_panel_child(parent_index, child_index);
+        .try_add_panel_child(parent_index, child_index)
+        .map_err(|err| runtime_error("Widget:addChild", &err.to_string()))?;
     Ok(())
 }
 /// Detaches one widget from a terminal and restores its local snapshot state.
@@ -465,6 +470,49 @@ impl LuaUserData for LuaTerminal {
             );
             Ok(())
         });
+        // -- trySet --
+        /// Strictly writes a character with colors to a specific cell and returns an explicit error string on invalid input.
+        /// @param | col | integer | Column index (1-based).
+        /// @param | row | integer | Row index (1-based).
+        /// @param | ch | string|number | Character as a string or Unicode codepoint.
+        /// @param | fr | number? | Foreground red (0-1, default 1).
+        /// @param | fg | number? | Foreground green (0-1, default 1).
+        /// @param | fb | number? | Foreground blue (0-1, default 1).
+        /// @param | fa | number? | Foreground alpha (0-1, default 1).
+        /// @param | br | number? | Background red (0-1, default 0).
+        /// @param | bg | number? | Background green (0-1, default 0).
+        /// @param | bb | number? | Background blue (0-1, default 0).
+        /// @param | ba | number? | Background alpha (0-1, default 0).
+        /// @return | boolean, string? | True on success, otherwise false and a reason string.
+        methods.add_method("trySet", |_, this, args: LuaMultiValue| {
+            let mut values = args.into_iter();
+            let col = usize_from_value(values.next());
+            let row = usize_from_value(values.next());
+            let ch = match values.next() {
+                Some(LuaValue::String(value)) => {
+                    value.to_str()?.chars().next().unwrap_or(' ') as u32
+                }
+                Some(LuaValue::Integer(value)) => value as u32,
+                Some(LuaValue::Number(value)) => value as u32,
+                _ => b' ' as u32,
+            };
+            let mut floats = [1.0_f32, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0];
+            for float in &mut floats {
+                if let Some(value) = number_from_value(values.next()) {
+                    *float = value;
+                }
+            }
+            match this.binding.terminal.borrow_mut().try_set(
+                col,
+                row,
+                ch,
+                [floats[0], floats[1], floats[2], floats[3]],
+                [floats[4], floats[5], floats[6], floats[7]],
+            ) {
+                Ok(()) => Ok((true, Option::<String>::None)),
+                Err(err) => Ok((false, Some(err.to_string()))),
+            }
+        });
         // -- get --
         /// Reads the character and colors at a specific cell in the terminal grid.
         /// @param | col | integer | Column index (1-based).
@@ -557,6 +605,66 @@ impl LuaUserData for LuaTerminal {
                 )),
                 None => Ok(LuaValue::Nil),
             }
+        });
+        // -- validateWidgets --
+        /// Validates panel child ownership, stale references, cycles, and the current focus target.
+        /// @return | boolean, string[]? | True when valid, otherwise false plus an array of validation messages.
+        methods.add_method("validateWidgets", |lua: &Lua, this, ()| {
+            let errors = this.binding.terminal.borrow().validate_widgets();
+            if errors.is_empty() {
+                return Ok((true, LuaValue::Nil));
+            }
+            let result = lua.create_table()?;
+            for (i, error) in errors.iter().enumerate() {
+                result.set(i + 1, error.to_string())?;
+            }
+            Ok((false, LuaValue::Table(result)))
+        });
+        // -- getDiagnostics --
+        /// Returns the current terminal diagnostics counters.
+        /// @return | table | Diagnostic counters keyed by counter name.
+        methods.add_method("getDiagnostics", |lua: &Lua, this, ()| {
+            let diagnostics = this.binding.terminal.borrow().diagnostics();
+            let table = lua.create_table()?;
+            table.set("out_of_bounds_writes", diagnostics.out_of_bounds_writes)?;
+            table.set("out_of_bounds_reads", diagnostics.out_of_bounds_reads)?;
+            table.set("invalid_codepoints", diagnostics.invalid_codepoints)?;
+            table.set("invalid_colors", diagnostics.invalid_colors)?;
+            table.set("clipped_text", diagnostics.clipped_text)?;
+            table.set("rejected_widgets", diagnostics.rejected_widgets)?;
+            table.set(
+                "rejected_widget_children",
+                diagnostics.rejected_widget_children,
+            )?;
+            table.set(
+                "rejected_history_entries",
+                diagnostics.rejected_history_entries,
+            )?;
+            table.set(
+                "rejected_clipboard_writes",
+                diagnostics.rejected_clipboard_writes,
+            )?;
+            table.set("cleared_focus_targets", diagnostics.cleared_focus_targets)?;
+            Ok(table)
+        });
+        // -- clearDiagnostics --
+        /// Clears all terminal diagnostics counters.
+        methods.add_method("clearDiagnostics", |_, this, ()| {
+            this.binding.terminal.borrow_mut().clear_diagnostics();
+            Ok(())
+        });
+        // -- getRenderStats --
+        /// Returns the most recent render composition stats gathered by terminal render helpers.
+        /// @return | table | Render stats keyed by stat name.
+        methods.add_method("getRenderStats", |lua: &Lua, this, ()| {
+            let stats = this.binding.terminal.borrow().render_stats();
+            let table = lua.create_table()?;
+            table.set("cells_composed", stats.cells_composed)?;
+            table.set("widgets_drawn", stats.widgets_drawn)?;
+            table.set("clipped_chars", stats.clipped_chars)?;
+            table.set("list_items_drawn", stats.list_items_drawn)?;
+            table.set("list_items_skipped", stats.list_items_skipped)?;
+            Ok(table)
         });
         // -- keypressed --
         /// Forwards a key press event to the terminal for widget input processing.
@@ -799,15 +907,52 @@ impl LuaUserData for LuaWidget {
         /// Sets the display text of a label, button, or text box widget. Fires the onChange callback if the text actually changed.
         /// @param | text | string | The new text content.
         methods.add_method("setText", |lua, this, text: String| {
-            let changed = with_widget_mut(&this.binding, "Widget:setText", |widget| {
-                widget
-                    .set_text(text)
-                    .map_err(|e| runtime_error("Widget:setText", e))
-            })?;
+            let changed = if let Some((terminal, index)) = attached_location(&this.binding) {
+                terminal
+                    .terminal
+                    .borrow_mut()
+                    .set_widget_text(index, text)
+                    .map_err(|e| runtime_error("Widget:setText", &e.to_string()))?
+            } else {
+                with_widget_mut(&this.binding, "Widget:setText", |widget| {
+                    widget
+                        .set_text(text)
+                        .map_err(|e| runtime_error("Widget:setText", e))
+                })?
+            };
             if changed {
                 dispatch_callback(lua, &this.binding, CallbackKind::Change)?;
             }
             Ok(())
+        });
+        // -- trySetText --
+        /// Strictly sets widget text and returns an explicit error string instead of silently truncating.
+        /// @param | text | string | The new text content.
+        /// @return | boolean, string? | True on success, otherwise false and a reason string.
+        methods.add_method("trySetText", |_, this, text: String| {
+            if let Some((terminal, index)) = attached_location(&this.binding) {
+                match terminal
+                    .terminal
+                    .borrow_mut()
+                    .try_set_widget_text(index, text)
+                {
+                    Ok(_) => Ok((true, Option::<String>::None)),
+                    Err(err) => Ok((false, Some(err.to_string()))),
+                }
+            } else {
+                match with_widget_mut(&this.binding, "Widget:trySetText", |widget| {
+                    widget
+                        .try_set_text_with_limit(
+                            text,
+                            crate::terminal::TerminalLimits::default().max_widget_text_chars,
+                        )
+                        .map(|_| ())
+                        .map_err(|e| runtime_error("Widget:trySetText", &e.to_string()))
+                }) {
+                    Ok(()) => Ok((true, Option::<String>::None)),
+                    Err(err) => Ok((false, Some(err.to_string()))),
+                }
+            }
         });
         // -- getText --
         /// Returns the current text content of a label, button, or text box widget.
@@ -896,11 +1041,19 @@ impl LuaUserData for LuaWidget {
         /// Appends a text item to a list widget.
         /// @param | item | string | The item text to add.
         methods.add_method("addItem", |_, this, item: String| {
-            with_widget_mut(&this.binding, "Widget:addItem", |widget| {
-                widget
-                    .add_item(item)
-                    .map_err(|e| runtime_error("Widget:addItem", e))
-            })
+            if let Some((terminal, index)) = attached_location(&this.binding) {
+                terminal
+                    .terminal
+                    .borrow_mut()
+                    .add_widget_item(index, item)
+                    .map_err(|e| runtime_error("Widget:addItem", &e.to_string()))
+            } else {
+                with_widget_mut(&this.binding, "Widget:addItem", |widget| {
+                    widget
+                        .add_item(item)
+                        .map_err(|e| runtime_error("Widget:addItem", e))
+                })
+            }
         });
         // -- removeItem --
         /// Removes a list item by its 1-based index.
@@ -1006,11 +1159,19 @@ impl LuaUserData for LuaWidget {
         /// Sets the title text displayed in the border of a border or panel widget.
         /// @param | title | string | The title text.
         methods.add_method("setTitle", |_, this, title: String| {
-            with_widget_mut(&this.binding, "Widget:setTitle", |widget| {
-                widget
-                    .set_title(title)
-                    .map_err(|e| runtime_error("Widget:setTitle", e))
-            })
+            if let Some((terminal, index)) = attached_location(&this.binding) {
+                terminal
+                    .terminal
+                    .borrow_mut()
+                    .set_widget_title(index, title)
+                    .map_err(|e| runtime_error("Widget:setTitle", &e.to_string()))
+            } else {
+                with_widget_mut(&this.binding, "Widget:setTitle", |widget| {
+                    widget
+                        .set_title(title)
+                        .map_err(|e| runtime_error("Widget:setTitle", e))
+                })
+            }
         });
         // -- getTitle --
         /// Returns the current title text of a border or panel widget.
@@ -1049,10 +1210,11 @@ impl LuaUserData for LuaWidget {
                     }
                     None => attach_widget(&terminal, &child)?,
                 };
-                let _ = terminal
+                terminal
                     .terminal
                     .borrow_mut()
-                    .add_panel_child(panel_index, child_index);
+                    .try_add_panel_child(panel_index, child_index)
+                    .map_err(|err| runtime_error("Widget:addChild", &err.to_string()))?;
                 Ok(())
             } else {
                 if attached_location(&child).is_some() {
@@ -1365,6 +1527,27 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
             Ok(())
         })?,
     )?;
+    // -- tryPushScrollback --
+    /// Strictly appends a line of text to the terminal scrollback buffer.
+    /// @param | terminal | LTerminal | The terminal to push to.
+    /// @param | line | string | The text line to append.
+    /// @return | boolean, string? | True on success, otherwise false and a reason string.
+    tbl.set(
+        "tryPushScrollback",
+        lua.create_function(move |_, (term_ud, line): (LuaAnyUserData, String)| {
+            let term_ref = term_ud.borrow_mut::<LuaTerminal>()?;
+            let result = match term_ref
+                .binding
+                .terminal
+                .borrow_mut()
+                .try_push_scrollback(&line)
+            {
+                Ok(()) => Ok((true, Option::<String>::None)),
+                Err(err) => Ok((false, Some(err.to_string()))),
+            };
+            result
+        })?,
+    )?;
     let s = state.clone();
     // -- getScrollback --
     /// Retrieves a range of lines from the terminal scrollback buffer.
@@ -1430,6 +1613,27 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
                 .borrow_mut()
                 .push_cmd_history(&cmd);
             Ok(())
+        })?,
+    )?;
+    // -- tryPushCmdHistory --
+    /// Strictly appends a command string to the terminal command history.
+    /// @param | terminal | LTerminal | The terminal to push to.
+    /// @param | cmd | string | The command string to store.
+    /// @return | boolean, string? | True on success, otherwise false and a reason string.
+    tbl.set(
+        "tryPushCmdHistory",
+        lua.create_function(|_, (term_ud, cmd): (LuaAnyUserData, String)| {
+            let term_ref = term_ud.borrow_mut::<LuaTerminal>()?;
+            let result = match term_ref
+                .binding
+                .terminal
+                .borrow_mut()
+                .try_push_cmd_history(&cmd)
+            {
+                Ok(()) => Ok((true, Option::<String>::None)),
+                Err(err) => Ok((false, Some(err.to_string()))),
+            };
+            result
         })?,
     )?;
     // -- prevCmd --
