@@ -3,7 +3,8 @@
 //! Datetime values are normalized into strings, while nulls are rejected because TOML has no native null value.
 //! Open this file when TOML mapping rules change; generic codec dispatch and other formats live in sibling files.
 
-use super::lua_table::SerialValue;
+use super::codec::SerializeLimits;
+use super::lua_table::{validate_serial_value, SerialValue};
 use indexmap::IndexMap;
 
 /// Parse a raw TOML string into a `toml::Value` tree.
@@ -16,7 +17,10 @@ pub fn parse_toml(input: &str) -> Result<toml::Value, String> {
 /// Parse a TOML string and convert it into a `SerialValue`.
 pub fn from_toml(s: &str) -> Result<SerialValue, String> {
     let v = parse_toml(s)?;
-    Ok(toml_to_serial(v))
+    let serial = toml_to_serial(v);
+    validate_serial_value(&serial, &SerializeLimits::default(), "from_toml")
+        .map_err(|err| err.to_string())?;
+    Ok(serial)
 }
 
 /// Encode a `toml::Value` table into a TOML-formatted string.
@@ -29,6 +33,8 @@ pub fn encode_toml(value: &toml::Value) -> Result<String, String> {
 
 /// Convert a `SerialValue` into a TOML-encoded string.
 pub fn to_toml(val: &SerialValue) -> Result<String, String> {
+    validate_serial_value(val, &SerializeLimits::default(), "to_toml")
+        .map_err(|err| err.to_string())?;
     let tv = serial_to_toml(val)?;
     encode_toml(&tv)
 }

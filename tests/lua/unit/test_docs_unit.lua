@@ -125,9 +125,9 @@ describe("lurek.docs", function()
         local quality = lurek.docs.quality(cat)
         expect_not_nil(quality, "quality() should return a report")
         local score = quality:getOverallScore()
-        expect_true(math.abs(score - 0.6) < 0.01, "score should be 0.6, got " .. score)
+        expect_true(math.abs(score - 0.8823) < 0.01, "score should be about 0.88, got " .. score)
         local grade = quality:getGrade()
-        expect_equal("C", grade)
+        expect_equal("B", grade)
         lurek.docs.resetCatalog()
     end)
 end)
@@ -214,7 +214,7 @@ describe("Missing API Coverage", function()
         local quality = lurek.docs.qualityModule(module_name, cat)
 
         expect_type("number", quality:getOverallScore())
-        expect_equal("C", quality:getGrade())
+        expect_equal("B", quality:getGrade())
         lurek.docs.resetCatalog()
     end)
 
@@ -703,13 +703,13 @@ describe("lurek.docs", function()
     -- @covers LDocEntry:getScore
     it("DocEntry should report score correctly", function()
         lurek.docs.resetCatalog()
-        -- Entry with description only = 40%
+        -- Entry with description and qualified name only = 6/11 under the weighted policy.
         lurek.docs.describe("lurek.test.scored", "Has description")
         local cat = lurek.docs.getCatalog()
         local entry = cat:getEntry("lurek.test.scored")
         expect_not_nil(entry)
         local score = entry:getScore()
-        expect_true(math.abs(score - 0.4) < 0.01, "score should be 0.4 for desc only, got " .. score)
+        expect_true(math.abs(score - 0.5454) < 0.01, "score should be about 0.55 for desc only, got " .. score)
         expect_true(entry:hasDescription())
         expect_true(not entry:hasParameters())
         expect_true(not entry:hasReturnType())
@@ -827,10 +827,10 @@ describe("lurek.docs", function()
         local quality = lurek.docs.quality(cat)
         expect_not_nil(quality, "quality() should return a report")
         local score = quality:getOverallScore()
-        -- domain scoring: desc(1/5) + qualified_name(1/5) + params_or_returns(1/5) = 3/5 = 0.6
-        expect_true(math.abs(score - 0.6) < 0.01, "score should be 0.6, got " .. score)
+        -- weighted scoring: desc + qualified name + signature + param docs + return docs = 15/17.
+        expect_true(math.abs(score - 0.8823) < 0.01, "score should be about 0.88, got " .. score)
         local grade = quality:getGrade()
-        expect_equal("C", grade)
+        expect_equal("B", grade)
         lurek.docs.resetCatalog()
     end)
     -- @covers LQualityReport:getModuleScores
@@ -864,10 +864,10 @@ describe("lurek.docs", function()
         lurek.docs.describe("lurek.test.g1", "Has desc only")
         local cat = lurek.docs.getCatalog()
         local quality = lurek.docs.quality(cat)
-        -- desc only = 0.4, grade D
-        local d_entries = quality:getByGrade("D")
-        expect_not_nil(d_entries, "getByGrade should return entries")
-        expect_true(#d_entries > 0, "should have at least one D-grade entry")
+        -- desc only scores about 0.55 under the weighted policy, which maps to grade C.
+        local c_entries = quality:getByGrade("C")
+        expect_not_nil(c_entries, "getByGrade should return entries")
+        expect_true(#c_entries > 0, "should have at least one C-grade entry")
         lurek.docs.resetCatalog()
     end)
 
@@ -1075,6 +1075,12 @@ describe("docs explicit owner coverage", function()
         expect_type("table", incomplete)
     end)
 
+    -- @covers LValidationReport:getIssues
+    it("ValidationReport exposes structured issues", function()
+        local issues = lurek.docs.validate():getIssues()
+        expect_type("table", issues)
+    end)
+
     -- @covers LValidationReport:missingCount
     it("ValidationReport reports the missing issue count", function()
         local report = lurek.docs.validate()
@@ -1091,6 +1097,12 @@ describe("docs explicit owner coverage", function()
     it("ValidationReport reports the incomplete issue count", function()
         local report = lurek.docs.validate()
         expect_equal(#report:getIncomplete(), report:incompleteCount())
+    end)
+
+    -- @covers LValidationReport:issueCount
+    it("ValidationReport reports the structured issue count", function()
+        local report = lurek.docs.validate()
+        expect_equal(#report:getIssues(), report:issueCount())
     end)
 
     -- @covers LValidationReport:getSummary
@@ -1119,6 +1131,20 @@ describe("docs explicit owner coverage", function()
         local best = quality_report():getBest(1)
         expect_type("table", best)
         expect_true(#best >= 1)
+        lurek.docs.resetCatalog()
+    end)
+
+    -- @covers LQualityReport:getIssues
+    it("LQualityReport exposes structured issues", function()
+        local issues = quality_report():getIssues()
+        expect_type("table", issues)
+        lurek.docs.resetCatalog()
+    end)
+
+    -- @covers LQualityReport:issueCount
+    it("LQualityReport reports the structured issue count", function()
+        local report = quality_report()
+        expect_equal(#report:getIssues(), report:issueCount())
         lurek.docs.resetCatalog()
     end)
 

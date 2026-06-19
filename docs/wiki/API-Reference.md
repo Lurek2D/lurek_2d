@@ -2546,10 +2546,12 @@ LDocEntry:typeOf(name: string) -> boolean -- Returns whether this documentation 
 LQualityReport:getBest([count]: integer) -> LDocEntry[] -- Returns the highest-scoring documentation entries.
 LQualityReport:getByGrade(grade: string) -> LDocEntry[] -- Returns documentation entries whose calculated grade matches a grade string.
 LQualityReport:getGrade() -> string -- Returns the letter grade derived from the aggregate documentation score.
+LQualityReport:getIssues() -> table[] -- Returns structured quality-rule issues with rule ids, severities, and hints.
 LQualityReport:getModuleScores() -> table -- Returns per-module documentation quality scores.
 LQualityReport:getOverallScore() -> number -- Returns the aggregate documentation quality score.
 LQualityReport:getSummary() -> string -- Returns a human-readable summary of overall and per-module quality scores.
 LQualityReport:getWorst([count]: integer) -> LDocEntry[] -- Returns the lowest-scoring documentation entries.
+LQualityReport:issueCount() -> integer -- Returns the number of structured quality issues.
 LQualityReport:toJSON() -> string -- Serializes this quality report to formatted JSON.
 LQualityReport:toTable() -> table -- Converts this quality report into a plain Lua table.
 LQualityReport:type() -> string -- Returns the Lua-visible type name for this quality report handle.
@@ -2572,10 +2574,12 @@ LSchema:validate(data: table) -> boolean -- Validates a Lua table and returns a 
 
 ```lua
 LValidationReport:getIncomplete() -> string[] -- Returns catalog APIs whose documentation was incomplete.
+LValidationReport:getIssues() -> table[] -- Returns structured validation issues with rule ids, severities, and hints.
 LValidationReport:getMissing() -> string[] -- Returns live APIs that were missing from the checked catalog.
 LValidationReport:getPhantom() -> string[] -- Returns catalog APIs that were not present in the live Lua table.
 LValidationReport:getSummary() -> string -- Returns a compact text summary of missing, phantom, and incomplete counts.
 LValidationReport:incompleteCount() -> integer -- Returns the number of catalog APIs with incomplete documentation.
+LValidationReport:issueCount() -> integer -- Returns the number of structured validation issues.
 LValidationReport:isValid() -> boolean -- Returns whether the validation report has no missing live APIs.
 LValidationReport:missingCount() -> integer -- Returns the number of live APIs missing from the catalog.
 LValidationReport:phantomCount() -> integer -- Returns the number of catalog APIs absent from live reflection.

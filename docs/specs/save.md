@@ -148,4 +148,9 @@ This module primarily collaborates with `binary`, `runtime`. Its responsibility 
 
 ## Notes
 
-- No additional module-specific notes.
+- Slot names are restricted to non-empty ASCII `[A-Za-z0-9_-]` identifiers with a bounded maximum length; path traversal and separator-like input must be rejected before any save/delete/load path is constructed.
+- Save collection rejects cyclic Lua tables, non-finite numbers, oversized strings/keys, and oversized table graphs before serialization begins.
+- Parser and compression reads are bounded by explicit depth, entry-count, key/string, and compressed/decompressed byte limits; malformed or oversized payloads must fail with a concrete reason.
+- Compressed saves use a versioned `LUREK_SAVE v1` header with LZ4 + Base64 metadata, declared uncompressed size, and SHA-256 integrity verification; legacy `--[[COMPRESSED]]` payloads remain readable.
+- Slot writes use temp-file plus rename semantics and keep a `.bak` recovery copy when replacing an existing slot; loads may recover from the backup when the primary payload is corrupt.
+- Migration routing is strict: missing version steps or downgrade attempts must be reported instead of silently skipping versions.

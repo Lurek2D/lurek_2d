@@ -43,7 +43,7 @@ use crate::runtime::log_messages::{
     L082_LOG_FILE_FAIL, L083_DROP_ARCHIVE, L084_DROP_ARCHIVE_FAIL,
 };
 use crate::runtime::resource_keys::{
-    CanvasKey, FontKey, MeshKey, ShaderKey, SpriteBatchKey, TextureKey,
+    CanvasKey, FontKey, MeshKey, ShaderKey, ShapeKey, SpriteBatchKey, TextureKey,
 };
 pub use crate::runtime::shared_state::WindowState;
 use crate::runtime::{FullscreenType, SharedState};
@@ -60,7 +60,7 @@ use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use std::rc::Rc;
 use std::sync::Arc;
-use std::time::Instant;
+use std::time::{Duration, Instant};
 use winit::application::ApplicationHandler;
 use winit::event::{ElementState, MouseButton, WindowEvent};
 use winit::event_loop::{ActiveEventLoop, ControlFlow, EventLoop};
@@ -174,30 +174,318 @@ pub enum DropStartupTarget {
     Unsupported,
 }
 
+const SUPPORTED_SCALE_MODES: &[&str] = &["none", "letterbox", "stretch", "pixel"];
+const DEFAULT_STARTUP_MAX_ARCHIVE_BYTES: u64 = 512 * 1024 * 1024;
+const DEFAULT_HOT_RELOAD_DEBOUNCE: Duration = Duration::from_millis(250);
+
+/// GPU startup phase that failed before the app could enter steady execution.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum AppStartupStage {
+    /// Failed while binding the wgpu surface to the window.
+    Surface,
+    /// Failed while selecting a compatible adapter.
+    Adapter,
+    /// Failed while creating the wgpu device or queue.
+    Device,
+}
+
+/// Structured startup failure used to avoid panics during GPU initialization.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct AppStartupError {
+    /// GPU startup phase that failed.
+    pub stage: AppStartupStage,
+    /// Requested backend string from config.
+    pub backend: String,
+    /// Requested power-preference string from config.
+    pub power_preference: String,
+    /// Human-readable failure details.
+    pub details: String,
+}
+
+impl AppStartupError {
+    fn to_error_screen(&self) -> ErrorScreen {
+        let stage = match self.stage {
+            AppStartupStage::Surface => "surface creation",
+            AppStartupStage::Adapter => "adapter selection",
+            AppStartupStage::Device => "device creation",
+        };
+        ErrorScreen::from_error(&format!(
+            "GPU Startup Failed\nstage: {}\nbackend: {}\npower preference: {}\n{}",
+            stage, self.backend, self.power_preference, self.details
+        ))
+    }
+}
+
+/// Map a structured startup failure into recoverable app error state.
+pub fn map_startup_error_to_run_state(error: &AppStartupError) -> RunState {
+    RunState::Error(error.to_error_screen())
+}
+
+/// Policy used to validate startup targets and `.lurek` archives before loading.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct StartupTargetPolicy {
+    /// Maximum archive size accepted for `.lurek` startup input.
+    pub max_archive_bytes: u64,
+    /// Whether filesystem symlinks are rejected for startup inputs.
+    pub reject_symlinks: bool,
+}
+
+impl Default for StartupTargetPolicy {
+    fn default() -> Self {
+        Self {
+            max_archive_bytes: DEFAULT_STARTUP_MAX_ARCHIVE_BYTES,
+            reject_symlinks: true,
+        }
+    }
+}
+
+/// Diagnostic emitted while classifying startup input.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum StartupTargetDiagnostic {
+    /// The target was rejected because it resolves through a symlink.
+    SymlinkRejected(PathBuf),
+    /// The target does not contain a launchable `main.lua`.
+    MissingMainLua(PathBuf),
+    /// The archive exceeded the allowed size limit.
+    ArchiveTooLarge {
+        /// Archive path being validated.
+        path: PathBuf,
+        /// Observed archive size.
+        actual_bytes: u64,
+        /// Maximum allowed archive size.
+        max_bytes: u64,
+    },
+    /// The archive contained an unsafe entry path.
+    UnsafeArchiveEntry(String),
+}
+
+/// Classification result plus diagnostics for drag-drop startup input.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct StartupTargetReport {
+    /// Resolved startup target kind.
+    pub target: DropStartupTarget,
+    /// Diagnostics emitted while resolving the target.
+    pub diagnostics: Vec<StartupTargetDiagnostic>,
+}
+
+/// Callback failure mode used by app-hosted Lua execution.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum CallbackFailurePolicy {
+    /// Only record the error and continue.
+    ReportOnly,
+    /// Enter app error mode after recording the failure.
+    Fatal,
+}
+
+/// Diagnostic record for one Lua callback failure.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct CallbackErrorRecord {
+    /// Callback name such as `draw` or `ui.keypressed`.
+    pub callback: String,
+    /// App phase that triggered the callback.
+    pub phase: String,
+    /// Error text captured from Lua.
+    pub message: String,
+    /// Applied failure policy.
+    pub policy: CallbackFailurePolicy,
+}
+
+/// Structured report for one attempted window-state apply cycle.
+#[derive(Debug, Clone, PartialEq, Eq, Default)]
+pub struct WindowRuntimeReport {
+    /// Requested size and the clamped size that was applied.
+    pub clamped_size: Option<((u32, u32), (u32, u32))>,
+    /// Unsupported scale mode that was ignored.
+    pub invalid_scale_mode: Option<String>,
+    /// Requested vsync mode and the normalized applied mode.
+    pub vsync_adjustment: Option<(i32, i32)>,
+    /// Requested display index that could not be applied.
+    pub invalid_display_index: Option<usize>,
+}
+
+impl WindowRuntimeReport {
+    fn is_empty(&self) -> bool {
+        self.clamped_size.is_none()
+            && self.invalid_scale_mode.is_none()
+            && self.vsync_adjustment.is_none()
+            && self.invalid_display_index.is_none()
+    }
+}
+
+type WindowRuntimeValidation = (
+    Option<(u32, u32)>,
+    Option<String>,
+    Option<i32>,
+    WindowRuntimeReport,
+);
+
+/// Dispatch stage used for input-routing diagnostics.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum InputDispatchTarget {
+    /// Host/platform state was updated first.
+    Platform,
+    /// `lurek.ui` had the first callback chance.
+    Ui,
+    /// Game callback was invoked after UI.
+    Game,
+}
+
+/// Diagnostic report for one input event routed through the app host.
+#[derive(Debug, Clone, PartialEq)]
+pub struct InputDispatchReport {
+    /// Stable event kind such as `keypressed` or `mousemoved`.
+    pub event_kind: String,
+    /// Ordered dispatch targets that were considered.
+    pub order: Vec<InputDispatchTarget>,
+    /// Whether UI consumed the event before the game callback.
+    pub ui_consumed: bool,
+    /// Optional callback error text.
+    pub callback_error: Option<String>,
+    /// Optional transformed game-space coordinates.
+    pub coordinates: Option<(f32, f32)>,
+}
+
+/// Structured report for one runtime reload attempt.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ReloadReport {
+    /// Short trigger name such as `manual` or `hot_reload`.
+    pub trigger: String,
+    /// Files that contributed to the reload request, when known.
+    pub changed_paths: Vec<PathBuf>,
+    /// Ordered lifecycle phases reached by the reload attempt.
+    pub phases: Vec<String>,
+    /// Whether the new runtime session was committed.
+    pub reloaded: bool,
+    /// Whether an old session was restored after failure.
+    pub rolled_back: bool,
+    /// Failure summary when reload did not commit.
+    pub failure: Option<String>,
+}
+
+/// Report emitted when hot reload coalesces filesystem changes into one restart.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct HotReloadReport {
+    /// Paths merged into the debounce window.
+    pub changed_paths: Vec<PathBuf>,
+    /// Reload report emitted when the debounce window completed.
+    pub reload: ReloadReport,
+}
+
+#[derive(Debug, Default)]
+struct AppDiagnostics {
+    callback_errors: Vec<CallbackErrorRecord>,
+    window_reports: Vec<WindowRuntimeReport>,
+    input_reports: Vec<InputDispatchReport>,
+    hot_reload_reports: Vec<HotReloadReport>,
+}
+
+struct RuntimeSession {
+    lua: Lua,
+    state: Rc<RefCell<SharedState>>,
+    has_game: bool,
+}
+
+struct RuntimeSessionError {
+    screen: ErrorScreen,
+    summary: String,
+    state: Option<Rc<RefCell<SharedState>>>,
+}
+
 /// Classify a dropped path into archive, game directory, or unsupported input.
 pub fn classify_drop_startup_target(path: &Path) -> DropStartupTarget {
+    classify_drop_startup_target_with_policy(path, &StartupTargetPolicy::default()).target
+}
+
+/// Classify a dropped path under an explicit startup policy and retain diagnostics.
+pub fn classify_drop_startup_target_with_policy(
+    path: &Path,
+    policy: &StartupTargetPolicy,
+) -> StartupTargetReport {
+    let mut diagnostics = Vec::new();
+    if policy.reject_symlinks
+        && std::fs::symlink_metadata(path)
+            .map(|meta| meta.file_type().is_symlink())
+            .unwrap_or(false)
+    {
+        diagnostics.push(StartupTargetDiagnostic::SymlinkRejected(path.to_path_buf()));
+        return StartupTargetReport {
+            target: DropStartupTarget::Unsupported,
+            diagnostics,
+        };
+    }
+
     let is_lurek_archive = path
         .extension()
-        .map(|e| e.eq_ignore_ascii_case("lurek"))
+        .map(|extension| extension.eq_ignore_ascii_case("lurek"))
         .unwrap_or(false);
     if is_lurek_archive {
-        return DropStartupTarget::Archive;
+        if let Ok(metadata) = std::fs::metadata(path) {
+            if metadata.len() > policy.max_archive_bytes {
+                diagnostics.push(StartupTargetDiagnostic::ArchiveTooLarge {
+                    path: path.to_path_buf(),
+                    actual_bytes: metadata.len(),
+                    max_bytes: policy.max_archive_bytes,
+                });
+                return StartupTargetReport {
+                    target: DropStartupTarget::Unsupported,
+                    diagnostics,
+                };
+            }
+        }
+        return StartupTargetReport {
+            target: DropStartupTarget::Archive,
+            diagnostics,
+        };
     }
 
     if path.is_dir() {
-        if path.join("main.lua").exists() {
-            return DropStartupTarget::GameDir(path.to_path_buf());
+        let main_lua = path.join("main.lua");
+        if main_lua.exists() {
+            let resolved = path.canonicalize().unwrap_or_else(|_| path.to_path_buf());
+            return StartupTargetReport {
+                target: DropStartupTarget::GameDir(resolved),
+                diagnostics,
+            };
         }
-        return DropStartupTarget::Unsupported;
+        diagnostics.push(StartupTargetDiagnostic::MissingMainLua(path.to_path_buf()));
+        return StartupTargetReport {
+            target: DropStartupTarget::Unsupported,
+            diagnostics,
+        };
     }
 
     if let Some(parent) = path.parent() {
+        if policy.reject_symlinks
+            && std::fs::symlink_metadata(parent)
+                .map(|meta| meta.file_type().is_symlink())
+                .unwrap_or(false)
+        {
+            diagnostics.push(StartupTargetDiagnostic::SymlinkRejected(
+                parent.to_path_buf(),
+            ));
+            return StartupTargetReport {
+                target: DropStartupTarget::Unsupported,
+                diagnostics,
+            };
+        }
         if parent.join("main.lua").exists() {
-            return DropStartupTarget::GameDir(parent.to_path_buf());
+            let resolved = parent
+                .canonicalize()
+                .unwrap_or_else(|_| parent.to_path_buf());
+            return StartupTargetReport {
+                target: DropStartupTarget::GameDir(resolved),
+                diagnostics,
+            };
         }
     }
 
-    DropStartupTarget::Unsupported
+    diagnostics.push(StartupTargetDiagnostic::MissingMainLua(
+        path.parent().unwrap_or(path).to_path_buf(),
+    ));
+    StartupTargetReport {
+        target: DropStartupTarget::Unsupported,
+        diagnostics,
+    }
 }
 
 /// Return `true` when the splash screen should open the startup picker for a key press.
@@ -332,6 +620,16 @@ pub struct LurekApp {
     perf_render_ms_acc: f64,
     /// Whether LUREK_PERF_LOG=1 periodic logging is active.
     perf_log_enabled: bool,
+    /// Latest app-host diagnostics for callback, window, input, and reload reports.
+    diagnostics: AppDiagnostics,
+    /// Per-callback failure policy overrides used by tests and host policy wiring.
+    callback_failure_overrides: HashMap<String, CallbackFailurePolicy>,
+    /// Coalesced hot-reload paths waiting for the debounce window to expire.
+    pending_hot_reload_paths: Vec<PathBuf>,
+    /// Deadline after which coalesced file changes trigger one reload.
+    pending_hot_reload_deadline: Option<Instant>,
+    /// Debounce window applied to watcher-triggered restarts.
+    hot_reload_debounce: Duration,
 }
 impl LurekApp {
     #[allow(clippy::too_many_arguments)]
@@ -423,11 +721,123 @@ impl LurekApp {
             perf_update_ms_acc: 0.0,
             perf_render_ms_acc: 0.0,
             perf_log_enabled: std::env::var("LUREK_PERF_LOG").ok().as_deref() == Some("1"),
+            diagnostics: AppDiagnostics::default(),
+            callback_failure_overrides: HashMap::new(),
+            pending_hot_reload_paths: Vec::new(),
+            pending_hot_reload_deadline: None,
+            hot_reload_debounce: DEFAULT_HOT_RELOAD_DEBOUNCE,
         }
     }
     /// Return the configured Lua callback timeout in milliseconds.
     fn callback_timeout_ms(&self) -> Option<f32> {
         self.config.performance.lua_callback_timeout_ms
+    }
+
+    /// Override one callback failure policy for deterministic tests and host tuning.
+    pub fn set_callback_failure_policy_for_testing(
+        &mut self,
+        callback: &str,
+        policy: CallbackFailurePolicy,
+    ) {
+        self.callback_failure_overrides
+            .insert(callback.to_string(), policy);
+    }
+
+    fn callback_failure_policy(&self, callback: &str) -> CallbackFailurePolicy {
+        self.callback_failure_overrides
+            .get(callback)
+            .copied()
+            .unwrap_or(match callback {
+                "ready" | "process_physics" | "fixedUpdate" | "process" | "process_late"
+                | "draw" | "draw_ui" | "ui.update" => CallbackFailurePolicy::Fatal,
+                _ => CallbackFailurePolicy::ReportOnly,
+            })
+    }
+
+    fn push_callback_error(&mut self, record: CallbackErrorRecord) {
+        if self.diagnostics.callback_errors.len() >= 32 {
+            self.diagnostics.callback_errors.remove(0);
+        }
+        self.diagnostics.callback_errors.push(record);
+    }
+
+    fn push_window_report(&mut self, report: WindowRuntimeReport) {
+        if report.is_empty() {
+            return;
+        }
+        if self.diagnostics.window_reports.len() >= 32 {
+            self.diagnostics.window_reports.remove(0);
+        }
+        self.diagnostics.window_reports.push(report);
+    }
+
+    fn push_input_report(&mut self, report: InputDispatchReport) {
+        if self.diagnostics.input_reports.len() >= 32 {
+            self.diagnostics.input_reports.remove(0);
+        }
+        self.diagnostics.input_reports.push(report);
+    }
+
+    fn push_hot_reload_report(&mut self, report: HotReloadReport) {
+        if self.diagnostics.hot_reload_reports.len() >= 16 {
+            self.diagnostics.hot_reload_reports.remove(0);
+        }
+        self.diagnostics.hot_reload_reports.push(report);
+    }
+
+    fn begin_input_report(
+        &self,
+        event_kind: &str,
+        coordinates: Option<(f32, f32)>,
+    ) -> InputDispatchReport {
+        let mut order = vec![InputDispatchTarget::Platform];
+        if shared_flag(&self.state, |st| st.auto_ui_input) {
+            order.push(InputDispatchTarget::Ui);
+        }
+        order.push(InputDispatchTarget::Game);
+        InputDispatchReport {
+            event_kind: event_kind.to_string(),
+            order,
+            ui_consumed: false,
+            callback_error: None,
+            coordinates,
+        }
+    }
+
+    fn record_last_error(&mut self, message: String, hint: Option<String>) {
+        if let Some(state) = &self.state {
+            state.borrow_mut().last_error = Some(crate::runtime::ErrorInfo {
+                message,
+                code: "app.callback".to_string(),
+                category: "script".to_string(),
+                hint,
+            });
+        }
+    }
+
+    fn handle_callback_error(&mut self, callback: &str, phase: &str, error: mlua::Error) -> bool {
+        let policy = self.callback_failure_policy(callback);
+        let message = error.to_string();
+        self.record_last_error(
+            format!("{} failed during {}: {}", callback, phase, message),
+            Some("Check the Lua callback and recent host diagnostics.".to_string()),
+        );
+        self.push_callback_error(CallbackErrorRecord {
+            callback: callback.to_string(),
+            phase: phase.to_string(),
+            message: message.clone(),
+            policy,
+        });
+        if matches!(policy, CallbackFailurePolicy::Fatal) {
+            let screen = if let Some(lua) = self.lua.as_ref() {
+                try_errorhandler_or_screen(lua, &error)
+            } else {
+                ErrorScreen::from_lua_error(&error)
+            };
+            self.run_state = RunState::Error(screen);
+            return true;
+        }
+        false
     }
     /// Open the native startup folder picker and try to load the selected game directory.
     fn browse_for_startup_game_dir(&mut self) {
@@ -441,10 +851,43 @@ impl LurekApp {
     }
     /// Load a startup target selected via drag-and-drop or the splash picker.
     fn load_startup_target_path(&mut self, path: &Path) {
-        match classify_drop_startup_target(path) {
+        let report =
+            classify_drop_startup_target_with_policy(path, &StartupTargetPolicy::default());
+        for diagnostic in &report.diagnostics {
+            match diagnostic {
+                StartupTargetDiagnostic::SymlinkRejected(rejected) => {
+                    log::warn!(
+                        "startup path rejected due to symlink: {}",
+                        rejected.display()
+                    );
+                }
+                StartupTargetDiagnostic::MissingMainLua(dir) => {
+                    log::warn!("startup path missing main.lua: {}", dir.display());
+                }
+                StartupTargetDiagnostic::ArchiveTooLarge {
+                    path,
+                    actual_bytes,
+                    max_bytes,
+                } => {
+                    log::warn!(
+                        "startup archive rejected: {} exceeds {} bytes (got {})",
+                        path.display(),
+                        max_bytes,
+                        actual_bytes
+                    );
+                }
+                StartupTargetDiagnostic::UnsafeArchiveEntry(entry) => {
+                    log::warn!("startup archive rejected unsafe entry: {}", entry);
+                }
+            }
+        }
+        match report.target {
             DropStartupTarget::Archive => {
                 log_msg!(info, L083_DROP_ARCHIVE, "{}", path.display());
-                match LurekApp::extract_lurek_archive(path) {
+                match LurekApp::extract_lurek_archive_with_policy(
+                    path,
+                    &StartupTargetPolicy::default(),
+                ) {
                     Ok((dir, td)) => {
                         self.lurek_temp_dir = Some(td);
                         self.game_dir = dir;
@@ -462,6 +905,7 @@ impl LurekApp {
                 } else {
                     log_msg!(info, L044_DROP_GAME, "parent folder: {}", dir.display());
                 }
+                self.lurek_temp_dir = None;
                 self.game_dir = dir;
                 self.explicit_game_dir = true;
                 self.restart_game();
@@ -473,15 +917,195 @@ impl LurekApp {
             }
         }
     }
+
+    fn reset_runtime_accumulators(&mut self) {
+        self.ready_fired = false;
+        self.physics_accumulator = 0.0;
+        self.fixed_update_accumulator = 0.0;
+        self.fixed_update_deprecation_warned = false;
+        self.prev_mouse = [false; 5];
+    }
+
+    fn build_runtime_session(&self) -> Result<RuntimeSession, RuntimeSessionError> {
+        let window_title = self.current_window_title();
+        let mut shared_state = SharedState::new(
+            self.config.window.width,
+            self.config.window.height,
+            &window_title,
+            self.game_dir.clone(),
+        );
+        shared_state.runtime_mode = self.config.runtime.mode;
+        if let Some(identity) = &self.config.identity {
+            shared_state.filesystem_identity = identity.clone();
+        }
+        shared_state.window_state.vsync_mode = self.window_vsync_mode;
+        shared_state.window = self.window.as_ref().map(Arc::clone);
+        shared_state.physics_run.fixed_dt =
+            1.0 / self.config.performance.physics_tick_rate.max(1) as f64;
+        shared_state.physics_run.fixed_update_dt =
+            match self.config.performance.fixed_update_tick_rate {
+                Some(rate) if rate > 0 => 1.0 / rate as f64,
+                _ => 0.0,
+            };
+        shared_state.set_configured_default_font(
+            self.config.render.default_font_size,
+            self.config.render.default_font_bold,
+        );
+        shared_state.frame_budget_warn_ms = self.config.performance.frame_budget_warn_ms;
+        shared_state.lua_callback_timeout_ms = self.callback_timeout_ms();
+        {
+            let ws = &mut shared_state.window_state;
+            ws.game_width = self
+                .config
+                .window
+                .game_width
+                .unwrap_or(self.config.window.width) as f32;
+            ws.game_height = self
+                .config
+                .window
+                .game_height
+                .unwrap_or(self.config.window.height) as f32;
+            ws.scale_mode_str = self.config.window.scale_mode.clone();
+            let (ww, wh) = (shared_state.window_width, shared_state.window_height);
+            recompute_viewport(ws, ww, wh);
+        }
+        let state = Rc::new(RefCell::new(shared_state));
+        state.borrow_mut().load_default_fonts();
+        let lua = match create_lua_vm(state.clone(), &self.config.modules) {
+            Ok(lua) => lua,
+            Err(error) => {
+                log_msg!(error, L016_LUA_VM_INIT_FAIL, "{}", error);
+                let summary = format!("Lua VM initialization failed: {}", error);
+                return Err(RuntimeSessionError {
+                    screen: ErrorScreen::from_error(&format!(
+                        "Lua VM Initialization Failed\n{}",
+                        error
+                    )),
+                    summary,
+                    state: Some(state),
+                });
+            }
+        };
+        let main_lua = self.game_dir.join("main.lua");
+        if main_lua.exists() {
+            log_msg!(info, L003_GAME_LOADED, "{}", main_lua.display());
+            let code = match std::fs::read_to_string(&main_lua) {
+                Ok(code) => code,
+                Err(error) => {
+                    log_msg!(error, L017_MAIN_LUA_READ_FAIL, "{}", error);
+                    return Err(RuntimeSessionError {
+                        screen: ErrorScreen::from_error(&format!(
+                            "Failed to read main.lua\n{}",
+                            error
+                        )),
+                        summary: format!("Failed to read main.lua: {}", error),
+                        state: Some(state),
+                    });
+                }
+            };
+            if let Err(error) = lua.load(&code).set_name("main.lua").exec() {
+                log_msg!(error, L011_LUA_ERROR, "main.lua: {}", error);
+                return Err(RuntimeSessionError {
+                    screen: ErrorScreen::from_lua_error(&error),
+                    summary: format!("main.lua execution failed: {}", error),
+                    state: Some(state),
+                });
+            }
+            if let Err(error) =
+                call_lua_callback_checked_with_timeout(&lua, "init", (), self.callback_timeout_ms())
+            {
+                return Err(RuntimeSessionError {
+                    screen: try_errorhandler_or_screen(&lua, &error),
+                    summary: format!("lurek.init failed: {}", error),
+                    state: Some(state),
+                });
+            }
+            return Ok(RuntimeSession {
+                lua,
+                state,
+                has_game: true,
+            });
+        }
+        if self.explicit_game_dir {
+            log_msg!(warn, L007_NO_MAIN_LUA, "{}", self.game_dir.display());
+        }
+        log_msg!(info, L006_SPLASH_SCREEN);
+        Ok(RuntimeSession {
+            lua,
+            state,
+            has_game: false,
+        })
+    }
+
+    fn apply_runtime_session(&mut self, session: RuntimeSession) {
+        let window_title = self.current_window_title();
+        if let Some(window) = &self.window {
+            window.set_title(&window_title);
+        }
+        self.lua = Some(session.lua);
+        self.state = Some(session.state);
+        self.has_game = session.has_game;
+        self.run_state = RunState::Running;
+    }
+
     /// Rebuild content file watchers after a game directory change.
     fn refresh_content_watchers(&mut self) {
-        self.content_script_watcher = FileWatcher::new();
-        self.content_asset_watcher = FileWatcher::new();
-        register_content_watchers(
-            &self.game_dir,
-            &mut self.content_script_watcher,
-            &mut self.content_asset_watcher,
-        );
+        let (script_watcher, asset_watcher) = build_content_watchers(&self.game_dir);
+        self.content_script_watcher = script_watcher;
+        self.content_asset_watcher = asset_watcher;
+    }
+
+    fn reload_game_with_report(
+        &mut self,
+        trigger: &str,
+        changed_paths: Vec<PathBuf>,
+    ) -> ReloadReport {
+        let mut report = ReloadReport {
+            trigger: trigger.to_string(),
+            changed_paths,
+            phases: vec!["stop_callbacks".to_string()],
+            reloaded: false,
+            rolled_back: false,
+            failure: None,
+        };
+        let old_lua = self.lua.take();
+        let old_state = self.state.take();
+        let old_has_game = self.has_game;
+        let old_prev_mouse = self.prev_mouse;
+        let old_run_state = std::mem::replace(&mut self.run_state, RunState::Restarting);
+        self.reset_runtime_accumulators();
+        report.phases.push("build_runtime".to_string());
+        match self.build_runtime_session() {
+            Ok(session) => {
+                report.phases.push("refresh_watchers".to_string());
+                self.refresh_content_watchers();
+                report.phases.push("commit".to_string());
+                self.apply_runtime_session(session);
+                report.reloaded = true;
+            }
+            Err(error) => {
+                report.failure = Some(error.summary.clone());
+                if old_lua.is_some() || old_state.is_some() {
+                    report.phases.push("rollback".to_string());
+                    self.lua = old_lua;
+                    self.state = old_state;
+                    self.has_game = old_has_game;
+                    self.prev_mouse = old_prev_mouse;
+                    self.run_state = old_run_state;
+                    report.rolled_back = true;
+                    self.record_last_error(
+                        format!("reload failed: {}", error.summary),
+                        Some("The previous runtime session was restored.".to_string()),
+                    );
+                } else {
+                    self.lua = None;
+                    self.state = error.state;
+                    self.has_game = false;
+                    self.run_state = RunState::Error(error.screen);
+                }
+            }
+        }
+        report
     }
     /// Record frame phase timings and log a periodic PERF summary when enabled.
     fn perf_record_frame(&mut self, tick_ms: f64, update_ms: f64, render_ms: f64) {
@@ -593,10 +1217,12 @@ impl LurekApp {
         self.reconfigure_surface();
     }
     /// Create the wgpu instance, adapter, device, surface, and renderer.
-    fn init_gpu(&mut self, window: Arc<Window>) {
+    fn try_init_gpu(&mut self, window: Arc<Window>) -> Result<(), AppStartupError> {
         let t0 = Instant::now();
         let width = self.config.window.width;
         let height = self.config.window.height;
+        let backend_name = self.config.render.backend.clone();
+        let power_name = self.config.render.power_preference.clone();
         let backends = wgpu::util::backend_bits_from_env().unwrap_or(
             match self.config.render.backend.as_str() {
                 "dx12" => wgpu::Backends::DX12,
@@ -616,13 +1242,24 @@ impl LurekApp {
         });
         let surface: wgpu::Surface<'static> = instance
             .create_surface(Arc::clone(&window))
-            .expect("Failed to create wgpu surface");
+            .map_err(|error| AppStartupError {
+                stage: AppStartupStage::Surface,
+                backend: backend_name.clone(),
+                power_preference: power_name.clone(),
+                details: format!("Failed to create wgpu surface: {}", error),
+            })?;
         let adapter = pollster::block_on(instance.request_adapter(&wgpu::RequestAdapterOptions {
             power_preference,
             compatible_surface: Some(&surface),
             force_fallback_adapter: false,
         }))
-        .expect("No compatible GPU adapter found. Try installing a display driver.");
+        .ok_or_else(|| AppStartupError {
+            stage: AppStartupStage::Adapter,
+            backend: backend_name.clone(),
+            power_preference: power_name.clone(),
+            details: "No compatible GPU adapter found. Try installing a display driver."
+                .to_string(),
+        })?;
         let adapter_info = adapter.get_info();
         log_msg!(
             info,
@@ -650,8 +1287,27 @@ impl LurekApp {
             },
             None,
         ))
-        .expect("Failed to create wgpu device");
+        .map_err(|error| AppStartupError {
+            stage: AppStartupStage::Device,
+            backend: backend_name.clone(),
+            power_preference: power_name.clone(),
+            details: format!(
+                "Failed to create wgpu device for adapter '{}': {}",
+                adapter_info.name, error
+            ),
+        })?;
         let caps = surface.get_capabilities(&adapter);
+        if caps.formats.is_empty() {
+            return Err(AppStartupError {
+                stage: AppStartupStage::Device,
+                backend: backend_name,
+                power_preference: power_name,
+                details: format!(
+                    "Adapter '{}' reported no compatible surface formats",
+                    adapter_info.name
+                ),
+            });
+        }
         let surface_format = caps
             .formats
             .iter()
@@ -699,114 +1355,27 @@ impl LurekApp {
             width,
             height,
         );
+        Ok(())
     }
     /// Create the Lua VM, load main.lua, and fire `lurek.init()`.
     pub fn init_lua(&mut self) {
-        self.ready_fired = false;
-        self.physics_accumulator = 0.0;
-        self.fixed_update_accumulator = 0.0;
-        self.fixed_update_deprecation_warned = false;
+        self.reset_runtime_accumulators();
         if let Some(conf_err) = self.conf_error.take() {
             self.run_state = RunState::Error(ErrorScreen::from_error(&format!(
                 "Configuration Error\n{}",
                 conf_err
             )));
+            return;
         }
-        let window_title = self.current_window_title();
-        if let Some(window) = &self.window {
-            window.set_title(&window_title);
-        }
-        let mut shared_state = SharedState::new(
-            self.config.window.width,
-            self.config.window.height,
-            &window_title,
-            self.game_dir.clone(),
-        );
-        shared_state.runtime_mode = self.config.runtime.mode;
-        if let Some(identity) = &self.config.identity {
-            shared_state.filesystem_identity = identity.clone();
-        }
-        shared_state.window_state.vsync_mode = self.window_vsync_mode;
-        shared_state.window = self.window.as_ref().map(Arc::clone);
-        shared_state.physics_run.fixed_dt =
-            1.0 / self.config.performance.physics_tick_rate.max(1) as f64;
-        shared_state.physics_run.fixed_update_dt =
-            match self.config.performance.fixed_update_tick_rate {
-                Some(rate) if rate > 0 => 1.0 / rate as f64,
-                _ => 0.0,
-            };
-        shared_state.set_configured_default_font(
-            self.config.render.default_font_size,
-            self.config.render.default_font_bold,
-        );
-        shared_state.frame_budget_warn_ms = self.config.performance.frame_budget_warn_ms;
-        shared_state.lua_callback_timeout_ms = self.callback_timeout_ms();
-        {
-            let ws = &mut shared_state.window_state;
-            ws.game_width = self
-                .config
-                .window
-                .game_width
-                .unwrap_or(self.config.window.width) as f32;
-            ws.game_height = self
-                .config
-                .window
-                .game_height
-                .unwrap_or(self.config.window.height) as f32;
-            ws.scale_mode_str = self.config.window.scale_mode.clone();
-            let (ww, wh) = (shared_state.window_width, shared_state.window_height);
-            recompute_viewport(ws, ww, wh);
-        }
-        let state = Rc::new(RefCell::new(shared_state));
-        state.borrow_mut().load_default_fonts();
-        let lua = match create_lua_vm(state.clone(), &self.config.modules) {
-            Ok(l) => l,
-            Err(e) => {
-                log_msg!(error, L016_LUA_VM_INIT_FAIL, "{}", e);
-                self.run_state = RunState::Error(ErrorScreen::from_error(&format!(
-                    "Lua VM Initialization Failed\n{}",
-                    e
-                )));
-                self.state = Some(state);
-                return;
+        match self.build_runtime_session() {
+            Ok(session) => self.apply_runtime_session(session),
+            Err(error) => {
+                self.state = error.state;
+                self.lua = None;
+                self.has_game = false;
+                self.run_state = RunState::Error(error.screen);
             }
-        };
-        let main_lua = self.game_dir.join("main.lua");
-        if main_lua.exists() {
-            log_msg!(info, L003_GAME_LOADED, "{}", main_lua.display());
-            match std::fs::read_to_string(&main_lua) {
-                Ok(code) => {
-                    if let Err(e) = lua.load(&code).set_name("main.lua").exec() {
-                        log_msg!(error, L011_LUA_ERROR, "main.lua: {}", e);
-                        self.run_state = RunState::Error(ErrorScreen::from_lua_error(&e));
-                    } else {
-                        if let Err(e) = call_lua_callback_checked_with_timeout(
-                            &lua,
-                            "init",
-                            (),
-                            self.callback_timeout_ms(),
-                        ) {
-                            self.run_state = RunState::Error(try_errorhandler_or_screen(&lua, &e));
-                        }
-                        self.has_game = true;
-                    }
-                }
-                Err(e) => {
-                    log_msg!(error, L017_MAIN_LUA_READ_FAIL, "{}", e);
-                    self.run_state = RunState::Error(ErrorScreen::from_error(&format!(
-                        "Failed to read main.lua\n{}",
-                        e
-                    )));
-                }
-            }
-        } else {
-            if self.explicit_game_dir {
-                log_msg!(warn, L007_NO_MAIN_LUA, "{}", self.game_dir.display());
-            }
-            log_msg!(info, L006_SPLASH_SCREEN);
         }
-        self.lua = Some(lua);
-        self.state = Some(state);
     }
     /// Advance clocks, poll input devices, and update the debug overlay flag.
     fn tick_frame(&mut self) {
@@ -826,6 +1395,52 @@ impl LurekApp {
         }
         self.apply_pending_window_actions();
     }
+
+    fn validate_window_runtime_request(
+        &self,
+        pending_size: Option<(u32, u32)>,
+        pending_scale_mode: Option<String>,
+        pending_vsync: Option<i32>,
+    ) -> WindowRuntimeValidation {
+        let mut report = WindowRuntimeReport::default();
+        let size = pending_size.map(|(width, height)| {
+            let clamped = self.clamp_surface_dims(width, height);
+            if clamped != (width, height) {
+                report.clamped_size = Some(((width, height), clamped));
+            }
+            clamped
+        });
+        let scale_mode = pending_scale_mode.and_then(|mode| {
+            if SUPPORTED_SCALE_MODES.contains(&mode.as_str()) {
+                Some(mode)
+            } else {
+                report.invalid_scale_mode = Some(mode);
+                None
+            }
+        });
+        let vsync_mode = pending_vsync.map(|requested| {
+            let (_, normalized) =
+                Self::resolve_present_mode(&self.surface_present_modes, requested);
+            if normalized != requested {
+                report.vsync_adjustment = Some((requested, normalized));
+            }
+            normalized
+        });
+        (size, scale_mode, vsync_mode, report)
+    }
+
+    /// Expose window-runtime validation as a stable test seam.
+    pub fn inspect_window_runtime_request_for_testing(
+        &self,
+        pending_size: Option<(u32, u32)>,
+        pending_scale_mode: Option<String>,
+        pending_vsync: Option<i32>,
+    ) -> WindowRuntimeReport {
+        let (_, _, _, report) =
+            self.validate_window_runtime_request(pending_size, pending_scale_mode, pending_vsync);
+        report
+    }
+
     /// Apply deferred window property changes requested by Lua during the frame.
     fn apply_pending_window_actions(&mut self) {
         let window = match &self.window {
@@ -884,6 +1499,8 @@ impl LurekApp {
                 st.window_state.pending_scale_mode.take(),
             )
         };
+        let (pending_size, pending_scale_mode, pending_vsync, mut runtime_report) =
+            self.validate_window_runtime_request(pending_size, pending_scale_mode, pending_vsync);
         if let Some(title) = pending_title {
             window.set_title(&title);
             state.borrow_mut().window_title = title;
@@ -916,6 +1533,7 @@ impl LurekApp {
         if let Some(display_index) = pending_display_index {
             if !move_window_to_display(window.as_ref(), display_index) {
                 log::warn!("Requested display index {} is not available", display_index);
+                runtime_report.invalid_display_index = Some(display_index);
             }
         }
         if let Some((w, h)) = pending_size {
@@ -982,24 +1600,23 @@ impl LurekApp {
             state.borrow_mut().quit_requested = true;
         }
         if let Some(new_mode) = pending_scale_mode {
-            if matches!(
-                new_mode.as_str(),
-                "none" | "letterbox" | "stretch" | "pixel"
-            ) {
-                if let Some(state) = &self.state {
-                    let mut st = state.borrow_mut();
-                    st.window_state.scale_mode_str = new_mode;
-                    let (ww, wh) = (st.window_width, st.window_height);
-                    recompute_viewport(&mut st.window_state, ww, wh);
-                }
+            if let Some(state) = &self.state {
+                let mut st = state.borrow_mut();
+                st.window_state.scale_mode_str = new_mode;
+                let (ww, wh) = (st.window_width, st.window_height);
+                recompute_viewport(&mut st.window_state, ww, wh);
             }
         }
+        self.push_window_report(runtime_report);
     }
     /// Run the full game-update sequence: physics, process, draw, and overlay.
     fn game_update(&mut self) {
-        let (Some(lua), Some(state)) = (&self.lua, &self.state) else {
+        let Some(state) = self.state.as_ref().cloned() else {
             return;
         };
+        if self.lua.is_none() {
+            return;
+        }
         let callback_timeout_ms = self.callback_timeout_ms();
         if self.auto_screenshot_path.is_some() && !self.auto_screenshot_done {
             if self.auto_screenshot_frame_count == 0 {
@@ -1017,10 +1634,14 @@ impl LurekApp {
         }
         if !self.ready_fired {
             self.ready_fired = true;
-            if let Err(e) =
-                call_lua_callback_checked_with_timeout(lua, "ready", (), callback_timeout_ms)
-            {
-                self.run_state = RunState::Error(try_errorhandler_or_screen(lua, &e));
+            let error = {
+                let lua = self.lua.as_ref().expect("lua checked above");
+                call_lua_callback_checked_with_timeout(lua, "ready", (), callback_timeout_ms).err()
+            };
+            if let Some(error) = error {
+                if self.handle_callback_error("ready", "frame.ready", error) {
+                    return;
+                }
                 return;
             }
         }
@@ -1035,13 +1656,21 @@ impl LurekApp {
             while self.physics_accumulator >= fixed_dt && steps < max_steps {
                 self.physics_accumulator -= fixed_dt;
                 steps += 1;
-                if let Err(e) = call_lua_callback_checked_with_timeout(
-                    lua,
-                    "process_physics",
-                    fixed_dt,
-                    callback_timeout_ms,
-                ) {
-                    self.run_state = RunState::Error(try_errorhandler_or_screen(lua, &e));
+                let error = {
+                    let lua = self.lua.as_ref().expect("lua checked above");
+                    call_lua_callback_checked_with_timeout(
+                        lua,
+                        "process_physics",
+                        fixed_dt,
+                        callback_timeout_ms,
+                    )
+                    .err()
+                };
+                if let Some(error) = error {
+                    if self.handle_callback_error("process_physics", "frame.process_physics", error)
+                    {
+                        return;
+                    }
                     return;
                 }
             }
@@ -1051,7 +1680,12 @@ impl LurekApp {
             let phase_start = Instant::now();
             let fixed_dt = state.borrow().physics_run.fixed_update_dt;
             if fixed_dt > 0.0 {
-                if !self.fixed_update_deprecation_warned && has_lua_callback(lua, "fixedUpdate") {
+                let has_fixed_update = self
+                    .lua
+                    .as_ref()
+                    .map(|lua| has_lua_callback(lua, "fixedUpdate"))
+                    .unwrap_or(false);
+                if !self.fixed_update_deprecation_warned && has_fixed_update {
                     log::warn!(
                         "lurek.fixedUpdate(dt) is deprecated; use lurek.process_physics(dt)"
                     );
@@ -1063,13 +1697,20 @@ impl LurekApp {
                 while self.fixed_update_accumulator >= fixed_dt && steps < max_steps {
                     self.fixed_update_accumulator -= fixed_dt;
                     steps += 1;
-                    if let Err(e) = call_lua_callback_checked_with_timeout(
-                        lua,
-                        "fixedUpdate",
-                        fixed_dt,
-                        callback_timeout_ms,
-                    ) {
-                        self.run_state = RunState::Error(try_errorhandler_or_screen(lua, &e));
+                    let error = {
+                        let lua = self.lua.as_ref().expect("lua checked above");
+                        call_lua_callback_checked_with_timeout(
+                            lua,
+                            "fixedUpdate",
+                            fixed_dt,
+                            callback_timeout_ms,
+                        )
+                        .err()
+                    };
+                    if let Some(error) = error {
+                        if self.handle_callback_error("fixedUpdate", "frame.fixed_update", error) {
+                            return;
+                        }
                         return;
                     }
                 }
@@ -1078,27 +1719,43 @@ impl LurekApp {
         }
         {
             let phase_start = Instant::now();
-            if let Err(e) =
+            let error = {
+                let lua = self.lua.as_ref().expect("lua checked above");
                 call_lua_callback_checked_with_timeout(lua, "process", dt, callback_timeout_ms)
-            {
-                self.run_state = RunState::Error(try_errorhandler_or_screen(lua, &e));
+                    .err()
+            };
+            if let Some(error) = error {
+                if self.handle_callback_error("process", "frame.process", error) {
+                    return;
+                }
                 return;
             }
             frame_profile.process_ms = phase_start.elapsed().as_secs_f64() as f32 * 1000.0;
         }
         {
             let phase_start = Instant::now();
-            if let Err(e) =
+            let error = {
+                let lua = self.lua.as_ref().expect("lua checked above");
                 call_lua_callback_checked_with_timeout(lua, "process_late", dt, callback_timeout_ms)
-            {
-                self.run_state = RunState::Error(try_errorhandler_or_screen(lua, &e));
+                    .err()
+            };
+            if let Some(error) = error {
+                if self.handle_callback_error("process_late", "frame.process_late", error) {
+                    return;
+                }
                 return;
             }
             frame_profile.process_late_ms = phase_start.elapsed().as_secs_f64() as f32 * 1000.0;
         }
         if shared_flag(&self.state, |st| st.auto_ui_update) {
-            if let Err(e) = call_lua_ui_update(lua, dt as f32, callback_timeout_ms) {
-                self.run_state = RunState::Error(try_errorhandler_or_screen(lua, &e));
+            let error = {
+                let lua = self.lua.as_ref().expect("lua checked above");
+                call_lua_ui_update(lua, dt as f32, callback_timeout_ms).err()
+            };
+            if let Some(error) = error {
+                if self.handle_callback_error("ui.update", "frame.ui_update", error) {
+                    return;
+                }
                 return;
             }
         }
@@ -1151,10 +1808,14 @@ impl LurekApp {
         }
         {
             let phase_start = Instant::now();
-            if let Err(e) =
-                call_lua_callback_checked_with_timeout(lua, "draw", (), callback_timeout_ms)
-            {
-                self.run_state = RunState::Error(try_errorhandler_or_screen(lua, &e));
+            let error = {
+                let lua = self.lua.as_ref().expect("lua checked above");
+                call_lua_callback_checked_with_timeout(lua, "draw", (), callback_timeout_ms).err()
+            };
+            if let Some(error) = error {
+                if self.handle_callback_error("draw", "frame.draw", error) {
+                    return;
+                }
                 return;
             }
             frame_profile.draw_ms = phase_start.elapsed().as_secs_f64() as f32 * 1000.0;
@@ -1290,10 +1951,15 @@ impl LurekApp {
         }
         {
             let phase_start = Instant::now();
-            if let Err(e) =
+            let error = {
+                let lua = self.lua.as_ref().expect("lua checked above");
                 call_lua_callback_checked_with_timeout(lua, "draw_ui", (), callback_timeout_ms)
-            {
-                self.run_state = RunState::Error(try_errorhandler_or_screen(lua, &e));
+                    .err()
+            };
+            if let Some(error) = error {
+                if self.handle_callback_error("draw_ui", "frame.draw_ui", error) {
+                    return;
+                }
                 return;
             }
             frame_profile.draw_ui_ms = phase_start.elapsed().as_secs_f64() as f32 * 1000.0;
@@ -1471,6 +2137,7 @@ impl LurekApp {
                 &mut fonts,
                 &s_ref.light_world,
                 &sprite_batches,
+                &s_ref.shapes,
                 &canvases,
                 &meshes,
                 &shaders,
@@ -1657,6 +2324,7 @@ impl LurekApp {
         );
         let bg = [0.12, 0.08, 0.20, 1.0];
         let no_batches: SlotMap<SpriteBatchKey, crate::sprite::SpriteBatch> = SlotMap::with_key();
+        let no_shapes: SlotMap<ShapeKey, crate::render::CompoundShape> = SlotMap::with_key();
         let no_canvases: SlotMap<CanvasKey, crate::render::Canvas> = SlotMap::with_key();
         let empty_textures: SlotMap<TextureKey, TextureData> = SlotMap::with_key();
         let no_meshes: SlotMap<MeshKey, crate::render::Mesh> = SlotMap::with_key();
@@ -1671,6 +2339,7 @@ impl LurekApp {
             splash_fonts,
             &no_lights,
             &no_batches,
+            &no_shapes,
             &no_canvases,
             &no_meshes,
             &no_shaders,
@@ -1710,6 +2379,8 @@ impl LurekApp {
                 let bg = [0.11, 0.22, 0.53, 1.0];
                 let no_batches: SlotMap<SpriteBatchKey, crate::sprite::SpriteBatch> =
                     SlotMap::with_key();
+                let no_shapes: SlotMap<ShapeKey, crate::render::CompoundShape> =
+                    SlotMap::with_key();
                 let no_canvases: SlotMap<CanvasKey, crate::render::Canvas> = SlotMap::with_key();
                 let no_textures: SlotMap<TextureKey, TextureData> = SlotMap::with_key();
                 let no_meshes: SlotMap<MeshKey, crate::render::Mesh> = SlotMap::with_key();
@@ -1723,6 +2394,7 @@ impl LurekApp {
                     &mut st.fonts,
                     &no_lights,
                     &no_batches,
+                    &no_shapes,
                     &no_canvases,
                     &no_meshes,
                     &no_shaders,
@@ -1776,6 +2448,7 @@ impl LurekApp {
         );
         let bg = [0.11, 0.22, 0.53, 1.0];
         let no_batches: SlotMap<SpriteBatchKey, crate::sprite::SpriteBatch> = SlotMap::with_key();
+        let no_shapes: SlotMap<ShapeKey, crate::render::CompoundShape> = SlotMap::with_key();
         let no_canvases: SlotMap<CanvasKey, crate::render::Canvas> = SlotMap::with_key();
         let no_textures: SlotMap<TextureKey, TextureData> = SlotMap::with_key();
         let no_meshes: SlotMap<MeshKey, crate::render::Mesh> = SlotMap::with_key();
@@ -1789,6 +2462,7 @@ impl LurekApp {
             error_fonts,
             &no_lights,
             &no_batches,
+            &no_shapes,
             &no_canvases,
             &no_meshes,
             &no_shaders,
@@ -1805,10 +2479,21 @@ impl LurekApp {
         }
     }
     /// Extract `.lurek` archive into a temp directory and reject unsafe paths.
-    fn extract_lurek_archive(
+    pub fn extract_lurek_archive_with_policy(
         archive_path: &std::path::Path,
+        policy: &StartupTargetPolicy,
     ) -> Result<(std::path::PathBuf, tempfile::TempDir), String> {
         use std::io;
+        let metadata = std::fs::metadata(archive_path)
+            .map_err(|e| format!("Cannot stat archive '{}': {}", archive_path.display(), e))?;
+        if metadata.len() > policy.max_archive_bytes {
+            return Err(format!(
+                "Archive '{}' exceeds max size {} bytes (got {})",
+                archive_path.display(),
+                policy.max_archive_bytes,
+                metadata.len()
+            ));
+        }
         let file = std::fs::File::open(archive_path)
             .map_err(|e| format!("Cannot open archive '{}': {}", archive_path.display(), e))?;
         let mut archive = zip::ZipArchive::new(file)
@@ -1820,17 +2505,21 @@ impl LurekApp {
                 .by_index(i)
                 .map_err(|e| format!("Archive entry {}: {}", i, e))?;
             let entry_name = entry.name().to_owned();
-            let relative = std::path::Path::new(&entry_name);
-            for component in relative.components() {
-                match component {
-                    std::path::Component::Normal(_) | std::path::Component::CurDir => {}
-                    _ => {
-                        return Err(format!(
-                            "Unsafe path in archive: '{}' - extraction rejected",
-                            entry_name
-                        ));
-                    }
-                }
+            let Some(relative) = entry.enclosed_name().map(|path| path.to_path_buf()) else {
+                return Err(format!(
+                    "Unsafe path in archive: '{}' - extraction rejected",
+                    entry_name
+                ));
+            };
+            if entry
+                .unix_mode()
+                .map(|mode| mode & 0o170000 == 0o120000)
+                .unwrap_or(false)
+            {
+                return Err(format!(
+                    "Unsafe symlink entry in archive: '{}' - extraction rejected",
+                    entry_name
+                ));
             }
             let dest = temp_dir.path().join(relative);
             if entry.is_dir() {
@@ -1852,30 +2541,49 @@ impl LurekApp {
     }
     /// Tear down the current game session and reinitialise from the game directory.
     fn restart_game(&mut self) {
-        self.refresh_content_watchers();
-        self.lua = None;
-        self.state = None;
-        self.has_game = false;
-        self.prev_mouse = [false; 5];
-        self.run_state = RunState::Running;
-        self.init_lua();
+        let report = self.reload_game_with_report("manual", Vec::new());
+        if !report.reloaded && report.failure.is_some() && !report.rolled_back {
+            log::warn!(
+                "runtime restart failed without rollback: {}",
+                report.failure.as_deref().unwrap_or("unknown error")
+            );
+        }
     }
     /// Poll content watchers and trigger a restart when scripts or assets changed.
     fn poll_content_hot_reload(&mut self) {
         if !self.has_game {
             return;
         }
-        let script_changed = !self.content_script_watcher.poll().is_empty();
-        let asset_changed = !self.content_asset_watcher.poll().is_empty();
-        if !(script_changed || asset_changed) {
+        let mut changed_paths = self.content_script_watcher.poll();
+        changed_paths.extend(self.content_asset_watcher.poll());
+        changed_paths.sort();
+        changed_paths.dedup();
+        if !changed_paths.is_empty() {
+            for path in changed_paths {
+                if !self.pending_hot_reload_paths.contains(&path) {
+                    self.pending_hot_reload_paths.push(path);
+                }
+            }
+            self.pending_hot_reload_deadline = Some(Instant::now() + self.hot_reload_debounce);
             return;
         }
+        let Some(deadline) = self.pending_hot_reload_deadline else {
+            return;
+        };
+        if Instant::now() < deadline || self.pending_hot_reload_paths.is_empty() {
+            return;
+        }
+        let changed_paths = std::mem::take(&mut self.pending_hot_reload_paths);
+        self.pending_hot_reload_deadline = None;
         log::info!(
-            "content hot-reload triggered (scripts_changed={}, assets_changed={})",
-            script_changed,
-            asset_changed
+            "content hot-reload triggered after debounce ({} path(s))",
+            changed_paths.len()
         );
-        self.restart_game();
+        let reload = self.reload_game_with_report("hot_reload", changed_paths.clone());
+        self.push_hot_reload_report(HotReloadReport {
+            changed_paths,
+            reload,
+        });
     }
     /// Poll the config watcher and apply updated conf.toml values.
     fn poll_config_hot_reload(&mut self) {
@@ -2316,6 +3024,23 @@ fn load_window_icon(game_dir: &Path, icon_path: &str) -> Option<winit::window::I
     }
 }
 /// Register watchers for script and asset files under `game_dir`.
+fn build_content_watchers(game_dir: &Path) -> (FileWatcher, FileWatcher) {
+    let mut script_watcher = FileWatcher::new();
+    let mut asset_watcher = FileWatcher::new();
+    register_content_watchers(game_dir, &mut script_watcher, &mut asset_watcher);
+    (script_watcher, asset_watcher)
+}
+
+fn should_ignore_hot_reload_path(path: &Path) -> bool {
+    path.components().any(|component| {
+        let name = component.as_os_str().to_string_lossy();
+        matches!(
+            name.as_ref(),
+            "save" | "logs" | "target" | ".git" | "build" | "dist" | "tmp" | ".tmp" | "temp"
+        )
+    })
+}
+
 fn register_content_watchers(
     game_dir: &Path,
     script_watcher: &mut FileWatcher,
@@ -2329,12 +3054,10 @@ fn register_content_watchers(
         };
         for entry in entries.flatten() {
             let path = entry.path();
+            if should_ignore_hot_reload_path(&path) {
+                continue;
+            }
             if path.is_dir() {
-                if let Some(name) = path.file_name().and_then(|n| n.to_str()) {
-                    if matches!(name, "save" | "logs" | "target" | ".git") {
-                        continue;
-                    }
-                }
                 walk_dir(&path, script_watcher, asset_watcher);
                 continue;
             }
@@ -2407,7 +3130,17 @@ impl ApplicationHandler for LurekApp {
                 window.set_window_icon(Some(icon));
             }
         }
-        self.init_gpu(window);
+        if let Err(error) = self.try_init_gpu(window.clone()) {
+            self.window = Some(window);
+            log::error!(
+                "GPU startup failed [backend={}, power={}]: {}",
+                error.backend,
+                error.power_preference,
+                error.details
+            );
+            self.run_state = map_startup_error_to_run_state(&error);
+            return;
+        }
         match Gilrs::new() {
             Ok(g) => self.gilrs = Some(g),
             Err(e) => log_msg!(warn, L038_GILRS_UNAVAILABLE, "{}", e),
@@ -2570,22 +3303,34 @@ impl ApplicationHandler for LurekApp {
                                 st.keys_down.insert(key_str.clone());
                                 st.keyboard.set_key_down(&key_str);
                             }
+                            let mut dispatch_report = self.begin_input_report("keypressed", None);
                             let mut ui_consumed = false;
-                            if shared_flag(&self.state, |st| st.auto_ui_input) {
-                                if let Some(lua) = &self.lua {
-                                    match call_lua_ui_bool(
+                            if shared_flag(&self.state, |st| st.auto_ui_input)
+                                && self.lua.is_some()
+                            {
+                                let ui_result = {
+                                    let lua = self.lua.as_ref().expect("lua should exist");
+                                    call_lua_ui_bool(
                                         lua,
                                         "keypressed",
                                         key_str.clone(),
                                         self.callback_timeout_ms(),
-                                    ) {
-                                        Ok(consumed) => ui_consumed = consumed,
-                                        Err(e) => {
-                                            self.run_state = RunState::Error(
-                                                try_errorhandler_or_screen(lua, &e),
-                                            );
-                                            return;
-                                        }
+                                    )
+                                };
+                                match ui_result {
+                                    Ok(consumed) => {
+                                        ui_consumed = consumed;
+                                        dispatch_report.ui_consumed = consumed;
+                                    }
+                                    Err(e) => {
+                                        let screen = {
+                                            let lua = self.lua.as_ref().expect("lua should exist");
+                                            try_errorhandler_or_screen(lua, &e)
+                                        };
+                                        dispatch_report.callback_error = Some(e.to_string());
+                                        self.push_input_report(dispatch_report);
+                                        self.run_state = RunState::Error(screen);
+                                        return;
                                     }
                                 }
                             }
@@ -2615,6 +3360,7 @@ impl ApplicationHandler for LurekApp {
                                     ],
                                 );
                             }
+                            self.push_input_report(dispatch_report);
                         }
                         ElementState::Released => {
                             if let Some(state) = &self.state {
@@ -2640,6 +3386,16 @@ impl ApplicationHandler for LurekApp {
                                     vec![EventArg::Str(key_str.clone()), EventArg::Str(sc)],
                                 );
                             }
+                            self.push_input_report(InputDispatchReport {
+                                event_kind: "keyreleased".to_string(),
+                                order: vec![
+                                    InputDispatchTarget::Platform,
+                                    InputDispatchTarget::Game,
+                                ],
+                                ui_consumed: false,
+                                callback_error: None,
+                                coordinates: None,
+                            });
                         }
                     }
                 }
@@ -2650,21 +3406,32 @@ impl ApplicationHandler for LurekApp {
                     if st.keyboard.has_text_input() {
                         st.keyboard.push_text_input(text.clone());
                         drop(st);
+                        let mut dispatch_report = self.begin_input_report("textinput", None);
                         let mut ui_consumed = false;
-                        if shared_flag(&self.state, |st| st.auto_ui_input) {
-                            if let Some(lua) = &self.lua {
-                                match call_lua_ui_bool(
+                        if shared_flag(&self.state, |st| st.auto_ui_input) && self.lua.is_some() {
+                            let ui_result = {
+                                let lua = self.lua.as_ref().expect("lua should exist");
+                                call_lua_ui_bool(
                                     lua,
                                     "textinput",
                                     text.clone(),
                                     self.callback_timeout_ms(),
-                                ) {
-                                    Ok(consumed) => ui_consumed = consumed,
-                                    Err(e) => {
-                                        self.run_state =
-                                            RunState::Error(try_errorhandler_or_screen(lua, &e));
-                                        return;
-                                    }
+                                )
+                            };
+                            match ui_result {
+                                Ok(consumed) => {
+                                    ui_consumed = consumed;
+                                    dispatch_report.ui_consumed = consumed;
+                                }
+                                Err(e) => {
+                                    let screen = {
+                                        let lua = self.lua.as_ref().expect("lua should exist");
+                                        try_errorhandler_or_screen(lua, &e)
+                                    };
+                                    dispatch_report.callback_error = Some(e.to_string());
+                                    self.push_input_report(dispatch_report);
+                                    self.run_state = RunState::Error(screen);
+                                    return;
                                 }
                             }
                         }
@@ -2678,6 +3445,7 @@ impl ApplicationHandler for LurekApp {
                                 );
                             }
                         }
+                        self.push_input_report(dispatch_report);
                     }
                 }
             }
@@ -2703,26 +3471,32 @@ impl ApplicationHandler for LurekApp {
                 let dy = gy - self.mouse_y;
                 self.mouse_x = gx;
                 self.mouse_y = gy;
+                let mut dispatch_report = self.begin_input_report("mousemoved", Some((gx, gy)));
                 if let Some(state) = &self.state {
                     let mut st = state.borrow_mut();
                     st.mouse.x = gx;
                     st.mouse.y = gy;
                 }
                 let mut ui_consumed = false;
-                if shared_flag(&self.state, |st| st.auto_ui_input) {
-                    if let Some(lua) = &self.lua {
-                        match call_lua_ui_bool(
-                            lua,
-                            "mousemoved",
-                            (gx, gy),
-                            self.callback_timeout_ms(),
-                        ) {
-                            Ok(consumed) => ui_consumed = consumed,
-                            Err(e) => {
-                                self.run_state =
-                                    RunState::Error(try_errorhandler_or_screen(lua, &e));
-                                return;
-                            }
+                if shared_flag(&self.state, |st| st.auto_ui_input) && self.lua.is_some() {
+                    let ui_result = {
+                        let lua = self.lua.as_ref().expect("lua should exist");
+                        call_lua_ui_bool(lua, "mousemoved", (gx, gy), self.callback_timeout_ms())
+                    };
+                    match ui_result {
+                        Ok(consumed) => {
+                            ui_consumed = consumed;
+                            dispatch_report.ui_consumed = consumed;
+                        }
+                        Err(e) => {
+                            let screen = {
+                                let lua = self.lua.as_ref().expect("lua should exist");
+                                try_errorhandler_or_screen(lua, &e)
+                            };
+                            dispatch_report.callback_error = Some(e.to_string());
+                            self.push_input_report(dispatch_report);
+                            self.run_state = RunState::Error(screen);
+                            return;
                         }
                     }
                 }
@@ -2742,24 +3516,30 @@ impl ApplicationHandler for LurekApp {
                     winit::event::MouseScrollDelta::LineDelta(x, y) => (x as f64, y as f64),
                     winit::event::MouseScrollDelta::PixelDelta(pos) => (pos.x, pos.y),
                 };
+                let mut dispatch_report = self.begin_input_report("wheelmoved", None);
                 if let Some(state) = &self.state {
                     state.borrow_mut().mouse.accumulate_scroll(dx, dy);
                 }
                 let mut ui_consumed = false;
-                if shared_flag(&self.state, |st| st.auto_ui_input) {
-                    if let Some(lua) = &self.lua {
-                        match call_lua_ui_bool(
-                            lua,
-                            "wheelmoved",
-                            (dx, dy),
-                            self.callback_timeout_ms(),
-                        ) {
-                            Ok(consumed) => ui_consumed = consumed,
-                            Err(e) => {
-                                self.run_state =
-                                    RunState::Error(try_errorhandler_or_screen(lua, &e));
-                                return;
-                            }
+                if shared_flag(&self.state, |st| st.auto_ui_input) && self.lua.is_some() {
+                    let ui_result = {
+                        let lua = self.lua.as_ref().expect("lua should exist");
+                        call_lua_ui_bool(lua, "wheelmoved", (dx, dy), self.callback_timeout_ms())
+                    };
+                    match ui_result {
+                        Ok(consumed) => {
+                            ui_consumed = consumed;
+                            dispatch_report.ui_consumed = consumed;
+                        }
+                        Err(e) => {
+                            let screen = {
+                                let lua = self.lua.as_ref().expect("lua should exist");
+                                try_errorhandler_or_screen(lua, &e)
+                            };
+                            dispatch_report.callback_error = Some(e.to_string());
+                            self.push_input_report(dispatch_report);
+                            self.run_state = RunState::Error(screen);
+                            return;
                         }
                     }
                 }
@@ -2799,36 +3579,66 @@ impl ApplicationHandler for LurekApp {
                     let mx = self.mouse_x;
                     let my = self.mouse_y;
                     let button_index = (i + 1) as u32;
+                    let mut dispatch_report = self.begin_input_report(
+                        if pressed {
+                            "mousepressed"
+                        } else {
+                            "mousereleased"
+                        },
+                        Some((mx, my)),
+                    );
                     let mut ui_consumed = false;
-                    if shared_flag(&self.state, |st| st.auto_ui_input) {
-                        if let Some(lua) = &self.lua {
-                            if pressed && !self.prev_mouse[i] {
-                                match call_lua_ui_bool(
+                    if shared_flag(&self.state, |st| st.auto_ui_input) && self.lua.is_some() {
+                        if pressed && !self.prev_mouse[i] {
+                            let ui_result = {
+                                let lua = self.lua.as_ref().expect("lua should exist");
+                                call_lua_ui_bool(
                                     lua,
                                     "mousepressed",
                                     (mx, my, button_index),
                                     self.callback_timeout_ms(),
-                                ) {
-                                    Ok(consumed) => ui_consumed = consumed,
-                                    Err(e) => {
-                                        self.run_state =
-                                            RunState::Error(try_errorhandler_or_screen(lua, &e));
-                                        return;
-                                    }
+                                )
+                            };
+                            match ui_result {
+                                Ok(consumed) => {
+                                    ui_consumed = consumed;
+                                    dispatch_report.ui_consumed = consumed;
                                 }
-                            } else if !pressed && self.prev_mouse[i] {
-                                match call_lua_ui_bool(
+                                Err(e) => {
+                                    let screen = {
+                                        let lua = self.lua.as_ref().expect("lua should exist");
+                                        try_errorhandler_or_screen(lua, &e)
+                                    };
+                                    dispatch_report.callback_error = Some(e.to_string());
+                                    self.push_input_report(dispatch_report);
+                                    self.run_state = RunState::Error(screen);
+                                    return;
+                                }
+                            }
+                        } else if !pressed && self.prev_mouse[i] {
+                            let ui_result = {
+                                let lua = self.lua.as_ref().expect("lua should exist");
+                                call_lua_ui_bool(
                                     lua,
                                     "mousereleased",
                                     (mx, my, button_index),
                                     self.callback_timeout_ms(),
-                                ) {
-                                    Ok(consumed) => ui_consumed = consumed,
-                                    Err(e) => {
-                                        self.run_state =
-                                            RunState::Error(try_errorhandler_or_screen(lua, &e));
-                                        return;
-                                    }
+                                )
+                            };
+                            match ui_result {
+                                Ok(consumed) => {
+                                    ui_consumed = consumed;
+                                    dispatch_report.ui_consumed = consumed;
+                                }
+                                Err(e) => {
+                                    let screen = {
+                                        let lua = self.lua.as_ref().expect("lua should exist");
+                                        try_errorhandler_or_screen(lua, &e)
+                                    };
+                                    dispatch_report.callback_error = Some(e.to_string());
+                                    self.push_input_report(dispatch_report);
+                                    self.run_state = RunState::Error(screen);
+                                    return;
                                 }
                             }
                         }
@@ -2979,6 +3789,15 @@ impl ApplicationHandler for LurekApp {
                 let id = touch.id;
                 let x = touch.location.x;
                 let y = touch.location.y;
+                let event_kind = match touch.phase {
+                    winit::event::TouchPhase::Started => "touchpressed",
+                    winit::event::TouchPhase::Moved => "touchmoved",
+                    winit::event::TouchPhase::Ended | winit::event::TouchPhase::Cancelled => {
+                        "touchreleased"
+                    }
+                };
+                let dispatch_report =
+                    self.begin_input_report(event_kind, Some((x as f32, y as f32)));
                 let pressure = touch.force.map_or(1.0, |f| match f {
                     winit::event::Force::Normalized(n) => n,
                     winit::event::Force::Calibrated {
@@ -3054,6 +3873,7 @@ impl ApplicationHandler for LurekApp {
                         }
                     }
                 }
+                self.push_input_report(dispatch_report);
             }
             WindowEvent::HoveredFile(path) => {
                 log_msg!(debug, L077_DRAG_HOVER, "{}", path.display());

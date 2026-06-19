@@ -1,6 +1,7 @@
 //! File: tests/rust/unit/save_tests.rs
 
 use lurek2d::save::*;
+use mlua::prelude::{Lua, LuaValue};
 use std::collections::HashMap;
 
 mod save_manager_tests {
@@ -169,5 +170,127 @@ mod save_manager_tests {
         let compressed = compress_save_content(plain).expect("compress");
         let restored = decompress_save_content(&compressed).expect("decompress");
         assert_eq!(restored, plain);
+    }
+
+    #[test]
+    fn slot_path_rejects_path_traversal_and_invalid_names() {
+        let sm = SaveManager::new();
+        assert!(sm.slot_path_checked("../evil").is_err());
+        assert!(sm.slot_path_checked("/tmp/x").is_err());
+        assert!(sm.slot_path_checked("").is_err());
+        assert!(sm.slot_path_checked(&"a".repeat(65)).is_err());
+        assert_eq!(
+            sm.slot_path_checked("valid_slot-1")
+                .expect("validated slot"),
+            "save/slot_valid_slot-1.sav"
+        );
+    }
+
+    #[test]
+    fn migration_plan_reports_missing_steps() {
+        let mut sm = SaveManager::new();
+        sm.set_schema_version(4);
+        sm.add_migration(1);
+        sm.add_migration(3);
+        let err = sm.migration_plan(1).expect_err("missing step");
+        assert!(err.to_string().contains("2"));
+    }
+
+    #[test]
+    fn parse_rejects_deep_or_huge_table() {
+        let mut nested = String::from("return ");
+        for _ in 0..10 {
+            nested.push_str("{ child = ");
+        }
+        nested.push_str("1");
+        for _ in 0..10 {
+            nested.push('}');
+        }
+        let deep_limits = SaveParseLimits {
+            max_depth: 4,
+            ..SaveParseLimits::default()
+        };
+        assert!(parse_save_table_with_limits(&nested, &deep_limits).is_err());
+
+        let huge_string = format!("return {{ text = \"{}\" }}", "x".repeat(32));
+        let string_limits = SaveParseLimits {
+            max_string_chars: 8,
+            ..SaveParseLimits::default()
+        };
+        assert!(parse_save_table_with_limits(&huge_string, &string_limits).is_err());
+    }
+
+    #[test]
+    fn from_lua_rejects_cyclic_table() {
+        let lua = Lua::new();
+        let table = lua.create_table().expect("table");
+        table.set("self", table.clone()).expect("cycle");
+        let err =
+            SaveValue::from_lua_with_limits(&LuaValue::Table(table), &SaveLuaLimits::default())
+                .expect_err("cyclic table should fail");
+        assert!(err.to_string().contains("cyclic"));
+    }
+
+    #[test]
+    fn save_rejects_nan_inf_numbers() {
+        let nan_err =
+            SaveValue::from_lua(&LuaValue::Number(f64::NAN)).expect_err("nan should fail");
+        assert!(nan_err.to_string().contains("non-finite"));
+
+        let inf_err = serialize_value(&SaveValue::Number(f64::INFINITY), 0)
+            .expect_err("infinity should fail");
+        assert!(inf_err.contains("non-finite"));
+
+        let parsed_err = parse_save_table("return { value = 1e999 }").expect_err("infinite parse");
+        assert!(parsed_err.contains("non-finite"));
+    }
+
+    #[test]
+    fn auto_save_rejects_invalid_interval_and_dt() {
+        let mut sm = SaveManager::new();
+        assert!(sm.enable_auto_save(0.0, "auto").is_err());
+        assert!(sm.enable_auto_save(f64::NAN, "auto").is_err());
+        assert!(sm.enable_auto_save(-1.0, "auto").is_err());
+
+        sm.enable_auto_save(0.5, "auto").expect("valid autosave");
+        sm.mark_dirty();
+        assert_eq!(sm.update(f64::NAN), None);
+        assert_eq!(sm.update(-0.1), None);
+        assert_eq!(
+            sm.diagnostics().last(),
+            Some("delta time must be finite and >= 0 seconds (got -0.1)")
+        );
+    }
+
+    #[test]
+    fn decompress_rejects_output_over_limit() {
+        let plain = format!("return {{ blob = \"{}\" }}\n", "x".repeat(256));
+        let compressed = compress_save_content(&plain).expect("compress");
+        let limits = SaveCompressionLimits {
+            max_decompressed_bytes: 64,
+            ..SaveCompressionLimits::default()
+        };
+        let err = decompress_save_content_with_limits(&compressed, &limits)
+            .expect_err("limit should reject payload");
+        assert!(err.to_string().contains("decompressed bytes"));
+    }
+
+    #[test]
+    fn compressed_header_checksum_detects_corruption() {
+        let plain = "return { hp = 10 }\n";
+        let compressed = compress_save_content(plain).expect("compress");
+        let mut lines: Vec<String> = compressed.lines().map(str::to_string).collect();
+        let header = &mut lines[0];
+        let checksum_pos = header.find("sha256=").expect("checksum field") + "sha256=".len();
+        let corrupt_pos = checksum_pos;
+        let replacement = if &header[corrupt_pos..corrupt_pos + 1] == "a" {
+            "b"
+        } else {
+            "a"
+        };
+        header.replace_range(corrupt_pos..corrupt_pos + 1, replacement);
+        let corrupt = format!("{}\n{}\n", lines[0], lines[1]);
+        let err = decompress_save_content(&corrupt).expect_err("checksum mismatch");
+        assert!(err.contains("checksum"));
     }
 }

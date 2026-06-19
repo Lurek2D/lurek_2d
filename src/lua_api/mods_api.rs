@@ -1,7 +1,10 @@
 //! Registers the `lurek.mods` Lua API for mod metadata, config schemas, info tables, and mod-management userdata.
 
 use super::SharedState;
-use crate::mods::{ModInfo, ModManager};
+use crate::mods::{
+    FieldType, HookPoint, ModError, ModInfo, ModLimits, ModManager, ModSandbox, SandboxListMode,
+};
+use crate::runtime::{call_function_with_policy, LuaExecutionPolicy};
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::collections::{HashMap, HashSet};
@@ -30,15 +33,280 @@ fn lua_config_schema(tbl: &LuaTable) -> Vec<(String, String, String)> {
         .unwrap_or_default()
 }
 
+fn lua_error_from_mod(error: ModError) -> LuaError {
+    LuaError::RuntimeError(error.to_string())
+}
+
+fn default_mod_limits() -> ModLimits {
+    ModLimits::default()
+}
+
+fn validate_symbol(kind: &str, value: &str, max_len: usize) -> LuaResult<()> {
+    if value.is_empty() {
+        return Err(LuaError::RuntimeError(format!("{} cannot be empty", kind)));
+    }
+    if value.len() > max_len {
+        return Err(LuaError::RuntimeError(format!(
+            "{} '{}' exceeds max length {}",
+            kind, value, max_len
+        )));
+    }
+    if !value
+        .chars()
+        .all(|ch| ch.is_ascii_alphanumeric() || matches!(ch, '_' | '-' | '.' | ':'))
+    {
+        return Err(LuaError::RuntimeError(format!(
+            "{} '{}' contains unsupported characters",
+            kind, value
+        )));
+    }
+    Ok(())
+}
+
+fn validate_version(value: &str, max_len: usize) -> LuaResult<()> {
+    if value.is_empty() {
+        return Err(LuaError::RuntimeError("version cannot be empty".into()));
+    }
+    if value.len() > max_len {
+        return Err(LuaError::RuntimeError(format!(
+            "version '{}' exceeds max length {}",
+            value, max_len
+        )));
+    }
+    if !value
+        .chars()
+        .all(|ch| ch.is_ascii_alphanumeric() || matches!(ch, '.' | '-' | '+'))
+    {
+        return Err(LuaError::RuntimeError(format!(
+            "version '{}' contains unsupported characters",
+            value
+        )));
+    }
+    Ok(())
+}
+
+fn normalize_relative_asset_path(path: &str) -> LuaResult<String> {
+    let logical = path.replace('\\', "/");
+    if logical.is_empty() {
+        return Err(LuaError::RuntimeError("asset path cannot be empty".into()));
+    }
+    let candidate = std::path::Path::new(&logical);
+    if candidate.is_absolute() {
+        return Err(LuaError::RuntimeError(
+            "asset path must be relative to the mod root".into(),
+        ));
+    }
+    let mut cleaned = Vec::new();
+    for component in candidate.components() {
+        match component {
+            std::path::Component::CurDir => {}
+            std::path::Component::Normal(part) => cleaned.push(part.to_string_lossy().into_owned()),
+            std::path::Component::ParentDir => {
+                return Err(LuaError::RuntimeError(
+                    "asset path traversal is not allowed".into(),
+                ))
+            }
+            std::path::Component::RootDir | std::path::Component::Prefix(_) => {
+                return Err(LuaError::RuntimeError(
+                    "asset path must be relative to the mod root".into(),
+                ))
+            }
+        }
+    }
+    Ok(cleaned.join("/"))
+}
+
+fn parse_hook_point(name: &str) -> LuaResult<HookPoint> {
+    HookPoint::parse_validated(name, &default_mod_limits()).map_err(lua_error_from_mod)
+}
+
+fn parse_sandbox_mode(value: &str, field: &str) -> LuaResult<SandboxListMode> {
+    SandboxListMode::from_name(value).ok_or_else(|| {
+        LuaError::RuntimeError(format!(
+            "{} must be one of allow_all, deny_by_default, allow_list",
+            field
+        ))
+    })
+}
+
+fn parse_lua_sandbox(tbl: &LuaTable) -> LuaResult<ModSandbox> {
+    let limits = default_mod_limits();
+    let mut sandbox = ModSandbox::new();
+
+    if let Ok(mode) = tbl.get::<_, String>("api_mode") {
+        sandbox.set_api_mode(parse_sandbox_mode(&mode, "sandbox.api_mode")?);
+    }
+    if let Ok(apis) = tbl.get::<_, LuaTable>("apis") {
+        for api in apis.sequence_values::<String>().flatten() {
+            validate_symbol("sandbox api", &api, limits.max_capability_len)?;
+            sandbox.allow_api(api);
+        }
+    }
+
+    if let Ok(mode) = tbl.get::<_, String>("hook_mode") {
+        sandbox.set_hook_mode(parse_sandbox_mode(&mode, "sandbox.hook_mode")?);
+    }
+    if let Ok(hooks) = tbl.get::<_, LuaTable>("hooks") {
+        for hook_name in hooks.sequence_values::<String>().flatten() {
+            sandbox.allow_hook(parse_hook_point(&hook_name)?);
+        }
+    }
+
+    if let Ok(mode) = tbl.get::<_, String>("read_mode") {
+        sandbox.set_read_mode(parse_sandbox_mode(&mode, "sandbox.read_mode")?);
+    }
+    if let Ok(read_roots) = tbl.get::<_, LuaTable>("read_roots") {
+        for root in read_roots.sequence_values::<String>().flatten() {
+            sandbox.allow_read_root(&root).map_err(lua_error_from_mod)?;
+        }
+    }
+
+    if let Ok(blocked_ops) = tbl.get::<_, LuaTable>("blocked_ops") {
+        for op in blocked_ops.sequence_values::<String>().flatten() {
+            validate_symbol("sandbox blocked op", &op, limits.max_hook_len)?;
+            sandbox.block_op(op);
+        }
+    }
+
+    if let Ok(max_memory) = tbl.get::<_, i64>("max_memory") {
+        sandbox.max_memory = usize::try_from(max_memory).map_err(|_| {
+            LuaError::RuntimeError("sandbox.max_memory must be a non-negative integer".into())
+        })?;
+    }
+    sandbox.allow_network = tbl.get::<_, bool>("allow_network").unwrap_or(false);
+    sandbox.allow_file_write = tbl.get::<_, bool>("allow_file_write").unwrap_or(false);
+
+    Ok(sandbox)
+}
+
+fn sandbox_to_lua_table<'a>(lua: &'a Lua, sandbox: &ModSandbox) -> LuaResult<LuaTable<'a>> {
+    let table = lua.create_table()?;
+    table.set("api_mode", sandbox.api_mode().as_str())?;
+    table.set("hook_mode", sandbox.hook_mode().as_str())?;
+    table.set("read_mode", sandbox.read_mode().as_str())?;
+    table.set("allow_network", sandbox.allow_network)?;
+    table.set("allow_file_write", sandbox.allow_file_write)?;
+    table.set("max_memory", sandbox.max_memory as i64)?;
+
+    let apis = lua.create_table()?;
+    let mut api_values: Vec<String> = sandbox.allowed_apis().cloned().collect();
+    api_values.sort();
+    for (index, api) in api_values.into_iter().enumerate() {
+        apis.set(index + 1, api)?;
+    }
+    table.set("apis", apis)?;
+
+    let hooks = lua.create_table()?;
+    let mut hook_values: Vec<String> = sandbox.allowed_hooks().map(HookPoint::as_str).collect();
+    hook_values.sort();
+    for (index, hook) in hook_values.into_iter().enumerate() {
+        hooks.set(index + 1, hook)?;
+    }
+    table.set("hooks", hooks)?;
+
+    let read_roots = lua.create_table()?;
+    for (index, root) in sandbox.allowed_read_roots().iter().enumerate() {
+        read_roots.set(index + 1, root.to_string_lossy().into_owned())?;
+    }
+    table.set("read_roots", read_roots)?;
+
+    let blocked_ops = lua.create_table()?;
+    let mut blocked_values: Vec<String> = sandbox.blocked_ops().cloned().collect();
+    blocked_values.sort();
+    for (index, op) in blocked_values.into_iter().enumerate() {
+        blocked_ops.set(index + 1, op)?;
+    }
+    table.set("blocked_ops", blocked_ops)?;
+
+    Ok(table)
+}
+
+fn restore_mod_context(
+    state: &Rc<RefCell<SharedState>>,
+    previous_mod_id: Option<String>,
+    previous_sandbox: Option<ModSandbox>,
+) {
+    state
+        .borrow_mut()
+        .restore_active_mod_context(previous_mod_id, previous_sandbox);
+}
+
+fn call_hook_with_sandbox<'lua>(
+    lua: &'lua Lua,
+    state: &Rc<RefCell<SharedState>>,
+    mod_id: &str,
+    sandbox: Option<ModSandbox>,
+    hook_name: &str,
+    function: LuaFunction<'lua>,
+    args: LuaMultiValue<'lua>,
+) -> LuaResult<LuaMultiValue<'lua>> {
+    let policy = LuaExecutionPolicy::with_timeout(state.borrow().lua_callback_timeout_ms);
+    let Some(sandbox) = sandbox else {
+        return call_function_with_policy(lua, hook_name, function, args, policy);
+    };
+    let hook = parse_hook_point(hook_name)?;
+    if !sandbox.is_hook_allowed(&hook) {
+        return Err(lua_error_from_mod(ModError::SandboxDenied {
+            operation: format!("hook '{}'", hook_name),
+            detail: format!("mod '{}' is not allowed to execute this hook", mod_id),
+        }));
+    }
+
+    let (previous_mod_id, previous_sandbox) = state.borrow().active_mod_context();
+    state
+        .borrow_mut()
+        .set_active_mod_sandbox(mod_id.to_string(), sandbox.clone());
+
+    let previous_limit = match lua.set_memory_limit(sandbox.max_memory) {
+        Ok(limit) => Some(limit),
+        Err(LuaError::MemoryLimitNotAvailable) if sandbox.max_memory == 0 => None,
+        Err(LuaError::MemoryLimitNotAvailable) => {
+            restore_mod_context(state, previous_mod_id, previous_sandbox);
+            return Err(LuaError::RuntimeError(format!(
+                "mod '{}' requires sandbox.max_memory enforcement, but Lua memory limits are unavailable",
+                mod_id
+            )));
+        }
+        Err(error) => {
+            restore_mod_context(state, previous_mod_id, previous_sandbox);
+            return Err(error);
+        }
+    };
+
+    let call_result = call_function_with_policy(lua, hook_name, function, args, policy);
+    let restore_limit_result = match previous_limit {
+        Some(limit) => lua.set_memory_limit(limit).map(|_| ()),
+        None => Ok(()),
+    };
+    restore_mod_context(state, previous_mod_id, previous_sandbox);
+    restore_limit_result?;
+    call_result
+}
+
 /// Converts a Lua mod metadata table into a Rust `ModInfo` value.
 fn mod_info_from_table(tbl: &LuaTable) -> LuaResult<ModInfo> {
+    let limits = default_mod_limits();
     let id: String = tbl
         .get::<_, String>("id")
         .map_err(|_| LuaError::RuntimeError("newMod requires 'id' field".into()))?;
+    validate_symbol("mod id", &id, limits.max_id_len)?;
     let dependencies = lua_string_sequence(tbl, "dependencies");
+    for dependency in &dependencies {
+        validate_symbol("dependency id", dependency, limits.max_id_len)?;
+    }
     let capabilities = lua_string_sequence(tbl, "capabilities");
+    for capability in &capabilities {
+        validate_symbol("capability", capability, limits.max_capability_len)?;
+    }
     let config_schema = lua_config_schema(tbl);
-    let asset_paths = lua_string_sequence(tbl, "assets");
+    for (key, type_hint, _) in &config_schema {
+        validate_symbol("config_schema key", key, limits.max_id_len)?;
+        FieldType::parse_config_type_name(type_hint).map_err(LuaError::RuntimeError)?;
+    }
+    let asset_paths = lua_string_sequence(tbl, "assets")
+        .into_iter()
+        .map(|path| normalize_relative_asset_path(&path))
+        .collect::<LuaResult<Vec<_>>>()?;
     let mut info = ModInfo::from_parts(
         id,
         tbl.get::<_, String>("name").ok(),
@@ -49,10 +317,16 @@ fn mod_info_from_table(tbl: &LuaTable) -> LuaResult<ModInfo> {
         dependencies,
     );
     info.api_version = tbl.get::<_, String>("api_version").ok();
+    if let Some(api_version) = &info.api_version {
+        validate_version(api_version, limits.max_version_len)?;
+    }
     info.capabilities = capabilities;
     info.config_schema = config_schema;
     info.asset_paths = asset_paths;
     info.signature = tbl.get::<_, String>("signature").ok();
+    if let Ok(sandbox_tbl) = tbl.get::<_, LuaTable>("sandbox") {
+        info.sandbox = Some(parse_lua_sandbox(&sandbox_tbl)?);
+    }
     Ok(info)
 }
 /// Converts a Rust `ModInfo` value into a Lua table.
@@ -119,6 +393,9 @@ fn mod_info_to_table<'a>(lua: &'a Lua, info: &ModInfo) -> LuaResult<LuaTable<'a>
     if let Some(ref signature) = info.signature {
         /// Performs the 'signature' operation.
         t.set("signature", signature.as_str())?;
+    }
+    if let Some(sandbox) = &info.sandbox {
+        t.set("sandbox", sandbox_to_lua_table(lua, sandbox)?)?;
     }
     let deps = lua.create_table()?;
     for (i, dep) in info.dependencies.iter().enumerate() {
@@ -226,6 +503,7 @@ impl LuaUserData for LuaMod {
         /// Sets the required API version string.
         /// @param | api_version | string | API version string.
         methods.add_method_mut("setApiVersion", |_, this, api_version: String| {
+            validate_version(&api_version, default_mod_limits().max_version_len)?;
             this.inner.api_version = Some(api_version);
             Ok(())
         });
@@ -239,7 +517,12 @@ impl LuaUserData for LuaMod {
         /// Sets capability names from an array table.
         /// @param | caps | table | Array table of capability names.
         methods.add_method_mut("setCapabilities", |_, this, caps: LuaTable| {
-            this.inner.capabilities = caps.sequence_values::<String>().flatten().collect();
+            let limits = default_mod_limits();
+            let values: Vec<String> = caps.sequence_values::<String>().flatten().collect();
+            for capability in &values {
+                validate_symbol("capability", capability, limits.max_capability_len)?;
+            }
+            this.inner.capabilities = values;
             Ok(())
         });
         // -- getConfigSchema --
@@ -266,6 +549,7 @@ impl LuaUserData for LuaMod {
         /// Sets config schema entries from a Lua table.
         /// @param | schema | table | Array table of schema entries.
         methods.add_method_mut("setConfigSchema", |_, this, schema: LuaTable| {
+            let limits = default_mod_limits();
             this.inner.config_schema = schema
                 .sequence_values::<LuaTable>()
                 .flatten()
@@ -275,7 +559,13 @@ impl LuaUserData for LuaMod {
                     let default: String = entry.get("default").unwrap_or_default();
                     Some((key, type_hint, default))
                 })
-                .collect();
+                .map(|(key, type_hint, default)| {
+                    validate_symbol("config_schema key", &key, limits.max_id_len)?;
+                    FieldType::parse_config_type_name(&type_hint)
+                        .map_err(LuaError::RuntimeError)?;
+                    Ok((key, type_hint, default))
+                })
+                .collect::<LuaResult<Vec<_>>>()?;
             Ok(())
         });
         // -- setHook --
@@ -285,6 +575,7 @@ impl LuaUserData for LuaMod {
         methods.add_method_mut(
             "setHook",
             |lua, this, (name, func): (String, LuaFunction)| {
+                parse_hook_point(&name)?;
                 if let Some(old_key) = this.hooks.remove(&name) {
                     lua.remove_registry_value(old_key)?;
                 }
@@ -321,6 +612,64 @@ impl LuaUserData for LuaMod {
                 t.set(i + 1, name.as_str())?;
             }
             Ok(t)
+        });
+        // -- setSandbox --
+        /// Sets the sandbox policy used by `runHook`.
+        /// @param | sandbox | table | Sandbox configuration table.
+        methods.add_method_mut("setSandbox", |_, this, sandbox: LuaTable| {
+            this.inner.sandbox = Some(parse_lua_sandbox(&sandbox)?);
+            Ok(())
+        });
+        // -- getSandbox --
+        /// Returns the configured sandbox policy.
+        /// @return | table | Sandbox configuration table, or nil when unset.
+        methods.add_method("getSandbox", |lua, this, ()| {
+            if let Some(sandbox) = &this.inner.sandbox {
+                Ok(LuaValue::Table(sandbox_to_lua_table(lua, sandbox)?))
+            } else {
+                Ok(LuaValue::Nil)
+            }
+        });
+        // -- runHook --
+        /// Executes one registered hook under the mod's configured sandbox policy.
+        /// @param | name | string | Hook name.
+        /// @return | any | Hook return values.
+        methods.add_method("runHook", |lua, this, args: LuaMultiValue| {
+            let mut values = args.into_iter();
+            let hook_name = match values.next() {
+                Some(LuaValue::String(name)) => name.to_str()?.to_string(),
+                Some(_) => {
+                    return Err(LuaError::RuntimeError(
+                        "runHook requires a string hook name".into(),
+                    ))
+                }
+                None => {
+                    return Err(LuaError::RuntimeError(
+                        "runHook requires at least a hook name".into(),
+                    ))
+                }
+            };
+            let Some(key) = this.hooks.get(&hook_name) else {
+                return Err(LuaError::RuntimeError(format!(
+                    "hook '{}' is not registered for mod '{}'",
+                    hook_name, this.inner.id
+                )));
+            };
+            let function = lua.registry_value::<LuaFunction>(key)?;
+            let remaining: LuaMultiValue = values.collect();
+            let state = lua
+                .app_data_ref::<Rc<RefCell<SharedState>>>()
+                .ok_or_else(|| LuaError::RuntimeError("missing SharedState app data".into()))?
+                .clone();
+            call_hook_with_sandbox(
+                lua,
+                &state,
+                &this.inner.id,
+                this.inner.sandbox.clone(),
+                &hook_name,
+                function,
+                remaining,
+            )
         });
         // -- setConfig --
         /// Stores a Lua config value for this mod.

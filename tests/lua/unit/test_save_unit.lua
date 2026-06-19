@@ -310,6 +310,18 @@ describe("SaveManager regression coverage", function()
         sm:markDirty()
         expect_equal(nil, sm:update(1.0))
     end)
+
+    -- @covers LSaveManager:update
+    it("update ignores non-finite and negative delta time values", function()
+        local sm = lurek.save.newSaveManager()
+
+        sm:enableAutoSave(0.5, "autosave_slot")
+        sm:markDirty()
+
+        expect_equal(nil, sm:update(0 / 0))
+        expect_equal(nil, sm:update(-1.0))
+        expect_equal("autosave_slot", sm:update(0.5))
+    end)
 end)
 
 -- @describe save strict: LSaveManager addMigration/type/typeOf

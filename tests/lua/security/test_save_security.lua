@@ -84,12 +84,65 @@ describe("validation: savegame edge cases", function()
         expect_false(triggered, "not ready after 1 second")
     end)
 
+    -- @security LSaveManager:save
+    it("save rejects invalid slot names before writing files", function()
+        local mgr = new_manager()
+        mgr:register("player", function() return { hp = 100 } end, function(_) end)
+        expect_error(function()
+            mgr:save("../evil")
+        end)
+        expect_false(mgr:exists("../evil"), "invalid slot should not be treated as persisted")
+    end)
+
+    -- @security LSaveManager:enableAutoSave
+    it("enableAutoSave rejects invalid interval values and slot names", function()
+        local mgr = new_manager()
+        expect_error(function()
+            mgr:enableAutoSave(0, "auto")
+        end)
+        expect_error(function()
+            mgr:enableAutoSave(-1, "auto")
+        end)
+        expect_error(function()
+            mgr:enableAutoSave(0 / 0, "auto")
+        end)
+        expect_error(function()
+            mgr:enableAutoSave(1, "../evil")
+        end)
+    end)
+
     -- @security LSaveManager:update
     it("update returns false before the auto-save interval elapses", function()
         local mgr = new_manager()
         mgr:enableAutoSave(30.0, "auto")
         local triggered = mgr:update(1.0)
         expect_false(triggered, "not ready after 1 second")
+    end)
+
+    -- @security LSaveManager:load
+    it("load falls back to the backup slot when the primary payload is corrupt", function()
+        local slot = "security_backup_" .. tostring(os.time()) .. "_" .. tostring(math.floor(os.clock() * 1000000))
+        local mgr = new_manager()
+        local hp = 10
+
+        mgr:register("player", function()
+            return { hp = hp }
+        end, function(data)
+            hp = data.hp
+        end)
+
+        mgr:save(slot)
+        hp = 20
+        mgr:save(slot)
+
+        lurek.filesystem.write("save/slot_" .. slot .. ".sav", "return { broken = }")
+
+        hp = 0
+        local ok, err = mgr:load(slot)
+        expect_true(ok, err or "backup recovery should succeed")
+        expect_equal(10, hp, "backup payload restored the earlier save")
+
+        mgr:delete(slot)
     end)
 
     -- @security LSaveManager:disableAutoSave

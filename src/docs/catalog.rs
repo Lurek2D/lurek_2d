@@ -1,33 +1,63 @@
 //! `src/docs/catalog.rs` owns the in-memory catalog that stores, groups, searches, merges, and clears doc entries.
 //! It provides the collection boundary over `DocEntry`, preserving insertion order while exposing module and kind queries.
-//! Merge and lookup behavior live here so export and reporting stages can share one consistent documentation container.
+//! Merge, duplicate handling, and derived lookup caches live here so export and reporting stages can share one consistent documentation container.
 //! Read it when catalog search, deduplication, module grouping, or entry aggregation behavior needs to change.
 
 use crate::docs::entry::DocEntry;
-/// Hold the in-memory list of documentation entries collected from source data.
+use crate::docs::error::{DocsError, DocsResult};
+use std::collections::HashMap;
+
+/// Search behavior options for catalog queries that may need result caps or case-sensitive matching.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub struct SearchOptions {
+    /// Cap the number of returned matches when a caller only needs the top subset.
+    pub max_results: Option<usize>,
+    /// Switch to exact-case substring matching instead of cached lowercase search text.
+    pub case_sensitive: bool,
+}
+
+/// Hold the in-memory list of documentation entries plus derived lookup caches.
+#[derive(Debug, Default, Clone)]
 pub struct Catalog {
     /// Preserve all collected entries in insertion order for export stages.
     entries: Vec<DocEntry>,
+    /// Cache entry positions keyed by qualified name for O(1) point lookups.
+    entry_index: HashMap<String, usize>,
+    /// Cache normalized search text so repeated case-insensitive queries avoid repeated allocation.
+    normalized_search: Vec<String>,
 }
+
 impl Catalog {
     /// Create an empty catalog and return it for entry aggregation.
     pub fn new() -> Self {
-        Self {
-            entries: Vec::new(),
-        }
+        Self::default()
     }
-    /// Build a catalog from a slice and return a cloned copy of each entry.
+
+    /// Build a catalog from a slice and return a de-duplicated copy of each entry.
     pub fn from_entries(entries: &[DocEntry]) -> Self {
-        let mut cat = Self::new();
-        for e in entries {
-            cat.add(e.clone());
+        let mut catalog = Self::new();
+        for entry in entries {
+            catalog.add(entry.clone());
         }
-        cat
+        catalog
     }
-    /// Append one entry to the catalog and return unit.
+
+    /// Append or replace one entry by qualified name and return unit.
     pub fn add(&mut self, entry: DocEntry) {
-        self.entries.push(entry);
+        self.insert_or_replace(entry);
     }
+
+    /// Append one entry only when its qualified name is new, else return a duplicate error.
+    pub fn add_checked(&mut self, entry: DocEntry) -> DocsResult<()> {
+        if self.entry_index.contains_key(&entry.qualified_name) {
+            return Err(DocsError::DuplicateQualifiedName {
+                qualified_name: entry.qualified_name,
+            });
+        }
+        self.push_new_entry(entry);
+        Ok(())
+    }
+
     /// Return sorted unique module names referenced by all stored entries.
     pub fn modules(&self) -> Vec<&str> {
         let mut names: Vec<&str> = self.entries.iter().map(|e| e.module.as_str()).collect();
@@ -35,61 +65,111 @@ impl Catalog {
         names.dedup();
         names
     }
+
     /// Return an immutable slice of all entries in insertion order.
     pub fn all_entries(&self) -> &[DocEntry] {
         &self.entries
     }
+
     /// Return all entries that belong to the requested module name.
     pub fn entries_for_module(&self, module: &str) -> Vec<&DocEntry> {
-        self.entries.iter().filter(|e| e.module == module).collect()
-    }
-    /// Return the entry matching a fully qualified name or None when missing.
-    pub fn get_entry(&self, qualified_name: &str) -> Option<&DocEntry> {
         self.entries
             .iter()
-            .find(|e| e.qualified_name == qualified_name)
+            .filter(|entry| entry.module == module)
+            .collect()
     }
+
+    /// Return the entry matching a fully qualified name or None when missing.
+    pub fn get_entry(&self, qualified_name: &str) -> Option<&DocEntry> {
+        self.entry_index
+            .get(qualified_name)
+            .and_then(|index| self.entries.get(*index))
+    }
+
     /// Return the number of stored entries.
     pub fn entry_count(&self) -> usize {
         self.entries.len()
     }
-    /// Return entries whose lowercase name or description contains the query.
+
+    /// Return entries whose cached search text contains the query using default search behavior.
     pub fn search(&self, query: &str) -> Vec<&DocEntry> {
-        let q = query.to_lowercase();
-        self.entries
-            .iter()
-            .filter(|e| {
-                e.name.to_lowercase().contains(&q) || e.description.to_lowercase().contains(&q)
-            })
-            .collect()
+        self.search_with_options(query, SearchOptions::default())
     }
-    /// Return entries with a kind exactly equal to the provided value.
-    pub fn filter_by_kind(&self, kind: &str) -> Vec<&DocEntry> {
-        self.entries.iter().filter(|e| e.kind == kind).collect()
-    }
-    /// Merge this catalog with another and return de-duplicated entries by qualified name.
-    pub fn merge(&self, other: &Catalog) -> Catalog {
-        let mut merged = self.entries.clone();
-        for entry in &other.entries {
-            if let Some(existing) = merged
-                .iter_mut()
-                .find(|candidate| candidate.qualified_name == entry.qualified_name)
-            {
-                *existing = entry.clone();
+
+    /// Return entries whose names, qualified names, or descriptions contain the query under the given options.
+    pub fn search_with_options(&self, query: &str, options: SearchOptions) -> Vec<&DocEntry> {
+        let limit = options.max_results.unwrap_or(usize::MAX);
+        if limit == 0 {
+            return Vec::new();
+        }
+        let query_text = if options.case_sensitive {
+            query.to_string()
+        } else {
+            query.to_lowercase()
+        };
+        let mut matches = Vec::new();
+        for (index, entry) in self.entries.iter().enumerate() {
+            let is_match = if query_text.is_empty() {
+                true
+            } else if options.case_sensitive {
+                entry.name.contains(&query_text)
+                    || entry.qualified_name.contains(&query_text)
+                    || entry.description.contains(&query_text)
             } else {
-                merged.push(entry.clone());
+                self.normalized_search[index].contains(&query_text)
+            };
+            if is_match {
+                matches.push(entry);
+                if matches.len() >= limit {
+                    break;
+                }
             }
         }
-        Catalog { entries: merged }
+        matches
     }
+
+    /// Return entries with a kind exactly equal to the provided value.
+    pub fn filter_by_kind(&self, kind: &str) -> Vec<&DocEntry> {
+        self.entries
+            .iter()
+            .filter(|entry| entry.kind == kind)
+            .collect()
+    }
+
+    /// Merge this catalog with another and return de-duplicated entries by qualified name.
+    pub fn merge(&self, other: &Catalog) -> Catalog {
+        let mut merged = self.clone();
+        for entry in other.all_entries() {
+            merged.add(entry.clone());
+        }
+        merged
+    }
+
     /// Remove all stored entries and return unit.
     pub fn clear(&mut self) {
         self.entries.clear();
+        self.entry_index.clear();
+        self.normalized_search.clear();
     }
-}
-/// Provide a default empty catalog for callers that rely on Default.
-impl Default for Catalog {
-    fn default() -> Self {
-        Self::new()
+
+    /// Insert an entry, replacing the existing slot when the qualified name already exists.
+    fn insert_or_replace(&mut self, entry: DocEntry) {
+        if let Some(existing_index) = self.entry_index.get(&entry.qualified_name).copied() {
+            self.entries[existing_index] = entry;
+            self.normalized_search[existing_index] =
+                self.entries[existing_index].normalized_search_text();
+            return;
+        }
+        self.push_new_entry(entry);
+    }
+
+    /// Append a new entry and update the lookup caches in lockstep.
+    fn push_new_entry(&mut self, entry: DocEntry) {
+        let normalized = entry.normalized_search_text();
+        let qualified_name = entry.qualified_name.clone();
+        let index = self.entries.len();
+        self.entries.push(entry);
+        self.normalized_search.push(normalized);
+        self.entry_index.insert(qualified_name, index);
     }
 }

@@ -3,7 +3,8 @@
 //! Ordered maps and JSON-specific success logging live here so structure and instrumentation stay format-local.
 //! Open this file when JSON mapping rules change; codec dispatch and Lua bridging remain in sibling modules.
 
-use super::lua_table::SerialValue;
+use super::codec::SerializeLimits;
+use super::lua_table::{validate_serial_value, SerialValue};
 use crate::log_msg;
 use crate::runtime::log_messages::{SR01_JSON_OK, SR03_JSON_ENC};
 use indexmap::IndexMap;
@@ -13,10 +14,15 @@ use serde_json::Value as JsonValue;
 pub fn from_json(s: &str) -> Result<SerialValue, String> {
     let v: JsonValue = serde_json::from_str(s).map_err(|e| format!("JSON parse error: {e}"))?;
     log_msg!(debug, SR01_JSON_OK);
-    Ok(json_to_serial(v))
+    let serial = json_to_serial(v);
+    validate_serial_value(&serial, &SerializeLimits::default(), "from_json")
+        .map_err(|err| err.to_string())?;
+    Ok(serial)
 }
 /// Encode a `SerialValue` tree to a JSON string.
 pub fn to_json(val: &SerialValue, pretty: bool) -> Result<String, String> {
+    validate_serial_value(val, &SerializeLimits::default(), "to_json")
+        .map_err(|err| err.to_string())?;
     let jv = serial_to_json(val);
     let result = if pretty {
         serde_json::to_string_pretty(&jv).map_err(|e| format!("JSON encode error: {e}"))

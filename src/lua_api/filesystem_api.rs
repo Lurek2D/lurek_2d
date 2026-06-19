@@ -22,6 +22,30 @@ fn ensure_save_write_path(path: &str) -> LuaResult<()> {
     Ok(())
 }
 
+fn enforce_mod_fs_read(state: &Rc<RefCell<SharedState>>, path: &str) -> LuaResult<()> {
+    let shared = state.borrow();
+    shared
+        .ensure_mod_api_allowed("filesystem")
+        .map_err(LuaError::external)?;
+    shared
+        .ensure_mod_file_read(path)
+        .map_err(LuaError::external)
+}
+
+fn enforce_mod_fs_write(
+    state: &Rc<RefCell<SharedState>>,
+    path: &str,
+    operation: &str,
+) -> LuaResult<()> {
+    let shared = state.borrow();
+    shared
+        .ensure_mod_api_allowed("filesystem")
+        .map_err(LuaError::external)?;
+    shared
+        .ensure_mod_file_write(path, operation)
+        .map_err(LuaError::external)
+}
+
 /// Provides Lua methods for inspecting loaded file data.
 impl LuaUserData for LuaFileData {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
@@ -259,6 +283,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "read",
         lua.create_function(move |_, path: String| {
+            enforce_mod_fs_read(&s, &path)?;
             s.borrow().fs.read_string(&path).map_err(LuaError::external)
         })?,
     )?;
@@ -271,6 +296,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         "write",
         lua.create_function(move |_, (path, data): (String, String)| {
             ensure_save_write_path(&path)?;
+            enforce_mod_fs_write(&s, &path, "filesystem.write")?;
             s.borrow()
                 .fs
                 .write_string(&path, &data)
@@ -285,6 +311,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "readJson",
         lua.create_function(move |_, path: String| {
+            enforce_mod_fs_read(&s, &path)?;
             s.borrow().fs.read_json(&path).map_err(LuaError::external)
         })?,
     )?;
@@ -297,6 +324,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         "writeJson",
         lua.create_function(move |_, (path, json): (String, String)| {
             ensure_save_write_path(&path)?;
+            enforce_mod_fs_write(&s, &path, "filesystem.writeJson")?;
             s.borrow()
                 .fs
                 .write_json(&path, &json)
@@ -312,6 +340,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "readOrWriteJson",
         lua.create_function(move |_, (path, default_json): (String, String)| {
+            enforce_mod_fs_read(&s, &path)?;
+            enforce_mod_fs_write(&s, &path, "filesystem.readOrWriteJson")?;
             s.borrow()
                 .fs
                 .read_or_write_json(&path, &default_json)
@@ -326,6 +356,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "readBytes",
         lua.create_function(move |lua, path: String| {
+            enforce_mod_fs_read(&s, &path)?;
             let bytes = s
                 .borrow()
                 .fs
@@ -343,6 +374,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         "writeBytes",
         lua.create_function(move |_, (path, data): (String, LuaString)| {
             ensure_save_write_path(&path)?;
+            enforce_mod_fs_write(&s, &path, "filesystem.writeBytes")?;
             s.borrow()
                 .fs
                 .write_bytes(&path, data.as_bytes().as_ref())
@@ -356,7 +388,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | boolean | True when the path exists.
     tbl.set(
         "exists",
-        lua.create_function(move |_, path: String| Ok(s.borrow().fs.exists(&path)))?,
+        lua.create_function(move |_, path: String| {
+            enforce_mod_fs_read(&s, &path)?;
+            Ok(s.borrow().fs.exists(&path))
+        })?,
     )?;
     let s = state.clone();
     // -- append --
@@ -367,6 +402,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         "append",
         lua.create_function(move |_, (path, data): (String, String)| {
             ensure_save_write_path(&path)?;
+            enforce_mod_fs_write(&s, &path, "filesystem.append")?;
             s.borrow()
                 .fs
                 .append_string(&path, &data)
@@ -382,6 +418,12 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "openFile",
         lua.create_function(move |_, (path, mode): (String, String)| {
+            if mode.contains('w') || mode.contains('a') || mode.contains('+') {
+                ensure_save_write_path(&path)?;
+                enforce_mod_fs_write(&s, &path, "filesystem.openFile")?;
+            } else {
+                enforce_mod_fs_read(&s, &path)?;
+            }
             let handle = s
                 .borrow()
                 .fs
@@ -400,6 +442,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "getDirectoryItems",
         lua.create_function(move |_, path: String| {
+            enforce_mod_fs_read(&s, &path)?;
             s.borrow()
                 .fs
                 .get_directory_items(&path)
@@ -413,7 +456,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | boolean | True when the path is a file.
     tbl.set(
         "isFile",
-        lua.create_function(move |_, path: String| Ok(s.borrow().fs.is_file(&path)))?,
+        lua.create_function(move |_, path: String| {
+            enforce_mod_fs_read(&s, &path)?;
+            Ok(s.borrow().fs.is_file(&path))
+        })?,
     )?;
     let s = state.clone();
     // -- isDirectory --
@@ -422,7 +468,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | boolean | True when the path is a directory.
     tbl.set(
         "isDirectory",
-        lua.create_function(move |_, path: String| Ok(s.borrow().fs.is_directory(&path)))?,
+        lua.create_function(move |_, path: String| {
+            enforce_mod_fs_read(&s, &path)?;
+            Ok(s.borrow().fs.is_directory(&path))
+        })?,
     )?;
     let s = state.clone();
     // -- createDirectory --
@@ -431,6 +480,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "createDirectory",
         lua.create_function(move |_, path: String| {
+            ensure_save_write_path(&path)?;
+            enforce_mod_fs_write(&s, &path, "filesystem.createDirectory")?;
             s.borrow()
                 .fs
                 .create_directory(&path)
@@ -444,6 +495,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "remove",
         lua.create_function(move |_, path: String| {
+            ensure_save_write_path(&path)?;
+            enforce_mod_fs_write(&s, &path, "filesystem.remove")?;
             s.borrow().fs.remove(&path).map_err(LuaError::external)
         })?,
     )?;
@@ -458,8 +511,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @field | readonly | boolean | Whether the file is read-only.
     tbl.set(
         "getInfo",
-        lua.create_function(
-            move |lua, path: String| match s.borrow().fs.get_info(&path) {
+        lua.create_function(move |lua, path: String| {
+            enforce_mod_fs_read(&s, &path)?;
+            match s.borrow().fs.get_info(&path) {
                 Ok(info) => {
                     let t = lua.create_table()?;
                     /// Performs the 'type' operation.
@@ -473,8 +527,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                     Ok(Some(t))
                 }
                 Err(_) => Ok(None),
-            },
-        )?,
+            }
+        })?,
     )?;
     let s = state.clone();
     // -- getSource --
@@ -541,6 +595,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "lines",
         lua.create_function(move |lua, path: String| {
+            enforce_mod_fs_read(&s, &path)?;
             let lines = s
                 .borrow()
                 .fs
@@ -583,6 +638,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         "writeAsync",
         lua.create_function(move |_, (path, data): (String, LuaString)| {
             ensure_save_write_path(&path)?;
+            enforce_mod_fs_write(&s, &path, "filesystem.writeAsync")?;
             s.borrow_mut()
                 .request_async_write(&path, data.as_bytes().to_vec())
                 .map_err(LuaError::external)
@@ -630,6 +686,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "load",
         lua.create_function(move |ctx, path: String| {
+            enforce_mod_fs_read(&s, &path)?;
             let bytes = s
                 .borrow()
                 .fs
@@ -647,6 +704,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "newFileData",
         lua.create_function(move |_, path: String| {
+            enforce_mod_fs_read(&s, &path)?;
             let bytes = s
                 .borrow()
                 .fs
@@ -665,6 +723,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "copy",
         lua.create_function(move |_, (src, dst): (String, String)| {
+            enforce_mod_fs_read(&s, &src)?;
+            ensure_save_write_path(&dst)?;
+            enforce_mod_fs_write(&s, &dst, "filesystem.copy")?;
             s.borrow()
                 .fs
                 .copy_file(&src, &dst)
@@ -679,6 +740,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "move",
         lua.create_function(move |_, (src, dst): (String, String)| {
+            ensure_save_write_path(&src)?;
+            ensure_save_write_path(&dst)?;
+            enforce_mod_fs_write(&s, &src, "filesystem.move")?;
+            enforce_mod_fs_write(&s, &dst, "filesystem.move")?;
             s.borrow()
                 .fs
                 .move_file(&src, &dst)
@@ -692,6 +757,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "removeDir",
         lua.create_function(move |_, path: String| {
+            ensure_save_write_path(&path)?;
+            enforce_mod_fs_write(&s, &path, "filesystem.removeDir")?;
             s.borrow().fs.remove_dir(&path).map_err(LuaError::external)
         })?,
     )?;
@@ -703,6 +770,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "glob",
         lua.create_function(move |lua, pattern: String| {
+            enforce_mod_fs_read(&s, &pattern)?;
             let paths = s.borrow().fs.glob(&pattern).map_err(LuaError::external)?;
             let tbl = lua.create_table()?;
             for (i, p) in paths.iter().enumerate() {
@@ -719,6 +787,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "listRecursive",
         lua.create_function(move |lua, path: String| {
+            enforce_mod_fs_read(&s, &path)?;
             let paths = s
                 .borrow()
                 .fs
@@ -742,6 +811,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "stat",
         lua.create_function(move |lua, path: String| {
+            enforce_mod_fs_read(&s, &path)?;
             let (size, is_file, is_dir) = s.borrow().fs.stat(&path).map_err(LuaError::external)?;
             let t = lua.create_table()?;
             /// Performs the 'size' operation.
@@ -761,6 +831,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "createTempFile",
         lua.create_function(move |_, prefix: Option<String>| {
+            enforce_mod_fs_write(&s, "save/", "filesystem.createTempFile")?;
             let prefix = prefix.as_deref().unwrap_or("tmp");
             s.borrow()
                 .fs
@@ -775,6 +846,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "mkdir",
         lua.create_function(move |_, path: String| {
+            enforce_mod_fs_write(&s, &path, "filesystem.mkdir")?;
             let abs = s.borrow().fs.base_dir().join(&path);
             std::fs::create_dir_all(&abs)
                 .map_err(|e| LuaError::RuntimeError(format!("mkdir '{}': {}", path, e)))
@@ -788,6 +860,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "toAbsolutePath",
         lua.create_function(move |_, path: String| {
+            enforce_mod_fs_read(&s, &path)?;
             let abs = s.borrow().fs.base_dir().join(&path);
             Ok(abs.to_string_lossy().to_string())
         })?,

@@ -7,15 +7,15 @@
 
 use crate::lua_api::create_headless_vm;
 use crate::repl::value_to_string;
-use crate::runtime::{Config, EngineError, EngineResult, SharedState};
+use crate::runtime::{
+    call_function_with_policy, Config, EngineError, EngineResult, LuaExecutionPolicy, SharedState,
+};
 use mlua::prelude::*;
-use mlua::HookTriggers;
 use std::cell::RefCell;
 use std::io::{self, Write};
 use std::path::{Path, PathBuf};
 use std::process::ExitCode;
 use std::rc::Rc;
-use std::time::{Duration, Instant};
 
 #[derive(Debug, Clone)]
 /// Inputs required to run the headless runtime once.
@@ -172,46 +172,12 @@ where
     let Ok(function) = lurek.get::<_, LuaFunction>(name) else {
         return Ok(());
     };
-    let result = if let Some(ms) = timeout_ms.filter(|value| *value > 0.0) {
-        call_with_timeout(lua, name, function, args, ms)
-    } else {
-        function.call::<_, ()>(args)
-    };
-    result.map_err(|error| EngineError::LuaError(format!("lurek.{}: {}", name, error)))
-}
-
-/// Call a Lua function and abort it with an error if execution exceeds the timeout.
-fn call_with_timeout<'lua, Args>(
-    lua: &'lua Lua,
-    name: &str,
-    function: LuaFunction<'lua>,
-    args: Args,
-    timeout_ms: f32,
-) -> LuaResult<()>
-where
-    Args: IntoLuaMulti<'lua>,
-{
-    let timeout = Duration::from_secs_f64((timeout_ms as f64 / 1000.0).max(0.000_001));
-    let deadline = Instant::now() + timeout;
-    let callback_name = name.to_string();
-    lua.set_hook(
-        HookTriggers {
-            on_calls: false,
-            on_returns: false,
-            every_line: false,
-            every_nth_instruction: Some(20_000),
-        },
-        move |_, _| {
-            if Instant::now() >= deadline {
-                return Err(mlua::Error::RuntimeError(format!(
-                    "lurek.{}() exceeded callback timeout ({:.2} ms)",
-                    callback_name, timeout_ms
-                )));
-            }
-            Ok(())
-        },
+    let result = call_function_with_policy(
+        lua,
+        name,
+        function,
+        args,
+        LuaExecutionPolicy::with_timeout(timeout_ms),
     );
-    let result = function.call::<_, ()>(args);
-    lua.remove_hook();
-    result
+    result.map_err(|error| EngineError::LuaError(format!("lurek.{}: {}", name, error)))
 }

@@ -17,6 +17,7 @@ use crate::input::{
 };
 use crate::light::LightWorld;
 use crate::midi::MidiState;
+use crate::mods::ModSandbox;
 use crate::parallax::ParallaxLayer;
 use crate::particle::ParticleSystem;
 use crate::province::registry::ProvinceRegistry;
@@ -370,6 +371,10 @@ pub struct SharedState {
     pub event_queue: EventQueue,
     /// Stores filesystem_identity state.
     pub filesystem_identity: String,
+    /// Currently active mod id for sandboxed Lua callbacks, when present.
+    pub active_mod_id: Option<String>,
+    /// Currently active mod sandbox policy for sandboxed Lua callbacks, when present.
+    pub active_mod_sandbox: Option<ModSandbox>,
     /// Stores clock state.
     pub clock: Clock,
     /// Stores debug_overlay_enabled state.
@@ -500,6 +505,8 @@ impl SharedState {
             window: None,
             event_queue: EventQueue::new(),
             filesystem_identity: String::new(),
+            active_mod_id: None,
+            active_mod_sandbox: None,
             clock: Clock::new(),
             debug_overlay_enabled: false,
             last_error: None,
@@ -626,6 +633,8 @@ impl SharedState {
     }
     /// Submit an asynchronous file read and return a poll handle.
     pub fn request_async_load(&mut self, path: &str) -> crate::runtime::error::EngineResult<u64> {
+        self.ensure_mod_api_allowed("filesystem")?;
+        self.ensure_mod_file_read(path)?;
         let resolved = self.fs.resolve_read_path(path)?;
         if self.async_loader.is_none() {
             self.async_loader = Some(crate::filesystem::AsyncLoader::new());
@@ -643,6 +652,8 @@ impl SharedState {
         path: &str,
         data: Vec<u8>,
     ) -> crate::runtime::error::EngineResult<u64> {
+        self.ensure_mod_api_allowed("filesystem")?;
+        self.ensure_mod_file_write(path, "filesystem.writeAsync")?;
         let resolved = self.fs.resolve_save_path(path)?;
         if self.async_loader.is_none() {
             self.async_loader = Some(crate::filesystem::AsyncLoader::new());
@@ -744,6 +755,122 @@ impl SharedState {
             ("error".to_string(), None)
         }
     }
+
+    /// Set the active mod sandbox context for subsequent Lua API calls.
+    pub fn set_active_mod_sandbox(&mut self, mod_id: impl Into<String>, sandbox: ModSandbox) {
+        self.active_mod_id = Some(mod_id.into());
+        self.active_mod_sandbox = Some(sandbox);
+    }
+
+    /// Clear any active mod sandbox context.
+    pub fn clear_active_mod_sandbox(&mut self) {
+        self.active_mod_id = None;
+        self.active_mod_sandbox = None;
+    }
+
+    /// Return a cloned snapshot of the active mod sandbox context.
+    pub fn active_mod_context(&self) -> (Option<String>, Option<ModSandbox>) {
+        (self.active_mod_id.clone(), self.active_mod_sandbox.clone())
+    }
+
+    /// Restore a previously saved mod sandbox context.
+    pub fn restore_active_mod_context(
+        &mut self,
+        mod_id: Option<String>,
+        sandbox: Option<ModSandbox>,
+    ) {
+        self.active_mod_id = mod_id;
+        self.active_mod_sandbox = sandbox;
+    }
+
+    /// Enforce API-module access for the active mod sandbox, when present.
+    pub fn ensure_mod_api_allowed(&self, module: &str) -> crate::runtime::error::EngineResult<()> {
+        let Some(sandbox) = &self.active_mod_sandbox else {
+            return Ok(());
+        };
+        if module == "network" && !sandbox.allow_network {
+            return Err(crate::runtime::error::EngineError::FileSystemError(
+                format!(
+                    "Active mod '{}' cannot access lurek.network while network access is disabled",
+                    self.active_mod_id.as_deref().unwrap_or("unknown"),
+                ),
+            ));
+        }
+        if sandbox.is_api_allowed(module) {
+            Ok(())
+        } else {
+            Err(crate::runtime::error::EngineError::FileSystemError(
+                format!(
+                    "Active mod '{}' cannot access lurek.{}",
+                    self.active_mod_id.as_deref().unwrap_or("unknown"),
+                    module
+                ),
+            ))
+        }
+    }
+
+    /// Enforce read-path access for the active mod sandbox, when present.
+    pub fn ensure_mod_file_read(&self, path: &str) -> crate::runtime::error::EngineResult<()> {
+        let Some(sandbox) = &self.active_mod_sandbox else {
+            return Ok(());
+        };
+        let host_path = resolve_mod_host_path(self.fs.base_dir(), path);
+        sandbox.check_read_path_host(&host_path).map_err(|err| {
+            crate::runtime::error::EngineError::FileSystemError(format!(
+                "Active mod '{}' read denied: {}",
+                self.active_mod_id.as_deref().unwrap_or("unknown"),
+                err
+            ))
+        })
+    }
+
+    /// Enforce write access for the active mod sandbox, when present.
+    pub fn ensure_mod_file_write(
+        &self,
+        path: &str,
+        operation: &str,
+    ) -> crate::runtime::error::EngineResult<()> {
+        let Some(sandbox) = &self.active_mod_sandbox else {
+            return Ok(());
+        };
+        if !sandbox.allow_file_write {
+            return Err(crate::runtime::error::EngineError::FileSystemError(
+                format!(
+                    "Active mod '{}' cannot call {} on '{}'",
+                    self.active_mod_id.as_deref().unwrap_or("unknown"),
+                    operation,
+                    path
+                ),
+            ));
+        }
+        if sandbox.is_op_blocked(operation) {
+            return Err(crate::runtime::error::EngineError::FileSystemError(
+                format!(
+                    "Active mod '{}' blocked operation {}",
+                    self.active_mod_id.as_deref().unwrap_or("unknown"),
+                    operation
+                ),
+            ));
+        }
+        Ok(())
+    }
+}
+
+fn resolve_mod_host_path(base_dir: &std::path::Path, path: &str) -> std::path::PathBuf {
+    let candidate = std::path::Path::new(path);
+    if candidate.is_absolute() {
+        return candidate.to_path_buf();
+    }
+    let mut resolved = base_dir.to_path_buf();
+    for component in candidate.components() {
+        match component {
+            std::path::Component::CurDir => {}
+            std::path::Component::Normal(part) => resolved.push(part),
+            std::path::Component::ParentDir => resolved.push(".."),
+            std::path::Component::RootDir | std::path::Component::Prefix(_) => {}
+        }
+    }
+    resolved
 }
 /// Runtime data model for aggregate renderer counters derived from the current frame state.
 /// # Fields

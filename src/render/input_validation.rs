@@ -9,6 +9,7 @@ use crate::render::renderer::{
     ParticleRenderShape, PathSegment, PhysicsDebugConfig, PhysicsDebugShape, PostFxPass,
     RenderCommand, RenderCommandCategory, SpineSlotDraw, TextSpan,
 };
+use crate::render::shape::{CompoundShape, ShapeCommand};
 use std::fmt;
 
 /// Upper bounds and scalar policies used while validating render commands before tessellation.
@@ -624,6 +625,106 @@ pub fn validate_render_command_with_category(
         category: command.category(),
         error,
     })
+}
+
+/// Validate a registered compound shape before replaying its nested commands in a backend.
+pub fn validate_compound_shape(
+    shape: &CompoundShape,
+    limits: &RenderInputLimits,
+) -> Result<(), RenderInputError> {
+    validate_color("shape.current_color", shape.current_color)?;
+    validate_positive("shape.current_line_width", shape.current_line_width)?;
+    validate_count(
+        "shape.commands",
+        shape.commands.len(),
+        limits.max_vertices_per_command,
+    )?;
+    for command in &shape.commands {
+        validate_shape_command(command, limits)?;
+    }
+    Ok(())
+}
+
+fn validate_shape_command(
+    command: &ShapeCommand,
+    limits: &RenderInputLimits,
+) -> Result<(), RenderInputError> {
+    match command {
+        ShapeCommand::SetColor(r, g, b, a) => validate_color("shape.color", [*r, *g, *b, *a]),
+        ShapeCommand::SetLineWidth(width) => validate_positive("shape.line_width", *width),
+        ShapeCommand::Rectangle { x, y, w, h, .. } => {
+            validate_finite_many(&[("shape.rectangle.x", *x), ("shape.rectangle.y", *y)])?;
+            validate_non_negative("shape.rectangle.w", *w)?;
+            validate_non_negative("shape.rectangle.h", *h)
+        }
+        ShapeCommand::RoundedRectangle {
+            x, y, w, h, rx, ry, ..
+        } => {
+            validate_finite_many(&[
+                ("shape.rounded_rectangle.x", *x),
+                ("shape.rounded_rectangle.y", *y),
+            ])?;
+            validate_non_negative("shape.rounded_rectangle.w", *w)?;
+            validate_non_negative("shape.rounded_rectangle.h", *h)?;
+            validate_non_negative("shape.rounded_rectangle.rx", *rx)?;
+            validate_non_negative("shape.rounded_rectangle.ry", *ry)
+        }
+        ShapeCommand::Circle { x, y, r, .. } => {
+            validate_finite_many(&[("shape.circle.x", *x), ("shape.circle.y", *y)])?;
+            validate_non_negative("shape.circle.r", *r)
+        }
+        ShapeCommand::Ellipse { x, y, rx, ry, .. } => {
+            validate_finite_many(&[("shape.ellipse.x", *x), ("shape.ellipse.y", *y)])?;
+            validate_non_negative("shape.ellipse.rx", *rx)?;
+            validate_non_negative("shape.ellipse.ry", *ry)
+        }
+        ShapeCommand::Triangle {
+            x1,
+            y1,
+            x2,
+            y2,
+            x3,
+            y3,
+            ..
+        } => validate_finite_many(&[
+            ("shape.triangle.x1", *x1),
+            ("shape.triangle.y1", *y1),
+            ("shape.triangle.x2", *x2),
+            ("shape.triangle.y2", *y2),
+            ("shape.triangle.x3", *x3),
+            ("shape.triangle.y3", *y3),
+        ]),
+        ShapeCommand::Polygon { vertices, .. } => {
+            validate_flat_points("shape.polygon.vertices", vertices, limits)
+        }
+        ShapeCommand::Line { x1, y1, x2, y2 } => validate_finite_many(&[
+            ("shape.line.x1", *x1),
+            ("shape.line.y1", *y1),
+            ("shape.line.x2", *x2),
+            ("shape.line.y2", *y2),
+        ]),
+        ShapeCommand::Polyline { points } => {
+            validate_flat_points("shape.polyline.points", points, limits)
+        }
+        ShapeCommand::Arc {
+            x,
+            y,
+            radius,
+            angle1,
+            angle2,
+            segments,
+            ..
+        } => {
+            validate_finite_many(&[
+                ("shape.arc.x", *x),
+                ("shape.arc.y", *y),
+                ("shape.arc.angle1", *angle1),
+                ("shape.arc.angle2", *angle2),
+            ])?;
+            validate_non_negative("shape.arc.radius", *radius)?;
+            validate_segments("shape.arc.segments", *segments, limits)
+        }
+    }
 }
 
 fn validate_transform(prefix: &'static str, input: TransformInput) -> Result<(), RenderInputError> {

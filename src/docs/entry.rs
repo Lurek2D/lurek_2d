@@ -90,4 +90,39 @@ impl DocEntry {
         }
         missing
     }
+    /// Return true when every documented parameter has both a type and description.
+    pub fn has_complete_parameter_docs(&self) -> bool {
+        self.parameters
+            .iter()
+            .all(|param| !param.type_name.is_empty() && !param.description.is_empty())
+    }
+    /// Return true when every documented return value has both a type and description.
+    pub fn has_complete_return_docs(&self) -> bool {
+        self.returns
+            .iter()
+            .all(|ret| !ret.type_name.is_empty() && !ret.description.is_empty())
+    }
+    /// Return true when the entry has a non-empty example snippet.
+    pub fn has_example(&self) -> bool {
+        self.example
+            .as_deref()
+            .map(|example| !example.trim().is_empty())
+            .unwrap_or(false)
+    }
+    /// Return true when the entry has a non-empty version marker.
+    pub fn has_since(&self) -> bool {
+        self.since
+            .as_deref()
+            .map(|since| !since.trim().is_empty())
+            .unwrap_or(false)
+    }
+    /// Build cached search text for the entry and return a normalized string.
+    pub fn normalized_search_text(&self) -> String {
+        format!(
+            "{}\n{}\n{}",
+            self.name.to_lowercase(),
+            self.qualified_name.to_lowercase(),
+            self.description.to_lowercase()
+        )
+    }
 }

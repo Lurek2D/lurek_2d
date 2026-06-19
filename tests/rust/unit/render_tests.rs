@@ -973,6 +973,7 @@ mod render_diagnostics_tests {
         diagnostics.record_missing_texture();
         diagnostics.record_missing_canvas();
         diagnostics.record_missing_mesh();
+        diagnostics.record_missing_shape();
         diagnostics.record_missing_static_geometry();
         diagnostics.record_missing_instance_buffer();
         diagnostics.record_unsupported_instanced_sprite_batch();
@@ -985,10 +986,11 @@ mod render_diagnostics_tests {
         diagnostics.record_shadow_dispatch(4, 8);
 
         assert!(diagnostics.has_findings());
-        assert_eq!(diagnostics.dropped_commands, 7);
+        assert_eq!(diagnostics.dropped_commands, 8);
         assert_eq!(diagnostics.missing_textures, 1);
         assert_eq!(diagnostics.missing_canvases, 1);
         assert_eq!(diagnostics.missing_meshes, 1);
+        assert_eq!(diagnostics.missing_shapes, 1);
         assert_eq!(diagnostics.missing_static_geometry, 1);
         assert_eq!(diagnostics.missing_instance_buffers, 1);
         assert_eq!(diagnostics.unsupported_instanced_sprite_batches, 1);
@@ -1001,7 +1003,7 @@ mod render_diagnostics_tests {
         assert_eq!(diagnostics.shadow_lights_rendered, 1);
         assert_eq!(diagnostics.shadow_edges_collected, 4);
         assert_eq!(diagnostics.shadow_edges_culled, 8);
-        assert_eq!(diagnostics.finding_total(), 32);
+        assert_eq!(diagnostics.finding_total(), 34);
     }
 
     #[test]
@@ -1055,6 +1057,64 @@ mod render_diagnostics_tests {
             .contains("record_missing_canvas()"),
             "DrawCanvas should report missing canvas resources"
         );
+    }
+
+    #[test]
+    fn gpu_renderer_draw_rich_text_uses_font_atlas_instead_of_noop() {
+        let renderer_source = include_str!("../../../src/render/gpu_renderer.rs");
+        let renderer_section = source_section(
+            renderer_source,
+            "RenderCommand::DrawRichText {",
+            "RenderCommand::DrawConvexFan",
+        );
+        let text_replay_source = include_str!("../../../src/render/gpu_text_replay.rs");
+
+        assert!(!renderer_source.contains("RenderCommand::DrawRichText { .. } => {}"));
+        assert!(renderer_section.contains("replay_rich_text"));
+        assert!(text_replay_source.contains("TexRef::FontAtlas(font_key)"));
+        assert!(text_replay_source.contains("span_color"));
+    }
+
+    #[test]
+    fn gpu_renderer_print_delegates_to_text_replay() {
+        let renderer_source = include_str!("../../../src/render/gpu_renderer.rs");
+        let print_section = source_section(
+            renderer_source,
+            "RenderCommand::Print {",
+            "RenderCommand::DrawImage",
+        );
+        let formatted_section = source_section(
+            renderer_source,
+            "RenderCommand::PrintFormatted {",
+            "RenderCommand::StencilBegin",
+        );
+        let text_replay_source = include_str!("../../../src/render/gpu_text_replay.rs");
+
+        assert!(print_section.contains("replay_plain_text"));
+        assert!(formatted_section.contains("replay_formatted_text"));
+        assert!(text_replay_source.contains("pub(crate) fn replay_plain_text"));
+        assert!(text_replay_source.contains("pub(crate) fn replay_formatted_text"));
+        assert!(text_replay_source.contains("wrap_text"));
+        assert!(text_replay_source.contains("ensure_font_atlas"));
+    }
+
+    #[test]
+    fn gpu_renderer_draw_shape_replays_compound_shape_commands() {
+        let renderer_source = include_str!("../../../src/render/gpu_renderer.rs");
+        let renderer_section = source_section(
+            renderer_source,
+            "RenderCommand::DrawShape {",
+            "RenderCommand::DrawParticleSystem",
+        );
+        let replay_source = include_str!("../../../src/render/gpu_shape_replay.rs");
+
+        assert!(!renderer_source.contains("RenderCommand::DrawShape { .. } => {}"));
+        assert!(renderer_section.contains("shapes.get(*shape_key)"));
+        assert!(renderer_section.contains("record_missing_shape()"));
+        assert!(renderer_section.contains("validate_compound_shape"));
+        assert!(renderer_section.contains("replay_compound_shape"));
+        assert!(replay_source.contains("ShapeCommand::Rectangle"));
+        assert!(replay_source.contains("ShapeCommand::Arc"));
     }
 }
 
@@ -1163,9 +1223,10 @@ mod frame_buffer_tests {
 mod render_input_validation_tests {
     use lurek2d::math::Vec2;
     use lurek2d::render::input_validation::{
-        validate_render_command, validate_render_command_with_category, RenderInputError,
-        RenderInputLimits,
+        validate_compound_shape, validate_render_command, validate_render_command_with_category,
+        RenderInputError, RenderInputLimits,
     };
+    use lurek2d::render::shape::{CompoundShape, ShapeCommand};
     use lurek2d::render::{DrawMode, RenderCommand, RenderCommandCategory};
     use lurek2d::runtime::resource_keys::{CanvasKey, FontKey};
     use slotmap::SlotMap;
@@ -1272,6 +1333,47 @@ mod render_input_validation_tests {
         assert_eq!(
             err.to_string(),
             "Text command: print.scale must be greater than zero"
+        );
+    }
+
+    #[test]
+    fn validates_compound_shape_commands_before_gpu_replay() {
+        let mut shape = CompoundShape::new();
+        shape.push_command(ShapeCommand::SetColor(1.0, 0.5, 0.0, 1.0));
+        shape.push_command(ShapeCommand::Rectangle {
+            mode: DrawMode::Fill,
+            x: 0.0,
+            y: 0.0,
+            w: 8.0,
+            h: 4.0,
+        });
+
+        assert!(validate_compound_shape(&shape, &RenderInputLimits::default()).is_ok());
+    }
+
+    #[test]
+    fn rejects_invalid_compound_shape_commands_before_tessellation() {
+        let mut shape = CompoundShape::new();
+        shape.push_command(ShapeCommand::Polygon {
+            mode: DrawMode::Fill,
+            vertices: vec![0.0, 0.0, 1.0],
+        });
+
+        assert_eq!(
+            validate_compound_shape(&shape, &RenderInputLimits::default()).unwrap_err(),
+            RenderInputError::OddCoordinateCount {
+                field: "shape.polygon.vertices",
+                len: 3,
+            }
+        );
+
+        let mut bad_line_width = CompoundShape::new();
+        bad_line_width.push_command(ShapeCommand::SetLineWidth(0.0));
+        assert_eq!(
+            validate_compound_shape(&bad_line_width, &RenderInputLimits::default()).unwrap_err(),
+            RenderInputError::NonPositive {
+                field: "shape.line_width",
+            }
         );
     }
 

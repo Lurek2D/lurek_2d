@@ -143,6 +143,7 @@ static MODULES: &[ModuleEntry] = &[
 /// the `lurek` table, and registers enabled modules.
 pub fn create_lua_vm(state: Rc<RefCell<SharedState>>, modules: &ModulesConfig) -> LuaResult<Lua> {
     let lua = Lua::new();
+    lua.set_app_data(state.clone());
     lockdown_stdlib(&lua)?;
 
     let lurek = lua.create_table()?;

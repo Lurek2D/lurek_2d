@@ -10,7 +10,7 @@
 - Source path: `src/mods/`
 - Binding: `src/lua_api/mods_api.rs`
 - Namespace: `lurek.mods`
-- Lua API surface: `4` functions, `8` types, `51` methods
+- Lua API surface: `4` functions, `8` types, `54` methods
 - Rust test path(s): none found in the workspace
 - Lua test path(s): tests/lua/unit/test_mods_unit.lua
 
@@ -22,6 +22,12 @@
 - That policy layer is the main reason the module exists, because external content can be powerful without automatically receiving unrestricted code or data access.
 - The same system is useful for shipped player-facing mod ecosystems and for internal extension-style content workflows during development.
 - Controlled reload behavior and dependency ordering are especially important because modded projects need predictable iteration, recoverable startup, and explicit load precedence rather than a best-effort folder scan.
+- Default sandbox policy is deny-by-default for APIs, hooks, and read roots unless a mod is promoted into an explicit allow-all or allow-list mode.
+- Sandbox policy can now travel with manifest metadata or Lua-created `LMod` handles, and `LMod:runHook(...)` is the live execution boundary that activates API, hook, filesystem, network, and memory enforcement.
+- Manifest and content parsing are strict TOML decoders with byte, field, and count limits instead of line-based best-effort parsing.
+- Discovery and reload flows now build structured scan and load-plan reports so missing dependencies, cycles, checksum failures, and path-policy violations are explicit.
+- Hot reload is atomic at the registry level: the previous valid snapshot stays active when the new manifest set fails validation.
+- `sandbox.max_memory` is enforced at hook execution time when the underlying Lua runtime supports memory limits; file writes and top-level network entry points are blocked through the normal Lua API surface while the sandbox is active.
 - It keeps mod power visible, explicit, and reviewable.
 - Read `mods` as the runtime policy layer for modded content: filesystem and runtime systems provide capabilities, but `mods` decides how external content is described, admitted, isolated, and managed.
 
@@ -148,17 +154,20 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - `LMod:getId() -> string`: Returns the mod id. This method is available to Lua scripts.
 - `LMod:getName() -> string`: Returns the mod display name. This method is available to Lua scripts.
 - `LMod:getPriority() -> integer`: Returns the mod priority. This method is available to Lua scripts.
+- `LMod:getSandbox() -> table`: Returns the configured sandbox policy table, or nil when unset.
 - `LMod:getVersion() -> string`: Returns the mod version. This method is available to Lua scripts.
 - `LMod:hasHook(name) -> boolean`: Returns whether a hook name is registered.
 - `LMod:isEnabled() -> boolean`: Returns whether the mod is enabled.
 - `LMod:isLoaded() -> boolean`: Returns whether the mod is loaded. This method is available to Lua scripts.
 - `LMod:releaseRefs() -> nil`: Releases stored Lua registry references for hooks and config.
+- `LMod:runHook(name) -> any`: Executes one stored hook under the mod sandbox and returns its Lua return values.
 - `LMod:setApiVersion(api_version) -> nil`: Sets the required API version string.
 - `LMod:setCapabilities(caps) -> nil`: Sets capability names from an array table.
 - `LMod:setConfig(value) -> nil`: Stores a Lua config value for this mod.
 - `LMod:setConfigSchema(schema) -> nil`: Sets config schema entries from a Lua table.
 - `LMod:setEnabled(enabled) -> nil`: Sets whether the mod is enabled. This method is available to Lua scripts.
 - `LMod:setHook(name, func) -> nil`: Stores a Lua hook function by name. This method is available to Lua scripts.
+- `LMod:setSandbox(sandbox) -> nil`: Sets the sandbox policy used by `runHook`.
 - `LMod:type() -> string`: Returns the Lua-visible type name for this mod handle.
 - `LMod:typeOf(name) -> boolean`: Returns whether this mod handle matches a supported type name.
 
@@ -288,4 +297,8 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 ## Notes
 
-- No additional module-specific notes.
+- Manifest `checksum` is an integrity checksum, not a trust signature. The legacy key name `signature` is still accepted as a checksum alias for compatibility.
+- Allowed read paths are canonical roots; prefix-only string matching is not sufficient for mod sandbox reads.
+- `ModScanPolicy`, `ModScanReport`, `ModLoadPlan`, and `ModReloadReport` are the authoritative diagnostics surfaces for scans, dependency validation, and hot reload outcomes.
+- Manifest validation now enforces identifier, capability, asset-path, config-schema, and byte/count limits before a mod joins the registry.
+- Capability enforcement currently includes runtime boundary checks for `lurek.filesystem` and top-level `lurek.network` entry points, including write denial when a mod sandbox disables file writes.

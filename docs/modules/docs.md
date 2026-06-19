@@ -1912,6 +1912,22 @@ end
 
 ---
 
+#### `LQualityReport:getIssues`
+
+Returns structured quality-rule issues with rule ids, severities, and hints.
+
+```lua
+LQualityReport:getIssues()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table[] | Array of issue rows. |
+
+---
+
 #### `LQualityReport:getModuleScores`
 
 Returns per-module documentation quality scores.
@@ -2031,6 +2047,22 @@ end
 
 ---
 
+#### `LQualityReport:issueCount`
+
+Returns the number of structured quality issues.
+
+```lua
+LQualityReport:issueCount()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Total issue count. |
+
+---
+
 #### `LQualityReport:toJSON`
 
 Serializes this quality report to formatted JSON.
@@ -2071,7 +2103,7 @@ LQualityReport:toTable()
 
 | Type | Description |
 |------|-------------|
-| LQualityReportToTableResult | Table with overallScore, grade, and moduleScores fields. |
+| LQualityReportToTableResult | Table with overallScore, grade, moduleScores, issues, and policy fields. |
 
 **Example**
 
@@ -2408,6 +2440,22 @@ end
 
 ---
 
+#### `LValidationReport:getIssues`
+
+Returns structured validation issues with rule ids, severities, and hints.
+
+```lua
+LValidationReport:getIssues()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table[] | Array of issue rows. |
+
+---
+
 #### `LValidationReport:getMissing`
 
 Returns live APIs that were missing from the checked catalog.
@@ -2549,6 +2597,22 @@ end
 
 ---
 
+#### `LValidationReport:issueCount`
+
+Returns the number of structured validation issues.
+
+```lua
+LValidationReport:issueCount()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Total issue count. |
+
+---
+
 #### `LValidationReport:missingCount`
 
 Returns the number of live APIs missing from the catalog.
@@ -2645,7 +2709,7 @@ LValidationReport:toTable()
 
 | Type | Description |
 |------|-------------|
-| LValidationReportToTableResult | Table with missing, phantom, and incomplete array fields. |
+| LValidationReportToTableResult | Table with missing, phantom, incomplete, issues, and isValid fields. |
 
 **Example**
 

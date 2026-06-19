@@ -13,6 +13,8 @@ pub mod error;
 pub mod headless;
 /// Log message identifiers and log-level override helpers.
 pub mod log_messages;
+/// Shared Lua execution policy used by GUI and headless hosts.
+pub mod lua_execution;
 /// Message catalog loader and lookup API.
 pub mod messages;
 /// Runtime mode parsing and display helpers.
@@ -26,6 +28,7 @@ pub mod shared_state;
 pub use config::Config;
 pub use error::{EngineError, EngineResult, ErrorCategory, ErrorSnapshot};
 pub use headless::{run_headless, run_headless_checked, HeadlessOptions};
+pub use lua_execution::{call_function_with_policy, LuaExecutionPolicy};
 pub use messages::MessageCatalog;
 pub use mode::{RuntimeMode, RuntimeModeParseError};
 pub use shared_state::{

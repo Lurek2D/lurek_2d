@@ -15,9 +15,15 @@ pub mod mod_loader;
 pub mod mod_manager;
 /// Sandbox environment restricting mod Lua API access and capabilities.
 pub mod mod_sandbox;
+/// Shared errors, policies, limits, and reports.
+pub mod types;
 
 pub use api_registry::{GameApiRegistry, TypeSchema};
 pub use api_schema::{FieldDef, FieldType, MethodDef};
-pub use mod_loader::{FieldValue, ModInstance};
+pub use mod_loader::{
+    load_instances_from_toml, load_instances_from_toml_with_options, FieldValue,
+    ModContentLoadOptions, ModInstance,
+};
 pub use mod_manager::*;
-pub use mod_sandbox::{HookPoint, ModSandbox};
+pub use mod_sandbox::{HookPoint, ModSandbox, SandboxListMode};
+pub use types::*;

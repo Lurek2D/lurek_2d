@@ -50,10 +50,10 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 - Mesh upload and Lua-facing mesh construction reject non-finite vertex fields, out-of-range indices, and incomplete triangle-list topology before static geometry is synchronized.
 - OBJ face indices are bounded after 1-based or negative-index normalization, index zero is invalid, and material-library paths must stay under the supplied base directory.
 - Shader uniform names must be valid, non-reserved WGSL identifiers before they can participate in wrapper-source generation.
-- Render commands pass through a central input sanitizer before backend work; non-finite floats, invalid sizes, out-of-range colors, excessive segments, and malformed point arrays are rejected and counted.
+- Render commands and registered compound shapes pass through a central input sanitizer before backend work; non-finite floats, invalid sizes, out-of-range colors, excessive segments, and malformed point arrays are rejected and counted.
 - Arc tessellation clamps zero segment counts to a safe minimum before vertex generation.
 - Draw-layer ordering uses total floating-point ordering and callback ID tie-breaks, so NaN and equal depths flush deterministically.
-- `RenderDiagnostics` records skipped render commands, missing GPU resources, invalid uploads, invalid meshes, GPU buffer growth, and shader or pipeline cache fallback events without turning the frame into a hard error.
+- `RenderDiagnostics` records skipped render commands, missing GPU or shape resources, invalid uploads, invalid meshes, GPU buffer growth, and shader or pipeline cache fallback events without turning the frame into a hard error.
 - Frame-local color, texture, draw, instance, merge, and command scratch buffers clear between frames without shrinking; hot flat-color primitives tessellate directly into shared frame buffers and textured paths reuse scratch buffers instead of allocating per command.
 - Shadow edge collection filters disabled, masked-out, and out-of-radius occluders before GPU upload, reuses per-occluder world-space edge caches for shadow lights in the same frame, and records rendered shadow rows plus collected and culled edge counts.
 - `SoftwareCaptureDiagnostics` records unsupported capture commands and bounded polygon fill behavior; software capture is evidence-oriented and does not promise pixel parity for GPU-only texture, shader, post-fx, layer, batch, or registered-resource commands.
@@ -143,7 +143,8 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 - Uploads and reuses static geometry to bypass repeated tessellation and reduce CPU-side frame overhead.
 - Reuses high-water CPU frame buffers for prepared draws, vertices, indices, instances, and merge scratch space, with direct range finalization for hot flat-color primitive draws.
 - Supports GPU instancing for repeated sprites, particles, and grid-like content that share one draw shape.
-- Resolves text rendering by expanding glyph quads from atlas data and batching them with other draw work.
+- Delegates validated registered compound-shape replay to `gpu_shape_replay.rs` instead of silently dropping `DrawShape` commands.
+- Delegates plain, formatted, and rich text glyph replay to `gpu_text_replay.rs` so atlas expansion stays out of frame orchestration.
 - Maintains frame orchestration for offscreen canvases while delegating canvas target sync and dimension helpers to `gpu_canvas_pass.rs`.
 - Handles resize and viewport updates that keep swapchain-backed output coherent.
 - Delegates GPU surface readback for screenshots and software-visible capture to `gpu_screenshot_readback.rs`.
@@ -212,6 +213,23 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 - Uses `PendingSurfaceReadback` as the short-lived handoff between command encoding and post-submit mapping.
 - Open this file when GPU screenshots fail, return wrong channel order, or mishandle readback padding.
 
+### gpu_shape_replay.rs
+
+- Replays validated registered compound shapes into GPU flat-color draw buffers.
+- Interprets nested `ShapeCommand` values while preserving per-shape color and line-width state.
+- Applies draw-time transform, wireframe override, scissor, shader, blend, and stencil state from the current frame.
+- Emits prepared color draw ranges directly into caller-owned frame buffers without allocating per command.
+- Keeps reusable shape replay separate from the main frame loop so `gpu_renderer.rs` stays focused on orchestration.
+- Open this file when `DrawShape` output differs from equivalent immediate-mode shape commands.
+
+### gpu_text_replay.rs
+
+- Replays plain, formatted, and rich text commands into GPU font-atlas textured draw buffers.
+- Expands glyph metrics into transformed quads while preserving wrapping, alignment, span color, scale, blend, scissor, shader, color-mask, and stencil state.
+- Ensures font atlas availability before emitting prepared draws and uses caller-owned scratch buffers instead of allocating per glyph.
+- Keeps reusable glyph replay separate from the main frame loop so `gpu_renderer.rs` stays focused on orchestration.
+- Open this file when `Print` or `DrawRichText` output differs from font metrics or current draw state.
+
 ### gpu_shaders.rs
 
 - Defines the GPU shader data structures that store compiled WGSL artifacts and uniform-kind metadata.
@@ -273,13 +291,14 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 
 - Defines shared render-command validation for scalar finiteness, normalized colors, dimensions, segments, array lengths, and per-command count ceilings.
 - Provides `RenderInputLimits` and `RenderInputError` so render backends reject malformed command data before tessellation or GPU resource work begins.
+- Validates registered compound shapes and their nested shape commands before GPU replay.
 - Validates common command families such as shapes, transforms, text, particles, paths, gradients, physics debug, Spine slots, and convex fans.
 - Keeps command-boundary skip policy separate from resource validation, mesh validation, shader validation, and backend pass encoding.
 - Open this file when a new `RenderCommand` variant introduces scalar, color, topology, or count invariants that should fail deterministically.
 
 ### render_diagnostics.rs
 
-- Defines per-frame counters for skipped render commands, missing resource lookups, and invalid resource inputs.
+- Defines per-frame counters for skipped render commands, missing resource or shape lookups, and invalid resource inputs.
 - Records non-fatal renderer findings without changing the render-frame error contract or relying only on log output.
 - Counts shader and pipeline cache invariant failures separately from resource lookup skips.
 - Counts GPU buffer growth events when shared geometry, instance, or shadow edge buffers must be reallocated.

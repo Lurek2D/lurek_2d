@@ -866,10 +866,23 @@ LProvinceRegistryProvinceSpansResult = {}
 ---@field unresolved_pixels number Unresolved pixel count.
 LProvinceSanitizeMarkedPngResult = {}
 
+---@class LQualityReportGetIssuesResult
+---@field hint string? Optional fix hint.
+---@field kind string Broad issue kind.
+---@field message string User-facing issue message.
+---@field module string? Module name when present.
+---@field qualifiedName string? Qualified API name when present.
+---@field ruleId string Stable rule identifier.
+---@field severity string Issue severity string.
+---@field source string? Producing stage label.
+LQualityReportGetIssuesResult = {}
+
 ---@class LQualityReportToTableResult
 ---@field grade string Quality grade letter.
+---@field issues table[] Structured issue rows.
 ---@field moduleScores table Per-module score table.
 ---@field overallScore number Overall quality score.
+---@field policy table Weighting policy used to compute the score.
 LQualityReportToTableResult = {}
 
 ---@class LRaycasterBuildMinimapWindowResult
@@ -1331,8 +1344,21 @@ LUniverseSnapshotResult = {}
 ---@field removed_components table Array of {entity_id, name} tables.
 LUniverseTakeSnapshotDiffResult = {}
 
+---@class LValidationReportGetIssuesResult
+---@field hint string? Optional fix hint.
+---@field kind string Broad issue kind.
+---@field message string User-facing issue message.
+---@field module string? Module name when present.
+---@field qualifiedName string? Qualified API name when present.
+---@field ruleId string Stable rule identifier.
+---@field severity string Issue severity string.
+---@field source string? Producing stage label.
+LValidationReportGetIssuesResult = {}
+
 ---@class LValidationReportToTableResult
 ---@field incomplete string[] Incomplete symbols.
+---@field isValid boolean Whether no live APIs are missing.
+---@field issues table[] Structured issue rows.
 ---@field missing string[] Missing symbols.
 ---@field phantom string[] Phantom symbols.
 LValidationReportToTableResult = {}
@@ -10414,6 +10440,10 @@ function LQualityReport:getByGrade(grade) end
 ---@return string Quality grade text.
 function LQualityReport:getGrade() end
 
+--- Returns structured quality-rule issues with rule ids, severities, and hints.
+---@return table[] Array of issue rows.
+function LQualityReport:getIssues() end
+
 --- Returns per-module documentation quality scores.
 ---@return table Map table keyed by module name with numeric scores.
 function LQualityReport:getModuleScores() end
@@ -10431,12 +10461,16 @@ function LQualityReport:getSummary() end
 ---@return LDocEntry[] Worst-scoring `LDocEntry` handles.
 function LQualityReport:getWorst(count) end
 
+--- Returns the number of structured quality issues.
+---@return number Total issue count.
+function LQualityReport:issueCount() end
+
 --- Serializes this quality report to formatted JSON.
 ---@return string Pretty-printed JSON object for the quality report.
 function LQualityReport:toJSON() end
 
 --- Converts this quality report into a plain Lua table.
----@return LQualityReportToTableResult Table with overallScore, grade, and moduleScores fields.
+---@return LQualityReportToTableResult Table with overallScore, grade, moduleScores, issues, and policy fields.
 function LQualityReport:toTable() end
 
 --- Returns the Lua-visible type name for this quality report handle.
@@ -10484,6 +10518,10 @@ function LSchema:validate(data) end
 ---@return string[] Incomplete qualified names.
 function LValidationReport:getIncomplete() end
 
+--- Returns structured validation issues with rule ids, severities, and hints.
+---@return table[] Array of issue rows.
+function LValidationReport:getIssues() end
+
 --- Returns live APIs that were missing from the checked catalog.
 ---@return string[] Missing qualified names.
 function LValidationReport:getMissing() end
@@ -10504,6 +10542,10 @@ function LValidationReport:incompleteCount() end
 ---@return boolean True when no live APIs are missing from the catalog.
 function LValidationReport:isValid() end
 
+--- Returns the number of structured validation issues.
+---@return number Total issue count.
+function LValidationReport:issueCount() end
+
 --- Returns the number of live APIs missing from the catalog.
 ---@return number Missing API count.
 function LValidationReport:missingCount() end
@@ -10517,7 +10559,7 @@ function LValidationReport:phantomCount() end
 function LValidationReport:toJSON() end
 
 --- Converts this validation report into a plain Lua table.
----@return LValidationReportToTableResult Table with missing, phantom, and incomplete array fields.
+---@return LValidationReportToTableResult Table with missing, phantom, incomplete, issues, and isValid fields.
 function LValidationReport:toTable() end
 
 --- Returns the Lua-visible type name for this validation report handle.

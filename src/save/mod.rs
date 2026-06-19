@@ -7,6 +7,9 @@
 
 mod save_manager;
 pub use save_manager::{
-    compress_save_content, decompress_save_content, parse_save_table, serialize_table,
-    serialize_value, SaveManager, SaveValue, SlotMeta,
+    compress_save_content, compress_save_content_with_limits, decompress_save_content,
+    decompress_save_content_with_limits, parse_save_table, parse_save_table_with_limits,
+    serialize_table, serialize_value, MigrationPlan, SaveCompressionLimits, SaveDiagnostics,
+    SaveError, SaveLimits, SaveLoadPolicy, SaveLuaLimits, SaveManager, SaveParseLimits, SaveValue,
+    SaveWritePolicy, SlotMeta,
 };

@@ -1,142 +1,174 @@
 //! File: tests/rust/unit/mods_tests.rs
 
-// TODO(lua-first): public Rust API coverage in this file should live in tests/lua/unit/; keep only private/internal seams here.
-
-mod mod_manager_tests {
-    use lurek2d::mods::{ModInfo, ModManager};
+mod mods_tests {
+    use lurek2d::lua_api::{create_lua_vm, SharedState};
+    use lurek2d::mods::{
+        load_instances_from_toml_with_options, DependencyCyclePolicy, FieldValue, HookPoint,
+        ModContentLoadOptions, ModError, ModInfo, ModLimits, ModManager, ModSandbox, ModScanPolicy,
+    };
+    use lurek2d::runtime::config::Config;
+    use lurek2d::runtime::RuntimeMode;
+    use mlua::prelude::LuaValue;
+    use std::cell::RefCell;
     use std::fs;
+    use std::path::{Path, PathBuf};
+    use std::rc::Rc;
     use tempfile::tempdir;
 
-    fn write_mod_manifest(dir: &std::path::Path, manifest: &str) {
+    fn write_mod_manifest(dir: &Path, manifest: &str) {
         fs::create_dir_all(dir).unwrap();
         fs::write(dir.join("mod.toml"), manifest).unwrap();
     }
 
-    #[test]
-    fn empty_manager_has_zero_mods() {
-        let mgr = ModManager::new();
-        assert_eq!(mgr.mod_count(), 0);
+    fn new_test_state(base_dir: &Path) -> Rc<RefCell<SharedState>> {
+        let mut shared = SharedState::new(800, 600, "Test", base_dir.to_path_buf());
+        shared.runtime_mode = RuntimeMode::Headless;
+        Rc::new(RefCell::new(shared))
     }
 
     #[test]
-    fn register_mod_increases_count() {
-        let mut mgr = ModManager::new();
-        mgr.register_mod(ModInfo::new("test_mod"));
-        assert_eq!(mgr.mod_count(), 1);
+    fn default_sandbox_does_not_allow_all() {
+        let temp = tempdir().unwrap();
+        let sandbox = ModSandbox::new();
+
+        assert!(!sandbox.is_api_allowed("filesystem"));
+        assert!(!sandbox.is_hook_allowed(&HookPoint::OnLoad));
+        assert!(!sandbox.is_read_allowed(temp.path().to_str().unwrap()));
     }
 
     #[test]
-    fn has_mod_returns_true_after_register() {
-        let mut mgr = ModManager::new();
-        mgr.register_mod(ModInfo::new("my_mod"));
-        assert!(mgr.has_mod("my_mod"));
+    fn read_path_policy_rejects_prefix_and_traversal() {
+        let temp = tempdir().unwrap();
+        let root_a = temp.path().join("mods").join("a");
+        let root_a2 = temp.path().join("mods").join("a2");
+        fs::create_dir_all(&root_a).unwrap();
+        fs::create_dir_all(&root_a2).unwrap();
+        fs::write(root_a.join("inside.txt"), "ok").unwrap();
+        fs::write(root_a2.join("outside.txt"), "nope").unwrap();
+
+        let mut sandbox = ModSandbox::new();
+        sandbox.allow_read_root(&root_a).unwrap();
+
+        assert!(sandbox.is_read_allowed(root_a.join("inside.txt").to_str().unwrap()));
+        assert!(sandbox.is_read_allowed(root_a.join("missing.txt").to_str().unwrap()));
+        assert!(!sandbox.is_read_allowed(root_a2.join("outside.txt").to_str().unwrap()));
+        assert!(!sandbox.is_read_allowed(
+            temp.path()
+                .join("mods")
+                .join("a")
+                .join("..")
+                .join("a2")
+                .join("outside.txt")
+                .to_str()
+                .unwrap()
+        ));
     }
 
     #[test]
-    fn unregister_mod_removes_it() {
-        let mut mgr = ModManager::new();
-        mgr.register_mod(ModInfo::new("rem_mod"));
-        assert!(mgr.unregister_mod("rem_mod"));
-        assert!(!mgr.has_mod("rem_mod"));
+    fn content_loader_uses_real_toml_parser() {
+        let content = r#"
+            [[item]]
+            id = "iron_sword"
+            tags = ["weapon", "melee"]
+            name = "Iron\nSword"
+            [item.stats]
+            damage = 10
+            crit = 0.25
+        "#;
+        let source = PathBuf::from("items.toml");
+        let instances = load_instances_from_toml_with_options(
+            "base_mod",
+            content,
+            &source,
+            &ModContentLoadOptions::default(),
+        )
+        .unwrap();
+
+        assert_eq!(instances.len(), 1);
+        assert_eq!(instances[0].instance_id, "iron_sword");
+        assert_eq!(
+            instances[0].get_field("name"),
+            Some(&FieldValue::String("Iron\nSword".to_string()))
+        );
+        assert!(matches!(
+            instances[0].get_field("tags"),
+            Some(FieldValue::Array(values)) if values.len() == 2
+        ));
+        assert!(matches!(
+            instances[0].get_field("stats"),
+            Some(FieldValue::Table(stats)) if stats.contains_key("damage") && stats.contains_key("crit")
+        ));
+
+        let invalid = load_instances_from_toml_with_options(
+            "base_mod",
+            "[[item]\nid = \"broken\"",
+            &source,
+            &ModContentLoadOptions::default(),
+        );
+        assert!(invalid.is_err());
     }
 
     #[test]
-    fn get_mods_by_capability_filters_matching_mods() {
-        let mut mgr = ModManager::new();
-        let mut save_mod = ModInfo::new("save_mod");
-        save_mod.capabilities = vec!["save".to_string(), "ui".to_string()];
-        mgr.register_mod(save_mod);
+    fn scan_folder_rejects_huge_manifest() {
+        let temp = tempdir().unwrap();
+        let mod_dir = temp.path().join("big_mod");
+        let mut manifest = "id = \"big_mod\"\n".to_string();
+        manifest.push_str(&format!("description = \"{}\"\n", "x".repeat(300)));
+        write_mod_manifest(&mod_dir, &manifest);
 
-        let mut audio_mod = ModInfo::new("audio_mod");
-        audio_mod.capabilities = vec!["audio".to_string()];
-        mgr.register_mod(audio_mod);
+        let mut manager = ModManager::new();
+        let mut policy = ModScanPolicy::default();
+        policy.limits.max_manifest_bytes = 64;
+        let report = manager
+            .scan_folder_with_policy(temp.path().to_str().unwrap(), &policy)
+            .unwrap();
 
-        let matches = mgr.get_mods_by_capability("save");
-        assert_eq!(matches.len(), 1);
-        assert_eq!(matches[0].id, "save_mod");
+        assert!(report.loaded.is_empty());
+        assert_eq!(report.skipped.len(), 1);
+        assert_eq!(manager.mod_count(), 0);
     }
 
     #[test]
-    fn load_order_respects_dependencies_before_priority() {
-        let mut mgr = ModManager::new();
+    fn dependency_cycle_strict_mode_errors() {
+        let mut manager = ModManager::new();
+        let mut a = ModInfo::new("a");
+        a.dependencies = vec!["b".to_string()];
+        let mut b = ModInfo::new("b");
+        b.dependencies = vec!["a".to_string()];
+        manager.register_mod(a);
+        manager.register_mod(b);
 
-        let mut base = ModInfo::new("base_mod");
-        base.priority = 50;
-        mgr.register_mod(base);
-
-        let mut child = ModInfo::new("child_mod");
-        child.priority = -10;
-        child.dependencies = vec!["base_mod".to_string()];
-        mgr.register_mod(child);
-
-        let order = mgr.load_order();
-        assert_eq!(order[0].id, "base_mod");
-        assert_eq!(order[1].id, "child_mod");
+        let plan = manager.build_load_plan(None, DependencyCyclePolicy::Error);
+        assert!(plan
+            .errors
+            .iter()
+            .any(|err| matches!(err, ModError::DependencyCycle { .. })));
+        assert!(manager
+            .load_order_checked(None, DependencyCyclePolicy::Error)
+            .is_err());
     }
 
     #[test]
-    fn mark_for_reload_marks_loaded_false_and_dedupes_queue() {
-        let mut mgr = ModManager::new();
-        let mut info = ModInfo::new("reload_mod");
-        info.loaded = true;
-        mgr.register_mod(info);
-
-        assert!(mgr.mark_for_reload("reload_mod"));
-        assert!(mgr.mark_for_reload("reload_mod"));
-        assert_eq!(mgr.get_reload_queue().len(), 1);
-        assert!(!mgr.get_mod("reload_mod").unwrap().loaded);
-    }
-
-    #[test]
-    fn from_parts_applies_optional_overrides() {
-        let info = ModInfo::from_parts(
-            "mod_a".to_string(),
-            Some("Mod A".to_string()),
-            Some("2.0.0".to_string()),
-            Some("Author".to_string()),
-            Some("Desc".to_string()),
-            Some(7),
-            vec!["dep_one".to_string(), "dep_two".to_string()],
+    fn missing_dependency_prevents_load_plan() {
+        let temp = tempdir().unwrap();
+        write_mod_manifest(
+            &temp.path().join("consumer"),
+            r#"
+id = "consumer"
+dependencies = ["missing_dep"]
+"#,
         );
 
-        assert_eq!(info.id, "mod_a");
-        assert_eq!(info.name, "Mod A");
-        assert_eq!(info.version, "2.0.0");
-        assert_eq!(info.author, "Author");
-        assert_eq!(info.description, "Desc");
-        assert_eq!(info.priority, 7);
-        assert_eq!(info.dependencies, ["dep_one", "dep_two"]);
+        let mut manager = ModManager::new();
+        let report = manager.scan_folder(temp.path().to_str().unwrap());
+        assert!(report.is_empty());
+        assert_eq!(manager.mod_count(), 0);
     }
 
     #[test]
-    fn get_mod_mut_updates_entry_in_place() {
-        let mut mgr = ModManager::new();
-        mgr.register_mod(ModInfo::new("edit_mod"));
-
-        let info = mgr.get_mod_mut("edit_mod").unwrap();
-        info.name = "Edited".to_string();
-        info.priority = 42;
-
-        let reread = mgr.get_mod("edit_mod").unwrap();
-        assert_eq!(reread.name, "Edited");
-        assert_eq!(reread.priority, 42);
-    }
-
-    #[test]
-    fn get_custom_load_order_returns_explicit_order() {
-        let mut mgr = ModManager::new();
-        mgr.set_load_order(vec!["first".to_string(), "second".to_string()]);
-
-        assert_eq!(mgr.get_custom_load_order().unwrap(), ["first", "second"]);
-
-        mgr.clear_load_order();
-        assert!(mgr.get_custom_load_order().is_none());
-    }
-
-    #[test]
-    fn process_reload_queue_reloads_from_disk() {
-        let temp_dir = tempdir().unwrap();
-        let mod_dir = temp_dir.path().join("reload_mod");
+    fn hot_reload_failure_rolls_back() {
+        let temp = tempdir().unwrap();
+        let mod_dir = temp.path().join("reload_mod");
         write_mod_manifest(
             &mod_dir,
             r#"
@@ -145,104 +177,234 @@ version = "1.0.0"
 "#,
         );
 
-        let mut mgr = ModManager::new();
-        mgr.scan_folder(temp_dir.path().to_str().unwrap());
-        assert!(mgr.mark_for_reload("reload_mod"));
-        assert!(!mgr.get_mod("reload_mod").unwrap().loaded);
+        let mut manager = ModManager::new();
+        let discovered = manager.scan_folder(temp.path().to_str().unwrap());
+        assert_eq!(discovered.len(), 1);
+        assert_eq!(manager.get_mod("reload_mod").unwrap().version, "1.0.0");
 
+        manager.mark_for_reload("reload_mod");
         write_mod_manifest(
             &mod_dir,
             r#"
 id = "reload_mod"
-version = "2.0.0"
+dependencies = ["missing_dep"]
 "#,
         );
 
-        let reloaded = mgr.process_reload_queue();
-        assert_eq!(reloaded, ["reload_mod"]);
-        assert!(mgr.get_reload_queue().is_empty());
-        assert!(mgr.get_mod("reload_mod").unwrap().loaded);
-        assert_eq!(mgr.get_mod("reload_mod").unwrap().version, "2.0.0");
+        let report = manager.process_reload_queue_with_policy(&ModScanPolicy::default());
+        assert!(report.reloaded.is_empty());
+        assert!(!report.failed.is_empty());
+        assert_eq!(manager.get_mod("reload_mod").unwrap().version, "1.0.0");
     }
 
     #[test]
-    fn scan_folder_skips_invalid_manifest() {
-        let temp_dir = tempdir().unwrap();
-        let mod_dir = temp_dir.path().join("broken_mod");
-        write_mod_manifest(&mod_dir, "this is not valid toml");
+    fn mod_id_asset_path_and_schema_validation() {
+        let temp = tempdir().unwrap();
+        write_mod_manifest(
+            &temp.path().join("bad_mod"),
+            r#"
+id = "bad/mod"
+assets = ["../escape.png"]
+config_schema = [{ key = "volume", type = "WeaponType" }]
+"#,
+        );
+        write_mod_manifest(
+            &temp.path().join("bad_capability"),
+            r#"
+id = "bad_capability"
+capabilities = ["bad capability"]
+"#,
+        );
 
-        let mut mgr = ModManager::new();
-        let discovered = mgr.scan_folder(temp_dir.path().to_str().unwrap());
+        let mut manager = ModManager::new();
+        let report = manager
+            .scan_folder_with_policy(temp.path().to_str().unwrap(), &ModScanPolicy::default())
+            .unwrap();
 
-        assert!(discovered.is_empty());
-        assert_eq!(mgr.mod_count(), 0);
+        assert!(report.loaded.is_empty());
+        assert_eq!(report.skipped.len(), 2);
+        assert!(HookPoint::parse_validated("bad hook name", &ModLimits::default()).is_err());
     }
 
     #[test]
-    fn scan_folder_skips_missing_id_field() {
-        let temp_dir = tempdir().unwrap();
-        let mod_dir = temp_dir.path().join("missing_id_mod");
+    fn manifest_sandbox_policy_is_parsed() {
+        let temp = tempdir().unwrap();
+        let read_root = temp.path().join("sandboxed_mod").join("data");
+        fs::create_dir_all(&read_root).unwrap();
         write_mod_manifest(
-            &mod_dir,
+            &temp.path().join("sandboxed_mod"),
             r#"
-name = "No ID"
+id = "sandboxed_mod"
+[sandbox]
+api_mode = "allow_list"
+apis = ["filesystem"]
+hook_mode = "allow_list"
+hooks = ["on_load"]
+read_mode = "allow_list"
+read_roots = ["data"]
+allow_network = false
+allow_file_write = false
+max_memory = 4096
 "#,
         );
 
-        let mut mgr = ModManager::new();
-        let discovered = mgr.scan_folder(temp_dir.path().to_str().unwrap());
+        let mut manager = ModManager::new();
+        let report = manager
+            .scan_folder_with_policy(temp.path().to_str().unwrap(), &ModScanPolicy::default())
+            .unwrap();
 
-        assert!(discovered.is_empty());
-        assert_eq!(mgr.mod_count(), 0);
+        assert_eq!(report.loaded.len(), 1);
+        let sandbox = report.loaded[0].sandbox.as_ref().expect("sandbox parsed");
+        assert!(sandbox.is_api_allowed("filesystem"));
+        assert!(sandbox.is_hook_allowed(&HookPoint::OnLoad));
+        assert!(sandbox.is_read_allowed(read_root.join("ok.txt").to_str().unwrap()));
+        assert!(!sandbox.allow_network);
+        assert!(!sandbox.allow_file_write);
+        assert_eq!(sandbox.max_memory, 4096);
     }
 
     #[test]
-    fn scan_folder_skips_wrong_type_fields() {
-        let temp_dir = tempdir().unwrap();
-        let mod_dir = temp_dir.path().join("wrong_type_mod");
-        write_mod_manifest(
-            &mod_dir,
-            r#"
-id = "wrong_type_mod"
-priority = "high"
-"#,
-        );
+    fn sandbox_blocks_file_write_api() {
+        let temp = tempdir().unwrap();
+        let lua = create_lua_vm(new_test_state(temp.path()), &Config::default().modules).unwrap();
 
-        let mut mgr = ModManager::new();
-        let discovered = mgr.scan_folder(temp_dir.path().to_str().unwrap());
+        let result: (bool, LuaValue) = lua
+            .load(
+                r#"
+                return pcall(function()
+                    local mod = lurek.mods.newMod({
+                        id = "mod_under_test",
+                        sandbox = {
+                            api_mode = "allow_list",
+                            apis = { "filesystem" },
+                            hook_mode = "allow_list",
+                            hooks = { "on_load" },
+                        },
+                    })
+                    mod:setHook("on_load", function()
+                        lurek.filesystem.write("save/blocked.txt", "hello")
+                    end)
+                    mod:runHook("on_load")
+                end)
+                "#,
+            )
+            .eval()
+            .unwrap();
 
-        assert_eq!(discovered.len(), 1);
-        assert_eq!(discovered[0].priority, 0);
-        assert!(mgr.has_mod("wrong_type_mod"));
+        assert!(!result.0);
+        match result.1 {
+            LuaValue::String(message) => {
+                let text = message.to_str().unwrap();
+                assert!(text.contains("cannot call filesystem.write"));
+            }
+            LuaValue::Error(error) => {
+                let text = error.to_string();
+                assert!(text.contains("cannot call filesystem.write"));
+            }
+            other => panic!("expected Lua error string, got {:?}", other),
+        }
+        assert!(!temp.path().join("save").join("blocked.txt").exists());
     }
 
     #[test]
-    fn scan_folder_skips_asset_conflicts() {
-        let temp_dir = tempdir().unwrap();
-        let first_dir = temp_dir.path().join("first_mod");
-        let second_dir = temp_dir.path().join("second_mod");
+    fn sandbox_blocks_network_api_when_network_is_disabled() {
+        let temp = tempdir().unwrap();
+        let lua = create_lua_vm(new_test_state(temp.path()), &Config::default().modules).unwrap();
 
-        write_mod_manifest(
-            &first_dir,
+        let result: (bool, LuaValue) = lua
+            .load(
+                r#"
+                return pcall(function()
+                    local mod = lurek.mods.newMod({
+                        id = "mod_under_test",
+                        sandbox = {
+                            api_mode = "allow_list",
+                            apis = { "network" },
+                            hook_mode = "allow_list",
+                            hooks = { "on_load" },
+                        },
+                    })
+                    mod:setHook("on_load", function()
+                        lurek.network.newServer({ port = 12345 })
+                    end)
+                    mod:runHook("on_load")
+                end)
+                "#,
+            )
+            .eval()
+            .unwrap();
+
+        assert!(!result.0);
+        match result.1 {
+            LuaValue::String(message) => {
+                let text = message.to_str().unwrap();
+                assert!(text.contains("network access is disabled"));
+            }
+            LuaValue::Error(error) => {
+                let text = error.to_string();
+                assert!(text.contains("network access is disabled"));
+            }
+            other => panic!("expected Lua network error, got {:?}", other),
+        }
+    }
+
+    #[test]
+    fn sandboxed_hook_enforces_memory_limit_and_restores_previous_limit() {
+        let temp = tempdir().unwrap();
+        let lua = create_lua_vm(new_test_state(temp.path()), &Config::default().modules).unwrap();
+        if cfg!(feature = "lua-jit") && lua.set_memory_limit(0).is_err() {
+            return;
+        }
+        let limit = lua.used_memory() + 10_000;
+        let script = format!(
             r#"
-id = "first_mod"
-assets = ["shared/asset.png"]
-"#,
+            local mod = lurek.mods.newMod({{
+                id = "memory_mod",
+                sandbox = {{
+                    hook_mode = "allow_list",
+                    hooks = {{ "on_load" }},
+                    max_memory = {},
+                }},
+            }})
+            mod:setHook("on_load", function()
+                local t = {{}}
+                for i = 1, 10000 do
+                    t[i] = i
+                end
+            end)
+            return pcall(function()
+                mod:runHook("on_load")
+            end)
+            "#,
+            limit
         );
-        write_mod_manifest(
-            &second_dir,
+
+        let result: (bool, LuaValue) = lua.load(&script).eval().unwrap();
+
+        assert!(!result.0);
+        match result.1 {
+            LuaValue::String(message) => {
+                let text = message.to_str().unwrap().to_ascii_lowercase();
+                assert!(text.contains("memory"));
+            }
+            LuaValue::Error(error) => {
+                let text = error.to_string().to_ascii_lowercase();
+                assert!(text.contains("memory"));
+            }
+            other => panic!("expected Lua memory error, got {:?}", other),
+        }
+
+        let previous_limit = lua.set_memory_limit(0).unwrap();
+        assert_eq!(previous_limit, 0);
+        lua.load(
             r#"
-id = "second_mod"
-assets = ["shared/asset.png"]
-"#,
-        );
-
-        let mut mgr = ModManager::new();
-        let discovered = mgr.scan_folder(temp_dir.path().to_str().unwrap());
-
-        assert_eq!(discovered.len(), 1);
-        assert_eq!(discovered[0].id, "first_mod");
-        assert!(mgr.has_mod("first_mod"));
-        assert!(!mgr.has_mod("second_mod"));
+            local t = {}
+            for i = 1, 10000 do
+                t[i] = i
+            end
+            "#,
+        )
+        .exec()
+        .unwrap();
     }
 }

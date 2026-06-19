@@ -4,7 +4,8 @@
 //! Logging lives here so MessagePack-specific encode and decode activity stays next to the binary conversion path.
 //! Open this file when MessagePack mapping changes; generic dispatch and shared value ownership live nearby.
 
-use super::lua_table::SerialValue;
+use super::codec::SerializeLimits;
+use super::lua_table::{validate_serial_value, SerialValue};
 use crate::log_msg;
 use crate::runtime::log_messages::{SR04_MSGPACK_DEC, SR05_MSGPACK_ENC};
 use indexmap::IndexMap;
@@ -85,6 +86,8 @@ fn msg_to_serial(val: MsgValue) -> SerialValue {
 }
 /// Encode a SerialValue tree into MessagePack bytes.
 pub fn encode(val: &SerialValue) -> Result<Vec<u8>, String> {
+    validate_serial_value(val, &SerializeLimits::default(), "msgpack encode")
+        .map_err(|err| err.to_string())?;
     let mv = serial_to_msg(val);
     let mut bytes = Vec::with_capacity(estimate_msg_size(&mv));
     let mut serializer = rmps::Serializer::new(&mut bytes).with_struct_map();
@@ -95,18 +98,35 @@ pub fn encode(val: &SerialValue) -> Result<Vec<u8>, String> {
 }
 /// Decode MessagePack bytes into a SerialValue tree.
 pub fn decode(bytes: &[u8]) -> Result<SerialValue, String> {
+    decode_with_limits(bytes, &SerializeLimits::default()).map_err(|err| err.to_string())
+}
+
+/// Decode MessagePack bytes into a SerialValue tree with explicit limits.
+pub(crate) fn decode_with_limits(
+    bytes: &[u8],
+    limits: &SerializeLimits,
+) -> Result<SerialValue, super::codec::SerializeError> {
     let mv: MsgValue = {
         let mut deserializer = rmps::Deserializer::new(std::io::Cursor::new(bytes));
-        let value = MsgValue::deserialize(&mut deserializer)
-            .map_err(|e| format!("MessagePack decode error: {e}"))?;
+        let value = MsgValue::deserialize(&mut deserializer).map_err(|e| {
+            super::codec::SerializeError::codec(
+                "msgpack decode",
+                format!("MessagePack decode error: {e}"),
+            )
+        })?;
         let consumed = deserializer.get_ref().position() as usize;
         if consumed != bytes.len() {
-            return Err("MessagePack decode error: trailing bytes after root value".to_string());
+            return Err(super::codec::SerializeError::codec(
+                "msgpack decode",
+                "MessagePack decode error: trailing bytes after root value",
+            ));
         }
         value
     };
     log_msg!(debug, SR04_MSGPACK_DEC);
-    Ok(msg_to_serial(mv))
+    let serial = msg_to_serial(mv);
+    validate_serial_value(&serial, limits, "msgpack decode")?;
+    Ok(serial)
 }
 /// Encode a serde_json Value into MessagePack bytes.
 pub fn encode_json(value: &serde_json::Value) -> Result<Vec<u8>, String> {

@@ -543,6 +543,24 @@ impl LuaUserData for ValidationReport {
             }
             Ok(tbl)
         });
+        // -- getIssues --
+        /// Returns structured validation issues with rule ids, severities, and hints.
+        /// @return | table[] | Array of issue rows.
+        /// @field | ruleId | string | Stable rule identifier.
+        /// @field | kind | string | Broad issue kind.
+        /// @field | severity | string | Issue severity string.
+        /// @field | qualifiedName | string? | Qualified API name when present.
+        /// @field | module | string? | Module name when present.
+        /// @field | source | string? | Producing stage label.
+        /// @field | message | string | User-facing issue message.
+        /// @field | hint | string? | Optional fix hint.
+        methods.add_method("getIssues", |lua, this, ()| {
+            docs_issues_to_lua_table(lua, &this.0.issues)
+        });
+        // -- issueCount --
+        /// Returns the number of structured validation issues.
+        /// @return | integer | Total issue count.
+        methods.add_method("issueCount", |_, this, ()| Ok(this.0.issues.len()));
         // -- missingCount --
         /// Returns the number of live APIs missing from the catalog.
         /// @return | integer | Missing API count.
@@ -568,10 +586,12 @@ impl LuaUserData for ValidationReport {
         });
         // -- toTable --
         /// Converts this validation report into a plain Lua table.
-        /// @return | table | Table with missing, phantom, and incomplete array fields.
+        /// @return | table | Table with missing, phantom, incomplete, issues, and isValid fields.
         /// @field | missing | string[] | Missing symbols.
         /// @field | phantom | string[] | Phantom symbols.
         /// @field | incomplete | string[] | Incomplete symbols.
+        /// @field | issues | table[] | Structured issue rows.
+        /// @field | isValid | boolean | Whether no live APIs are missing.
         methods.add_method("toTable", |lua, this, ()| {
             let tbl = lua.create_table()?;
             let missing = lua.create_table()?;
@@ -593,6 +613,8 @@ impl LuaUserData for ValidationReport {
             // incomplete: items with partial or missing documentation
             /// Performs the 'incomplete' operation.
             tbl.set("incomplete", incomplete)?;
+            tbl.set("issues", docs_issues_to_lua_table(lua, &this.0.issues)?)?;
+            tbl.set("isValid", this.0.missing.is_empty())?;
             Ok(tbl)
         });
         // -- toJSON --
@@ -603,6 +625,7 @@ impl LuaUserData for ValidationReport {
                 "missing": this.0.missing,
                 "phantom": this.0.phantom,
                 "incomplete": this.0.incomplete,
+                "issues": docs_issues_to_json(&this.0.issues),
                 "isValid": this.0.missing.is_empty()
             });
             Ok(serde_json::to_string_pretty(&val).unwrap_or_default())
@@ -699,6 +722,24 @@ impl LuaUserData for QualityReport {
             }
             Ok(tbl)
         });
+        // -- getIssues --
+        /// Returns structured quality-rule issues with rule ids, severities, and hints.
+        /// @return | table[] | Array of issue rows.
+        /// @field | ruleId | string | Stable rule identifier.
+        /// @field | kind | string | Broad issue kind.
+        /// @field | severity | string | Issue severity string.
+        /// @field | qualifiedName | string? | Qualified API name when present.
+        /// @field | module | string? | Module name when present.
+        /// @field | source | string? | Producing stage label.
+        /// @field | message | string | User-facing issue message.
+        /// @field | hint | string? | Optional fix hint.
+        methods.add_method("getIssues", |lua, this, ()| {
+            docs_issues_to_lua_table(lua, &this.0.issues)
+        });
+        // -- issueCount --
+        /// Returns the number of structured quality issues.
+        /// @return | integer | Total issue count.
+        methods.add_method("issueCount", |_, this, ()| Ok(this.0.issues.len()));
         // -- getSummary --
         /// Returns a human-readable summary of overall and per-module quality scores.
         /// @return | string | Multiline quality summary text.
@@ -708,6 +749,7 @@ impl LuaUserData for QualityReport {
                 docs::quality_grade(this.0.overall_score),
                 this.0.overall_score * 100.0
             )];
+            lines.push(format!("Issues: {}", this.0.issues.len()));
             let mut mods: Vec<(&String, &f64)> = this.0.module_scores.iter().collect();
             mods.sort_by_key(|(k, _)| *k);
             for (m, s) in mods {
@@ -717,10 +759,12 @@ impl LuaUserData for QualityReport {
         });
         // -- toTable --
         /// Converts this quality report into a plain Lua table.
-        /// @return | table | Table with overallScore, grade, and moduleScores fields.
+        /// @return | table | Table with overallScore, grade, moduleScores, issues, and policy fields.
         /// @field | overallScore | number | Overall quality score.
         /// @field | grade | string | Quality grade letter.
         /// @field | moduleScores | table | Per-module score table.
+        /// @field | issues | table[] | Structured issue rows.
+        /// @field | policy | table | Weighting policy used to compute the score.
         methods.add_method("toTable", |lua, this, ()| {
             let tbl = lua.create_table()?;
             /// Performs the 'overallScore' operation.
@@ -733,6 +777,24 @@ impl LuaUserData for QualityReport {
             }
             /// Performs the 'moduleScores' operation.
             tbl.set("moduleScores", mods)?;
+            tbl.set("issues", docs_issues_to_lua_table(lua, &this.0.issues)?)?;
+            let policy = lua.create_table()?;
+            policy.set("descriptionWeight", this.0.policy.description_weight)?;
+            policy.set("qualifiedNameWeight", this.0.policy.qualified_name_weight)?;
+            policy.set("signatureWeight", this.0.policy.signature_weight)?;
+            policy.set(
+                "parameterDescriptionWeight",
+                this.0.policy.parameter_description_weight,
+            )?;
+            policy.set("parameterTypeWeight", this.0.policy.parameter_type_weight)?;
+            policy.set(
+                "returnDescriptionWeight",
+                this.0.policy.return_description_weight,
+            )?;
+            policy.set("returnTypeWeight", this.0.policy.return_type_weight)?;
+            policy.set("exampleWeight", this.0.policy.example_weight)?;
+            policy.set("sinceWeight", this.0.policy.since_weight)?;
+            tbl.set("policy", policy)?;
             Ok(tbl)
         });
         // -- toJSON --
@@ -742,7 +804,19 @@ impl LuaUserData for QualityReport {
             let val = serde_json::json!({
                 "overallScore": this.0.overall_score,
                 "grade": docs::quality_grade(this.0.overall_score),
-                "moduleScores": this.0.module_scores
+                "moduleScores": this.0.module_scores,
+                "issues": docs_issues_to_json(&this.0.issues),
+                "policy": {
+                    "descriptionWeight": this.0.policy.description_weight,
+                    "qualifiedNameWeight": this.0.policy.qualified_name_weight,
+                    "signatureWeight": this.0.policy.signature_weight,
+                    "parameterDescriptionWeight": this.0.policy.parameter_description_weight,
+                    "parameterTypeWeight": this.0.policy.parameter_type_weight,
+                    "returnDescriptionWeight": this.0.policy.return_description_weight,
+                    "returnTypeWeight": this.0.policy.return_type_weight,
+                    "exampleWeight": this.0.policy.example_weight,
+                    "sinceWeight": this.0.policy.since_weight
+                }
             });
             Ok(serde_json::to_string_pretty(&val).unwrap_or_default())
         });
@@ -775,6 +849,54 @@ impl DocsState {
 /// Computes a Lua quality report from documentation entries.
 fn compute_quality(entries: &[docs::DocEntry]) -> QualityReport {
     QualityReport(docs::QualityReport::from_entries(entries))
+}
+
+/// Convert one docs issue into a plain Lua table row.
+fn docs_issue_to_lua_table<'lua>(
+    lua: &'lua Lua,
+    issue: &docs::DocsIssue,
+) -> LuaResult<LuaTable<'lua>> {
+    let tbl = lua.create_table()?;
+    tbl.set("ruleId", issue.rule_id.clone())?;
+    tbl.set("kind", format!("{:?}", issue.kind).to_lowercase())?;
+    tbl.set("severity", issue.severity.as_str())?;
+    tbl.set("qualifiedName", issue.qualified_name.clone())?;
+    tbl.set("module", issue.module.clone())?;
+    tbl.set("source", issue.source.clone())?;
+    tbl.set("message", issue.message.clone())?;
+    tbl.set("hint", issue.hint.clone())?;
+    Ok(tbl)
+}
+
+/// Convert docs issues into an indexed Lua array table.
+fn docs_issues_to_lua_table<'lua>(
+    lua: &'lua Lua,
+    issues: &[docs::DocsIssue],
+) -> LuaResult<LuaTable<'lua>> {
+    let tbl = lua.create_table()?;
+    for (index, issue) in issues.iter().enumerate() {
+        tbl.set(index + 1, docs_issue_to_lua_table(lua, issue)?)?;
+    }
+    Ok(tbl)
+}
+
+/// Convert docs issues into JSON values suitable for pretty report serialization.
+fn docs_issues_to_json(issues: &[docs::DocsIssue]) -> Vec<serde_json::Value> {
+    issues
+        .iter()
+        .map(|issue| {
+            serde_json::json!({
+                "ruleId": issue.rule_id,
+                "kind": format!("{:?}", issue.kind).to_lowercase(),
+                "severity": issue.severity.as_str(),
+                "qualifiedName": issue.qualified_name,
+                "module": issue.module,
+                "source": issue.source,
+                "message": issue.message,
+                "hint": issue.hint
+            })
+        })
+        .collect()
 }
 #[allow(clippy::only_used_in_recursion)]
 /// Recursively scans Lua tables and records function entries up to bounded depth.
@@ -1063,32 +1185,10 @@ pub fn register(
             let luna_tbl: LuaTable = globals.get("lurek")?;
             let mut live_entries = Vec::new();
             scan_table(lua, &luna_tbl, "lurek", "lurek", &mut live_entries, 0)?;
-            let live_names: std::collections::HashSet<String> = live_entries
-                .iter()
-                .map(|e| e.qualified_name.clone())
-                .collect();
-            let doc_names: std::collections::HashSet<String> = doc_entries
-                .iter()
-                .map(|e| e.qualified_name.clone())
-                .collect();
-            let mut missing: Vec<String> = live_names.difference(&doc_names).cloned().collect();
-            missing.sort();
-            let mut phantom: Vec<String> = doc_names.difference(&live_names).cloned().collect();
-            phantom.sort();
-            let mut incomplete: Vec<String> = doc_entries
-                .iter()
-                .filter(|e| {
-                    e.description.is_empty()
-                        || (e.kind != "value" && e.parameters.is_empty() && e.returns.is_empty())
-                })
-                .map(|e| e.qualified_name.clone())
-                .collect();
-            incomplete.sort();
-            Ok(ValidationReport(docs::ValidationReport {
-                missing,
-                phantom,
-                incomplete,
-            }))
+            Ok(ValidationReport(docs::ValidationReport::compare(
+                &doc_entries,
+                &live_entries,
+            )))
         })?,
     )?;
 
@@ -1111,36 +1211,15 @@ pub fn register(
                 let prefix = format!("lurek.{}", module_name);
                 let mut live_entries = Vec::new();
                 scan_table(lua, &sub, &prefix, &module_name, &mut live_entries, 0)?;
-                let live_names: std::collections::HashSet<String> = live_entries
-                    .iter()
-                    .map(|e| e.qualified_name.clone())
-                    .collect();
-                let doc_names: std::collections::HashSet<String> = doc_entries
+                let module_doc_entries: Vec<docs::DocEntry> = doc_entries
                     .iter()
                     .filter(|e| e.module == module_name)
-                    .map(|e| e.qualified_name.clone())
+                    .cloned()
                     .collect();
-                let mut missing: Vec<String> = live_names.difference(&doc_names).cloned().collect();
-                missing.sort();
-                let mut phantom: Vec<String> = doc_names.difference(&live_names).cloned().collect();
-                phantom.sort();
-                let mut incomplete: Vec<String> = doc_entries
-                    .iter()
-                    .filter(|e| e.module == module_name)
-                    .filter(|e| {
-                        e.description.is_empty()
-                            || (e.kind != "value"
-                                && e.parameters.is_empty()
-                                && e.returns.is_empty())
-                    })
-                    .map(|e| e.qualified_name.clone())
-                    .collect();
-                incomplete.sort();
-                Ok(ValidationReport(docs::ValidationReport {
-                    missing,
-                    phantom,
-                    incomplete,
-                }))
+                Ok(ValidationReport(docs::ValidationReport::compare(
+                    &module_doc_entries,
+                    &live_entries,
+                )))
             },
         )?,
     )?;

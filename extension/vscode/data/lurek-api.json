@@ -114203,6 +114203,28 @@
           "objectType": "LQualityReport"
         },
         {
+          "name": "getIssues",
+          "fullPath": "LQualityReport:getIssues",
+          "signature": "()",
+          "description": "Returns structured quality-rule issues with rule ids, severities, and hints.",
+          "parameters": [],
+          "returns": "table[]",
+          "returnType": "table[]",
+          "isMethod": true,
+          "objectType": "LQualityReport"
+        },
+        {
+          "name": "issueCount",
+          "fullPath": "LQualityReport:issueCount",
+          "signature": "()",
+          "description": "Returns the number of structured quality issues.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LQualityReport"
+        },
+        {
           "name": "getSummary",
           "fullPath": "LQualityReport:getSummary",
           "signature": "()",
@@ -158234,6 +158256,28 @@
           "parameters": [],
           "returns": "string[]",
           "returnType": "string[]",
+          "isMethod": true,
+          "objectType": "LValidationReport"
+        },
+        {
+          "name": "getIssues",
+          "fullPath": "LValidationReport:getIssues",
+          "signature": "()",
+          "description": "Returns structured validation issues with rule ids, severities, and hints.",
+          "parameters": [],
+          "returns": "table[]",
+          "returnType": "table[]",
+          "isMethod": true,
+          "objectType": "LValidationReport"
+        },
+        {
+          "name": "issueCount",
+          "fullPath": "LValidationReport:issueCount",
+          "signature": "()",
+          "description": "Returns the number of structured validation issues.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LValidationReport"
         },

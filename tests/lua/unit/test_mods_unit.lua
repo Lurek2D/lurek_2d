@@ -220,6 +220,9 @@ describe("lurek.mods", function()
         expect_type("function", fn)
         fn()
         expect_true(called)
+        expect_error(function()
+            mod:setHook("bad hook name", function() end)
+        end)
     end)
 
     -- @covers LMod:hasHook
@@ -243,6 +246,62 @@ describe("lurek.mods", function()
     -- @covers LMod:getHook
     it("returns nil for missing hooks", function()
         expect_nil(make_mod({ id = "get_hook_mod" }):getHook("missing_hook"))
+    end)
+
+    -- @covers LMod:setSandbox
+    -- @covers LMod:getSandbox
+    it("stores and returns sandbox configuration tables", function()
+        local root = "save/_mods_sandbox_unit/"
+        remove_if_exists(root, true)
+        lurek.filesystem.createDirectory(root)
+
+        local mod = make_mod({ id = "sandbox_mod" })
+        mod:setSandbox({
+            api_mode = "allow_list",
+            apis = { "filesystem" },
+            hook_mode = "allow_list",
+            hooks = { "on_load" },
+            read_mode = "allow_list",
+            read_roots = { root },
+            blocked_ops = { "filesystem.remove" },
+            allow_network = false,
+            allow_file_write = false,
+            max_memory = 4096,
+        })
+
+        local sandbox = mod:getSandbox()
+        expect_type("table", sandbox)
+        expect_equal("allow_list", sandbox.api_mode)
+        expect_equal("allow_list", sandbox.hook_mode)
+        expect_equal("allow_list", sandbox.read_mode)
+        expect_equal("filesystem", sandbox.apis[1])
+        expect_equal("on_load", sandbox.hooks[1])
+        expect_equal(false, sandbox.allow_network)
+        expect_equal(false, sandbox.allow_file_write)
+        expect_equal(4096, sandbox.max_memory)
+
+        remove_if_exists(root, true)
+    end)
+
+    -- @covers LMod:runHook
+    it("executes hooks under sandbox policy and returns their values", function()
+        local mod = make_mod({
+            id = "run_hook_mod",
+            sandbox = {
+                hook_mode = "allow_list",
+                hooks = { "on_load" },
+            },
+        })
+        mod:setHook("on_load", function(a, b)
+            return a + b, "ok"
+        end)
+
+        local sum, status = mod:runHook("on_load", 2, 3)
+        expect_equal(5, sum)
+        expect_equal("ok", status)
+        expect_error(function()
+            mod:runHook("missing_hook")
+        end)
     end)
 
     -- @covers LMod:setConfig

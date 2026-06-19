@@ -263,8 +263,10 @@ This module is mostly self-contained inside the Edge/Integration group. Cross-mo
 - `LQualityReport:getBest(count?) -> LDocEntry[]`: Returns the highest-scoring documentation entries.
 - `LQualityReport:getByGrade(grade) -> LDocEntry[]`: Returns documentation entries whose calculated grade matches a grade string.
 - `LQualityReport:getGrade() -> string`: Returns the letter grade derived from the aggregate documentation score.
+- `LQualityReport:getIssues() -> table[]`: Returns structured quality-rule issues with rule ids, severities, and hints.
 - `LQualityReport:getModuleScores() -> table`: Returns per-module documentation quality scores.
 - `LQualityReport:getOverallScore() -> number`: Returns the aggregate documentation quality score.
+- `LQualityReport:issueCount() -> integer`: Returns the number of structured quality issues.
 - `LQualityReport:getSummary() -> string`: Returns a human-readable summary of overall and per-module quality scores.
 - `LQualityReport:getWorst(count?) -> LDocEntry[]`: Returns the lowest-scoring documentation entries.
 - `LQualityReport:toJSON() -> string`: Serializes this quality report to formatted JSON.
@@ -279,8 +281,10 @@ This module is mostly self-contained inside the Edge/Integration group. Cross-mo
 ##### Fields
 
 - `grade` (`string`): Quality grade letter.
+- `issues` (`table[]`): Structured quality issues with rule ids, severities, and hints.
 - `moduleScores` (`table`): Per-module score table.
 - `overallScore` (`number`): Overall quality score.
+- `policy` (`table`): Weighting policy used to compute the score.
 
 ##### Methods
 
@@ -328,10 +332,12 @@ This module is mostly self-contained inside the Edge/Integration group. Cross-mo
 ##### Methods
 
 - `LValidationReport:getIncomplete() -> string[]`: Returns catalog APIs whose documentation was incomplete.
+- `LValidationReport:getIssues() -> table[]`: Returns structured validation issues with rule ids, severities, and hints.
 - `LValidationReport:getMissing() -> string[]`: Returns live APIs that were missing from the checked catalog.
 - `LValidationReport:getPhantom() -> string[]`: Returns catalog APIs that were not present in the live Lua table.
 - `LValidationReport:getSummary() -> string`: Returns a compact text summary of missing, phantom, and incomplete counts.
 - `LValidationReport:incompleteCount() -> integer`: Returns the number of catalog APIs with incomplete documentation.
+- `LValidationReport:issueCount() -> integer`: Returns the number of structured validation issues.
 - `LValidationReport:isValid() -> boolean`: Returns whether the validation report has no missing live APIs.
 - `LValidationReport:missingCount() -> integer`: Returns the number of live APIs missing from the catalog.
 - `LValidationReport:phantomCount() -> integer`: Returns the number of catalog APIs absent from live reflection.
@@ -347,6 +353,8 @@ This module is mostly self-contained inside the Edge/Integration group. Cross-mo
 ##### Fields
 
 - `incomplete` (`string[]`): Incomplete symbols.
+- `isValid` (`boolean`): Whether no live APIs are missing.
+- `issues` (`table[]`): Structured validation issues with rule ids, severities, and hints.
 - `missing` (`string[]`): Missing symbols.
 - `phantom` (`string[]`): Phantom symbols.
 
@@ -360,4 +368,9 @@ This module is mostly self-contained inside the Edge/Integration group. Cross-mo
 
 ## Notes
 
-- No additional module-specific notes.
+- The Rust docs backend now supports strict export options with safe roots, JSON-only file targets, atomic writes, byte limits, and versioned payload envelopes. The current Lua `export*` helpers remain compatible with the legacy flat payload shapes.
+- Catalog mutation is now deterministic by qualified name: duplicate entries can be rejected in checked mode and default merges replace the earlier entry in insertion order.
+- Catalog search now uses cached normalized search text and supports explicit result caps through `SearchOptions`, so repeated case-insensitive queries do not rebuild lowercase strings for every entry.
+- Quality scoring now follows a weighted policy that distinguishes missing description, missing signature data, parameter/return documentation gaps, missing examples, and missing `since` tags as separate rule ids.
+- Validation and quality reports now carry structured issues with `ruleId`, `severity`, `message`, and optional `hint`, while preserving the legacy missing/phantom/incomplete bucket views for compatibility.
+- Export trimming now applies configurable limits for entries, descriptions, parameters, returns, and output bytes so large catalogs can be bounded instead of silently producing oversized payloads.

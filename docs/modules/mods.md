@@ -8,6 +8,10 @@
 - That policy layer is the main reason the module exists, because external content can be powerful without automatically receiving unrestricted code or data access.
 - The same system is useful for shipped player-facing mod ecosystems and for internal extension-style content workflows during development.
 - Controlled reload behavior and dependency ordering are especially important because modded projects need predictable iteration, recoverable startup, and explicit load precedence rather than a best-effort folder scan.
+- Default sandbox policy is deny-by-default for APIs, hooks, and read roots unless a mod is promoted into an explicit allow-all or allow-list mode.
+- Manifest and content parsing are strict TOML decoders with byte, field, and count limits instead of line-based best-effort parsing.
+- Discovery and reload flows now build structured scan and load-plan reports so missing dependencies, cycles, checksum failures, and path-policy violations are explicit.
+- Hot reload is atomic at the registry level: the previous valid snapshot stays active when the new manifest set fails validation.
 - It keeps mod power visible, explicit, and reviewable.
 - Read `mods` as the runtime policy layer for modded content: filesystem and runtime systems provide capabilities, but `mods` decides how external content is described, admitted, isolated, and managed.
 

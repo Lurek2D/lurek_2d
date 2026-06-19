@@ -13,6 +13,39 @@ use rusty_enet::PeerID;
 use std::cell::RefCell;
 use std::net::SocketAddr;
 use std::rc::Rc;
+
+fn guard_mod_network(state: &Rc<RefCell<SharedState>>) -> LuaResult<()> {
+    state
+        .borrow()
+        .ensure_mod_api_allowed("network")
+        .map_err(LuaError::external)
+}
+
+fn wrap_top_level_functions(
+    lua: &Lua,
+    table: &LuaTable,
+    state: Rc<RefCell<SharedState>>,
+) -> LuaResult<()> {
+    let mut function_keys = Vec::new();
+    for pair in table.clone().pairs::<LuaValue, LuaValue>() {
+        let (key, value) = pair?;
+        if matches!(value, LuaValue::Function(_)) {
+            function_keys.push(key);
+        }
+    }
+    for key in function_keys {
+        let function = table.get::<_, LuaFunction>(key.clone())?;
+        let function_key = lua.create_registry_value(function)?;
+        let state = state.clone();
+        let wrapper = lua.create_function(move |lua, args: LuaMultiValue| {
+            guard_mod_network(&state)?;
+            let function = lua.registry_value::<LuaFunction>(&function_key)?;
+            function.call::<_, LuaMultiValue>(args)
+        })?;
+        table.set(key, wrapper)?;
+    }
+    Ok(())
+}
 /// Converts a network event into a Lua table with `type` and event fields.
 fn event_to_table(lua: &Lua, ev: NetworkEvent) -> LuaResult<LuaTable<'_>> {
     let t = lua.create_table()?;
@@ -1186,7 +1219,7 @@ impl LuaUserData for LuaSseStream {
     }
 }
 /// Registers the `lurek.network` module.
-pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
+pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
     /// Maximum allowed peers per host.
     tbl.set("MAX_PEERS", MAX_PEERS as u64)?;
@@ -1820,6 +1853,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         )?,
     )?;
     /// Performs the 'network' operation.
+    wrap_top_level_functions(lua, &tbl, state)?;
     lurek.set("network", tbl)?;
     Ok(())
 }

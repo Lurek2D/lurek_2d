@@ -4,7 +4,8 @@
 //! This file depends on schema definitions but does not parse TOML, manage live mods, or enforce Lua sandbox boundaries.
 //! Read it when mod type registration, instance validation, or allowed API surface contracts need to change.
 
-use super::api_schema::{AssetRequirement, FieldDef, MethodDef};
+use super::api_schema::{AssetRequirement, FieldDef, FieldType, MethodDef};
+use super::FieldValue;
 use std::collections::HashMap;
 
 /// Schema for a registered game API type.
@@ -98,7 +99,7 @@ impl GameApiRegistry {
     pub fn validate_instance(
         &self,
         type_name: &str,
-        fields: &HashMap<String, String>,
+        fields: &HashMap<String, FieldValue>,
     ) -> Vec<String> {
         let mut errors = Vec::new();
 
@@ -114,6 +115,19 @@ impl GameApiRegistry {
         for field in &schema.fields {
             if field.required && !fields.contains_key(&field.name) {
                 errors.push(format!("Missing required field: {}", field.name));
+            }
+        }
+
+        for field in &schema.fields {
+            let Some(value) = fields.get(&field.name) else {
+                continue;
+            };
+            if !matches_field_type(value, &field.field_type) {
+                errors.push(format!(
+                    "Field '{}' expected {}",
+                    field.name,
+                    field.field_type.as_str()
+                ));
             }
         }
 
@@ -136,5 +150,23 @@ impl GameApiRegistry {
 impl Default for GameApiRegistry {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+fn matches_field_type(value: &FieldValue, expected: &FieldType) -> bool {
+    match expected {
+        FieldType::String | FieldType::Userdata(_) | FieldType::Function => {
+            matches!(value, FieldValue::String(_))
+        }
+        FieldType::Integer => matches!(value, FieldValue::Integer(_)),
+        FieldType::Float => matches!(value, FieldValue::Float(_) | FieldValue::Integer(_)),
+        FieldType::Boolean => matches!(value, FieldValue::Boolean(_)),
+        FieldType::Table => matches!(value, FieldValue::Table(_)),
+        FieldType::Any => true,
+        FieldType::Optional(inner) => matches_field_type(value, inner),
+        FieldType::Array(inner) => match value {
+            FieldValue::Array(items) => items.iter().all(|item| matches_field_type(item, inner)),
+            _ => false,
+        },
     }
 }

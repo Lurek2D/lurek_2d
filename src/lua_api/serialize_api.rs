@@ -2,9 +2,13 @@
 
 use super::SharedState;
 use crate::serialize::{
-    codec::{DecodeOptions, EncodeOptions, EncodedValue, SerialFormat},
-    lua_table::{from_lua, to_lua},
-    CsvOptions,
+    codec::{
+        decode_bytes_with_options, decode_bytes_with_schema, decode_text_detailed,
+        decode_text_with_schema, DecodeOptions, EncodeOptions, EncodedValue, SerialFormat,
+        SerializeLimits,
+    },
+    lua_table::{from_lua, from_lua_with_limits, to_lua},
+    CsvComplexCellPolicy, CsvOptions,
 };
 use mlua::prelude::*;
 use std::cell::RefCell;
@@ -23,6 +27,7 @@ fn csv_options_from_args(delim: Option<String>, headers: Option<bool>) -> CsvOpt
     CsvOptions {
         delimiter: parse_delimiter(delim),
         has_headers: headers.unwrap_or(true),
+        ..CsvOptions::default()
     }
 }
 
@@ -32,8 +37,91 @@ fn csv_options_from_table(opts: Option<LuaTable>) -> LuaResult<CsvOptions> {
     if let Some(t) = opts {
         let delim: Option<String> = t.get("delimiter")?;
         let headers: Option<bool> = t.get("has_headers")?;
+        let max_rows: Option<usize> = t.get("max_rows")?;
+        let max_columns: Option<usize> = t.get("max_columns")?;
+        let max_field_chars: Option<usize> = t.get("max_field_chars")?;
+        let strict_column_count: Option<bool> = t.get("strict_column_count")?;
+        let complex_cells: Option<String> = t.get("complex_cells")?;
         out.delimiter = parse_delimiter(delim);
         out.has_headers = headers.unwrap_or(true);
+        if let Some(limit) = max_rows {
+            out.max_rows = limit;
+        }
+        if let Some(limit) = max_columns {
+            out.max_columns = limit;
+        }
+        if let Some(limit) = max_field_chars {
+            out.max_field_chars = limit;
+        }
+        if let Some(strict) = strict_column_count {
+            out.strict_column_count = strict;
+        }
+        if let Some(mode) = complex_cells {
+            out.complex_cells = match mode.trim().to_ascii_lowercase().as_str() {
+                "reject" => CsvComplexCellPolicy::Reject,
+                "json" => CsvComplexCellPolicy::Json,
+                other => {
+                    return Err(LuaError::RuntimeError(format!(
+                        "serialize options: unknown complex_cells mode '{other}'"
+                    )))
+                }
+            };
+        }
+    }
+    Ok(out)
+}
+
+/// Parses shared serialization limit options from an optional Lua options table.
+fn serialize_limits_from_table(opts: Option<&LuaTable>) -> LuaResult<SerializeLimits> {
+    let mut out = SerializeLimits::default();
+    if let Some(t) = opts {
+        if let Some(limit) = t.get::<_, Option<usize>>("max_depth")? {
+            out.max_depth = limit;
+        }
+        if let Some(limit) = t.get::<_, Option<usize>>("max_nodes")? {
+            out.max_nodes = limit;
+        }
+        if let Some(limit) = t.get::<_, Option<usize>>("max_string_chars")? {
+            out.max_string_chars = limit;
+        }
+        if let Some(limit) = t.get::<_, Option<usize>>("max_table_entries")? {
+            out.max_table_entries = limit;
+        }
+        if let Some(limit) = t.get::<_, Option<usize>>("max_sequence_len")? {
+            out.max_sequence_len = limit;
+        }
+        if let Some(limit) = t.get::<_, Option<usize>>("max_input_bytes")? {
+            out.max_input_bytes = limit;
+        }
+        if let Some(limit) = t.get::<_, Option<usize>>("max_detect_attempts")? {
+            out.max_detect_attempts = limit;
+        }
+    }
+    Ok(out)
+}
+
+/// Parses an allow-list of format names from a Lua array table.
+fn allowed_formats_from_table(table: LuaTable) -> LuaResult<Vec<SerialFormat>> {
+    let mut formats = Vec::new();
+    for value in table.sequence_values::<String>() {
+        let raw = value?;
+        let format = SerialFormat::parse(&raw).ok_or_else(|| {
+            LuaError::RuntimeError(format!("serialize options: unknown allowed format '{raw}'"))
+        })?;
+        formats.push(format);
+    }
+    Ok(formats)
+}
+
+/// Parses shared serialization decode options from an optional Lua options table.
+fn decode_options_from_table(opts: Option<&LuaTable>) -> LuaResult<DecodeOptions> {
+    let mut out = DecodeOptions::default();
+    if let Some(t) = opts {
+        out.csv = csv_options_from_table(Some(t.clone()))?;
+        out.limits = serialize_limits_from_table(Some(t))?;
+        if let Some(allowed) = t.get::<_, Option<LuaTable>>("allowed_formats")? {
+            out.allowed_formats = allowed_formats_from_table(allowed)?;
+        }
     }
     Ok(out)
 }
@@ -44,9 +132,24 @@ fn encode_options_from_table(opts: Option<LuaTable>) -> LuaResult<EncodeOptions>
     if let Some(t) = opts {
         let pretty: Option<bool> = t.get("pretty")?;
         out.json_pretty = pretty.unwrap_or(false);
-        out.csv = csv_options_from_table(Some(t))?;
+        out.csv = csv_options_from_table(Some(t.clone()))?;
+        out.limits = serialize_limits_from_table(Some(&t))?;
     }
     Ok(out)
+}
+
+/// Extracts an optional schema from the shared options table.
+fn schema_from_table(opts: Option<&LuaTable>) -> LuaResult<Option<crate::serialize::SerialValue>> {
+    let Some(t) = opts else {
+        return Ok(None);
+    };
+    let schema_value: Option<LuaValue> = t.get("schema")?;
+    schema_value
+        .map(|value| {
+            from_lua_with_limits(&value, &serialize_limits_from_table(Some(t))?)
+                .map_err(|err| LuaError::RuntimeError(err.to_string()))
+        })
+        .transpose()
 }
 
 /// Parses a user-supplied format label into a `SerialFormat`.
@@ -92,12 +195,24 @@ fn decode_payload<'lua>(
     opts: Option<LuaTable<'lua>>,
 ) -> LuaResult<LuaValue<'lua>> {
     let fmt = parse_format_arg("decode", format.as_deref())?;
-    let csv = csv_options_from_table(opts)?;
+    let decode_opts = decode_options_from_table(opts.as_ref())?;
+    let schema = schema_from_table(opts.as_ref())?;
     let decoded = match (payload, fmt) {
-        (LuaValue::String(bytes), Some(SerialFormat::MsgPack)) => {
-            crate::serialize::decode_bytes(bytes.as_bytes(), SerialFormat::MsgPack)
-                .map_err(LuaError::RuntimeError)?
-        }
+        (LuaValue::String(bytes), Some(SerialFormat::MsgPack)) => match schema.as_ref() {
+            Some(schema) => decode_bytes_with_schema(
+                bytes.as_bytes(),
+                SerialFormat::MsgPack,
+                schema,
+                decode_opts.clone(),
+            )
+            .map_err(|err| LuaError::RuntimeError(err.to_string()))?,
+            None => decode_bytes_with_options(
+                bytes.as_bytes(),
+                SerialFormat::MsgPack,
+                decode_opts.clone(),
+            )
+            .map_err(|err| LuaError::RuntimeError(err.to_string()))?,
+        },
         (LuaValue::String(text), explicit_format) => {
             let input = text.to_str().map_err(|error| {
                 let label = if explicit_format.is_some() {
@@ -107,8 +222,14 @@ fn decode_payload<'lua>(
                 };
                 LuaError::RuntimeError(format!("{label}: {error}"))
             })?;
-            crate::serialize::decode_text(input, explicit_format, DecodeOptions { csv })
-                .map_err(LuaError::RuntimeError)?
+            match schema.as_ref() {
+                Some(schema) => {
+                    decode_text_with_schema(input, explicit_format, schema, decode_opts.clone())
+                        .map_err(|err| LuaError::RuntimeError(err.to_string()))?
+                }
+                None => decode_text_detailed(input, explicit_format, decode_opts.clone())
+                    .map_err(|err| LuaError::RuntimeError(err.to_string()))?,
+            }
         }
         _ => {
             return Err(LuaError::RuntimeError(
@@ -116,7 +237,7 @@ fn decode_payload<'lua>(
             ))
         }
     };
-    to_lua(lua, &decoded)
+    to_lua(lua, &decoded.value)
 }
 
 /// Encodes a Lua value into the requested serialization format and returns a Lua string.
@@ -126,14 +247,16 @@ fn encode_payload<'lua>(
     format: String,
     opts: Option<LuaTable<'lua>>,
 ) -> LuaResult<LuaString<'lua>> {
-    let val = from_lua(&value)?;
+    let encode_opts = encode_options_from_table(opts.clone())?;
+    let val = from_lua_with_limits(&value, &encode_opts.limits)
+        .map_err(|err| LuaError::RuntimeError(err.to_string()))?;
     let fmt = SerialFormat::parse(&format).ok_or_else(|| {
         LuaError::RuntimeError(
             "encode: unknown format (expected json/toml/csv/msgpack)".to_string(),
         )
     })?;
-    let encoded = crate::serialize::encode(&val, fmt, encode_options_from_table(opts)?)
-        .map_err(LuaError::RuntimeError)?;
+    let encoded = crate::serialize::encode(&val, fmt, encode_opts)
+        .map_err(|err| LuaError::RuntimeError(err.to_string()))?;
     match encoded {
         EncodedValue::Text(text) => lua.create_string(&text),
         EncodedValue::Binary(bytes) => lua.create_string(&bytes),
@@ -254,9 +377,13 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     tbl.set(
         "decodeMsgPack",
         lua.create_function(|lua, bytes: mlua::String| {
-            let val =
-                crate::serialize::from_msgpack(bytes.as_bytes()).map_err(LuaError::RuntimeError)?;
-            crate::serialize::lua_table::to_lua(lua, &val)
+            let val = decode_bytes_with_options(
+                bytes.as_bytes(),
+                SerialFormat::MsgPack,
+                DecodeOptions::default(),
+            )
+            .map_err(|err| LuaError::RuntimeError(err.to_string()))?;
+            crate::serialize::lua_table::to_lua(lua, &val.value)
         })?,
     )?;
 

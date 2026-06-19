@@ -1,15 +1,44 @@
 //! `src/mods/mod_loader.rs` parses TOML content files into typed `ModInstance` records ready for registry validation.
-//! It owns `FieldValue`, `ModInstance`, scalar coercion helpers, line-based manifest parsing, and source-path attachment.
+//! It owns `FieldValue`, `ModContentLoadOptions`, scalar coercion helpers, real TOML decoding, and source-path attachment.
 //! Instance bootstrap from content files happens here so manifest decoding stays separate from registration and execution.
-//! Complex field values are flattened for validation, while richer table and array data stay in `FieldValue`.
+//! Complex field values remain structured instead of being flattened into strings during parse time.
 //! This file does not manage dependency order or sandbox policy; it only turns content text into structured instances.
 //! Read it when TOML parsing, field coercion, instance IDs, or source-file tracking for mods needs to change.
 
+use super::{ModError, ModLimits, ModResult};
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 
-/// A field value in a mod instance.
+/// Load options used by the mod content TOML parser.
 #[derive(Debug, Clone)]
+pub struct ModContentLoadOptions {
+    /// Maximum raw TOML size in bytes.
+    pub max_bytes: usize,
+    /// Maximum number of instances accepted from one file.
+    pub max_instances: usize,
+    /// Maximum fields accepted for one instance.
+    pub max_fields: usize,
+}
+
+impl Default for ModContentLoadOptions {
+    fn default() -> Self {
+        Self::from_limits(&ModLimits::default())
+    }
+}
+
+impl ModContentLoadOptions {
+    /// Build loader options from shared mod limits.
+    pub fn from_limits(limits: &ModLimits) -> Self {
+        Self {
+            max_bytes: limits.max_content_bytes,
+            max_instances: limits.max_instances,
+            max_fields: limits.max_instance_fields,
+        }
+    }
+}
+
+/// A field value in a mod instance.
+#[derive(Debug, Clone, PartialEq)]
 pub enum FieldValue {
     String(String),
     Integer(i64),
@@ -94,7 +123,7 @@ impl ModInstance {
         self.fields.get(name)
     }
 
-    /// Return all fields as a flat `String → String` map for validation against a type schema.
+    /// Return all scalar fields as a flat `String -> String` map for legacy callers.
     pub fn field_as_string_map(&self) -> HashMap<String, String> {
         self.fields
             .iter()
@@ -104,7 +133,7 @@ impl ModInstance {
                     FieldValue::Integer(n) => n.to_string(),
                     FieldValue::Float(f) => f.to_string(),
                     FieldValue::Boolean(b) => b.to_string(),
-                    _ => "<complex>".to_string(),
+                    FieldValue::Array(_) | FieldValue::Table(_) => "<complex>".to_string(),
                 };
                 (k.clone(), s)
             })
@@ -112,100 +141,121 @@ impl ModInstance {
     }
 }
 
-/// Load mod instances from a TOML content file.
-///
-/// Expected format:
-/// ```toml
-/// [[item]]
-/// id = "iron_sword"
-/// name = "Iron Sword"
-/// damage = 10
-/// ```
+/// Load mod instances from a TOML content file using default safety limits.
 pub fn load_instances_from_toml(
     mod_id: &str,
     content: &str,
     source_file: &Path,
-) -> Vec<ModInstance> {
-    let mut instances = Vec::new();
-    let mut current_type = String::new();
-    let mut current_id = String::new();
-    let mut current_fields: HashMap<String, FieldValue> = HashMap::new();
-
-    for line in content.lines() {
-        let trimmed = line.trim();
-
-        // Detect [[type]] header
-        if trimmed.starts_with("[[") && trimmed.ends_with("]]") {
-            // Save previous instance
-            if !current_type.is_empty() && !current_id.is_empty() {
-                let mut inst = ModInstance::new(mod_id, &current_type, &current_id);
-                inst.fields = current_fields.clone();
-                inst.source_file = source_file.to_path_buf();
-                instances.push(inst);
-            }
-            current_type = trimmed[2..trimmed.len() - 2].to_string();
-            current_id.clear();
-            current_fields.clear();
-            continue;
-        }
-
-        if current_type.is_empty() {
-            continue;
-        }
-
-        // Parse key = value
-        if let Some(eq_pos) = trimmed.find('=') {
-            let key = trimmed[..eq_pos].trim().to_string();
-            let value_str = trimmed[eq_pos + 1..].trim();
-            let value = parse_toml_value(value_str);
-
-            if key == "id" {
-                if let FieldValue::String(ref s) = value {
-                    current_id = s.clone();
-                }
-            }
-            current_fields.insert(key, value);
-        }
-    }
-
-    // Save last instance
-    if !current_type.is_empty() && !current_id.is_empty() {
-        let mut inst = ModInstance::new(mod_id, &current_type, &current_id);
-        inst.fields = current_fields;
-        inst.source_file = source_file.to_path_buf();
-        instances.push(inst);
-    }
-
-    instances
+) -> ModResult<Vec<ModInstance>> {
+    load_instances_from_toml_with_options(
+        mod_id,
+        content,
+        source_file,
+        &ModContentLoadOptions::default(),
+    )
 }
 
-fn parse_toml_value(s: &str) -> FieldValue {
-    // Boolean
-    if s == "true" {
-        return FieldValue::Boolean(true);
-    }
-    if s == "false" {
-        return FieldValue::Boolean(false);
-    }
-
-    // String
-    if s.starts_with('"') && s.ends_with('"') && s.len() >= 2 {
-        return FieldValue::String(s[1..s.len() - 1].to_string());
-    }
-    if s.starts_with('\'') && s.ends_with('\'') && s.len() >= 2 {
-        return FieldValue::String(s[1..s.len() - 1].to_string());
+/// Load mod instances from a TOML content file with explicit limits.
+pub fn load_instances_from_toml_with_options(
+    mod_id: &str,
+    content: &str,
+    source_file: &Path,
+    options: &ModContentLoadOptions,
+) -> ModResult<Vec<ModInstance>> {
+    if content.len() > options.max_bytes {
+        return Err(ModError::LimitExceeded {
+            what: format!("content file '{}'", source_file.display()),
+            actual: content.len() as u64,
+            max: options.max_bytes as u64,
+        });
     }
 
-    // Integer
-    if let Ok(n) = s.parse::<i64>() {
-        return FieldValue::Integer(n);
+    let value: toml::Value = content.parse().map_err(|err| ModError::Parse {
+        path: source_file.to_path_buf(),
+        detail: format!("invalid TOML: {}", err),
+    })?;
+    let table = value.as_table().ok_or_else(|| ModError::Validation {
+        path: Some(source_file.to_path_buf()),
+        detail: "content file must contain a TOML table".to_string(),
+    })?;
+
+    let mut instances = Vec::new();
+    for (type_name, items) in table {
+        let array = items.as_array().ok_or_else(|| ModError::Validation {
+            path: Some(source_file.to_path_buf()),
+            detail: format!("top-level '{}' must be an array of tables", type_name),
+        })?;
+        for item in array {
+            if instances.len() >= options.max_instances {
+                return Err(ModError::LimitExceeded {
+                    what: format!("content instances in '{}'", source_file.display()),
+                    actual: (instances.len() + 1) as u64,
+                    max: options.max_instances as u64,
+                });
+            }
+            let item_table = item.as_table().ok_or_else(|| ModError::Validation {
+                path: Some(source_file.to_path_buf()),
+                detail: format!("entry in '{}' must be a table", type_name),
+            })?;
+            if item_table.len() > options.max_fields {
+                return Err(ModError::LimitExceeded {
+                    what: format!("fields for '{}'", type_name),
+                    actual: item_table.len() as u64,
+                    max: options.max_fields as u64,
+                });
+            }
+            let instance_id = item_table
+                .get("id")
+                .and_then(|value| value.as_str())
+                .ok_or_else(|| ModError::Validation {
+                    path: Some(source_file.to_path_buf()),
+                    detail: format!("'{}.id' must be a string", type_name),
+                })?;
+            let mut instance = ModInstance::new(mod_id, type_name, instance_id);
+            instance.source_file = source_file.to_path_buf();
+            for (field_name, value) in item_table {
+                instance.set_field(
+                    field_name.clone(),
+                    convert_value(value, source_file, type_name, field_name)?,
+                );
+            }
+            instances.push(instance);
+        }
     }
 
-    // Float
-    if let Ok(f) = s.parse::<f64>() {
-        return FieldValue::Float(f);
-    }
+    Ok(instances)
+}
 
-    // Default to string
-    FieldValue::String(s.to_string())
+fn convert_value(
+    value: &toml::Value,
+    source_file: &Path,
+    type_name: &str,
+    field_name: &str,
+) -> ModResult<FieldValue> {
+    match value {
+        toml::Value::String(text) => Ok(FieldValue::String(text.clone())),
+        toml::Value::Integer(number) => Ok(FieldValue::Integer(*number)),
+        toml::Value::Float(number) => Ok(FieldValue::Float(*number)),
+        toml::Value::Boolean(flag) => Ok(FieldValue::Boolean(*flag)),
+        toml::Value::Array(values) => values
+            .iter()
+            .map(|item| convert_value(item, source_file, type_name, field_name))
+            .collect::<ModResult<Vec<_>>>()
+            .map(FieldValue::Array),
+        toml::Value::Table(entries) => entries
+            .iter()
+            .map(|(key, entry)| {
+                convert_value(entry, source_file, type_name, key)
+                    .map(|converted| (key.clone(), converted))
+            })
+            .collect::<ModResult<HashMap<_, _>>>()
+            .map(FieldValue::Table),
+        toml::Value::Datetime(_) => Err(ModError::Validation {
+            path: Some(source_file.to_path_buf()),
+            detail: format!(
+                "unsupported TOML datetime for '{}.{}'; use string, number, boolean, array, or table",
+                type_name, field_name
+            ),
+        }),
+    }
 }

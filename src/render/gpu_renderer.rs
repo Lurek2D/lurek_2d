@@ -4,7 +4,7 @@
 //! Coalesces compatible draw calls so repeated materials and textures do not force unnecessary pipeline churn.
 //! Uploads and reuses static geometry to bypass repeated tessellation and reduce CPU-side frame overhead.
 //! Supports GPU instancing for repeated sprites, particles, and grid-like content that share one draw shape.
-//! Resolves text rendering by expanding glyph quads from atlas data and batching them with other draw work.
+//! Delegates text glyph replay to a focused owner while batching the resulting draw work with the frame.
 //! Maintains offscreen canvases as render targets so composite views and multi-surface workflows stay possible.
 //! Handles resize, viewport updates, and target-dimension logic that keep swapchain-backed output coherent.
 //! Owns readback orchestration for surfaces when screenshots or software-visible capture need GPU results.
@@ -18,12 +18,12 @@ use crate::math::{polygon, Mat3, Vec2};
 use crate::render::mesh::Mesh;
 use crate::render::renderer::{
     adaptive_circle_ellipse_segments, BevelStyle, BlendMode, DrawMode, DrawableKind,
-    GradientDirection, HexOrientation, ParticleRenderShape, PathSegment, RenderCommand, TextAlign,
+    GradientDirection, HexOrientation, ParticleRenderShape, PathSegment, RenderCommand,
     TextureData,
 };
 use crate::render::shader::Shader;
 use crate::runtime::resource_keys::{
-    CanvasKey, FontKey, MeshKey, ShaderKey, SpriteBatchKey, StaticGeometryKey, TextureKey,
+    CanvasKey, FontKey, MeshKey, ShaderKey, ShapeKey, SpriteBatchKey, StaticGeometryKey, TextureKey,
 };
 use slotmap::{Key, SlotMap, SparseSecondaryMap};
 use std::collections::{HashMap, HashSet};
@@ -39,7 +39,9 @@ use crate::render::gpu_types::{
     ColorVertex, LightVertex, PreparedDraw, RenderTargetId, ShadowDispatchInput, TexRef, TexVertex,
     ViewportUniform, MAX_COLOR_IDXS, MAX_COLOR_VERTS, MAX_LIGHT_QUADS, MAX_TEX_IDXS, MAX_TEX_VERTS,
 };
-use crate::render::input_validation::{validate_render_command_with_category, RenderInputLimits};
+use crate::render::input_validation::{
+    validate_compound_shape, validate_render_command_with_category, RenderInputLimits,
+};
 use crate::render::render_diagnostics::RenderDiagnostics;
 
 // Submodule helper imports
@@ -671,6 +673,7 @@ impl GpuRenderer {
         fonts: &mut SlotMap<FontKey, crate::render::Font>,
         light_world: &crate::light::light_world::LightWorld,
         sprite_batches: &SlotMap<SpriteBatchKey, crate::sprite::SpriteBatch>,
+        shapes: &SlotMap<ShapeKey, crate::render::CompoundShape>,
         canvases: &SlotMap<CanvasKey, crate::render::Canvas>,
         meshes: &SlotMap<MeshKey, Mesh>,
         shaders: &SlotMap<ShaderKey, Shader>,
@@ -1285,67 +1288,32 @@ impl GpuRenderer {
                     y,
                     scale,
                 } => {
-                    if let Some(font) = fonts.get_mut(*font_key) {
-                        if self.ensure_font_atlas(*font_key, font, default_filter) {
-                            let t = transform_stack_last(&transform_stack);
-                            let font_size = font.size();
-                            let ratio = *scale;
-                            let (target_width, target_height) =
-                                self.target_dimensions(current_target, canvases);
-                            let scissor =
-                                normalize_scissor(current_scissor, target_width, target_height);
-                            let mut cursor_x = *x;
-                            for ch in text.chars() {
-                                if let Some(glyph) = font.glyph(ch) {
-                                    if glyph.width > 0 && glyph.height > 0 {
-                                        let gw = glyph.width as f32 * ratio;
-                                        let gh = glyph.height as f32 * ratio;
-                                        let gx = cursor_x + glyph.offset_x * ratio;
-                                        let gy = *y
-                                            + (font_size - glyph.offset_y - glyph.height as f32)
-                                                * ratio;
-                                        scratch_tex_verts.clear();
-                                        scratch_tex_idxs.clear();
-                                        push_tex_quad(
-                                            &mut scratch_tex_verts,
-                                            &mut scratch_tex_idxs,
-                                            t,
-                                            current_color,
-                                            gx,
-                                            gy,
-                                            0.0,
-                                            1.0,
-                                            1.0,
-                                            0.0,
-                                            0.0,
-                                            gw,
-                                            gh,
-                                            glyph.uv_x,
-                                            glyph.uv_y,
-                                            glyph.uv_x + glyph.uv_w,
-                                            glyph.uv_y + glyph.uv_h,
-                                        );
-                                        append_tex_draw_slices(
-                                            &mut draws,
-                                            &mut all_tex_verts,
-                                            &mut all_tex_idxs,
-                                            current_target,
-                                            TexRef::FontAtlas(*font_key),
-                                            current_blend_mode,
-                                            scissor,
-                                            color_mask_bits,
-                                            active_shader.filter(|key| shaders.contains_key(*key)),
-                                            stencil_mode,
-                                            stencil_reference,
-                                            &scratch_tex_verts,
-                                            &scratch_tex_idxs,
-                                        );
-                                    }
-                                    cursor_x += glyph.advance_width * ratio;
-                                }
-                            }
-                        }
-                    }
+                    let t = transform_stack_last(&transform_stack);
+                    self.replay_plain_text(
+                        *font_key,
+                        text,
+                        *x,
+                        *y,
+                        *scale,
+                        current_color,
+                        t,
+                        current_target,
+                        current_blend_mode,
+                        current_scissor,
+                        color_mask_bits,
+                        active_shader,
+                        stencil_mode,
+                        stencil_reference,
+                        canvases,
+                        shaders,
+                        fonts,
+                        default_filter,
+                        &mut all_tex_verts,
+                        &mut all_tex_idxs,
+                        &mut scratch_tex_verts,
+                        &mut scratch_tex_idxs,
+                        &mut draws,
+                    );
                 }
                 RenderCommand::DrawImage {
                     texture_key,
@@ -1739,7 +1707,6 @@ impl GpuRenderer {
                         &scratch_tex_idxs,
                     );
                 }
-                }
                 RenderCommand::SetPointSize(size) => {
                     point_size = *size;
                 }
@@ -1795,82 +1762,34 @@ impl GpuRenderer {
                     align,
                     scale,
                 } => {
-                    if let Some(font) = fonts.get_mut(*font_key) {
-                        let ratio = *scale;
-                        let wrapped = font.wrap_text(text, *limit / ratio);
-                        let lh = font.line_height() * ratio;
-                        let font_size = font.size();
-                        if self.ensure_font_atlas(*font_key, font, default_filter) {
-                            let t = transform_stack_last(&transform_stack);
-                            let (target_width, target_height) =
-                                self.target_dimensions(current_target, canvases);
-                            let scissor =
-                                normalize_scissor(current_scissor, target_width, target_height);
-                            for (i, line) in wrapped.iter().enumerate() {
-                                let line_w = font.text_width(line) * ratio;
-                                let x_offset = match align {
-                                    TextAlign::Center => (*limit - line_w) * 0.5,
-                                    TextAlign::Right => *limit - line_w,
-                                    _ => 0.0,
-                                };
-                                let line_x = *x + x_offset;
-                                let line_y = *y + i as f32 * lh;
-                                let mut cursor_x = line_x;
-                                for ch in line.chars() {
-                                    if let Some(glyph) = font.glyph(ch) {
-                                        if glyph.width > 0 && glyph.height > 0 {
-                                            let gw = glyph.width as f32 * ratio;
-                                            let gh = glyph.height as f32 * ratio;
-                                            let gx = cursor_x + glyph.offset_x * ratio;
-                                            let gy = line_y
-                                                + (font_size
-                                                    - glyph.offset_y
-                                                    - glyph.height as f32)
-                                                    * ratio;
-                                            scratch_tex_verts.clear();
-                                            scratch_tex_idxs.clear();
-                                            push_tex_quad(
-                                                &mut scratch_tex_verts,
-                                                &mut scratch_tex_idxs,
-                                                t,
-                                                current_color,
-                                                gx,
-                                                gy,
-                                                0.0,
-                                                1.0,
-                                                1.0,
-                                                0.0,
-                                                0.0,
-                                                gw,
-                                                gh,
-                                                glyph.uv_x,
-                                                glyph.uv_y,
-                                                glyph.uv_x + glyph.uv_w,
-                                                glyph.uv_y + glyph.uv_h,
-                                            );
-                                            append_tex_draw_slices(
-                                                &mut draws,
-                                                &mut all_tex_verts,
-                                                &mut all_tex_idxs,
-                                                current_target,
-                                                TexRef::FontAtlas(*font_key),
-                                                current_blend_mode,
-                                                scissor,
-                                                color_mask_bits,
-                                                active_shader
-                                                    .filter(|key| shaders.contains_key(*key)),
-                                                stencil_mode,
-                                                stencil_reference,
-                                                &scratch_tex_verts,
-                                                &scratch_tex_idxs,
-                                            );
-                                        }
-                                        cursor_x += glyph.advance_width * ratio;
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    let t = transform_stack_last(&transform_stack);
+                    self.replay_formatted_text(
+                        *font_key,
+                        text,
+                        *x,
+                        *y,
+                        *limit,
+                        *align,
+                        *scale,
+                        current_color,
+                        t,
+                        current_target,
+                        current_blend_mode,
+                        current_scissor,
+                        color_mask_bits,
+                        active_shader,
+                        stencil_mode,
+                        stencil_reference,
+                        canvases,
+                        shaders,
+                        fonts,
+                        default_filter,
+                        &mut all_tex_verts,
+                        &mut all_tex_idxs,
+                        &mut scratch_tex_verts,
+                        &mut scratch_tex_idxs,
+                        &mut draws,
+                    );
                 }
                 RenderCommand::StencilBegin { action, value } => {
                     stencil_mode = GpuStencilMode::Write(*action);
@@ -2181,7 +2100,49 @@ impl GpuRenderer {
                 RenderCommand::SetShader(shader) => {
                     active_shader = shader.filter(|key| shaders.contains_key(*key));
                 }
-                RenderCommand::DrawShape { .. } => {}
+                RenderCommand::DrawShape {
+                    shape_key,
+                    x,
+                    y,
+                    rotation,
+                    sx,
+                    sy,
+                    ox,
+                    oy,
+                } => {
+                    let Some(shape) = shapes.get(*shape_key) else {
+                        self.render_diagnostics.record_missing_shape();
+                        continue;
+                    };
+                    if let Err(err) = validate_compound_shape(shape, &render_input_limits) {
+                        self.render_diagnostics.record_invalid_render_input();
+                        log::warn!("Skipping invalid shape command: {}", err);
+                        continue;
+                    }
+                    let parent = transform_stack_last(&transform_stack);
+                    let local = Mat3::from_translation(Vec2 { x: *x, y: *y })
+                        * Mat3::from_rotation(*rotation)
+                        * Mat3::from_scale(Vec2 { x: *sx, y: *sy })
+                        * Mat3::from_translation(Vec2 { x: -*ox, y: -*oy });
+                    let shape_transform = *parent * local;
+                    self.replay_compound_shape(
+                        shape,
+                        &shape_transform,
+                        wireframe,
+                        current_target,
+                        current_blend_mode,
+                        current_scissor,
+                        color_mask_bits,
+                        active_shader,
+                        stencil_mode,
+                        stencil_reference,
+                        canvases,
+                        shaders,
+                        &mut all_color_verts,
+                        &mut all_color_idxs,
+                        &mut draws,
+                    );
+                }
                 RenderCommand::DrawParticleSystem { ref particles } => {
                     if particles.is_empty() {
                         continue;
@@ -3278,7 +3239,37 @@ impl GpuRenderer {
                 } => {
                     pending_postfx.push((*stack_id, passes.clone(), *width, *height));
                 }
-                RenderCommand::DrawRichText { .. } => {}
+                RenderCommand::DrawRichText {
+                    font_key,
+                    spans,
+                    x,
+                    y,
+                } => {
+                    let t = transform_stack_last(&transform_stack);
+                    self.replay_rich_text(
+                        *font_key,
+                        spans,
+                        *x,
+                        *y,
+                        t,
+                        current_target,
+                        current_blend_mode,
+                        current_scissor,
+                        color_mask_bits,
+                        active_shader,
+                        stencil_mode,
+                        stencil_reference,
+                        canvases,
+                        shaders,
+                        fonts,
+                        default_filter,
+                        &mut all_tex_verts,
+                        &mut all_tex_idxs,
+                        &mut scratch_tex_verts,
+                        &mut scratch_tex_idxs,
+                        &mut draws,
+                    );
+                }
                 RenderCommand::DrawConvexFan {
                     vertices,
                     tint,

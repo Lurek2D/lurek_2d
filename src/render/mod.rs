@@ -37,10 +37,14 @@ pub mod gpu_shader_cache;
 pub mod gpu_shaders;
 /// Shadow-map and occluder rendering support for GPU lighting passes.
 pub mod gpu_shadows;
+/// Registered compound-shape replay into GPU flat-color draw buffers.
+pub mod gpu_shape_replay;
 /// Shared renderer state that owns wgpu devices, surfaces, and frame resources.
 pub mod gpu_state;
 /// Tessellation helpers that convert 2D primitives into GPU vertex/index buffers.
 pub mod gpu_tess;
+/// Font-atlas text replay into GPU textured draw buffers.
+pub mod gpu_text_replay;
 /// Common GPU-facing structs, enums, and packed data layouts used by render passes.
 pub mod gpu_types;
 /// Per-frame image post-processing effect descriptors and shader parameter blocks.

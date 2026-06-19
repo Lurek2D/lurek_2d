@@ -3,8 +3,11 @@
 use lurek2d::image::TextureColorSpace;
 use lurek2d::render::{Canvas, Shader, TextureData};
 use lurek2d::runtime::config::ModulesConfig;
-use lurek2d::runtime::{Config, RuntimeMode, SharedState};
+use lurek2d::runtime::{
+    call_function_with_policy, Config, LuaExecutionPolicy, RuntimeMode, SharedState,
+};
 use lurek2d::window;
+use mlua::Lua;
 use std::path::PathBuf;
 
 mod touch_canvas_tests {
@@ -189,6 +192,53 @@ mod config_tests {
         assert!(!modules.globe);
         assert!(!modules.spine);
         assert!(modules.runtime);
+    }
+}
+
+mod lua_execution_policy_tests {
+    use super::*;
+
+    #[test]
+    fn shared_policy_runs_function_without_timeout_by_default() {
+        let lua = Lua::new();
+        let function = lua
+            .load("return function(value) return value + 1 end")
+            .eval::<mlua::Function>()
+            .expect("function");
+
+        let value: i64 = call_function_with_policy(
+            &lua,
+            "test",
+            function,
+            41_i64,
+            LuaExecutionPolicy::default(),
+        )
+        .expect("call succeeds");
+
+        assert_eq!(value, 42);
+    }
+
+    #[test]
+    fn shared_policy_times_out_busy_loop() {
+        let lua = Lua::new();
+        let function = lua
+            .load("return function() local sum = 0 for i = 1, 100000000 do sum = sum + i end return sum end")
+            .eval::<mlua::Function>()
+            .expect("function");
+
+        let error = call_function_with_policy::<_, ()>(
+            &lua,
+            "busy",
+            function,
+            (),
+            LuaExecutionPolicy {
+                timeout_ms: Some(1.0),
+                hook_instruction_interval: 1,
+            },
+        )
+        .expect_err("long-running loop should time out");
+
+        assert!(error.to_string().contains("exceeded callback timeout"));
     }
 }
 

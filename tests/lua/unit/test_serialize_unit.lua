@@ -47,6 +47,16 @@ describe("lurek.serial JSON helpers", function()
         expect_equal(2, decoded.meta.version)
         expect_equal("lurek", decoded.meta.engine)
         expect_equal(4, decoded.data[2].y)
+
+        local cyclic = {}
+        cyclic.self = cyclic
+        expect_error(function()
+            lurek.serial.toJson(cyclic, false)
+        end)
+
+        expect_error(function()
+            lurek.serial.toJson({ bad = math.huge }, false)
+        end)
     end)
 end)
 
@@ -264,6 +274,37 @@ describe("lurek.serial unified codec helpers", function()
         local bytes = lurek.serial.encodeMsgPack({ hp = 10 })
         local msgpack = lurek.serial.decode(bytes, "msgpack")
         expect_equal(10, msgpack.hp)
+
+        local patched = lurek.serial.decode('{"name":"hero"}', "json", {
+            schema = {
+                type = "table",
+                fields = {
+                    name = { type = "string", required = true },
+                    hp = { type = "number", default = 10 },
+                },
+            },
+        })
+        expect_equal("hero", patched.name)
+        expect_equal(10, patched.hp)
+
+        expect_error(function()
+            lurek.serial.decode("title = \"demo\"", nil, {
+                allowed_formats = { "json", "toml" },
+                max_detect_attempts = 1,
+            })
+        end)
+
+        expect_error(function()
+            lurek.serial.decode("name,score\nada,10\nlin,20\n", "csv", {
+                max_rows = 1,
+            })
+        end)
+
+        expect_error(function()
+            lurek.serial.decode("name,score\nada,toolong\n", "csv", {
+                max_field_chars = 3,
+            })
+        end)
     end)
 
     -- @covers lurek.serial.encode
@@ -278,6 +319,27 @@ describe("lurek.serial unified codec helpers", function()
         }
         local csv = lurek.serial.encode(rows, "csv", { delimiter = ";", has_headers = true })
         expect_true(string.find(csv, ";", 1, true) ~= nil)
+
+        local big = {}
+        for i = 1, 20 do
+            big[i] = i
+        end
+        expect_error(function()
+            lurek.serial.encode(big, "json", { max_sequence_len = 10 })
+        end)
+
+        expect_error(function()
+            lurek.serial.encode({
+                { name = "ada", payload = { nested = true } },
+            }, "csv")
+        end)
+
+        local csv_nested = lurek.serial.encode({
+            { name = "ada", payload = { nested = true } },
+        }, "csv", {
+            complex_cells = "json",
+        })
+        expect_true(string.find(csv_nested, '{"nested":true}', 1, true) ~= nil)
     end)
 
     -- @covers lurek.serial.applyDefaults

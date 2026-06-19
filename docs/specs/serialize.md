@@ -4,6 +4,7 @@
 
 - Translates JSON, TOML, CSV, XML, INI, and MessagePack via one intermediate tree.
 - Validates data against schemas.
+- Enforces bounded decode, encode, and Lua-conversion limits for depth, nodes, strings, rows, and input size.
 
 ## General Info
 
@@ -12,7 +13,7 @@
 - Binding: `src/lua_api/serialize_api.rs`
 - Namespace: `lurek.serial`
 - Lua API surface: `16` functions, `0` types, `0` methods
-- Rust test path(s): tests/rust/unit/serial_tests.rs
+- Rust test path(s): tests/rust/unit/serialize_tests.rs
 - Lua test path(s): tests/lua/unit/test_serialize_unit.lua
 
 ## Summary
@@ -23,6 +24,7 @@
 - Its shared intermediate tree is the key user-facing idea: several formats can participate in the same workflows because they resolve into one normalized serial representation.
 - That normalized representation is what makes cross-format tooling practical. Validators, exporters, migration steps, and transforms can reason about one value model instead of reimplementing logic for every source format.
 - That also makes migrations easier to reason about.
+- Safety is part of the contract. Lua conversion, autodetection, CSV parsing, and MessagePack decode must stay bounded and reject cyclic or non-finite inputs instead of recursing or allocating without policy.
 - Read `serialize` as the normalization layer for structured data moving between external formats and engine-facing workflows.
 
 This module primarily collaborates with `runtime`. Its responsibility should stay inside the Foundations group rather than absorb behavior owned by those neighbors.
@@ -36,9 +38,10 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 ### codec.rs
 
 - This file owns the format-agnostic serialization front door for text and binary payloads across supported formats.
-- It defines `SerialFormat`, encode or decode options, and the `EncodedValue` result used by top-level callers.
-- Format detection inspects text content, while explicit routing sends MessagePack through byte decoding only.
+- It defines `SerialFormat`, `SerializeLimits`, typed codec errors, decode reports, and the `EncodedValue` result used by top-level callers.
+- Format detection inspects text content through a bounded attempt budget, while explicit routing sends MessagePack through byte decoding only.
 - Encode and decode helpers centralize dispatch so callers do not need per-format branching spread across modules.
+- Schema-aware front-door decode applies validation plus defaults and records what was attempted or patched.
 - Open this file when top-level serialization routing changes; concrete format implementations live in siblings.
 
 ### csv.rs
@@ -46,7 +49,7 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - This file owns CSV translation between delimited rows and the shared `SerialValue` tree used by the engine.
 - It defines `CsvOptions`, parses header-aware or positional records, and serializes row sequences back to text.
 - Header mode maps columns into ordered maps, while headerless mode keeps each record as a plain value sequence.
-- Encoding enforces compatible row shapes so CSV assumptions stay aligned between read and write operations.
+- Encoding enforces compatible row shapes, row or column budgets, field size limits, and explicit nested-cell policy so CSV assumptions stay aligned between read and write operations.
 - Open this file when tabular serialization rules change; generic dispatch and value-tree ownership live nearby.
 
 ### ini.rs
@@ -68,7 +71,7 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - This file owns `SerialValue` plus Lua conversion helpers that bridge dynamic Lua values into serializable Rust data.
 - It decides whether Lua tables become sequences or maps, while preserving scalars, nulls, and string-keyed content.
 - `to_lua` rebuilds Lua primitives and tables from decoded values so serialized data can round-trip through scripts.
-- Array detection is structural and automatic, which keeps callers from tagging plain Lua tables before encoding.
+- Array detection is structural and automatic, and conversion is bounded by cycle, depth, node, string, and sequence checks before encode paths consume the tree.
 - Open this file when shared value semantics change; concrete text and binary codecs live in sibling modules.
 
 ### mod.rs
@@ -84,7 +87,7 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 - This file owns MessagePack translation for compact binary serialization of the shared `SerialValue` tree.
 - It converts through a local `MsgValue` bridge that matches serde-based MessagePack encoding and decoding needs.
-- Size estimation, trailing-byte checks, and JSON-value helpers keep binary workflows predictable for callers.
+- Size estimation, trailing-byte checks, and limit validation keep binary workflows predictable for callers.
 - Logging lives here so MessagePack-specific encode and decode activity stays next to the binary conversion path.
 - Open this file when MessagePack mapping changes; generic dispatch and shared value ownership live nearby.
 
@@ -93,7 +96,7 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - This file owns schema validation and default application for decoded `SerialValue` trees before runtime use.
 - Validation checks required fields, declared types, numeric limits, string lengths, nested fields, and array items.
 - Errors include dotted paths so content authors can find the exact subtree that violates a schema contract.
-- Default application walks the same tree shape, filling missing fields or items from schema-provided fallback values.
+- Default application walks the same tree shape, filling missing fields or items from schema-provided fallback values and reporting which paths were patched.
 - Schema pass and fail logging also lives here because validation is a common content-ingestion debugging boundary.
 - Open this file when structural validation rules change; format parsers and Lua conversion live in sibling files.
 
@@ -118,11 +121,11 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 ### Functions
 
 - `lurek.serial.applyDefaults(value, schema) -> table`: Merges a schema's default values into a data table, filling in any missing fields without overwriting existing ones. Use this to ensure game config or save data always has complete fields even when the user provides only partial overrides.
-- `lurek.serial.decode(payload, format?, opts?) -> table`: Universal decoder that parses a string payload into a Lua table using the specified format. If no format is given, auto-detects from the content. Supports JSON, TOML, CSV, XML, INI, and MessagePack. Use this as a single entry point when handling files of varying or unknown formats.
+- `lurek.serial.decode(payload, format?, opts?) -> table`: Universal decoder that parses a string payload into a Lua table using the specified format. If no format is given, auto-detects from the content. Supports JSON, TOML, CSV, XML, INI, and MessagePack. `opts` may bound detection and payload limits, tune CSV safety, restrict allowed formats, and apply a schema before the value is returned.
 - `lurek.serial.decodeMsgPack(bytes) -> table`: Decodes a binary MessagePack string back into a Lua table. Use this to read save files, network packets, or any data previously encoded with encodeMsgPack.
 - `lurek.serial.decodeXml(text) -> table`: Parses an XML string into a Lua table structure. Elements become nested tables with tag names as keys. Useful for loading Tiled map exports, SVG data, UI layout definitions, or other XML-based game assets.
 - `lurek.serial.detectFormat(text) -> string`: Attempts to auto-detect the serialization format of a string by inspecting its content (e.g., leading `{` for JSON, `[section]` for INI, XML declaration for XML). Returns the format name or nil if detection fails. Useful for loading user-provided files where the format is unknown.
-- `lurek.serial.encode(value, format, opts?) -> string`: Universal encoder that serializes a Lua value into the specified format. Supports JSON, TOML, CSV, and MessagePack. Returns a string (text for JSON/TOML/CSV, binary for MessagePack). Use this as a single entry point for all serialization needs.
+- `lurek.serial.encode(value, format, opts?) -> string`: Universal encoder that serializes a Lua value into the specified format. Supports JSON, TOML, CSV, and MessagePack. Returns a string (text for JSON/TOML/CSV, binary for MessagePack). `opts` may bound Lua conversion and configure CSV nested-cell behavior.
 - `lurek.serial.encodeMsgPack(value) -> string`: Encodes a Lua table into a compact binary MessagePack string. MessagePack is faster and smaller than JSON, making it ideal for save files, network packets, or any scenario where performance matters more than human readability. The argument must be a table.
 - `lurek.serial.encodeMsgPack(value) -> string`: Encodes a Lua table into a compact binary MessagePack string. MessagePack is faster and smaller than JSON, making it ideal for save files, network packets, or any scenario where performance matters more than human readability. The argument must be a table.
 - `lurek.serial.fromCsv(text, delimiter?, hasHeaders?) -> table`: Parses a CSV string into a Lua table (array of rows). Each row is either a keyed table (when headers are present) or an indexed array of field values. Useful for loading spreadsheet exports, leaderboard data, or tabular game data.
@@ -152,4 +155,6 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 ## Notes
 
-- No additional module-specific notes.
+- `SerializeLimits` are part of the module contract for untrusted or generated data. Depth, node, string, input-byte, and CSV budgets should stay explicit.
+- Lua table cycles and non-finite numbers are rejected rather than coerced or silently serialized.
+- `SerialFormat` exposes capability flags so tooling can discover whether a format can encode, decode text, or decode bytes before attempting the operation.

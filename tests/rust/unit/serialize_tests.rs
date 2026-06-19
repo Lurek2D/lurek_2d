@@ -1,186 +1,285 @@
 //! File: tests/rust/unit/serialize_tests.rs
+//! Owns Rust-side coverage for private serialize limits, reports, and typed error paths.
 
-// TODO(lua-first): public Rust API coverage in this file should live in tests/lua/unit/; keep only private/internal seams here.
+use indexmap::IndexMap;
+use lurek2d::serial::{
+    decode_bytes_with_options, decode_text, decode_text_with_schema, detect_format_detailed,
+    encode, from_lua_with_limits, to_msgpack, CsvComplexCellPolicy, CsvOptions, DecodeOptions,
+    EncodeOptions, SerialFormat, SerialValue, SerializeError, SerializeLimitKind, SerializeLimits,
+};
+use mlua::{Lua, Value as LuaValue};
 
-// â”€â”€ lua_table â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+fn serialize_schema() -> SerialValue {
+    let mut hp_schema = IndexMap::new();
+    hp_schema.insert("type".to_string(), SerialValue::Str("number".to_string()));
+    hp_schema.insert("default".to_string(), SerialValue::Int(10));
 
-mod lua_table_tests {
-    use indexmap::IndexMap;
-    use lurek2d::serial::lua_table::{from_lua, to_lua, SerialValue};
-    use mlua::prelude::*;
+    let mut name_schema = IndexMap::new();
+    name_schema.insert("type".to_string(), SerialValue::Str("string".to_string()));
+    name_schema.insert("required".to_string(), SerialValue::Bool(true));
 
-    #[test]
-    fn to_lua_null_becomes_nil() {
-        let lua = Lua::new();
-        let val = to_lua(&lua, &SerialValue::Null).unwrap();
-        assert!(matches!(val, LuaValue::Nil));
-    }
+    let mut fields = IndexMap::new();
+    fields.insert("hp".to_string(), SerialValue::Map(hp_schema));
+    fields.insert("name".to_string(), SerialValue::Map(name_schema));
 
-    #[test]
-    fn to_lua_bool_preserved() {
-        let lua = Lua::new();
-        let val = to_lua(&lua, &SerialValue::Bool(true)).unwrap();
-        assert!(matches!(val, LuaValue::Boolean(true)));
-    }
+    let mut schema = IndexMap::new();
+    schema.insert("type".to_string(), SerialValue::Str("table".to_string()));
+    schema.insert("fields".to_string(), SerialValue::Map(fields));
+    SerialValue::Map(schema)
+}
 
-    #[test]
-    fn to_lua_int_preserved() {
-        let lua = Lua::new();
-        let val = to_lua(&lua, &SerialValue::Int(42)).unwrap();
-        assert!(matches!(val, LuaValue::Integer(42)));
-    }
+#[test]
+fn serialize_from_lua_rejects_cyclic_table() {
+    let lua = Lua::new();
+    let table: mlua::Table = lua
+        .load("local t = {}; t.self = t; return t")
+        .eval()
+        .expect("cyclic table");
 
-    #[test]
-    fn to_lua_float_preserved() {
-        let lua = Lua::new();
-        let val = to_lua(&lua, &SerialValue::Float(std::f64::consts::PI)).unwrap();
-        match val {
-            LuaValue::Number(n) => assert!((n - std::f64::consts::PI).abs() < 1e-10),
-            other => panic!("expected Number, got {:?}", other),
+    let err = from_lua_with_limits(&LuaValue::Table(table), &SerializeLimits::default())
+        .expect_err("cyclic table should fail");
+
+    assert!(matches!(err, SerializeError::CyclicLuaTable { .. }));
+}
+
+#[test]
+fn serialize_from_lua_rejects_huge_raw_len() {
+    let lua = Lua::new();
+    let table: mlua::Table = lua
+        .load("local t = {}; for i = 1, 16 do t[i] = i end; return t")
+        .eval()
+        .expect("sequence table");
+    let limits = SerializeLimits {
+        max_sequence_len: 8,
+        ..SerializeLimits::default()
+    };
+
+    let err = from_lua_with_limits(&LuaValue::Table(table), &limits)
+        .expect_err("sequence length should be bounded");
+
+    assert!(matches!(
+        err,
+        SerializeError::LimitExceeded {
+            kind: SerializeLimitKind::SequenceLength,
+            ..
         }
-    }
+    ));
+}
 
-    #[test]
-    fn to_lua_string_preserved() {
-        let lua = Lua::new();
-        let val = to_lua(&lua, &SerialValue::Str("hello".to_string())).unwrap();
-        match val {
-            LuaValue::String(s) => assert_eq!(s.to_str().unwrap(), "hello"),
-            other => panic!("expected String, got {:?}", other),
+#[test]
+fn serialize_rejects_nan_inf_numbers() {
+    let err = from_lua_with_limits(
+        &LuaValue::Number(f64::INFINITY),
+        &SerializeLimits::default(),
+    )
+    .expect_err("lua infinity should fail");
+    assert!(matches!(err, SerializeError::NonFiniteNumber { .. }));
+
+    for value in [
+        SerialValue::Float(f64::NAN),
+        SerialValue::Float(f64::NEG_INFINITY),
+    ] {
+        let err = encode(&value, SerialFormat::Json, EncodeOptions::default())
+            .expect_err("non-finite numbers should not encode");
+        assert!(matches!(err, SerializeError::NonFiniteNumber { .. }));
+    }
+}
+
+#[test]
+fn detect_format_respects_input_and_attempt_limits() {
+    let opts = DecodeOptions {
+        limits: SerializeLimits {
+            max_input_bytes: 4,
+            ..SerializeLimits::default()
+        },
+        ..DecodeOptions::default()
+    };
+    let err = detect_format_detailed("12345", &opts).expect_err("input bytes should be bounded");
+    assert!(matches!(
+        err,
+        SerializeError::LimitExceeded {
+            kind: SerializeLimitKind::InputBytes,
+            ..
         }
-    }
+    ));
 
-    #[test]
-    fn round_trip_seq() {
-        let lua = Lua::new();
-        let original = SerialValue::Seq(vec![
+    let opts = DecodeOptions {
+        limits: SerializeLimits {
+            max_detect_attempts: 1,
+            ..SerializeLimits::default()
+        },
+        allowed_formats: vec![SerialFormat::Json, SerialFormat::Toml],
+        ..DecodeOptions::default()
+    };
+    let err = detect_format_detailed("title = \"demo\"", &opts)
+        .expect_err("detect attempts should be bounded");
+    assert!(matches!(
+        err,
+        SerializeError::LimitExceeded {
+            kind: SerializeLimitKind::DetectAttempts,
+            ..
+        }
+    ));
+}
+
+#[test]
+fn msgpack_decode_rejects_nested_over_limit() {
+    let nested = SerialValue::Seq(vec![SerialValue::Seq(vec![SerialValue::Seq(vec![
+        SerialValue::Int(1),
+    ])])]);
+    let bytes = to_msgpack(&nested).expect("msgpack encode");
+    let opts = DecodeOptions {
+        limits: SerializeLimits {
+            max_depth: 2,
+            ..SerializeLimits::default()
+        },
+        ..DecodeOptions::default()
+    };
+
+    let err = decode_bytes_with_options(&bytes, SerialFormat::MsgPack, opts)
+        .expect_err("deep msgpack should fail");
+
+    assert!(matches!(
+        err,
+        SerializeError::LimitExceeded {
+            kind: SerializeLimitKind::Depth,
+            ..
+        }
+    ));
+}
+
+#[test]
+fn csv_decode_respects_row_column_field_limits() {
+    let err = decode_text(
+        "name,score\nada,10\nlin,20\n",
+        Some(SerialFormat::Csv),
+        DecodeOptions {
+            csv: CsvOptions {
+                max_rows: 1,
+                ..CsvOptions::default()
+            },
+            ..DecodeOptions::default()
+        },
+    )
+    .expect_err("csv row limit should fail");
+    assert!(matches!(
+        err,
+        SerializeError::LimitExceeded {
+            kind: SerializeLimitKind::CsvRows,
+            ..
+        }
+    ));
+
+    let err = decode_text(
+        "name,score\nada,toolong\n",
+        Some(SerialFormat::Csv),
+        DecodeOptions {
+            csv: CsvOptions {
+                max_field_chars: 3,
+                ..CsvOptions::default()
+            },
+            ..DecodeOptions::default()
+        },
+    )
+    .expect_err("csv field limit should fail");
+    assert!(matches!(
+        err,
+        SerializeError::LimitExceeded {
+            kind: SerializeLimitKind::CsvFieldChars,
+            ..
+        }
+    ));
+
+    let err = decode_text(
+        "name,score\nada,10,extra\n",
+        Some(SerialFormat::Csv),
+        DecodeOptions {
+            csv: CsvOptions {
+                strict_column_count: true,
+                ..CsvOptions::default()
+            },
+            ..DecodeOptions::default()
+        },
+    )
+    .expect_err("strict column count should fail");
+    assert!(matches!(err, SerializeError::CsvColumnMismatch { .. }));
+}
+
+#[test]
+fn csv_encode_rejects_complex_cell_in_strict_mode() {
+    let mut row = IndexMap::new();
+    row.insert(
+        "payload".to_string(),
+        SerialValue::Map(IndexMap::from([(
+            "nested".to_string(),
             SerialValue::Int(1),
-            SerialValue::Int(2),
-            SerialValue::Int(3),
-        ]);
-        let lua_val = to_lua(&lua, &original).unwrap();
-        let back = from_lua(&lua_val).unwrap();
-        match back {
-            SerialValue::Seq(v) => {
-                assert_eq!(v.len(), 3);
-                assert!(matches!(v[0], SerialValue::Int(1)));
-            }
-            other => panic!("expected Seq, got {:?}", other),
+        )])),
+    );
+    let rows = SerialValue::Seq(vec![SerialValue::Map(row)]);
+
+    let err = encode(
+        &rows,
+        SerialFormat::Csv,
+        EncodeOptions {
+            csv: CsvOptions {
+                complex_cells: CsvComplexCellPolicy::Reject,
+                ..CsvOptions::default()
+            },
+            ..EncodeOptions::default()
+        },
+    )
+    .expect_err("nested csv cells should fail by default");
+
+    assert!(matches!(err, SerializeError::CsvComplexCell { .. }));
+}
+
+#[test]
+fn decode_with_schema_reports_defaults_and_errors() {
+    let schema = serialize_schema();
+    let decoded = decode_text_with_schema(
+        "{\"name\":\"hero\"}",
+        Some(SerialFormat::Json),
+        &schema,
+        DecodeOptions::default(),
+    )
+    .expect("schema defaults should apply");
+
+    match decoded.value {
+        SerialValue::Map(map) => {
+            assert!(matches!(map.get("name"), Some(SerialValue::Str(name)) if name == "hero"));
+            assert!(matches!(map.get("hp"), Some(SerialValue::Int(10))));
         }
+        other => panic!("expected map, got {other:?}"),
     }
+    assert_eq!(decoded.report.defaults_applied, vec!["$.hp".to_string()]);
+    assert!(decoded.report.validation_errors.is_empty());
 
-    #[test]
-    fn round_trip_map() {
-        let lua = Lua::new();
-        let mut map = IndexMap::new();
-        map.insert("key".to_string(), SerialValue::Str("val".to_string()));
-        let original = SerialValue::Map(map);
-        let lua_val = to_lua(&lua, &original).unwrap();
-        let back = from_lua(&lua_val).unwrap();
-        match back {
-            SerialValue::Map(m) => {
-                assert!(matches!(m.get("key"), Some(SerialValue::Str(s)) if s == "val"));
-            }
-            other => panic!("expected Map, got {:?}", other),
+    let err = decode_text_with_schema(
+        "{}",
+        Some(SerialFormat::Json),
+        &schema,
+        DecodeOptions::default(),
+    )
+    .expect_err("required field should fail validation");
+
+    match err {
+        SerializeError::SchemaValidation { errors, .. } => {
+            assert!(errors.iter().any(|entry| entry.contains("$.name")));
         }
-    }
-
-    #[test]
-    fn from_lua_whole_number_coerces_to_int() {
-        // Lua Number 5.0 with zero fractional part should coerce to Int(5)
-        let val = LuaValue::Number(5.0);
-        let sv = from_lua(&val).unwrap();
-        assert!(matches!(sv, SerialValue::Int(5)));
-    }
-
-    #[test]
-    fn from_lua_fractional_number_stays_float() {
-        let val = LuaValue::Number(std::f64::consts::PI);
-        let sv = from_lua(&val).unwrap();
-        match sv {
-            SerialValue::Float(f) => assert!((f - std::f64::consts::PI).abs() < 1e-10),
-            other => panic!("expected Float, got {:?}", other),
-        }
-    }
-
-    #[test]
-    fn from_lua_rejects_unsupported_types() {
-        let lua = Lua::new();
-        let func = lua.create_function(|_, ()| Ok(())).unwrap();
-        let val = LuaValue::Function(func);
-        assert!(from_lua(&val).is_err());
-    }
-
-    #[test]
-    fn from_lua_keeps_mixed_tables_as_maps() {
-        let lua = Lua::new();
-        let table = lua.create_table().unwrap();
-        table.set(1, "sword").unwrap();
-        table.set("equip", "shield").unwrap();
-
-        let back = from_lua(&LuaValue::Table(table)).unwrap();
-        match back {
-            SerialValue::Map(map) => {
-                assert!(matches!(map.get("1"), Some(SerialValue::Str(value)) if value == "sword"));
-                assert!(
-                    matches!(map.get("equip"), Some(SerialValue::Str(value)) if value == "shield")
-                );
-            }
-            other => panic!("expected Map, got {:?}", other),
-        }
+        other => panic!("expected schema validation error, got {other:?}"),
     }
 }
 
-mod schema_defaults_tests {
-    use indexmap::IndexMap;
-    use lurek2d::serial::{apply_schema_defaults, SerialValue};
+#[test]
+fn serial_format_capability_flags() {
+    assert!(SerialFormat::Json.can_encode());
+    assert!(SerialFormat::Json.can_decode_text());
+    assert!(!SerialFormat::Json.can_decode_bytes());
 
-    #[test]
-    fn apply_defaults_fills_missing_fields() {
-        let value = SerialValue::Map(IndexMap::new());
+    assert!(!SerialFormat::Xml.can_encode());
+    assert!(SerialFormat::Xml.can_decode_text());
 
-        let mut hp_schema = IndexMap::new();
-        hp_schema.insert("type".to_string(), SerialValue::Str("number".to_string()));
-        hp_schema.insert("default".to_string(), SerialValue::Int(100));
-
-        let mut fields = IndexMap::new();
-        fields.insert("hp".to_string(), SerialValue::Map(hp_schema));
-
-        let mut schema = IndexMap::new();
-        schema.insert("type".to_string(), SerialValue::Str("table".to_string()));
-        schema.insert("fields".to_string(), SerialValue::Map(fields));
-
-        let patched = apply_schema_defaults(&value, &SerialValue::Map(schema)).unwrap();
-        match patched {
-            SerialValue::Map(m) => assert!(matches!(m.get("hp"), Some(SerialValue::Int(100)))),
-            other => panic!("expected map, got {other:?}"),
-        }
-    }
-}
-
-mod csv_tests {
-    use indexmap::IndexMap;
-    use lurek2d::serial::{to_csv, CsvOptions, SerialValue};
-
-    #[test]
-    fn to_csv_writes_rows_in_header_order() {
-        let mut first = IndexMap::new();
-        first.insert("name".to_string(), SerialValue::Str("ada".to_string()));
-        first.insert("score".to_string(), SerialValue::Str("10".to_string()));
-
-        let mut second = IndexMap::new();
-        second.insert("score".to_string(), SerialValue::Str("20".to_string()));
-        second.insert("name".to_string(), SerialValue::Str("lin".to_string()));
-
-        let csv = to_csv(
-            &SerialValue::Seq(vec![SerialValue::Map(first), SerialValue::Map(second)]),
-            CsvOptions::default(),
-        )
-        .unwrap();
-
-        let lines: Vec<&str> = csv.lines().collect();
-        assert_eq!(lines[0], "name,score");
-        assert_eq!(lines[1], "ada,10");
-        assert_eq!(lines[2], "lin,20");
-    }
+    assert!(SerialFormat::MsgPack.can_encode());
+    assert!(!SerialFormat::MsgPack.can_decode_text());
+    assert!(SerialFormat::MsgPack.can_decode_bytes());
 }

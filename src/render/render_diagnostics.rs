@@ -14,6 +14,8 @@ pub struct RenderDiagnostics {
     pub missing_canvases: u32,
     /// Number of skipped mesh draws caused by missing cached mesh geometry.
     pub missing_meshes: u32,
+    /// Number of skipped compound-shape draws caused by missing shape registry entries.
+    pub missing_shapes: u32,
     /// Number of skipped draws caused by missing static geometry cache entries.
     pub missing_static_geometry: u32,
     /// Number of skipped instanced draws caused by missing instance-buffer entries.
@@ -66,6 +68,12 @@ impl RenderDiagnostics {
     /// Record one skipped mesh draw caused by missing cached mesh geometry.
     pub fn record_missing_mesh(&mut self) {
         self.missing_meshes = self.missing_meshes.saturating_add(1);
+        self.record_dropped_command();
+    }
+
+    /// Record one skipped compound-shape draw caused by a missing shape registry entry.
+    pub fn record_missing_shape(&mut self) {
+        self.missing_shapes = self.missing_shapes.saturating_add(1);
         self.record_dropped_command();
     }
 
@@ -136,6 +144,7 @@ impl RenderDiagnostics {
             .saturating_add(self.missing_textures)
             .saturating_add(self.missing_canvases)
             .saturating_add(self.missing_meshes)
+            .saturating_add(self.missing_shapes)
             .saturating_add(self.missing_static_geometry)
             .saturating_add(self.missing_instance_buffers)
             .saturating_add(self.unsupported_instanced_sprite_batches)

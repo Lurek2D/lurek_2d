@@ -57,6 +57,30 @@ impl FieldType {
             Self::Array(inner) => format!("{}[]", inner.as_str()),
         }
     }
+
+    /// Return true when this field type is a plain config-schema type rather than a userdata reference.
+    pub fn is_known_config_type(&self) -> bool {
+        match self {
+            Self::String
+            | Self::Integer
+            | Self::Float
+            | Self::Boolean
+            | Self::Table
+            | Self::Any => true,
+            Self::Optional(inner) | Self::Array(inner) => inner.is_known_config_type(),
+            Self::Function | Self::Userdata(_) => false,
+        }
+    }
+
+    /// Parse a config-schema type hint and reject unsupported userdata or function types.
+    pub fn parse_config_type_name(s: &str) -> Result<Self, String> {
+        let parsed = Self::from_name(s);
+        if parsed.is_known_config_type() {
+            Ok(parsed)
+        } else {
+            Err(format!("unsupported config schema type '{}'", s))
+        }
+    }
 }
 
 /// A single field definition in an API schema.

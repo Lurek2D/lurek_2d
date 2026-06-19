@@ -2,22 +2,28 @@
 
 use super::SharedState;
 use crate::save::{
-    compress_save_content, decompress_save_content, parse_save_table, serialize_table, SaveManager,
-    SaveValue,
+    compress_save_content_with_limits, decompress_save_content_with_limits,
+    parse_save_table_with_limits, serialize_table, SaveManager, SaveValue,
 };
 use mlua::prelude::*;
 use std::cell::RefCell;
-use std::collections::HashMap;
+use std::collections::{BTreeSet, HashMap};
 use std::rc::Rc;
 /// Extracts a logical slot name from a `slot_<name>.sav` filename.
 fn slot_name_from_filename(filename: &str) -> Option<&str> {
-    filename
-        .strip_prefix("slot_")
-        .and_then(|s| s.strip_suffix(".sav"))
+    filename.strip_prefix("slot_").and_then(|s| {
+        s.strip_suffix(".sav")
+            .or_else(|| s.strip_suffix(".sav.bak"))
+    })
 }
 /// Parses validated save content into a Lua table without executing arbitrary code.
-fn parse_save_content<'a>(lua: &'a Lua, content: &str) -> LuaResult<LuaTable<'a>> {
-    let root = parse_save_table(content).map_err(LuaError::RuntimeError)?;
+fn parse_save_content<'a>(
+    lua: &'a Lua,
+    content: &str,
+    manager: &SaveManager,
+) -> LuaResult<LuaTable<'a>> {
+    let root =
+        parse_save_table_with_limits(content, &manager.limits().parse).map_err(LuaError::from)?;
     match SaveValue::Table(root).to_lua(lua)? {
         LuaValue::Table(table) => Ok(table),
         _ => Err(LuaError::RuntimeError(
@@ -88,7 +94,11 @@ impl LuaSaveManager {
         mut data: LuaTable<'a>,
         saved_ver: i32,
     ) -> LuaResult<LuaTable<'a>> {
-        for ver in self.manager.applicable_migrations(saved_ver) {
+        let plan = self
+            .manager
+            .migration_plan(saved_ver)
+            .map_err(LuaError::from)?;
+        for ver in plan.steps {
             if let Some(key) = self.migrations.get(&ver) {
                 let func = lua.registry_value::<LuaFunction>(key)?;
                 let result: LuaValue = func.call(data.clone())?;
@@ -122,7 +132,10 @@ impl LuaSaveManager {
         let mut data_map = HashMap::new();
         for pair in data_table.pairs::<String, LuaValue>() {
             let (k, v) = pair?;
-            data_map.insert(k, SaveValue::from_lua(&v)?);
+            data_map.insert(
+                k,
+                SaveValue::from_lua_with_limits(&v, &self.manager.limits().lua)?,
+            );
         }
         let body = serialize_table(&data_map, 0).map_err(LuaError::RuntimeError)?;
         Ok(format!("return {}\n", body))
@@ -134,34 +147,63 @@ impl LuaSaveManager {
         }
         let plain = self.serialize_collected(lua)?;
         let content = if self.compress {
-            compress_save_content(&plain).map_err(LuaError::RuntimeError)?
+            compress_save_content_with_limits(&plain, &self.manager.limits().compression)
+                .map_err(LuaError::from)?
         } else {
             plain
         };
-        let path = SaveManager::slot_path(slot);
-        self.state
-            .borrow()
-            .fs
-            .write_string(&path, &content)
-            .map_err(|e| LuaError::RuntimeError(format!("lurek.save:save: {}", e)))?;
+        let path = self
+            .manager
+            .slot_path_checked(slot)
+            .map_err(LuaError::from)?;
+        let backup_path = self
+            .manager
+            .backup_slot_path(slot)
+            .map_err(LuaError::from)?;
+        let write_policy = self.manager.write_policy().clone();
+        {
+            let state_ref = self.state.borrow();
+            let game_fs = &state_ref.fs;
+            let temp_path = game_fs
+                .create_temp_file(&write_policy.temp_prefix)
+                .map_err(|e| LuaError::RuntimeError(format!("lurek.save:save: {}", e)))?;
+            let write_result = (|| -> LuaResult<()> {
+                game_fs
+                    .write_string(&temp_path, &content)
+                    .map_err(|e| LuaError::RuntimeError(format!("lurek.save:save: {}", e)))?;
+                if write_policy.keep_backup && game_fs.exists(&path) {
+                    game_fs.copy_file(&path, &backup_path).map_err(|e| {
+                        LuaError::RuntimeError(format!("lurek.save:save backup: {}", e))
+                    })?;
+                }
+                game_fs
+                    .move_file(&temp_path, &path)
+                    .map_err(|e| LuaError::RuntimeError(format!("lurek.save:save commit: {}", e)))
+            })();
+            if write_result.is_err() && game_fs.exists(&temp_path) {
+                let _ = game_fs.remove(&temp_path);
+            }
+            write_result?;
+        }
         self.manager.clear_dirty();
         Ok(())
     }
     fn load_from_slot(&mut self, lua: &Lua, slot: &str) -> LuaResult<(bool, Option<String>)> {
-        let path = SaveManager::slot_path(slot);
-        let raw = match self.state.borrow().fs.read_string(&path) {
-            Ok(c) => c,
+        let (content, used_backup) = match self.read_slot_payload(slot) {
+            Ok(payload) => payload,
             Err(e) => return Ok((false, Some(format!("lurek.save:load: {}", e)))),
         };
-        let content: String = match decompress_save_content(&raw) {
-            Ok(s) => s,
-            Err(e) => return Ok((false, Some(format!("lurek.save:load: {}", e)))),
-        };
-        let data: LuaTable = match parse_save_content(lua, &content) {
+        let data: LuaTable = match parse_save_content(lua, &content, &self.manager) {
             Ok(t) => t,
             Err(e) => return Ok((false, Some(format!("lurek.save:load: corrupt save: {}", e)))),
         };
         self.restore_from_table(lua, data)?;
+        if used_backup {
+            self.manager.record_diagnostic(format!(
+                "loaded backup save for slot '{}'; primary payload was rejected",
+                slot
+            ));
+        }
         if let Some(ref key) = self.after_load {
             let func = lua.registry_value::<LuaFunction>(key)?;
             func.call::<_, ()>(slot)?;
@@ -169,36 +211,42 @@ impl LuaSaveManager {
         Ok((true, None))
     }
     fn delete_slot(&self, slot: &str) -> LuaResult<()> {
-        let path = SaveManager::slot_path(slot);
-        self.state
-            .borrow()
-            .fs
-            .remove(&path)
-            .map_err(|e| LuaError::RuntimeError(format!("lurek.save:delete: {}", e)))?;
+        let path = self
+            .manager
+            .slot_path_checked(slot)
+            .map_err(LuaError::from)?;
+        let backup_path = self
+            .manager
+            .backup_slot_path(slot)
+            .map_err(LuaError::from)?;
+        let state_ref = self.state.borrow();
+        let game_fs = &state_ref.fs;
+        if game_fs.exists(&path) {
+            game_fs
+                .remove(&path)
+                .map_err(|e| LuaError::RuntimeError(format!("lurek.save:delete: {}", e)))?;
+        }
+        if game_fs.exists(&backup_path) {
+            game_fs
+                .remove(&backup_path)
+                .map_err(|e| LuaError::RuntimeError(format!("lurek.save:delete backup: {}", e)))?;
+        }
         Ok(())
     }
     fn slot_exists(&self, slot: &str) -> bool {
-        let path = SaveManager::slot_path(slot);
-        self.state.borrow().fs.exists(&path)
+        let Ok(path) = self.manager.slot_path_checked(slot) else {
+            return false;
+        };
+        let backup_path = format!("{}.bak", path);
+        let state_ref = self.state.borrow();
+        state_ref.fs.exists(&path) || state_ref.fs.exists(&backup_path)
     }
     fn read_slot_meta<'a>(&self, lua: &'a Lua, slot: &str) -> LuaResult<Option<LuaTable<'a>>> {
-        let path = SaveManager::slot_path(slot);
-        let content = {
-            let state_ref = self.state.borrow();
-            let game_fs = &state_ref.fs;
-            if !game_fs.exists(&path) {
-                return Ok(None);
-            }
-            match game_fs.read_string(&path) {
-                Ok(c) => c,
-                Err(_) => return Ok(None),
-            }
-        };
-        let content = match decompress_save_content(&content) {
-            Ok(decoded) => decoded,
+        let content = match self.read_slot_payload(slot) {
+            Ok((content, _)) => content,
             Err(_) => return Ok(None),
         };
-        match parse_save_content(lua, &content) {
+        match parse_save_content(lua, &content, &self.manager) {
             Ok(data) => {
                 let info = lua.create_table()?;
                 /// Performs the 'slot' operation.
@@ -223,16 +271,67 @@ impl LuaSaveManager {
             Ok(e) => e,
             Err(_) => return Ok(result),
         };
-        let mut idx = 1;
+        let mut slots = BTreeSet::new();
         for entry in &entries {
             if let Some(slot_name) = slot_name_from_filename(entry) {
-                if let Some(info) = self.read_slot_meta(lua, slot_name)? {
-                    result.set(idx, info)?;
-                    idx += 1;
-                }
+                slots.insert(slot_name.to_string());
+            }
+        }
+        let mut idx = 1;
+        for slot_name in slots {
+            if let Some(info) = self.read_slot_meta(lua, &slot_name)? {
+                result.set(idx, info)?;
+                idx += 1;
             }
         }
         Ok(result)
+    }
+
+    fn read_slot_payload(&self, slot: &str) -> Result<(String, bool), String> {
+        let path = self
+            .manager
+            .slot_path_checked(slot)
+            .map_err(|e| e.to_string())?;
+        let backup_path = self
+            .manager
+            .backup_slot_path(slot)
+            .map_err(|e| e.to_string())?;
+        let allow_backup = self.manager.load_policy().allow_backup_fallback;
+        let state_ref = self.state.borrow();
+        let game_fs = &state_ref.fs;
+
+        let decode = |logical_path: &str| -> Result<String, String> {
+            let raw = game_fs
+                .read_string(logical_path)
+                .map_err(|e| format!("{}", e))?;
+            decompress_save_content_with_limits(&raw, &self.manager.limits().compression)
+                .map_err(|e| e.to_string())
+        };
+
+        if !game_fs.exists(&path) {
+            if allow_backup && game_fs.exists(&backup_path) {
+                return decode(&backup_path).map(|content| (content, true));
+            }
+            return Err(format!("slot '{}' does not exist", slot));
+        }
+
+        match decode(&path) {
+            Ok(content) => Ok((content, false)),
+            Err(primary_error) => {
+                if allow_backup && game_fs.exists(&backup_path) {
+                    decode(&backup_path)
+                        .map(|content| (content, true))
+                        .map_err(|backup_error| {
+                            format!(
+                                "primary save failed ({}) and backup save failed ({})",
+                                primary_error, backup_error
+                            )
+                        })
+                } else {
+                    Err(primary_error)
+                }
+            }
+        }
     }
 }
 impl LuaUserData for LuaSaveManager {
@@ -319,12 +418,13 @@ impl LuaUserData for LuaSaveManager {
         methods.add_method("isDirty", |_, this, ()| Ok(this.manager.is_dirty()));
         // -- enableAutoSave --
         /// Enable periodic auto-saving: when the dirty flag is set, the system writes to the target slot every interval seconds.
+        /// Slot names must use `[A-Za-z0-9_-]`, and `interval` must be finite and greater than zero.
         /// @param | interval | number | Time in seconds between auto-save checks (e.g. 30.0 for every 30 seconds).
-        /// @param | slot | string | The slot name to auto-save into (e.g. "autosave").
+        /// @param | slot | string | The validated slot name to auto-save into (e.g. "autosave").
         methods.add_method_mut(
             "enableAutoSave",
             |_, this, (interval, slot): (f64, String)| {
-                this.manager.enable_auto_save(interval, slot);
+                this.manager.enable_auto_save(interval, slot)?;
                 Ok(())
             },
         );
@@ -336,6 +436,7 @@ impl LuaUserData for LuaSaveManager {
         });
         // -- update --
         /// Advance the auto-save timer by dt seconds. Call this once per frame from your game loop.
+        /// Non-finite or negative delta times are ignored and do not trigger auto-save.
         /// Returns the configured slot name when the timer reaches a dirty auto-save boundary, or nil otherwise.
         /// @param | dt | number | Delta time in seconds since the last frame.
         /// @return | string | Auto-save slot name when save work is due, or nil when no flush is needed yet.
@@ -419,13 +520,15 @@ impl LuaUserData for LuaSaveManager {
         });
         // -- save --
         /// Persist all registered data sections to the named slot file on disk.
-        /// Calls the onBeforeSave hook, collects data, optionally compresses, and writes to save/<slot>.sav.
+        /// Calls the onBeforeSave hook, collects data, optionally compresses, then writes temp + rename with optional `.bak` recovery.
+        /// Slot names must use `[A-Za-z0-9_-]`; invalid names are rejected before any file write occurs.
         /// @param | slot | string | Slot name (e.g. "slot1", "quicksave"). The file is stored as save/slot_<name>.sav.
         methods.add_method_mut("save", |lua, this, slot: String| {
             this.save_to_slot(lua, &slot)
         });
         // -- load --
         /// Load game state from a named slot file. Decompresses if needed, applies migrations, calls restorers, then fires onAfterLoad.
+        /// When the primary slot payload is corrupt and a `.bak` exists, the loader may recover from the backup automatically.
         /// @param | slot | string | Slot name to load (e.g. "slot1").
         /// @return | boolean | True if the load succeeded, false on error.
         /// @return | string | Error message if the load failed, nil on success.
@@ -434,6 +537,7 @@ impl LuaUserData for LuaSaveManager {
         });
         // -- delete --
         /// Permanently delete a save slot file from disk. This action cannot be undone.
+        /// Deletes both the primary slot file and any `.bak` recovery copy for the slot.
         /// @param | slot | string | Slot name to delete (e.g. "slot1").
         /// @return | nil | No return value.
         methods.add_method("delete", |_, this, slot: String| this.delete_slot(&slot));

@@ -3,8 +3,9 @@
 // TODO(lua-first): public Rust API coverage in this file should live in tests/lua/unit/; keep only private/internal seams here.
 
 use lurek2d::app::app::{
-    classify_drop_startup_target, fit_contain_size, recompute_viewport,
-    should_open_startup_picker_on_key, DropStartupTarget, LurekApp,
+    classify_drop_startup_target, classify_drop_startup_target_with_policy, fit_contain_size,
+    map_startup_error_to_run_state, recompute_viewport, should_open_startup_picker_on_key,
+    AppStartupError, AppStartupStage, DropStartupTarget, LurekApp, RunState, StartupTargetPolicy,
 };
 use lurek2d::app::debug_overlay::DebugOverlay;
 use lurek2d::app::error_screen::{format_traceback, wrap_text, ErrorScreen};
@@ -12,6 +13,7 @@ use lurek2d::render::renderer::RenderCommand;
 use lurek2d::runtime::error::EngineError;
 use lurek2d::runtime::resource_keys::FontKey;
 use lurek2d::runtime::shared_state::WindowState;
+use lurek2d::runtime::Config;
 use slotmap::SlotMap;
 
 // Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬ error_screen Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬
@@ -273,6 +275,7 @@ mod present_mode_tests {
 
 mod drop_startup_target_tests {
     use super::*;
+    use std::io::Write;
 
     #[test]
     fn classify_drop_startup_target_detects_lurek_archive_case_insensitive() {
@@ -297,7 +300,7 @@ mod drop_startup_target_tests {
 
         assert_eq!(
             classify_drop_startup_target(&game_dir),
-            DropStartupTarget::GameDir(game_dir)
+            DropStartupTarget::GameDir(game_dir.canonicalize().expect("canonical game dir"))
         );
     }
 
@@ -311,8 +314,64 @@ mod drop_startup_target_tests {
 
         assert_eq!(
             classify_drop_startup_target(&main_lua),
-            DropStartupTarget::GameDir(game_dir)
+            DropStartupTarget::GameDir(game_dir.canonicalize().expect("canonical game dir"))
         );
+    }
+
+    #[test]
+    fn classify_drop_startup_target_with_policy_canonicalizes_game_dir() {
+        let tmp = tempfile::tempdir().expect("tempdir");
+        let game_dir = tmp.path().join("game");
+        std::fs::create_dir_all(&game_dir).expect("create game dir");
+        std::fs::write(game_dir.join("main.lua"), "return true").expect("write main.lua");
+
+        let report =
+            classify_drop_startup_target_with_policy(&game_dir, &StartupTargetPolicy::default());
+
+        assert_eq!(
+            report.target,
+            DropStartupTarget::GameDir(game_dir.canonicalize().expect("canonical game dir"))
+        );
+        assert!(report.diagnostics.is_empty());
+    }
+
+    #[test]
+    fn classify_drop_startup_target_with_policy_rejects_oversized_archive() {
+        let tmp = tempfile::tempdir().expect("tempdir");
+        let archive = tmp.path().join("game.lurek");
+        std::fs::write(&archive, vec![0_u8; 32]).expect("write archive");
+
+        let report = classify_drop_startup_target_with_policy(
+            &archive,
+            &StartupTargetPolicy {
+                max_archive_bytes: 8,
+                ..StartupTargetPolicy::default()
+            },
+        );
+
+        assert_eq!(report.target, DropStartupTarget::Unsupported);
+        assert_eq!(report.diagnostics.len(), 1);
+    }
+
+    #[test]
+    fn extract_lurek_archive_with_policy_rejects_traversal_entries() {
+        let tmp = tempfile::tempdir().expect("tempdir");
+        let archive_path = tmp.path().join("traversal.lurek");
+        let file = std::fs::File::create(&archive_path).expect("create archive");
+        let mut zip = zip::ZipWriter::new(file);
+        let options: zip::write::SimpleFileOptions = zip::write::FileOptions::default();
+        zip.start_file("../escape.lua", options)
+            .expect("start zip entry");
+        zip.write_all(b"print('escape')").expect("write zip entry");
+        zip.finish().expect("finish zip");
+
+        let error = LurekApp::extract_lurek_archive_with_policy(
+            &archive_path,
+            &StartupTargetPolicy::default(),
+        )
+        .expect_err("traversal archive should be rejected");
+
+        assert!(error.contains("Unsafe path"));
     }
 
     #[test]
@@ -346,5 +405,53 @@ mod drop_startup_target_tests {
         assert!(should_open_startup_picker_on_key("o", true));
         assert!(!should_open_startup_picker_on_key("o", false));
         assert!(!should_open_startup_picker_on_key("escape", true));
+    }
+
+    #[test]
+    fn startup_error_mapping_enters_error_state_without_panic() {
+        let error = AppStartupError {
+            stage: AppStartupStage::Adapter,
+            backend: "auto".to_string(),
+            power_preference: "high".to_string(),
+            details: "No compatible GPU adapter found".to_string(),
+        };
+
+        let state = map_startup_error_to_run_state(&error);
+
+        match state {
+            RunState::Error(screen) => {
+                let text = screen.as_text();
+                assert!(text.contains("GPU Startup Failed"));
+                assert!(text.contains("No compatible GPU adapter found"));
+            }
+            _ => panic!("startup error should map to RunState::Error"),
+        }
+    }
+
+    #[test]
+    fn window_runtime_request_reports_clamped_size_invalid_scale_and_vsync_adjustment() {
+        let app = LurekApp::new(
+            Config::default(),
+            std::path::PathBuf::from("."),
+            None,
+            false,
+            None,
+            0,
+            None,
+            None,
+            None,
+            false,
+            None,
+        );
+
+        let report = app.inspect_window_runtime_request_for_testing(
+            Some((10_000, 10_000)),
+            Some("bad-scale".to_string()),
+            Some(-1),
+        );
+
+        assert_eq!(report.clamped_size, Some(((10_000, 10_000), (4096, 4096))));
+        assert_eq!(report.invalid_scale_mode.as_deref(), Some("bad-scale"));
+        assert_eq!(report.vsync_adjustment, Some((-1, 1)));
     }
 }
