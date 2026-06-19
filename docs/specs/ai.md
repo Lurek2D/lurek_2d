@@ -394,6 +394,7 @@
 - `LAIWorld:addAgent(name) -> LBot`: Creates a named agent in this world and returns a handle that can edit its movement and decision state.
 - `LAIWorld:getAgent(name) -> LuaValue`: Returns the named agent handle when it exists in this world.
 - `LAIWorld:getAgentCount() -> integer`: Returns the number of agents currently stored in this world.
+- `LAIWorld:getLastCallbackErrors() -> table`: Returns callback errors recorded during the most recent custom-model update pulse.
 - `LAIWorld:getGlobalBlackboard() -> LAIBlackboard`: Returns a blackboard snapshot containing the world's shared AI facts.
 - `LAIWorld:removeAgent(agent) -> nil`: Removes an agent from this world by using an existing agent handle.
 - `LAIWorld:type() -> string`: Returns the Lua-visible type name for this AI world handle.
@@ -432,7 +433,7 @@
 
 ##### Methods
 
-- `LBehaviorTree:getDebugState() -> table`: Returns behavior tree debug counters and status in a Lua table.
+- `LBehaviorTree:getDebugState() -> table`: Returns behavior tree debug counters, guarded depth info, limit state, and status in a Lua table.
 - `LBehaviorTree:getLastStatus() -> string`: Returns the last behavior tree status string recorded by the tree.
 - `LBehaviorTree:setRoot(node) -> nil`: Sets the behavior tree root by moving a node handle into the tree.
 - `LBehaviorTree:type() -> string`: Returns the Lua-visible type name for this behavior tree handle.
@@ -558,9 +559,11 @@
 - `LGOAPPlanner:addAction(name, cost?, callback?) -> nil`: Adds a GOAP action with optional cost and completion callback.
 - `LGOAPPlanner:addGoal(name, priority?) -> nil`: Adds a GOAP goal with an optional priority weight.
 - `LGOAPPlanner:getActionCount() -> integer`: Returns the number of GOAP actions registered in this planner.
+- `LGOAPPlanner:getLastFailureReason() -> LuaValue`: Returns the last planner failure reason string when planning did not succeed.
+- `LGOAPPlanner:getLastTrace() -> table`: Returns the last structured GOAP planning trace.
 - `LGOAPPlanner:getGoalCount() -> integer`: Returns the number of GOAP goals registered in this planner.
 - `LGOAPPlanner:getMaxIterations() -> integer`: Returns the maximum number of planner iterations allowed during search.
-- `LGOAPPlanner:plan(world_state_tbl, max_depth?) -> string[]`: Builds a plan from the supplied boolean world state and returns action names in execution order.
+- `LGOAPPlanner:plan(world_state_tbl, max_depth?) -> string[]`: Builds a plan from the supplied boolean world state, records a failure taxonomy on miss, and returns action names in execution order.
 - `LGOAPPlanner:setEffect(action_name, key, value) -> nil`: Sets one boolean effect produced by an existing GOAP action.
 - `LGOAPPlanner:setGoalState(goal_name, key, value) -> nil`: Sets one desired world-state key for an existing GOAP goal.
 - `LGOAPPlanner:setMaxIterations(n) -> nil`: Sets the maximum number of planner iterations allowed during search.
@@ -624,7 +627,8 @@
 
 ##### Methods
 
-- `LMCTSEngine:search(root_state, get_actions_fn, apply_fn, eval_fn) -> LuaValue`: Runs MCTS from a root state using Lua callbacks for actions, transitions, and evaluation.
+- `LMCTSEngine:getLastTrace() -> table`: Returns the last structured MCTS search trace.
+- `LMCTSEngine:search(root_state, get_actions_fn, apply_fn, eval_fn) -> LuaValue`: Runs MCTS from a root state using Lua callbacks for actions, transitions, evaluation, and invalid-score diagnostics.
 - `LMCTSEngine:type() -> string`: Returns the Lua-visible type name for this MCTS engine handle.
 - `LMCTSEngine:typeOf(name) -> boolean`: Returns whether this MCTS engine handle matches a supported type name.
 
@@ -719,7 +723,7 @@
 
 ##### Methods
 
-- `LSteeringManager:addArrive(tx, ty, slowing?, weight?) -> nil`: Adds an arrive behavior that slows the agent as it approaches a target point.
+- `LSteeringManager:addArrive(tx, ty, slowing?, weight?) -> nil`: Adds an arrive behavior that slows the agent as it approaches a target point and rejects non-positive slowing radii at the Lua boundary.
 - `LSteeringManager:addCustomBehavior(func, weight?) -> nil`: Adds a custom steering behavior backed by a Lua callback.
 - `LSteeringManager:addEvade(threat_name?, weight?) -> nil`: Adds an evade behavior that moves away from another named agent when a threat name is supplied.
 - `LSteeringManager:addFlee(tx, ty, panic_dist?, weight?) -> nil`: Adds a flee behavior that pushes the agent away from a target point inside a panic distance.
@@ -727,6 +731,7 @@
 - `LSteeringManager:addPursue(target_name?, weight?) -> nil`: Adds a pursue behavior that chases another named agent when a target name is supplied.
 - `LSteeringManager:addSeek(tx, ty, weight?) -> nil`: Adds a seek behavior that pulls the agent toward a target point.
 - `LSteeringManager:addWander(radius?, dist?, jitter?, weight?) -> nil`: Adds a wander behavior that produces jittered exploratory movement.
+- `LSteeringManager:getLastDiagnostic() -> LuaValue`: Returns the most recent steering validation or runtime diagnostic string.
 - `LSteeringManager:applyCustomSteering(agent, dt) -> number, number`: Runs enabled custom steering callbacks for an agent and returns the weighted combined force.
 - `LSteeringManager:calculate(px, py, vx, vy, max_speed, max_force, dt) -> number, number`: Calculates a steering force for the supplied agent movement state.
 - `LSteeringManager:clearEntities() -> nil`: Clears all steering-context entities.
@@ -819,9 +824,10 @@
 
 - `LUtilityAI:addAction(name, scorer_fn, weight?) -> nil`: Adds an action scored by a Lua callback and optional momentum weight.
 - `LUtilityAI:addConsideration(action_name, name, scorer_fn, curve_arg, p1?, p2?, p3?, weight?) -> nil`: Adds a consideration scorer and response curve to an existing utility action.
-- `LUtilityAI:evaluate() -> LuaValue`: Evaluates all actions and returns the winning action name when one is available.
+- `LUtilityAI:evaluate() -> LuaValue`: Evaluates all actions, folds consideration scores into the final ranking, and returns the winning action name when one is available.
 - `LUtilityAI:getActionCount() -> integer`: Returns the number of actions registered in this utility AI.
 - `LUtilityAI:getLastAction() -> LuaValue`: Returns the last winning action name when evaluation has selected one.
+- `LUtilityAI:getLastTrace() -> table`: Returns the last structured utility evaluation trace.
 - `LUtilityAI:type() -> string`: Returns the Lua-visible type name for this utility AI handle.
 - `LUtilityAI:typeOf(name) -> boolean`: Returns whether this utility AI handle matches a supported type name.
 

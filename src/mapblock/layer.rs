@@ -3,6 +3,7 @@
 //! Layer-wide mutation lives here because tile-grid indexing and reset behavior belong below `MapBlock` orchestration.
 //! Open it when per-layer tile storage changes; block footprints, placement logic, and export passes live in siblings.
 
+use super::block::{MapBlockError, MapBlockLimits};
 use super::maptile::MapTile;
 
 /// A single layer within a map block — a 2D grid of map tiles.
@@ -21,14 +22,20 @@ pub struct BlockLayer {
 impl BlockLayer {
     /// Create a new layer with given dimensions and slot count per tile.
     pub fn new(width: u32, height: u32, slot_count: usize) -> Self {
-        let count = (width * height) as usize;
+        Self::try_new(width, height, slot_count)
+            .expect("MapBlock::new validated layer dimensions before allocating tile storage")
+    }
+
+    /// Create a new layer after validating dimensions and checked cell arithmetic.
+    pub fn try_new(width: u32, height: u32, slot_count: usize) -> Result<Self, MapBlockError> {
+        let count = MapBlockLimits::default().validate_layer(width, height, slot_count)?;
         let tiles = vec![MapTile::new(slot_count); count];
-        Self {
+        Ok(Self {
             width,
             height,
             slot_count,
             tiles,
-        }
+        })
     }
 
     /// Get the tile width of this layer.

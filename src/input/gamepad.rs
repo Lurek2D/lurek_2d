@@ -7,10 +7,12 @@
 //! Open it when gamepad semantics change; combo logic, recording, and window-event orchestration live in siblings.
 
 use crate::log_msg;
+use crate::filesystem::GameFS;
 use crate::runtime::log_messages::{GD01, GD02, GD03};
 use crate::runtime::EngineError;
 use std::collections::{HashMap, HashSet};
 use std::io::{BufRead, Write};
+use std::path::Path;
 
 /// Pending vibration command for one gamepad, queued for delivery to the OS driver.
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -282,8 +284,17 @@ impl GamepadMappings {
     }
 
     /// Insert or overwrite the mapping string for `guid`.
-    pub fn set_mapping(&mut self, guid: &str, mapping: &str) {
-        self.map.insert(guid.to_string(), mapping.to_string());
+    pub fn set_mapping(&mut self, guid: &str, mapping: &str) -> Result<(), String> {
+        let guid = canonicalize_guid(guid)?;
+        let parsed = parse_mapping_line(mapping)?;
+        if parsed.guid != guid {
+            return Err(format!(
+                "mapping guid '{}' does not match expected guid '{}'",
+                parsed.guid, guid
+            ));
+        }
+        self.map.insert(guid, parsed.raw_line);
+        Ok(())
     }
 
     /// Parse SDL2 gamecontrollerdb lines from `source`; return the number of entries loaded.
@@ -294,8 +305,8 @@ impl GamepadMappings {
             if trimmed.is_empty() || trimmed.starts_with('#') {
                 continue;
             }
-            if let Some(guid) = trimmed.split(',').next() {
-                self.map.insert(guid.to_string(), trimmed.to_string());
+            if let Ok(parsed) = parse_mapping_line(trimmed) {
+                self.map.insert(parsed.guid, parsed.raw_line);
                 count += 1;
             }
         }
@@ -304,18 +315,25 @@ impl GamepadMappings {
 
     /// Return the raw mapping string for `guid`, or `None` when not present.
     pub fn get_mapping_string(&self, guid: &str) -> Option<&str> {
-        self.map.get(guid).map(|s| s.as_str())
+        let guid = canonicalize_guid(guid).ok()?;
+        self.map.get(&guid).map(|s| s.as_str())
     }
 
     /// Load mappings from a file at `path`; return entry count or `EngineError` on I/O failure.
     pub fn load_from_file(&mut self, path: &str) -> Result<usize, EngineError> {
-        let file = std::fs::File::open(path)
-            .map_err(|e| EngineError::FileSystemError(format!("Cannot open {}: {}", path, e)))?;
+        self.load_from_path(Path::new(path))
+    }
+
+    /// Load mappings from a resolved host path; return entry count or `EngineError` on I/O failure.
+    pub fn load_from_path(&mut self, path: &Path) -> Result<usize, EngineError> {
+        let file = std::fs::File::open(path).map_err(|e| {
+            EngineError::FileSystemError(format!("Cannot open {}: {}", path.display(), e))
+        })?;
         let reader = std::io::BufReader::new(file);
         let mut content = String::new();
         for line in reader.lines() {
             let line = line.map_err(|e| {
-                EngineError::FileSystemError(format!("Read error in {}: {}", path, e))
+                EngineError::FileSystemError(format!("Read error in {}: {}", path.display(), e))
             })?;
             content.push_str(&line);
             content.push('\n');
@@ -325,12 +343,76 @@ impl GamepadMappings {
 
     /// Write all stored mappings to a file at `path`; return `EngineError` on I/O failure.
     pub fn save_to_file(&self, path: &str) -> Result<(), EngineError> {
-        let mut file = std::fs::File::create(path)
-            .map_err(|e| EngineError::FileSystemError(format!("Cannot create {}: {}", path, e)))?;
+        self.save_to_path(Path::new(path))
+    }
+
+    /// Write all stored mappings to a resolved host path; return `EngineError` on I/O failure.
+    pub fn save_to_path(&self, path: &Path) -> Result<(), EngineError> {
+        let mut file = std::fs::File::create(path).map_err(|e| {
+            EngineError::FileSystemError(format!("Cannot create {}: {}", path.display(), e))
+        })?;
         for mapping in self.map.values() {
             writeln!(file, "{}", mapping)
                 .map_err(|e| EngineError::FileSystemError(format!("Write error: {}", e)))?;
         }
         Ok(())
     }
+
+    /// Load mappings from a GameFS path using sandboxed read resolution.
+    pub fn load_from_game_fs(&mut self, fs: &GameFS, path: &str) -> Result<usize, EngineError> {
+        let resolved = fs.resolve_read_path(path)?;
+        self.load_from_path(&resolved)
+    }
+
+    /// Save mappings to a GameFS path using sandboxed write resolution.
+    pub fn save_to_game_fs(&self, fs: &GameFS, path: &str) -> Result<(), EngineError> {
+        let resolved = fs.resolve_save_path(path)?;
+        self.save_to_path(&resolved)
+    }
+}
+
+#[derive(Debug)]
+struct ParsedMappingLine {
+    guid: String,
+    raw_line: String,
+}
+
+fn canonicalize_guid(raw: &str) -> Result<String, String> {
+    let guid = raw.trim().to_ascii_lowercase();
+    if guid.len() != 32 || !guid.bytes().all(|byte| byte.is_ascii_hexdigit()) {
+        return Err("guid must be a 32-character hexadecimal string".to_string());
+    }
+    Ok(guid)
+}
+
+fn parse_mapping_line(raw_line: &str) -> Result<ParsedMappingLine, String> {
+    let trimmed = raw_line.trim();
+    let parts: Vec<&str> = trimmed.split(',').collect();
+    if parts.len() < 3 {
+        return Err("mapping line must contain guid, name, and at least one token".to_string());
+    }
+    let guid = canonicalize_guid(parts[0])?;
+    let name = parts[1].trim();
+    if name.is_empty() {
+        return Err("mapping line name must not be empty".to_string());
+    }
+    for token in parts.iter().skip(2) {
+        let token = token.trim();
+        if token.is_empty() {
+            return Err("mapping line contains an empty token".to_string());
+        }
+        if !token.contains(':') {
+            return Err(format!("mapping token '{}' must contain ':'", token));
+        }
+        let mut pieces = token.splitn(2, ':');
+        let key = pieces.next().unwrap_or_default().trim();
+        let value = pieces.next().unwrap_or_default().trim();
+        if key.is_empty() || value.is_empty() {
+            return Err(format!("mapping token '{}' must contain key:value data", token));
+        }
+    }
+    Ok(ParsedMappingLine {
+        guid,
+        raw_line: trimmed.to_string(),
+    })
 }

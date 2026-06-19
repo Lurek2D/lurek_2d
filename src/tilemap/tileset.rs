@@ -132,6 +132,11 @@ impl TileSet {
     pub fn get_animation(&self, local_tile_id: u32) -> Option<&Vec<TileAnimFrame>> {
         self.animations.get(&local_tile_id)
     }
+
+    /// Iterate over local tile IDs that own animation sequences.
+    pub fn iter_animated_local_ids(&self) -> impl Iterator<Item = u32> + '_ {
+        self.animations.keys().copied()
+    }
     /// Set or clear the solid flag for `local_tile_id`; grows the solids vec as needed.
     pub fn set_solid(&mut self, local_tile_id: u32, solid: bool) {
         log_msg!(trace, TS03, "tile={} solid={}", local_tile_id, solid);

@@ -2441,7 +2441,12 @@ impl ApplicationHandler for LurekApp {
             }
             WindowEvent::Focused(focused) => {
                 if let Some(state) = &self.state {
-                    state.borrow_mut().window_state.focused = focused;
+                    let mut state = state.borrow_mut();
+                    state.window_state.focused = focused;
+                    if !focused {
+                        state.keyboard.clear_all();
+                        self.ctrl_held = false;
+                    }
                 }
                 if self.has_game {
                     if let Some(lua) = &self.lua {

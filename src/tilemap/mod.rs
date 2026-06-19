@@ -13,12 +13,16 @@ pub mod autotile_sheet;
 pub mod chunk;
 /// Tile-space coordinate conversion helpers.
 pub mod coords;
+/// Shared tilemap validation and resource-limit errors.
+pub mod error;
 /// Isometric tile maps with layered `IsoTile` items.
 pub mod isomap;
 /// Large-map chunked renderer suitable for maps exceeding GPU texture limits.
 pub mod large_map_renderer;
 /// LDtk JSON level format import.
 pub mod ldtk;
+/// Shared tilemap limits and checked arithmetic helpers.
+pub mod limits;
 /// Procedural map generator using zones, groups, and scripted steps.
 pub mod mapgen;
 /// Shared map-generation model types extracted from `mapgen.rs`.
@@ -47,12 +51,16 @@ pub use autotile_sheet::{AutoTileLayout, AutoTileSheet};
 pub use chunk::ChunkMap;
 /// Re-export all coordinate helpers as a flat namespace.
 pub use coords::*;
+/// Re-export shared tilemap error type.
+pub use error::TileMapError;
 /// Re-export isometric map types for callers.
 pub use isomap::{IsoDrawItem, IsoLevel, IsoMap, IsoTile, IsoTilePart};
 /// Re-export large-map renderer types.
 pub use large_map_renderer::{LargeMapRenderer, MapChunk};
 /// Re-export the LDtk level loader function.
-pub use ldtk::load_ldtk;
+pub use ldtk::{load_ldtk, load_ldtk_with_limits};
+/// Re-export shared tilemap limits.
+pub use limits::TileMapLimits;
 /// Re-export procedural map generation types.
 pub use mapgen::{
     Edge, LayerMode, MapBlock, MapGen, MapGroup, MapOrientation, MapScript, MapSize, MapZone,
@@ -61,10 +69,13 @@ pub use mapgen::{
 /// Re-export polygon map types.
 pub use polygon_map::{PolygonMap, PolygonRegion};
 /// Re-export core tilemap types.
-pub use tilemap::{SweepResult, TileLayer, TileMap};
+pub use tilemap::{
+    SweepResult, TileIndexPolicy, TileLayer, TileMap, TileMapDiagnosticsSnapshot,
+};
 /// Re-export tileset types.
 pub use tileset::{TileAnimFrame, TileSet};
 /// Re-export TMX import types and loader function.
 pub use tmx::{
-    load_tmx, TmxLayer, TmxMap, TmxObject, TmxObjectLayer, TmxOrientation, TmxTileLayer, TmxTileset,
+    load_tmx, load_tmx_with_options, TmxLayer, TmxLoadOptions, TmxMap, TmxObject, TmxObjectLayer,
+    TmxOrientation, TmxTileLayer, TmxTileset,
 };

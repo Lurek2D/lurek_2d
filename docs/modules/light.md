@@ -2,28 +2,18 @@
 
 ## Summary
 
-- This module gives users dynamic 2D lighting and shadow control for mood, readability, and gameplay signaling.
-- It supports point, spot, and directional light types with configurable intensity and color behavior.
-- Attenuation and falloff controls let teams tune how light fades across distance.
-- Blend modes support additive and subtractive composition for different visual styles.
-- Ambient controls provide scene-wide baseline illumination.
-- Group operations allow bulk edits to sets of lights during state transitions.
-- Flicker and transition helpers support animated lighting effects without custom per-frame math.
-- Shadow casting uses polygon occluders for geometry-driven blocking behavior.
-- Shadow masks and receiver masks provide control over which objects interact with which lights.
-- Filter settings support quality/performance trade-offs for hard and softened shadows.
-- Normal-map hinting and volumetric-adjacent settings help integrate richer shading workflows.
-- Light-world APIs centralize creation, mutation, and cleanup of runtime light entities.
-- Preview-to-image utilities support debug and evidence workflows for visual validation.
-- The module is useful for stealth, atmosphere, navigation cues, and dramatic scene transitions.
-- For users, it turns lighting from static art into a controllable gameplay system.
-- It reduces custom lighting glue code while keeping behavior script-driven.
-- The practical result is faster lighting iteration and clearer visual feedback loops.
-- It also improves testability by exposing deterministic controls and introspection-friendly outputs.
-- Overall, users get a comprehensive 2D illumination toolkit integrated with runtime scripting.
-- This helps teams balance style, performance, and legibility in one place.
-
-This module primarily collaborates with `color`, `image`, `math`, `runtime`. Its responsibility should stay inside the Platform Services group rather than absorb behavior owned by those neighbors.
+- The `light` module is the engine's shared 2D lighting-data surface for users who need lights, occluders, shadows, and illumination behavior to remain structured before rendering.
+- It lets scripts reason about lighting as scene data instead of raw draw commands by grouping light types, falloff, attenuation, blend modes, occlusion, and shadow-related state in one model.
+- This matters because atmosphere, visibility, stealth cues, alarms, and scene readability often depend on several changing lights at once.
+- Flicker, ramps, fades, and other transitions are part of the contract because lighting is usually dynamic rather than fixed at load time.
+- Light-world organization matters too, since several systems may contribute lights and occluders to the same scene and still need one inspectable runtime authority.
+- Blend and attenuation semantics are especially important because they control not only whether a light exists, but how strongly it influences surrounding space and how several lights combine visually.
+- Occluder-aware behavior is equally important because lights only become useful for scene reasoning when blocking and shadow semantics are modeled alongside them.
+- This lets the same subsystem support both atmosphere and gameplay readability, since visibility cues often depend on how light is shaped by world geometry rather than on color alone.
+- It also gives tools a stable light-world model to inspect.
+- That shared data layer matters whenever gameplay, art direction, and debugging all need to read the same light setup.
+- `render` draws the final result, but `light` owns how 2D light entities, falloff, and occlusion semantics are represented together.
+- Read `light` as the owner of light definitions and light-world state inside the engine.
 
 ## Functions
 
@@ -46,10 +36,13 @@ lurek.light.advanceFlickers(dt)
 ```lua
 do
     local light = lurek.light.newLight(200, 200, 100)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:addFlicker(0.5, 1.0, 4.0)
     light:setFlickerEnabled(true)
     lurek.light.advanceFlickers(0.016)
-    print("flickers advanced")
+    example_print_log("flickers advanced")
 end
 ```
 
@@ -68,8 +61,10 @@ lurek.light.clear()
 ```lua
 do
     lurek.light.newLight(0, 0, 50)
+    lurek.light.newLight(40, 20, 70)
+    local before = lurek.light.getLightCount()
     lurek.light.clear()
-    print("after clear: lights = " .. lurek.light.getLightCount())
+    example_print_log("after clear: lights = " .. lurek.light.getLightCount())
 end
 ```
 
@@ -102,10 +97,13 @@ lurek.light.drawToImage(width, height)
 do
     lurek.light.clear()
     local light = lurek.light.newLight(200, 150, 120)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setColor(1.0, 0.9, 0.6, 1.0)
     local img = lurek.light.drawToImage(400, 300)
-    print("lurek.light.drawToImage type=" .. type(img))
-    print("lurek.light.drawToImage hasLight = " .. tostring(light:isValid()))
+    example_print_log("lurek.light.drawToImage type=" .. type(img))
+    example_print_log("lurek.light.drawToImage hasLight = " .. tostring(light:isValid()))
 end
 ```
 
@@ -133,7 +131,10 @@ lurek.light.getAmbient()
 ```lua
 do
     local r, g, b, a = lurek.light.getAmbient()
-    print("ambient", r, g, b, a)
+    local enabled = lurek.light.isEnabled()
+    local count = lurek.light.getLightCount()
+    local max_lights = lurek.light.getMaxLights()
+    example_print_log("ambient", r, g, b, a)
 end
 ```
 
@@ -159,11 +160,14 @@ lurek.light.getGodRayHints()
 do
     lurek.light.clear()
     local light = lurek.light.newLight(120, 90, 160)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setLightType("directional")
     light:setDirection(0.75)
     local hints = lurek.light.getGodRayHints()
-    print("god ray hints = " .. #hints)
-    print("first hint angle = " .. hints[1].angle)
+    example_print_log("god ray hints = " .. #hints)
+    example_print_log("first hint angle = " .. hints[1].angle)
 end
 ```
 
@@ -197,7 +201,7 @@ do
     local b = lurek.light.newLight(10, 10, 50)
     a:setGroupId(1)
     b:setGroupId(1)
-    print("group 1 count = " .. lurek.light.getGroupCount(1))
+    example_print_log("group 1 count = " .. lurek.light.getGroupCount(1))
 end
 ```
 
@@ -224,7 +228,8 @@ do
     lurek.light.clear()
     lurek.light.newLight(0, 0, 100)
     lurek.light.newLight(50, 50, 80)
-    print("lights = " .. lurek.light.getLightCount())
+    local enabled = lurek.light.isEnabled()
+    example_print_log("lights = " .. lurek.light.getLightCount())
 end
 ```
 
@@ -249,7 +254,10 @@ lurek.light.getMaxLights()
 ```lua
 do
     lurek.light.setMaxLights(128)
-    print("max lights = " .. lurek.light.getMaxLights())
+    lurek.light.clear()
+    lurek.light.newLight(32, 32, 64)
+    local count = lurek.light.getLightCount()
+    example_print_log("max lights = " .. lurek.light.getMaxLights())
 end
 ```
 
@@ -275,11 +283,14 @@ lurek.light.getNormalMapHints()
 do
     lurek.light.clear()
     local light = lurek.light.newLight(80, 60, 120)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setNormalMap("assets/textures/sample_normal.png")
     light:setNormalStrength(0.8)
     local hints = lurek.light.getNormalMapHints()
-    print("normal map hints = " .. #hints)
-    print("first hint strength = " .. hints[1].strength)
+    example_print_log("normal map hints = " .. #hints)
+    example_print_log("first hint strength = " .. hints[1].strength)
 end
 ```
 
@@ -306,7 +317,8 @@ do
     lurek.light.clear()
     lurek.light.newOccluder({0, 0, 10, 0, 10, 10, 0, 10})
     lurek.light.newOccluder({20, 20, 30, 20, 30, 30, 20, 30})
-    print("occluders = " .. lurek.light.getOccluderCount())
+    local enabled = lurek.light.isEnabled()
+    example_print_log("occluders = " .. lurek.light.getOccluderCount())
 end
 ```
 
@@ -331,7 +343,10 @@ lurek.light.isEnabled()
 ```lua
 do
     local enabled = lurek.light.isEnabled()
-    print("enabled = " .. tostring(enabled))
+    local count = lurek.light.getLightCount()
+    local max_lights = lurek.light.getMaxLights()
+    local r, g, b, a = lurek.light.getAmbient()
+    example_print_log("enabled = " .. tostring(enabled))
 end
 ```
 
@@ -365,7 +380,10 @@ lurek.light.newLight(x, y, radius, opts)
 ```lua
 do
     local light = lurek.light.newLight(400, 300, 200)
-    print("radius = " .. light:getRadius())
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
+    example_print_log("radius = " .. light:getRadius())
 end
 ```
 
@@ -398,7 +416,10 @@ lurek.light.newOccluder(vtbl, opts)
 do
     local verts = {0, 0, 100, 0, 100, 50, 0, 50}
     local occ = lurek.light.newOccluder(verts)
-    print("occluder valid = " .. tostring(occ:isValid()))
+    occ:setPosition(8, 12)
+    occ:setOpacity(0.9)
+    local occluder_count = lurek.light.getOccluderCount()
+    example_print_log("occluder valid = " .. tostring(occ:isValid()))
 end
 ```
 
@@ -427,7 +448,9 @@ lurek.light.setAmbient(r, g, b, a)
 do
     lurek.light.setAmbient(0.1, 0.1, 0.15, 1)
     local r, g, b, a = lurek.light.getAmbient()
-    print("ambient = " .. r .. "," .. g .. "," .. b .. "," .. a)
+    local enabled = lurek.light.isEnabled()
+    local count = lurek.light.getLightCount()
+    example_print_log("ambient = " .. r .. "," .. g .. "," .. b .. "," .. a)
 end
 ```
 
@@ -451,8 +474,12 @@ lurek.light.setEnabled(enabled)
 
 ```lua
 do
+    lurek.light.clear()
+    lurek.light.newLight(64, 64, 96)
     lurek.light.setEnabled(true)
-    print("light world enabled = " .. tostring(lurek.light.isEnabled()))
+    local count = lurek.light.getLightCount()
+    local max_lights = lurek.light.getMaxLights()
+    example_print_log("light world enabled = " .. tostring(lurek.light.isEnabled()))
 end
 ```
 
@@ -487,8 +514,8 @@ do
     second:setGroupId(1)
     lurek.light.setGroupColor(1, 1, 0, 0, 1)
     local r, g, b, a = first:getColor()
-    print("group 1 count = " .. lurek.light.getGroupCount(1))
-    print("group 1 color = " .. r .. "," .. g .. "," .. b .. "," .. a)
+    example_print_log("group 1 count = " .. lurek.light.getGroupCount(1))
+    example_print_log("group 1 color = " .. r .. "," .. g .. "," .. b .. "," .. a)
 end
 ```
 
@@ -519,8 +546,8 @@ do
     first:setGroupId(1)
     second:setGroupId(1)
     lurek.light.setGroupEnabled(1, false)
-    print("group 1 count = " .. lurek.light.getGroupCount(1))
-    print("group 1 enabled = " .. tostring(first:isEnabled()))
+    example_print_log("group 1 count = " .. lurek.light.getGroupCount(1))
+    example_print_log("group 1 enabled = " .. tostring(first:isEnabled()))
 end
 ```
 
@@ -551,8 +578,8 @@ do
     first:setGroupId(1)
     second:setGroupId(1)
     lurek.light.setGroupIntensity(1, 3.0)
-    print("group 1 count = " .. lurek.light.getGroupCount(1))
-    print("group 1 intensity = " .. first:getIntensity())
+    example_print_log("group 1 count = " .. lurek.light.getGroupCount(1))
+    example_print_log("group 1 intensity = " .. first:getIntensity())
 end
 ```
 
@@ -577,7 +604,10 @@ lurek.light.setMaxLights(n)
 ```lua
 do
     lurek.light.setMaxLights(64)
-    print("max lights = " .. lurek.light.getMaxLights())
+    lurek.light.clear()
+    lurek.light.newLight(48, 48, 96)
+    local count = lurek.light.getLightCount()
+    example_print_log("max lights = " .. lurek.light.getMaxLights())
 end
 ```
 
@@ -606,7 +636,9 @@ lurek.light.syncAmbient()
 do
     lurek.light.setAmbient(0.2, 0.25, 0.3, 1.0)
     local r, g, b, a = lurek.light.syncAmbient()
-    print("sync ambient = " .. r .. "," .. g .. "," .. b .. "," .. a)
+    local enabled = lurek.light.isEnabled()
+    local count = lurek.light.getLightCount()
+    example_print_log("sync ambient = " .. r .. "," .. g .. "," .. b .. "," .. a)
 end
 ```
 
@@ -1463,10 +1495,13 @@ LLight:addFlicker(min, max, hz)
 ```lua
 do
     local light = lurek.light.newLight(100, 100, 80)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:addFlicker(0.5, 1.0, 8.0)
     local speed, strength = light:getFlicker()
-    print("flicker speed = " .. speed)
-    print("flicker strength = " .. strength)
+    example_print_log("flicker speed = " .. speed)
+    example_print_log("flicker strength = " .. strength)
 end
 ```
 
@@ -1485,9 +1520,12 @@ LLight:clearCookie()
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setCookie("content/examples/assets/images/sample_texture.png")
     light:clearCookie()
-    print("cookie = " .. tostring(light:getCookie()))
+    example_print_log("cookie = " .. tostring(light:getCookie()))
 end
 ```
 
@@ -1506,9 +1544,12 @@ LLight:clearNormalMap()
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setNormalMap("content/examples/assets/images/sample_normal.dds")
     light:clearNormalMap()
-    print("normal map = " .. tostring(light:getNormalMap()))
+    example_print_log("normal map = " .. tostring(light:getNormalMap()))
 end
 ```
 
@@ -1535,9 +1576,12 @@ LLight:getAttenuation()
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setAttenuation(1, 0.1, 0.01)
     local c, l, q = light:getAttenuation()
-    print("attenuation c=" .. c .. " l=" .. l .. " q=" .. q)
+    example_print_log("attenuation c=" .. c .. " l=" .. l .. " q=" .. q)
 end
 ```
 
@@ -1562,8 +1606,11 @@ LLight:getBlendMode()
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setBlendMode("add")
-    print("blend = " .. light:getBlendMode())
+    example_print_log("blend = " .. light:getBlendMode())
 end
 ```
 
@@ -1591,9 +1638,12 @@ LLight:getColor()
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setColor(1, 0.5, 0, 0.9)
     local r, g, b, a = light:getColor()
-    print("color = " .. r .. "," .. g .. "," .. b .. "," .. a)
+    example_print_log("color = " .. r .. "," .. g .. "," .. b .. "," .. a)
 end
 ```
 
@@ -1618,8 +1668,11 @@ LLight:getCookie()
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setCookie("content/examples/assets/images/sample_texture.png")
-    print("cookie = " .. light:getCookie())
+    example_print_log("cookie = " .. light:getCookie())
 end
 ```
 
@@ -1644,9 +1697,12 @@ LLight:getDirection()
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setLightType("directional")
     light:setDirection(1.57)
-    print("direction = " .. light:getDirection())
+    example_print_log("direction = " .. light:getDirection())
 end
 ```
 
@@ -1671,8 +1727,11 @@ LLight:getEnergy()
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setEnergy(2.5)
-    print("energy = " .. light:getEnergy())
+    example_print_log("energy = " .. light:getEnergy())
 end
 ```
 
@@ -1697,8 +1756,11 @@ LLight:getFalloff()
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setFalloff("smooth")
-    print("falloff = " .. light:getFalloff())
+    example_print_log("falloff = " .. light:getFalloff())
 end
 ```
 
@@ -1724,9 +1786,12 @@ LLight:getFlicker()
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setFlicker(3.0, 0.4)
     local speed, strength = light:getFlicker()
-    print("flicker speed=" .. speed .. " strength=" .. strength)
+    example_print_log("flicker speed=" .. speed .. " strength=" .. strength)
 end
 ```
 
@@ -1751,8 +1816,11 @@ LLight:getGroupId()
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setGroupId(5)
-    print("group = " .. light:getGroupId())
+    example_print_log("group = " .. light:getGroupId())
 end
 ```
 
@@ -1777,10 +1845,13 @@ LLight:getInnerAngle()
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setLightType("spot")
     light:setInnerAngle(0.3)
     light:setOuterAngle(0.8)
-    print("inner = " .. light:getInnerAngle() .. " outer = " .. light:getOuterAngle())
+    example_print_log("inner = " .. light:getInnerAngle() .. " outer = " .. light:getOuterAngle())
 end
 ```
 
@@ -1805,8 +1876,11 @@ LLight:getIntensity()
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setIntensity(5)
-    print("intensity = " .. light:getIntensity())
+    example_print_log("intensity = " .. light:getIntensity())
 end
 ```
 
@@ -1831,8 +1905,11 @@ LLight:getLightMask()
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setLightMask(3)
-    print("mask = " .. light:getLightMask())
+    example_print_log("mask = " .. light:getLightMask())
 end
 ```
 
@@ -1857,8 +1934,11 @@ LLight:getLightType()
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setLightType("spot")
-    print("type = " .. light:getLightType())
+    example_print_log("type = " .. light:getLightType())
 end
 ```
 
@@ -1883,8 +1963,11 @@ LLight:getNormalMap()
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setNormalMap("content/examples/assets/images/sample_normal.dds")
-    print("normal map = " .. light:getNormalMap())
+    example_print_log("normal map = " .. light:getNormalMap())
 end
 ```
 
@@ -1909,8 +1992,11 @@ LLight:getNormalStrength()
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setNormalStrength(1.5)
-    print("normal strength = " .. light:getNormalStrength())
+    example_print_log("normal strength = " .. light:getNormalStrength())
 end
 ```
 
@@ -1935,10 +2021,13 @@ LLight:getOuterAngle()
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setLightType("spot")
     light:setInnerAngle(0.3)
     light:setOuterAngle(0.8)
-    print("inner = " .. light:getInnerAngle() .. " outer = " .. light:getOuterAngle())
+    example_print_log("inner = " .. light:getInnerAngle() .. " outer = " .. light:getOuterAngle())
 end
 ```
 
@@ -1964,9 +2053,12 @@ LLight:getPosition()
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setPosition(200, 150)
     local x, y = light:getPosition()
-    print("pos = " .. x .. "," .. y)
+    example_print_log("pos = " .. x .. "," .. y)
 end
 ```
 
@@ -1991,8 +2083,11 @@ LLight:getRadius()
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setRadius(250)
-    print("radius = " .. light:getRadius())
+    example_print_log("radius = " .. light:getRadius())
 end
 ```
 
@@ -2020,10 +2115,13 @@ LLight:getShadowColor()
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setShadowEnabled(true)
     light:setShadowColor(0, 0, 0.1, 0.8)
     local r, g, b, a = light:getShadowColor()
-    print("shadow color = " .. r .. "," .. g .. "," .. b .. "," .. a)
+    example_print_log("shadow color = " .. r .. "," .. g .. "," .. b .. "," .. a)
 end
 ```
 
@@ -2048,9 +2146,12 @@ LLight:getShadowFilter()
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setShadowEnabled(true)
     light:setShadowFilter("pcf5")
-    print("shadow filter = " .. light:getShadowFilter())
+    example_print_log("shadow filter = " .. light:getShadowFilter())
 end
 ```
 
@@ -2075,8 +2176,11 @@ LLight:getShadowMask()
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setShadowMask(7)
-    print("shadow mask = " .. light:getShadowMask())
+    example_print_log("shadow mask = " .. light:getShadowMask())
 end
 ```
 
@@ -2101,9 +2205,12 @@ LLight:getShadowSmooth()
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setShadowEnabled(true)
     light:setShadowSmooth(2.0)
-    print("shadow smooth = " .. light:getShadowSmooth())
+    example_print_log("shadow smooth = " .. light:getShadowSmooth())
 end
 ```
 
@@ -2128,9 +2235,12 @@ LLight:getShadowSoftness()
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setShadowEnabled(true)
     light:setShadowSoftness(1.5)
-    print("shadow softness = " .. light:getShadowSoftness())
+    example_print_log("shadow softness = " .. light:getShadowSoftness())
 end
 ```
 
@@ -2155,8 +2265,11 @@ LLight:isEnabled()
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setEnabled(false)
-    print("enabled = " .. tostring(light:isEnabled()))
+    example_print_log("enabled = " .. tostring(light:isEnabled()))
 end
 ```
 
@@ -2181,9 +2294,12 @@ LLight:isFlickerEnabled()
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setFlicker(2.0, 0.3)
     light:setFlickerEnabled(true)
-    print("flicker on = " .. tostring(light:isFlickerEnabled()))
+    example_print_log("flicker on = " .. tostring(light:isFlickerEnabled()))
 end
 ```
 
@@ -2208,8 +2324,11 @@ LLight:isShadowEnabled()
 ```lua
 do
     local light = lurek.light.newLight(200, 200, 150)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setShadowEnabled(true)
-    print("shadows = " .. tostring(light:isShadowEnabled()))
+    example_print_log("shadows = " .. tostring(light:isShadowEnabled()))
 end
 ```
 
@@ -2234,9 +2353,12 @@ LLight:isValid()
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
-    print("valid = " .. tostring(light:isValid()))
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
+    example_print_log("valid = " .. tostring(light:isValid()))
     light:remove()
-    print("valid after remove = " .. tostring(light:isValid()))
+    example_print_log("valid after remove = " .. tostring(light:isValid()))
 end
 ```
 
@@ -2261,8 +2383,11 @@ LLight:isVolumetric()
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 200)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setVolumetric(true)
-    print("volumetric = " .. tostring(light:isVolumetric()))
+    example_print_log("volumetric = " .. tostring(light:isVolumetric()))
 end
 ```
 
@@ -2281,9 +2406,11 @@ LLight:remove()
 ```lua
 do
     local lt = lurek.light.newLight(200, 300, 150)
-    print("lights = " .. lurek.light.getLightCount())
+    lt:setColor(1.0, 0.85, 0.55, 1.0)
+    lt:setIntensity(1.5)
+    example_print_log("lights = " .. lurek.light.getLightCount())
     lt:remove()
-    print("after remove = " .. lurek.light.getLightCount())
+    example_print_log("after remove = " .. lurek.light.getLightCount())
 end
 ```
 
@@ -2310,9 +2437,12 @@ LLight:setAttenuation(c, l, q)
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setAttenuation(1, 0.1, 0.01)
     local c, l, q = light:getAttenuation()
-    print("attenuation c=" .. c .. " l=" .. l .. " q=" .. q)
+    example_print_log("attenuation c=" .. c .. " l=" .. l .. " q=" .. q)
 end
 ```
 
@@ -2337,8 +2467,11 @@ LLight:setBlendMode(mode)
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setBlendMode("add")
-    print("blend = " .. light:getBlendMode())
+    example_print_log("blend = " .. light:getBlendMode())
 end
 ```
 
@@ -2366,9 +2499,12 @@ LLight:setColor(r, g, b, a)
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setColor(1, 0.5, 0, 0.9)
     local r, g, b, a = light:getColor()
-    print("color = " .. r .. "," .. g .. "," .. b .. "," .. a)
+    example_print_log("color = " .. r .. "," .. g .. "," .. b .. "," .. a)
 end
 ```
 
@@ -2393,8 +2529,11 @@ LLight:setCookie(path)
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setCookie("content/examples/assets/images/sample_texture.png")
-    print("cookie = " .. light:getCookie())
+    example_print_log("cookie = " .. light:getCookie())
 end
 ```
 
@@ -2419,9 +2558,12 @@ LLight:setDirection(dir)
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setLightType("directional")
     light:setDirection(1.57)
-    print("direction = " .. light:getDirection())
+    example_print_log("direction = " .. light:getDirection())
 end
 ```
 
@@ -2446,8 +2588,11 @@ LLight:setEnabled(b)
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setEnabled(false)
-    print("enabled = " .. tostring(light:isEnabled()))
+    example_print_log("enabled = " .. tostring(light:isEnabled()))
 end
 ```
 
@@ -2472,8 +2617,11 @@ LLight:setEnergy(e)
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setEnergy(2.5)
-    print("energy = " .. light:getEnergy())
+    example_print_log("energy = " .. light:getEnergy())
 end
 ```
 
@@ -2498,8 +2646,11 @@ LLight:setFalloff(mode)
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setFalloff("smooth")
-    print("falloff = " .. light:getFalloff())
+    example_print_log("falloff = " .. light:getFalloff())
 end
 ```
 
@@ -2525,9 +2676,12 @@ LLight:setFlicker(speed, strength)
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setFlicker(3.0, 0.4)
     local speed, strength = light:getFlicker()
-    print("flicker speed=" .. speed .. " strength=" .. strength)
+    example_print_log("flicker speed=" .. speed .. " strength=" .. strength)
 end
 ```
 
@@ -2552,9 +2706,12 @@ LLight:setFlickerEnabled(b)
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setFlicker(2.0, 0.3)
     light:setFlickerEnabled(true)
-    print("flicker on = " .. tostring(light:isFlickerEnabled()))
+    example_print_log("flicker on = " .. tostring(light:isFlickerEnabled()))
 end
 ```
 
@@ -2579,8 +2736,11 @@ LLight:setGroupId(id)
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setGroupId(5)
-    print("group = " .. light:getGroupId())
+    example_print_log("group = " .. light:getGroupId())
 end
 ```
 
@@ -2605,10 +2765,13 @@ LLight:setInnerAngle(a)
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setLightType("spot")
     light:setInnerAngle(0.3)
     light:setOuterAngle(0.8)
-    print("inner = " .. light:getInnerAngle() .. " outer = " .. light:getOuterAngle())
+    example_print_log("inner = " .. light:getInnerAngle() .. " outer = " .. light:getOuterAngle())
 end
 ```
 
@@ -2633,8 +2796,11 @@ LLight:setIntensity(i)
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setIntensity(5)
-    print("intensity = " .. light:getIntensity())
+    example_print_log("intensity = " .. light:getIntensity())
 end
 ```
 
@@ -2659,8 +2825,11 @@ LLight:setLightMask(mask)
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setLightMask(3)
-    print("mask = " .. light:getLightMask())
+    example_print_log("mask = " .. light:getLightMask())
 end
 ```
 
@@ -2685,8 +2854,11 @@ LLight:setLightType(t)
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setLightType("spot")
-    print("type = " .. light:getLightType())
+    example_print_log("type = " .. light:getLightType())
 end
 ```
 
@@ -2711,8 +2883,11 @@ LLight:setNormalMap(path)
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setNormalMap("content/examples/assets/images/sample_normal.dds")
-    print("normal map = " .. light:getNormalMap())
+    example_print_log("normal map = " .. light:getNormalMap())
 end
 ```
 
@@ -2737,8 +2912,11 @@ LLight:setNormalStrength(strength)
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setNormalStrength(1.5)
-    print("normal strength = " .. light:getNormalStrength())
+    example_print_log("normal strength = " .. light:getNormalStrength())
 end
 ```
 
@@ -2763,10 +2941,13 @@ LLight:setOuterAngle(a)
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setLightType("spot")
     light:setInnerAngle(0.3)
     light:setOuterAngle(0.8)
-    print("inner = " .. light:getInnerAngle() .. " outer = " .. light:getOuterAngle())
+    example_print_log("inner = " .. light:getInnerAngle() .. " outer = " .. light:getOuterAngle())
 end
 ```
 
@@ -2792,9 +2973,12 @@ LLight:setPosition(x, y)
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setPosition(200, 150)
     local x, y = light:getPosition()
-    print("pos = " .. x .. "," .. y)
+    example_print_log("pos = " .. x .. "," .. y)
 end
 ```
 
@@ -2819,8 +3003,11 @@ LLight:setRadius(r)
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setRadius(250)
-    print("radius = " .. light:getRadius())
+    example_print_log("radius = " .. light:getRadius())
 end
 ```
 
@@ -2848,10 +3035,13 @@ LLight:setShadowColor(r, g, b, a)
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setShadowEnabled(true)
     light:setShadowColor(0, 0, 0.1, 0.8)
     local r, g, b, a = light:getShadowColor()
-    print("shadow color = " .. r .. "," .. g .. "," .. b .. "," .. a)
+    example_print_log("shadow color = " .. r .. "," .. g .. "," .. b .. "," .. a)
 end
 ```
 
@@ -2876,8 +3066,11 @@ LLight:setShadowEnabled(b)
 ```lua
 do
     local light = lurek.light.newLight(200, 200, 150)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setShadowEnabled(true)
-    print("shadows = " .. tostring(light:isShadowEnabled()))
+    example_print_log("shadows = " .. tostring(light:isShadowEnabled()))
 end
 ```
 
@@ -2902,9 +3095,12 @@ LLight:setShadowFilter(filter)
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setShadowEnabled(true)
     light:setShadowFilter("pcf5")
-    print("shadow filter = " .. light:getShadowFilter())
+    example_print_log("shadow filter = " .. light:getShadowFilter())
 end
 ```
 
@@ -2929,8 +3125,11 @@ LLight:setShadowMask(mask)
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setShadowMask(7)
-    print("shadow mask = " .. light:getShadowMask())
+    example_print_log("shadow mask = " .. light:getShadowMask())
 end
 ```
 
@@ -2955,9 +3154,12 @@ LLight:setShadowSmooth(s)
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setShadowEnabled(true)
     light:setShadowSmooth(2.0)
-    print("shadow smooth = " .. light:getShadowSmooth())
+    example_print_log("shadow smooth = " .. light:getShadowSmooth())
 end
 ```
 
@@ -2982,9 +3184,12 @@ LLight:setShadowSoftness(softness)
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setShadowEnabled(true)
     light:setShadowSoftness(1.5)
-    print("shadow softness = " .. light:getShadowSoftness())
+    example_print_log("shadow softness = " .. light:getShadowSoftness())
 end
 ```
 
@@ -3009,8 +3214,11 @@ LLight:setVolumetric(b)
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 200)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setVolumetric(true)
-    print("volumetric = " .. tostring(light:isVolumetric()))
+    example_print_log("volumetric = " .. tostring(light:isVolumetric()))
 end
 ```
 
@@ -3029,9 +3237,12 @@ LLight:stopTransition()
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:transitionTo({color = {0, 0, 1, 1}, intensity = 3.0, radius = 200}, 2.0)
     light:stopTransition()
-    print("stopped, progress = " .. light:transitionProgress())
+    example_print_log("stopped, progress = " .. light:transitionProgress())
 end
 ```
 
@@ -3056,9 +3267,12 @@ LLight:transitionProgress()
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:transitionTo({color = {0, 0, 1, 1}, intensity = 3.0, radius = 200}, 2.0)
     light:updateTransition(0.5)
-    print("progress = " .. light:transitionProgress())
+    example_print_log("progress = " .. light:transitionProgress())
 end
 ```
 
@@ -3084,10 +3298,13 @@ LLight:transitionTo(target, duration)
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:setColor(1, 0, 0, 1)
     light:setIntensity(1.0)
     light:transitionTo({color = {0, 0, 1, 1}, intensity = 3.0, radius = 200}, 2.0)
-    print("progress = " .. light:transitionProgress())
+    example_print_log("progress = " .. light:transitionProgress())
 end
 ```
 
@@ -3112,8 +3329,11 @@ LLight:type()
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
-    print("type = " .. light:type())
-    print("is LLight = " .. tostring(light:typeOf("LLight")))
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
+    example_print_log("type = " .. light:type())
+    example_print_log("is LLight = " .. tostring(light:typeOf("LLight")))
 end
 ```
 
@@ -3144,9 +3364,12 @@ LLight:typeOf(name)
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
-    print("type = " .. light:type())
-    print("is LLight = " .. tostring(light:typeOf("LLight")))
-    print("is Object = " .. tostring(light:typeOf("LObject")))
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
+    example_print_log("type = " .. light:type())
+    example_print_log("is LLight = " .. tostring(light:typeOf("LLight")))
+    example_print_log("is Object = " .. tostring(light:typeOf("LObject")))
 end
 ```
 
@@ -3177,9 +3400,12 @@ LLight:updateTransition(dt)
 ```lua
 do
     local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
     light:transitionTo({color = {0, 0, 1, 1}, intensity = 3.0, radius = 200}, 2.0)
     local applied = light:updateTransition(0.5)
-    print("applied = " .. tostring(applied))
+    example_print_log("applied = " .. tostring(applied))
 end
 ```
 
@@ -3212,8 +3438,11 @@ LOccluder:getLightMask()
 ```lua
 do
     local occ = lurek.light.newOccluder({0, 0, 10, 0, 10, 10, 0, 10})
+    occ:setPosition(8, 12)
+    occ:setOpacity(0.9)
+    local occluder_count = lurek.light.getOccluderCount()
     occ:setLightMask(5)
-    print("occ mask = " .. occ:getLightMask())
+    example_print_log("occ mask = " .. occ:getLightMask())
 end
 ```
 
@@ -3238,8 +3467,11 @@ LOccluder:getOpacity()
 ```lua
 do
     local occ = lurek.light.newOccluder({0, 0, 10, 0, 10, 10, 0, 10})
+    occ:setPosition(8, 12)
+    occ:setOpacity(0.9)
+    local occluder_count = lurek.light.getOccluderCount()
     occ:setOpacity(0.6)
-    print("opacity = " .. occ:getOpacity())
+    example_print_log("opacity = " .. occ:getOpacity())
 end
 ```
 
@@ -3265,9 +3497,12 @@ LOccluder:getPosition()
 ```lua
 do
     local occ = lurek.light.newOccluder({0, 0, 10, 0, 10, 10, 0, 10})
+    occ:setPosition(8, 12)
+    occ:setOpacity(0.9)
+    local occluder_count = lurek.light.getOccluderCount()
     occ:setPosition(50, 75)
     local x, y = occ:getPosition()
-    print("occ pos = " .. x .. "," .. y)
+    example_print_log("occ pos = " .. x .. "," .. y)
 end
 ```
 
@@ -3292,9 +3527,12 @@ LOccluder:getVertices()
 ```lua
 do
     local occ = lurek.light.newOccluder({0, 0, 20, 0, 20, 20, 0, 20})
+    occ:setPosition(8, 12)
+    occ:setOpacity(0.9)
+    local occluder_count = lurek.light.getOccluderCount()
     occ:setVertices({0, 0, 30, 0, 30, 30, 0, 30})
     local v = occ:getVertices()
-    print("vertex count = " .. #v / 2)
+    example_print_log("vertex count = " .. #v / 2)
 end
 ```
 
@@ -3319,8 +3557,11 @@ LOccluder:isEnabled()
 ```lua
 do
     local occ = lurek.light.newOccluder({0, 0, 10, 0, 10, 10, 0, 10})
+    occ:setPosition(8, 12)
+    occ:setOpacity(0.9)
+    local occluder_count = lurek.light.getOccluderCount()
     occ:setEnabled(false)
-    print("enabled = " .. tostring(occ:isEnabled()))
+    example_print_log("enabled = " .. tostring(occ:isEnabled()))
 end
 ```
 
@@ -3345,9 +3586,12 @@ LOccluder:isValid()
 ```lua
 do
     local occ = lurek.light.newOccluder({0, 0, 10, 0, 10, 10, 0, 10})
-    print("valid = " .. tostring(occ:isValid()))
+    occ:setPosition(8, 12)
+    occ:setOpacity(0.9)
+    local occluder_count = lurek.light.getOccluderCount()
+    example_print_log("valid = " .. tostring(occ:isValid()))
     occ:remove()
-    print("valid after remove = " .. tostring(occ:isValid()))
+    example_print_log("valid after remove = " .. tostring(occ:isValid()))
 end
 ```
 
@@ -3367,9 +3611,12 @@ LOccluder:remove()
 do
     local vtbl = { 0, 0, 100, 0, 100, 100, 0, 100 }
     local occ = lurek.light.newOccluder(vtbl)
-    print("occluders = " .. lurek.light.getOccluderCount())
+    occ:setPosition(8, 12)
+    occ:setOpacity(0.9)
+    local occluder_count = lurek.light.getOccluderCount()
+    example_print_log("occluders = " .. lurek.light.getOccluderCount())
     occ:remove()
-    print("after remove = " .. lurek.light.getOccluderCount())
+    example_print_log("after remove = " .. lurek.light.getOccluderCount())
 end
 ```
 
@@ -3394,8 +3641,11 @@ LOccluder:setEnabled(b)
 ```lua
 do
     local occ = lurek.light.newOccluder({0, 0, 10, 0, 10, 10, 0, 10})
+    occ:setPosition(8, 12)
+    occ:setOpacity(0.9)
+    local occluder_count = lurek.light.getOccluderCount()
     occ:setEnabled(false)
-    print("enabled = " .. tostring(occ:isEnabled()))
+    example_print_log("enabled = " .. tostring(occ:isEnabled()))
 end
 ```
 
@@ -3420,8 +3670,11 @@ LOccluder:setLightMask(mask)
 ```lua
 do
     local occ = lurek.light.newOccluder({0, 0, 10, 0, 10, 10, 0, 10})
+    occ:setPosition(8, 12)
+    occ:setOpacity(0.9)
+    local occluder_count = lurek.light.getOccluderCount()
     occ:setLightMask(5)
-    print("occ mask = " .. occ:getLightMask())
+    example_print_log("occ mask = " .. occ:getLightMask())
 end
 ```
 
@@ -3446,8 +3699,11 @@ LOccluder:setOpacity(o)
 ```lua
 do
     local occ = lurek.light.newOccluder({0, 0, 10, 0, 10, 10, 0, 10})
+    occ:setPosition(8, 12)
+    occ:setOpacity(0.9)
+    local occluder_count = lurek.light.getOccluderCount()
     occ:setOpacity(0.6)
-    print("opacity = " .. occ:getOpacity())
+    example_print_log("opacity = " .. occ:getOpacity())
 end
 ```
 
@@ -3473,9 +3729,12 @@ LOccluder:setPosition(x, y)
 ```lua
 do
     local occ = lurek.light.newOccluder({0, 0, 10, 0, 10, 10, 0, 10})
+    occ:setPosition(8, 12)
+    occ:setOpacity(0.9)
+    local occluder_count = lurek.light.getOccluderCount()
     occ:setPosition(50, 75)
     local x, y = occ:getPosition()
-    print("occ pos = " .. x .. "," .. y)
+    example_print_log("occ pos = " .. x .. "," .. y)
 end
 ```
 
@@ -3500,9 +3759,12 @@ LOccluder:setVertices(tbl)
 ```lua
 do
     local occ = lurek.light.newOccluder({0, 0, 20, 0, 20, 20, 0, 20})
+    occ:setPosition(8, 12)
+    occ:setOpacity(0.9)
+    local occluder_count = lurek.light.getOccluderCount()
     occ:setVertices({0, 0, 30, 0, 30, 30, 0, 30})
     local v = occ:getVertices()
-    print("vertex count = " .. #v / 2)
+    example_print_log("vertex count = " .. #v / 2)
 end
 ```
 
@@ -3527,8 +3789,11 @@ LOccluder:type()
 ```lua
 do
     local occ = lurek.light.newOccluder({0, 0, 10, 0, 10, 10, 0, 10})
-    print("type = " .. occ:type())
-    print("is LOccluder = " .. tostring(occ:typeOf("LOccluder")))
+    occ:setPosition(8, 12)
+    occ:setOpacity(0.9)
+    local occluder_count = lurek.light.getOccluderCount()
+    example_print_log("type = " .. occ:type())
+    example_print_log("is LOccluder = " .. tostring(occ:typeOf("LOccluder")))
 end
 ```
 
@@ -3559,9 +3824,12 @@ LOccluder:typeOf(name)
 ```lua
 do
     local occ = lurek.light.newOccluder({0, 0, 10, 0, 10, 10, 0, 10})
-    print("type = " .. occ:type())
-    print("is LOccluder = " .. tostring(occ:typeOf("LOccluder")))
-    print("is Object = " .. tostring(occ:typeOf("LObject")))
+    occ:setPosition(8, 12)
+    occ:setOpacity(0.9)
+    local occluder_count = lurek.light.getOccluderCount()
+    example_print_log("type = " .. occ:type())
+    example_print_log("is LOccluder = " .. tostring(occ:typeOf("LOccluder")))
+    example_print_log("is Object = " .. tostring(occ:typeOf("LObject")))
 end
 ```
 

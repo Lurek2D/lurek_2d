@@ -15,6 +15,10 @@ pub mod agent;
 pub mod behavior_tree;
 /// Command queue for deferred AI actions.
 pub mod command_queue;
+/// Shared AI diagnostics and decision traces.
+pub mod diagnostics;
+/// Shared AI validation and safety errors.
+pub mod error;
 /// Finite-state machine helpers.
 pub mod fsm;
 /// Goal-oriented action planning types.
@@ -59,6 +63,51 @@ pub mod perception;
 pub mod strategy;
 /// Personality traits and archetype presets.
 pub mod traits;
+/// Shared AI validation limits and numeric helpers.
+pub mod validation;
+
+/// Grouped planning APIs for callers that want a narrower public surface.
+pub mod planning {
+    pub use super::goap::{GOAPAction, GOAPGoal, GOAPPlanner, PlanFailureReason};
+    pub use super::htn::{HTNDomain, HTNMethod, HTNPlanner, HTNTask, WorldState};
+    pub use super::mcts::{MCTSConfig, MCTSEngine};
+}
+
+/// Grouped movement and avoidance APIs for callers that only need locomotion-side AI.
+pub mod movement {
+    pub use super::context_steering::{ContextBehavior, ContextBehaviorKind, ContextSteering};
+    pub use super::orca::{ORCAAgent, ORCASolver};
+    pub use super::steering::*;
+}
+
+/// Grouped decision APIs for callers that only need reasoning primitives.
+pub mod decision {
+    pub use super::behavior_tree::{BTNode, BTStatus, BehaviorTree, ParallelPolicy};
+    pub use super::fsm::{StateCallbacks, StateMachine, Transition};
+    pub use super::strategy::{StrategicGoal, StrategyAI};
+    pub use super::utility_ai::{Consideration, ResponseCurve, UAAction, UtilityAI};
+}
+
+/// Grouped simulation-side AI state APIs for callers that manage world or actor state.
+pub mod simulation {
+    pub use super::agent::{Agent, DecisionModel};
+    pub use super::director::{AIDirector, DirectorConfig, DirectorPhase};
+    pub use super::emotion::{Emotion, EmotionModel};
+    pub use super::lod::{AILod, LodTier};
+    pub use super::needs::{Need, NeedAdvertisement, NeedSystem};
+    pub use super::perception::{DetectedStimulus, Sensor, Stimulus, StimulusType, StimulusWorld};
+    pub use super::squad::{FormationType, Squad};
+    pub use super::traits::{TraitArchetypes, TraitModifier, TraitProfile};
+    pub use super::world::AIWorld;
+}
+
+/// Grouped debug and diagnostics APIs for AI inspection.
+pub mod debug {
+    pub use super::diagnostics::{
+        CallbackErrorTrace, GoapPlanTrace, MctsDecisionTrace, UtilityActionTrace,
+        UtilityConsiderationTrace, UtilityDecisionTrace,
+    };
+}
 
 /// Tabular reinforcement learner (re-exported from learning module).
 pub use crate::learning::QLearner;
@@ -73,7 +122,7 @@ pub use command_queue::{Command, CommandQueue};
 /// Finite-state machine building blocks.
 pub use fsm::{StateCallbacks, StateMachine, Transition};
 /// GOAP planner inputs and planner type.
-pub use goap::{GOAPAction, GOAPGoal, GOAPPlanner};
+pub use goap::{GOAPAction, GOAPGoal, GOAPPlanner, PlanFailureReason};
 /// Squad container and formation mode.
 pub use squad::{FormationType, Squad};
 /// Steering behavior primitives and helpers.
@@ -89,6 +138,13 @@ pub use crate::learning::Neuroevolution;
 pub use crate::learning::{Activation, NeuralLayer, NeuralNet};
 /// Multi-armed bandit policies and arm stats (re-exported from learning module).
 pub use crate::learning::{Bandit, BanditArm, BanditStrategy};
+/// Shared AI callback and decision traces.
+pub use diagnostics::{
+    CallbackErrorTrace, GoapPlanTrace, MctsDecisionTrace, UtilityActionTrace,
+    UtilityConsiderationTrace, UtilityDecisionTrace,
+};
+/// Shared AI validation errors and limits.
+pub use error::AiError;
 /// Genetic algorithm public types (re-exported from learning module).
 pub use crate::learning::{Chromosome, GeneticAlgorithm};
 /// Context-steering behaviors and runtime type.
@@ -115,3 +171,5 @@ pub use perception::{DetectedStimulus, Sensor, Stimulus, StimulusType, StimulusW
 pub use strategy::{StrategicGoal, StrategyAI};
 /// Trait profiles, modifiers, and archetypes.
 pub use traits::{TraitArchetypes, TraitModifier, TraitProfile};
+/// Shared AI validation limit configuration.
+pub use validation::AiValidationLimits;

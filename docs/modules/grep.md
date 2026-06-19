@@ -2,16 +2,11 @@
 
 ## Summary
 
-- This module exposes scriptable text search across project files from one Lua-facing API.
-- Literal and multi-literal search are the strongest paths today.
-- Regex, glob, and fuzzy modes remain lightweight helpers, not full external-engine equivalents.
-- Directory scans use buffered file reads, size caps, and small std-thread worker pools.
-- Result ordering is deterministic after parallel merge.
-- `GrepConfig.max_results` caps returned matches after collection.
-- File filters handle extensions, path substring exclusions, and hidden-file policy.
-- JSON and structured-log helpers support data-oriented searches beside plain text.
-
-This module is mostly self-contained inside the `Edge/Integration` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
+- The `grep` module is the scriptable text-search surface for users who want to scan project files, logs, or structured content from inside the engine environment.
+- Search configuration, path filtering, matching, and specialized JSON or log helpers work together so one module can cover ordinary content search as well as more structured diagnostic queries.
+- Literal-first behavior matters because many runtime and tooling searches are about exact identifiers, paths, or messages rather than full external-regex-engine complexity.
+- Threaded scanning and result shaping make the module practical for tools, editors, audit scripts, and content workflows that need search without leaving the project runtime.
+- Read it as the in-engine file-search utility layer: it does not replace every external grep tool, but it gives scripts a controlled search workflow that fits the engine's data and file model.
 
 ## Functions
 
@@ -40,8 +35,13 @@ lurek.grep.jsonSearch(file, key)
 
 ```lua
 do
-    local results = lurek.grep.jsonSearch("content/examples", "lurek.math")
-    print("json results = " .. #results)
+    local paths = fixture_paths()
+    local result = lurek.grep.jsonSearch(paths.json, "kind")
+    local first = result[1]
+    local third = result[3]
+    local first_value = first and first.value or "nil"
+    local third_value = third and third.value or "nil"
+    grep_log("jsonSearch hits=" .. #result .. " first=" .. first_value .. " third=" .. third_value)
 end
 ```
 
@@ -73,10 +73,12 @@ lurek.grep.logSearch(file, level, pattern)
 
 ```lua
 do
-    local path = "save/grep_runtime.log"
-    lurek.filesystem.write(path, "[INFO] boot\n[ERROR] panic: sample failure\n")
-    local results = lurek.grep.logSearch(path, "ERROR", "panic")
-    print("log results = " .. #results)
+    local paths = fixture_paths()
+    local result = lurek.grep.logSearch(paths.log, "ERROR", "panic")
+    local first = result[1]
+    local level = first and first.level or "nil"
+    local line = first and first.line or -1
+    grep_log("logSearch hits=" .. #result .. " level=" .. tostring(level) .. " line=" .. tostring(line))
 end
 ```
 
@@ -100,8 +102,13 @@ lurek.grep.luaFilter()
 
 ```lua
 do
-    local fil = lurek.grep.luaFilter()
-    print("lua filter created = " .. tostring(fil ~= nil))
+    local filter = lurek.grep.luaFilter()
+    filter:excludePattern("notes")
+    filter:setIncludeHidden(false)
+    local engine = lurek.grep.newEngine()
+    local paths = fixture_paths()
+    local result = engine:searchExt(paths.search, "needle", { "lua" })
+    grep_log("luaFilter companion search matched=" .. result.total_matches .. " across " .. result.files_searched .. " files")
 end
 ```
 
@@ -125,8 +132,12 @@ lurek.grep.newEngine()
 
 ```lua
 do
-    local eng = lurek.grep.newEngine()
-    print("engine created = " .. tostring(eng ~= nil))
+    local paths = fixture_paths()
+    local engine = lurek.grep.newEngine()
+    local result = engine:search(paths.search, "needle")
+    local total = result.total_matches
+    local files = result.files_searched
+    grep_log("newEngine files=" .. files .. " total_matches=" .. total)
 end
 ```
 
@@ -156,9 +167,13 @@ lurek.grep.newEngineOpts(opts)
 
 ```lua
 do
-    local opts = { case_sensitive = false, threads = 2, whole_word = false }
-    local eng = lurek.grep.newEngineOpts(opts)
-    print("engine with opts created = " .. tostring(eng ~= nil))
+    local paths = fixture_paths()
+    local opts = { threads = 2, case_sensitive = true, whole_word = false, max_file_size = 4096 }
+    local engine = lurek.grep.newEngineOpts(opts)
+    local result = engine:search(paths.search, "needle")
+    local matched = result.files_matched
+    local total = result.total_matches
+    grep_log("newEngineOpts matched_files=" .. matched .. " total_matches=" .. total)
 end
 ```
 
@@ -182,9 +197,12 @@ lurek.grep.newFilter()
 
 ```lua
 do
-    local fil = lurek.grep.newFilter()
-    fil:addExtension("lua")
-    print("filter created = " .. tostring(fil ~= nil))
+    local filter = lurek.grep.newFilter()
+    filter:addExtension("lua")
+    filter:excludeExtension("txt")
+    filter:excludePattern("vendor")
+    filter:setIncludeHidden(false)
+    grep_log("newFilter configured for lua files without txt or vendor paths")
 end
 ```
 
@@ -215,9 +233,12 @@ lurek.grep.search(path, pattern)
 
 ```lua
 do
-    local results = lurek.grep.search("content/examples", "lurek.math")
-    print("files searched = " .. results.files_searched)
-    print("total matches = " .. results.total_matches)
+    local paths = fixture_paths()
+    local result = lurek.grep.search(paths.search, "needle")
+    local first = result.matches[1]
+    local line = first and first.lines and first.lines[1]
+    local line_no = line and line.line or -1
+    grep_log("search files=" .. result.files_searched .. " matched=" .. result.files_matched .. " first_line=" .. line_no)
 end
 ```
 
@@ -266,10 +287,12 @@ LFileFilter:addExtension(ext)
 
 ```lua
 do
-    local fil = lurek.grep.newFilter()
-    fil:addExtension("lua")
-    fil:addExtension("toml")
-    print("LFileFilter:addExtension ok")
+    local filter = lurek.grep.newFilter()
+    filter:addExtension("lua")
+    filter:addExtension("toml")
+    filter:excludePattern("vendor")
+    filter:setIncludeHidden(false)
+    grep_log("LFileFilter:addExtension added lua and toml include rules")
 end
 ```
 
@@ -293,9 +316,12 @@ LFileFilter:excludeExtension(ext)
 
 ```lua
 do
-    local fil = lurek.grep.newFilter()
-    fil:excludeExtension("min.lua")
-    print("LFileFilter:excludeExtension ok")
+    local filter = lurek.grep.newFilter()
+    filter:addExtension("lua")
+    filter:excludeExtension("txt")
+    filter:excludePattern("notes")
+    filter:setIncludeHidden(false)
+    grep_log("LFileFilter:excludeExtension configured txt exclusion")
 end
 ```
 
@@ -319,9 +345,12 @@ LFileFilter:excludePattern(pattern)
 
 ```lua
 do
-    local fil = lurek.grep.newFilter()
-    fil:excludePattern("test_")
-    print("LFileFilter:excludePattern ok")
+    local filter = lurek.grep.newFilter()
+    filter:addExtension("lua")
+    filter:excludePattern("notes")
+    filter:excludePattern("vendor")
+    filter:setIncludeHidden(false)
+    grep_log("LFileFilter:excludePattern configured notes/vendor path exclusions")
 end
 ```
 
@@ -345,9 +374,12 @@ LFileFilter:setIncludeHidden(include)
 
 ```lua
 do
-    local fil = lurek.grep.newFilter()
-    fil:setIncludeHidden(false)
-    print("LFileFilter:setIncludeHidden ok")
+    local filter = lurek.grep.newFilter()
+    filter:addExtension("lua")
+    filter:setIncludeHidden(true)
+    filter:setIncludeHidden(false)
+    filter:excludePattern(".git")
+    grep_log("LFileFilter:setIncludeHidden toggled hidden file scanning")
 end
 ```
 
@@ -386,9 +418,12 @@ LGrepEngine:count(path, pattern)
 
 ```lua
 do
-    local eng = lurek.grep.newEngine()
-    local n = eng:count("content/examples", "lurek.math")
-    print("LGrepEngine:count=" .. n)
+    local paths = fixture_paths()
+    local engine = lurek.grep.newEngine()
+    local count = engine:count(paths.search, "needle")
+    local search = engine:search(paths.search, "needle")
+    local files = search.files_searched
+    grep_log("LGrepEngine:count total=" .. count .. " files=" .. files)
 end
 ```
 
@@ -419,10 +454,12 @@ LGrepEngine:multiSearch(path, patterns)
 
 ```lua
 do
-    local eng = lurek.grep.newEngine()
-    local results = eng:multiSearch("content/examples", { "lurek.math", "lurek.color" })
-    print("LGrepEngine:multiSearch files=" .. results.files_searched)
-    print("LGrepEngine:multiSearch matches=" .. results.total_matches)
+    local paths = fixture_paths()
+    local engine = lurek.grep.newEngine()
+    local result = engine:multiSearch(paths.search, { "needle", "other" })
+    local first = result.matches[1]
+    local path = first and first.path or "nil"
+    grep_log("LGrepEngine:multiSearch files=" .. result.files_searched .. " total=" .. result.total_matches .. " first_path=" .. tostring(path))
 end
 ```
 
@@ -453,14 +490,12 @@ LGrepEngine:search(path, pattern)
 
 ```lua
 do
-    local eng = lurek.grep.newEngine()
-    local ok, results = pcall(function() return eng:search("content/examples", "lurek.math") end)
-    if ok then
-        print("LGrepEngine:search files=" .. results.files_searched)
-        print("LGrepEngine:search matches=" .. results.total_matches)
-    else
-        print("LGrepEngine:search skipped: " .. tostring(results))
-    end
+    local paths = fixture_paths()
+    local engine = lurek.grep.newEngine()
+    local result = engine:search(paths.search, "needle")
+    local first = result.matches[1]
+    local path = first and first.path or "nil"
+    grep_log("LGrepEngine:search files=" .. result.files_searched .. " total=" .. result.total_matches .. " first_path=" .. tostring(path))
 end
 ```
 
@@ -492,14 +527,13 @@ LGrepEngine:searchExt(path, pattern, extensions)
 
 ```lua
 do
-    local eng = lurek.grep.newEngine()
-    local ok, results = pcall(function() return eng:searchExt("content/examples", "lurek.math", { "lua" }) end)
-    if ok then
-        print("LGrepEngine:searchExt files=" .. results.files_searched)
-        print("LGrepEngine:searchExt matches=" .. results.total_matches)
-    else
-        print("LGrepEngine:searchExt skipped: " .. tostring(results))
-    end
+    local paths = fixture_paths()
+    local engine = lurek.grep.newEngine()
+    local result = engine:searchExt(paths.search, "needle", { "lua" })
+    local total = result.total_matches
+    local files = result.files_searched
+    local matched = result.files_matched
+    grep_log("LGrepEngine:searchExt files=" .. files .. " matched=" .. matched .. " total=" .. total)
 end
 ```
 
@@ -530,10 +564,12 @@ LGrepEngine:searchFiles(files, pattern)
 
 ```lua
 do
-    local eng = lurek.grep.newEngine()
-    local results = eng:searchFiles({ "content/examples/grep.lua", "content/examples/font.lua" }, "lurek.math")
-    print("LGrepEngine:searchFiles files=" .. results.files_searched)
-    print("LGrepEngine:searchFiles matches=" .. results.total_matches)
+    local paths = fixture_paths()
+    local engine = lurek.grep.newEngine()
+    local result = engine:searchFiles({ paths.alpha, paths.beta }, "needle")
+    local first = result.matches[1]
+    local path = first and first.path or "nil"
+    grep_log("LGrepEngine:searchFiles files=" .. result.files_searched .. " total=" .. result.total_matches .. " first=" .. tostring(path))
 end
 ```
 

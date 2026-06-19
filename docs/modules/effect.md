@@ -2,22 +2,15 @@
 
 ## Summary
 
-- This module lets users shape final frame look through configurable post-processing passes.
-- You can combine built-in and custom shader effects to build a visual style pipeline per scene.
-- Stack ordering controls allow deliberate multi-pass composition instead of one-off filter toggles.
-- Runtime enable/disable and reordering support fast visual iteration during gameplay testing.
-- Preset stacks provide one-call mood changes for common cinematic or stylized looks.
-- Capture-aware stack behavior integrates with render flow without forcing manual pass orchestration.
-- Image-specific chains support applying effects to selected assets independently of full-screen capture.
-- Parameter APIs make tuning brightness, saturation, threshold, and similar controls straightforward.
-- Diagnostic helpers expose stack state and shader issues to speed up troubleshooting.
-- Viewport-aware defaults help effects remain consistent across resolution changes.
-- For users, this module turns post FX from engine internals into script-level art direction control.
-- It reduces visual-pipeline glue code and encourages reusable look presets.
-- The result is faster experimentation and more consistent presentation quality.
-- Overall, it provides the practical runtime layer for stylized rendering workflows.
-
-This module primarily collaborates with `image`, `overlay`, `render`, `runtime`. Its responsibility should stay inside the Platform Services group rather than absorb behavior owned by those neighbors.
+- The `effect` module is the post-processing surface for users who want final-frame styling to be configurable at runtime instead of buried in renderer internals.
+- Effect stacks, presets, and parameter control let projects combine blur, bloom, grading, distortion, and custom passes as a reusable look pipeline rather than as isolated toggles.
+- The same module supports both full-frame and image-scoped workflows, which makes it useful for global scene mood, local asset treatment, and diagnostic capture flows.
+- Runtime enabling, disabling, and reordering matter because visual iteration often depends on trying combinations quickly while the game is running.
+- Preset-oriented workflow is a major user-facing advantage because art direction usually depends on named looks that can be switched, blended, or tuned per scene instead of rebuilt from scratch each time.
+- That makes the module valuable for shipped presentation, look development, and visual comparison.
+- It is especially useful when several passes need to be staged and tuned together as one style decision.
+- It also keeps composition policy above the renderer, so projects can adjust how global and local treatments are assembled without rewriting low-level pass code.
+- Read `effect` as the owner of effect composition and art-direction control. The renderer executes passes, but `effect` defines how those passes are organized and tuned from the user side.
 
 ## Functions
 
@@ -40,8 +33,10 @@ lurek.effect.getEffectTypes()
 ```lua
 do
     local types = lurek.effect.getEffectTypes()
-    print("available types = " .. #types)
-    print("lua type = " .. type(types))
+    local stack = lurek.effect.newStack(640, 360)
+    stack:add(lurek.effect.newEffect(types[1] or "bloom"))
+    local first = types[1] or "none"
+    effect_log("effect catalog size=" .. #types .. " first=" .. first)
 end
 ```
 
@@ -66,8 +61,10 @@ lurek.effect.getPresetNames()
 ```lua
 do
     local names = lurek.effect.getPresetNames()
-    print("preset count = " .. #names)
-    print("first preset = " .. tostring(names[1]))
+    local preset = names[1] or "retro_tv"
+    local stack = lurek.effect.newPresetStack(preset, 320, 180)
+    local count = stack:getEffectCount()
+    effect_log("preset catalog size=" .. #names .. " sample=" .. preset .. " effects=" .. count)
 end
 ```
 
@@ -92,8 +89,10 @@ lurek.effect.getShaderErrorDisplay()
 ```lua
 do
     local on = lurek.effect.getShaderErrorDisplay()
-    print("shader error display = " .. tostring(on))
-    print("lua type = " .. type(on))
+    local stack = lurek.effect.newStack(320, 180)
+    stack:add(lurek.effect.newEffect("bloom"))
+    local count = stack:getEffectCount()
+    effect_log("shader overlay=" .. tostring(on) .. " stack effects=" .. count)
 end
 ```
 
@@ -124,8 +123,10 @@ lurek.effect.newCustomEffect(shader_id)
 ```lua
 do
     local fx = lurek.effect.newCustomEffect(1)
-    print("custom effect built-in = " .. tostring(fx:isBuiltIn()))
-    print("lua type = " .. type(fx))
+    fx:setParameter("distortion", 0.15)
+    fx:disableAutoUniforms()
+    local enabled = fx:isEnabled()
+    effect_log("custom pass built_in=" .. tostring(fx:isBuiltIn()) .. " enabled=" .. tostring(enabled))
 end
 ```
 
@@ -156,8 +157,10 @@ lurek.effect.newEffect(type_name)
 ```lua
 do
     local fx = lurek.effect.newEffect("bloom")
-    print("effect type = " .. fx:getType())
-    print("built-in = " .. tostring(fx:isBuiltIn()))
+    fx:setThreshold(0.65)
+    fx:setIntensity(1.8)
+    local effect_type = fx:getType()
+    effect_log("cinematic " .. effect_type .. " built_in=" .. tostring(fx:isBuiltIn()))
 end
 ```
 
@@ -189,8 +192,10 @@ lurek.effect.newImageEffect(spec, params)
 ```lua
 do
     local ie = lurek.effect.newImageEffect()
-    print("image effect count = " .. ie:getEffectCount())
-    print("lua type = " .. type(ie))
+    ie:addEffect("bloom")
+    ie:addEffect("blur")
+    local count = ie:getEffectCount()
+    effect_log("thumbnail chain effects=" .. count)
 end
 ```
 
@@ -221,8 +226,10 @@ lurek.effect.newPass(shader_id)
 ```lua
 do
     local fx = lurek.effect.newPass(2)
-    print("pass type = " .. fx:getType())
-    print("lua type = " .. type(fx))
+    fx:setParameter("exposure", 1.1)
+    fx:enableAutoUniforms()
+    local type_name = fx:getType()
+    effect_log("custom pass type=" .. type_name .. " auto_uniforms=" .. tostring(fx:isAutoUniforms()))
 end
 ```
 
@@ -255,8 +262,10 @@ lurek.effect.newPresetStack(name, w, h)
 ```lua
 do
     local stack = lurek.effect.newPresetStack("retro_tv", 320, 240)
-    print("preset stack effects = " .. stack:getEffectCount())
-    print("lua type = " .. type(stack))
+    stack:setFeedback(0.2)
+    local count = stack:getEffectCount()
+    local w, h = stack:getDimensions()
+    effect_log("retro preset effects=" .. count .. " size=" .. w .. "x" .. h)
 end
 ```
 
@@ -288,8 +297,10 @@ lurek.effect.newStack(w, h)
 ```lua
 do
     local stack = lurek.effect.newStack(800, 600)
-    print("stack w=" .. stack:getWidth() .. " h=" .. stack:getHeight())
-    print("lua type = " .. type(stack))
+    stack:add(lurek.effect.newEffect("bloom"))
+    stack:add(lurek.effect.newEffect("blur"))
+    local w, h = stack:getDimensions()
+    effect_log("combat stack " .. w .. "x" .. h .. " effects=" .. stack:getEffectCount())
 end
 ```
 
@@ -314,8 +325,10 @@ lurek.effect.setShaderErrorDisplay(enabled)
 ```lua
 do
     lurek.effect.setShaderErrorDisplay(true)
-    print("shader errors on")
-    print("shader error display = " .. tostring(lurek.effect.getShaderErrorDisplay()))
+    local fx = lurek.effect.newEffect("blur")
+    fx:setRadius(6.0)
+    local shown = lurek.effect.getShaderErrorDisplay()
+    effect_log("shader errors visible=" .. tostring(shown))
 end
 ```
 
@@ -373,7 +386,9 @@ LImageEffect:addEffect(name)
 do
     local ie = lurek.effect.newImageEffect()
     local fx = ie:addEffect("bloom")
-    print("added effect type = " .. fx:getType())
+    ie:addEffect("blur")
+    local count = ie:getEffectCount()
+    effect_log("added effect=" .. fx:getType() .. " count=" .. count)
 end
 ```
 
@@ -394,7 +409,9 @@ do
     local ie = lurek.effect.newImageEffect()
     ie:addEffect("bloom")
     ie:clear()
-    print("after clear = " .. ie:getEffectCount())
+    local count = ie:getEffectCount()
+    local empty = ie:effectCount()
+    effect_log("after clear count=" .. count .. " effectCount=" .. empty)
 end
 ```
 
@@ -415,7 +432,9 @@ do
     local ie = lurek.effect.newImageEffect()
     ie:addEffect("crt")
     ie:clearEffects()
-    print("after clearEffects = " .. ie:getEffectCount())
+    local count = ie:getEffectCount()
+    local empty = ie:effectCount()
+    effect_log("after clearEffects count=" .. count .. " effectCount=" .. empty)
 end
 ```
 
@@ -442,7 +461,9 @@ do
     local ie = lurek.effect.newImageEffect()
     ie:addEffect("bloom")
     local copy = ie:clone()
-    print("clone count = " .. copy:getEffectCount())
+    copy:addEffect("blur")
+    local count = copy:getEffectCount()
+    effect_log("clone count=" .. count .. " source=" .. ie:getEffectCount())
 end
 ```
 
@@ -468,7 +489,9 @@ LImageEffect:effectCount()
 do
     local ie = lurek.effect.newImageEffect()
     ie:addEffect("crt")
-    print("effectCount = " .. ie:effectCount())
+    ie:addEffect("bloom")
+    local count = ie:effectCount()
+    effect_log("effectCount=" .. count .. " cloneable=" .. tostring(ie:clone() ~= nil))
 end
 ```
 
@@ -501,7 +524,9 @@ do
     local ie = lurek.effect.newImageEffect()
     ie:addEffect("blur")
     local fx = ie:getEffect("blur")
-    print("found effect = " .. tostring(fx ~= nil))
+    ie:addEffect("bloom")
+    local count = ie:getEffectCount()
+    effect_log("found blur=" .. tostring(fx ~= nil) .. " count=" .. count)
 end
 ```
 
@@ -528,7 +553,9 @@ do
     local ie = lurek.effect.newImageEffect()
     ie:addEffect("bloom")
     ie:addEffect("blur")
-    print("count = " .. ie:getEffectCount())
+    local count = ie:getEffectCount()
+    local first = ie:getEffect(1)
+    effect_log("count=" .. count .. " first=" .. tostring(first and first:getType()))
 end
 ```
 
@@ -561,7 +588,8 @@ do
     local ie = lurek.effect.newImageEffect()
     ie:addEffect("bloom")
     local ok = ie:removeByIndex(0)
-    print("removeByIndex = " .. tostring(ok))
+    local count = ie:getEffectCount()
+    effect_log("removeByIndex=" .. tostring(ok) .. " count=" .. count)
 end
 ```
 
@@ -594,7 +622,8 @@ do
     local ie = lurek.effect.newImageEffect()
     ie:addEffect("blur")
     local ok = ie:removeByName("blur")
-    print("removeByName = " .. tostring(ok))
+    local count = ie:getEffectCount()
+    effect_log("removeByName=" .. tostring(ok) .. " count=" .. count)
 end
 ```
 
@@ -627,7 +656,8 @@ do
     local ie = lurek.effect.newImageEffect()
     ie:addEffect("bloom")
     local ok = ie:removeEffect("bloom")
-    print("removed = " .. tostring(ok))
+    local count = ie:getEffectCount()
+    effect_log("removed=" .. tostring(ok) .. " count=" .. count)
 end
 ```
 
@@ -652,8 +682,11 @@ LImageEffect:save()
 ```lua
 do
     local ie = lurek.effect.newImageEffect()
+    ie:addEffect("bloom")
+    ie:addEffect("crt")
     local ok = ie:save()
-    print("save = " .. tostring(ok))
+    local count = ie:getEffectCount()
+    effect_log("save=" .. tostring(ok) .. " count=" .. count)
 end
 ```
 
@@ -678,8 +711,10 @@ LImageEffect:type()
 ```lua
 do
     local ie = lurek.effect.newImageEffect()
-    print("type = " .. ie:type())
-    print("typeOf LObject = " .. tostring(ie:typeOf("LObject")))
+    ie:addEffect("bloom")
+    local type_name = ie:type()
+    local is_object = ie:typeOf("LObject")
+    effect_log(type_name .. " object=" .. tostring(is_object))
 end
 ```
 
@@ -710,8 +745,10 @@ LImageEffect:typeOf(name)
 ```lua
 do
     local ie = lurek.effect.newImageEffect()
-    print("is ImageEffect = " .. tostring(ie:typeOf("LImageEffect")))
-    print("type = " .. tostring(ie:type()))
+    ie:addEffect("bloom")
+    local is_image_effect = ie:typeOf("LImageEffect")
+    local type_name = ie:type()
+    effect_log("is image effect=" .. tostring(is_image_effect) .. " type=" .. type_name)
 end
 ```
 
@@ -739,7 +776,9 @@ LPostFxEffect:disableAutoUniforms()
 do
     local fx = lurek.effect.newEffect("bloom")
     fx:disableAutoUniforms()
-    print("auto uniforms off = " .. tostring(fx:isAutoUniforms()))
+    fx:setIntensity(1.4)
+    local auto = fx:isAutoUniforms()
+    effect_log("auto uniforms on=" .. tostring(auto))
 end
 ```
 
@@ -759,7 +798,9 @@ LPostFxEffect:enableAutoUniforms()
 do
     local fx = lurek.effect.newEffect("bloom")
     fx:enableAutoUniforms()
-    print("auto uniforms on = " .. tostring(fx:isAutoUniforms()))
+    fx:setIntensity(1.4)
+    local auto = fx:isAutoUniforms()
+    effect_log("auto uniforms on=" .. tostring(auto))
 end
 ```
 
@@ -784,8 +825,10 @@ LPostFxEffect:getEffectType()
 ```lua
 do
     local fx = lurek.effect.newEffect("bloom")
-    print("effectType = " .. fx:getEffectType())
-    print("owner type = " .. tostring(fx:type()))
+    fx:setThreshold(0.7)
+    fx:setIntensity(1.6)
+    local effect_type = fx:getEffectType()
+    effect_log("effect type=" .. effect_type .. " owner=" .. fx:type())
 end
 ```
 
@@ -819,7 +862,8 @@ do
     local fx = lurek.effect.newEffect("bloom")
     fx:setParameter("intensity", 1.5)
     local v = fx:getParameter("intensity", 1.0)
-    print("intensity = " .. v)
+    fx:setEnabled(true)
+    effect_log("intensity=" .. v .. " enabled=" .. tostring(fx:isEnabled()))
 end
 ```
 
@@ -845,8 +889,10 @@ LPostFxEffect:getParameterNames()
 do
     local fx = lurek.effect.newEffect("bloom")
     fx:setParameter("threshold", 0.5)
+    fx:setParameter("intensity", 1.3)
     local names = fx:getParameterNames()
-    print("param names = " .. #names)
+    local first = names[1] or "none"
+    effect_log("parameter names=" .. #names .. " first=" .. first)
 end
 ```
 
@@ -871,8 +917,10 @@ LPostFxEffect:getType()
 ```lua
 do
     local fx = lurek.effect.newEffect("blur")
-    print("type = " .. fx:getType())
-    print("owner type = " .. tostring(fx:type()))
+    fx:setRadius(8.0)
+    fx:setStrength(0.4)
+    local effect_type = fx:getType()
+    effect_log("pause blur type=" .. effect_type .. " owner=" .. fx:type())
 end
 ```
 
@@ -897,8 +945,10 @@ LPostFxEffect:getTypeName()
 ```lua
 do
     local fx = lurek.effect.newEffect("crt")
-    print("typeName = " .. fx:getTypeName())
-    print("owner type = " .. tostring(fx:type()))
+    fx:setScanlineStrength(0.35)
+    fx:setOffset(0.002)
+    local type_name = fx:getTypeName()
+    effect_log("crt type name=" .. type_name .. " owner=" .. fx:type())
 end
 ```
 
@@ -930,7 +980,9 @@ LPostFxEffect:hasParameter(name)
 do
     local fx = lurek.effect.newEffect("blur")
     fx:setParameter("radius", 4)
-    print("has radius = " .. tostring(fx:hasParameter("radius")))
+    fx:setStrength(0.4)
+    local has_radius = fx:hasParameter("radius")
+    effect_log("has radius=" .. tostring(has_radius) .. " names=" .. #fx:getParameterNames())
 end
 ```
 
@@ -955,8 +1007,10 @@ LPostFxEffect:isAutoUniforms()
 ```lua
 do
     local fx = lurek.effect.newEffect("bloom")
-    print("autoUniforms = " .. tostring(fx:isAutoUniforms()))
-    print("owner type = " .. tostring(fx:type()))
+    fx:enableAutoUniforms()
+    fx:setThreshold(0.7)
+    local auto = fx:isAutoUniforms()
+    effect_log("auto uniforms=" .. tostring(auto) .. " owner=" .. fx:type())
 end
 ```
 
@@ -981,8 +1035,10 @@ LPostFxEffect:isBuiltIn()
 ```lua
 do
     local fx = lurek.effect.newEffect("blur")
-    print("builtIn = " .. tostring(fx:isBuiltIn()))
-    print("owner type = " .. tostring(fx:type()))
+    fx:setRadius(4.0)
+    fx:setEnabled(true)
+    local built_in = fx:isBuiltIn()
+    effect_log("built_in=" .. tostring(built_in) .. " owner=" .. fx:type())
 end
 ```
 
@@ -1007,8 +1063,10 @@ LPostFxEffect:isEnabled()
 ```lua
 do
     local fx = lurek.effect.newEffect("bloom")
-    print("enabled = " .. tostring(fx:isEnabled()))
-    print("owner type = " .. tostring(fx:type()))
+    fx:setIntensity(2.2)
+    fx:setThreshold(0.6)
+    local enabled = fx:isEnabled()
+    effect_log("bloom enabled=" .. tostring(enabled) .. " owner=" .. fx:type())
 end
 ```
 
@@ -1034,7 +1092,9 @@ LPostFxEffect:setBrightness(v)
 do
     local fx = lurek.effect.newEffect("bloom")
     fx:setBrightness(1.2)
-    print("brightness set")
+    fx:setContrast(1.05)
+    local brightness = fx:getParameter("brightness", 0.0)
+    effect_log("grade brightness=" .. brightness)
 end
 ```
 
@@ -1060,7 +1120,9 @@ LPostFxEffect:setContrast(v)
 do
     local fx = lurek.effect.newEffect("bloom")
     fx:setContrast(1.1)
-    print("contrast set")
+    fx:setBrightness(0.95)
+    local contrast = fx:getParameter("contrast", 0.0)
+    effect_log("grade contrast=" .. contrast)
 end
 ```
 
@@ -1086,7 +1148,9 @@ LPostFxEffect:setEnabled(enabled)
 do
     local fx = lurek.effect.newEffect("bloom")
     fx:setEnabled(false)
-    print("after disable = " .. tostring(fx:isEnabled()))
+    fx:setIntensity(2.0)
+    local enabled = fx:isEnabled()
+    effect_log("photo bloom enabled=" .. tostring(enabled))
 end
 ```
 
@@ -1112,7 +1176,9 @@ LPostFxEffect:setIntensity(v)
 do
     local fx = lurek.effect.newEffect("bloom")
     fx:setIntensity(2.0)
-    print("intensity set")
+    fx:setThreshold(0.6)
+    local intensity = fx:getParameter("intensity", 0.0)
+    effect_log("bloom intensity=" .. intensity)
 end
 ```
 
@@ -1138,7 +1204,9 @@ LPostFxEffect:setOffset(v)
 do
     local fx = lurek.effect.newEffect("crt")
     fx:setOffset(0.002)
-    print("offset set")
+    fx:setScanlineStrength(0.25)
+    local offset = fx:getParameter("offset", 0.0)
+    effect_log("crt offset=" .. offset)
 end
 ```
 
@@ -1165,7 +1233,9 @@ LPostFxEffect:setParameter(name, value)
 do
     local fx = lurek.effect.newEffect("bloom")
     fx:setParameter("threshold", 0.8)
-    print("param set")
+    fx:setParameter("intensity", 1.4)
+    local threshold = fx:getParameter("threshold", 0.0)
+    effect_log("custom threshold=" .. threshold)
 end
 ```
 
@@ -1191,7 +1261,9 @@ LPostFxEffect:setRadius(v)
 do
     local fx = lurek.effect.newEffect("blur")
     fx:setRadius(8)
-    print("radius set")
+    fx:setStrength(0.25)
+    local radius = fx:getParameter("radius", 0.0)
+    effect_log("blur radius=" .. radius)
 end
 ```
 
@@ -1217,7 +1289,9 @@ LPostFxEffect:setSaturation(v)
 do
     local fx = lurek.effect.newEffect("bloom")
     fx:setSaturation(0.8)
-    print("saturation set")
+    fx:setContrast(1.1)
+    local saturation = fx:getParameter("saturation", 0.0)
+    effect_log("grade saturation=" .. saturation)
 end
 ```
 
@@ -1243,7 +1317,9 @@ LPostFxEffect:setScanlineStrength(v)
 do
     local fx = lurek.effect.newEffect("crt")
     fx:setScanlineStrength(0.3)
-    print("scanline set")
+    fx:setOffset(0.002)
+    local scanline = fx:getParameter("scanline_strength", 0.0)
+    effect_log("crt scanlines=" .. scanline)
 end
 ```
 
@@ -1269,7 +1345,9 @@ LPostFxEffect:setStrength(v)
 do
     local fx = lurek.effect.newEffect("blur")
     fx:setStrength(0.5)
-    print("strength set")
+    fx:setRadius(6.0)
+    local strength = fx:getParameter("strength", 0.0)
+    effect_log("blur strength=" .. strength)
 end
 ```
 
@@ -1295,7 +1373,9 @@ LPostFxEffect:setThreshold(v)
 do
     local fx = lurek.effect.newEffect("bloom")
     fx:setThreshold(0.6)
-    print("threshold set")
+    fx:setIntensity(1.7)
+    local threshold = fx:getParameter("threshold", 0.0)
+    effect_log("bloom threshold=" .. threshold)
 end
 ```
 
@@ -1320,8 +1400,10 @@ LPostFxEffect:type()
 ```lua
 do
     local fx = lurek.effect.newEffect("blur")
-    print("type = " .. fx:type())
-    print("typeOf LObject = " .. tostring(fx:typeOf("LObject")))
+    fx:setRadius(5.0)
+    fx:setEnabled(true)
+    local type_name = fx:type()
+    effect_log(type_name .. " object=" .. tostring(fx:typeOf("LObject")))
 end
 ```
 
@@ -1352,8 +1434,10 @@ LPostFxEffect:typeOf(name)
 ```lua
 do
     local fx = lurek.effect.newEffect("blur")
-    print("is PostFxEffect = " .. tostring(fx:typeOf("LPostFxEffect")))
-    print("type = " .. tostring(fx:type()))
+    fx:setRadius(5.0)
+    fx:setStrength(0.4)
+    local is_effect = fx:typeOf("LPostFxEffect")
+    effect_log("is effect=" .. tostring(is_effect) .. " type=" .. fx:type())
 end
 ```
 
@@ -1388,7 +1472,9 @@ do
     local stack = lurek.effect.newStack(800, 600)
     local fx = lurek.effect.newEffect("bloom")
     stack:add(fx)
-    print("stack count = " .. stack:getEffectCount())
+    stack:add(lurek.effect.newEffect("blur"))
+    local count = stack:getEffectCount()
+    effect_log("stack count=" .. count)
 end
 ```
 
@@ -1411,7 +1497,7 @@ do
     stack:beginCapture()
     stack:endCapture()
     stack:apply()
-    print("applied")
+    example_print_log("applied")
 end
 ```
 
@@ -1432,7 +1518,9 @@ do
     local stack = lurek.effect.newStack(800, 600)
     stack:add(lurek.effect.newEffect("bloom"))
     stack:beginCapture()
-    print("capture started")
+    local capturing = stack:isCapturing()
+    local count = stack:getEffectCount()
+    effect_log("capture started=" .. tostring(capturing) .. " effects=" .. count)
 end
 ```
 
@@ -1453,7 +1541,9 @@ do
     local stack = lurek.effect.newStack(800, 600)
     stack:add(lurek.effect.newEffect("bloom"))
     stack:clear()
-    print("after clear = " .. stack:getEffectCount())
+    local count = stack:getEffectCount()
+    local empty = stack:isEmpty()
+    effect_log("after clear count=" .. count .. " empty=" .. tostring(empty))
 end
 ```
 
@@ -1474,7 +1564,9 @@ do
     local stack = lurek.effect.newStack(800, 600)
     stack:setFeedback(0.8)
     stack:clearFeedback()
-    print("cleared feedback = " .. stack:getFeedback())
+    local feedback = stack:getFeedback()
+    local capturing = stack:isCapturing()
+    effect_log("cleared feedback=" .. feedback .. " capturing=" .. tostring(capturing))
 end
 ```
 
@@ -1503,7 +1595,7 @@ do
     stack:add(fx)
     stack:add(fx)
     local removed = stack:dedup()
-    print("dedup removed = " .. removed)
+    example_print_log("dedup removed = " .. removed)
 end
 ```
 
@@ -1525,7 +1617,7 @@ do
     stack:add(lurek.effect.newEffect("bloom"))
     stack:beginCapture()
     stack:endCapture()
-    print("capture ended")
+    example_print_log("capture ended")
 end
 ```
 
@@ -1551,8 +1643,10 @@ LPostFxStack:getDimensions()
 ```lua
 do
     local stack = lurek.effect.newStack(800, 600)
+    stack:add(lurek.effect.newEffect("blur"))
     local w, h = stack:getDimensions()
-    print("dims = " .. w .. "x" .. h)
+    local count = stack:getEffectCount()
+    effect_log("dims=" .. w .. "x" .. h .. " effects=" .. count)
 end
 ```
 
@@ -1585,7 +1679,9 @@ do
     local stack = lurek.effect.newStack(800, 600)
     stack:add(lurek.effect.newEffect("bloom"))
     local fx = stack:getEffect(1)
-    print("got effect at 1 = " .. tostring(fx ~= nil))
+    local count = stack:getEffectCount()
+    local kind = fx and fx:getType() or "none"
+    effect_log("got effect=" .. kind .. " count=" .. count)
 end
 ```
 
@@ -1612,7 +1708,9 @@ do
     local stack = lurek.effect.newStack(800, 600)
     stack:add(lurek.effect.newEffect("bloom"))
     stack:add(lurek.effect.newEffect("blur"))
-    print("effect count = " .. stack:getEffectCount())
+    local count = stack:getEffectCount()
+    local enabled = #stack:getEnabledEffects()
+    effect_log("effect count=" .. count .. " enabled=" .. enabled)
 end
 ```
 
@@ -1640,7 +1738,7 @@ do
     stack:add(lurek.effect.newEffect("bloom"))
     stack:add(lurek.effect.newEffect("blur"))
     local enabled = stack:getEnabledEffects()
-    print("enabled effects = " .. #enabled)
+    example_print_log("enabled effects = " .. #enabled)
 end
 ```
 
@@ -1666,7 +1764,9 @@ LPostFxStack:getFeedback()
 do
     local stack = lurek.effect.newStack(800, 600)
     stack:setFeedback(0.3)
-    print("feedback = " .. stack:getFeedback())
+    stack:add(lurek.effect.newEffect("crt"))
+    local feedback = stack:getFeedback()
+    effect_log("feedback=" .. feedback .. " width=" .. stack:getWidth())
 end
 ```
 
@@ -1691,8 +1791,10 @@ LPostFxStack:getHeight()
 ```lua
 do
     local stack = lurek.effect.newStack(1024, 768)
-    print("height = " .. stack:getHeight())
-    print("owner type = " .. tostring(stack:type()))
+    stack:add(lurek.effect.newEffect("bloom"))
+    local height = stack:getHeight()
+    local count = stack:getEffectCount()
+    effect_log("stack height=" .. height .. " effects=" .. count)
 end
 ```
 
@@ -1717,8 +1819,10 @@ LPostFxStack:getWidth()
 ```lua
 do
     local stack = lurek.effect.newStack(1024, 768)
-    print("width = " .. stack:getWidth())
-    print("owner type = " .. tostring(stack:type()))
+    stack:add(lurek.effect.newEffect("bloom"))
+    local width = stack:getWidth()
+    local count = stack:getEffectCount()
+    effect_log("stack width=" .. width .. " effects=" .. count)
 end
 ```
 
@@ -1746,7 +1850,9 @@ do
     local stack = lurek.effect.newStack(800, 600)
     stack:add(lurek.effect.newEffect("bloom"))
     stack:insert(1, lurek.effect.newEffect("blur"))
-    print("after insert count = " .. stack:getEffectCount())
+    local first = stack:getEffect(1)
+    local count = stack:getEffectCount()
+    effect_log("after insert count=" .. count .. " first=" .. tostring(first and first:getType()))
 end
 ```
 
@@ -1771,8 +1877,10 @@ LPostFxStack:isCapturing()
 ```lua
 do
     local stack = lurek.effect.newStack(800, 600)
-    print("capturing = " .. tostring(stack:isCapturing()))
-    print("owner type = " .. tostring(stack:type()))
+    stack:add(lurek.effect.newEffect("bloom"))
+    stack:setFeedback(0.15)
+    local capturing = stack:isCapturing()
+    effect_log("capturing=" .. tostring(capturing) .. " feedback=" .. stack:getFeedback())
 end
 ```
 
@@ -1797,8 +1905,10 @@ LPostFxStack:isEmpty()
 ```lua
 do
     local stack = lurek.effect.newStack(800, 600)
-    print("empty = " .. tostring(stack:isEmpty()))
-    print("owner type = " .. tostring(stack:type()))
+    stack:add(lurek.effect.newEffect("bloom"))
+    local empty = stack:isEmpty()
+    local count = stack:getEffectCount()
+    effect_log("empty=" .. tostring(empty) .. " count=" .. count)
 end
 ```
 
@@ -1831,7 +1941,9 @@ do
     local stack = lurek.effect.newStack(800, 600)
     local fx = lurek.effect.newEffect("blur")
     stack:add(fx)
-    print("pass enabled = " .. tostring(stack:isEnabled(1)))
+    fx:setEnabled(true)
+    local enabled = stack:isEnabled(1)
+    effect_log("pass enabled=" .. tostring(enabled) .. " count=" .. stack:getEffectCount())
 end
 ```
 
@@ -1857,7 +1969,9 @@ LPostFxStack:len()
 do
     local stack = lurek.effect.newStack(800, 600)
     stack:add(lurek.effect.newEffect("bloom"))
-    print("len = " .. stack:len())
+    stack:add(lurek.effect.newEffect("blur"))
+    local len = stack:len()
+    effect_log("len=" .. len .. " enabled=" .. #stack:getEnabledEffects())
 end
 ```
 
@@ -1891,7 +2005,7 @@ do
     local fx = lurek.effect.newEffect("blur")
     stack:add(fx)
     local ok = stack:remove(fx)
-    print("removed = " .. tostring(ok))
+    example_print_log("removed = " .. tostring(ok))
 end
 ```
 
@@ -1917,8 +2031,10 @@ LPostFxStack:resize(w, h)
 ```lua
 do
     local stack = lurek.effect.newStack(800, 600)
+    stack:add(lurek.effect.newEffect("bloom"))
     stack:resize(1920, 1080)
-    print("resized w=" .. stack:getWidth())
+    local w, h = stack:getDimensions()
+    effect_log("resized to " .. w .. "x" .. h)
 end
 ```
 
@@ -1947,7 +2063,7 @@ do
     local fx = lurek.effect.newEffect("bloom")
     stack:add(fx)
     stack:setEnabled(1, false)
-    print("pass 1 enabled = " .. tostring(stack:isEnabled(1)))
+    example_print_log("pass 1 enabled = " .. tostring(stack:isEnabled(1)))
 end
 ```
 
@@ -1973,7 +2089,9 @@ LPostFxStack:setFeedback(factor)
 do
     local stack = lurek.effect.newStack(800, 600)
     stack:setFeedback(0.5)
-    print("feedback = " .. stack:getFeedback())
+    stack:add(lurek.effect.newEffect("crt"))
+    local feedback = stack:getFeedback()
+    effect_log("feedback=" .. feedback .. " effects=" .. stack:getEffectCount())
 end
 ```
 
@@ -1998,8 +2116,10 @@ LPostFxStack:type()
 ```lua
 do
     local stack = lurek.effect.newStack(800, 600)
-    print("type = " .. stack:type())
-    print("typeOf LObject = " .. tostring(stack:typeOf("LObject")))
+    stack:add(lurek.effect.newEffect("bloom"))
+    local type_name = stack:type()
+    local is_object = stack:typeOf("LObject")
+    effect_log(type_name .. " object=" .. tostring(is_object))
 end
 ```
 
@@ -2030,8 +2150,10 @@ LPostFxStack:typeOf(name)
 ```lua
 do
     local stack = lurek.effect.newStack(800, 600)
-    print("is PostFxStack = " .. tostring(stack:typeOf("LPostFxStack")))
-    print("type = " .. tostring(stack:type()))
+    stack:add(lurek.effect.newEffect("bloom"))
+    local is_stack = stack:typeOf("LPostFxStack")
+    local type_name = stack:type()
+    effect_log("is stack=" .. tostring(is_stack) .. " type=" .. type_name)
 end
 ```
 

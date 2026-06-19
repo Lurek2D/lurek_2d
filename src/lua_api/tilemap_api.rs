@@ -7,16 +7,19 @@ use crate::tilemap::chunk::ChunkMap;
 use crate::tilemap::coords;
 use crate::tilemap::isomap::IsoMap;
 use crate::tilemap::large_map_renderer::LargeMapRenderer;
-use crate::tilemap::ldtk::load_ldtk;
+use crate::tilemap::ldtk::load_ldtk_with_limits;
 use crate::tilemap::mapgen::{
     Edge, MapBlock, MapGen, MapGroup, MapOrientation, MapScript, MapSize, ScriptStep, StepType,
 };
 use crate::tilemap::tilemap::TileMap;
+use crate::tilemap::tmx::{load_tmx_with_options, TmxLoadOptions};
+use crate::tilemap::{TileMapDiagnosticsSnapshot, TileMapLimits};
 use crate::tilemap::tileset::{TileAnimFrame, TileSet};
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
+use std::path::PathBuf;
 /// Converts a one-based Lua index into a zero-based `usize` tile index.
 fn one_based_usize(name: &str, val: usize) -> LuaResult<usize> {
     val.checked_sub(1)
@@ -43,6 +46,63 @@ fn tilemap_import_error_table<'lua>(
     err.set("line", line)?;
     err.set("column", column)?;
     Ok(err)
+}
+
+fn tilemap_limits_from_table(opts: Option<&LuaTable>) -> LuaResult<TileMapLimits> {
+    let mut limits = TileMapLimits::default();
+    let Some(opts) = opts else {
+        return Ok(limits);
+    };
+    limits.max_layers = opts.get("maxLayers").unwrap_or(limits.max_layers);
+    limits.max_tiles_per_layer = opts
+        .get("maxTiles")
+        .unwrap_or(limits.max_tiles_per_layer);
+    limits.max_image_pixels = opts
+        .get("maxImagePixels")
+        .unwrap_or(limits.max_image_pixels);
+    limits.max_import_bytes = opts
+        .get("maxImportBytes")
+        .unwrap_or(limits.max_import_bytes);
+    limits.max_decoded_bytes = opts
+        .get("maxDecodedBytes")
+        .unwrap_or(limits.max_decoded_bytes);
+    limits.max_chunk_cells = opts
+        .get("maxChunkCells")
+        .unwrap_or(limits.max_chunk_cells);
+    limits.max_chunks = opts.get("maxChunks").unwrap_or(limits.max_chunks);
+    limits.max_collision_tile_checks = opts
+        .get("maxCollisionTileChecks")
+        .unwrap_or(limits.max_collision_tile_checks);
+    Ok(limits)
+}
+
+fn tmx_options_from_table(opts: Option<&LuaTable>) -> LuaResult<TmxLoadOptions> {
+    let mut options = TmxLoadOptions::default();
+    if let Some(opts) = opts {
+        options.strict_layer_size = opts
+            .get("strictLayerSize")
+            .unwrap_or(options.strict_layer_size);
+        options.allow_external_tilesets = opts
+            .get("allowExternalTilesets")
+            .unwrap_or(options.allow_external_tilesets);
+        options.safe_paths = opts.get("safePaths").unwrap_or(options.safe_paths);
+        options.asset_root = opts
+            .get::<_, Option<String>>("assetRoot")
+            .unwrap_or(None)
+            .map(PathBuf::from);
+        options.limits = tilemap_limits_from_table(Some(opts))?;
+    }
+    Ok(options)
+}
+
+fn diagnostics_table(lua: &Lua, diagnostics: TileMapDiagnosticsSnapshot) -> LuaResult<LuaTable<'_>> {
+    let tbl = lua.create_table()?;
+    tbl.set("invalidLayer", diagnostics.invalid_layer)?;
+    tbl.set("invalidCoord", diagnostics.invalid_coord)?;
+    tbl.set("unknownGid", diagnostics.unknown_gid)?;
+    tbl.set("invalidQueries", diagnostics.invalid_queries)?;
+    tbl.set("lazyIndexRebuilds", diagnostics.lazy_index_rebuilds)?;
+    Ok(tbl)
 }
 /// Lua-side handle wrapping a `TileSet` for defining tile atlases, animations, solidity, and auto-tile rules.
 #[derive(Clone)]
@@ -346,8 +406,25 @@ impl LuaUserData for LuaTileMap {
         /// @param | h | integer | Height in tiles.
         /// @return | integer | Index of the new layer (1-based).
         methods.add_method("addLayer", |_, this, (name, w, h): (String, u32, u32)| {
-            let idx = this.inner.borrow_mut().add_layer(&name, w, h);
+            let idx = this
+                .inner
+                .borrow_mut()
+                .try_add_layer(&name, w, h)
+                .map_err(|err| LuaError::RuntimeError(format!("LTileMap:addLayer: {err}")))?;
             Ok(idx + 1)
+        });
+        // -- tryAddLayer --
+        /// Creates a new tile layer and returns `nil, error` instead of throwing on invalid dimensions or layer limits.
+        /// @param | name | string | Layer name.
+        /// @param | w | integer | Width in tiles.
+        /// @param | h | integer | Height in tiles.
+        /// @return | integer? | Index of the new layer (1-based).
+        /// @return | string? | Error message when validation fails.
+        methods.add_method("tryAddLayer", |_, this, (name, w, h): (String, u32, u32)| {
+            match this.inner.borrow_mut().try_add_layer(&name, w, h) {
+                Ok(idx) => Ok((Some(idx + 1), None::<String>)),
+                Err(err) => Ok((None::<usize>, Some(err.to_string()))),
+            }
         });
         // -- getLayerCount --
         /// Returns the total number of layers in this map.
@@ -373,7 +450,12 @@ impl LuaUserData for LuaTileMap {
         methods.add_method(
             "setLayerVisible",
             |_, this, (idx, visible): (usize, bool)| {
-                this.inner.borrow_mut().set_layer_visible(idx - 1, visible);
+                this.inner
+                    .borrow_mut()
+                    .try_set_layer_visible(idx - 1, visible)
+                    .map_err(|err| {
+                        LuaError::RuntimeError(format!("LTileMap:setLayerVisible: {err}"))
+                    })?;
                 Ok(())
             },
         );
@@ -394,7 +476,12 @@ impl LuaUserData for LuaTileMap {
         methods.add_method(
             "setLayerColor",
             |_, this, (idx, r, g, b, a): (usize, f32, f32, f32, f32)| {
-                this.inner.borrow_mut().set_layer_color(idx - 1, r, g, b, a);
+                this.inner
+                    .borrow_mut()
+                    .try_set_layer_color(idx - 1, r, g, b, a)
+                    .map_err(|err| {
+                        LuaError::RuntimeError(format!("LTileMap:setLayerColor: {err}"))
+                    })?;
                 Ok(())
             },
         );
@@ -417,7 +504,12 @@ impl LuaUserData for LuaTileMap {
         methods.add_method(
             "setLayerOffset",
             |_, this, (idx, ox, oy): (usize, f32, f32)| {
-                this.inner.borrow_mut().set_layer_offset(idx - 1, ox, oy);
+                this.inner
+                    .borrow_mut()
+                    .try_set_layer_offset(idx - 1, ox, oy)
+                    .map_err(|err| {
+                        LuaError::RuntimeError(format!("LTileMap:setLayerOffset: {err}"))
+                    })?;
                 Ok(())
             },
         );
@@ -438,7 +530,12 @@ impl LuaUserData for LuaTileMap {
         methods.add_method(
             "setLayerParallax",
             |_, this, (idx, px, py): (usize, f32, f32)| {
-                this.inner.borrow_mut().set_layer_parallax(idx - 1, px, py);
+                this.inner
+                    .borrow_mut()
+                    .try_set_layer_parallax(idx - 1, px, py)
+                    .map_err(|err| {
+                        LuaError::RuntimeError(format!("LTileMap:setLayerParallax: {err}"))
+                    })?;
                 Ok(())
             },
         );
@@ -462,8 +559,26 @@ impl LuaUserData for LuaTileMap {
             |_, this, (layer, x, y, gid): (usize, u32, u32, u32)| {
                 this.inner
                     .borrow_mut()
-                    .set_tile(layer - 1, x - 1, y - 1, gid);
+                    .try_set_tile(layer - 1, x - 1, y - 1, gid)
+                    .map_err(|err| LuaError::RuntimeError(format!("LTileMap:setTile: {err}")))?;
                 Ok(())
+            },
+        );
+        // -- trySetTile --
+        /// Sets a tile and returns `false, error` instead of throwing on invalid layer or coordinate input.
+        /// @param | layer | integer | Layer index (1-based).
+        /// @param | x | integer | Column (1-based).
+        /// @param | y | integer | Row (1-based).
+        /// @param | gid | integer | Global tile ID to place.
+        /// @return | boolean | True on success.
+        /// @return | string? | Error message on failure.
+        methods.add_method(
+            "trySetTile",
+            |_, this, (layer, x, y, gid): (usize, u32, u32, u32)| {
+                match this.inner.borrow_mut().try_set_tile(layer - 1, x - 1, y - 1, gid) {
+                    Ok(()) => Ok((true, None::<String>)),
+                    Err(err) => Ok((false, Some(err.to_string()))),
+                }
             },
         );
         // -- getTile --
@@ -474,6 +589,19 @@ impl LuaUserData for LuaTileMap {
         /// @return | integer | Global tile ID at that position.
         methods.add_method("getTile", |_, this, (layer, x, y): (usize, u32, u32)| {
             Ok(this.inner.borrow().get_tile(layer - 1, x - 1, y - 1))
+        });
+        // -- tryGetTile --
+        /// Returns the tile GID at a specific grid position, or `nil, error` when the layer or coord is invalid.
+        /// @param | layer | integer | Layer index (1-based).
+        /// @param | x | integer | Column (1-based).
+        /// @param | y | integer | Row (1-based).
+        /// @return | integer? | Global tile ID at that position.
+        /// @return | string? | Error message on failure.
+        methods.add_method("tryGetTile", |_, this, (layer, x, y): (usize, u32, u32)| {
+            match this.inner.borrow().try_get_tile(layer - 1, x - 1, y - 1) {
+                Ok(gid) => Ok((Some(gid), None::<String>)),
+                Err(err) => Ok((None::<u32>, Some(err.to_string()))),
+            }
         });
         // -- clearTile --
         /// Removes the tile at a specific grid position, setting it to empty (GID 0).
@@ -502,7 +630,7 @@ impl LuaUserData for LuaTileMap {
             if layer == 0 {
                 return Err(mlua::Error::RuntimeError("layer must be >= 1".into()));
             }
-            let index = this.inner.borrow().tile_type_index(layer - 1);
+            let index = this.inner.borrow_mut().tile_type_index(layer - 1);
             let result = lua.create_table()?;
             for (gid, positions) in index {
                 let arr = lua.create_table()?;
@@ -529,7 +657,7 @@ impl LuaUserData for LuaTileMap {
             if layer == 0 {
                 return Err(mlua::Error::RuntimeError("layer must be >= 1".into()));
             }
-            let positions = this.inner.borrow().find_tiles_by_gid(layer - 1, gid);
+            let positions = this.inner.borrow_mut().find_tiles_by_gid(layer - 1, gid);
             let arr = lua.create_table()?;
             for (i, (x, y)) in positions.iter().enumerate() {
                 let pos = lua.create_table()?;
@@ -582,6 +710,20 @@ impl LuaUserData for LuaTileMap {
         methods.add_method("worldToTile", |_, this, (wx, wy): (f32, f32)| {
             let (tx, ty) = this.inner.borrow().world_to_tile(wx, wy);
             Ok((tx + 1, ty + 1))
+        });
+        // -- tryWorldToTile --
+        /// Converts world-space pixel coordinates to tile-grid coordinates, returning nils for negative or non-finite input.
+        /// @param | wx | number | World X position in pixels.
+        /// @param | wy | number | World Y position in pixels.
+        /// @return | integer? | Tile column (1-based).
+        /// @return | integer? | Tile row (1-based).
+        methods.add_method("tryWorldToTile", |_, this, (wx, wy): (f32, f32)| {
+            Ok(this
+                .inner
+                .borrow()
+                .try_world_to_tile(wx, wy)
+                .map(|(tx, ty)| (Some(tx + 1), Some(ty + 1)))
+                .unwrap_or((None::<u32>, None::<u32>)))
         });
         // -- tileToWorld --
         /// Converts tile-grid coordinates to world-space pixel coordinates (top-left corner of the tile).
@@ -779,8 +921,26 @@ impl LuaUserData for LuaTileMap {
             |_, this, (layer, x, y, r, g, b, a): (usize, u32, u32, f32, f32, f32, f32)| {
                 this.inner
                     .borrow_mut()
-                    .set_tile_tint(layer - 1, x - 1, y - 1, r, g, b, a);
+                    .try_set_tile_tint(layer - 1, x - 1, y - 1, r, g, b, a)
+                    .map_err(|err| {
+                        LuaError::RuntimeError(format!("LTileMap:setTileTint: {err}"))
+                    })?;
                 Ok(())
+            },
+        );
+        // -- trySetTileTint --
+        /// Sets a per-cell tint override and returns `false, error` instead of throwing on invalid input.
+        methods.add_method(
+            "trySetTileTint",
+            |_, this, (layer, x, y, r, g, b, a): (usize, u32, u32, f32, f32, f32, f32)| {
+                match this
+                    .inner
+                    .borrow_mut()
+                    .try_set_tile_tint(layer - 1, x - 1, y - 1, r, g, b, a)
+                {
+                    Ok(()) => Ok((true, None::<String>)),
+                    Err(err) => Ok((false, Some(err.to_string()))),
+                }
             },
         );
         // -- render --
@@ -799,8 +959,17 @@ impl LuaUserData for LuaTileMap {
         /// @param | tileSize | integer | Pixel size of each tile in the output image.
         /// @return | LImage | Rasterized image of the map.
         methods.add_method("drawToImage", |_, this, tile_size: u32| {
-            let img = this.inner.borrow().draw_to_image(tile_size);
+            let img = this
+                .inner
+                .borrow()
+                .try_draw_to_image(tile_size)
+                .map_err(|err| LuaError::RuntimeError(format!("LTileMap:drawToImage: {err}")))?;
             Ok(img)
+        });
+        // -- getDiagnostics --
+        /// Returns tilemap diagnostics counters for invalid calls, unknown gids, and lazy index rebuilds.
+        methods.add_method("getDiagnostics", |lua, this, ()| {
+            diagnostics_table(lua, this.inner.borrow().diagnostics_snapshot())
         });
         // -- toNavGrid --
         /// Converts a layer into a 2D boolean grid for pathfinding. Tiles with GIDs in the given list are marked walkable.
@@ -1083,7 +1252,11 @@ impl LuaUserData for LuaChunkMap {
         methods.add_method(
             "fillRect",
             |_, this, (x0, y0, x1, y1, gid): (i32, i32, i32, i32, u32)| {
-                this.inner.borrow_mut().fill_rect(x0, y0, x1, y1, gid);
+                let limits = TileMapLimits::default();
+                this.inner
+                    .borrow_mut()
+                    .try_fill_rect(x0, y0, x1, y1, gid, &limits)
+                    .map_err(|err| LuaError::RuntimeError(format!("LChunkMap:fillRect: {err}")))?;
                 Ok(())
             },
         );
@@ -1900,16 +2073,24 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param | tileWidth | integer | Tile width in pixels.
     /// @param | tileHeight | integer | Tile height in pixels.
     /// @param | chunkSize | integer? | Internal chunk size in tiles (default 16).
+    /// @param | opts | any? | Optional limits table (`maxLayers`, `maxTiles`, `maxImagePixels`, `maxImportBytes`, `maxDecodedBytes`, `maxChunkCells`, `maxChunks`, `maxCollisionTileChecks`).
     /// @return | LTileMap | New tilemap.
     tbl.set(
         "newTileMap",
         lua.create_function(
-            move |lua, (tile_width, tile_height, chunk_size): (u32, u32, Option<u32>)| {
-                let inner_rc = Rc::new(RefCell::new(TileMap::new(
-                    tile_width,
-                    tile_height,
-                    chunk_size.unwrap_or(16),
-                )));
+            move |lua, (tile_width, tile_height, chunk_size, opts): (
+                u32,
+                u32,
+                Option<u32>,
+                Option<LuaTable>,
+            )| {
+                let limits = tilemap_limits_from_table(opts.as_ref())?;
+                let inner_map =
+                    TileMap::try_new_with_limits(tile_width, tile_height, chunk_size.unwrap_or(16), limits)
+                        .map_err(|err| {
+                            LuaError::RuntimeError(format!("lurek.tilemap.newTileMap: {err}"))
+                        })?;
+                let inner_rc = Rc::new(RefCell::new(inner_map));
                 s.borrow_mut().auto_tilemaps.push(Rc::downgrade(&inner_rc));
                 lua.create_userdata(LuaTileMap {
                     inner: inner_rc,
@@ -1949,12 +2130,18 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     // -- newChunkMap --
     /// Creates a new infinite chunk-based tile map.
     /// @param | chunkSize | integer? | Tiles per chunk side (default 16).
+    /// @param | opts | any? | Optional limits table (`maxChunkCells`, `maxChunks`, `maxCollisionTileChecks`, and related tilemap ceilings).
     /// @return | LChunkMap | New chunk map.
     tbl.set(
         "newChunkMap",
-        lua.create_function(|lua, chunk_size: Option<u32>| {
+        lua.create_function(|lua, (chunk_size, opts): (Option<u32>, Option<LuaTable>)| {
+            let limits = tilemap_limits_from_table(opts.as_ref())?;
             lua.create_userdata(LuaChunkMap {
-                inner: Rc::new(RefCell::new(ChunkMap::new(chunk_size.unwrap_or(16)))),
+                inner: Rc::new(RefCell::new(
+                    ChunkMap::try_new_with_limits(chunk_size.unwrap_or(16), &limits).map_err(
+                        |err| LuaError::RuntimeError(format!("lurek.tilemap.newChunkMap: {err}")),
+                    )?,
+                )),
             })
         })?,
     )?;
@@ -2436,6 +2623,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     // -- loadTMX --
     /// Parses a TMX (Tiled XML) string and returns a table describing the map structure.
     /// @param | xml | string | Raw TMX XML content.
+    /// @param | opts | any? | Optional import policy table (`strictLayerSize`, `allowExternalTilesets`, `safePaths`, `assetRoot`) plus byte/size limits.
     /// @return | table | Parsed map with `width`, `height`, `tileWidth`, `tileHeight`, `orientation`, and `layers`, or nil on parse failure.
     /// @return | table | Structured import error table on parse failure, or nil on success.
     /// @field | format | string | Source format identifier (`"tmx"`).
@@ -2451,8 +2639,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @field | layers | table | Layers array.
     tbl.set(
         "loadTMX",
-        lua.create_function(|lua, xml: String| {
-            let tmx = match crate::tilemap::tmx::load_tmx(&xml) {
+        lua.create_function(|lua, (xml, opts): (String, Option<LuaTable>)| {
+            let options = tmx_options_from_table(opts.as_ref())?;
+            let tmx = match load_tmx_with_options(&xml, &options) {
                 Ok(tmx) => tmx,
                 Err(err) => {
                     let err_tbl = tilemap_import_error_table(
@@ -2517,6 +2706,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// Loads a tilemap from an LDtk JSON string, optionally targeting a specific level.
     /// @param | jsonStr | string | Raw LDtk JSON content.
     /// @param | levelName | string? | Level name to load, or nil for the first level.
+    /// @param | opts | any? | Optional limits table used to bound imported layer size, chunk allocation, and decoded input bytes.
     /// @return | LTileMap | Loaded tilemap, or nil when import fails.
     /// @return | table | Structured import error table on import failure, or nil on success.
     /// @field | format | string | Source format identifier (`"ldtk"`).
@@ -2528,10 +2718,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         "fromLDtk",
         lua.create_function({
             let state = state.clone();
-            move |lua, (json_str, level_name): (String, Option<String>)| match load_ldtk(
-                &json_str,
-                level_name.as_deref(),
-            ) {
+            move |lua, (json_str, level_name, opts): (String, Option<String>, Option<LuaTable>)| {
+                let limits = tilemap_limits_from_table(opts.as_ref())?;
+                match load_ldtk_with_limits(&json_str, level_name.as_deref(), &limits) {
                 Ok(map) => {
                     let ud = lua.create_userdata(LuaTileMap {
                         inner: Rc::new(RefCell::new(map)),
@@ -2552,6 +2741,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                         None,
                     )?;
                     Ok((LuaValue::Nil, LuaValue::Table(err_tbl)))
+                }
                 }
             }
         })?,

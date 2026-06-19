@@ -4,6 +4,10 @@
 
 use crate::procgen::noise::perlin_noise_periodic;
 use crate::procgen::scalar_map_to_rgba_bytes;
+use crate::procgen::{
+    limits::{checked_cell_count, validate_positive},
+    ProcgenError, ProcgenLimits,
+};
 
 /// Flat noise grid with tiling-Perlin cell values in 0.0–1.0.
 pub struct NoiseGrid {
@@ -18,11 +22,22 @@ pub struct NoiseGrid {
 impl NoiseGrid {
     /// Build a tileable Perlin noise grid at the given `scale`; scale is clamped to >= 1e-6.
     pub fn from_perlin(width: u32, height: u32, scale: f64) -> Self {
-        let scale = scale.max(1e-6);
+        Self::try_from_perlin(width, height, scale, &ProcgenLimits::default())
+            .expect("NoiseGrid::from_perlin received invalid dimensions or scale")
+    }
+
+    /// Build a tileable Perlin noise grid after validating dimensions and scale.
+    pub fn try_from_perlin(
+        width: u32,
+        height: u32,
+        scale: f64,
+        limits: &ProcgenLimits,
+    ) -> Result<Self, ProcgenError> {
+        validate_positive("scale", scale)?;
+        let len = checked_cell_count(width, height, limits)?;
         let px = width as f64 * scale;
         let py = height as f64 * scale;
-        let size = (width * height) as usize;
-        let mut cells = Vec::with_capacity(size);
+        let mut cells = Vec::with_capacity(len);
         for y in 0..height {
             for x in 0..width {
                 let nx = x as f64 * scale;
@@ -31,11 +46,11 @@ impl NoiseGrid {
                 cells.push(v);
             }
         }
-        Self {
+        Ok(Self {
             width,
             height,
             cells,
-        }
+        })
     }
     /// Convert the cell grid to a flat grayscale RGBA byte buffer at 4 bytes per cell.
     pub fn to_rgba_bytes(&self) -> Vec<u8> {

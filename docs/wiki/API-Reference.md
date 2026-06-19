@@ -188,6 +188,7 @@
   - [LMapBlock](#lmapblock)
   - [LMapBlockConfig](#lmapblockconfig)
   - [LMapBlockGenerator](#lmapblockgenerator)
+  - [LMapBlockReport](#lmapblockreport)
   - [LMapBlockResult](#lmapblockresult)
   - [LMapGroup](#lmapgroup)
   - [LMapScript](#lmapscript)
@@ -328,7 +329,7 @@
   - [LPromise](#lpromise)
   - [LThreadHandle](#lthreadhandle)
   - [LThreadPool](#lthreadpool)
-- [lurek.physics](#lurekphysics)
+- [lurek.tilemap](#lurektilemap)
   - [LAutoTileSheet](#lautotilesheet)
   - [LChunkMap](#lchunkmap)
   - [LIsoMap](#lisomap)
@@ -4233,7 +4234,9 @@ LMapBlockConfig:setMaxLayers(max: integer) -- Set maximum layers per block for t
 ```lua
 LMapBlockGenerator:addGroup(group: MapGroup) -- Add a named block group definition to this map generator.
 LMapBlockGenerator:generate(script: MapScript) -> MapBlockResult -- Generate map using a script for this object.
+LMapBlockGenerator:generateWithReport(script: MapScript) -> MapBlockResult -- Generate map using a script and return runtime diagnostics for this object.
 LMapBlockGenerator:getLastPlacedCount() -> integer -- Get last placement count for this object.
+LMapBlockGenerator:getLastReport() -> MapBlockReport -- Get the diagnostic report captured during the previous generation run.
 LMapBlockGenerator:setGrid(grid: PlacementGrid) -- Set the placement grid from a prepared PlacementGrid object.
 LMapBlockGenerator:setMaxLevels(levels: integer) -- Set the number of vertical levels or storeys to generate.
 LMapBlockGenerator:setOrientation(orientation: string) -- Set rendering orientation for this object.
@@ -4241,7 +4244,14 @@ LMapBlockGenerator:setRectShape(width: integer, height: integer) -- Set rectangu
 LMapBlockGenerator:setRules(rules: NeighborRules) -- Set neighbor matching rules for this object.
 LMapBlockGenerator:setSeed(seed: integer) -- Set RNG seed for deterministic generation.
 LMapBlockGenerator:setShape(positions: table) -- Set the generator map shape using a list of tile positions.
+LMapBlockGenerator:setSolverBudget(opts: table) -- Set bounded recursion budgets for `solve_shape`.
 LMapBlockGenerator:setTileSize(w: integer, h: integer) -- Set tile pixel dimensions for this object.
+```
+
+### LMapBlockReport
+
+```lua
+LMapBlockReport:toTable() -> table -- Serialize generation diagnostics into a plain Lua table.
 ```
 
 ### LMapBlockResult
@@ -5924,7 +5934,7 @@ LWorld:addRopeJoint(bodyA: integer, bodyB: integer, anchorAX: number, anchorAY: 
 LWorld:addWeldJoint(bodyA: integer, bodyB: integer, anchorX: number, anchorY: number) -> integer -- Creates a weld joint that rigidly connects two bodies at an anchor point (no relative movement).
 LWorld:addWheelJoint(bodyA: integer, bodyB: integer, anchorX: number, anchorY: number, axisX: number, axisY: number) -> integer -- Creates a wheel joint simulating a suspension: allows rotation and linear movement along an axis.
 LWorld:addZone(x: number, y: number, w: number, h: number) -> LZone -- Creates a rectangular physics zone for area-based effects (custom gravity, damping overrides).
-LWorld:clear() -- Removes all bodies and joints from the world, resetting it to an empty state.
+LWorld:clear() -- Removes bodies, joints, terrain colliders, and zones while preserving world-level settings.
 LWorld:clearBeginContact() -- Removes the begin-contact callback so it is no longer called.
 LWorld:clearBodyData(id: integer) -- Removes and releases the Lua data attached to a body.
 LWorld:clearBodyOneWay(id: integer) -- Removes the one-way platform behavior from a body, making it block from all directions.
@@ -5970,6 +5980,7 @@ LWorld:queryAABB(x: number, y: number, w: number, h: number, [filter]: table) ->
 LWorld:raycast(x1: number, y1: number, x2: number, y2: number, [filter]: table) -> table -- Casts a ray from point (x1,y1) to (x2,y2) and returns the first body hit, or nil.
 LWorld:raycastAll(x: number, y: number, dx: number, dy: number, maxDist: number, [filter]: table) -> table -- Casts a directional ray and returns all bodies hit within max distance as a table of results.
 LWorld:raycastClosest(x: number, y: number, dx: number, dy: number, maxDist: number, [filter]: table) -> table -- Casts a directional ray from a point and returns the closest hit within max distance.
+LWorld:resetWorld() -- Fully resets the world to its post-construction state.
 LWorld:setBeginContact(callback: function) -- Registers a callback function invoked whenever two bodies begin touching.
 LWorld:setBodyCCD(id: integer, enabled: boolean) -- Enables or disables continuous collision detection (bullet mode) on a body to prevent tunneling.
 LWorld:setBodyData(id: integer, value: any) -- Attaches arbitrary Lua data to a body ID for later retrieval (e.g. entity reference, tag).
@@ -7298,12 +7309,12 @@ LThreadPool:type() -> string -- Returns the type name of this object.
 LThreadPool:typeOf(name: string) -> boolean -- Checks whether this object matches the given type name.
 ```
 
-## lurek.physics
+## lurek.tilemap
 
 [Module page](Module-tilemap)
 
 ```lua
-lurek.tilemap.fromLDtk(jsonStr: string, [levelName]: string) -> LTileMap -- Loads a tilemap from an LDtk JSON string, optionally targeting a specific level.
+lurek.tilemap.fromLDtk(jsonStr: string, [levelName]: string, [opts]: any) -> LTileMap -- Loads a tilemap from an LDtk JSON string, optionally targeting a specific level.
 lurek.tilemap.fromScreenHex(sx: number, sy: number, size: number) -> integer -- Converts screen-space pixel coordinates to axial hex coordinates.
 lurek.tilemap.fromScreenIso(sx: number, sy: number, tw: number, th: number) -> number -- Converts screen-space coordinates back to tile coordinates for isometric projection.
 lurek.tilemap.hexArea(q: integer, r: integer, radius: integer) -> table -- Returns all hex cells within a filled area of a given radius.
@@ -7318,16 +7329,16 @@ lurek.tilemap.hexSpiral(q: integer, r: integer, radius: integer) -> table -- Ret
 lurek.tilemap.isoDirectionFromAngle(angle: number) -> integer -- Converts an angle in degrees to the nearest isometric direction index.
 lurek.tilemap.isoDirectionName(direction: integer) -> string -- Returns a human-readable name for an isometric direction index.
 lurek.tilemap.isoRotate(direction: integer, steps: integer) -> integer -- Rotates an isometric direction index by a number of 90-degree steps.
-lurek.tilemap.loadTMX(xml: string) -> table -- Parses a TMX (Tiled XML) string and returns a table describing the map structure.
+lurek.tilemap.loadTMX(xml: string, [opts]: any) -> table -- Parses a TMX (Tiled XML) string and returns a table describing the map structure.
 lurek.tilemap.newAutoTileSheet(tileW: integer, tileH: integer, layout: string) -> LAutoTileSheet -- Creates an auto-tile sheet with a given tile size and layout.
-lurek.tilemap.newChunkMap([chunkSize]: integer) -> LChunkMap -- Creates a new infinite chunk-based tile map.
+lurek.tilemap.newChunkMap([chunkSize]: integer, [opts]: any) -> LChunkMap -- Creates a new infinite chunk-based tile map.
 lurek.tilemap.newIsoMap(width: integer, height: integer, tileW: integer, tileH: integer, levelHeight: integer, [partCount]: integer) -> LIsoMap -- Creates a new isometric map with the given dimensions and tile geometry.
 lurek.tilemap.newLargeMapRenderer(tileW: integer, tileH: integer) -> LLargeMapRenderer -- Creates a chunk-based large-map renderer for efficient rendering of very large maps.
 lurek.tilemap.newMapBlock(width: integer, height: integer, [layers]: integer, [segmentSize]: integer) -> LMapBlock -- Creates a new procedural map block with the given dimensions.
 lurek.tilemap.newMapGen(group: LMapGroup, presetOrWidth: string|integer, segmentSizeOrHeight: integer, [segmentSize]: integer) -> LMapGen -- Creates a procedural map generator from a group and either a size preset or explicit dimensions.
 lurek.tilemap.newMapGroup(name: string) -> LMapGroup -- Creates a new map group to hold blocks and generation scripts.
 lurek.tilemap.newMapScript() -> LMapScript -- Creates a new empty map-generation script.
-lurek.tilemap.newTileMap(tileWidth: integer, tileHeight: integer, [chunkSize]: integer) -> LTileMap -- Creates a new empty tilemap with the given tile dimensions.
+lurek.tilemap.newTileMap(tileWidth: integer, tileHeight: integer, [chunkSize]: integer, [opts]: any) -> LTileMap -- Creates a new empty tilemap with the given tile dimensions.
 lurek.tilemap.newTileSet(firstGid: integer, tileCount: integer, columns: integer, tileWidth: integer, tileHeight: integer, [spacing]: integer, [margin]: integer) -> LTileSet -- Creates a new tileset from atlas parameters.
 lurek.tilemap.syncMinimap(map: LTileMap, layer: integer, minimap: LMinimap, [opts]: table) -- Synchronizes a tilemap layer's solid tiles into a minimap's terrain grid.
 lurek.tilemap.toScreenHex(q: integer, r: integer, size: number) -> number -- Converts axial hex coordinates to screen-space pixel position.
@@ -7484,6 +7495,7 @@ LTileMap:findTilesByGid(layer: integer, gid: integer) -> table -- Returns all po
 LTileMap:fireTileExit(gid: integer, entity: table, tx: integer, ty: integer) -- Manually fires the tile-exit callback for a specific GID and entity at a tile position.
 LTileMap:fireTileStep(gid: integer, entity: table, tx: integer, ty: integer) -- Manually fires the tile-step callback for a specific GID and entity at a tile position.
 LTileMap:getChunkSize() -> integer -- Returns the chunk size used for internal tile storage.
+LTileMap:getDiagnostics() -- Returns tilemap diagnostics counters for invalid calls, unknown gids, and lazy index rebuilds.
 LTileMap:getLayerColor(idx: integer) -> number -- Returns the tint color of a layer as four RGBA components.
 LTileMap:getLayerCount() -> integer -- Returns the total number of layers in this map.
 LTileMap:getLayerName(idx: integer) -> string -- Returns the name of a layer by index.
@@ -7516,6 +7528,11 @@ LTileMap:sweepRect(layer: integer, x: number, y: number, w: number, h: number, d
 LTileMap:tileToWorld(tx: integer, ty: integer) -> number -- Converts tile-grid coordinates to world-space pixel coordinates (top-left corner of the tile).
 LTileMap:tileTypeIndex(layer: integer) -> table -- Builds an index mapping each GID present on a layer to an array of `{x, y}` positions.
 LTileMap:toNavGrid(layer: integer, gids: table) -> boolean[] -- Converts a layer into a 2D boolean grid for pathfinding. Tiles with GIDs in the given list are marked walka...
+LTileMap:tryAddLayer(name: string, w: integer, h: integer) -> integer? -- Creates a new tile layer and returns `nil, error` instead of throwing on invalid dimensions or layer limits.
+LTileMap:tryGetTile(layer: integer, x: integer, y: integer) -> integer? -- Returns the tile GID at a specific grid position, or `nil, error` when the layer or coord is invalid.
+LTileMap:trySetTile(layer: integer, x: integer, y: integer, gid: integer) -> boolean -- Sets a tile and returns `false, error` instead of throwing on invalid layer or coordinate input.
+LTileMap:trySetTileTint(layer: any, x: any, y: any, r: any, g: any, b: any, a: any) -- Sets a per-cell tint override and returns `false, error` instead of throwing on invalid input.
+LTileMap:tryWorldToTile(wx: number, wy: number) -> integer? -- Converts world-space pixel coordinates to tile-grid coordinates, returning nils for negative or non-finite...
 LTileMap:type() -> string -- Returns the type name of this userdata.
 LTileMap:typeOf(name: string) -> boolean -- Checks whether this object matches the given type name.
 LTileMap:update(dt: number) -- Advances tile animations by the given delta time.

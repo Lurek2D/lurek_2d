@@ -17,12 +17,16 @@ pub mod cellular;
 pub mod cellular_world;
 /// Scalar-to-colour RGBA conversion helpers.
 pub mod color;
+/// Shared procgen validation and resource-limit errors.
+pub mod error;
 /// 4-connected flood fill mask generator.
 pub mod flood_fill;
 /// FBM noise-based heightmap with optional erosion.
 pub mod heightmap;
 /// Linear Congruential Generator for deterministic seeding.
 pub mod lcg;
+/// Shared procgen dimension, byte-budget, and iteration limits.
+pub mod limits;
 /// L-system string rewriting and turtle geometry.
 pub mod lsystem;
 /// Markov-chain name generator.
@@ -33,6 +37,8 @@ pub mod noise;
 pub mod poisson;
 /// Tileable sampled noise-grid helpers.
 pub mod render;
+/// Shared procgen report summaries.
+pub mod report;
 /// Random-room scatter dungeon generator.
 pub mod rooms;
 /// Voronoi diagram with optional domain warp.
@@ -49,25 +55,36 @@ pub use bsp::{
     bsp_dungeon, bsp_dungeon_with_prefabs, BspDungeon, BspOpts, BspPrefabStamp, BspRoom,
     PlacedBspPrefab,
 };
-pub use cellular::{cellular_automata, CellularOpts};
-pub use cellular_world::{default_palette, CellType, CellularWorld};
+pub use cellular::{cellular_automata, try_cellular_automata, CellularOpts};
+pub use cellular_world::{
+    default_palette, CellType, CellularWorld, CellularWorldActiveBounds, CellularWorldStepStats,
+};
 pub use color::scalar_map_to_rgba_bytes;
+pub use error::ProcgenError;
 pub use flood_fill::flood_fill;
-pub use heightmap::{Heightmap, HeightmapOpts};
+pub use heightmap::{ErosionMode, Heightmap, HeightmapErosionReport, HeightmapOpts};
+pub use limits::ProcgenLimits;
 pub use lsystem::LSystem;
 pub use namegen::NameGen;
 pub use noise::{
     fbm, generate_noise_map_parallel, perlin2d, perlin3d, perlin4d, perlin_noise_periodic,
-    simplex2d, simplex_noise_2d, simplex_noise_3d, DistType, FractalType, MapGenOptions,
-    NoiseGenerator, NoiseKind,
+    simplex2d, simplex_noise_2d, simplex_noise_3d, try_generate_noise_map_parallel, DistType,
+    FractalType, MapGenOptions, NoiseGenerator, NoiseKind,
 };
-pub use poisson::poisson_disk;
+pub use poisson::{poisson_disk, try_poisson_disk};
 pub use render::NoiseGrid;
+pub use report::ProcgenReport;
 pub use rooms::{
-    rooms_dungeon, rooms_dungeon_with_prefabs, PlacedRoomPrefab, Room, RoomPrefabStamp,
-    RoomsDungeon, RoomsOpts,
+    rooms_dungeon, rooms_dungeon_with_prefabs, try_rooms_dungeon, PlacedRoomPrefab, Room,
+    RoomPrefabStamp, RoomsDungeon, RoomsOpts,
 };
-pub use voronoi::{voronoi_diagram, VoronoiOpts};
-pub use wfc::{wfc_generate, WfcGrid, WfcOpts, WfcRules, WfcTile};
-pub use wfc_llm::{parse_llm_constraints, parse_llm_wfc_response};
+pub use voronoi::{try_voronoi_diagram, voronoi_diagram, VoronoiOpts};
+pub use wfc::{
+    try_wfc_generate, wfc_generate, WfcFailureReason, WfcGrid, WfcOpts, WfcReport, WfcRules,
+    WfcTile,
+};
+pub use wfc_llm::{
+    parse_llm_constraints, parse_llm_wfc_response, try_parse_llm_constraints,
+    try_parse_llm_wfc_response,
+};
 pub use world_graph::{generate_world_graph, WorldEdge, WorldGraph, WorldRegion};

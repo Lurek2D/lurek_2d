@@ -2,18 +2,13 @@
 
 ## Summary
 
-- This module gives users safe background Lua execution through isolated worker VMs.
-- Worker isolation prevents unsafe shared-state mutation across threads.
-- Typed channels provide message-passing for scalars, tables, and byte blobs.
-- Bounded and unbounded channel modes support different backpressure strategies.
-- Promise APIs support one-shot async result tracking and chaining.
-- Thread handles support start, join, status, and error retrieval workflows.
-- Thread pools support parallel job processing with shared input/output channels.
-- Named channels support convenient cross-worker communication topologies.
-- For users, this module provides practical concurrency without exposing unsafe memory sharing.
-- It helps offload heavy tasks while keeping frame loop responsiveness.
-
-This module primarily collaborates with `runtime`. Its responsibility should stay inside the Core Runtime group rather than absorb behavior owned by those neighbors.
+- The `thread` module is the isolated-concurrency surface for projects that want background Lua work without violating the engine's VM and runtime-safety rules.
+- Channels, worker threads, pools, and promises let asynchronous work move messages and results between isolated execution contexts instead of sharing unsafe state directly.
+- That matters because concurrency here is not just thread creation; it is about controlling what can cross between workers and how results return safely.
+- The module is useful for expensive background tasks, staged jobs, and workflows where script-facing logic should continue while separate workers finish their part of the work.
+- Promise-style completion is central because finished work still has to rejoin the foreground safely.
+- It keeps worker isolation visible to scripts while still making background jobs practical and safe.
+- Read it as the engine's sanctioned script-concurrency model.
 
 ## Functions
 
@@ -42,9 +37,11 @@ lurek.thread.async(codeOrFunc, ...)
 
 ```lua
 do
-    local promise = lurek.thread.async("return 42")
-    print("type = " .. promise:type())
-    print("done immediately = " .. tostring(promise:isDone()))
+    local promise = lurek.thread.async("lurek.thread.getChannel('__promise_result'):push(42)")
+    local type_name = promise:type()
+    local done = promise:isDone()
+    local result = promise:result()
+    thread_log("async promise type=" .. type_name .. " done=" .. tostring(done) .. " result=" .. tostring(result))
 end
 ```
 
@@ -74,11 +71,11 @@ lurek.thread.getChannel(name)
 
 ```lua
 do
-    local ch = lurek.thread.getChannel("events")
-    ch:push("player_died")
+    local events = clear_named_channel("events")
+    events:push("player_died")
     local same = lurek.thread.getChannel("events")
-    print("shared channel msg = " .. tostring(same:pop()))
-    print("same instance = " .. tostring(ch == same))
+    local message = same:pop()
+    thread_log("shared channel message=" .. tostring(message) .. " same_instance=" .. tostring(events == same))
 end
 ```
 
@@ -103,7 +100,10 @@ lurek.thread.getWorkerCapabilities()
 ```lua
 do
     local caps = lurek.thread.getWorkerCapabilities()
-    print("capabilities = " .. #caps)
+    local first = caps[1] or "none"
+    local count = #caps
+    local has_thread = count > 0
+    thread_log("worker capabilities count=" .. count .. " first=" .. first .. " available=" .. tostring(has_thread))
 end
 ```
 
@@ -133,11 +133,11 @@ lurek.thread.newBoundedChannel(capacity)
 
 ```lua
 do
-    ---@type LChannel
-    local ch = lurek.thread.newBoundedChannel(10)
-    print("bounded = " .. tostring(ch:isBounded()))
-    print("capacity = " .. ch:getCapacity())
-    print("count = " .. ch:getCount())
+    local channel = lurek.thread.newBoundedChannel(10)
+    channel:push("frame_1")
+    local bounded = channel:isBounded()
+    local capacity = channel:getCapacity()
+    thread_log("bounded channel bounded=" .. tostring(bounded) .. " capacity=" .. capacity .. " count=" .. channel:getCount())
 end
 ```
 
@@ -161,10 +161,11 @@ lurek.thread.newChannel()
 
 ```lua
 do
-    local ch = lurek.thread.newChannel()
-    print("type = " .. ch:type())
-    print("count = " .. ch:getCount())
-    print("bounded = " .. tostring(ch:isBounded()))
+    local channel = lurek.thread.newChannel()
+    channel:push("spawn_enemy")
+    local type_name = channel:type()
+    local count = channel:getCount()
+    thread_log("new channel type=" .. type_name .. " count=" .. count .. " bounded=" .. tostring(channel:isBounded()))
 end
 ```
 
@@ -195,16 +196,11 @@ lurek.thread.newPool(size, code)
 
 ```lua
 do
-    local pool = lurek.thread.newPool(2, [[
-        local input = lurek.thread.getChannel("__pool_input")
-        local output = lurek.thread.getChannel("__pool_output")
-        local value = input:demand(0.1)
-        if value then
-            output:push(value * 2)
-        end
-    ]])
-    print("type = " .. pool:type())
-    print("pool size = " .. pool:size())
+    local pool = make_worker_pool()
+    local type_name = pool:type()
+    local size = pool:size()
+    local matches = pool:typeOf("LThreadPool")
+    thread_log("new pool type=" .. type_name .. " workers=" .. size .. " matches=" .. tostring(matches))
 end
 ```
 
@@ -234,15 +230,14 @@ lurek.thread.newThread(code)
 
 ```lua
 do
-    local results = lurek.thread.getChannel("results")
-    results:clear()
+    local results = clear_named_channel("thread_results")
     local thread = lurek.thread.newThread([[
-        local ch = lurek.thread.getChannel("results")
+        local ch = lurek.thread.getChannel("thread_results")
         ch:push(21 * 2)
     ]])
     thread:start()
     thread:wait()
-    print("result = " .. tostring(results:pop()))
+    thread_log("newThread result=" .. tostring(results:pop()))
 end
 ```
 
@@ -287,11 +282,12 @@ LChannel:clear()
 
 ```lua
 do
-    local ch = lurek.thread.newChannel()
-    ch:push("x")
-    print("before clear = " .. ch:getCount())
-    ch:clear()
-    print("after clear = " .. ch:getCount())
+    local channel = lurek.thread.newChannel()
+    channel:push("x")
+    channel:push("y")
+    local before = channel:getCount()
+    channel:clear()
+    thread_log("clear removed queue from " .. before .. " to " .. channel:getCount())
 end
 ```
 
@@ -322,10 +318,11 @@ LChannel:demand(timeout)
 
 ```lua
 do
-    local ch = lurek.thread.newChannel()
-    ch:push("ready")
-    print("demand got = " .. tostring(ch:demand(1.0)))
-    print("demand timeout = " .. tostring(ch:demand(0.01)))
+    local channel = lurek.thread.newChannel()
+    channel:push("ready")
+    local immediate = channel:demand(1.0)
+    local timeout = channel:demand(0.01)
+    thread_log("demand immediate=" .. tostring(immediate) .. " timeout=" .. tostring(timeout))
 end
 ```
 
@@ -349,8 +346,11 @@ LChannel:getCapacity()
 
 ```lua
 do
-    local ch = lurek.thread.newChannel()
-    print("capacity=" .. tostring(ch:getCapacity()))
+    local channel = lurek.thread.newBoundedChannel(3)
+    channel:push("job")
+    local capacity = channel:getCapacity()
+    local bounded = channel:isBounded()
+    thread_log("bounded channel capacity=" .. tostring(capacity) .. " count=" .. channel:getCount() .. " bounded=" .. tostring(bounded))
 end
 ```
 
@@ -374,9 +374,12 @@ LChannel:getCount()
 
 ```lua
 do
-    local ch = lurek.thread.newChannel()
-    ch:push("x")
-    print("count = " .. ch:getCount())
+    local channel = lurek.thread.newChannel()
+    channel:push("x")
+    channel:push("y")
+    local count = channel:getCount()
+    local preview = channel:peek()
+    thread_log("getCount reports " .. count .. " next=" .. tostring(preview))
 end
 ```
 
@@ -400,8 +403,11 @@ LChannel:isBounded()
 
 ```lua
 do
-    local ch = lurek.thread.newChannel()
-    print("bounded=" .. tostring(ch:isBounded()))
+    local channel = lurek.thread.newBoundedChannel(1)
+    channel:push("job")
+    local bounded = channel:isBounded()
+    local count = channel:getCount()
+    thread_log("channel bounded=" .. tostring(bounded) .. " capacity=" .. tostring(channel:getCapacity()) .. " count=" .. count)
 end
 ```
 
@@ -426,10 +432,12 @@ LChannel:peek()
 
 ```lua
 do
-    local ch = lurek.thread.newChannel()
-    ch:push("first")
-    print("peek = " .. tostring(ch:peek()))
-    print("count after peek = " .. ch:getCount())
+    local channel = lurek.thread.newChannel()
+    channel:push("first")
+    channel:push("second")
+    local preview = channel:peek()
+    local count = channel:getCount()
+    thread_log("peek saw=" .. tostring(preview) .. " while count stayed=" .. count)
 end
 ```
 
@@ -454,11 +462,12 @@ LChannel:pop()
 
 ```lua
 do
-    ---@type LChannel
-    local ch = lurek.thread.newChannel()
-    ch:push("hello")
-    local val1 = ch:pop()
-    print("pop 1 = " .. tostring(val1))
+    local channel = lurek.thread.newChannel()
+    channel:push("hello")
+    channel:push("world")
+    local first = channel:pop()
+    local remaining = channel:getCount()
+    thread_log("pop first=" .. tostring(first) .. " remaining=" .. remaining)
 end
 ```
 
@@ -482,9 +491,11 @@ LChannel:popBytes()
 
 ```lua
 do
-    local ch = lurek.thread.newChannel()
-    ch:pushBytes(string.rep("\x00\xFF", 100))
-    print("popBytes length = " .. #ch:popBytes())
+    local channel = lurek.thread.newChannel()
+    channel:pushBytes(string.rep("\x00\xFF", 100))
+    local payload = channel:popBytes()
+    local size = #payload
+    thread_log("popBytes length=" .. size .. " remaining=" .. channel:getCount())
 end
 ```
 
@@ -508,10 +519,11 @@ LChannel:popTable()
 
 ```lua
 do
-    local ch = lurek.thread.newChannel()
-    ch:pushTable({ name = "player" })
-    local result = ch:popTable()
-    print("popTable name = " .. result.name)
+    local channel = lurek.thread.newChannel()
+    channel:pushTable({ name = "player", hp = 100 })
+    local result = channel:popTable()
+    local hp = result.hp
+    thread_log("popTable name=" .. result.name .. " hp=" .. hp)
 end
 ```
 
@@ -541,11 +553,11 @@ LChannel:push(value)
 
 ```lua
 do
-    ---@type LChannel
-    local ch = lurek.thread.newChannel()
-    local id1 = ch:push("hello")
-    print("pushed id: " .. id1)
-    print("count = " .. ch:getCount())
+    local channel = lurek.thread.newChannel()
+    local id = channel:push("quest_started")
+    local queued = channel:getCount()
+    local preview = channel:peek()
+    thread_log("push queued id=" .. id .. " count=" .. queued .. " preview=" .. tostring(preview))
 end
 ```
 
@@ -575,11 +587,11 @@ LChannel:pushBytes(data)
 
 ```lua
 do
-    ---@type LChannel
-    local ch = lurek.thread.newChannel()
-    local data = string.rep("\x00\xFF", 100)
-    local id = ch:pushBytes(data)
-    print("pushBytes id = " .. id)
+    local channel = lurek.thread.newChannel()
+    local payload = string.rep("\x00\xFF", 100)
+    local id = channel:pushBytes(payload)
+    local count = channel:getCount()
+    thread_log("pushBytes id=" .. id .. " bytes=" .. #payload .. " count=" .. count)
 end
 ```
 
@@ -609,11 +621,11 @@ LChannel:pushTable(value)
 
 ```lua
 do
-    ---@type LChannel
-    local ch = lurek.thread.newChannel()
+    local channel = lurek.thread.newChannel()
     local payload = { name = "player", hp = 100, items = { "sword", "shield" } }
-    local id = ch:pushTable(payload)
-    print("pushTable id = " .. id)
+    local id = channel:pushTable(payload)
+    local preview = channel:peek()
+    thread_log("pushTable id=" .. id .. " preview_name=" .. tostring(preview.name))
 end
 ```
 
@@ -643,10 +655,12 @@ LChannel:supply(value)
 
 ```lua
 do
-    local ch = lurek.thread.newBoundedChannel(2)
-    ch:tryPush("a")
-    ch:tryPush("b")
-    print("supply when full = " .. tostring(ch:supply("d")))
+    local channel = lurek.thread.newBoundedChannel(2)
+    channel:tryPush("a")
+    channel:tryPush("b")
+    local ok = channel:supply("c")
+    local count = channel:getCount()
+    thread_log("supply when full=" .. tostring(ok) .. " queued=" .. count)
 end
 ```
 
@@ -676,10 +690,11 @@ LChannel:tryPush(value)
 
 ```lua
 do
-    ---@type LChannel
-    local ch = lurek.thread.newBoundedChannel(2)
-    local ok1 = ch:tryPush("a")
-    print("tryPush 1 = " .. tostring(ok1))
+    local channel = lurek.thread.newBoundedChannel(2)
+    local first = channel:tryPush("a")
+    local second = channel:tryPush("b")
+    local third = channel:tryPush("c")
+    thread_log("tryPush results=" .. tostring(first) .. "," .. tostring(second) .. "," .. tostring(third))
 end
 ```
 
@@ -703,8 +718,11 @@ LChannel:type()
 
 ```lua
 do
-    local ch = lurek.thread.newChannel()
-    print("type=" .. ch:type())
+    local channel = lurek.thread.newChannel()
+    channel:push("job")
+    local type_name = channel:type()
+    local bounded = channel:isBounded()
+    thread_log("channel type=" .. type_name .. " count=" .. channel:getCount() .. " bounded=" .. tostring(bounded))
 end
 ```
 
@@ -734,8 +752,11 @@ LChannel:typeOf(name)
 
 ```lua
 do
-    local ch = lurek.thread.newChannel()
-    print("typeOf=" .. tostring(ch:typeOf("LChannel")))
+    local channel = lurek.thread.newChannel()
+    channel:push("job")
+    local matches = channel:typeOf("LChannel")
+    local type_name = channel:type()
+    thread_log("channel typeOf LChannel=" .. tostring(matches) .. " type=" .. type_name)
 end
 ```
 
@@ -774,24 +795,15 @@ LPromise:chain(code, ...)
 
 ```lua
 do
-    local first = lurek.thread.async([[
-        local result = lurek.thread.getChannel("__promise_result")
-        result:push(10)
-    ]])
-    local guard = 0
-    while not first:isDone() and guard < 10000 do
-        guard = guard + 1
+    local first = lurek.thread.async("lurek.thread.getChannel('__promise_result'):push(10)")
+    while not first:isDone() do
     end
-    local second = first:chain([[
-        local prev = ...
-        local result = lurek.thread.getChannel("__promise_result")
-        result:push(prev * 3)
-    ]])
-    guard = 0
-    while not second:isDone() and guard < 10000 do
-        guard = guard + 1
+    local second = first:chain("lurek.thread.getChannel('__promise_result'):push((arg[1] or 0) * 3)")
+    while not second:isDone() do
     end
-    print("chain result = " .. tostring(second:result()))
+    local result = second:result()
+    local done = second:isDone()
+    thread_log("promise chain result=" .. tostring(result) .. " done=" .. tostring(done))
 end
 ```
 
@@ -815,9 +827,11 @@ LPromise:getError()
 
 ```lua
 do
-    local promise = lurek.thread.async("return 42")
-    promise:result()
-    print("error = " .. tostring(promise:getError()))
+    local promise = lurek.thread.async("lurek.thread.getChannel('__promise_result'):push(42)")
+    local done = promise:isDone()
+    local result = promise:result()
+    local error_message = promise:getError()
+    thread_log("promise done_before=" .. tostring(done) .. " result=" .. tostring(result) .. " error=" .. tostring(error_message))
 end
 ```
 
@@ -841,9 +855,11 @@ LPromise:isDone()
 
 ```lua
 do
-    local promise = lurek.thread.async("return 42")
-    promise:result()
-    print("done = " .. tostring(promise:isDone()))
+    local promise = lurek.thread.async("lurek.thread.getChannel('__promise_result'):push(42)")
+    local before = promise:isDone()
+    local result = promise:result()
+    local after = promise:isDone()
+    thread_log("promise isDone before=" .. tostring(before) .. " after=" .. tostring(after) .. " result=" .. tostring(result))
 end
 ```
 
@@ -868,8 +884,11 @@ LPromise:result()
 
 ```lua
 do
-    local promise = lurek.thread.async("return 42")
-    print("result = " .. tostring(promise:result()))
+    local promise = lurek.thread.async("lurek.thread.getChannel('__promise_result'):push(42)")
+    local type_name = promise:type()
+    local result = promise:result()
+    local done = promise:isDone()
+    thread_log("promise type=" .. type_name .. " result=" .. tostring(result) .. " done=" .. tostring(done))
 end
 ```
 
@@ -893,9 +912,11 @@ LPromise:type()
 
 ```lua
 do
-    local p = lurek.thread.async("return 42")
-    local t = p:type()
-    print("LPromise type:", t)
+    local promise = lurek.thread.async("lurek.thread.getChannel('__promise_result'):push(42)")
+    local type_name = promise:type()
+    local result = promise:result()
+    local done = promise:isDone()
+    thread_log("promise type=" .. type_name .. " result=" .. tostring(result) .. " done=" .. tostring(done))
 end
 ```
 
@@ -925,9 +946,11 @@ LPromise:typeOf(name)
 
 ```lua
 do
-    local p = lurek.thread.async("return 42")
-    local ok = p:typeOf("LPromise")
-    print("LPromise typeOf:", ok)
+    local promise = lurek.thread.async("lurek.thread.getChannel('__promise_result'):push(42)")
+    local is_promise = promise:typeOf("LPromise")
+    local result = promise:result()
+    local type_name = promise:type()
+    thread_log("promise typeOf=" .. tostring(is_promise) .. " result=" .. tostring(result) .. " type=" .. type_name)
 end
 ```
 
@@ -959,10 +982,11 @@ LThreadHandle:getError()
 
 ```lua
 do
-    local t = lurek.thread.newThread("return 1")
-    t:start()
-    t:wait()
-    print("LThreadHandle:getError = " .. tostring(t:getError()))
+    local thread = lurek.thread.newThread("return 1")
+    thread:start()
+    thread:wait()
+    local error_message = thread:getError()
+    thread_log("thread handle error=" .. tostring(error_message))
 end
 ```
 
@@ -986,9 +1010,12 @@ LThreadHandle:isRunning()
 
 ```lua
 do
-    local t = lurek.thread.newThread("return 1")
-    t:start()
-    print("LThreadHandle:isRunning = " .. tostring(t:isRunning()))
+    local thread = lurek.thread.newThread("return 1")
+    local before = thread:isRunning()
+    thread:start()
+    thread:wait()
+    local after = thread:isRunning()
+    thread_log("thread handle running before=" .. tostring(before) .. " after=" .. tostring(after))
 end
 ```
 
@@ -1012,9 +1039,11 @@ LThreadHandle:start(...)
 
 ```lua
 do
-    local t = lurek.thread.newThread("return 1")
-    t:start()
-    print("LThreadHandle:start ok")
+    local results = clear_named_channel("thread_handle_start")
+    local thread = lurek.thread.newThread([[lurek.thread.getChannel("thread_handle_start"):push("ok")]])
+    thread:start()
+    thread:wait()
+    thread_log("thread handle start pushed=" .. tostring(results:pop()))
 end
 ```
 
@@ -1032,10 +1061,11 @@ LThreadHandle:wait()
 
 ```lua
 do
-    local t = lurek.thread.newThread("return 1")
-    t:start()
-    t:wait()
-    print("LThreadHandle:wait ok")
+    local results = clear_named_channel("thread_handle_wait")
+    local thread = lurek.thread.newThread([[lurek.thread.getChannel("thread_handle_wait"):push(99)]])
+    thread:start()
+    thread:wait()
+    thread_log("thread handle wait result=" .. tostring(results:pop()))
 end
 ```
 
@@ -1068,17 +1098,11 @@ LThreadPool:collect()
 
 ```lua
 do
-    local pool = lurek.thread.newPool(2, [[
-        local input = lurek.thread.getChannel("__pool_input")
-        local output = lurek.thread.getChannel("__pool_output")
-        local value = input:demand(0.1)
-        if value then
-            output:push(value * 2)
-        end
-    ]])
+    local pool = make_worker_pool()
     pool:submit(10)
     pool:join(1.0)
-    print("collected = " .. tostring(pool:collect()))
+    local result = pool:collect()
+    thread_log("collect returned=" .. tostring(result))
 end
 ```
 
@@ -1102,17 +1126,11 @@ LThreadPool:getInputChannel()
 
 ```lua
 do
-    local pool = lurek.thread.newPool(2, [[
-        local input = lurek.thread.getChannel("__pool_input")
-        local output = lurek.thread.getChannel("__pool_output")
-        local value = input:demand(0.1)
-        if value then
-            output:push(value * 2)
-        end
-    ]])
-    local inCh = pool:getInputChannel()
-    print("input channel type = " .. inCh:type())
-    print("input bounded = " .. tostring(inCh:isBounded()))
+    local pool = make_worker_pool()
+    local input = pool:getInputChannel()
+    pool:submit(7)
+    local count = input:getCount()
+    thread_log("input channel type=" .. input:type() .. " count=" .. count)
 end
 ```
 
@@ -1136,17 +1154,12 @@ LThreadPool:getOutputChannel()
 
 ```lua
 do
-    local pool = lurek.thread.newPool(2, [[
-        local input = lurek.thread.getChannel("__pool_input")
-        local output = lurek.thread.getChannel("__pool_output")
-        local value = input:demand(0.1)
-        if value then
-            output:push(value * 2)
-        end
-    ]])
-    local outCh = pool:getOutputChannel()
-    print("output channel type = " .. outCh:type())
-    print("output count = " .. outCh:getCount())
+    local pool = make_worker_pool()
+    local output = pool:getOutputChannel()
+    pool:submit(5)
+    pool:join(1.0)
+    local preview = output:peek()
+    thread_log("output channel type=" .. output:type() .. " preview=" .. tostring(preview))
 end
 ```
 
@@ -1176,8 +1189,11 @@ LThreadPool:join(timeout)
 
 ```lua
 do
-    local pool = lurek.thread.newPool(2, "return nil")
-    print("join result = " .. tostring(pool:join(2.0)))
+    local pool = make_worker_pool()
+    pool:submit(8)
+    local joined = pool:join(2.0)
+    local collected = pool:collect()
+    thread_log("join result=" .. tostring(joined) .. " collected=" .. tostring(collected))
 end
 ```
 
@@ -1201,16 +1217,11 @@ LThreadPool:size()
 
 ```lua
 do
-    local pool = lurek.thread.newPool(3, [[
-        local input = lurek.thread.getChannel("__pool_input")
-        local output = lurek.thread.getChannel("__pool_output")
-        local value = input:demand(0.05)
-        if value then
-            output:push(value)
-        end
-    ]])
-    local sz = pool:size()
-    print("pool size = " .. sz)
+    local pool = make_worker_pool()
+    pool:submit(3)
+    local size = pool:size()
+    local input_count = pool:getInputChannel():getCount()
+    thread_log("thread pool size=" .. size .. " queued=" .. input_count)
 end
 ```
 
@@ -1234,17 +1245,11 @@ LThreadPool:submit(value)
 
 ```lua
 do
-    local pool = lurek.thread.newPool(2, [[
-        local input = lurek.thread.getChannel("__pool_input")
-        local output = lurek.thread.getChannel("__pool_output")
-        local value = input:demand(0.1)
-        if value then
-            output:push(value * 2)
-        end
-    ]])
+    local pool = make_worker_pool()
     pool:submit(10)
-    print("submitted one task")
-    print("input count = " .. pool:getInputChannel():getCount())
+    local queued = pool:getInputChannel():getCount()
+    local workers = pool:size()
+    thread_log("submit queued=" .. queued .. " workers=" .. workers)
 end
 ```
 
@@ -1268,16 +1273,11 @@ LThreadPool:type()
 
 ```lua
 do
-    local pool = lurek.thread.newPool(3, [[
-        local input = lurek.thread.getChannel("__pool_input")
-        local output = lurek.thread.getChannel("__pool_output")
-        local value = input:demand(0.05)
-        if value then
-            output:push(value)
-        end
-    ]])
-    local t = pool:type()
-    print("type = " .. t)
+    local pool = make_worker_pool()
+    pool:submit(3)
+    local type_name = pool:type()
+    local matches = pool:typeOf("LThreadPool")
+    thread_log("thread pool type=" .. type_name .. " size=" .. pool:size() .. " matches=" .. tostring(matches))
 end
 ```
 
@@ -1307,16 +1307,11 @@ LThreadPool:typeOf(name)
 
 ```lua
 do
-    local pool = lurek.thread.newPool(3, [[
-        local input = lurek.thread.getChannel("__pool_input")
-        local output = lurek.thread.getChannel("__pool_output")
-        local value = input:demand(0.05)
-        if value then
-            output:push(value)
-        end
-    ]])
-    local ok = pool:typeOf("LThreadPool")
-    print("typeOf = " .. tostring(ok))
+    local pool = make_worker_pool()
+    local matches = pool:typeOf("LThreadPool")
+    pool:submit(4)
+    local size = pool:size()
+    thread_log("thread pool typeOf LThreadPool=" .. tostring(matches) .. " size=" .. size)
 end
 ```
 

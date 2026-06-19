@@ -2,18 +2,11 @@
 
 ## Summary
 
-- The validator module provides static pre-runtime checks for Lua project quality.
-- It runs composable rules through a central validation engine.
-- Built-in checks cover API usage, import resolution, and asset path existence.
-- Violations include severity, location, identifier, and human-readable message.
-- Report models support filtering and summary views for large result sets.
-- Parallel execution support improves throughput on large script sets.
-- Single-thread fallback preserves predictable behavior in constrained environments.
-- TOML-defined rules support data-driven policy extension.
-- Lua-backed rule adapters support project-specific checks without engine rebuild.
-- The module performs static analysis only and does not execute scripts.
-
-This module is mostly self-contained inside the `Edge/Integration` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
+- The `validator` module is the content-checking surface for users who want assets, imports, and API usage to be verified as a structured workflow instead of informal manual review.
+- Rule types, execution policy, engine orchestration, and report structures work together so several validation checks can be run through one reusable framework.
+- That matters because a project often needs to catch different classes of mistakes, such as missing assets or invalid `lurek.*` usage, before those problems become runtime failures.
+- It is therefore useful for CI, local authoring passes, and package or mod checks.
+- Read it as the engine's validation coordinator. Individual rules know what they are checking, but `validator` owns how those rules are configured, executed, and reported.
 
 ## Functions
 
@@ -42,8 +35,11 @@ lurek.validator.newEngine(root)
 ```lua
 do
     local eng = lurek.validator.newEngine("content/examples")
-    print("lurek.validator.newEngine type=" .. type(eng))
-    print("rule count=" .. eng:ruleCount())
+    local before = eng:ruleCount()
+    eng:addApiRule()
+    example_print_log("lurek.validator.newEngine type=" .. type(eng))
+    example_print_log("rule count before=" .. before)
+    example_print_log("rule count after=" .. eng:ruleCount())
 end
 ```
 
@@ -74,8 +70,10 @@ lurek.validator.validate(path)
 ```lua
 do
     local report = lurek.validator.validate("content/examples")
-    print("lurek.validator.validate files_checked=" .. report.files_checked)
-    print("is_clean=" .. tostring(report.is_clean))
+    example_print_log("lurek.validator.validate files_checked=" .. report.files_checked)
+    example_print_log("errors=" .. report.error_count)
+    example_print_log("warnings=" .. report.warning_count)
+    example_print_log("is_clean=" .. tostring(report.is_clean))
 end
 ```
 
@@ -106,8 +104,10 @@ lurek.validator.validateFile(path)
 ```lua
 do
     local report = lurek.validator.validateFile("content/examples/math.lua")
-    print("lurek.validator.validateFile files_checked=" .. report.files_checked)
-    print("errors=" .. report.error_count)
+    example_print_log("lurek.validator.validateFile files_checked=" .. report.files_checked)
+    example_print_log("warnings=" .. report.warning_count)
+    example_print_log("errors=" .. report.error_count)
+    example_print_log("violations=" .. #report.violations)
 end
 ```
 
@@ -150,8 +150,12 @@ LValidationEngine:addApiRule()
 ```lua
 do
     local eng = lurek.validator.newEngine("content/examples")
+    local before = eng:ruleCount()
     eng:addApiRule()
-    print("LValidationEngine:addApiRule rules=" .. eng:ruleCount())
+    local report = eng:runFile("content/examples/math.lua")
+    example_print_log("LValidationEngine:addApiRule rules before=" .. before)
+    example_print_log("LValidationEngine:addApiRule rules after=" .. eng:ruleCount())
+    example_print_log("runFile warnings=" .. report.warning_count)
 end
 ```
 
@@ -176,8 +180,11 @@ LValidationEngine:addAssetRule(asset_root)
 ```lua
 do
     local eng = lurek.validator.newEngine("content/examples")
+    local before = eng:ruleCount()
     eng:addAssetRule("assets")
-    print("LValidationEngine:addAssetRule rules=" .. eng:ruleCount())
+    eng:addApiRule()
+    example_print_log("LValidationEngine:addAssetRule rules before=" .. before)
+    example_print_log("LValidationEngine:addAssetRule rules after=" .. eng:ruleCount())
 end
 ```
 
@@ -202,8 +209,11 @@ LValidationEngine:addImportRule(paths)
 ```lua
 do
     local eng = lurek.validator.newEngine("content/examples")
+    local before = eng:ruleCount()
     eng:addImportRule({ "content/examples", "library" })
-    print("LValidationEngine:addImportRule rules=" .. eng:ruleCount())
+    eng:addApiRule()
+    example_print_log("LValidationEngine:addImportRule rules before=" .. before)
+    example_print_log("LValidationEngine:addImportRule rules after=" .. eng:ruleCount())
 end
 ```
 
@@ -232,7 +242,10 @@ LValidationEngine:addPatternRule(id, pattern, message, severity)
 do
     local eng = lurek.validator.newEngine("content/examples")
     eng:addPatternRule("no_print", "print\\(", "Use lurek.log instead of print()", "warning")
-    print("LValidationEngine:addPatternRule rules=" .. eng:ruleCount())
+    local report = eng:runFile("content/examples/math.lua")
+    example_print_log("LValidationEngine:addPatternRule rules=" .. eng:ruleCount())
+    example_print_log("warnings=" .. report.warning_count)
+    example_print_log("violations=" .. #report.violations)
 end
 ```
 
@@ -260,7 +273,10 @@ LValidationEngine:addRequiredRule(id, pattern, message)
 do
     local eng = lurek.validator.newEngine("content/examples")
     eng:addRequiredRule("must_use_lurek", "lurek\\.", "Expected at least one lurek.* call")
-    print("LValidationEngine:addRequiredRule rules=" .. eng:ruleCount())
+    local report = eng:runFile("content/examples/math.lua")
+    example_print_log("LValidationEngine:addRequiredRule rules=" .. eng:ruleCount())
+    example_print_log("warnings=" .. report.warning_count)
+    example_print_log("violations=" .. #report.violations)
 end
 ```
 
@@ -286,7 +302,10 @@ LValidationEngine:loadTomlRules(path)
 do
     local eng = lurek.validator.newEngine("content/examples")
     eng:loadTomlRules("docs/templates/validator_rules.toml")
-    print("LValidationEngine:loadTomlRules rules=" .. eng:ruleCount())
+    local report = eng:runFile("content/examples/math.lua")
+    example_print_log("LValidationEngine:loadTomlRules rules=" .. eng:ruleCount())
+    example_print_log("warnings=" .. report.warning_count)
+    example_print_log("violations=" .. #report.violations)
 end
 ```
 
@@ -313,7 +332,9 @@ do
     local eng = lurek.validator.newEngine("content/examples")
     eng:addApiRule()
     eng:addAssetRule("assets")
-    print("LValidationEngine:ruleCount=" .. eng:ruleCount())
+    eng:addImportRule({ "content/examples", "library" })
+    example_print_log("LValidationEngine:ruleCount=" .. eng:ruleCount())
+    example_print_log("has multiple rules=" .. tostring(eng:ruleCount() >= 3))
 end
 ```
 
@@ -340,8 +361,8 @@ do
     local eng = lurek.validator.newEngine("content/examples")
     eng:addApiRule()
     local report = eng:run()
-    print("LValidationEngine:run files_checked=" .. report.files_checked)
-    print("violations=" .. #report.violations)
+    example_print_log("LValidationEngine:run files_checked=" .. report.files_checked)
+    example_print_log("violations=" .. #report.violations)
 end
 ```
 
@@ -374,8 +395,8 @@ do
     local eng = lurek.validator.newEngine("content/examples")
     eng:addApiRule()
     local report = eng:runFile("content/examples/math.lua")
-    print("LValidationEngine:runFile files_checked=" .. report.files_checked)
-    print("violations=" .. #report.violations)
+    example_print_log("LValidationEngine:runFile files_checked=" .. report.files_checked)
+    example_print_log("violations=" .. #report.violations)
 end
 ```
 

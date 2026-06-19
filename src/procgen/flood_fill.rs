@@ -17,14 +17,39 @@ pub fn flood_fill(
     threshold: u8,
     above: bool,
 ) -> Vec<u8> {
-    let size = (width * height) as usize;
+    try_flood_fill(
+        data,
+        width,
+        height,
+        sx,
+        sy,
+        threshold,
+        above,
+        &ProcgenLimits::default(),
+    )
+    .unwrap_or_default()
+}
+
+/// Flood-fill from `(sx, sy)` after validating the grid size and input length.
+#[allow(clippy::too_many_arguments)]
+pub fn try_flood_fill(
+    data: &[u8],
+    width: u32,
+    height: u32,
+    sx: u32,
+    sy: u32,
+    threshold: u8,
+    above: bool,
+    limits: &ProcgenLimits,
+) -> Result<Vec<u8>, ProcgenError> {
+    let size = checked_cell_count(width, height, limits)?;
     if data.len() != size {
-        return vec![0; size];
+        return Ok(vec![0; size]);
     }
     let mut result = vec![0u8; size];
     let start_idx = (sy * width + sx) as usize;
     if start_idx >= size {
-        return result;
+        return Ok(result);
     }
     let matches = |v: u8| -> bool {
         if above {
@@ -34,7 +59,7 @@ pub fn flood_fill(
         }
     };
     if !matches(data[start_idx]) {
-        return result;
+        return Ok(result);
     }
     let mut queue = std::collections::VecDeque::new();
     queue.push_back((sx, sy));
@@ -55,5 +80,6 @@ pub fn flood_fill(
             }
         }
     }
-    result
+    Ok(result)
 }
+use crate::procgen::{limits::checked_cell_count, ProcgenError, ProcgenLimits};

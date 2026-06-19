@@ -1,9 +1,12 @@
 //! Registers the `lurek.input` Lua API for key, mouse, and gamepad bindings, state queries, and axes.
 
 use super::SharedState;
+use crate::input::action_def::{canonicalize_action_bindings, InputBinding};
 use crate::input::combo::{ComboDetector, ComboStep};
 use crate::input::keyboard::{get_key_from_scancode, get_scancode_from_key};
-use crate::input::mouse::{is_cursor_supported, CursorKind, SystemCursor};
+use crate::input::mouse::{
+    is_cursor_supported, validate_cursor_image, CursorImageLimits, CursorKind, SystemCursor,
+};
 use crate::input::virtual_dpad;
 use crate::input::ActionDef;
 use mlua::prelude::*;
@@ -11,63 +14,73 @@ use mlua::Variadic;
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
-/// Parses a gamepad binding string in `gamepad:id:button` form.
-fn parse_gamepad_binding(binding: &str) -> Option<(usize, u32)> {
-    let mut parts = binding.split(':');
-    let prefix = parts.next()?;
-    if prefix != "gamepad" {
-        return None;
+
+fn parse_binding_list(function_name: &str, value: LuaValue) -> LuaResult<Vec<String>> {
+    let mut raw = Vec::new();
+    match value {
+        LuaValue::String(value) => {
+            raw.push(
+                value
+                    .to_str()
+                    .map_err(|e| LuaError::RuntimeError(e.to_string()))?
+                    .to_string(),
+            );
+        }
+        LuaValue::Table(values) => {
+            for item in values.sequence_values::<String>() {
+                raw.push(item?);
+            }
+        }
+        _ => {
+            return Err(LuaError::RuntimeError(format!(
+                "input.{function_name}: bindings must be a string or array of strings"
+            )))
+        }
     }
-    let id = parts.next()?.parse::<usize>().ok()?;
-    let button = parts.next()?.parse::<u32>().ok()?;
-    Some((id, button))
-}
-fn parse_mouse_binding(binding: &str) -> Option<usize> {
-    let binding = binding.trim().to_ascii_lowercase();
-    let button = binding.strip_prefix("mouse")?.parse::<usize>().ok()?;
-    (1..=5).contains(&button).then_some(button - 1)
+    canonicalize_action_bindings(raw)
+        .map_err(|e| LuaError::RuntimeError(format!("input.{function_name}: {e}")))
 }
 
 /// Returns whether a keyboard, mouse, or gamepad binding is currently down.
 fn binding_is_down(st: &SharedState, binding: &str) -> bool {
-    if let Some(button) = parse_mouse_binding(binding) {
-        return st.mouse.is_down(button);
-    }
-    if let Some((id, button)) = parse_gamepad_binding(binding) {
-        return st
+    match InputBinding::parse(binding) {
+        Ok(InputBinding::KeyboardKey(key)) => st.keyboard.is_down(&key),
+        Ok(InputBinding::Scancode(scancode)) => st.keyboard.is_scancode_down(&scancode),
+        Ok(InputBinding::MouseButton(button)) => st.mouse.is_down((button - 1) as usize),
+        Ok(InputBinding::GamepadButton { gamepad_id, button }) => st
             .gamepads
-            .get(id)
-            .is_some_and(|gp| gp.is_button_pressed(button));
+            .get(gamepad_id)
+            .is_some_and(|gp| gp.is_button_pressed(button)),
+        Ok(InputBinding::GamepadAxis { .. } | InputBinding::TouchGesture(_)) | Err(_) => false,
     }
-    st.keyboard.is_down(binding) || st.keyboard.is_scancode_down(binding)
 }
 /// Returns whether a keyboard, mouse, or gamepad binding was pressed this frame.
 fn binding_was_pressed(st: &SharedState, binding: &str) -> bool {
-    if let Some(button) = parse_mouse_binding(binding) {
-        return st.mouse.buttons_pressed[button];
-    }
-    if let Some((id, button)) = parse_gamepad_binding(binding) {
-        return st
+    match InputBinding::parse(binding) {
+        Ok(InputBinding::KeyboardKey(key)) => st.keyboard.get_pressed().iter().any(|k| k == &key),
+        Ok(InputBinding::Scancode(scancode)) => st.keyboard.was_scancode_pressed(&scancode),
+        Ok(InputBinding::MouseButton(button)) => st.mouse.buttons_pressed[(button - 1) as usize],
+        Ok(InputBinding::GamepadButton { gamepad_id, button }) => st
             .gamepads
-            .get(id)
-            .is_some_and(|gp| gp.was_button_pressed(button));
+            .get(gamepad_id)
+            .is_some_and(|gp| gp.was_button_pressed(button)),
+        Ok(InputBinding::GamepadAxis { .. } | InputBinding::TouchGesture(_)) | Err(_) => false,
     }
-    st.keyboard.get_pressed().iter().any(|k| k == binding)
-        || st.keyboard.was_scancode_pressed(binding)
 }
 /// Returns whether a keyboard, mouse, or gamepad binding was released this frame.
 fn binding_was_released(st: &SharedState, binding: &str) -> bool {
-    if let Some(button) = parse_mouse_binding(binding) {
-        return st.mouse.buttons_released[button];
-    }
-    if let Some((id, button)) = parse_gamepad_binding(binding) {
-        return st
+    match InputBinding::parse(binding) {
+        Ok(InputBinding::KeyboardKey(key)) => {
+            st.keyboard.get_released().iter().any(|k| k == &key)
+        }
+        Ok(InputBinding::Scancode(scancode)) => st.keyboard.was_scancode_released(&scancode),
+        Ok(InputBinding::MouseButton(button)) => st.mouse.buttons_released[(button - 1) as usize],
+        Ok(InputBinding::GamepadButton { gamepad_id, button }) => st
             .gamepads
-            .get(id)
-            .is_some_and(|gp| gp.was_button_released(button));
+            .get(gamepad_id)
+            .is_some_and(|gp| gp.was_button_released(button)),
+        Ok(InputBinding::GamepadAxis { .. } | InputBinding::TouchGesture(_)) | Err(_) => false,
     }
-    st.keyboard.get_released().iter().any(|k| k == binding)
-        || st.keyboard.was_scancode_released(binding)
 }
 /// Computes a -1/0/+1 axis value from an action's first two bindings; first binding is positive, second is negative.
 fn compute_axis(map: &HashMap<String, ActionDef>, st: &SharedState, action: &str) -> f32 {
@@ -502,13 +515,24 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 Option<u32>,
                 Option<u32>,
             )| {
+                let hotx = hotx.unwrap_or(0);
+                let hoty = hoty.unwrap_or(0);
+                validate_cursor_image(
+                    width,
+                    height,
+                    pixels.len(),
+                    hotx,
+                    hoty,
+                    CursorImageLimits::default(),
+                )
+                .map_err(|e| LuaError::RuntimeError(format!("input.mouse.newCursor: {e}")))?;
                 Ok(LuaCursor {
                     kind: CursorKind::Custom {
                         pixels,
                         width,
                         height,
-                        hotx: hotx.unwrap_or(0),
-                        hoty: hoty.unwrap_or(0),
+                        hotx,
+                        hoty,
                     },
                 })
             },
@@ -906,7 +930,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     gamepad.set(
         "setGamepadMapping",
         lua.create_function(move |_, (guid, mapping): (String, String)| {
-            s.borrow_mut().gamepad_mappings.set_mapping(&guid, &mapping);
+            s.borrow_mut()
+                .gamepad_mappings
+                .set_mapping(&guid, &mapping)
+                .map_err(|e| LuaError::RuntimeError(format!("input.gamepad.setGamepadMapping: {e}")))?;
             Ok(())
         })?,
     )?;
@@ -931,9 +958,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     gamepad.set(
         "loadGamepadMappings",
         lua.create_function(move |_, path: String| {
+            let fs = s.borrow().fs.clone();
             s.borrow_mut()
                 .gamepad_mappings
-                .load_from_file(&path)
+                .load_from_game_fs(&fs, &path)
                 .map_err(LuaError::external)
         })?,
     )?;
@@ -944,9 +972,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     gamepad.set(
         "saveGamepadMappings",
         lua.create_function(move |_, path: String| {
-            s.borrow()
-                .gamepad_mappings
-                .save_to_file(&path)
+            let st = s.borrow();
+            st.gamepad_mappings
+                .save_to_game_fs(&st.fs, &path)
                 .map_err(LuaError::external)?;
             Ok(())
         })?,
@@ -1049,31 +1077,13 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     input_tbl.set(
         "bind",
         lua.create_function(move |lua, (action, keys): (String, LuaValue)| {
+            let parsed = parse_binding_list("bind", keys)?;
             {
                 let mut map = am.borrow_mut();
                 let entry = map.entry(action.clone()).or_default();
-                match keys {
-                    LuaValue::String(s) => {
-                        let k = s
-                            .to_str()
-                            .map_err(|e| LuaError::RuntimeError(e.to_string()))?
-                            .to_string();
-                        if !entry.bindings.contains(&k) {
-                            entry.bindings.push(k);
-                        }
-                    }
-                    LuaValue::Table(t) => {
-                        for pair in t.sequence_values::<String>() {
-                            let k = pair?;
-                            if !entry.bindings.contains(&k) {
-                                entry.bindings.push(k);
-                            }
-                        }
-                    }
-                    _ => {
-                        return Err(LuaError::RuntimeError(
-                            "input.bind: keys must be a string or array of strings".into(),
-                        ))
+                for binding in parsed {
+                    if !entry.bindings.contains(&binding) {
+                        entry.bindings.push(binding);
                     }
                 }
             }
@@ -1113,31 +1123,13 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     input_tbl.set(
         "newMapping",
         lua.create_function(move |lua, (name, keys): (String, LuaValue)| {
+            let parsed = parse_binding_list("newMapping", keys)?;
             {
                 let mut map = am.borrow_mut();
                 let entry = map.entry(name.clone()).or_default();
-                match keys {
-                    LuaValue::String(s) => {
-                        let k = s
-                            .to_str()
-                            .map_err(|e| LuaError::RuntimeError(e.to_string()))?
-                            .to_string();
-                        if !entry.bindings.contains(&k) {
-                            entry.bindings.push(k);
-                        }
-                    }
-                    LuaValue::Table(t) => {
-                        for pair in t.sequence_values::<String>() {
-                            let k = pair?;
-                            if !entry.bindings.contains(&k) {
-                                entry.bindings.push(k);
-                            }
-                        }
-                    }
-                    _ => {
-                        return Err(LuaError::RuntimeError(
-                            "input.newMapping: keys must be a string or array of strings".into(),
-                        ))
+                for binding in parsed {
+                    if !entry.bindings.contains(&binding) {
+                        entry.bindings.push(binding);
                     }
                 }
             }
@@ -1337,29 +1329,12 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         lua.create_function(
             move |lua, (name, keys, cat): (String, LuaValue, Option<String>)| {
                 let category = cat.unwrap_or_default();
-                let mut parsed: Vec<String> = Vec::new();
-                match keys {
-                    LuaValue::String(s) => {
-                        parsed.push(
-                            s.to_str()
-                                .map_err(|e| LuaError::RuntimeError(e.to_string()))?
-                                .to_string(),
-                        );
-                    }
-                    LuaValue::Table(t) => {
-                        for pair in t.sequence_values::<String>() {
-                            parsed.push(pair?);
-                        }
-                    }
-                    _ => {
-                        return Err(LuaError::RuntimeError(
-                            "input.define: bindings must be a string or array of strings".into(),
-                        ))
-                    }
-                }
+                let parsed = parse_binding_list("define", keys)?;
                 {
                     let mut map = am.borrow_mut();
-                    map.insert(name.clone(), ActionDef::new(parsed, category));
+                    let def = ActionDef::new(parsed, category)
+                        .map_err(|e| LuaError::RuntimeError(format!("input.define: {e}")))?;
+                    map.insert(name.clone(), def);
                 }
                 let new_keys = am
                     .borrow()
@@ -1485,8 +1460,17 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     input_tbl.set(
         "deserializeBindings",
         lua.create_function(move |lua, json: String| {
-            let new_map: HashMap<String, ActionDef> = serde_json::from_str(&json)
+            let raw_map: HashMap<String, ActionDef> = serde_json::from_str(&json)
                 .map_err(|e| LuaError::RuntimeError(format!("input.deserializeBindings: {e}")))?;
+            let mut new_map = HashMap::with_capacity(raw_map.len());
+            for (action, def) in raw_map {
+                let canonical = def.canonicalize().map_err(|e| {
+                    LuaError::RuntimeError(format!(
+                        "input.deserializeBindings: action '{action}': {e}"
+                    ))
+                })?;
+                new_map.insert(action, canonical);
+            }
             let actions: Vec<String> = new_map.keys().cloned().collect();
             {
                 let mut map = am.borrow_mut();
@@ -1692,12 +1676,14 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | table | Array of event records with `kind` and `name` fields.
     /// @field | kind | string | Event kind (press, release, hold).
     /// @field | name | string | Event name.
+    /// @field | mouse_x | number? | Replayed mouse X coordinate for this frame when recorded.
+    /// @field | mouse_y | number? | Replayed mouse Y coordinate for this frame when recorded.
     input_tbl.set(
         "advancePlayback",
         lua.create_function(move |lua, ()| {
-            let events = rc.borrow_mut().playback_frame();
+            let frame = rc.borrow_mut().playback_frame();
             let tbl = lua.create_table()?;
-            for (i, ev) in events.iter().enumerate() {
+            for (i, ev) in frame.key_events.iter().enumerate() {
                 let etbl = lua.create_table()?;
                 /// Performs the 'kind' operation.
                 etbl.set("kind", ev.kind.clone())?;
@@ -1705,6 +1691,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 etbl.set("name", ev.name.clone())?;
                 tbl.set(i + 1, etbl)?;
             }
+            tbl.set("mouse_x", frame.mouse_x)?;
+            tbl.set("mouse_y", frame.mouse_y)?;
             Ok(tbl)
         })?,
     )?;

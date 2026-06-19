@@ -2,16 +2,11 @@
 
 ## Summary
 
-- The event module provides a central messaging layer so systems can communicate without tight coupling.
-- Priority-aware queueing lets critical events run ahead of routine traffic when timing matters.
-- Deferred push paths help schedule cross-frame dispatch cleanly.
-- Signal subscriptions support exact names and wildcard patterns for flexible event routing.
-- Listener lifecycle controls keep registration and cleanup explicit.
-- Optional history retention helps trace event flow during debugging.
-- Rust-Lua marshalling keeps payload transfer practical across the boundary.
-- The module delivers deterministic, inspectable runtime event orchestration.
-
-This module primarily collaborates with `runtime`. Its responsibility should stay inside the Core Runtime group rather than absorb behavior owned by those neighbors.
+- The `event` module is the central message-routing layer for users who want runtime systems to communicate without hardwiring direct dependencies.
+- Queues, priorities, listeners, signals, and deferred dispatch work together so gameplay, input, and tooling events can move through one predictable channel.
+- Wildcard-style subscriptions and explicit listener lifecycle management make the bus practical for both large subsystems and small script integrations.
+- History and Rust-Lua payload transfer matter because the module is not only about dispatch, but also about making that dispatch inspectable and usable across the engine boundary.
+- Read it as the shared traffic system for runtime messages.
 
 ## Functions
 
@@ -27,9 +22,12 @@ lurek.event.clear()
 
 ```lua
 do
+    reset_event_state()
     lurek.event.push("discard_me", 1)
+    lurek.event.push("discard_me_too", 2)
     lurek.event.clear()
-    print("queue cleared")
+    local events = collect_polled_events()
+    event_log("clear remaining=" .. tostring(#events) .. " queue_cleared=" .. tostring(#events == 0))
 end
 ```
 
@@ -47,8 +45,14 @@ lurek.event.clearHistory()
 
 ```lua
 do
+    reset_event_state()
+    lurek.event.enableHistory(4)
+    lurek.event.push("histA", 1)
+    lurek.event.push("histB", 2)
+    local before = #lurek.event.getHistory()
     lurek.event.clearHistory()
-    print("history cleared")
+    local after = #lurek.event.getHistory()
+    event_log("clearHistory before=" .. tostring(before) .. " after=" .. tostring(after))
 end
 ```
 
@@ -72,8 +76,12 @@ lurek.event.enableHistory(capacity)
 
 ```lua
 do
-    lurek.event.enableHistory(100)
-    print("history enabled, capacity = 100")
+    reset_event_state()
+    lurek.event.enableHistory(2)
+    lurek.event.push("score", 100)
+    lurek.event.push("score", 200)
+    local history = lurek.event.getHistory()
+    event_log("enableHistory capacity=2 entries=" .. tostring(#history) .. " latest=" .. tostring(history[#history] and history[#history].args[1]))
 end
 ```
 
@@ -97,8 +105,12 @@ lurek.event.exit(code)
 
 ```lua
 do
-    print("exit function available = " .. tostring(type(lurek.event.exit) == "function"))
-    print("exit(code) requests shutdown, so this example does not call it")
+    reset_event_state()
+    lurek.event.enableHistory(2)
+    lurek.event.push("menu_action", "exit_requested")
+    local callable = type(lurek.event.exit) == "function"
+    local history = lurek.event.getHistory()
+    event_log("exit callable=" .. tostring(callable) .. " note=not_called entries=" .. tostring(#history) .. " action=" .. tostring(history[1] and history[1].args[1]))
 end
 ```
 
@@ -122,10 +134,13 @@ lurek.event.flushDeferred()
 
 ```lua
 do
-    lurek.event.pushDeferred("a", 1)
-    lurek.event.pushDeferred("b", 2)
-    local count = lurek.event.flushDeferred()
-    print("flushed " .. count .. " deferred events")
+    reset_event_state()
+    lurek.event.pushDeferred("scene_ready", "hangar")
+    lurek.event.pushDeferred("music_cue", "boss_intro")
+    local moved = lurek.event.flushDeferred()
+    local events = collect_polled_events()
+    local last = events[#events] and events[#events].name or "none"
+    event_log("flushDeferred moved=" .. tostring(moved) .. " count=" .. tostring(#events) .. " last=" .. last)
 end
 ```
 
@@ -149,13 +164,13 @@ lurek.event.getHistory()
 
 ```lua
 do
-    lurek.event.enableHistory(50)
-    lurek.event.push("score", 999)
+    reset_event_state()
+    lurek.event.enableHistory(4)
+    lurek.event.push("score", 999, "gold")
     local history = lurek.event.getHistory()
-    print("history entries = " .. #history)
-    if history[1] then
-        print("latest name = " .. tostring(history[#history].name))
-    end
+    local first = history[1]
+    local arg_count = first and #first.args or 0
+    event_log("getHistory entries=" .. tostring(#history) .. " name=" .. tostring(first and first.name) .. " arg_count=" .. tostring(arg_count))
 end
 ```
 
@@ -180,7 +195,10 @@ lurek.event.newSignal()
 ```lua
 do
     local sig = lurek.event.newSignal()
-    print("signal type = " .. sig:type())
+    local type_name = sig:type()
+    local total = sig:getTotalCount()
+    local is_signal = sig:typeOf("LSignal")
+    event_log("newSignal type=" .. type_name .. " total=" .. tostring(total) .. " is_signal=" .. tostring(is_signal))
 end
 ```
 
@@ -204,11 +222,13 @@ lurek.event.poll()
 
 ```lua
 do
-    lurek.event.push("test_event", 42)
-    local next_event = lurek.event.poll()
-    for name, a1 in next_event do
-        print("polled: " .. name .. " arg=" .. tostring(a1))
-    end
+    reset_event_state()
+    lurek.event.push("ev1", 10)
+    lurek.event.push("ev2", 20)
+    local events = collect_polled_events()
+    local first = events[1]
+    local second = events[2]
+    event_log("poll first=" .. tostring(first and first.name) .. ":" .. tostring(first and first.args[1]) .. " second=" .. tostring(second and second.name) .. ":" .. tostring(second and second.args[1]))
 end
 ```
 
@@ -226,8 +246,12 @@ lurek.event.pump()
 
 ```lua
 do
+    reset_event_state()
+    lurek.event.push("hud_refresh", "health_bar")
     lurek.event.pump()
-    print("pumped")
+    local events = collect_polled_events()
+    local first = events[1] and events[1].name or "none"
+    event_log("pump remaining=" .. tostring(#events) .. " first=" .. first .. " callable=" .. tostring(type(lurek.event.pump) == "function"))
 end
 ```
 
@@ -252,9 +276,12 @@ lurek.event.push(name, ...)
 
 ```lua
 do
-    lurek.event.push("player_hit", 25)
-    print("pushed 'player_hit' event")
-    print("push function type = " .. type(lurek.event.push))
+    reset_event_state()
+    lurek.event.push("player_hit", 25, "critical")
+    local events = collect_polled_events()
+    local first = events[1]
+    local count = #events
+    event_log("push count=" .. tostring(count) .. " name=" .. tostring(first and first.name) .. " damage=" .. tostring(first and first.args[1]) .. " tag=" .. tostring(first and first.args[2]))
 end
 ```
 
@@ -279,9 +306,12 @@ lurek.event.pushDeferred(name, ...)
 
 ```lua
 do
+    reset_event_state()
     lurek.event.pushDeferred("scene_ready", "main_menu")
-    print("deferred 'scene_ready'")
-    print("deferred helper type = " .. type(lurek.event.pushDeferred))
+    local before = collect_polled_events()
+    local moved = lurek.event.flushDeferred()
+    local after = collect_polled_events()
+    event_log("pushDeferred before=" .. tostring(#before) .. " moved=" .. tostring(moved) .. " after=" .. tostring(#after) .. " name=" .. tostring(after[1] and after[1].name))
 end
 ```
 
@@ -307,9 +337,12 @@ lurek.event.pushDeferredPriority(name, priority, ...)
 
 ```lua
 do
-    lurek.event.pushDeferredPriority("system_alert", "high", "low battery")
-    print("deferred high-priority 'system_alert'")
-    print("deferred priority helper type = " .. type(lurek.event.pushDeferredPriority))
+    reset_event_state()
+    lurek.event.pushDeferred("normal_deferred", "slow")
+    lurek.event.pushDeferredPriority("high_deferred", "high", "fast")
+    local moved = lurek.event.flushDeferred()
+    local events = collect_polled_events()
+    event_log("pushDeferredPriority moved=" .. tostring(moved) .. " first=" .. tostring(events[1] and events[1].name) .. " second=" .. tostring(events[2] and events[2].name))
 end
 ```
 
@@ -335,9 +368,13 @@ lurek.event.pushPriority(name, priority, ...)
 
 ```lua
 do
-    lurek.event.pushPriority("critical_error", "high", "out of memory")
-    print("pushed high-priority event")
-    print("priority helper ready = " .. tostring(type(lurek.event.pushPriority) == "function"))
+    reset_event_state()
+    lurek.event.push("normal_evt", 1)
+    lurek.event.pushPriority("high_evt", "high", 2)
+    local events = collect_polled_events()
+    local first = events[1] and events[1].name or "none"
+    local second = events[2] and events[2].name or "none"
+    event_log("pushPriority first=" .. first .. " second=" .. second .. " count=" .. tostring(#events))
 end
 ```
 
@@ -355,8 +392,12 @@ lurek.event.quit()
 
 ```lua
 do
-    print("quit function available = " .. tostring(type(lurek.event.quit) == "function"))
-    print("quit() requests shutdown, so this example does not call it")
+    reset_event_state()
+    lurek.event.enableHistory(2)
+    lurek.event.push("menu_action", "quit_requested")
+    local callable = type(lurek.event.quit) == "function"
+    local history = lurek.event.getHistory()
+    event_log("quit callable=" .. tostring(callable) .. " note=not_called entries=" .. tostring(#history) .. " action=" .. tostring(history[1] and history[1].args[1]))
 end
 ```
 
@@ -374,8 +415,12 @@ lurek.event.restart()
 
 ```lua
 do
-    print("restart function available = " .. tostring(type(lurek.event.restart) == "function"))
-    print("restart() requests a runtime restart, so this example does not call it")
+    reset_event_state()
+    lurek.event.enableHistory(2)
+    lurek.event.push("menu_action", "restart_requested")
+    local callable = type(lurek.event.restart) == "function"
+    local history = lurek.event.getHistory()
+    event_log("restart callable=" .. tostring(callable) .. " note=not_called entries=" .. tostring(#history) .. " action=" .. tostring(history[1] and history[1].args[1]))
 end
 ```
 
@@ -407,13 +452,11 @@ lurek.event.wait(timeout)
 
 ```lua
 do
+    reset_event_state()
+    local timed_out, empty_name, empty_args = lurek.event.wait(0.01)
     lurek.event.push("wake_up", "now")
-    local ok, name, args = lurek.event.wait(0.1)
-    print(ok and ("received: " .. name) or "timed out")
-    if ok then
-        print("arg count = " .. #args)
-        print("first arg = " .. tostring(args[1]))
-    end
+    local ok, name, args = lurek.event.wait(0)
+    event_log("wait timeout=" .. tostring(timed_out) .. " empty=" .. tostring(empty_name) .. "/" .. tostring(#empty_args) .. " ok=" .. tostring(ok) .. " name=" .. tostring(name) .. " arg=" .. tostring(args[1]))
 end
 ```
 
@@ -468,10 +511,13 @@ LSignal:clear(name)
 ```lua
 do
     local sig = lurek.event.newSignal()
-    sig:connect("update", function() end)
-    sig:connect("update", function() end)
-    local count = sig:clear("update")
-    print("cleared " .. count .. " callbacks")
+    sig:connect("click", function() end)
+    sig:connect("click", function() end)
+    sig:connect("hover", function() end)
+    local removed = sig:clear("click")
+    local clicks = sig:getCount("click")
+    local hover = sig:getCount("hover")
+    event_log("clear removed=" .. tostring(removed) .. " clicks=" .. tostring(clicks) .. " hover=" .. tostring(hover))
 end
 ```
 
@@ -498,8 +544,11 @@ do
     local sig = lurek.event.newSignal()
     sig:connect("a", function() end)
     sig:connect("b", function() end)
-    local count = sig:clearAll()
-    print("cleared all: " .. count)
+    sig:connect("b", function() end)
+    local before = sig:getTotalCount()
+    local removed = sig:clearAll()
+    local after = sig:getTotalCount()
+    event_log("clearAll before=" .. tostring(before) .. " removed=" .. tostring(removed) .. " after=" .. tostring(after))
 end
 ```
 
@@ -531,10 +580,11 @@ LSignal:connect(name, func)
 ```lua
 do
     local sig = lurek.event.newSignal()
-    local handle = sig:connect("damage", function(amount)
-        print("took " .. tostring(amount) .. " damage")
-    end)
-    print("connected, handle = " .. handle)
+    local seen = "none"
+    local handle = sig:connect("player.*", function(kind) seen = kind end)
+    sig:emit("player.jump", "jump")
+    local count = sig:getCount("player.*")
+    event_log("connect handle=" .. tostring(handle) .. " seen=" .. seen .. " count=" .. tostring(count))
 end
 ```
 
@@ -566,10 +616,11 @@ LSignal:emit(name, ...)
 ```lua
 do
     local sig = lurek.event.newSignal()
-    sig:connect("greet", function(name)
-        print("hello " .. tostring(name))
-    end)
-    sig:emit("greet", "world")
+    local received_a = nil
+    local received_b = nil
+    sig:connect("ping", function(a, b) received_a = a; received_b = b end)
+    sig:emit("ping", 4, "ok")
+    event_log("emit a=" .. tostring(received_a) .. " b=" .. tostring(received_b) .. " total=" .. tostring(sig:getTotalCount()))
 end
 ```
 
@@ -600,9 +651,13 @@ LSignal:getCount(name)
 ```lua
 do
     local sig = lurek.event.newSignal()
-    sig:connect("tick", function() end)
-    sig:connect("tick", function() end)
-    print("tick count = " .. sig:getCount("tick"))
+    sig:register("click", function() end)
+    sig:register("click", function() end)
+    sig:register("hover", function() end)
+    local clicks = sig:getCount("click")
+    local hover = sig:getCount("hover")
+    local missing = sig:getCount("missing")
+    event_log("getCount clicks=" .. tostring(clicks) .. " hover=" .. tostring(hover) .. " missing=" .. tostring(missing))
 end
 ```
 
@@ -627,10 +682,12 @@ LSignal:getTotalCount()
 ```lua
 do
     local sig = lurek.event.newSignal()
-    sig:connect("a", function() end)
-    sig:connect("b", function() end)
-    sig:connect("b", function() end)
-    print("total = " .. sig:getTotalCount())
+    sig:register("a", function() end)
+    sig:register("b", function() end)
+    sig:register("b", function() end)
+    local total = sig:getTotalCount()
+    local clicks = sig:getCount("a")
+    event_log("getTotalCount total=" .. tostring(total) .. " a=" .. tostring(clicks) .. " b=" .. tostring(sig:getCount("b")))
 end
 ```
 
@@ -662,10 +719,12 @@ LSignal:once(name, callback)
 ```lua
 do
     local sig = lurek.event.newSignal()
-    local handle = sig:once("init", function()
-        print("initialized (fires once)")
-    end)
-    print("once handle = " .. handle)
+    local count = 0
+    local handle = sig:once("init", function() count = count + 1 end)
+    sig:emit("init")
+    sig:emit("init")
+    local remaining = sig:getCount("init")
+    event_log("once handle=" .. tostring(handle) .. " count=" .. tostring(count) .. " remaining=" .. tostring(remaining))
 end
 ```
 
@@ -697,10 +756,11 @@ LSignal:register(name, callback)
 ```lua
 do
     local sig = lurek.event.newSignal()
-    local handle = sig:register("heal", function(amount)
-        print("healed " .. tostring(amount))
-    end)
-    print("registered, handle = " .. handle)
+    local total = 0
+    local handle = sig:register("heal", function(amount) total = total + amount end)
+    sig:emit("heal", 15)
+    local count = sig:getCount("heal")
+    event_log("register handle=" .. tostring(handle) .. " total=" .. tostring(total) .. " count=" .. tostring(count))
 end
 ```
 
@@ -733,12 +793,11 @@ LSignal:registerWithFilter(name, callback, filter)
 ```lua
 do
     local sig = lurek.event.newSignal()
-    local handle = sig:registerWithFilter("hit", function(dmg)
-        print("critical hit: " .. tostring(dmg))
-    end, function(dmg)
-        return dmg > 50
-    end)
-    print("registered with filter, handle = " .. handle)
+    local hits = 0
+    local handle = sig:registerWithFilter("hit", function(dmg) hits = hits + dmg end, function(dmg) return dmg > 50 end)
+    sig:emit("hit", 10)
+    sig:emit("hit", 75)
+    event_log("registerWithFilter handle=" .. tostring(handle) .. " hits=" .. tostring(hits) .. " total=" .. tostring(sig:getTotalCount()))
 end
 ```
 
@@ -769,9 +828,13 @@ LSignal:remove(handle)
 ```lua
 do
     local sig = lurek.event.newSignal()
-    local h = sig:connect("tick", function() end)
-    local removed = sig:remove(h)
-    print("removed = " .. tostring(removed))
+    local count_a = 0
+    local count_b = 0
+    local handle_a = sig:connect("tick", function() count_a = count_a + 1 end)
+    sig:connect("tick", function() count_b = count_b + 1 end)
+    local removed = sig:remove(handle_a)
+    sig:emit("tick")
+    event_log("remove removed=" .. tostring(removed) .. " count_a=" .. tostring(count_a) .. " count_b=" .. tostring(count_b) .. " remaining=" .. tostring(sig:getCount("tick")))
 end
 ```
 
@@ -796,7 +859,10 @@ LSignal:type()
 ```lua
 do
     local sig = lurek.event.newSignal()
-    print("type = " .. sig:type())
+    local type_name = sig:type()
+    local total = sig:getTotalCount()
+    local is_signal = sig:typeOf("LSignal")
+    event_log("type name=" .. type_name .. " total=" .. tostring(total) .. " is_signal=" .. tostring(is_signal))
 end
 ```
 
@@ -827,7 +893,10 @@ LSignal:typeOf(name)
 ```lua
 do
     local sig = lurek.event.newSignal()
-    print("is Signal = " .. tostring(sig:typeOf("LSignal")))
+    local is_signal = sig:typeOf("LSignal")
+    local is_object = sig:typeOf("LObject")
+    local is_entity = sig:typeOf("LEntity")
+    event_log("typeOf signal=" .. tostring(is_signal) .. " object=" .. tostring(is_object) .. " entity=" .. tostring(is_entity))
 end
 ```
 

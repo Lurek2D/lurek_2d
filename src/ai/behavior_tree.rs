@@ -5,6 +5,7 @@
 //! Provides the control-flow boundary between authored hierarchical behavior logic and runtime execution state.
 //! Open this owner when branching policy, decorator semantics, or tree reset behavior needs coordinated revision.
 
+use crate::ai::validation::{AiValidationLimits, validate_count, validate_depth};
 use mlua::RegistryKey;
 /// Execution result produced by a behavior-tree node or whole tree.
 #[derive(Debug, Clone, PartialEq)]
@@ -177,6 +178,10 @@ pub struct BehaviorTree {
     pub root: Option<BTNode>,
     /// Result returned by the last completed tick.
     pub last_status: BTStatus,
+    /// Shared safety limits for tree shape validation and guarded debug traversal.
+    pub limits: AiValidationLimits,
+    /// Last tree-shape validation error produced by strict root updates.
+    pub last_validation_error: Option<String>,
 }
 impl BehaviorTree {
     /// Create an empty tree with `last_status` initialised to `Success`.
@@ -184,7 +189,21 @@ impl BehaviorTree {
         Self {
             root: None,
             last_status: BTStatus::Success,
+            limits: AiValidationLimits::default(),
+            last_validation_error: None,
         }
+    }
+
+    /// Replace the root after validating node count and depth against shared limits.
+    pub fn set_root_checked(&mut self, root: BTNode) -> Result<(), String> {
+        if let Err(err) = validate_tree_shape(&root, &self.limits) {
+            let message = err.to_string();
+            self.last_validation_error = Some(message.clone());
+            return Err(message);
+        }
+        self.last_validation_error = None;
+        self.root = Some(root);
+        Ok(())
     }
 }
 /// `Default` delegates to `BehaviorTree::new`.
@@ -194,36 +213,70 @@ impl Default for BehaviorTree {
         Self::new()
     }
 }
-/// Count all nodes in a subtree recursively, including the root node.
-fn count_bt_nodes(node: &BTNode) -> usize {
-    1 + match node {
-        BTNode::Selector { children, .. }
-        | BTNode::Sequence { children, .. }
-        | BTNode::Parallel { children, .. } => children.iter().map(count_bt_nodes).sum(),
-        BTNode::Inverter { child } | BTNode::Succeeder { child } | BTNode::Guard { child, .. } => {
-            count_bt_nodes(child)
-        }
-        BTNode::Repeater { child, .. } => count_bt_nodes(child),
-        BTNode::Action { .. } | BTNode::Condition { .. } => 0,
-    }
-}
 /// Debug summary containing node count and the last resolved tree status.
 pub struct BtDebugState {
     /// Total node count in the associated tree.
     pub node_count: usize,
+    /// Maximum tree depth reached during guarded traversal.
+    pub max_depth: usize,
     /// String form of the last tick status.
     pub last_status: String,
+    /// Whether guarded traversal hit a configured node or depth limit.
+    pub limit_exceeded: bool,
 }
 impl BehaviorTree {
     /// Build a `BtDebugState` snapshot from the current tree shape and status.
     pub fn debug_state(&self) -> BtDebugState {
-        let node_count = match &self.root {
-            Some(root) => count_bt_nodes(root),
-            None => 0,
+        let (node_count, max_depth, limit_exceeded) = match &self.root {
+            Some(root) => guarded_tree_summary(root, &self.limits),
+            None => (0, 0, false),
         };
         BtDebugState {
             node_count,
+            max_depth,
             last_status: self.last_status.as_str().to_string(),
+            limit_exceeded,
         }
     }
+}
+
+fn validate_tree_shape(node: &BTNode, limits: &AiValidationLimits) -> Result<(), crate::ai::AiError> {
+    let (node_count, max_depth, limit_exceeded) = guarded_tree_summary(node, limits);
+    validate_count("behavior tree nodes", node_count, limits.max_bt_nodes)?;
+    validate_depth("behavior tree", max_depth, limits.max_bt_depth)?;
+    if limit_exceeded {
+        return Err(crate::ai::AiError::InvalidConfig {
+            context: "behavior tree",
+            detail: "guarded traversal reported a limit breach".to_string(),
+        });
+    }
+    Ok(())
+}
+
+fn guarded_tree_summary(node: &BTNode, limits: &AiValidationLimits) -> (usize, usize, bool) {
+    let mut stack = vec![(node, 1usize)];
+    let mut node_count = 0usize;
+    let mut max_depth = 0usize;
+    while let Some((node, depth)) = stack.pop() {
+        node_count += 1;
+        max_depth = max_depth.max(depth);
+        if node_count > limits.max_bt_nodes || depth > limits.max_bt_depth {
+            return (node_count, max_depth, true);
+        }
+        match node {
+            BTNode::Selector { children, .. }
+            | BTNode::Sequence { children, .. }
+            | BTNode::Parallel { children, .. } => {
+                for child in children.iter().rev() {
+                    stack.push((child, depth + 1));
+                }
+            }
+            BTNode::Inverter { child }
+            | BTNode::Repeater { child, .. }
+            | BTNode::Succeeder { child }
+            | BTNode::Guard { child, .. } => stack.push((child, depth + 1)),
+            BTNode::Action { .. } | BTNode::Condition { .. } => {}
+        }
+    }
+    (node_count, max_depth, false)
 }

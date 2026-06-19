@@ -2,29 +2,15 @@
 
 ## Summary
 
-- Gives users a dense numeric workspace for array-heavy gameplay, simulation, AI, and analysis tasks.
-- Exposes multidimensional arrays that make matrix and tensor-like logic practical from Lua.
-- Supports common constructors and shape operations so data pipelines start quickly and stay explicit.
-- Enables element-wise arithmetic, comparisons, reductions, and logical transforms for fast feature engineering.
-- Provides in-place operations for performance-sensitive loops where allocation churn must stay low.
-- Includes axis-aware aggregates for summarizing large datasets without custom iteration code.
-- Supports linear algebra workflows for transforms, constraints, and solver-driven mechanics.
-- Offers matrix decomposition and linear-system tools useful in optimization and simulation scenarios.
-- Adds eigen and vector utilities for directional analysis and advanced math features.
-- Includes FFT and inverse FFT paths for spectral analysis, rhythm tools, and signal-oriented gameplay.
-- Provides convolution and Sobel operations for image-like or grid-based processing.
-- Supports morphology and flood-fill style operations for map processing and mask refinement tasks.
-- Delivers histogram, percentile, z-score, and correlation analytics for telemetry and balancing.
-- Gives one pipeline from raw numeric data to derived insights without leaving engine runtime.
-- Supports configurable parallel thresholds so heavy workloads can scale better on larger inputs.
-- Helps teams avoid reimplementing math kernels in ad-hoc Lua loops.
-- Acts as the user-facing compute backbone for projects that need more than scalar scripting.
-- Balances high-level ergonomics with deterministic behavior required by tests and reproducible runs.
-- Bridges gameplay scripting and scientific-style data operations in one cohesive module surface.
-- Improves iteration speed by keeping experimentation, diagnostics, and math-heavy logic in-engine.
-- Serves as the practical foundation for data-driven systems that depend on robust numeric primitives.
-
-This module is mostly self-contained inside the Foundations group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
+- The `compute` module is the dense numeric workspace for users who want array-heavy processing, analysis, and transformation logic inside the engine.
+- Multidimensional arrays, element-wise operations, reductions, and in-place math make it practical to treat data as a structured computation surface instead of hand-written Lua loops over raw tables.
+- Linear algebra, decompositions, and solver-style helpers extend that into simulation, optimization, and transform-oriented workloads where matrix logic must stay explicit and reusable.
+- FFT, convolution, morphology, spatial processing, and statistics push the module beyond generic arithmetic, so image-like grids, signal data, and analytics pipelines can all live under one API surface.
+- Parallel thresholds and typed operations matter from a user perspective because the same script-facing module can scale from quick experimentation to heavier numeric workloads without changing conceptual models.
+- The module is also a useful bridge for neighboring numeric systems such as image processing, signal work, procedural analysis, and learning-oriented workloads because they often need dense arrays before they need a more specialized domain API.
+- Deterministic typed array behavior matters for tooling and tests as much as for performance. Users can prototype a transform interactively and still keep the same operations reproducible enough for validation or batch workflows.
+- This gives the engine a practical middle layer between generic Lua tables and fully specialized numeric subsystems.
+- Read `compute` as the engine feature that turns numerical data processing into a first-class runtime capability rather than an external preprocessing step.
 
 ## Functions
 
@@ -56,8 +42,11 @@ lurek.compute.affine2d(tx, ty, angle_rad, sx, sy)
 
 ```lua
 do
-    local m = lurek.compute.affine2d(10, 20, 0, 1, 1)
-    print("affine tx=10 ty=20, [1,3] = " .. m:get(1, 3))
+    local camera_move = lurek.compute.affine2d(10, 20, 0, 1, 1)
+    local point = lurek.compute.fromTable({0, 0}, {1, 2})
+    local moved = camera_move:transformPoints(point)
+    local tx = moved:get(1, 1)
+    compute_log("camera transform moved x from 0 to " .. tx .. " with tx=" .. camera_move:get(1, 3))
 end
 ```
 
@@ -87,9 +76,11 @@ lurek.compute.fft(samples)
 
 ```lua
 do
-    local freqs = lurek.compute.fft({1, 0, -1, 0})
-    print("fft result count = " .. #freqs)
-    print("first bin re = " .. tostring(freqs[1].re) .. " im = " .. tostring(freqs[1].im))
+    local samples = {1, 0, -1, 0}
+    local spectrum = lurek.compute.fft(samples)
+    local bin = spectrum[2]
+    local magnitude = math.abs(bin.re) + math.abs(bin.im)
+    compute_log("looped pulse fft bins=" .. #spectrum .. " bin2_energy=" .. tostring(magnitude))
 end
 ```
 
@@ -119,9 +110,11 @@ lurek.compute.fftMagnitude(samples)
 
 ```lua
 do
-    local mags = lurek.compute.fftMagnitude({1, 0, -1, 0})
-    print("magnitudes count = " .. #mags)
-    print("magnitude[1] = " .. tostring(mags[1]))
+    local samples = {1, 0, -1, 0}
+    local magnitudes = lurek.compute.fftMagnitude(samples)
+    local peak = math.max(magnitudes[1], magnitudes[2], magnitudes[3], magnitudes[4])
+    local dc = magnitudes[1]
+    compute_log("fft magnitudes count=" .. #magnitudes .. " peak=" .. tostring(peak) .. " dc=" .. tostring(dc))
 end
 ```
 
@@ -153,8 +146,11 @@ lurek.compute.fromTable(data, shape, dtype)
 
 ```lua
 do
-    local a = lurek.compute.fromTable({1, 2, 3, 4, 5, 6}, {2, 3})
-    print("fromTable 2x3, val[2,1] = " .. a:get(2, 1))
+    local loot_table = lurek.compute.fromTable({5, 8, 13, 21, 34, 55}, {2, 3})
+    local shape = shape_text(loot_table)
+    local rare_slot = loot_table:get(2, 2)
+    local boss_slot = loot_table:get(2, 3)
+    compute_log("loot matrix=" .. shape .. " rare=" .. rare_slot .. " boss=" .. boss_slot)
 end
 ```
 
@@ -185,9 +181,11 @@ lurek.compute.gaussianKernel(size, sigma)
 
 ```lua
 do
-    local k = lurek.compute.gaussianKernel(5, 1.0)
-    print("gaussian 5x5, center = " .. k:get(3, 3))
-    print("kernel size = " .. k:getSize())
+    local blur_kernel = lurek.compute.gaussianKernel(5, 1.0)
+    local center = blur_kernel:get(3, 3)
+    local total = blur_kernel:sum()
+    local shape = shape_text(blur_kernel)
+    compute_log("blur kernel=" .. shape .. " center=" .. center .. " sum=" .. total)
 end
 ```
 
@@ -211,8 +209,11 @@ lurek.compute.getParThreshold()
 
 ```lua
 do
-    local t = lurek.compute.getParThreshold()
-    print("par threshold = " .. t)
+    local threshold = lurek.compute.getParThreshold()
+    local matrix = lurek.compute.newArray({32, 32})
+    local size = matrix:getSize()
+    local should_parallelize = size >= threshold
+    compute_log("parallel threshold=" .. threshold .. " matrix_size=" .. size .. " parallel=" .. tostring(should_parallelize))
 end
 ```
 
@@ -242,10 +243,12 @@ lurek.compute.ifft(freqs)
 
 ```lua
 do
-    local freqs = lurek.compute.fft({1, 0, -1, 0})
-    local samples = lurek.compute.ifft(freqs)
-    print("ifft reconstructed, count = " .. #samples)
-    print("sample[1] = " .. tostring(samples[1]))
+    local original = {1, 0, -1, 0}
+    local spectrum = lurek.compute.fft(original)
+    local rebuilt = lurek.compute.ifft(spectrum)
+    local first = rebuilt[1]
+    local drift = math.abs(first - original[1])
+    compute_log("ifft rebuilt " .. #rebuilt .. " samples with first_sample_drift=" .. tostring(drift))
 end
 ```
 
@@ -276,9 +279,11 @@ lurek.compute.newArray(shape, dtype)
 
 ```lua
 do
-    local a = lurek.compute.newArray({4, 4}, "float32")
-    print("new 4x4 array, size = " .. a:getSize())
-    print("dimensions = " .. a:getDimensions())
+    local spawn_weights = lurek.compute.newArray({4, 4}, "float32")
+    spawn_weights:set(1, 1, 0.25)
+    spawn_weights:set(4, 4, 0.75)
+    local shape = shape_text(spawn_weights)
+    compute_log("spawn weight grid=" .. shape .. " corners=" .. spawn_weights:get(1, 1) .. "/" .. spawn_weights:get(4, 4))
 end
 ```
 
@@ -309,8 +314,11 @@ lurek.compute.ones(shape, dtype)
 
 ```lua
 do
-    local o = lurek.compute.ones({2, 5}, "float32")
-    print("ones 2x5, val[1,3] = " .. o:get(1, 3))
+    local flood_mask = lurek.compute.ones({2, 5}, "float32")
+    local total = flood_mask:sum()
+    local shape = shape_text(flood_mask)
+    local edge = flood_mask:get(1, 5)
+    compute_log("full flood mask=" .. shape .. " sum=" .. total .. " edge=" .. edge)
 end
 ```
 
@@ -343,9 +351,11 @@ lurek.compute.range(start, stop, step, dtype)
 
 ```lua
 do
-    local r = lurek.compute.range(0, 10, 2, "float32")
-    print("range 0..10 step 2, size = " .. r:getSize())
-    print("last value = " .. r:get(5))
+    local frame_marks = lurek.compute.range(0, 10, 2, "float32")
+    local shape = shape_text(frame_marks)
+    local total = frame_marks:getSize()
+    local last = frame_marks:get(total)
+    compute_log("frame checkpoints shape=" .. shape .. " count=" .. total .. " last=" .. last)
 end
 ```
 
@@ -375,9 +385,11 @@ lurek.compute.rotate2dMatrix(angle_rad)
 
 ```lua
 do
-    local m = lurek.compute.rotate2dMatrix(math.pi / 4)
-    print("rotation 45 deg, [1,1] = " .. m:get(1, 1))
-    print("rotation 45 deg, [1,2] = " .. m:get(1, 2))
+    local facing_turn = lurek.compute.rotate2dMatrix(math.pi / 4)
+    local row_x = facing_turn:get(1, 1)
+    local row_y = facing_turn:get(1, 2)
+    local shape = shape_text(facing_turn)
+    compute_log("45 degree facing matrix=" .. shape .. " row=(" .. row_x .. "," .. row_y .. ")")
 end
 ```
 
@@ -407,9 +419,11 @@ lurek.compute.setParThreshold(threshold)
 
 ```lua
 do
-    local prev = lurek.compute.setParThreshold(1024)
-    print("prev threshold = " .. prev)
-    print("current threshold = " .. lurek.compute.getParThreshold())
+    local previous = lurek.compute.getParThreshold()
+    local old_value = lurek.compute.setParThreshold(1024)
+    local current = lurek.compute.getParThreshold()
+    lurek.compute.setParThreshold(previous)
+    compute_log("threshold changed from " .. old_value .. " to " .. current .. " and restored to " .. previous)
 end
 ```
 
@@ -440,8 +454,11 @@ lurek.compute.zeros(shape, dtype)
 
 ```lua
 do
-    local z = lurek.compute.zeros({3, 3})
-    print("zeros 3x3, val[1,1] = " .. z:get(1, 1))
+    local occupancy = lurek.compute.zeros({3, 3})
+    occupancy:set(2, 2, 1)
+    local shape = shape_text(occupancy)
+    local center = occupancy:get(2, 2)
+    compute_log("empty occupancy map=" .. shape .. " center=" .. center)
 end
 ```
 
@@ -489,9 +506,11 @@ LArray:abs()
 
 ```lua
 do
-    local a = lurek.compute.fromTable({-3, -1, 2}, {3})
-    local b = a:abs()
-    print("abs → [1] = " .. b:get(1))
+    local recoil_offsets = lurek.compute.fromTable({-3, -1, 2}, {3})
+    local absolute_offsets = recoil_offsets:abs()
+    local first = absolute_offsets:get(1)
+    local third = absolute_offsets:get(3)
+    compute_log("absolute recoil first=" .. first .. " third=" .. third)
 end
 ```
 
@@ -521,9 +540,11 @@ LArray:add(value)
 
 ```lua
 do
-    local a = lurek.compute.fromTable({1, 2, 3}, {3})
-    local b = a:add(10)
-    print("a + 10 → [1] = " .. b:get(1))
+    local threat_scores = lurek.compute.fromTable({1, 2, 3}, {3})
+    local danger_bonus = threat_scores:add(10)
+    local original = threat_scores:get(1)
+    local boosted = danger_bonus:get(1)
+    compute_log("threat scores original=" .. original .. " boosted=" .. boosted)
 end
 ```
 
@@ -547,11 +568,11 @@ LArray:addInplace(other)
 
 ```lua
 do
-    local a = lurek.compute.ones({3, 3})
-    local b = lurek.compute.ones({3, 3})
-    a:addInplace(b)
-    print("after addInplace[1,1] = " .. a:get(1, 1))
-    print("after addInplace[3,3] = " .. a:get(3, 3))
+    local base_cost = lurek.compute.ones({3, 3})
+    local swamp_penalty = lurek.compute.ones({3, 3})
+    base_cost:addInplace(swamp_penalty)
+    local center = base_cost:get(2, 2)
+    compute_log("path cost after swamp penalty center=" .. center .. " total=" .. base_cost:sum())
 end
 ```
 
@@ -575,8 +596,11 @@ LArray:all()
 
 ```lua
 do
-    local a = lurek.compute.fromTable({1, 2, 3}, {3})
-    print("all nonzero = " .. tostring(a:all()))
+    local alive_party = lurek.compute.fromTable({1, 2, 3}, {3})
+    local all_alive = alive_party:all()
+    local members = alive_party:getSize()
+    local total = alive_party:sum()
+    compute_log("party alive=" .. tostring(all_alive) .. " members=" .. members .. " total_hp_units=" .. total)
 end
 ```
 
@@ -600,9 +624,11 @@ LArray:any()
 
 ```lua
 do
-    local a = lurek.compute.fromTable({0, 0, 1}, {3})
-    print("any = " .. tostring(a:any()))
-    print("all = " .. tostring(a:all()))
+    local trigger_mask = lurek.compute.fromTable({0, 0, 1}, {3})
+    local any_active = trigger_mask:any()
+    local all_active = trigger_mask:all()
+    local total = trigger_mask:sum()
+    compute_log("trigger mask any=" .. tostring(any_active) .. " all=" .. tostring(all_active) .. " sum=" .. total)
 end
 ```
 
@@ -626,8 +652,11 @@ LArray:argmax()
 
 ```lua
 do
-    local a = lurek.compute.fromTable({5, 1, 8, 3}, {4})
-    print("argmax = " .. a:argmax())
+    local reward_score = lurek.compute.fromTable({5, 1, 8, 3}, {4})
+    local best = reward_score:argmax()
+    local values = reward_score:toTable()
+    local score = values[best]
+    compute_log("best reward index=" .. best .. " score=" .. score)
 end
 ```
 
@@ -651,8 +680,11 @@ LArray:argmin()
 
 ```lua
 do
-    local a = lurek.compute.fromTable({5, 1, 8, 3}, {4})
-    print("argmin = " .. a:argmin())
+    local travel_cost = lurek.compute.fromTable({5, 1, 8, 3}, {4})
+    local best = travel_cost:argmin()
+    local values = travel_cost:toTable()
+    local cost = values[best]
+    compute_log("cheapest route index=" .. best .. " cost=" .. cost)
 end
 ```
 
@@ -682,10 +714,11 @@ LArray:bitwiseAnd(other)
 
 ```lua
 do
-    local a = lurek.compute.fromTable({0xFF, 0x0F, 0xAA}, {3}, "int32")
-    local b = lurek.compute.fromTable({0x0F, 0x0F, 0x55}, {3}, "int32")
-    local c = a:bitwiseAnd(b)
-    print("AND[1] = " .. c:get(1))
+    local flags_a = lurek.compute.fromTable({0xFF, 0x0F, 0xAA}, {3}, "int32")
+    local flags_b = lurek.compute.fromTable({0x0F, 0x0F, 0x55}, {3}, "int32")
+    local overlap = flags_a:bitwiseAnd(flags_b)
+    local first = overlap:get(1)
+    compute_log("shared permission mask first=" .. first .. " third=" .. overlap:get(3))
 end
 ```
 
@@ -715,9 +748,11 @@ LArray:bitwiseLShift(amount)
 
 ```lua
 do
-    local a = lurek.compute.fromTable({1, 2, 4}, {3}, "int32")
-    local c = a:bitwiseLShift(2)
-    print("lshift(2)[1] = " .. c:get(1))
+    local palette_bits = lurek.compute.fromTable({1, 2, 4}, {3}, "int32")
+    local boosted = palette_bits:bitwiseLShift(2)
+    local first = boosted:get(1)
+    local third = boosted:get(3)
+    compute_log("palette bits shifted left first=" .. first .. " third=" .. third)
 end
 ```
 
@@ -741,9 +776,11 @@ LArray:bitwiseNot()
 
 ```lua
 do
-    local a = lurek.compute.fromTable({0, 255}, {2}, "int32")
-    local c = a:bitwiseNot()
-    print("NOT[1] = " .. c:get(1))
+    local solid_mask = lurek.compute.fromTable({0, 255}, {2}, "int32")
+    local walkable_mask = solid_mask:bitwiseNot()
+    local first = walkable_mask:get(1)
+    local second = walkable_mask:get(2)
+    compute_log("walkable mask first=" .. first .. " second=" .. second)
 end
 ```
 
@@ -773,10 +810,11 @@ LArray:bitwiseOr(other)
 
 ```lua
 do
-    local a = lurek.compute.fromTable({0xF0, 0x0F}, {2}, "int32")
-    local b = lurek.compute.fromTable({0x0F, 0xF0}, {2}, "int32")
-    local c = a:bitwiseOr(b)
-    print("OR[1] = " .. c:get(1))
+    local room_a = lurek.compute.fromTable({0xF0, 0x0F}, {2}, "int32")
+    local room_b = lurek.compute.fromTable({0x0F, 0xF0}, {2}, "int32")
+    local merged = room_a:bitwiseOr(room_b)
+    local first = merged:get(1)
+    compute_log("merged room flags first=" .. first .. " second=" .. merged:get(2))
 end
 ```
 
@@ -806,9 +844,11 @@ LArray:bitwiseRShift(amount)
 
 ```lua
 do
-    local a = lurek.compute.fromTable({8, 16, 32}, {3}, "int32")
-    local c = a:bitwiseRShift(2)
-    print("rshift(2)[1] = " .. c:get(1))
+    local packed_color = lurek.compute.fromTable({8, 16, 32}, {3}, "int32")
+    local unpacked = packed_color:bitwiseRShift(2)
+    local first = unpacked:get(1)
+    local third = unpacked:get(3)
+    compute_log("packed color shifted right first=" .. first .. " third=" .. third)
 end
 ```
 
@@ -838,10 +878,11 @@ LArray:bitwiseXor(other)
 
 ```lua
 do
-    local a = lurek.compute.fromTable({0xFF, 0x00}, {2}, "int32")
-    local b = lurek.compute.fromTable({0x0F, 0x0F}, {2}, "int32")
-    local c = a:bitwiseXor(b)
-    print("XOR[1] = " .. c:get(1))
+    local old_state = lurek.compute.fromTable({0xFF, 0x00}, {2}, "int32")
+    local new_state = lurek.compute.fromTable({0x0F, 0x0F}, {2}, "int32")
+    local changed = old_state:bitwiseXor(new_state)
+    local first = changed:get(1)
+    compute_log("changed state mask first=" .. first .. " second=" .. changed:get(2))
 end
 ```
 
@@ -872,9 +913,11 @@ LArray:clamp(min, max)
 
 ```lua
 do
-    local a = lurek.compute.fromTable({-5, 0, 3, 10, 15}, {5})
-    local b = a:clamp(0, 10)
-    print("clamp(0,10) → [1]=" .. b:get(1) .. " [5]=" .. b:get(5))
+    local audio_levels = lurek.compute.fromTable({-5, 0, 3, 10, 15}, {5})
+    local safe_levels = audio_levels:clamp(0, 10)
+    local low = safe_levels:get(1)
+    local high = safe_levels:get(5)
+    compute_log("clamped audio levels low=" .. low .. " high=" .. high)
 end
 ```
 
@@ -898,10 +941,11 @@ LArray:clone()
 
 ```lua
 do
-    local a = lurek.compute.ones({3, 3})
-    local b = a:clone()
-    b:set(1, 1, 5)
-    print("original[1,1] = " .. a:get(1, 1) .. " clone[1,1] = " .. b:get(1, 1))
+    local source_weights = lurek.compute.ones({3, 3})
+    local tuned_weights = source_weights:clone()
+    tuned_weights:set(1, 1, 5)
+    local original = source_weights:get(1, 1)
+    compute_log("clone preserved source=" .. original .. " while tuned copy=" .. tuned_weights:get(1, 1))
 end
 ```
 
@@ -933,8 +977,9 @@ LArray:convolve1d(kernel)
 do
     local signal = lurek.compute.fromTable({0, 1, 2, 3, 4}, {5})
     local kernel = lurek.compute.fromTable({1, 0, -1}, {3})
-    local c = signal:convolve1d(kernel)
-    print("conv1d size = " .. c:getSize())
+    local gradient = signal:convolve1d(kernel)
+    local size = gradient:getSize()
+    compute_log("1d gradient size=" .. size .. " center=" .. gradient:get(3))
 end
 ```
 
@@ -964,12 +1009,11 @@ LArray:convolve2D(kernel)
 
 ```lua
 do
-    local img = lurek.compute.zeros({5, 5})
-    img:set(3, 3, 1)
-    local kernel = lurek.compute.gaussianKernel(3, 1.0)
-    local result = img:convolve2D(kernel)
-    print("conv center = " .. result:get(3, 3))
-    print("conv neighbor = " .. result:get(3, 2))
+    local lightmap = lurek.compute.zeros({5, 5})
+    lightmap:set(3, 3, 1)
+    local blur = lurek.compute.gaussianKernel(3, 1.0)
+    local softened = lightmap:convolve2D(blur)
+    compute_log("softened light center=" .. softened:get(3, 3) .. " neighbor=" .. softened:get(3, 2))
 end
 ```
 
@@ -1000,9 +1044,10 @@ LArray:correlate1d(template)
 ```lua
 do
     local signal = lurek.compute.fromTable({0, 0, 1, 0, 0}, {5})
-    local templ = lurek.compute.fromTable({1}, {1})
-    local c = signal:correlate1d(templ)
-    print("corr peak at [3] = " .. c:get(3))
+    local template = lurek.compute.fromTable({1}, {1})
+    local match = signal:correlate1d(template)
+    local center = match:get(3)
+    compute_log("correlation match center=" .. center .. " size=" .. match:getSize())
 end
 ```
 
@@ -1026,8 +1071,11 @@ LArray:countNonZero()
 
 ```lua
 do
-    local a = lurek.compute.fromTable({0, 1, 0, 2, 3}, {5})
-    print("nonzero count = " .. a:countNonZero())
+    local occupancy = lurek.compute.fromTable({0, 1, 0, 2, 3}, {5})
+    local count = occupancy:countNonZero()
+    local total = occupancy:getSize()
+    local empty = total - count
+    compute_log("occupied cells=" .. count .. " empty cells=" .. empty)
 end
 ```
 
@@ -1057,9 +1105,11 @@ LArray:covariance(other)
 
 ```lua
 do
-    local a = lurek.compute.fromTable({1, 2, 3, 4, 5}, {5})
-    local b = lurek.compute.fromTable({2, 4, 6, 8, 10}, {5})
-    print("covariance = " .. a:covariance(b))
+    local effort = lurek.compute.fromTable({1, 2, 3, 4, 5}, {5})
+    local reward = lurek.compute.fromTable({2, 4, 6, 8, 10}, {5})
+    local cov = effort:covariance(reward)
+    local pairs = effort:getSize()
+    compute_log("effort reward covariance=" .. cov .. " pairs=" .. pairs)
 end
 ```
 
@@ -1089,9 +1139,11 @@ LArray:cross2d(other)
 
 ```lua
 do
-    local a = lurek.compute.fromTable({1, 0}, {2})
-    local b = lurek.compute.fromTable({0, 1}, {2})
-    print("cross2d = " .. a:cross2d(b))
+    local facing = lurek.compute.fromTable({1, 0}, {2})
+    local target = lurek.compute.fromTable({0, 1}, {2})
+    local cross = facing:cross2d(target)
+    local alignment = facing:dot(target)
+    compute_log("2d cross=" .. cross .. " dot=" .. alignment)
 end
 ```
 
@@ -1115,9 +1167,11 @@ LArray:cumsum()
 
 ```lua
 do
-    local a = lurek.compute.fromTable({1, 2, 3, 4}, {4})
-    local cs = a:cumsum()
-    print("cumsum[4] = " .. cs:get(4))
+    local xp_gains = lurek.compute.fromTable({1, 2, 3, 4}, {4})
+    local total_xp = xp_gains:cumsum()
+    local fourth = total_xp:get(4)
+    local second = total_xp:get(2)
+    compute_log("cumulative xp second=" .. second .. " fourth=" .. fourth)
 end
 ```
 
@@ -1147,9 +1201,11 @@ LArray:diff(order)
 
 ```lua
 do
-    local a = lurek.compute.fromTable({1, 3, 6, 10}, {4})
-    local d = a:diff()
-    print("diff[1] = " .. d:get(1))
+    local lap_times = lurek.compute.fromTable({1, 3, 6, 10}, {4})
+    local deltas = lap_times:diff()
+    local first = deltas:get(1)
+    local second = deltas:get(2)
+    compute_log("lap deltas first=" .. first .. " second=" .. second)
 end
 ```
 
@@ -1179,10 +1235,11 @@ LArray:dilate(radius)
 
 ```lua
 do
-    local a = lurek.compute.zeros({5, 5})
-    a:set(3, 3, 1)
-    local d = a:dilate(1)
-    print("dilated[2,3] = " .. d:get(2, 3))
+    local obstacle = lurek.compute.zeros({5, 5})
+    obstacle:set(3, 3, 1)
+    local clearance = obstacle:dilate(1)
+    local near = clearance:get(2, 3)
+    compute_log("clearance map near obstacle=" .. near .. " center=" .. clearance:get(3, 3))
 end
 ```
 
@@ -1212,9 +1269,11 @@ LArray:div(value)
 
 ```lua
 do
-    local a = lurek.compute.fromTable({10, 20, 30}, {3})
-    local b = a:div(10)
-    print("a / 10 → [1] = " .. b:get(1))
+    local damage_ticks = lurek.compute.fromTable({10, 20, 30}, {3})
+    local normalized = damage_ticks:div(10)
+    local first = normalized:get(1)
+    local third = normalized:get(3)
+    compute_log("normalized damage first=" .. first .. " third=" .. third)
 end
 ```
 
@@ -1238,10 +1297,11 @@ LArray:divInplace(other)
 
 ```lua
 do
-    local a = lurek.compute.fromTable({10, 20, 30, 40}, {2, 2})
-    local b = lurek.compute.fromTable({2, 4, 5, 8}, {2, 2})
-    a:divInplace(b)
-    print("after divInplace[1,1] = " .. a:get(1, 1))
+    local frame_times = lurek.compute.fromTable({10, 20, 30, 40}, {2, 2})
+    local sample_counts = lurek.compute.fromTable({2, 4, 5, 8}, {2, 2})
+    frame_times:divInplace(sample_counts)
+    local average = frame_times:get(1, 1)
+    compute_log("frame time average first=" .. average .. " final=" .. frame_times:get(2, 2))
 end
 ```
 
@@ -1271,9 +1331,11 @@ LArray:dot(other)
 
 ```lua
 do
-    local a = lurek.compute.fromTable({1, 2, 3}, {3})
-    local b = lurek.compute.fromTable({4, 5, 6}, {3})
-    print("dot = " .. a:dot(b))
+    local input_x = lurek.compute.fromTable({1, 2, 3}, {3})
+    local input_w = lurek.compute.fromTable({4, 5, 6}, {3})
+    local score = input_x:dot(input_w)
+    local dims = input_x:getDimensions()
+    compute_log("neuron dot score=" .. score .. " vector_dims=" .. dims)
 end
 ```
 
@@ -1304,10 +1366,11 @@ LArray:eigenPower(max_iter, tol)
 
 ```lua
 do
-    local a = lurek.compute.fromTable({2, 1, 1, 2}, {2, 2})
-    local result = a:eigenPower(100, 1e-6)
-    print("eigenvalue = " .. result.value)
-    print("eigenvector[1] = " .. tostring(result.vector[1]))
+    local covariance = lurek.compute.fromTable({2, 1, 1, 2}, {2, 2})
+    local dominant = covariance:eigenPower(100, 1e-6)
+    local value = dominant.value
+    local first = dominant.vector[1]
+    compute_log("dominant eigen value=" .. value .. " vector1=" .. tostring(first))
 end
 ```
 
@@ -1337,9 +1400,11 @@ LArray:eq(value)
 
 ```lua
 do
-    local a = lurek.compute.fromTable({1, 2, 3, 2, 1}, {5})
-    local mask = a:eq(2)
-    print("eq(2) → [2] = " .. mask:get(2))
+    local tile_ids = lurek.compute.fromTable({1, 2, 3, 2, 1}, {5})
+    local door_mask = tile_ids:eq(2)
+    local left = door_mask:get(2)
+    local right = door_mask:get(4)
+    compute_log("door mask marks left=" .. left .. " right=" .. right)
 end
 ```
 
@@ -1369,10 +1434,11 @@ LArray:erode(radius)
 
 ```lua
 do
-    local a = lurek.compute.ones({5, 5})
-    a:set(1, 1, 0)
-    local e = a:erode(1)
-    print("eroded[2,2] = " .. e:get(2, 2))
+    local floor = lurek.compute.ones({5, 5})
+    floor:set(1, 1, 0)
+    local trimmed = floor:erode(1)
+    local center = trimmed:get(2, 2)
+    compute_log("eroded floor center=" .. center .. " corner=" .. trimmed:get(1, 1))
 end
 ```
 
@@ -1402,9 +1468,11 @@ LArray:eval(expr)
 
 ```lua
 do
-    local a = lurek.compute.fromTable({1, 2, 3}, {3})
-    local b = a:eval("x * x + 1")
-    print("eval[2] = " .. b:get(2))
+    local base_damage = lurek.compute.fromTable({1, 2, 3}, {3})
+    local scripted = base_damage:eval("x * x + 1")
+    local second = scripted:get(2)
+    local third = scripted:get(3)
+    compute_log("evaluated damage curve second=" .. second .. " third=" .. third)
 end
 ```
 
@@ -1428,9 +1496,11 @@ LArray:fill(val)
 
 ```lua
 do
-    local a = lurek.compute.newArray({3, 3})
-    a:fill(7)
-    print("filled[2,2] = " .. a:get(2, 2))
+    local fog_layer = lurek.compute.newArray({3, 3})
+    fog_layer:fill(7)
+    local center = fog_layer:get(2, 2)
+    local total = fog_layer:sum()
+    compute_log("fog layer fill center=" .. center .. " total=" .. total)
 end
 ```
 
@@ -1462,11 +1532,11 @@ LArray:floodFill(row, col, val)
 
 ```lua
 do
-    local a = lurek.compute.zeros({5, 5})
-    a:set(1, 1, 1)
-    a:set(1, 2, 1)
-    local filled = a:floodFill(1, 1, 9)
-    print("flood[1,2] = " .. filled:get(1, 2))
+    local region = lurek.compute.zeros({5, 5})
+    region:set(1, 1, 1)
+    region:set(1, 2, 1)
+    local filled = region:floodFill(1, 1, 9)
+    compute_log("flood fill propagated to second cell=" .. filled:get(1, 2) .. " seed=" .. filled:get(1, 1))
 end
 ```
 
@@ -1496,8 +1566,11 @@ LArray:get(...)
 
 ```lua
 do
-    local a = lurek.compute.fromTable({10, 20, 30, 40}, {2, 2})
-    print("a[1,2] = " .. a:get(1, 2))
+    local damage_table = lurek.compute.fromTable({10, 20, 30, 40}, {2, 2})
+    local melee = damage_table:get(1, 2)
+    local ranged = damage_table:get(2, 1)
+    local shape = shape_text(damage_table)
+    compute_log("damage lookup from " .. shape .. " melee=" .. melee .. " ranged=" .. ranged)
 end
 ```
 
@@ -1521,8 +1594,11 @@ LArray:getDataType()
 
 ```lua
 do
-    local a = lurek.compute.newArray({2, 2}, "float32")
-    print("dtype = " .. a:getDataType())
+    local heat_values = lurek.compute.newArray({2, 2}, "float32")
+    heat_values:set(1, 2, 0.5)
+    local dtype = heat_values:getDataType()
+    local shape = shape_text(heat_values)
+    compute_log("heat grid dtype=" .. dtype .. " shape=" .. shape .. " probe=" .. heat_values:get(1, 2))
 end
 ```
 
@@ -1546,9 +1622,11 @@ LArray:getDimensions()
 
 ```lua
 do
-    local a = lurek.compute.newArray({2, 3, 4})
-    print("dims = " .. a:getDimensions())
-    print("size = " .. a:getSize())
+    local voxel_costs = lurek.compute.newArray({2, 3, 4})
+    voxel_costs:set(2, 3, 4, 9)
+    local dims = voxel_costs:getDimensions()
+    local size = voxel_costs:getSize()
+    compute_log("voxel cost tensor dims=" .. dims .. " size=" .. size .. " last=" .. voxel_costs:get(2, 3, 4))
 end
 ```
 
@@ -1581,10 +1659,11 @@ LArray:getRegion(row, col, rows, cols)
 
 ```lua
 do
-    local a = lurek.compute.range(1, 17, 1)
-    local m = a:reshape({4, 4})
-    local region = m:getRegion(2, 2, 2, 2)
-    print("region[1,1] = " .. region:get(1, 1))
+    local dungeon = lurek.compute.range(1, 17, 1):reshape({4, 4})
+    local room = dungeon:getRegion(2, 2, 2, 2)
+    local shape = shape_text(room)
+    local top_left = room:get(1, 1)
+    compute_log("cropped room region=" .. shape .. " top_left=" .. top_left)
 end
 ```
 
@@ -1608,9 +1687,11 @@ LArray:getShape()
 
 ```lua
 do
-    local a = lurek.compute.newArray({3, 4})
-    local shape = a:getShape()
-    print("shape = " .. shape[1] .. "x" .. shape[2])
+    local visibility = lurek.compute.newArray({3, 4})
+    visibility:set(1, 1, 1)
+    local shape = visibility:getShape()
+    local shape_name = tostring(shape[1]) .. "x" .. tostring(shape[2])
+    compute_log("visibility grid shape=" .. shape_name .. " first=" .. visibility:get(1, 1))
 end
 ```
 
@@ -1634,8 +1715,11 @@ LArray:getSize()
 
 ```lua
 do
-    local a = lurek.compute.newArray({5, 5})
-    print("size = " .. a:getSize())
+    local chunk_cells = lurek.compute.newArray({5, 5})
+    chunk_cells:set(3, 3, 7)
+    local size = chunk_cells:getSize()
+    local dims = chunk_cells:getDimensions()
+    compute_log("chunk cell buffer size=" .. size .. " dims=" .. dims .. " center=" .. chunk_cells:get(3, 3))
 end
 ```
 
@@ -1665,9 +1749,11 @@ LArray:gt(value)
 
 ```lua
 do
-    local a = lurek.compute.fromTable({1, 5, 10}, {3})
-    local mask = a:gt(4)
-    print("gt(4) → [2] = " .. mask:get(2))
+    local aggro = lurek.compute.fromTable({1, 5, 10}, {3})
+    local alerted = aggro:gt(4)
+    local second = alerted:get(2)
+    local third = alerted:get(3)
+    compute_log("alert mask medium=" .. second .. " high=" .. third)
 end
 ```
 
@@ -1697,9 +1783,11 @@ LArray:gte(value)
 
 ```lua
 do
-    local a = lurek.compute.fromTable({1, 5, 10}, {3})
-    local mask = a:gte(5)
-    print("gte(5) → [2] = " .. mask:get(2))
+    local loot_rarity = lurek.compute.fromTable({1, 5, 10}, {3})
+    local rare_mask = loot_rarity:gte(5)
+    local second = rare_mask:get(2)
+    local third = rare_mask:get(3)
+    compute_log("rare loot mask second=" .. second .. " third=" .. third)
 end
 ```
 
@@ -1731,10 +1819,11 @@ LArray:histogram(bins, lo, hi)
 
 ```lua
 do
-    local a = lurek.compute.fromTable({1, 2, 3, 4, 5, 6, 7, 8}, {8})
-    local bins = a:histogram(4)
-    print("bin count = " .. #bins)
-    print("first bin count = " .. tostring(bins[1].count))
+    local loot_rolls = lurek.compute.fromTable({1, 2, 3, 4, 5, 6, 7, 8}, {8})
+    local bins = loot_rolls:histogram(4)
+    local first = bins[1].count
+    local last = bins[#bins].count
+    compute_log("loot histogram bins=" .. #bins .. " first=" .. tostring(first) .. " last=" .. tostring(last))
 end
 ```
 
@@ -1758,8 +1847,11 @@ LArray:isOnGPU()
 
 ```lua
 do
-    local a = lurek.compute.ones({4, 4})
-    print("on GPU = " .. tostring(a:isOnGPU()))
+    local nav_buffer = lurek.compute.ones({4, 4})
+    nav_buffer:set(2, 3, 4)
+    local on_gpu = nav_buffer:isOnGPU()
+    local shape = shape_text(nav_buffer)
+    compute_log("nav buffer shape=" .. shape .. " gpu_resident=" .. tostring(on_gpu))
 end
 ```
 
@@ -1789,10 +1881,11 @@ LArray:linsolve(b)
 
 ```lua
 do
-    local a = lurek.compute.fromTable({2, 1, 5, 7}, {2, 2})
-    local b = lurek.compute.fromTable({11, 13}, {2})
-    local x = a:linsolve(b)
-    print("x[1] = " .. x:get(1))
+    local matrix = lurek.compute.fromTable({2, 1, 5, 7}, {2, 2})
+    local rhs = lurek.compute.fromTable({11, 13}, {2})
+    local solution = matrix:linsolve(rhs)
+    local x = solution:get(1)
+    compute_log("linear solve x=" .. x .. " y=" .. solution:get(2))
 end
 ```
 
@@ -1822,9 +1915,11 @@ LArray:lt(value)
 
 ```lua
 do
-    local a = lurek.compute.fromTable({1, 5, 10}, {3})
-    local mask = a:lt(6)
-    print("lt(6) → [3] = " .. mask:get(3))
+    local stamina = lurek.compute.fromTable({1, 5, 10}, {3})
+    local low_mask = stamina:lt(6)
+    local first = low_mask:get(1)
+    local third = low_mask:get(3)
+    compute_log("low stamina mask first=" .. first .. " third=" .. third)
 end
 ```
 
@@ -1854,9 +1949,11 @@ LArray:lte(value)
 
 ```lua
 do
-    local a = lurek.compute.fromTable({1, 5, 10}, {3})
-    local mask = a:lte(5)
-    print("lte(5) → [2] = " .. mask:get(2))
+    local cooldowns = lurek.compute.fromTable({1, 5, 10}, {3})
+    local ready_mask = cooldowns:lte(5)
+    local first = ready_mask:get(1)
+    local third = ready_mask:get(3)
+    compute_log("ready cooldown mask first=" .. first .. " third=" .. third)
 end
 ```
 
@@ -1880,10 +1977,11 @@ LArray:luDecompose()
 
 ```lua
 do
-    local a = lurek.compute.fromTable({4, 3, 6, 3}, {2, 2})
-    local lu = a:luDecompose()
-    print("n = " .. lu.n .. " det_sign = " .. lu.det_sign)
-    print("perm[1] = " .. tostring(lu.perm[1]))
+    local matrix = lurek.compute.fromTable({4, 3, 6, 3}, {2, 2})
+    local lu = matrix:luDecompose()
+    local perm0 = lu.perm[1]
+    local sign = lu.det_sign
+    compute_log("lu decomposition n=" .. lu.n .. " sign=" .. sign .. " perm1=" .. tostring(perm0))
 end
 ```
 
@@ -1913,9 +2011,11 @@ LArray:map(func)
 
 ```lua
 do
-    local a = lurek.compute.fromTable({1, 4, 9}, {3})
-    local b = a:map(function(x) return x * 2 end)
-    print("mapped[2] = " .. b:get(2))
+    local base_damage = lurek.compute.fromTable({1, 4, 9}, {3})
+    local doubled = base_damage:map(function(x) return x * 2 end)
+    local second = doubled:get(2)
+    local third = doubled:get(3)
+    compute_log("mapped damage second=" .. second .. " third=" .. third)
 end
 ```
 
@@ -1945,11 +2045,11 @@ LArray:matmul(other)
 
 ```lua
 do
-    local a = lurek.compute.fromTable({1, 2, 3, 4}, {2, 2})
-    local b = lurek.compute.fromTable({5, 6, 7, 8}, {2, 2})
-    local c = a:matmul(b)
-    print("matmul[1,1] = " .. c:get(1, 1))
-    print("matmul[2,2] = " .. c:get(2, 2))
+    local basis = lurek.compute.fromTable({1, 2, 3, 4}, {2, 2})
+    local transform = lurek.compute.fromTable({5, 6, 7, 8}, {2, 2})
+    local combined = basis:matmul(transform)
+    local top_left = combined:get(1, 1)
+    compute_log("combined transform shape=" .. shape_text(combined) .. " top_left=" .. top_left)
 end
 ```
 
@@ -1973,8 +2073,11 @@ LArray:max()
 
 ```lua
 do
-    local a = lurek.compute.fromTable({7, 2, 9, 1}, {4})
-    print("max = " .. a:max())
+    local threat_spikes = lurek.compute.fromTable({7, 2, 9, 1}, {4})
+    local peak = threat_spikes:max()
+    local index = threat_spikes:argmax()
+    local total = threat_spikes:sum()
+    compute_log("peak threat=" .. peak .. " index=" .. index .. " total=" .. total)
 end
 ```
 
@@ -1998,8 +2101,11 @@ LArray:mean()
 
 ```lua
 do
-    local a = lurek.compute.fromTable({2, 4, 6, 8}, {4})
-    print("mean = " .. a:mean())
+    local frame_times = lurek.compute.fromTable({2, 4, 6, 8}, {4})
+    local average = frame_times:mean()
+    local low = frame_times:min()
+    local high = frame_times:max()
+    compute_log("frame time mean=" .. average .. " range=" .. low .. "-" .. high)
 end
 ```
 
@@ -2023,8 +2129,11 @@ LArray:min()
 
 ```lua
 do
-    local a = lurek.compute.fromTable({7, 2, 9, 1}, {4})
-    print("min = " .. a:min())
+    local route_costs = lurek.compute.fromTable({7, 2, 9, 1}, {4})
+    local best = route_costs:min()
+    local index = route_costs:argmin()
+    local total = route_costs:sum()
+    compute_log("best route cost=" .. best .. " index=" .. index .. " total=" .. total)
 end
 ```
 
@@ -2054,9 +2163,11 @@ LArray:mul(value)
 
 ```lua
 do
-    local a = lurek.compute.fromTable({2, 3, 4}, {3})
-    local b = a:mul(3)
-    print("a * 3 → [3] = " .. b:get(3))
+    local combo_hits = lurek.compute.fromTable({2, 3, 4}, {3})
+    local scaled_hits = combo_hits:mul(3)
+    local second = scaled_hits:get(2)
+    local third = scaled_hits:get(3)
+    compute_log("scaled combo hits second=" .. second .. " third=" .. third)
 end
 ```
 
@@ -2080,10 +2191,11 @@ LArray:mulInplace(other)
 
 ```lua
 do
-    local a = lurek.compute.fromTable({2, 3, 4, 5}, {2, 2})
-    local b = lurek.compute.fromTable({10, 10, 10, 10}, {2, 2})
-    a:mulInplace(b)
-    print("after mulInplace[1,1] = " .. a:get(1, 1))
+    local reward_grid = lurek.compute.fromTable({2, 3, 4, 5}, {2, 2})
+    local combo_boost = lurek.compute.fromTable({10, 10, 10, 10}, {2, 2})
+    reward_grid:mulInplace(combo_boost)
+    local boosted = reward_grid:get(1, 1)
+    compute_log("reward grid after combo boost first=" .. boosted .. " total=" .. reward_grid:sum())
 end
 ```
 
@@ -2107,9 +2219,11 @@ LArray:neg()
 
 ```lua
 do
-    local a = lurek.compute.fromTable({5, -3, 0}, {3})
-    local b = a:neg()
-    print("neg → [1] = " .. b:get(1))
+    local knockback = lurek.compute.fromTable({5, -3, 0}, {3})
+    local reversed = knockback:neg()
+    local first = reversed:get(1)
+    local second = reversed:get(2)
+    compute_log("reversed knockback first=" .. first .. " second=" .. second)
 end
 ```
 
@@ -2139,9 +2253,11 @@ LArray:neq(value)
 
 ```lua
 do
-    local a = lurek.compute.fromTable({1, 2, 3}, {3})
-    local mask = a:neq(2)
-    print("neq(2) → [1] = " .. mask:get(1))
+    local terrain_ids = lurek.compute.fromTable({1, 2, 3}, {3})
+    local moving_mask = terrain_ids:neq(2)
+    local first = moving_mask:get(1)
+    local second = moving_mask:get(2)
+    compute_log("moving mask first=" .. first .. " blocked_center=" .. second)
 end
 ```
 
@@ -2172,9 +2288,11 @@ LArray:normalizeRange(lo, hi)
 
 ```lua
 do
-    local a = lurek.compute.fromTable({0, 50, 100}, {3})
-    local n = a:normalizeRange(0, 1)
-    print("normalized[2] = " .. n:get(2))
+    local light_levels = lurek.compute.fromTable({0, 50, 100}, {3})
+    local normalized = light_levels:normalizeRange(0, 1)
+    local middle = normalized:get(2)
+    local high = normalized:get(3)
+    compute_log("normalized light middle=" .. middle .. " high=" .. high)
 end
 ```
 
@@ -2198,10 +2316,11 @@ LArray:normalizeVec()
 
 ```lua
 do
-    local v = lurek.compute.fromTable({3, 4}, {2})
-    local n = v:normalizeVec()
-    print("normalized[1] = " .. n:get(1))
-    print("normalized[2] = " .. n:get(2))
+    local move_input = lurek.compute.fromTable({3, 4}, {2})
+    local unit = move_input:normalizeVec()
+    local x = unit:get(1)
+    local y = unit:get(2)
+    compute_log("unit move vector=(" .. x .. "," .. y .. ")")
 end
 ```
 
@@ -2231,10 +2350,11 @@ LArray:outer(other)
 
 ```lua
 do
-    local a = lurek.compute.fromTable({1, 2, 3}, {3})
-    local b = lurek.compute.fromTable({4, 5}, {2})
-    local o = a:outer(b)
-    print("outer[1,2] = " .. o:get(1, 2))
+    local row = lurek.compute.fromTable({1, 2, 3}, {3})
+    local col = lurek.compute.fromTable({4, 5}, {2})
+    local score_grid = row:outer(col)
+    local shape = shape_text(score_grid)
+    compute_log("outer score grid=" .. shape .. " top_right=" .. score_grid:get(1, 2))
 end
 ```
 
@@ -2264,9 +2384,11 @@ LArray:pearsonCorr(other)
 
 ```lua
 do
-    local a = lurek.compute.fromTable({1, 2, 3, 4, 5}, {5})
-    local b = lurek.compute.fromTable({2, 4, 6, 8, 10}, {5})
-    print("pearson = " .. a:pearsonCorr(b))
+    local effort = lurek.compute.fromTable({1, 2, 3, 4, 5}, {5})
+    local reward = lurek.compute.fromTable({2, 4, 6, 8, 10}, {5})
+    local corr = effort:pearsonCorr(reward)
+    local pairs = reward:getSize()
+    compute_log("effort reward correlation=" .. corr .. " pairs=" .. pairs)
 end
 ```
 
@@ -2296,9 +2418,11 @@ LArray:percentile(p)
 
 ```lua
 do
-    local a = lurek.compute.range(1, 100, 1)
-    local p50 = a:percentile(50)
-    print("p50 = " .. p50)
+    local damage_log = lurek.compute.range(1, 100, 1)
+    local median = damage_log:percentile(50)
+    local upper = damage_log:percentile(90)
+    local count = damage_log:getSize()
+    compute_log("damage percentile median=" .. median .. " p90=" .. upper .. " count=" .. count)
 end
 ```
 
@@ -2328,9 +2452,11 @@ LArray:pow(exp)
 
 ```lua
 do
-    local a = lurek.compute.fromTable({2, 3, 4}, {3})
-    local b = a:pow(2)
-    print("a^2 → [2] = " .. b:get(2))
+    local distance_ring = lurek.compute.fromTable({2, 3, 4}, {3})
+    local falloff = distance_ring:pow(2)
+    local second = falloff:get(2)
+    local third = falloff:get(3)
+    compute_log("quadratic falloff second=" .. second .. " third=" .. third)
 end
 ```
 
@@ -2361,9 +2487,11 @@ LArray:reduce(func, init)
 
 ```lua
 do
-    local a = lurek.compute.fromTable({1, 2, 3, 4}, {4})
-    local total = a:reduce(function(acc, v) return acc + v end, 0)
-    print("reduce sum = " .. total)
+    local rewards = lurek.compute.fromTable({1, 2, 3, 4}, {4})
+    local total = rewards:reduce(function(acc, v) return acc + v end, 0)
+    local mean = rewards:mean()
+    local count = rewards:getSize()
+    compute_log("reduced rewards total=" .. total .. " mean=" .. mean .. " count=" .. count)
 end
 ```
 
@@ -2393,10 +2521,11 @@ LArray:reshape(shape)
 
 ```lua
 do
-    local a = lurek.compute.fromTable({1, 2, 3, 4, 5, 6}, {6})
-    local b = a:reshape({2, 3})
-    print("reshaped dims = " .. b:getDimensions())
-    print("reshaped[2,3] = " .. b:get(2, 3))
+    local encounter_stream = lurek.compute.fromTable({1, 2, 3, 4, 5, 6}, {6})
+    local encounter_grid = encounter_stream:reshape({2, 3})
+    local shape = shape_text(encounter_grid)
+    local last = encounter_grid:get(2, 3)
+    compute_log("reshaped encounter grid=" .. shape .. " last=" .. last)
 end
 ```
 
@@ -2427,10 +2556,11 @@ LArray:scan(func, init)
 
 ```lua
 do
-    local a = lurek.compute.fromTable({1, 2, 3, 4}, {4})
-    local s = a:scan(function(acc, v) return acc + v end, 0)
-    print("scan[4] = " .. s:get(4))
-    print("scan[2] = " .. s:get(2))
+    local combo_hits = lurek.compute.fromTable({1, 2, 3, 4}, {4})
+    local running = combo_hits:scan(function(acc, v) return acc + v end, 0)
+    local second = running:get(2)
+    local fourth = running:get(4)
+    compute_log("running combo score second=" .. second .. " fourth=" .. fourth)
 end
 ```
 
@@ -2454,9 +2584,11 @@ LArray:set(...)
 
 ```lua
 do
-    local a = lurek.compute.zeros({3, 3})
-    a:set(2, 2, 99)
-    print("a[2,2] = " .. a:get(2, 2))
+    local threat_map = lurek.compute.zeros({3, 3})
+    threat_map:set(2, 2, 99)
+    threat_map:set(2, 3, 42)
+    local center = threat_map:get(2, 2)
+    compute_log("threat hotspot center=" .. center .. " east=" .. threat_map:get(2, 3))
 end
 ```
 
@@ -2482,10 +2614,11 @@ LArray:setRegion(row, col, source)
 
 ```lua
 do
-    local a = lurek.compute.zeros({4, 4})
-    local patch = lurek.compute.ones({2, 2})
-    a:setRegion(2, 2, patch)
-    print("after setRegion[2,2] = " .. a:get(2, 2))
+    local minimap = lurek.compute.zeros({4, 4})
+    local room_patch = lurek.compute.ones({2, 2})
+    minimap:setRegion(2, 2, room_patch)
+    local center = minimap:get(2, 2)
+    compute_log("inserted room patch center=" .. center .. " far_corner=" .. minimap:get(4, 4))
 end
 ```
 
@@ -2509,11 +2642,11 @@ LArray:sobel()
 
 ```lua
 do
-    local img = lurek.compute.zeros({5, 5})
-    img:set(3, 3, 1)
-    local grad = img:sobel()
-    print("gx size = " .. grad.gx:getSize())
-    print("gy size = " .. grad.gy:getSize())
+    local heightfield = lurek.compute.zeros({5, 5})
+    heightfield:set(3, 3, 1)
+    local gradient = heightfield:sobel()
+    local gx_shape = shape_text(gradient.gx)
+    compute_log("sobel gx=" .. gx_shape .. " gy=" .. shape_text(gradient.gy))
 end
 ```
 
@@ -2537,9 +2670,11 @@ LArray:sqrt()
 
 ```lua
 do
-    local a = lurek.compute.fromTable({4, 9, 16}, {3})
-    local b = a:sqrt()
-    print("sqrt → [1] = " .. b:get(1))
+    local area_values = lurek.compute.fromTable({4, 9, 16}, {3})
+    local side_lengths = area_values:sqrt()
+    local first = side_lengths:get(1)
+    local third = side_lengths:get(3)
+    compute_log("square root lengths first=" .. first .. " third=" .. third)
 end
 ```
 
@@ -2569,9 +2704,11 @@ LArray:sub(value)
 
 ```lua
 do
-    local a = lurek.compute.fromTable({10, 20, 30}, {3})
-    local b = a:sub(5)
-    print("a - 5 → [2] = " .. b:get(2))
+    local health_bar = lurek.compute.fromTable({10, 20, 30}, {3})
+    local after_hit = health_bar:sub(5)
+    local middle = after_hit:get(2)
+    local last = after_hit:get(3)
+    compute_log("health after hit middle=" .. middle .. " last=" .. last)
 end
 ```
 
@@ -2595,10 +2732,11 @@ LArray:subInplace(other)
 
 ```lua
 do
-    local a = lurek.compute.fromTable({5, 5, 5, 5}, {2, 2})
-    local b = lurek.compute.ones({2, 2})
-    a:subInplace(b)
-    print("after subInplace[1,1] = " .. a:get(1, 1))
+    local stamina_pool = lurek.compute.fromTable({5, 5, 5, 5}, {2, 2})
+    local drain = lurek.compute.ones({2, 2})
+    stamina_pool:subInplace(drain)
+    local remaining = stamina_pool:get(1, 1)
+    compute_log("stamina pool after drain first=" .. remaining .. " total=" .. stamina_pool:sum())
 end
 ```
 
@@ -2622,9 +2760,11 @@ LArray:sum()
 
 ```lua
 do
-    local a = lurek.compute.fromTable({1, 2, 3, 4}, {4})
-    print("sum = " .. a:sum())
-    print("mean = " .. a:mean())
+    local wave_counts = lurek.compute.fromTable({1, 2, 3, 4}, {4})
+    local total = wave_counts:sum()
+    local average = wave_counts:mean()
+    local last = wave_counts:get(4)
+    compute_log("wave count total=" .. total .. " mean=" .. average .. " last=" .. last)
 end
 ```
 
@@ -2654,9 +2794,11 @@ LArray:threshold(val)
 
 ```lua
 do
-    local a = lurek.compute.fromTable({0.1, 0.5, 0.9}, {3})
-    local mask = a:threshold(0.4)
-    print("threshold(0.4) → [1]=" .. mask:get(1) .. " [3]=" .. mask:get(3))
+    local light_probe = lurek.compute.fromTable({0.1, 0.5, 0.9}, {3})
+    local lit_mask = light_probe:threshold(0.4)
+    local first = lit_mask:get(1)
+    local third = lit_mask:get(3)
+    compute_log("light threshold mask first=" .. first .. " third=" .. third)
 end
 ```
 
@@ -2680,9 +2822,11 @@ LArray:toTable()
 
 ```lua
 do
-    local a = lurek.compute.fromTable({1, 2, 3}, {3})
-    local t = a:toTable()
-    print("table = " .. t[1] .. "," .. t[2] .. "," .. t[3])
+    local patrol_route = lurek.compute.fromTable({1, 2, 3}, {3})
+    local steps = patrol_route:toTable()
+    local first = steps[1]
+    local last = steps[#steps]
+    compute_log("patrol route table length=" .. #steps .. " first=" .. first .. " last=" .. last)
 end
 ```
 
@@ -2712,10 +2856,11 @@ LArray:transformPoints(pts)
 
 ```lua
 do
-    local m = lurek.compute.affine2d(10, 20, 0, 1, 1)
-    local pts = lurek.compute.fromTable({0, 0, 5, 5}, {2, 2})
-    local result = m:transformPoints(pts)
-    print("transformed[1,1] = " .. result:get(1, 1))
+    local world_from_local = lurek.compute.affine2d(10, 20, 0, 1, 1)
+    local corners = lurek.compute.fromTable({0, 0, 5, 5}, {2, 2})
+    local world_points = world_from_local:transformPoints(corners)
+    local first_x = world_points:get(1, 1)
+    compute_log("transformed points first_x=" .. first_x .. " last_y=" .. world_points:get(2, 2))
 end
 ```
 
@@ -2739,10 +2884,11 @@ LArray:transpose()
 
 ```lua
 do
-    local a = lurek.compute.fromTable({1, 2, 3, 4, 5, 6}, {2, 3})
-    local t = a:transpose()
-    local shape = t:getShape()
-    print("transposed shape = " .. shape[1] .. "x" .. shape[2])
+    local room_links = lurek.compute.fromTable({1, 2, 3, 4, 5, 6}, {2, 3})
+    local reversed_links = room_links:transpose()
+    local shape = shape_text(reversed_links)
+    local mirrored = reversed_links:get(3, 2)
+    compute_log("transposed room links shape=" .. shape .. " mirrored_cell=" .. mirrored)
 end
 ```
 
@@ -2766,8 +2912,11 @@ LArray:type()
 
 ```lua
 do
-    local a = lurek.compute.ones({2, 2})
-    print("type = " .. a:type())
+    local scratch = lurek.compute.ones({2, 2})
+    scratch:set(1, 2, 3)
+    local type_name = scratch:type()
+    local shape = shape_text(scratch)
+    compute_log("array userdata type=" .. type_name .. " shape=" .. shape)
 end
 ```
 
@@ -2797,9 +2946,11 @@ LArray:typeOf(name)
 
 ```lua
 do
-    local a = lurek.compute.ones({2, 2})
-    print("is LArray = " .. tostring(a:typeOf("LArray")))
-    print("is Object = " .. tostring(a:typeOf("LObject")))
+    local scratch = lurek.compute.ones({2, 2})
+    scratch:set(2, 1, 4)
+    local is_array = scratch:typeOf("LArray")
+    local is_object = scratch:typeOf("LObject")
+    compute_log("typeOf array=" .. tostring(is_array) .. " object=" .. tostring(is_object))
 end
 ```
 
@@ -2830,12 +2981,11 @@ LArray:where(mask, other)
 
 ```lua
 do
-    local a = lurek.compute.fromTable({10, 20, 30}, {3})
-    local b = lurek.compute.fromTable({-1, -2, -3}, {3})
-    local mask = a:gt(15)
-    local result = a:where(mask, b)
-    print("where → [1]=" .. result:get(1) .. " [2]=" .. result:get(2))
-    print("where → [3]=" .. result:get(3))
+    local daytime = lurek.compute.fromTable({10, 20, 30}, {3})
+    local nighttime = lurek.compute.fromTable({-1, -2, -3}, {3})
+    local visible = daytime:gt(15)
+    local blend = daytime:where(visible, nighttime)
+    compute_log("where blend values=" .. blend:get(1) .. "," .. blend:get(2) .. "," .. blend:get(3))
 end
 ```
 
@@ -2859,9 +3009,11 @@ LArray:zscore()
 
 ```lua
 do
-    local a = lurek.compute.fromTable({2, 4, 4, 4, 5, 5, 7, 9}, {8})
-    local z = a:zscore()
-    print("zscore[1] = " .. z:get(1))
+    local enemy_speeds = lurek.compute.fromTable({2, 4, 4, 4, 5, 5, 7, 9}, {8})
+    local zscores = enemy_speeds:zscore()
+    local first = zscores:get(1)
+    local last = zscores:get(8)
+    compute_log("enemy speed zscores first=" .. first .. " last=" .. last)
 end
 ```
 

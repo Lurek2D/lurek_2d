@@ -2,36 +2,20 @@
 
 ## Summary
 
-- This module gives users an in-engine data workspace for tables, analytics, and report-style processing.
-- You can load, build, and transform tabular datasets without moving data into external tools.
-- It supports both DataFrame-style column operations and multi-table database-style organization.
-- SQL-like query support enables joins, filters, grouping, and projections in a familiar declarative form.
-- Lazy query pipelines allow staging transformations before collecting results, which helps control runtime cost.
-- Vectorized execution accelerates numeric-heavy column operations for larger datasets.
-- Background task APIs keep expensive parsing or query work off the frame-critical path.
-- Window functions support rolling metrics, ranking, cumulative totals, and percent-change analysis.
-- Pivot and grouping features make it practical to reshape gameplay telemetry into decision-ready views.
-- Statistical helpers like correlation, percentile, and normalization support balancing and anomaly detection.
-- Duplicate and missing-value diagnostics help validate imported content before it drives gameplay systems.
-- The module can serialize and parse common formats, including CSV and JSON, for workflow interoperability.
-- LVDF binary support gives teams a compact storage format for faster load and smaller disk footprint.
-- Text-table rendering helps users inspect results quickly in logs and debug consoles.
-- Database containers allow related tables to be queried together instead of manually merged in script code.
-- Typed value handling reduces brittle parsing and conversion logic in downstream gameplay scripts.
-- This module is useful for economy simulation, quest metrics, AI telemetry, and content QA pipelines.
-- It supports both exploratory analysis during development and deterministic processing in shipped logic.
-- Users can move from raw records to actionable summaries without leaving the runtime.
-- The practical value is fewer custom table utilities and more consistent data operations across teams.
-- It also shortens iteration loops by keeping ingest, transform, validate, and export in one namespace.
-- For performance-sensitive projects, parallel/vectorized paths reduce pressure on plain Lua loops.
-- For tool-facing scripts, async handles provide predictable status polling and error capture.
-- In short, the module turns tabular data work into a first-class gameplay and tooling capability.
-- It bridges content pipelines and runtime behavior with one coherent API model.
-- This makes data-driven development easier to maintain as project complexity grows.
-- Users gain both expressiveness and operational control for serious in-engine analytics workloads.
-- The outcome is better observability, cleaner pipelines, and faster balancing decisions.
-
-This module is mostly self-contained inside the Foundations group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
+- The `dataframe` module is the engine's tabular-data workspace for users who want table-shaped information to be loaded, queried, transformed, summarized, and exported without leaving the runtime.
+- At its core are `DataFrame` and `Database` concepts that let a project work with both standalone tables and related multi-table collections, which is important because some workflows are local column operations while others look more like lightweight analytics databases.
+- Query behavior is deliberately broad. Filtering, sorting, slicing, grouping, joining, pivoting, window calculations, ranking, cumulative metrics, and percent-change analysis all live under the same module family so data processing can stay close to the game or tool using it.
+- SQL-like execution makes the feature practical for users who think declaratively, while direct frame methods keep it approachable for scripts that prefer explicit programmatic transformation.
+- Lazy pipelines are a major functional category because they let callers stage a sequence of operations and materialize only when needed, which helps organize larger data workflows without immediately paying every computation cost.
+- Vectorized execution extends the module from convenient table manipulation into more serious numeric workloads. Typed column stores and parallel operations make the same data model useful for both exploratory and performance-sensitive processing.
+- Import and export paths such as CSV, JSON, and LVDF matter because real projects move data between authoring tools, analytics views, gameplay state, and regression artifacts. The module is designed to sit in the middle of that movement rather than only at one endpoint.
+- Background task support is important from the user perspective because parsing and querying tables can become expensive; off-thread execution lets a project keep the same conceptual API while moving heavier work away from the frame-critical path.
+- Diagnostics such as missing-value reports, duplicate analysis, and descriptive statistics turn the module into a quality and validation aid, not only a storage surface. That is useful for telemetry, balancing, content audits, and data-heavy debugging.
+- Because joins, windows, grouping, and summary statistics live beside import/export, the module can support full analysis loops inside the engine: ingest data, clean it, compare it, visualize it elsewhere, and persist the refined result.
+- That makes the same table model useful for both exploratory inspection and repeatable reporting workflows.
+- This makes `dataframe` a natural backbone for reporting-oriented tools and live dashboards where structured content and metrics need to be manipulated with more discipline than generic Lua tables provide.
+- That shared table model keeps ingest, analysis, export, and visualization steps connected.
+- Read `dataframe` as the engine feature that turns structured tables into a first-class runtime capability. Other systems provide the data or consume the results, but this module owns how tabular information is modeled, queried, transformed, analyzed, and persisted.
 
 ## Functions
 
@@ -63,7 +47,9 @@ do
   -- fromBinary restores a dataframe that was serialised with toBinary().
   local src = lurek.dataframe.fromTable({{x = 1, y = 2}})
   local df = lurek.dataframe.fromBinary(src:toBinary())
-  lurek.log.info("fromBinary rows: " .. df:nrows())
+  local row = df:getRow(1)
+  dataframe_log("binary restore rows=" .. df:nrows())
+  dataframe_log("restored point=" .. tostring(row.x) .. "," .. tostring(row.y))
 end
 ```
 
@@ -96,8 +82,11 @@ do
 -- Parses a dataframe from CSV-formatted text
   -- fromCSV parses CSV text; the first line becomes column headers.
   local df = lurek.dataframe.fromCSV("name,hp\nGoblin,30\nOrc,60\n")
-  lurek.log.info("fromCSV rows: " .. df:nrows())
-    print("lua type = " .. type(df))
+  local names = df:select("name")
+  local top = df:sort("hp", false)
+  dataframe_log("csv import rows=" .. df:nrows() .. " cols=" .. df:ncols())
+  dataframe_log("name preview=" .. names:getValue(2, "name"))
+  dataframe_log("top hp enemy=" .. top:getValue(1, "name"))
 end
 ```
 
@@ -132,8 +121,8 @@ do
   local source = lurek.dataframe.fromRows({ "name", "score" }, { { "Alice", 10 }, { "Bob", 20 } })
   source:toCSVFile(path)
   local df = lurek.dataframe.fromCSVFile(path)
-  print("csv rows", df:nrows())
-  print(df:head(1):toString())
+  example_print_log("csv rows", df:nrows())
+  example_print_log(df:head(1):toString())
 end
 ```
 
@@ -168,11 +157,11 @@ do
   local source = lurek.dataframe.fromRows({ "name", "score" }, { { "Alice", 10 }, { "Bob", 20 } })
   source:toCSVFile(path)
   local task = lurek.dataframe.fromCSVFileAsync(path)
-  print("csv async started", task:type())
+  example_print_log("csv async started", task:type())
   task:wait()
   if task:getError() == nil then
     local df = task:result()
-    print("csv async rows", df:nrows())
+    example_print_log("csv async rows", df:nrows())
   end
 end
 ```
@@ -206,8 +195,11 @@ do
 -- Parses a dataframe from a JSON array of objects
   -- fromJSON parses a JSON array of objects into a dataframe.
   local df = lurek.dataframe.fromJSON('[{"name":"Goblin","hp":30},{"name":"Orc","hp":60}]')
-  lurek.log.info("fromJSON rows: " .. df:nrows())
-    print("lua type = " .. type(df))
+  local top = df:sort("hp", false)
+  local row = df:getRow(2)
+  dataframe_log("json import rows=" .. df:nrows() .. " cols=" .. df:ncols())
+  dataframe_log("boss preview=" .. top:getValue(1, "name"))
+  dataframe_log("second row enemy=" .. row.name)
 end
 ```
 
@@ -242,9 +234,9 @@ do
   local source = lurek.dataframe.fromRows({ "name", "score" }, { { "Alice", 10 }, { "Bob", 20 } })
   source:toJSONFile(path)
   local df = lurek.dataframe.fromJSONFile(path)
-  print("json rows", df:nrows())
+  example_print_log("json rows", df:nrows())
   local columns = df:columns()
-  print("Loaded schema:", table.concat(columns, ", "))
+  example_print_log("Loaded schema:", table.concat(columns, ", "))
 end
 ```
 
@@ -279,11 +271,11 @@ do
   local source = lurek.dataframe.fromRows({ "name", "score" }, { { "Alice", 10 }, { "Bob", 20 } })
   source:toJSONFile(path)
   local task = lurek.dataframe.fromJSONFileAsync(path)
-  print("json async started", task:type())
+  example_print_log("json async started", task:type())
   task:wait()
   if not task:getError() then
     local df = task:result()
-    print("json async rows", df:nrows())
+    example_print_log("json async rows", df:nrows())
   end
 end
 ```
@@ -318,8 +310,10 @@ do
 -- Creates a dataframe from column names and positional row arrays
   -- fromRows maps column names to positional arrays; no key look-up overhead.
   local df = lurek.dataframe.fromRows({"name", "hp"}, {{"Goblin", 30}, {"Orc", 60}})
-  lurek.log.info("fromRows rows: " .. df:nrows())
-    print("lua type = " .. type(df))
+  local upgraded = df:clone()
+  upgraded:addColumn("status", "idle")
+  dataframe_log("spawn plan rows=" .. df:nrows() .. " cols=" .. df:ncols())
+  dataframe_log("upgraded schema cols=" .. upgraded:ncols())
 end
 ```
 
@@ -352,8 +346,11 @@ do
 -- Creates a dataframe from an array of row tables (most common constructor)
   -- fromTable converts a Lua array-of-row-tables into a dataframe.
   local df = lurek.dataframe.fromTable({{name = "Goblin", hp = 30}, {name = "Orc", hp = 60}})
-  lurek.log.info("fromTable rows: " .. df:nrows())
-    print("lua type = " .. type(df))
+  local strongest = df:sort("hp", false)
+  local firstRow = df:getRow(1)
+  dataframe_log("enemy table rows=" .. df:nrows() .. " cols=" .. df:ncols())
+  dataframe_log("strongest enemy=" .. strongest:getValue(1, "name"))
+  dataframe_log("first row enemy=" .. firstRow.name)
 end
 ```
 
@@ -389,6 +386,7 @@ do
   vf:colMul("hp", 0.5)
   local df = lurek.dataframe.fromVec(vf)
   lurek.log.info("hp after reduction: " .. tostring(df:getValue(1, "hp")))
+  lurek.log.info("converted rows: " .. df:nrows())
 end
 ```
 
@@ -427,8 +425,8 @@ do
   local restored = lurek.dataframe.loadDatabase(path)
   local loaded_players = restored:getTable("players")
   if loaded_players then
-    print("Loaded " .. loaded_players:nrows() .. " player records")
-    print(loaded_players:toString())
+    example_print_log("Loaded " .. loaded_players:nrows() .. " player records")
+    example_print_log(loaded_players:toString())
   end
 end
 ```
@@ -456,8 +454,11 @@ do
 -- Creates an empty dataframe with no columns or rows
   -- newDataFrame builds an empty frame; define columns before inserting rows.
   local df = lurek.dataframe.newDataFrame()
-  lurek.log.info("empty dataframe ready")
-    print("lua type = " .. type(df))
+  df:addColumn("name", "")
+  df:addColumn("score", 0)
+  df:addRow({name = "Alice", score = 1200})
+  dataframe_log("scoreboard rows=" .. df:nrows() .. " cols=" .. df:ncols())
+  dataframe_log("first player=" .. df:getValue(1, "name"))
 end
 ```
 
@@ -484,8 +485,10 @@ do
 -- Creates an empty dataframe database for managing multiple named tables
   -- newDatabase returns an empty container for named dataframes.
   local db = lurek.dataframe.newDatabase()
-  lurek.log.info("empty database ready")
-    print("lua type = " .. type(db))
+  local players = lurek.dataframe.fromTable({{id = 1, name = "Alice", level = 12}})
+  db:addTable("players", players)
+  dataframe_log("database tables=" .. db:tableCount())
+  dataframe_log("has players=" .. tostring(db:hasTable("players")))
 end
 ```
 
@@ -520,8 +523,11 @@ do
 -- Generates a random dataframe from column type definitions
   -- random generates test data using column type hints and an optional seed.
   local df = lurek.dataframe.random({{"id", "id"}, {"hp", "int"}}, 10, 1)
-  lurek.log.info("random rows: " .. df:nrows())
-    print("lua type = " .. type(df))
+  local sample = df:head(2)
+  local cols = df:columns()
+  dataframe_log("random mob rows=" .. df:nrows())
+  dataframe_log("sample first id=" .. tostring(sample:getValue(1, "id")))
+  dataframe_log("random schema=" .. table.concat(cols, ","))
 end
 ```
 
@@ -556,6 +562,8 @@ do
   local df = lurek.dataframe.fromCSV("hp,mp\n100,50\n200,80\n")
   local vf = lurek.dataframe.toVec(df)
   lurek.log.info("VecFrame rows: " .. vf:nrows())
+  lurek.log.info("VecFrame cols: " .. vf:ncols())
+  lurek.log.info("VecFrame hp type: " .. vf:colType("hp"))
 end
 ```
 
@@ -658,8 +666,11 @@ do
   -- addRow appends one record and returns its 1-based row index.
   local df = lurek.dataframe.newDataFrame()
   df:addColumn("event", "")
+  df:addColumn("timestamp", 0)
   local idx = df:addRow({event = "spawn"})
-  lurek.log.info("added at row " .. idx)
+  df:addRow({event = "loot_drop", timestamp = 4.2})
+  dataframe_log("added at row " .. idx)
+  dataframe_log("latest event=" .. df:getValue(df:nrows(), "event"))
 end
 ```
 
@@ -719,6 +730,8 @@ do
   local df = lurek.dataframe.fromTable({{score=60},{score=80},{score=45}})
   df:apply("score", function(v) return v >= 70 and "pass" or "fail" end)
   lurek.log.info("grade[1]: " .. df:getValue(1, "score"))
+  lurek.log.info("grade[2]: " .. df:getValue(2, "score"))
+  lurek.log.info("grade[3]: " .. df:getValue(3, "score"))
 end
 ```
 
@@ -747,7 +760,8 @@ do
   local base = lurek.dataframe.fromTable({{stat="atk",value=10}})
   local copy = base:clone()
   copy:setValue(1, "value", 99)
-  lurek.log.info("base atk=" .. base:getValue(1,"value") .. " copy=" .. copy:getValue(1,"value"))
+  dataframe_log("base atk=" .. base:getValue(1,"value") .. " copy=" .. copy:getValue(1,"value"))
+  dataframe_log("copy rows=" .. copy:nrows())
 end
 ```
 
@@ -776,6 +790,8 @@ do
   local df = lurek.dataframe.fromTable({{hp=100,mp=50,stamina=80}})
   local cols = df:columns()
   lurek.log.info("schema: " .. table.concat(cols, ", "))
+  lurek.log.info("column count: " .. tostring(#cols))
+  lurek.log.info("first column: " .. tostring(cols[1]))
 end
 ```
 
@@ -811,6 +827,8 @@ do
   local df = lurek.dataframe.fromTable({{x=1,y=2},{x=2,y=4},{x=3,y=6}})
   local r = df:corr("x", "y")
   lurek.log.info("corr x,y: " .. string.format("%.3f", r))
+  lurek.log.info("x mean: " .. tostring(df:mean("x")))
+  lurek.log.info("y mean: " .. tostring(df:mean("y")))
 end
 ```
 
@@ -838,7 +856,9 @@ do
   -- correlationMatrix shows pairwise linear correlation between numeric columns.
   local df = lurek.dataframe.fromTable({{a=1,b=2},{a=2,b=4},{a=3,b=6}})
   local matrix = df:correlationMatrix()
-  lurek.log.info("correlation matrix cols: " .. matrix:ncols())
+  dataframe_log("correlation matrix cols=" .. matrix:ncols())
+  dataframe_log("correlation rows=" .. matrix:nrows())
+  dataframe_log("matrix first label=" .. tostring(matrix:getValue(1, "column")))
 end
 ```
 
@@ -864,8 +884,10 @@ LDataFrame:count()
 do
 -- Returns the total count of non-nil items in this dataframe
   local df = lurek.dataframe.fromTable({{a = 1, b = 2}, {a = 3, b = 4}})
-  print("row count", df:count())
-    print("owner type = " .. tostring(df:type()))
+  local count = df:count()
+  local firstRow = df:getRow(1)
+  dataframe_log("row count=" .. count)
+  dataframe_log("first row a=" .. tostring(firstRow.a) .. " b=" .. tostring(firstRow.b))
 end
 ```
 
@@ -899,7 +921,9 @@ do
   -- countBy builds a frequency table: one row per distinct value in the column.
   local df = lurek.dataframe.fromTable({{item="sword"},{item="bow"},{item="sword"}})
   local freq = df:countBy("item")
-  lurek.log.info("frequency rows: " .. freq:nrows())
+  local cols = freq:columns()
+  dataframe_log("frequency rows=" .. freq:nrows())
+  dataframe_log("top key column=" .. cols[1] .. " value=" .. tostring(freq:getValue(1, cols[1])))
 end
 ```
 
@@ -935,8 +959,8 @@ do
   })
   local parts = df:dateParts("login_date")
   local row = parts:getRow(1)
-  print("date parts rows", parts:nrows())
-  print("year", row.year, "month", row.month, "day", row.day)
+  example_print_log("date parts rows", parts:nrows())
+  example_print_log("year", row.year, "month", row.month, "day", row.day)
 end
 ```
 
@@ -964,7 +988,9 @@ do
   -- describe returns a summary-stats frame (min, max, mean, std per numeric col).
   local df = lurek.dataframe.fromTable({{v=1},{v=2},{v=3},{v=4},{v=5}})
   local stats = df:describe()
-  lurek.log.info("describe rows: " .. stats:nrows())
+  dataframe_log("describe rows=" .. stats:nrows())
+  dataframe_log("describe cols=" .. stats:ncols())
+  dataframe_log("describe first label=" .. tostring(stats:getValue(1, "stat")))
 end
 ```
 
@@ -999,6 +1025,8 @@ do
   local df = lurek.dataframe.fromTable({{item="Gem",rarity="rare"},{item="Rock",rarity=nil},{item="Ring",rarity="epic"}})
   local clean = df:dropNil("rarity")
   lurek.log.info("valid loot rows: " .. clean:nrows())
+  lurek.log.info("first valid item: " .. tostring(clean:getValue(1, "item")))
+  lurek.log.info("last valid rarity: " .. tostring(clean:getValue(clean:nrows(), "rarity")))
 end
 ```
 
@@ -1034,9 +1062,9 @@ do
     {id = 1, name = "A"},
   })
   local duplicates = df:duplicateRows({ "id" })
-  print("duplicate rows", duplicates:nrows())
+  example_print_log("duplicate rows", duplicates:nrows())
   if duplicates:nrows() > 0 then
-    print(duplicates:toString())
+    example_print_log(duplicates:toString())
   end
 end
 ```
@@ -1070,8 +1098,10 @@ do
 -- Returns the Shannon entropy of a column (measures diversity)
   -- entropy quantifies value diversity (bits); 0 = all same, high = many different.
   local df = lurek.dataframe.fromTable({{cls="warrior"},{cls="mage"},{cls="rogue"}})
-  lurek.log.info("class entropy: " .. string.format("%.2f", df:entropy("cls")))
-    print("owner type = " .. tostring(df:type()))
+  local entropy = df:entropy("cls")
+  dataframe_log("class entropy=" .. string.format("%.2f", entropy))
+  dataframe_log("dataframe type=" .. df:type())
+  dataframe_log("class count=" .. tostring(df:nrows()))
 end
 ```
 
@@ -1103,8 +1133,11 @@ LDataFrame:explain(sql_str)
 do
 -- Preview dataframe shape or SQL query structure for debugging.
   local df = lurek.dataframe.fromTable({ { item = "Sword", gold = 150 }, { item = "Stick", gold = 5 } })
-  print(df:explain())
-  print(df:explain("SELECT item FROM self WHERE gold > 100 LIMIT 1"))
+  local plan = df:explain()
+  local sql_plan = df:explain("SELECT item FROM self WHERE gold > 100 LIMIT 1")
+  lurek.log.info(plan)
+  lurek.log.info(sql_plan)
+  lurek.log.info("explain rows " .. tostring(df:nrows()))
 end
 ```
 
@@ -1133,7 +1166,9 @@ do
   -- fillNil replaces nil cells with a default so aggregations don't fail.
   local df = lurek.dataframe.fromTable({{s=10},{s=nil},{s=5}})
   df:fillNil("s", 0)
-  lurek.log.info("sum after fill: " .. df:sum("s"))
+  dataframe_log("sum after fill=" .. df:sum("s"))
+  dataframe_log("middle score=" .. tostring(df:getValue(2, "s")))
+  dataframe_log("mean after fill=" .. tostring(df:mean("s")))
 end
 ```
 
@@ -1170,6 +1205,8 @@ do
   local df = lurek.dataframe.fromTable({{enemy="Goblin",hp=30},{enemy="Orc",hp=80}})
   local strong = df:filter("hp", ">", 50)
   lurek.log.info("strong enemies: " .. strong:nrows())
+  lurek.log.info("strongest first enemy: " .. tostring(strong:getValue(1, "enemy")))
+  lurek.log.info("strongest hp: " .. tostring(strong:getValue(1, "hp")))
 end
 ```
 
@@ -1203,7 +1240,9 @@ do
   -- getColumn extracts all values in a named column as a plain Lua array.
   local df = lurek.dataframe.fromTable({{hp = 10}, {hp = 20}, {hp = 30}})
   local vals = df:getColumn("hp")
-  lurek.log.info("hp[2] = " .. vals[2])
+  local sum = vals[1] + vals[2] + vals[3]
+  dataframe_log("hp[2]=" .. vals[2])
+  dataframe_log("column sum=" .. sum)
 end
 ```
 
@@ -1237,7 +1276,9 @@ do
   -- getColumnAsF64 extracts a numeric column as a flat Lua number array.
   local df = lurek.dataframe.fromTable({{hp=10},{hp=20},{hp=30}})
   local vals = df:getColumnAsF64("hp")
-  lurek.log.info("hp[1] = " .. vals[1])
+  dataframe_log("hp[1]=" .. vals[1])
+  dataframe_log("hp[3]=" .. vals[3])
+  dataframe_log("hp sample count=" .. tostring(#vals))
 end
 ```
 
@@ -1271,7 +1312,9 @@ do
   -- getRow returns one record as a {col = value} Lua table.
   local df = lurek.dataframe.fromTable({{name = "Alice", hp = 80}})
   local row = df:getRow(1)
-  lurek.log.info(row.name .. " hp=" .. row.hp)
+  local summary = row.name .. " hp=" .. row.hp
+  dataframe_log(summary)
+  dataframe_log("row keys=" .. table.concat(df:columns(), ","))
 end
 ```
 
@@ -1305,8 +1348,10 @@ do
 -- Returns one cell value by row index and column reference
   -- getValue reads one cell by 1-based row index and column name.
   local df = lurek.dataframe.fromTable({{name = "Alice", score = 950}})
-  lurek.log.info("score: " .. df:getValue(1, "score"))
-    print("owner type = " .. tostring(df:type()))
+  local score = df:getValue(1, "score")
+  local player = df:getValue(1, "name")
+  dataframe_log("score=" .. tostring(score))
+  dataframe_log("player=" .. tostring(player) .. " type=" .. df:type())
 end
 ```
 
@@ -1415,7 +1460,7 @@ do
     {region="EU",score=100},{region="NA",score=200},{region="EU",score=150}
   })
   local grouped = df:groupByObj("region")
-  print("grouped type", grouped:type())
+  example_print_log("grouped type", grouped:type())
 end
 ```
 
@@ -1450,6 +1495,8 @@ do
   local df = lurek.dataframe.fromTable({{item="Sword"},{item="Shield"},{item="Potion"},{item="Arrow"}})
   local preview = df:head(3)
   lurek.log.info("preview rows: " .. preview:nrows())
+  lurek.log.info("preview first item: " .. tostring(preview:getValue(1, "item")))
+  lurek.log.info("preview last item: " .. tostring(preview:getValue(preview:nrows(), "item")))
 end
 ```
 
@@ -1488,6 +1535,7 @@ do
   local guilds  = lurek.dataframe.fromTable({{player_id=1,guild="Phoenix"},{player_id=2,guild="Shadow"}})
   local merged = players:join(guilds, "id", "player_id", "inner")
   lurek.log.info("joined rows: " .. merged:nrows())
+  lurek.log.info("first joined guild: " .. tostring(merged:getValue(1, "guild")))
 end
 ```
 
@@ -1516,6 +1564,8 @@ do
   local df = lurek.dataframe.fromTable({{hp=12,team="red"},{hp=7,team="blue"}})
   local q = df:lazy()
   lurek.log.info("lazy query type: " .. tostring(q:type()))
+  lurek.log.info("is lazy query: " .. tostring(q:typeOf("LLazyQuery")))
+  lurek.log.info("source rows still available: " .. tostring(df:nrows()))
 end
 ```
 
@@ -1548,8 +1598,10 @@ do
 -- Returns the maximum value of a column
   -- max returns the largest value in a numeric column.
   local df = lurek.dataframe.fromTable({{s=100},{s=450},{s=380}})
-  lurek.log.info("high score: " .. df:max("s"))
-    print("owner type = " .. tostring(df:type()))
+  local high = df:max("s")
+  dataframe_log("high score=" .. high)
+  dataframe_log("lowest score=" .. tostring(df:min("s")))
+  dataframe_log("score samples=" .. tostring(df:nrows()))
 end
 ```
 
@@ -1582,8 +1634,10 @@ do
 -- Returns the arithmetic mean of a numeric column
   -- mean computes the arithmetic average of a numeric column.
   local df = lurek.dataframe.fromTable({{ms=16},{ms=17},{ms=33}})
-  lurek.log.info("avg ms: " .. df:mean("ms"))
-    print("owner type = " .. tostring(df:type()))
+  local avg = df:mean("ms")
+  dataframe_log("avg ms=" .. avg)
+  dataframe_log("slowest frame=" .. tostring(df:max("ms")))
+  dataframe_log("frame samples=" .. tostring(df:nrows()))
 end
 ```
 
@@ -1616,8 +1670,10 @@ do
 -- Returns the median (middle value) of a numeric column
   -- median returns the middle value and is robust against outliers.
   local df = lurek.dataframe.fromTable({{ms=16},{ms=16},{ms=17},{ms=200}})
-  lurek.log.info("typical ms: " .. df:median("ms"))
-    print("owner type = " .. tostring(df:type()))
+  local typical = df:median("ms")
+  dataframe_log("typical ms=" .. typical)
+  dataframe_log("outlier max=" .. tostring(df:max("ms")))
+  dataframe_log("sample count=" .. tostring(df:nrows()))
 end
 ```
 
@@ -1647,6 +1703,7 @@ do
   local wave2 = lurek.dataframe.fromTable({{enemy="Orc",hp=80}})
   wave1:merge(wave2)
   lurek.log.info("combined spawn count: " .. wave1:nrows())
+  lurek.log.info("first spawn: " .. tostring(wave1:getValue(1, "enemy")))
 end
 ```
 
@@ -1679,8 +1736,10 @@ do
 -- Returns the minimum value of a column
   -- min returns the smallest value in a numeric column.
   local df = lurek.dataframe.fromTable({{t=140},{t=138},{t=145}})
-  lurek.log.info("best time: " .. df:min("t"))
-    print("owner type = " .. tostring(df:type()))
+  local best = df:min("t")
+  dataframe_log("best time=" .. best)
+  dataframe_log("attempt count=" .. df:nrows())
+  dataframe_log("worst time=" .. tostring(df:max("t")))
 end
 ```
 
@@ -1716,8 +1775,8 @@ do
     {score = 200},
   })
   local report = df:missingReport()
-  print("missing report rows", report:nrows())
-  print(report:toString())
+  example_print_log("missing report rows", report:nrows())
+  example_print_log(report:toString())
 end
 ```
 
@@ -1750,8 +1809,10 @@ do
 -- Returns the most frequently occurring value in a column
   -- modeVal returns the most frequently occurring value in a column.
   local df = lurek.dataframe.fromTable({{w="sword"},{w="bow"},{w="sword"},{w="staff"},{w="sword"}})
-  lurek.log.info("most popular: " .. tostring(df:modeVal("w")))
-    print("owner type = " .. tostring(df:type()))
+  local mode = df:modeVal("w")
+  dataframe_log("most popular=" .. tostring(mode))
+  dataframe_log("dataframe type=" .. df:type())
+  dataframe_log("unique choices=" .. tostring(#df:unique("w")))
 end
 ```
 
@@ -1779,7 +1840,9 @@ do
   -- ncols returns how many columns the schema has.
   local df = lurek.dataframe.fromTable({{name="Sword",damage=12,weight=3}})
   lurek.log.info("item schema cols: " .. df:ncols())
-    print("owner type = " .. tostring(df:type()))
+  lurek.log.info("item schema names: " .. table.concat(df:columns(), ", "))
+  lurek.log.info("row/col shape: " .. df:nrows() .. "x" .. df:ncols())
+  lurek.log.info("first item name: " .. tostring(df:getValue(1, "name")))
 end
 ```
 
@@ -1811,6 +1874,8 @@ do
   local df = lurek.dataframe.fromTable({{val=10},{val=50},{val=90}})
   df:normalizeCol("val", 0.0, 1.0, "val_norm")
   lurek.log.info("normalised column added: " .. df:ncols() .. " cols")
+  lurek.log.info("first normalized value: " .. tostring(df:getValue(1, "val_norm")))
+  lurek.log.info("last normalized value: " .. tostring(df:getValue(3, "val_norm")))
 end
 ```
 
@@ -1838,7 +1903,9 @@ do
   -- nrows returns the row count; check it before iterating or indexing.
   local df = lurek.dataframe.fromTable({{name="Alice"},{name="Bob"},{name="Cara"}})
   lurek.log.info("player count: " .. df:nrows())
-    print("owner type = " .. tostring(df:type()))
+  lurek.log.info("first player: " .. tostring(df:getValue(1, "name")))
+  lurek.log.info("row/col shape: " .. df:nrows() .. "x" .. df:ncols())
+  lurek.log.info("last player: " .. tostring(df:getValue(df:nrows(), "name")))
 end
 ```
 
@@ -1910,8 +1977,9 @@ LDataFrame:parFilter(col, op, val)
 do
   local df = lurek.dataframe.fromRows({ "x" }, { {1}, {2}, {3}, {4}, {5}, {6} })
   local out = df:parFilter("x", ">", 3)
-  print("parFilter rows", out:nrows())
-  print(out:toString())
+  lurek.log.info("parFilter rows " .. tostring(out:nrows()))
+  lurek.log.info("parFilter first kept " .. tostring(out:getValue(1, "x")))
+  lurek.log.info(out:toString())
 end
 ```
 
@@ -1950,8 +2018,8 @@ do
     {"b", 4},
   })
   local out = df:parGroupAgg("g", "v", "sum")
-  print("parGroupAgg rows", out:nrows())
-  print(out:toString())
+  example_print_log("parGroupAgg rows", out:nrows())
+  example_print_log(out:toString())
 end
 ```
 
@@ -2065,6 +2133,8 @@ do
   local df = lurek.dataframe.fromTable({{item="Sword",gold=150},{item="Stick",gold=5}})
   local expensive = df:query("SELECT * FROM t WHERE gold > 100")
   lurek.log.info("expensive items: " .. expensive:nrows())
+  lurek.log.info("first expensive item: " .. tostring(expensive:getValue(1, "item")))
+  lurek.log.info("first expensive price: " .. tostring(expensive:getValue(1, "gold")))
 end
 ```
 
@@ -2099,11 +2169,11 @@ do
     {age = 30},
   })
   local task = df:queryAsync("SELECT * FROM t WHERE age > 26")
-  print("query task", task:type())
+  example_print_log("query task", task:type())
   task:wait()
   local result_df = task:result()
-  print("async query rows", result_df:nrows())
-  print(result_df:toString())
+  example_print_log("async query rows", result_df:nrows())
+  example_print_log(result_df:toString())
 end
 ```
 
@@ -2140,6 +2210,8 @@ do
   local df = lurek.dataframe.fromTable({{player="Alice",score=80},{player="Bob",score=95},{player="Cara",score=72}})
   local ranked = df:rank("score", "desc", "position")
   lurek.log.info("ranked rows: " .. ranked:nrows())
+  lurek.log.info("leader name: " .. tostring(ranked:getValue(1, "player")))
+  lurek.log.info("leader rank: " .. tostring(ranked:getValue(1, "position")))
 end
 ```
 
@@ -2167,7 +2239,9 @@ do
   -- removeColumn drops a named column, reducing ncols by one.
   local df = lurek.dataframe.fromTable({{name = "Alice", internal = "x7", score = 100}})
   df:removeColumn("internal")
-  lurek.log.info("cols after remove: " .. df:ncols())
+  local cols = df:columns()
+  dataframe_log("cols after remove=" .. df:ncols())
+  dataframe_log("remaining schema=" .. table.concat(cols, ","))
 end
 ```
 
@@ -2195,7 +2269,10 @@ do
   -- removeRow deletes one record by 1-based index; later rows shift down.
   local df = lurek.dataframe.fromTable({{n = 1}, {n = 2}, {n = 3}})
   df:removeRow(2)
-  lurek.log.info("rows after remove: " .. df:nrows())
+  local first = df:getValue(1, "n")
+  dataframe_log("rows after remove=" .. df:nrows())
+  dataframe_log("new second row=" .. tostring(df:getValue(2, "n")))
+  dataframe_log("first row still=" .. tostring(first))
 end
 ```
 
@@ -2224,7 +2301,10 @@ do
   -- rename changes a column header without touching its data.
   local df = lurek.dataframe.fromTable({{pts = 100}})
   df:rename("pts", "score")
-  lurek.log.info("renamed column: " .. df:columns()[1])
+  local row = df:getRow(1)
+  dataframe_log("renamed column=" .. df:columns()[1])
+  dataframe_log("value survived=" .. tostring(df:getValue(1, "score")))
+  dataframe_log("row score=" .. tostring(row.score))
 end
 ```
 
@@ -2327,9 +2407,12 @@ do
 -- Returns an iterator for use in for-loops (index, row_table)
   -- rows() returns a generic-for iterator yielding (index, row_table).
   local df = lurek.dataframe.fromTable({{name="Alice"},{name="Bob"}})
+  local count = 0
   for i, row in df:rows() do
-    lurek.log.info("#" .. i .. " " .. row.name)
+    count = count + 1
+    dataframe_log("#" .. i .. " " .. row.name)
   end
+  dataframe_log("iterated rows=" .. count)
 end
 ```
 
@@ -2364,7 +2447,9 @@ do
   -- sample picks N random rows without replacement; seed for reproducibility.
   local src = lurek.dataframe.random({{"id","id"}}, 100, 1)
   local subset = src:sample(10, 42)
-  lurek.log.info("sampled rows: " .. subset:nrows())
+  dataframe_log("sampled rows=" .. subset:nrows())
+  dataframe_log("sample first id=" .. tostring(subset:getValue(1, "id")))
+  dataframe_log("sample last id=" .. tostring(subset:getValue(subset:nrows(), "id")))
 end
 ```
 
@@ -2391,8 +2476,9 @@ do
 -- Inspect inferred column types and nullability before running a data pipeline.
   local df = lurek.dataframe.fromTable({ { name = "Alice", score = 10 }, { name = "Bob", score = nil } })
   local schema = df:schema()
-  print("first column", schema[1].name, schema[1].dtype)
-  print("score nullable", schema[2].nullable)
+  lurek.log.info("first column " .. tostring(schema[1].name) .. " " .. tostring(schema[1].dtype))
+  lurek.log.info("score nullable " .. tostring(schema[2].nullable))
+  lurek.log.info("schema entries " .. tostring(#schema))
 end
 ```
 
@@ -2427,6 +2513,8 @@ do
   local df = lurek.dataframe.fromTable({{name="Alice",score=950,guild="Knights"}})
   local view = df:select("name", "score")
   lurek.log.info("selected cols: " .. view:ncols())
+  lurek.log.info("selected player: " .. tostring(view:getValue(1, "name")))
+  lurek.log.info("selected score: " .. tostring(view:getValue(1, "score")))
 end
 ```
 
@@ -2455,7 +2543,9 @@ do
   -- setColumnFromF64 bulk-writes computed numbers back into a column.
   local df = lurek.dataframe.fromTable({{x=0},{x=0},{x=0}})
   df:setColumnFromF64("x", {1.5, 2.5, 3.5})
-  lurek.log.info("sum x: " .. df:sum("x"))
+  dataframe_log("sum x=" .. df:sum("x"))
+  dataframe_log("last x=" .. tostring(df:getValue(3, "x")))
+  dataframe_log("mean x=" .. tostring(df:mean("x")))
 end
 ```
 
@@ -2486,6 +2576,8 @@ do
   local df = lurek.dataframe.fromTable({{player="Alice",score=50}})
   df:setValue(1, "score", 150)
   lurek.log.info("updated score: " .. df:getValue(1, "score"))
+  lurek.log.info("player after update: " .. tostring(df:getValue(1, "player")))
+  lurek.log.info("row count: " .. tostring(df:nrows()))
 end
 ```
 
@@ -2521,6 +2613,8 @@ do
   local df = lurek.dataframe.fromTable({{r="Sword"},{r="Shield"},{r="Bow"},{r="Staff"},{r="Helm"},{r="Boots"}})
   local page2 = df:slice(4, 6)
   lurek.log.info("page 2 rows: " .. page2:nrows())
+  lurek.log.info("page 2 first recipe: " .. tostring(page2:getValue(1, "r")))
+  lurek.log.info("page 2 last recipe: " .. tostring(page2:getValue(page2:nrows(), "r")))
 end
 ```
 
@@ -2556,6 +2650,8 @@ do
   local df = lurek.dataframe.fromTable({{name="Alice",score=950},{name="Bob",score=1200}})
   local sorted = df:sort("score", false)
   lurek.log.info("top scorer: " .. sorted:getValue(1, "name"))
+  lurek.log.info("top score: " .. tostring(sorted:getValue(1, "score")))
+  lurek.log.info("sorted rows: " .. tostring(sorted:nrows()))
 end
 ```
 
@@ -2588,8 +2684,10 @@ do
 -- Returns the standard deviation of a numeric column
   -- stddev measures the spread of values in a numeric column.
   local df = lurek.dataframe.fromTable({{v=10},{v=20},{v=30},{v=40}})
-  lurek.log.info("stddev: " .. string.format("%.1f", df:stddev("v")))
-    print("owner type = " .. tostring(df:type()))
+  local spread = df:stddev("v")
+  dataframe_log("stddev=" .. string.format("%.1f", spread))
+  dataframe_log("variance=" .. string.format("%.1f", df:variance("v")))
+  dataframe_log("mean=" .. string.format("%.1f", df:mean("v")))
 end
 ```
 
@@ -2622,8 +2720,10 @@ do
 -- Returns the numeric sum of a column
   -- sum totals all values in a numeric column.
   local df = lurek.dataframe.fromTable({{dmg=10},{dmg=20},{dmg=5}})
-  lurek.log.info("total damage: " .. df:sum("dmg"))
-    print("owner type = " .. tostring(df:type()))
+  local total = df:sum("dmg")
+  dataframe_log("total damage=" .. total)
+  dataframe_log("average hit=" .. tostring(df:mean("dmg")))
+  dataframe_log("highest hit=" .. tostring(df:max("dmg")))
 end
 ```
 
@@ -2658,6 +2758,8 @@ do
   local df = lurek.dataframe.fromTable({{turn=1},{turn=2},{turn=3},{turn=4}})
   local recent = df:tail(2)
   lurek.log.info("recent rows: " .. recent:nrows())
+  lurek.log.info("recent first turn: " .. tostring(recent:getValue(1, "turn")))
+  lurek.log.info("recent last turn: " .. tostring(recent:getValue(recent:nrows(), "turn")))
 end
 ```
 
@@ -2685,7 +2787,9 @@ do
   -- toBinary produces the most compact serialisation format.
   local df = lurek.dataframe.fromTable({{x=1.5,y=2.3}})
   local blob = df:toBinary()
-  lurek.log.info("binary bytes: " .. #blob)
+  local restored = lurek.dataframe.fromBinary(blob)
+  dataframe_log("binary bytes=" .. #blob)
+  dataframe_log("restored rows=" .. restored:nrows())
 end
 ```
 
@@ -2721,8 +2825,8 @@ do
     {level = 43},
   })
   local ok = df:toBinaryFile("save/output.lvdf")
-  print("binary saved", ok)
-  print("binary bytes", #df:toBinary())
+  example_print_log("binary saved", ok)
+  example_print_log("binary bytes", #df:toBinary())
 end
 ```
 
@@ -2750,7 +2854,9 @@ do
   -- toCSV serialises the frame to CSV text with a header row.
   local df = lurek.dataframe.fromTable({{name="Alice",score=100}})
   local csv = df:toCSV()
-  lurek.log.info("CSV bytes: " .. #csv)
+  dataframe_log("CSV bytes=" .. #csv)
+  dataframe_log("csv has header=" .. tostring(string.find(csv, "name,score", 1, true) ~= nil))
+  dataframe_log("csv has row=" .. tostring(string.find(csv, "Alice", 1, true) ~= nil))
 end
 ```
 
@@ -2786,8 +2892,8 @@ do
     {score = 725},
   })
   local ok = df:toCSVFile("save/output.csv")
-  print("csv saved", ok)
-  print("csv preview", df:toCSV())
+  example_print_log("csv saved", ok)
+  example_print_log("csv preview", df:toCSV())
 end
 ```
 
@@ -2816,6 +2922,8 @@ do
   local df = lurek.dataframe.fromTable({{stat="playtime",value=3600}})
   local json = df:toJSON()
   lurek.log.info("JSON length: " .. #json)
+  lurek.log.info("json has key stat: " .. tostring(string.find(json, "stat", 1, true) ~= nil))
+  lurek.log.info("json has value 3600: " .. tostring(string.find(json, "3600", 1, true) ~= nil))
 end
 ```
 
@@ -2851,8 +2959,8 @@ do
     {name = "Bob"},
   })
   local ok = df:toJSONFile("save/output.json")
-  print("json saved", ok)
-  print("json preview", df:toJSON())
+  example_print_log("json saved", ok)
+  example_print_log("json preview", df:toJSON())
 end
 ```
 
@@ -2879,8 +2987,10 @@ do
 -- Formats this dataframe as a human-readable aligned text table
   -- toString formats the frame as an aligned text table for debug output.
   local df = lurek.dataframe.fromTable({{name="Alice",hp=80}})
-  lurek.log.info("frame:\n" .. df:toString())
-    print("owner type = " .. tostring(df:type()))
+  local text = df:toString()
+  dataframe_log("frame text bytes=" .. #text)
+  dataframe_log("frame type=" .. df:type())
+  dataframe_log("text contains name=" .. tostring(string.find(text, "Alice", 1, true) ~= nil))
 end
 ```
 
@@ -2908,7 +3018,9 @@ do
   -- toTable converts the frame back to a plain Lua array-of-row-tables.
   local df = lurek.dataframe.fromTable({{name="Alice",hp=80}})
   local rows = df:toTable()
-  lurek.log.info("first row name: " .. rows[1].name)
+  dataframe_log("first row name=" .. rows[1].name)
+  dataframe_log("row count=" .. #rows)
+  dataframe_log("first row hp=" .. tostring(rows[1].hp))
 end
 ```
 
@@ -2933,9 +3045,10 @@ LDataFrame:type()
 ```lua
 do
   local df = lurek.dataframe.newDataFrame()
-  if df:type() == "LDataFrame" then
-    print("confirmed dataframe handle")
-  end
+  local typeName = df:type()
+  local matches = typeName == "LDataFrame"
+  dataframe_log("dataframe type=" .. typeName)
+  dataframe_log("confirmed dataframe handle=" .. tostring(matches))
 end
 ```
 
@@ -2966,9 +3079,10 @@ LDataFrame:typeOf(name)
 ```lua
 do
   local df = lurek.dataframe.newDataFrame()
-  if df:typeOf("LObject") then
-    print("dataframe is object")
-  end
+  local isObject = df:typeOf("LObject")
+  local isFrame = df:typeOf("LDataFrame")
+  dataframe_log("dataframe is object=" .. tostring(isObject))
+  dataframe_log("dataframe is frame=" .. tostring(isFrame))
 end
 ```
 
@@ -3002,7 +3116,9 @@ do
   -- unique returns the distinct values of one column as a Lua array.
   local df = lurek.dataframe.fromTable({{cls="warrior"},{cls="mage"},{cls="warrior"}})
   local types = df:unique("cls")
-  lurek.log.info("distinct classes: " .. #types)
+  dataframe_log("distinct classes=" .. #types)
+  dataframe_log("first distinct=" .. tostring(types[1]))
+  dataframe_log("last distinct=" .. tostring(types[#types]))
 end
 ```
 
@@ -3039,8 +3155,8 @@ do
     {class = "Warrior"},
   })
   local counts = df:valueCounts("class")
-  print("value counts rows", counts:nrows())
-  print(counts:toString())
+  example_print_log("value counts rows", counts:nrows())
+  example_print_log(counts:toString())
 end
 ```
 
@@ -3073,8 +3189,10 @@ do
 -- Returns the variance of a numeric column
   -- variance is stddev squared; used in statistical formulas.
   local df = lurek.dataframe.fromTable({{v=10},{v=20},{v=30}})
-  lurek.log.info("variance: " .. df:variance("v"))
-    print("owner type = " .. tostring(df:type()))
+  local variance = df:variance("v")
+  dataframe_log("variance=" .. variance)
+  dataframe_log("stddev=" .. tostring(df:stddev("v")))
+  dataframe_log("mean=" .. tostring(df:mean("v")))
 end
 ```
 
@@ -3140,7 +3258,9 @@ do
   -- withEval adds a derived column computed row-by-row from an expression.
   local df = lurek.dataframe.fromTable({{atk=10,bonus=4},{atk=15,bonus=2}})
   local result = df:withEval("eff", "atk + bonus")
-  lurek.log.info("eff[1]: " .. result:getValue(1, "eff"))
+  dataframe_log("eff[1]=" .. result:getValue(1, "eff"))
+  dataframe_log("best eff=" .. tostring(result:max("eff")))
+  dataframe_log("eff rows=" .. tostring(result:nrows()))
 end
 ```
 
@@ -3202,6 +3322,8 @@ do
   local df = lurek.dataframe.fromTable({{player="Alice",pts=10},{player="Bob",pts=30},{player="Cara",pts=20}})
   df:withRank("pts", true, "rank")
   lurek.log.info("rank col added: " .. df:ncols() .. " cols")
+  lurek.log.info("lowest points rank: " .. tostring(df:getValue(1, "rank")))
+  lurek.log.info("highest points rank: " .. tostring(df:getValue(2, "rank")))
 end
 ```
 
@@ -3398,7 +3520,7 @@ do
   source:toCSVFile(path)
   local task = lurek.dataframe.fromCSVFileAsync(path)
   task:wait()
-  print("task error", task:getError())
+  example_print_log("task error", task:getError())
 end
 ```
 
@@ -3426,9 +3548,9 @@ do
   local source = lurek.dataframe.fromRows({ "name", "score" }, { { "Alice", 10 }, { "Bob", 20 } })
   source:toCSVFile(path)
   local task = lurek.dataframe.fromCSVFileAsync(path)
-  print("done before wait", task:isDone())
+  example_print_log("done before wait", task:isDone())
   task:wait()
-  print("done after wait", task:isDone())
+  example_print_log("done after wait", task:isDone())
 end
 ```
 
@@ -3456,9 +3578,9 @@ do
   local source = lurek.dataframe.fromRows({ "name", "score" }, { { "Alice", 10 }, { "Bob", 20 } })
   source:toCSVFile(path)
   local task = lurek.dataframe.fromCSVFileAsync(path)
-  print("initial progress", task:progress())
+  example_print_log("initial progress", task:progress())
   task:wait()
-  print("final progress", task:progress())
+  example_print_log("final progress", task:progress())
 end
 ```
 
@@ -3486,8 +3608,8 @@ do
   local task = df:queryAsync("SELECT * FROM t WHERE id = 1")
   task:wait()
   local result_df = task:result()
-  print("result rows", result_df:nrows())
-  print(result_df:toString())
+  example_print_log("result rows", result_df:nrows())
+  example_print_log(result_df:toString())
 end
 ```
 
@@ -3514,9 +3636,9 @@ do
   local df = lurek.dataframe.fromRows({ "id" }, { { 1 }, { 2 } })
   local task = df:queryAsync("SELECT * FROM t WHERE id = 1")
   local type_name = task:type()
-  print("task type", type_name)
+  example_print_log("task type", type_name)
   if type_name == "LDataFrameTask" then
-    print("This is indeed a DataFrameTask")
+    example_print_log("This is indeed a DataFrameTask")
   end
   task:wait()
 end
@@ -3551,9 +3673,9 @@ do
   local df = lurek.dataframe.fromRows({ "id" }, { { 1 }, { 2 } })
   local task = df:queryAsync("SELECT * FROM t WHERE id = 1")
   local is_task = task:typeOf("LDataFrameTask")
-  print("is dataframe task", is_task)
+  example_print_log("is dataframe task", is_task)
   if is_task then
-    print("Object is verified as DataFrameTask")
+    example_print_log("Object is verified as DataFrameTask")
   end
   task:wait()
 end
@@ -3583,9 +3705,9 @@ do
   local source = lurek.dataframe.fromRows({ "name", "score" }, { { "Alice", 10 }, { "Bob", 20 } })
   source:toJSONFile(path)
   local task = lurek.dataframe.fromJSONFileAsync(path)
-  print("waiting for task")
+  example_print_log("waiting for task")
   task:wait()
-  print("task error", task:getError())
+  example_print_log("task error", task:getError())
 end
 ```
 
@@ -3651,8 +3773,10 @@ do
   -- clear removes all tables, resetting the database to empty.
   local db = lurek.dataframe.newDatabase()
   db:addTable("round1", lurek.dataframe.newDataFrame())
+  local before = db:tableCount()
   db:clear()
-  lurek.log.info("tables after clear: " .. db:tableCount())
+  dataframe_log("tables before clear=" .. before)
+  dataframe_log("tables after clear=" .. db:tableCount())
 end
 ```
 
@@ -3687,7 +3811,10 @@ do
   local db = lurek.dataframe.newDatabase()
   db:addTable("players", lurek.dataframe.fromTable({{name="Alice"}}))
   local t = db:getTable("players")
-  if t then lurek.log.info("players rows: " .. t:nrows()) end
+  if t then
+    dataframe_log("players rows=" .. t:nrows())
+    dataframe_log("first player=" .. tostring(t:getValue(1, "name")))
+  end
 end
 ```
 
@@ -3721,7 +3848,9 @@ do
   -- hasTable returns true when the named table is registered.
   local db = lurek.dataframe.newDatabase()
   db:addTable("scores", lurek.dataframe.newDataFrame())
-  lurek.log.info("has scores: " .. tostring(db:hasTable("scores")))
+  dataframe_log("has scores=" .. tostring(db:hasTable("scores")))
+  dataframe_log("has items=" .. tostring(db:hasTable("items")))
+  dataframe_log("table count=" .. tostring(db:tableCount()))
 end
 ```
 
@@ -3750,7 +3879,9 @@ do
   local db = lurek.dataframe.newDatabase()
   db:addTable("players", lurek.dataframe.newDataFrame())
   db:addTable("items", lurek.dataframe.newDataFrame())
-  lurek.log.info("tables: " .. table.concat(db:listTables(), ", "))
+  local names = db:listTables()
+  dataframe_log("tables=" .. table.concat(names, ", "))
+  dataframe_log("table count=" .. #names)
 end
 ```
 
@@ -3816,7 +3947,8 @@ do
   local db = lurek.dataframe.newDatabase()
   db:addTable("players", lurek.dataframe.fromTable({{name="Alice",hp=80},{name="Bob",hp=20}}))
   local result = db:query("SELECT name FROM players WHERE hp < 50")
-  lurek.log.info("low-hp players: " .. result:nrows())
+  dataframe_log("low-hp players=" .. result:nrows())
+  dataframe_log("first wounded=" .. tostring(result:getValue(1, "name")))
 end
 ```
 
@@ -3850,10 +3982,10 @@ do
   local users = lurek.dataframe.fromRows({ "age" }, { { 25 }, { 30 } })
   db:addTable("users", users)
   local task = db:queryAsync("SELECT * FROM users WHERE age > 26")
-  print("database query task", task:type())
+  example_print_log("database query task", task:type())
   task:wait()
   local result_df = task:result()
-  print("Async query finished, resulting rows: " .. result_df:nrows())
+  example_print_log("Async query finished, resulting rows: " .. result_df:nrows())
 end
 ```
 
@@ -3888,8 +4020,8 @@ do
   local users = lurek.dataframe.fromRows({ "name" }, { { "Alice" }, { "Bob" } })
   db:addTable("users", users)
   local result = db:queryParams("SELECT * FROM users WHERE name = ?", {"Alice"})
-  print("query params rows", result:nrows())
-  print(result:toString())
+  example_print_log("query params rows", result:nrows())
+  example_print_log(result:toString())
 end
 ```
 
@@ -3926,8 +4058,8 @@ do
   local task = db:queryParamsAsync("SELECT * FROM players WHERE level > ?", {15})
   task:wait()
   local result = task:result()
-  print("async param rows", result:nrows())
-  print(result:toString())
+  example_print_log("async param rows", result:nrows())
+  example_print_log(result:toString())
 end
 ```
 
@@ -3956,7 +4088,8 @@ do
   local db = lurek.dataframe.newDatabase()
   db:addTable("temp", lurek.dataframe.newDataFrame())
   db:removeTable("temp")
-  lurek.log.info("tables after remove: " .. db:tableCount())
+  dataframe_log("tables after remove=" .. db:tableCount())
+  dataframe_log("has temp=" .. tostring(db:hasTable("temp")))
 end
 ```
 
@@ -3993,7 +4126,7 @@ do
   })
   db:addTable("savegame_stats", df)
   local success = db:save("save/savegame_stats.json")
-  print("database saved", success)
+  example_print_log("database saved", success)
 end
 ```
 
@@ -4022,7 +4155,8 @@ do
   local db = lurek.dataframe.newDatabase()
   db:addTable("a", lurek.dataframe.newDataFrame())
   db:addTable("b", lurek.dataframe.newDataFrame())
-  lurek.log.info("table count: " .. db:tableCount())
+  dataframe_log("table count=" .. db:tableCount())
+  dataframe_log("has a=" .. tostring(db:hasTable("a")))
 end
 ```
 
@@ -4051,7 +4185,9 @@ do
   local db = lurek.dataframe.newDatabase()
   db:addTable("scores", lurek.dataframe.fromTable({{v=1}}))
   local json = db:toJSON()
-  lurek.log.info("database JSON bytes: " .. #json)
+  local tables = db:listTables()
+  dataframe_log("database JSON bytes=" .. #json)
+  dataframe_log("tables exported=" .. table.concat(tables, ","))
 end
 ```
 
@@ -4077,8 +4213,10 @@ LDatabase:type()
 do
 -- Returns the Lua-visible type name for this database handle.
   local db = lurek.dataframe.newDatabase()
-  print("db type", db:type())
-    print("typeOf LObject = " .. tostring(db:typeOf("LObject")))
+  lurek.log.info("db type " .. tostring(db:type()))
+  lurek.log.info("db rows: " .. tostring(db:nrows()))
+  lurek.log.info("table count " .. tostring(db:tableCount()))
+  lurek.log.info("is database " .. tostring(db:typeOf("LDatabase")))
 end
 ```
 
@@ -4110,8 +4248,10 @@ LDatabase:typeOf(name)
 do
 -- Returns whether this database handle matches a supported type name.
   local db = lurek.dataframe.newDatabase()
-  print("is database", db:typeOf("LDatabase"))
-  print("is object", db:typeOf("LObject"))
+  lurek.log.info("is database " .. tostring(db:typeOf("LDatabase")))
+  lurek.log.info("is object " .. tostring(db:typeOf("LObject")))
+  lurek.log.info("db type " .. tostring(db:type()))
+  lurek.log.info("table count " .. tostring(db:tableCount()))
 end
 ```
 
@@ -4162,8 +4302,8 @@ do
     end
     return sum / #vals
   end)
-  print("aggregate rows", result:nrows())
-  print(result:toString())
+  example_print_log("aggregate rows", result:nrows())
+  example_print_log(result:toString())
 end
 ```
 
@@ -4190,7 +4330,9 @@ do
 -- Returns the Lua-visible type name for this grouped frame handle.
   local df = lurek.dataframe.fromTable({{team="red",score=10},{team="blue",score=20}})
   local grouped = df:groupByObj("team")
-  print("grouped type", grouped:type())
+  lurek.log.info("grouped type " .. tostring(grouped:type()))
+  lurek.log.info("grouped handle " .. tostring(grouped))
+  lurek.log.info("is grouped object " .. tostring(grouped:typeOf("LObject")))
 end
 ```
 
@@ -4223,8 +4365,9 @@ do
 -- Returns whether this grouped frame handle matches a supported type name.
   local df = lurek.dataframe.fromTable({{team="red",score=10},{team="blue",score=20}})
   local grouped = df:groupByObj("team")
-  print("is grouped frame", grouped:typeOf("LGroupedFrame"))
-  print("is object", grouped:typeOf("LObject"))
+  lurek.log.info("is grouped frame " .. tostring(grouped:typeOf("LGroupedFrame")))
+  lurek.log.info("is object " .. tostring(grouped:typeOf("LObject")))
+  lurek.log.info("grouped type " .. tostring(grouped:type()))
 end
 ```
 
@@ -4259,8 +4402,9 @@ do
 -- Executes the lazy query and returns a dataframe.
   local df = lurek.dataframe.fromTable({{item="Sword",gold=150},{item="Stick",gold=5}})
   local result = df:lazy():limit(10):collect()
-  print("collected rows", result:nrows())
-  print(result:toString())
+  lurek.log.info("collected rows " .. tostring(result:nrows()))
+  lurek.log.info("first collected item " .. tostring(result:getValue(1, "item")))
+  lurek.log.info(result:toString())
 end
 ```
 
@@ -4294,7 +4438,9 @@ do
   -- dropNil on a lazy query filters out rows where the column is nil.
   local df = lurek.dataframe.fromTable({{v=1},{v=nil},{v=3}})
   local result = df:lazy():dropNil("v"):collect()
-  lurek.log.info("rows after dropNil: " .. result:nrows())
+  dataframe_log("rows after dropNil=" .. result:nrows())
+  dataframe_log("first kept value=" .. tostring(result:getValue(1, "v")))
+  dataframe_log("last kept value=" .. tostring(result:getValue(result:nrows(), "v")))
 end
 ```
 
@@ -4331,6 +4477,8 @@ do
   local df = lurek.dataframe.fromTable({{level=5},{level=20},{level=35}})
   local result = df:lazy():filter("level", ">=", 15):collect()
   lurek.log.info("high-level rows: " .. result:nrows())
+  lurek.log.info("lowest kept level: " .. tostring(result:getValue(1, "level")))
+  lurek.log.info("highest kept level: " .. tostring(result:getValue(result:nrows(), "level")))
 end
 ```
 
@@ -4364,7 +4512,9 @@ do
   -- head on a lazy query limits to the first N rows at collect time.
   local df = lurek.dataframe.fromTable({{n=1},{n=2},{n=3},{n=4},{n=5}})
   local result = df:lazy():head(3):collect()
-  lurek.log.info("head rows: " .. result:nrows())
+  dataframe_log("head rows=" .. result:nrows())
+  dataframe_log("first preview row=" .. tostring(result:getValue(1, "n")))
+  dataframe_log("head last preview row=" .. tostring(result:getValue(result:nrows(), "n")))
 end
 ```
 
@@ -4398,8 +4548,8 @@ do
   local df = lurek.dataframe.fromTable({{n=1},{n=2},{n=3},{n=4},{n=5},{n=6}})
   local q = df:lazy():limit(5)
   local result = q:collect()
-  print("rows after limit", result:nrows())
-  print(result:toString())
+  example_print_log("rows after limit", result:nrows())
+  example_print_log(result:toString())
 end
 ```
 
@@ -4433,7 +4583,9 @@ do
   -- select on a lazy query projects only the specified columns.
   local df = lurek.dataframe.fromTable({{a=1, b=2, c=3}})
   local result = df:lazy():select({"a", "b"}):collect()
-  lurek.log.info("selected cols: " .. result:ncols())
+  dataframe_log("selected cols=" .. result:ncols())
+  dataframe_log("first row a=" .. tostring(result:getValue(1, "a")))
+  dataframe_log("first row b=" .. tostring(result:getValue(1, "b")))
 end
 ```
 
@@ -4468,7 +4620,9 @@ do
   -- slice on a lazy query extracts a 1-based inclusive row range.
   local df = lurek.dataframe.fromTable({{n=1},{n=2},{n=3},{n=4},{n=5}})
   local result = df:lazy():slice(2, 4):collect()
-  lurek.log.info("sliced rows: " .. result:nrows())
+  dataframe_log("slice rows=" .. result:nrows())
+  dataframe_log("slice starts at=" .. tostring(result:getValue(1, "n")))
+  dataframe_log("slice ends at=" .. tostring(result:getValue(result:nrows(), "n")))
 end
 ```
 
@@ -4504,6 +4658,8 @@ do
   local df = lurek.dataframe.fromTable({{name="Cara",score=80},{name="Alice",score=95},{name="Bob",score=60}})
   local top = df:lazy():sort("score", false):collect()
   lurek.log.info("1st place: " .. top:getValue(1, "name"))
+  lurek.log.info("1st score: " .. tostring(top:getValue(1, "score")))
+  lurek.log.info("last score: " .. tostring(top:getValue(top:nrows(), "score")))
 end
 ```
 
@@ -4537,7 +4693,9 @@ do
   -- tail on a lazy query keeps only the last N rows.
   local df = lurek.dataframe.fromTable({{n=1},{n=2},{n=3},{n=4},{n=5}})
   local result = df:lazy():tail(2):collect()
-  lurek.log.info("tail rows: " .. result:nrows())
+  dataframe_log("tail rows=" .. result:nrows())
+  dataframe_log("tail first row=" .. tostring(result:getValue(1, "n")))
+  dataframe_log("tail newest row=" .. tostring(result:getValue(result:nrows(), "n")))
 end
 ```
 
@@ -4564,7 +4722,9 @@ do
 -- Returns the Lua-visible type name for this lazy query handle.
   local df = lurek.dataframe.fromTable({{x=1}})
   local lq = df:lazy()
-  print("lazy type", lq:type())
+  lurek.log.info("lazy type " .. tostring(lq:type()))
+  lurek.log.info("is object " .. tostring(lq:typeOf("LObject")))
+  lurek.log.info("source rows " .. tostring(df:nrows()))
 end
 ```
 
@@ -4597,8 +4757,9 @@ do
 -- Returns whether this lazy query handle matches a supported type name.
   local df = lurek.dataframe.fromTable({{x=1}})
   local lq = df:lazy()
-  print("is lazy query", lq:typeOf("LLazyQuery"))
-  print("is object", lq:typeOf("LObject"))
+  lurek.log.info("is lazy query " .. tostring(lq:typeOf("LLazyQuery")))
+  lurek.log.info("is object " .. tostring(lq:typeOf("LObject")))
+  lurek.log.info("lazy type " .. tostring(lq:type()))
 end
 ```
 
@@ -4642,6 +4803,7 @@ do
   local mask = vf:filterMask("hp", ">=", 50)
   local alive = vf:applyMask(mask)
   lurek.log.info("alive rows: " .. alive:nrows())
+  lurek.log.info("alive hp type: " .. alive:colType("hp"))
 end
 ```
 
@@ -4671,6 +4833,7 @@ do
   vf:colAbs("vel")
   local df = vf:toDataFrame()
   lurek.log.info("speed[1]: " .. tostring(df:getValue(1, "vel")))
+  lurek.log.info("speed[3]: " .. tostring(df:getValue(3, "vel")))
 end
 ```
 
@@ -4701,6 +4864,7 @@ do
   vf:colAdd("score", 5)
   local df = vf:toDataFrame()
   lurek.log.info("score[1] after +5: " .. tostring(df:getValue(1, "score")))
+  lurek.log.info("score[3] after +5: " .. tostring(df:getValue(3, "score")))
 end
 ```
 
@@ -4730,6 +4894,8 @@ do
   local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV("level\n1\n2\n3\n"))
   vf:colCast("level", "float64")
   lurek.log.info("level dtype after cast: " .. vf:colType("level"))
+  lurek.log.info("level rows after cast: " .. tostring(vf:nrows()))
+  lurek.log.info("vec type after cast: " .. tostring(vf:type()))
 end
 ```
 
@@ -4759,6 +4925,7 @@ do
   vf:colCeil("y")
   local df = vf:toDataFrame()
   lurek.log.info("ceiled y[1]: " .. tostring(df:getValue(1, "y")))
+  lurek.log.info("ceiled y[2]: " .. tostring(df:getValue(2, "y")))
 end
 ```
 
@@ -4790,6 +4957,7 @@ do
   vf:colClamp("hp", 0, 100)
   local df = vf:toDataFrame()
   lurek.log.info("clamped hp[1]: " .. tostring(df:getValue(1, "hp")))
+  lurek.log.info("clamped hp[3]: " .. tostring(df:getValue(3, "hp")))
 end
 ```
 
@@ -4820,6 +4988,7 @@ do
   vf:colDiv("score", 200)
   local df = vf:toDataFrame()
   lurek.log.info("normalised[1]: " .. tostring(df:getValue(1, "score")))
+  lurek.log.info("normalised[2]: " .. tostring(df:getValue(2, "score")))
 end
 ```
 
@@ -4849,6 +5018,7 @@ do
   vf:colFloor("x")
   local df = vf:toDataFrame()
   lurek.log.info("floored x[1]: " .. tostring(df:getValue(1, "x")))
+  lurek.log.info("floored x[3]: " .. tostring(df:getValue(3, "x")))
 end
 ```
 
@@ -4879,6 +5049,7 @@ do
   vf:colMul("dmg", 2.0)
   local df = vf:toDataFrame()
   lurek.log.info("dmg[1] doubled: " .. tostring(df:getValue(1, "dmg")))
+  lurek.log.info("dmg[2] doubled: " .. tostring(df:getValue(2, "dmg")))
 end
 ```
 
@@ -4908,6 +5079,7 @@ do
   vf:colNeg("vy")
   local df = vf:toDataFrame()
   lurek.log.info("bounced vy[1]: " .. tostring(df:getValue(1, "vy")))
+  lurek.log.info("bounced vy[2]: " .. tostring(df:getValue(2, "vy")))
 end
 ```
 
@@ -4940,6 +5112,7 @@ do
   vf:colOp("net", "atk", "sub", "def")
   local df = vf:toDataFrame()
   lurek.log.info("net[1]: " .. tostring(df:getValue(1, "net")))
+  lurek.log.info("net[2]: " .. tostring(df:getValue(2, "net")))
 end
 ```
 
@@ -4969,6 +5142,7 @@ do
   vf:colSqrt("d2")
   local df = vf:toDataFrame()
   lurek.log.info("dist[1]: " .. tostring(df:getValue(1, "d2")))
+  lurek.log.info("dist[3]: " .. tostring(df:getValue(3, "d2")))
 end
 ```
 
@@ -4999,6 +5173,7 @@ do
   vf:colSub("stamina", 10)
   local df = vf:toDataFrame()
   lurek.log.info("stamina[1] after drain: " .. tostring(df:getValue(1, "stamina")))
+  lurek.log.info("stamina[2] after drain: " .. tostring(df:getValue(2, "stamina")))
 end
 ```
 
@@ -5031,8 +5206,10 @@ do
 -- Returns the data type name of a vectorized column ("float64", "int64", "text", "bool")
   -- colType returns the internal data type of a column ("float64", "int64", etc.).
   local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV("hp\n10\n20\n"))
-  lurek.log.info("hp dtype: " .. vf:colType("hp"))
-    print("owner type = " .. tostring(vf:type()))
+  local dtype = vf:colType("hp")
+  lurek.log.info("hp dtype: " .. dtype)
+  lurek.log.info("vec type: " .. tostring(vf:type()))
+  lurek.log.info("is vec frame: " .. tostring(vf:typeOf("LVecFrame")))
 end
 ```
 
@@ -5060,7 +5237,9 @@ do
   -- columns() on a VecFrame returns the column name array.
   local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV("hp,mp\n10,5\n"))
   local cols = vf:columns()
-  lurek.log.info("VecFrame columns: " .. cols[1] .. ", " .. cols[2])
+  local rowCount = vf:nrows()
+  dataframe_log("vec columns=" .. cols[1] .. "," .. cols[2])
+  dataframe_log("row count=" .. rowCount)
 end
 ```
 
@@ -5097,6 +5276,8 @@ do
   local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV("hp\n10\n50\n90\n"))
   local mask = vf:filterMask("hp", ">=", 50)
   lurek.log.info("row 2 passes: " .. tostring(mask[2]))
+  lurek.log.info("row 3 passes: " .. tostring(mask[3]))
+  lurek.log.info("mask length: " .. tostring(#mask))
 end
 ```
 
@@ -5123,8 +5304,10 @@ do
 -- Returns the number of columns in this dataframe
   -- ncols on a VecFrame returns the column count.
   local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV("x,y\n1,2\n"))
-  lurek.log.info("VecFrame cols: " .. vf:ncols())
-    print("owner type = " .. tostring(vf:type()))
+  local cols = vf:columns()
+  local rows = vf:nrows()
+  dataframe_log("vec cols=" .. vf:ncols() .. " rows=" .. rows)
+  dataframe_log("schema=" .. cols[1] .. "," .. cols[2])
 end
 ```
 
@@ -5151,8 +5334,10 @@ do
 -- Returns the number of rows in this dataframe
   -- nrows on a VecFrame returns the row count, same as on DataFrame.
   local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV("v\n1\n2\n3\n"))
-  lurek.log.info("VecFrame rows: " .. vf:nrows())
-    print("owner type = " .. tostring(vf:type()))
+  local cols = vf:columns()
+  local asDf = vf:toDataFrame()
+  dataframe_log("vec rows=" .. vf:nrows() .. " cols=" .. vf:ncols())
+  dataframe_log("first column=" .. cols[1] .. " first value=" .. tostring(asDf:getValue(1, "v")))
 end
 ```
 
@@ -5188,6 +5373,8 @@ do
   local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV("hp,mp\n10,5\n20,10\n30,15\n"))
   local sums = vf:parReduce({"hp", "mp"}, "sum")
   lurek.log.info("hp sum: " .. tostring(sums["hp"]))
+  lurek.log.info("mp sum: " .. tostring(sums["mp"]))
+  lurek.log.info("reduced cols: " .. tostring(vf:ncols()))
 end
 ```
 
@@ -5219,6 +5406,7 @@ do
   vf:parScalarOp({"x", "y"}, "mul", 2.0)
   local df = vf:toDataFrame()
   lurek.log.info("x[1] doubled: " .. tostring(df:getValue(1, "x")))
+  lurek.log.info("y[1] doubled: " .. tostring(df:getValue(1, "y")))
 end
 ```
 
@@ -5254,6 +5442,8 @@ do
   local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV("score\n10\n20\n30\n"))
   local total = vf:reduce("score", "sum")
   lurek.log.info("total score: " .. total)
+  lurek.log.info("max score: " .. tostring(vf:reduce("score", "max")))
+  lurek.log.info("score rows: " .. tostring(vf:nrows()))
 end
 ```
 
@@ -5283,6 +5473,7 @@ do
   vf:colAdd("v", 10)
   local df = vf:toDataFrame()
   lurek.log.info("v[1] after +10: " .. tostring(df:getValue(1, "v")))
+  lurek.log.info("v rows after convert: " .. tostring(df:nrows()))
 end
 ```
 
@@ -5308,8 +5499,10 @@ LVecFrame:type()
 do
 -- Returns the type name string "DataFrame" for this handle
   local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV("v\n1\n"))
-  print("vec type", vf:type())
-    print("typeOf LObject = " .. tostring(vf:typeOf("LObject")))
+  local typeName = vf:type()
+  local isObject = vf:typeOf("LObject")
+  dataframe_log("vec type=" .. typeName)
+  dataframe_log("typeOf object=" .. tostring(isObject))
 end
 ```
 
@@ -5341,8 +5534,10 @@ LVecFrame:typeOf(name)
 do
 -- Returns true if this handle matches the given type name
   local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV("v\n1\n"))
-  print("is vec frame", vf:typeOf("LVecFrame"))
-  print("is object", vf:typeOf("LObject"))
+  local isVec = vf:typeOf("LVecFrame")
+  local isObject = vf:typeOf("LObject")
+  dataframe_log("is vec frame=" .. tostring(isVec))
+  dataframe_log("is object=" .. tostring(isObject))
 end
 ```
 

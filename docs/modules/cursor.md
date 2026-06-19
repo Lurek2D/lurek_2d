@@ -2,19 +2,11 @@
 
 ## Summary
 
-- Lets users shape pointer behavior as part of UX, not just rely on default OS cursor visuals.
-- Supports switching between native system cursors and fully custom pixel cursors per context.
-- Enables animated cursor states for interactive menus, crafting, drag-drop, and tool modes.
-- Provides rule-based context mapping so cursor style follows current game interaction state.
-- Adds trail effects that improve motion readability and perceived responsiveness.
-- Includes cursor-follow zoom for precision interactions and accessibility-friendly inspection.
-- Exposes lock and visibility controls for gameplay modes that need constrained pointer behavior.
-- Gives UI-heavy projects a consistent pointer presentation layer across features.
-- Helps teams build cursor feedback that is both functional and stylistically aligned with the game.
-- Centralizes cursor logic so interaction polish does not fragment across unrelated scripts.
-- Serves as the module for delivering intentional, state-aware pointer UX in-engine.
-
-This module is mostly self-contained inside the `Edge/Integration` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
+- The `cursor` module is the pointer-behavior surface for users who want the cursor to feel like part of the game UX rather than a fixed OS artifact.
+- System cursors, custom RGBA cursors, animated states, and context-driven switching work together so interaction modes can communicate themselves visually without extra UI explanation.
+- Trail effects, zoom-lens support, locking, visibility control, and mode-aware switching extend the same module into readability, precision work, and tool-oriented pointer behavior.
+- That makes the module especially useful for menus, editors, strategy controls, drag-and-drop flows, and inspection-heavy screens where the cursor is a major part of the interaction language.
+- Read `cursor` as the owner of cursor presentation and cursor-state policy. Other systems decide which interaction mode is active, but `cursor` decides how that mode is expressed to the user.
 
 ## Functions
 
@@ -42,9 +34,11 @@ lurek.cursor.newAnimated(looping)
 
 ```lua
 do
-    local c = lurek.cursor.newAnimated(true)
-    print("animated frame count = " .. c:frameCount())
-    print("animated scale = " .. c:currentScale())
+    local animated = lurek.cursor.newAnimated(true)
+    animated:addFrame(make_custom_cursor(16, 2), 16)
+    local frame_count = animated:frameCount()
+    local scale = animated:currentScale()
+    cursor_log("animated cursor frames=" .. frame_count .. " scale=" .. scale)
 end
 ```
 
@@ -77,10 +71,11 @@ lurek.cursor.newCustom(w, h, hx, hy)
 
 ```lua
 do
-    local c = lurek.cursor.newCustom(16, 16, 0, 0)
-    local w, h = c:getSize()
-    print("custom cursor size = " .. w .. "x" .. h)
-    print("hotspot = 0,0")
+    local cursor = lurek.cursor.newCustom(16, 16, 2, 2)
+    cursor:setPixel(2, 2, 255, 255, 255, 255)
+    local w, h = cursor:getSize()
+    local hx, hy = cursor:getHotspot()
+    cursor_log("custom cursor size=" .. w .. "x" .. h .. " hotspot=" .. hx .. "," .. hy)
 end
 ```
 
@@ -104,9 +99,11 @@ lurek.cursor.newManager()
 
 ```lua
 do
-    local cm = lurek.cursor.newManager()
-    print("manager visible = " .. tostring(cm:isVisible()))
-    print("manager context = " .. cm:getContext())
+    local manager = lurek.cursor.newManager()
+    manager:setContext("default")
+    local visible = manager:isVisible()
+    local context = manager:getContext()
+    cursor_log("manager visible=" .. tostring(visible) .. " context=" .. context)
 end
 ```
 
@@ -130,8 +127,11 @@ lurek.cursor.systemCursors()
 
 ```lua
 do
-    local list = lurek.cursor.systemCursors()
-    print("lurek.cursor.systemCursors count=" .. #list)
+    local names = lurek.cursor.systemCursors()
+    local first = names[1] or "none"
+    local second = names[2] or "none"
+    local count = #names
+    cursor_log("system cursor count=" .. count .. " sample=" .. first .. "," .. second)
 end
 ```
 
@@ -182,10 +182,12 @@ LAnimatedCursor:addFrame(cursor, duration_ms)
 
 ```lua
 do
-    local c = lurek.cursor.newAnimated(true)
-    local frame = lurek.cursor.newCustom(16, 16, 0, 0)
-    c:addFrame(frame, 100)
-    print("LAnimatedCursor:addFrame count=" .. c:frameCount())
+    local animated = lurek.cursor.newAnimated(true)
+    local first = make_custom_cursor(16, 2)
+    local second = make_custom_cursor(16, 3)
+    animated:addFrame(first, 100)
+    animated:addFrame(second, 120)
+    cursor_log("animated cursor frame count after addFrame=" .. animated:frameCount())
 end
 ```
 
@@ -203,10 +205,11 @@ LAnimatedCursor:clearPulse()
 
 ```lua
 do
-    local c = lurek.cursor.newAnimated(true)
-    c:setPulse(0.8, 1.2, 1.5)
-    c:clearPulse()
-    print("LAnimatedCursor:clearPulse scale=" .. c:currentScale())
+    local animated = make_animated_cursor()
+    animated:setPulse(0.8, 1.2, 1.5)
+    animated:clearPulse()
+    animated:update(0.10)
+    cursor_log("pulse cleared scale=" .. animated:currentScale())
 end
 ```
 
@@ -230,8 +233,11 @@ LAnimatedCursor:currentIndex()
 
 ```lua
 do
-    local c = lurek.cursor.newAnimated(true)
-    print("LAnimatedCursor:currentIndex=" .. c:currentIndex())
+    local animated = make_animated_cursor()
+    animated:update(0.03)
+    local index = animated:currentIndex()
+    local count = animated:frameCount()
+    cursor_log("animated cursor current index=" .. index .. " of " .. count .. " frames")
 end
 ```
 
@@ -255,8 +261,11 @@ LAnimatedCursor:currentScale()
 
 ```lua
 do
-    local c = lurek.cursor.newAnimated(true)
-    print("LAnimatedCursor:currentScale=" .. c:currentScale())
+    local animated = make_animated_cursor()
+    animated:setPulse(0.8, 1.2, 1.5)
+    animated:update(0.10)
+    local scale = animated:currentScale()
+    cursor_log("animated cursor pulse scale=" .. scale)
 end
 ```
 
@@ -280,10 +289,11 @@ LAnimatedCursor:frameCount()
 
 ```lua
 do
-    local c = lurek.cursor.newAnimated(true)
-    c:addFrame(lurek.cursor.newCustom(16, 16, 0, 0), 100)
-    c:addFrame(lurek.cursor.newCustom(16, 16, 0, 0), 100)
-    print("LAnimatedCursor:frameCount=" .. c:frameCount())
+    local animated = lurek.cursor.newAnimated(true)
+    animated:addFrame(make_custom_cursor(16, 2), 100)
+    animated:addFrame(make_custom_cursor(16, 4), 100)
+    local count = animated:frameCount()
+    cursor_log("animated cursor frame count=" .. count)
 end
 ```
 
@@ -301,11 +311,12 @@ LAnimatedCursor:reset()
 
 ```lua
 do
-    local c = lurek.cursor.newAnimated(true)
-    c:addFrame(lurek.cursor.newCustom(16, 16, 0, 0), 100)
-    c:update(0.2)
-    c:reset()
-    print("LAnimatedCursor:reset idx=" .. c:currentIndex())
+    local animated = make_animated_cursor()
+    animated:update(0.20)
+    local before = animated:currentIndex()
+    animated:reset()
+    local after = animated:currentIndex()
+    cursor_log("animated cursor reset from " .. before .. " to " .. after)
 end
 ```
 
@@ -331,9 +342,11 @@ LAnimatedCursor:setPulse(min_scale, max_scale, speed)
 
 ```lua
 do
-    local c = lurek.cursor.newAnimated(true)
-    c:setPulse(0.8, 1.2, 1.5)
-    print("LAnimatedCursor:setPulse scale=" .. c:currentScale())
+    local animated = make_animated_cursor()
+    animated:setPulse(0.8, 1.2, 1.5)
+    animated:update(0.10)
+    local scale = animated:currentScale()
+    cursor_log("pulse configured current scale=" .. scale)
 end
 ```
 
@@ -357,11 +370,11 @@ LAnimatedCursor:update(dt)
 
 ```lua
 do
-    local c = lurek.cursor.newAnimated(true)
-    local frame = lurek.cursor.newCustom(16, 16, 0, 0)
-    c:addFrame(frame, 100)
-    c:update(0.05)
-    print("LAnimatedCursor:update idx=" .. c:currentIndex())
+    local animated = make_animated_cursor()
+    local before = animated:currentIndex()
+    animated:update(0.05)
+    local after = animated:currentIndex()
+    cursor_log("animated cursor index advanced from " .. before .. " to " .. after)
 end
 ```
 
@@ -394,11 +407,11 @@ LCursorManager:addRule(ctx, cursor_name)
 
 ```lua
 do
-    local cm = lurek.cursor.newManager()
-    cm:addRule("gameplay", "crosshair")
-    cm:setContext("gameplay")
-    print("LCursorManager:addRule ok")
-    print("context = " .. cm:getContext())
+    local manager = lurek.cursor.newManager()
+    manager:addRule("gameplay", "crosshair")
+    manager:addRule("dialogue", "text")
+    manager:setContext("dialogue")
+    cursor_log("context rule applied for " .. manager:getContext())
 end
 ```
 
@@ -416,10 +429,11 @@ LCursorManager:disableTrail()
 
 ```lua
 do
-    local cm = lurek.cursor.newManager()
-    cm:enableTrail(1.0, 1.0, 1.0, 0.5)
-    cm:disableTrail()
-    print("LCursorManager:disableTrail ok")
+    local manager = lurek.cursor.newManager()
+    manager:enableTrail(1.0, 1.0, 1.0, 0.5)
+    manager:disableTrail()
+    manager:update(200, 120, 0.016)
+    cursor_log("trail disabled while cursor remains visible=" .. tostring(manager:isVisible()))
 end
 ```
 
@@ -437,10 +451,11 @@ LCursorManager:disableZoom()
 
 ```lua
 do
-    local cm = lurek.cursor.newManager()
-    cm:enableZoom(1.5, 60)
-    cm:disableZoom()
-    print("LCursorManager:disableZoom ok")
+    local manager = lurek.cursor.newManager()
+    manager:enableZoom(1.5, 60)
+    manager:disableZoom()
+    manager:setContext("default")
+    cursor_log("zoom disabled context=" .. manager:getContext())
 end
 ```
 
@@ -467,10 +482,11 @@ LCursorManager:enableLineTrail(r, g, b, width)
 
 ```lua
 do
-    local cm = lurek.cursor.newManager()
-    cm:enableLineTrail(0.0, 1.0, 1.0, 2.0)
-    print("LCursorManager:enableLineTrail ok")
-    print("locked = " .. tostring(cm:isLocked()))
+    local manager = lurek.cursor.newManager()
+    manager:enableLineTrail(0.0, 1.0, 1.0, 2.0)
+    manager:update(220, 160, 0.016)
+    local x, y = manager:getPosition()
+    cursor_log("line trail enabled near position=" .. x .. "," .. y)
 end
 ```
 
@@ -497,10 +513,11 @@ LCursorManager:enableTrail(r, g, b, lifetime)
 
 ```lua
 do
-    local cm = lurek.cursor.newManager()
-    cm:enableTrail(1.0, 0.5, 0.0, 0.8)
-    print("LCursorManager:enableTrail ok")
-    print("visible = " .. tostring(cm:isVisible()))
+    local manager = lurek.cursor.newManager()
+    manager:enableTrail(1.0, 0.5, 0.0, 0.8)
+    manager:update(200, 140, 0.016)
+    local x, y = manager:getPosition()
+    cursor_log("trail enabled near position=" .. x .. "," .. y)
 end
 ```
 
@@ -525,10 +542,11 @@ LCursorManager:enableZoom(magnification, radius)
 
 ```lua
 do
-    local cm = lurek.cursor.newManager()
-    cm:enableZoom(2.0, 80)
-    print("LCursorManager:enableZoom ok")
-    print("context = " .. cm:getContext())
+    local manager = lurek.cursor.newManager()
+    manager:enableZoom(2.0, 80)
+    manager:update(320, 180, 0.016)
+    local x, y = manager:getPosition()
+    cursor_log("zoom enabled around position=" .. x .. "," .. y)
 end
 ```
 
@@ -552,9 +570,11 @@ LCursorManager:getContext()
 
 ```lua
 do
-    local cm = lurek.cursor.newManager()
-    cm:setContext("menu")
-    print("LCursorManager:getContext=" .. cm:getContext())
+    local manager = lurek.cursor.newManager()
+    manager:setContext("menu")
+    local first = manager:getContext()
+    manager:setContext("gameplay")
+    cursor_log("context changed from " .. first .. " to " .. manager:getContext())
 end
 ```
 
@@ -579,9 +599,11 @@ LCursorManager:getPosition()
 
 ```lua
 do
-    local cm = lurek.cursor.newManager()
-    local x, y = cm:getPosition()
-    print("LCursorManager:getPosition x=" .. x .. " y=" .. y)
+    local manager = lurek.cursor.newManager()
+    manager:update(640, 360, 0.016)
+    local x, y = manager:getPosition()
+    local context = manager:getContext()
+    cursor_log("cursor position x=" .. x .. " y=" .. y .. " context=" .. context)
 end
 ```
 
@@ -605,9 +627,11 @@ LCursorManager:isLocked()
 
 ```lua
 do
-    local cm = lurek.cursor.newManager()
-    cm:setLocked(false)
-    print("LCursorManager:isLocked=" .. tostring(cm:isLocked()))
+    local manager = lurek.cursor.newManager()
+    local before = manager:isLocked()
+    manager:setLocked(true)
+    local after = manager:isLocked()
+    cursor_log("isLocked before=" .. tostring(before) .. " after=" .. tostring(after))
 end
 ```
 
@@ -631,9 +655,11 @@ LCursorManager:isVisible()
 
 ```lua
 do
-    local cm = lurek.cursor.newManager()
-    cm:setVisible(false)
-    print("LCursorManager:isVisible=" .. tostring(cm:isVisible()))
+    local manager = lurek.cursor.newManager()
+    local before = manager:isVisible()
+    manager:setVisible(false)
+    local after = manager:isVisible()
+    cursor_log("visibility before=" .. tostring(before) .. " after=" .. tostring(after))
 end
 ```
 
@@ -657,10 +683,12 @@ LCursorManager:removeRule(ctx)
 
 ```lua
 do
-    local cm = lurek.cursor.newManager()
-    cm:addRule("ui", "hand")
-    cm:removeRule("ui")
-    print("LCursorManager:removeRule ok")
+    local manager = lurek.cursor.newManager()
+    manager:addRule("ui", "hand")
+    manager:setContext("ui")
+    manager:removeRule("ui")
+    manager:setContext("default")
+    cursor_log("context after removeRule=" .. manager:getContext())
 end
 ```
 
@@ -684,10 +712,11 @@ LCursorManager:setAnimated(cursor)
 
 ```lua
 do
-    local cm = lurek.cursor.newManager()
-    local c = lurek.cursor.newAnimated(true)
-    cm:setAnimated(c)
-    print("LCursorManager:setAnimated ok")
+    local manager = lurek.cursor.newManager()
+    local animated = make_animated_cursor()
+    manager:setAnimated(animated)
+    manager:setContext("combat")
+    cursor_log("animated cursor active for context=" .. manager:getContext())
 end
 ```
 
@@ -711,9 +740,11 @@ LCursorManager:setContext(ctx)
 
 ```lua
 do
-    local cm = lurek.cursor.newManager()
-    cm:setContext("gameplay")
-    print("LCursorManager:setContext=" .. cm:getContext())
+    local manager = lurek.cursor.newManager()
+    manager:addRule("gameplay", "crosshair")
+    manager:setContext("gameplay")
+    local context = manager:getContext()
+    cursor_log("manager context switched to " .. context)
 end
 ```
 
@@ -737,10 +768,11 @@ LCursorManager:setCustom(cursor)
 
 ```lua
 do
-    local cm = lurek.cursor.newManager()
-    local c = lurek.cursor.newCustom(16, 16, 0, 0)
-    cm:setCustom(c)
-    print("LCursorManager:setCustom ok")
+    local manager = lurek.cursor.newManager()
+    local cursor = make_custom_cursor(16, 2)
+    manager:setCustom(cursor)
+    manager:setContext("editor")
+    cursor_log("custom cursor active for context=" .. manager:getContext())
 end
 ```
 
@@ -764,9 +796,11 @@ LCursorManager:setLocked(locked)
 
 ```lua
 do
-    local cm = lurek.cursor.newManager()
-    cm:setLocked(true)
-    print("LCursorManager:setLocked=" .. tostring(cm:isLocked()))
+    local manager = lurek.cursor.newManager()
+    manager:setLocked(true)
+    local locked = manager:isLocked()
+    manager:setLocked(false)
+    cursor_log("lock toggled true=" .. tostring(locked) .. " final=" .. tostring(manager:isLocked()))
 end
 ```
 
@@ -790,9 +824,11 @@ LCursorManager:setSystem(name)
 
 ```lua
 do
-    local cm = lurek.cursor.newManager()
-    cm:setSystem("arrow")
-    print("LCursorManager:setSystem ok")
+    local manager = lurek.cursor.newManager()
+    manager:setSystem("arrow")
+    manager:setContext("menu")
+    local context = manager:getContext()
+    cursor_log("system cursor set for context=" .. context)
 end
 ```
 
@@ -816,9 +852,11 @@ LCursorManager:setVisible(visible)
 
 ```lua
 do
-    local cm = lurek.cursor.newManager()
-    cm:setVisible(true)
-    print("LCursorManager:setVisible=" .. tostring(cm:isVisible()))
+    local manager = lurek.cursor.newManager()
+    manager:setVisible(false)
+    local hidden = manager:isVisible()
+    manager:setVisible(true)
+    cursor_log("visibility toggled hidden=" .. tostring(hidden) .. " final=" .. tostring(manager:isVisible()))
 end
 ```
 
@@ -844,11 +882,11 @@ LCursorManager:update(x, y, dt)
 
 ```lua
 do
-    local cm = lurek.cursor.newManager()
-    cm:update(320, 180, 0.016)
-    local x, y = cm:getPosition()
-    print("LCursorManager:update ok")
-    print("position = " .. x .. ", " .. y)
+    local manager = lurek.cursor.newManager()
+    manager:update(320, 180, 0.016)
+    local x, y = manager:getPosition()
+    local visible = manager:isVisible()
+    cursor_log("manager update position=" .. x .. "," .. y .. " visible=" .. tostring(visible))
 end
 ```
 
@@ -881,9 +919,11 @@ LCustomCursor:getHotspot()
 
 ```lua
 do
-    local c = lurek.cursor.newCustom(32, 32, 16, 16)
-    local hx, hy = c:getHotspot()
-    print("LCustomCursor:getHotspot hx=" .. hx .. " hy=" .. hy)
+    local cursor = lurek.cursor.newCustom(32, 32, 16, 16)
+    cursor:setPixel(16, 16, 255, 255, 255, 255)
+    local hx, hy = cursor:getHotspot()
+    local w, h = cursor:getSize()
+    cursor_log("cursor hotspot=" .. hx .. "," .. hy .. " size=" .. w .. "x" .. h)
 end
 ```
 
@@ -917,11 +957,11 @@ LCustomCursor:getPixel(x, y)
 
 ```lua
 do
-    local c = lurek.cursor.newCustom(16, 16, 0, 0)
-    c:setPixel(4, 4, 255, 0, 0, 255)
-    local r, g, b, a = c:getPixel(4, 4)
-    print("LCustomCursor:getPixel r=" .. r)
-    print("pixel rgba = " .. r .. "," .. g .. "," .. b .. "," .. a)
+    local cursor = lurek.cursor.newCustom(16, 16, 0, 0)
+    cursor:setPixel(4, 4, 255, 0, 0, 255)
+    local r, g, b, a = cursor:getPixel(4, 4)
+    local sample_is_red = r == 255 and g == 0 and b == 0 and a == 255
+    cursor_log("sampled pixel rgba=" .. r .. "," .. g .. "," .. b .. "," .. a .. " red=" .. tostring(sample_is_red))
 end
 ```
 
@@ -946,9 +986,11 @@ LCustomCursor:getSize()
 
 ```lua
 do
-    local c = lurek.cursor.newCustom(24, 24, 12, 12)
-    local w, h = c:getSize()
-    print("LCustomCursor:getSize=" .. w .. "x" .. h)
+    local cursor = lurek.cursor.newCustom(24, 24, 12, 12)
+    cursor:setPixel(12, 12, 255, 255, 0, 255)
+    local w, h = cursor:getSize()
+    local hx, hy = cursor:getHotspot()
+    cursor_log("cursor size=" .. w .. "x" .. h .. " hotspot=" .. hx .. "," .. hy)
 end
 ```
 
@@ -977,9 +1019,11 @@ LCustomCursor:setPixel(x, y, r, g, b, a)
 
 ```lua
 do
-    local c = lurek.cursor.newCustom(16, 16, 0, 0)
-    c:setPixel(8, 8, 255, 255, 255, 255)
-    print("LCustomCursor:setPixel ok")
+    local cursor = lurek.cursor.newCustom(16, 16, 0, 0)
+    cursor:setPixel(8, 8, 255, 255, 255, 255)
+    cursor:setPixel(9, 8, 0, 200, 255, 255)
+    local r, g, b, a = cursor:getPixel(8, 8)
+    cursor_log("custom pixel set rgba=" .. r .. "," .. g .. "," .. b .. "," .. a)
 end
 ```
 

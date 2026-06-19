@@ -36,6 +36,33 @@
 - That authority is what lets gameplay, tools, and effects ask the same world-state questions without maintaining parallel collision logic.
 - Other systems consume the results, but `physics` owns the source of truth for what counts as solid, colliding, constrained, or detectable in 2D space.
 
+## Validation And Safety Contract
+
+- Lua-facing body, shape, terrain, fixture, joint, and zone creation paths reject invalid numeric input instead of silently normalizing all failures.
+- `BodyId` rejects negative Lua integers, so accidental `-1` inputs do not wrap into huge slot indices.
+- Shape validation rejects non-finite coordinates, non-positive rectangle and circle sizes, degenerate polygons, invalid edge lengths, and malformed chain vertex lists before Rapier collider creation.
+- Terrain constructors and deserializers enforce finite positive `cellSize`, checked dimension arithmetic, versioned byte headers, and allocation limits before creating cell buffers or image exports.
+- Legacy APIs that still expose no-op or sentinel-return behavior for compatibility now increment world diagnostics so scripts can detect invalid operations through `LWorld:getStats()`.
+
+## Stepping And Determinism
+
+- `LWorld:step(dt)` rejects non-finite or non-positive `dt` values and does not forward them into Rapier.
+- Large `dt` values are clamped to the configured world limit, and diagnostics record skipped and clamped steps.
+- After a body is added, Rapier is the authoritative dynamic-body state. Mirror `Body` state only syncs back into Rapier when explicit setters mark that body dirty.
+- `LWorld:stepFixed(accumulator, stepDt, maxSteps)` remains the preferred API for deterministic gameplay loops because it bounds substeps and reduces frame-time-driven drift.
+- Stable body, joint, and zone slot ids are preserved until explicit destruction, but floating-point determinism is still bounded by Rapier and host-platform behavior.
+
+## World Reset Policy
+
+- `LWorld:clear()` removes runtime state such as bodies, joints, terrain colliders, and zones while preserving world-level configuration like gravity, solver iterations, and meter scale.
+- `LWorld:resetWorld()` performs a full post-construction reset: it clears runtime state and restores constructor-owned settings such as the original gravity vector and default solver configuration.
+- Use `clear()` when loading a new scene into the same tuned world configuration; use `resetWorld()` when the next scene should behave like a freshly created world.
+
+## Diagnostics
+
+- `LWorld:getStats()` returns active counts plus diagnostics: `skippedSteps`, `clampedSteps`, `invalidOperations`, `bodiesScanned`, `collidersRebuilt`, `zoneChecks`, `contacts`, and `syncedBodies`.
+- These counters describe safety fallbacks and per-step work so scripts can audit invalid API use, oversized frame deltas, and expensive simulation updates without attaching a profiler.
+
 ## Imports
 
 - `image`: Imports or references `image` from `src/image/`.

@@ -270,6 +270,7 @@ describe("keyboard.isModifierActive", function()
         expect_type("boolean", lurek.input.keyboard.isModifierActive("shift"))
         expect_type("boolean", lurek.input.keyboard.isModifierActive("ctrl"))
         expect_type("boolean", lurek.input.keyboard.isModifierActive("alt"))
+        expect_type("boolean", lurek.input.keyboard.isModifierActive("altgr"))
         expect_type("boolean", lurek.input.keyboard.isModifierActive("meta"))
         expect_type("boolean", lurek.input.keyboard.isModifierActive("super"))
         expect_equal(false, lurek.input.keyboard.isModifierActive("capslock"))
@@ -317,9 +318,10 @@ describe("lurek.input.gamepad mapping persistence", function()
 
     -- @covers lurek.input.gamepad.setGamepadMapping
     it("setGamepadMapping does not error for valid guid", function()
+        local guid = "030000005e0400008e02000014010000"
         lurek.input.gamepad.setGamepadMapping(
-            "000000000000000000000000504944564d",
-            "000000000000000000000000504944564d,TestPad,a:b0"
+            guid,
+            guid .. ",TestPad,a:b0"
         )
     end)
 
@@ -333,9 +335,12 @@ describe("lurek.input.gamepad mapping persistence", function()
     end)
 
     -- @covers lurek.input.gamepad.loadGamepadMappings
-    it("loadGamepadMappings errors on missing file", function()
+    it("loadGamepadMappings errors on missing or invalid paths", function()
         expect_error(function()
             lurek.input.gamepad.loadGamepadMappings("__nonexistent_mappings_file_.txt")
+        end)
+        expect_error(function()
+            lurek.input.gamepad.loadGamepadMappings("../outside.txt")
         end)
     end)
 end)
@@ -773,7 +778,7 @@ describe("input.recording", function()
         expect_equal(type(events), "table")
         lurek.input.stopPlayback()
 
-        local json = [[{"frames":[{"frame":0,"key_events":[{"kind":"down","name":"a"}],"mouse_x":null,"mouse_y":null},{"frame":2,"key_events":[{"kind":"up","name":"a"}],"mouse_x":null,"mouse_y":null}],"total_frames":3}]]
+        local json = [[{"frames":[{"frame":0,"key_events":[{"kind":"down","name":"a"}],"mouse_x":null,"mouse_y":null},{"frame":1,"key_events":[],"mouse_x":null,"mouse_y":42},{"frame":2,"key_events":[{"kind":"up","name":"a"}],"mouse_x":null,"mouse_y":null}],"total_frames":3}]]
         lurek.input.loadRecording(json)
         lurek.input.startPlayback()
 
@@ -786,6 +791,8 @@ describe("input.recording", function()
 
         local events1 = lurek.input.advancePlayback()
         expect_equal(#events1, 0)
+        expect_equal(events1.mouse_x, nil)
+        expect_equal(events1.mouse_y, 42)
         expect_equal(lurek.input.getPlaybackFrame(), 2)
         expect_equal(lurek.input.isPlayingBack(), true)
 
@@ -869,11 +876,17 @@ end)
 -- @describe lurek.input.mouse.newCursor
 describe("lurek.input.mouse.newCursor", function()
     -- @covers lurek.input.mouse.newCursor
-    it("newCursor creates a cursor from raw pixel data", function()
+    it("newCursor validates raw pixel data", function()
         -- 1x1 RGBA pixel
         local pixels = { 255, 0, 0, 255 }
         local cursor = lurek.input.mouse.newCursor(pixels, 1, 1)
         expect_not_nil(cursor)
+        expect_error(function()
+            lurek.input.mouse.newCursor({ 255, 0, 0 }, 1, 1)
+        end)
+        expect_error(function()
+            lurek.input.mouse.newCursor(pixels, 1, 1, 1, 0)
+        end)
     end)
 end)
 -- @describe unit: migrated from integration/test_input_camera.lua
@@ -946,10 +959,10 @@ describe("lurek.input extended action binding (NM-04)", function()
         lurek.input.bind("nm04_cb", "x")
         local c = lurek.input.getConflicts()
         expect_type("table", c, "getConflicts is table")
-        lurek.input.bind("nm04_cx", "shared_key")
-        lurek.input.bind("nm04_cy", "shared_key")
+        lurek.input.bind("nm04_cx", "mouse1")
+        lurek.input.bind("nm04_cy", "mouse1")
         c = lurek.input.getConflicts()
-        expect_not_nil(c["shared_key"])
+        expect_not_nil(c["mouse1"])
         lurek.input.reset()
     end)
 

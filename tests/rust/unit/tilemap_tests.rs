@@ -3,6 +3,7 @@
 // TODO(lua-first): public Rust API coverage in this file should live in tests/lua/unit/; keep only private/internal seams here.
 
 use lurek2d::color::Color;
+use lurek2d::math::Rect;
 use lurek2d::render::renderer::{DrawMode, RenderCommand};
 use lurek2d::tilemap::ldtk::load_ldtk;
 use lurek2d::tilemap::polygon_map::PolygonMap;
@@ -479,7 +480,7 @@ mod mapgen_tests {
 mod ldtk_tests {
     use super::*;
 
-    const MINIMAL_LDTK: &str = r#"{
+    pub(super) const MINIMAL_LDTK: &str = r#"{
         "levels": [{
             "identifier": "Level_0",
             "layerInstances": [{
@@ -840,6 +841,190 @@ mod coords_tests {
 }
 
 // Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬ chunk Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬
+
+mod safety_tests {
+    use super::*;
+
+    #[test]
+    fn tilemap_try_new_rejects_zero_tile_size() {
+        let err = TileMap::try_new(0, 16, 8).expect_err("zero tile width should be rejected");
+        assert!(matches!(err, TileMapError::InvalidTileSize { .. }));
+    }
+
+    #[test]
+    fn tile_layer_try_new_rejects_overflow_dimensions() {
+        let limits = TileMapLimits {
+            max_tiles_per_layer: 1024,
+            ..TileMapLimits::default()
+        };
+        let err = TileMap::try_new_with_limits(16, 16, 8, limits)
+            .and_then(|mut map| map.try_add_layer("overflow", 64, 64))
+            .expect_err("oversized layer should be rejected");
+        assert!(matches!(err, TileMapError::LayerCellLimitExceeded { .. }));
+    }
+
+    #[test]
+    fn chunkmap_try_new_rejects_zero_and_huge_chunk_size() {
+        let zero = ChunkMap::try_new(0).expect_err("zero chunk size should be rejected");
+        assert!(matches!(zero, TileMapError::InvalidChunkSize { .. }));
+
+        let limits = TileMapLimits {
+            max_chunk_cells: 256,
+            ..TileMapLimits::default()
+        };
+        let huge = ChunkMap::try_new_with_limits(32, &limits)
+            .expect_err("oversized chunk size should be rejected");
+        assert!(matches!(huge, TileMapError::ChunkCellLimitExceeded { .. }));
+    }
+
+    #[test]
+    fn try_world_to_tile_negative_returns_none() {
+        let map = TileMap::try_new(16, 16, 8).unwrap();
+        assert_eq!(map.try_world_to_tile(-1.0, 0.0), None);
+        assert_eq!(map.try_world_to_tile(0.0, -1.0), None);
+    }
+
+    #[test]
+    fn animation_update_large_dt_advances_multiple_frames() {
+        let mut map = TileMap::try_new(16, 16, 8).unwrap();
+        let mut ts = TileSet::new(1, 10, 10, 16, 16, 0, 0);
+        ts.set_animation(
+            0,
+            vec![
+                TileAnimFrame {
+                    tile_id: 0,
+                    duration_ms: 100.0,
+                },
+                TileAnimFrame {
+                    tile_id: 9,
+                    duration_ms: 100.0,
+                },
+                TileAnimFrame {
+                    tile_id: 2,
+                    duration_ms: 100.0,
+                },
+            ],
+        );
+        map.add_tileset(ts);
+        map.try_add_layer("base", 2, 2).unwrap();
+        map.try_set_tile(0, 0, 0, 1).unwrap();
+        map.set_viewport(0.0, 0.0, 32.0, 32.0);
+
+        map.update(1.0);
+
+        assert!(map
+            .build_render_commands(0.0, 0.0)
+            .iter()
+            .any(|cmd| matches!(cmd, RenderCommand::Circle { .. })));
+    }
+
+    #[test]
+    fn apply_autotile_at_empty_layer_no_underflow() {
+        let mut map = TileMap::try_new(16, 16, 8).unwrap();
+        map.try_add_layer("empty", 0, 0).unwrap();
+        map.apply_autotile_at(0, 0, 0, "grass");
+        map.apply_autotile_8_at(0, 0, 0, "grass");
+    }
+
+    #[test]
+    fn fill_large_layer_lazy_index_policy() {
+        let limits = TileMapLimits {
+            max_tiles_per_layer: 10_000_000,
+            ..TileMapLimits::default()
+        };
+        let mut map = TileMap::try_new_with_limits(16, 16, 8, limits).unwrap();
+        map.try_add_layer("base", 2_000, 2_000).unwrap();
+        map.fill(0, 7);
+        let before = map.diagnostics_snapshot().lazy_index_rebuilds;
+        let positions = map.find_tiles_by_gid(0, 7);
+        let after = map.diagnostics_snapshot().lazy_index_rebuilds;
+        assert_eq!(positions.len(), 4_000_000);
+        assert_eq!(before + 1, after);
+    }
+
+    #[test]
+    fn tmx_strict_rejects_short_and_long_layer_data() {
+        let short = r#"
+            <map width="2" height="2" tilewidth="16" tileheight="16" orientation="orthogonal">
+              <layer name="ground">
+                <data encoding="csv">1,2,3</data>
+              </layer>
+            </map>
+        "#;
+        let options = TmxLoadOptions {
+            strict_layer_size: true,
+            ..TmxLoadOptions::default()
+        };
+        let err = load_tmx_with_options(short, &options).expect_err("short strict layer should fail");
+        assert_eq!(err.code, "tmx_invalid_content");
+
+        let long = r#"
+            <map width="2" height="2" tilewidth="16" tileheight="16" orientation="orthogonal">
+              <layer name="ground">
+                <data encoding="csv">1,2,3,4,5</data>
+              </layer>
+            </map>
+        "#;
+        let err = load_tmx_with_options(long, &options).expect_err("long strict layer should fail");
+        assert_eq!(err.code, "tmx_invalid_content");
+    }
+
+    #[test]
+    fn tmx_rejects_decompression_over_limit() {
+        let raw = [1u8, 0, 0, 0];
+        let encoded = {
+            use base64::Engine as _;
+            base64::engine::general_purpose::STANDARD.encode(raw)
+        };
+        let xml = format!(
+            r#"<map width="1" height="1" tilewidth="16" tileheight="16" orientation="orthogonal"><layer name="ground"><data encoding="base64">{encoded}</data></layer></map>"#
+        );
+        let mut options = TmxLoadOptions::default();
+        options.limits.max_decoded_bytes = 2;
+        let err = load_tmx_with_options(&xml, &options)
+            .expect_err("decoded payload over limit should fail");
+        assert_eq!(err.code, "tmx_invalid_content");
+    }
+
+    #[test]
+    fn external_tsx_requires_policy() {
+        let xml = r#"
+            <map width="1" height="1" tilewidth="16" tileheight="16" orientation="orthogonal">
+              <tileset firstgid="1" source="tiles.tsx" />
+              <layer name="ground">
+                <data encoding="csv">1</data>
+              </layer>
+            </map>
+        "#;
+        let err = load_tmx(xml).expect_err("external TSX should require explicit policy");
+        assert_eq!(err.code, "tmx_invalid_content");
+    }
+
+    #[test]
+    fn ldtk_limits_reject_oversized_layers() {
+        let limits = TileMapLimits {
+            max_tiles_per_layer: 4,
+            ..TileMapLimits::default()
+        };
+        let err = load_ldtk_with_limits(super::ldtk_tests::MINIMAL_LDTK, None, &limits)
+            .expect_err("LDtk import should respect layer limits");
+        assert_eq!(err.code, "ldtk_invalid_layer");
+    }
+
+    #[test]
+    fn collision_queries_reject_invalid_rects() {
+        let map = TileMap::try_new(16, 16, 8).unwrap();
+        assert!(
+            map.try_rect_overlaps_solid(0, Rect::new(f32::NAN, 0.0, 1.0, 1.0))
+                .expect_err("NaN rect should error")
+                .to_string()
+                .contains("finite")
+        );
+        assert!(map
+            .try_sweep_rect(0, Rect::new(0.0, 0.0, -1.0, 1.0), 1.0, 0.0)
+            .is_err());
+    }
+}
 
 mod chunk_tests {
     use super::*;

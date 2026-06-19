@@ -128,7 +128,7 @@ do
     local cfg = lurek.mapblock.newConfig()
     local block = lurek.mapblock.newBlock(4, 4, 1, cfg)
     block:setEdge("north", 0, 2)
-    block:setEdge("south", 1, 2)
+    block:setEdge("south", 0, 2)
     example_print_log("LMapBlock:setEdge width=" .. block:getWidth())
 end
 
@@ -293,6 +293,21 @@ do
     mapblock_log("setTileSize matches authored dungeon tiles")
 end
 
+--@api: LMapBlockGenerator:setSolverBudget
+do
+    local cfg = lurek.mapblock.newConfig()
+    local gen = lurek.mapblock.newGenerator(cfg)
+    gen:setSolverBudget({
+        max_nodes = 256,
+        max_depth = 64,
+        max_ms = 100,
+        max_candidates_per_cell = 16,
+    })
+    mapblock_log("setSolverBudget nodes=256")
+    mapblock_log("setSolverBudget depth=64")
+    mapblock_log("setSolverBudget caps solve_shape recursion")
+end
+
 --@api: LMapBlockGenerator:addGroup
 do
     local cfg = lurek.mapblock.newConfig()
@@ -315,6 +330,20 @@ do
     example_print_log("LMapBlockGenerator:generate width=" .. result:getWidth())
 end
 
+--@api: LMapBlockGenerator:generateWithReport
+do
+    local cfg = lurek.mapblock.newConfig()
+    local script = lurek.mapblock.newScript("missing_group")
+    local gen = lurek.mapblock.newGenerator(cfg)
+    gen:setRectShape(1, 1)
+    script:addStep("place_random", { group = "missing" })
+    local result, report = gen:generateWithReport(script)
+    local tbl = report:toTable()
+    example_print_log("LMapBlockGenerator:generateWithReport resultEmpty=" .. tostring(result:isEmpty()))
+    example_print_log("LMapBlockGenerator:generateWithReport missingGroups=" .. tbl.diagnostics.missing_groups)
+    example_print_log("LMapBlockGenerator:generateWithReport rng=" .. tbl.rng_version)
+end
+
 --@api: LMapBlockGenerator:getLastPlacedCount
 do
     local cfg = lurek.mapblock.newConfig()
@@ -325,6 +354,33 @@ do
     script:addStep("fill_rect", { x = 0, y = 0, width = 2, height = 2, tile_id = 1, slot = 0, layer = 0 })
     gen:generate(script)
     example_print_log("LMapBlockGenerator:getLastPlacedCount=" .. gen:getLastPlacedCount())
+end
+
+--@api: LMapBlockGenerator:getLastReport
+do
+    local cfg = lurek.mapblock.newConfig()
+    local script = lurek.mapblock.newScript("missing_group")
+    local gen = lurek.mapblock.newGenerator(cfg)
+    gen:setRectShape(1, 1)
+    script:addStep("place_random", { group = "missing" })
+    gen:generateWithReport(script)
+    local report = gen:getLastReport():toTable()
+    example_print_log("LMapBlockGenerator:getLastReport executed=" .. report.executed_step_iterations)
+    example_print_log("LMapBlockGenerator:getLastReport cacheMisses=" .. report.transform_cache_misses)
+end
+
+--@api: LMapBlockReport:toTable
+do
+    local cfg = lurek.mapblock.newConfig()
+    local script = lurek.mapblock.newScript("missing_group")
+    local gen = lurek.mapblock.newGenerator(cfg)
+    gen:setRectShape(1, 1)
+    script:addStep("place_random", { group = "missing" })
+    local _, report = gen:generateWithReport(script)
+    local tbl = report:toTable()
+    example_print_log("LMapBlockReport:toTable seed=" .. tbl.seed)
+    example_print_log("LMapBlockReport:toTable missingGroups=" .. tbl.diagnostics.missing_groups)
+    example_print_log("LMapBlockReport:toTable cacheHits=" .. tbl.transform_cache_hits)
 end
 
 --@api: LMapBlockResult:getWidth

@@ -2,34 +2,19 @@
 
 ## Summary
 
-- The runtime module is the shared execution core that coordinates engine state across systems.
-- It owns the central mutable state container used during startup and per-frame updates.
-- Shared state includes timing, input snapshots, window-related state, and feature handles.
-- Resource pools for textures, fonts, canvases, shaders, and meshes are coordinated here.
-- Resource budgets and usage stats are tracked to support observability and policy.
-- Configuration models are typed and loaded from TOML with controlled defaults.
-- Runtime modes separate windowed execution from headless execution paths.
-- Reload revision tracking supports controlled runtime configuration refresh.
-- Error contracts provide stable codes and snapshot-oriented diagnostics.
-- Log message identifiers standardize machine-readable diagnostics across modules.
-- Message catalogs support lazy lookup and fallback behavior.
-- Frame profiling captures phase timing for update/render callback visibility.
-- Typed resource keys provide stable cross-module handles.
-- Host/environment queries expose platform and process context to script APIs.
-- Runtime services include clipboard and locale integration points.
-- Higher-level modules depend on runtime as source-of-truth.
-- The module avoids owning game-domain policy.
-- It owns lifecycle policy, state ownership, and core diagnostics.
-- Deterministic state progression is a central invariant.
-- Stable error/reporting contracts are another core invariant.
-- Runtime is the root integration layer for engine execution behavior.
-- It defines common contracts that keep module interactions coherent.
-- The module is essential for startup, frame loop, and host-facing integration stability.
-- Overall, runtime is the Core Runtime anchor for the dependency graph.
-- It keeps shared execution behavior explicit, observable, and maintainable.
-- Without it, resource and lifecycle ownership would fragment across subsystems.
-
-This module primarily collaborates with `audio`, `camera`, `event`, `filesystem`, `image`, `input`, `light`, `lua_api`, and adjacent engine modules. Its responsibility should stay inside the Core Runtime group rather than absorb behavior owned by those neighbors.
+- The `runtime` module is the shared engine-state surface that many other modules depend on before they expose their own user-facing features.
+- Its role is to keep the rest of the engine coherent. Configuration, shared state, execution mode, error vocabulary, resource keys, logging support, and OS-aware helpers live here so the engine has one common operating language.
+- This central vocabulary matters because large engines become fragile when every subsystem invents its own concepts for startup state, environment mode, resource identity, logging, or global context.
+- Mode handling is especially important because the same engine may run in normal interactive play, headless automation, docs generation, tests, screenshots, or other specialized workflows that need different assumptions.
+- Shared state, resource-key helpers, and runtime-wide error types give other modules a stable way to coordinate without dissolving into ad hoc registries and inconsistent failure reporting.
+- Logging and environment-aware helpers belong here for the same reason: runtime-wide diagnostics and platform context should be centralized rather than redefined in each subsystem.
+- That shared operating layer is what makes higher-level systems easier to compose around one startup and execution contract.
+- Headless support is especially important because non-interactive execution should feel first-class for CI, docs, evidence capture, and automation instead of like a reduced afterthought.
+- It also gives tool and gameplay code one place to agree on environment mode, startup assumptions, and shared process-level state.
+- It gives the engine one durable answer to runtime context.
+- That keeps “how the engine is running” separate from “what a feature is doing,” which is exactly the boundary `runtime` should own.
+- `runtime` should stabilize common policy and state, but it should not absorb the domain logic of the modules that depend on it.
+- Read `runtime` as the shared operating layer of the engine.
 
 ## Functions
 
@@ -57,10 +42,11 @@ lurek.runtime.errorSnapshot(msg)
 
 ```lua
 do
-    local snapshot = lurek.runtime.errorSnapshot("Something went wrong in level 3")
-    print("snapshot type = " .. type(snapshot))
-    print("snapshot length = " .. #snapshot)
-    print("contains message field = " .. tostring(snapshot:find('"message"') ~= nil))
+    local snapshot = lurek.runtime.errorSnapshot("Renderer warmup failed")
+    local has_message = snapshot:find('"message"') ~= nil
+    local has_code = snapshot:find('"code"') ~= nil
+    local has_category = snapshot:find('"category"') ~= nil
+    runtime_log("errorSnapshot len=" .. tostring(#snapshot) .. " message=" .. tostring(has_message) .. " code=" .. tostring(has_code) .. " category=" .. tostring(has_category))
 end
 ```
 
@@ -85,7 +71,10 @@ lurek.runtime.getArch()
 ```lua
 do
     local arch = lurek.runtime.getArch()
-    print("arch = " .. arch)
+    local cpus = lurek.runtime.getProcessorCount()
+    local memory = lurek.runtime.getMemorySize()
+    local fingerprint = arch .. ":" .. tostring(cpus) .. ":" .. tostring(memory)
+    runtime_log("getArch arch=" .. arch .. " fingerprint=" .. fingerprint)
 end
 ```
 
@@ -110,8 +99,10 @@ lurek.runtime.getArgs()
 ```lua
 do
     local args = lurek.runtime.getArgs()
-    print("raw args count = " .. #args)
-    print("first arg = " .. tostring(args[1]))
+    local first = first_or(args, "none")
+    local parsed = lurek.runtime.parseArgs(args)
+    local positional = #parsed.positional
+    runtime_log("getArgs count=" .. tostring(#args) .. " first=" .. first .. " positional=" .. tostring(positional))
 end
 ```
 
@@ -144,12 +135,12 @@ lurek.runtime.getBatchResults(results)
 ```lua
 do
     local results = {
-        ok = { status = "passed" },
-        bad = { status = "failed" },
-        later = { status = "skipped" },
+        ok = { status = "passed", time = 0.01 },
+        bad = { status = "failed", time = 0.02, error = "nope" },
+        later = { status = "skipped", time = 0.0 },
     }
     local passed, failed, skipped = lurek.runtime.getBatchResults(results)
-    print("batch_results = " .. passed .. "/" .. failed .. "/" .. skipped)
+    runtime_log("getBatchResults passed=" .. tostring(passed) .. " failed=" .. tostring(failed) .. " skipped=" .. tostring(skipped))
 end
 ```
 
@@ -173,10 +164,11 @@ lurek.runtime.getClipboardText()
 
 ```lua
 do
-    lurek.runtime.setClipboardText("Hello from Lurek2D!")
+    lurek.runtime.setClipboardText("mission:relay")
     local text = lurek.runtime.getClipboardText()
-    print("clipboard = " .. text)
-    print("clipboard len = " .. #text)
+    local length = #text
+    local restored = lurek.runtime.parseArgs({ "--clipboard=" .. text })
+    runtime_log("getClipboardText text=" .. text .. " length=" .. tostring(length) .. " echoed=" .. tostring(restored.options.clipboard))
 end
 ```
 
@@ -201,9 +193,10 @@ lurek.runtime.getConfig()
 ```lua
 do
     local config = lurek.runtime.getConfig()
-    print("runtime mode = " .. config.runtime_mode)
-    print("physics tick rate = " .. config.physics_tick_rate)
-    print("config revision = " .. config.config_reload_revision)
+    local mode = config.runtime_mode
+    local physics = tostring(config.physics_tick_rate)
+    local revision = tostring(config.config_reload_revision)
+    runtime_log("getConfig mode=" .. mode .. " physics=" .. physics .. " log=" .. config.log_level .. " revision=" .. revision)
 end
 ```
 
@@ -227,8 +220,11 @@ lurek.runtime.getDebugOverlay()
 
 ```lua
 do
-    local overlay = lurek.runtime.getDebugOverlay()
-    print("overlay enabled = " .. tostring(overlay))
+    lurek.runtime.setDebugOverlay(false)
+    local before = lurek.runtime.getDebugOverlay()
+    lurek.runtime.setDebugOverlay(true)
+    local after = lurek.runtime.getDebugOverlay()
+    runtime_log("getDebugOverlay before=" .. tostring(before) .. " after=" .. tostring(after) .. " mode=" .. lurek.runtime.getConfig().runtime_mode)
 end
 ```
 
@@ -259,8 +255,10 @@ lurek.runtime.getEnv(name)
 ```lua
 do
     local path = lurek.runtime.getEnv("PATH")
-    print("PATH set = " .. tostring(path ~= nil))
-    print("missing var = " .. tostring(lurek.runtime.getEnv("LUREK_NONEXISTENT_VAR") == nil))
+    local user = lurek.runtime.getEnv("USERNAME") or lurek.runtime.getEnv("USER")
+    local missing = lurek.runtime.getEnv("LUREK_NONEXISTENT_VAR")
+    local has_path = tostring(path ~= nil and #path > 0)
+    runtime_log("getEnv has_path=" .. has_path .. " user=" .. tostring(user) .. " missing=" .. tostring(missing))
 end
 ```
 
@@ -285,9 +283,10 @@ lurek.runtime.getInfo()
 ```lua
 do
     local info = lurek.runtime.getInfo()
-    print("engine = " .. info.engine .. " version = " .. info.version)
-    print("os = " .. info.os .. " lua = " .. info.lua_version)
-    print("processors = " .. info.processors .. " memory = " .. info.memory)
+    local summary = info.engine .. " " .. info.version
+    local host = info.os .. "/" .. tostring(info.processors)
+    local renderer = info.renderer .. " with " .. info.lua_version
+    runtime_log("getInfo summary=" .. summary .. " host=" .. host .. " renderer=" .. renderer .. " memory=" .. tostring(info.memory))
 end
 ```
 
@@ -312,8 +311,10 @@ lurek.runtime.getLastError()
 ```lua
 do
     local err = lurek.runtime.getLastError()
-    print("last error = " .. tostring(err and err.message))
-    print("category = " .. tostring(err and err.category))
+    local kind = type(err)
+    local message = err and err.message or "none"
+    local category = err and err.category or "none"
+    runtime_log("getLastError type=" .. kind .. " message=" .. message .. " category=" .. category)
 end
 ```
 
@@ -337,8 +338,11 @@ lurek.runtime.getLogLevel()
 
 ```lua
 do
-    local lvl = lurek.runtime.getLogLevel()
-    print("log_level = " .. lvl)
+    local initial = lurek.runtime.getLogLevel()
+    lurek.runtime.setLogLevel("info")
+    local info_level = lurek.runtime.getLogLevel()
+    lurek.runtime.setLogLevel(initial)
+    runtime_log("getLogLevel initial=" .. initial .. " info_level=" .. info_level .. " restored=" .. lurek.runtime.getLogLevel())
 end
 ```
 
@@ -363,8 +367,10 @@ lurek.runtime.getMemorySize()
 ```lua
 do
     local memory = lurek.runtime.getMemorySize()
-    print("mem_mb = " .. memory)
-    print("memory ok = " .. tostring(memory >= 0))
+    local info = lurek.runtime.getInfo()
+    local enough = tostring(memory > 0)
+    local mirrored = tostring(info.memory)
+    runtime_log("getMemorySize memory=" .. tostring(memory) .. " enough=" .. enough .. " info_memory=" .. mirrored)
 end
 ```
 
@@ -394,9 +400,11 @@ lurek.runtime.getMessage(id)
 
 ```lua
 do
-    local key = "engine.welcome"
-    print("has engine.welcome = " .. tostring(lurek.runtime.hasMessage(key)))
-    print("message = " .. tostring(lurek.runtime.getMessage(key)))
+    local boot = lurek.runtime.getMessage("L001")
+    local loaded = lurek.runtime.getMessage("L003")
+    local missing = lurek.runtime.getMessage("ZZUNKNOWN")
+    local known = lurek.runtime.hasMessage("L001")
+    runtime_log("getMessage boot=" .. boot .. " loaded=" .. loaded .. " missing=" .. missing .. " known=" .. tostring(known))
 end
 ```
 
@@ -420,8 +428,11 @@ lurek.runtime.getMessageCount()
 
 ```lua
 do
-    local n = lurek.runtime.getMessageCount()
-    print("msg_count = " .. n)
+    local count = lurek.runtime.getMessageCount()
+    local boot = lurek.runtime.getMessage("L001")
+    local loaded = lurek.runtime.getMessage("L003")
+    local enough = tostring(count >= 30)
+    runtime_log("getMessageCount count=" .. tostring(count) .. " enough=" .. enough .. " sample=" .. boot .. " / " .. loaded)
 end
 ```
 
@@ -446,7 +457,10 @@ lurek.runtime.getOS()
 ```lua
 do
     local os = lurek.runtime.getOS()
-    print("os = " .. os)
+    local arch = lurek.runtime.getArch()
+    local host = os .. "-" .. arch
+    local known = lurek.runtime.getInfo().os
+    runtime_log("getOS host=" .. host .. " info_os=" .. known)
 end
 ```
 
@@ -473,9 +487,10 @@ lurek.runtime.getPowerInfo()
 ```lua
 do
     local state, percent, seconds = lurek.runtime.getPowerInfo()
-    print("power state = " .. state)
-    print("battery = " .. tostring(percent))
-    print("seconds = " .. tostring(seconds))
+    local battery = tostring(percent)
+    local eta = tostring(seconds)
+    local locale = first_or(lurek.runtime.getPreferredLocales(), "en_US")
+    runtime_log("getPowerInfo state=" .. state .. " battery=" .. battery .. " eta=" .. eta .. " locale=" .. locale)
 end
 ```
 
@@ -500,8 +515,10 @@ lurek.runtime.getPreferredLocales()
 ```lua
 do
     local locales = lurek.runtime.getPreferredLocales()
-    print("locale count = " .. #locales)
-    print("first locale = " .. tostring(locales[1]))
+    local first = first_or(locales, "en_US")
+    local parsed = lurek.runtime.parseArgs({ "--locale=" .. first })
+    local locale = tostring(parsed.options.locale)
+    runtime_log("getPreferredLocales count=" .. tostring(#locales) .. " first=" .. first .. " parsed=" .. locale)
 end
 ```
 
@@ -526,8 +543,10 @@ lurek.runtime.getProcessorCount()
 ```lua
 do
     local cpus = lurek.runtime.getProcessorCount()
-    print("logical processors = " .. cpus)
-    print("has cpu info = " .. tostring(cpus >= 1))
+    local workers = math.max(cpus - 1, 1)
+    local batch = lurek.runtime.runBatch({ ai = function() return workers end })
+    local passed = batch.ai.status
+    runtime_log("getProcessorCount cpus=" .. tostring(cpus) .. " workers=" .. tostring(workers) .. " batch=" .. passed)
 end
 ```
 
@@ -552,8 +571,10 @@ lurek.runtime.getVersion()
 ```lua
 do
     local version = lurek.runtime.getVersion()
-    print("engine version = " .. version)
-    print("major tag = " .. tostring(version:match("^[^.]+")))
+    local major = version:match("^[^.]+") or "0"
+    local parts = lurek.runtime.parseArgs({ "--version=" .. version })
+    local tagged = parts.options.version or "unknown"
+    runtime_log("getVersion version=" .. version .. " major=" .. major .. " tagged=" .. tagged)
 end
 ```
 
@@ -583,8 +604,11 @@ lurek.runtime.hasMessage(id)
 
 ```lua
 do
-    local v = lurek.runtime.hasMessage("engine.welcome")
-    print("has_msg = " .. tostring(v))
+    local boot = lurek.runtime.hasMessage("L001")
+    local render = lurek.runtime.hasMessage("L010")
+    local unknown = lurek.runtime.hasMessage("ZZUNKNOWN")
+    local count = lurek.runtime.getMessageCount()
+    runtime_log("hasMessage boot=" .. tostring(boot) .. " render=" .. tostring(render) .. " unknown=" .. tostring(unknown) .. " count=" .. tostring(count))
 end
 ```
 
@@ -609,9 +633,11 @@ lurek.runtime.log(level, message)
 
 ```lua
 do
-    lurek.runtime.log("info", "Game starting up")
-    lurek.runtime.log("debug", "Loading runtime example block")
-    print("logged runtime messages")
+    local before = lurek.runtime.getLogLevel()
+    lurek.runtime.log("info", "Boot sequence ready")
+    lurek.runtime.log("warn", "Shader cache cold")
+    lurek.runtime.log("error", "Example error line for diagnostics")
+    runtime_log("log before=" .. before .. " after=" .. lurek.runtime.getLogLevel())
 end
 ```
 
@@ -641,8 +667,12 @@ lurek.runtime.openURL(url)
 
 ```lua
 do
-    local ok = lurek.runtime.openURL("https://lurek2d.dev")
-    print("open https = " .. tostring(ok))
+    local mode = lurek.runtime.getConfig().runtime_mode
+    local docs_ok = (mode == "headless" or mode == "cli") and lurek.runtime.openURL("https://lurek2d.dev/docs") or false
+    local issue_ok = (mode == "headless" or mode == "cli") and lurek.runtime.openURL("mailto:support@lurek2d.dev") or false
+    local https_allowed = tostring(docs_ok)
+    local mailto_allowed = tostring(issue_ok)
+    runtime_log("openURL docs=" .. https_allowed .. " mailto=" .. mailto_allowed .. " mode=" .. mode)
 end
 ```
 
@@ -672,10 +702,11 @@ lurek.runtime.parseArgs(args)
 
 ```lua
 do
-    local parsed = lurek.runtime.parseArgs({"--debug", "--level=5", "demo.lua", "--", "tail.txt"})
-    print("debug flag = " .. tostring(parsed.flags.debug))
-    print("level option = " .. tostring(parsed.options.level))
-    print("positional count = " .. #parsed.positional)
+    local parsed = lurek.runtime.parseArgs({ "--debug", "--level=5", "demo.lua", "--", "tail.txt" })
+    local debug_flag = tostring(parsed.flags.debug == true)
+    local level = tostring(parsed.options.level)
+    local entry = tostring(parsed.positional[1])
+    runtime_log("parseArgs debug=" .. debug_flag .. " level=" .. level .. " entry=" .. entry .. " tail=" .. tostring(parsed.positional[2]))
 end
 ```
 
@@ -696,8 +727,8 @@ do
     local before = lurek.runtime.getConfig().config_reload_revision
     lurek.runtime.reloadConfig()
     local after = lurek.runtime.getConfig().config_reload_revision
-    print("reload requested = true")
-    print("revision now = " .. after .. " (before " .. before .. ")")
+    local changed = tostring(after ~= before)
+    runtime_log("reloadConfig before=" .. tostring(before) .. " after=" .. tostring(after) .. " changed_now=" .. changed)
 end
 ```
 
@@ -729,16 +760,12 @@ lurek.runtime.runBatch(tasks, opts)
 ```lua
 do
     local results = lurek.runtime.runBatch({
-        ping = function()
-            return true
-        end,
-        fail = function()
-            error("boom")
-        end,
+        compile = function() return true end,
+        package = function() return "zip" end,
+        deploy = function() error("network timeout") end,
     })
     local passed, failed, skipped = lurek.runtime.getBatchResults(results)
-    print("passed = " .. passed .. " failed = " .. failed .. " skipped = " .. skipped)
-    print("fail status = " .. results.fail.status)
+    runtime_log("runBatch passed=" .. tostring(passed) .. " failed=" .. tostring(failed) .. " skipped=" .. tostring(skipped) .. " deploy=" .. results.deploy.status)
 end
 ```
 
@@ -762,8 +789,11 @@ lurek.runtime.setClipboardText(text)
 
 ```lua
 do
-    lurek.runtime.setClipboardText("lurek_test")
-    print("clipboard = " .. tostring(lurek.runtime.getClipboardText()))
+    local payload = "save-slot-02"
+    lurek.runtime.setClipboardText(payload)
+    local echoed = lurek.runtime.getClipboardText()
+    local preview = string.sub(echoed, 1, 12)
+    runtime_log("setClipboardText payload=" .. payload .. " echoed=" .. echoed .. " preview=" .. preview)
 end
 ```
 
@@ -788,11 +818,10 @@ lurek.runtime.setDebugOverlay(enabled)
 ```lua
 do
     local before = lurek.runtime.getDebugOverlay()
-    print("debug overlay before = " .. tostring(before))
     lurek.runtime.setDebugOverlay(true)
-    print("after enable = " .. tostring(lurek.runtime.getDebugOverlay()))
+    local enabled = lurek.runtime.getDebugOverlay()
     lurek.runtime.setDebugOverlay(false)
-    print("after disable = " .. tostring(lurek.runtime.getDebugOverlay()))
+    runtime_log("setDebugOverlay before=" .. tostring(before) .. " enabled=" .. tostring(enabled) .. " final=" .. tostring(lurek.runtime.getDebugOverlay()))
 end
 ```
 
@@ -817,9 +846,10 @@ lurek.runtime.setLogLevel(level)
 ```lua
 do
     local before = lurek.runtime.getLogLevel()
-    lurek.runtime.setLogLevel("info")
-    print("before = " .. before)
-    print("after = " .. lurek.runtime.getLogLevel())
+    lurek.runtime.setLogLevel("warn")
+    local during = lurek.runtime.getLogLevel()
+    lurek.runtime.setLogLevel(before)
+    runtime_log("setLogLevel before=" .. before .. " during=" .. during .. " restored=" .. lurek.runtime.getLogLevel())
 end
 ```
 

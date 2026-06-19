@@ -5,6 +5,27 @@
 //! The file keeps pointer state and cursor policy together, but leaves host event dispatch to the app runtime owner.
 //! Open it when mouse semantics change; touch, keyboard, and combo logic live in sibling input modules.
 
+/// Limits enforced for custom cursor image validation.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct CursorImageLimits {
+    /// Maximum allowed cursor width in pixels.
+    pub max_width: u32,
+    /// Maximum allowed cursor height in pixels.
+    pub max_height: u32,
+    /// Maximum allowed byte length for the RGBA buffer.
+    pub max_pixels_len: usize,
+}
+
+impl Default for CursorImageLimits {
+    fn default() -> Self {
+        Self {
+            max_width: 256,
+            max_height: 256,
+            max_pixels_len: 256 * 256 * 4,
+        }
+    }
+}
+
 /// OS-provided cursor shape variants available through `lurek.input.setCursor`.
 #[derive(Debug, Clone, Copy, PartialEq, Default)]
 pub enum SystemCursor {
@@ -254,4 +275,47 @@ pub struct CursorHandle {
 /// Return true; custom cursor images are supported on the desktop target.
 pub fn is_cursor_supported() -> bool {
     true
+}
+
+/// Validate a custom RGBA cursor image against dimension, buffer, and hotspot constraints.
+pub fn validate_cursor_image(
+    width: u32,
+    height: u32,
+    pixels_len: usize,
+    hotx: u32,
+    hoty: u32,
+    limits: CursorImageLimits,
+) -> Result<(), String> {
+    if width == 0 || height == 0 {
+        return Err("cursor width and height must be greater than zero".to_string());
+    }
+    if width > limits.max_width || height > limits.max_height {
+        return Err(format!(
+            "cursor dimensions {}x{} exceed limit {}x{}",
+            width, height, limits.max_width, limits.max_height
+        ));
+    }
+    let expected_len = (width as usize)
+        .checked_mul(height as usize)
+        .and_then(|count| count.checked_mul(4))
+        .ok_or_else(|| "cursor RGBA buffer size overflowed".to_string())?;
+    if expected_len > limits.max_pixels_len {
+        return Err(format!(
+            "cursor RGBA buffer size {} exceeds limit {}",
+            expected_len, limits.max_pixels_len
+        ));
+    }
+    if pixels_len != expected_len {
+        return Err(format!(
+            "cursor RGBA buffer length {} does not match expected {}",
+            pixels_len, expected_len
+        ));
+    }
+    if hotx >= width || hoty >= height {
+        return Err(format!(
+            "cursor hotspot ({}, {}) must stay within {}x{} image bounds",
+            hotx, hoty, width, height
+        ));
+    }
+    Ok(())
 }

@@ -4,6 +4,12 @@
 //! Open it when cave evolution rules change; flood fill and sandbox material simulation live in sibling modules.
 
 use super::lcg::Lcg;
+use crate::procgen::{
+    limits::{
+        checked_cell_count, validate_iterations, validate_non_zero_dimensions, validate_range,
+    },
+    ProcgenError, ProcgenLimits,
+};
 
 /// Configuration for one cellular automata cave generation run.
 #[derive(Debug, Clone)]
@@ -33,9 +39,47 @@ impl Default for CellularOpts {
     }
 }
 
+impl CellularOpts {
+    /// Validate fill ratio and iteration budget for safe cellular generation.
+    pub fn validate(&self, limits: &ProcgenLimits) -> Result<(), ProcgenError> {
+        validate_range("fill", self.fill as f64, 0.0, 1.0)?;
+        validate_iterations(self.iterations, limits)?;
+        if self.birth > 8 {
+            return Err(ProcgenError::ValueOutOfRange {
+                field: "birth",
+                min: 0.0,
+                max: 8.0,
+                value: self.birth as f64,
+            });
+        }
+        if self.survive > 8 {
+            return Err(ProcgenError::ValueOutOfRange {
+                field: "survive",
+                min: 0.0,
+                max: 8.0,
+                value: self.survive as f64,
+            });
+        }
+        Ok(())
+    }
+}
+
 /// Run cellular automata on a `width × height` grid and return a flat `0`/`1` slice (1 = solid).
 pub fn cellular_automata(width: u32, height: u32, opts: &CellularOpts) -> Vec<u8> {
-    let size = (width * height) as usize;
+    try_cellular_automata(width, height, opts, &ProcgenLimits::default())
+        .expect("cellular_automata received invalid dimensions or options")
+}
+
+/// Run cellular automata after validating dimensions, fill range, and iteration budgets.
+pub fn try_cellular_automata(
+    width: u32,
+    height: u32,
+    opts: &CellularOpts,
+    limits: &ProcgenLimits,
+) -> Result<Vec<u8>, ProcgenError> {
+    validate_non_zero_dimensions(width, height)?;
+    let size = checked_cell_count(width, height, limits)?;
+    opts.validate(limits)?;
     let mut grid = vec![0u8; size];
     let mut rng = Lcg::new(opts.seed);
     for cell in grid.iter_mut() {
@@ -76,5 +120,5 @@ pub fn cellular_automata(width: u32, height: u32, opts: &CellularOpts) -> Vec<u8
         }
         std::mem::swap(&mut grid, &mut next);
     }
-    grid
+    Ok(grid)
 }

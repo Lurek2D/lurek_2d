@@ -2242,6 +2242,10 @@ LMapBlockConfig = {}
 ---@class LMapBlockGenerator
 LMapBlockGenerator = {}
 
+--- Lua-facing generation diagnostics exposed by the lurek engine.
+---@class LMapBlockReport
+LMapBlockReport = {}
+
 --- Lua-facing generation result exposed by the lurek engine.
 ---@class LMapBlockResult
 LMapBlockResult = {}
@@ -16519,9 +16523,19 @@ function LMapBlockGenerator:addGroup(group) end
 ---@return LMapBlockResult Generation result.
 function LMapBlockGenerator:generate(script) end
 
+--- Generate map using a script and return runtime diagnostics for this object.
+---@param script LMapScript Script to execute.
+---@return LMapBlockResult Generation result.
+---@return LMapBlockReport Diagnostics report.
+function LMapBlockGenerator:generateWithReport(script) end
+
 --- Get last placement count for this object.
 ---@return number Blocks placed in last generation.
 function LMapBlockGenerator:getLastPlacedCount() end
+
+--- Get the diagnostic report captured during the previous generation run.
+---@return LMapBlockReport Last diagnostics report.
+function LMapBlockGenerator:getLastReport() end
 
 --- Set the placement grid from a prepared PlacementGrid object.
 ---@param grid LPlacementGrid Grid to clone into the generator.
@@ -16552,10 +16566,18 @@ function LMapBlockGenerator:setSeed(seed) end
 ---@param positions table Array of {x, y} positions.
 function LMapBlockGenerator:setShape(positions) end
 
+--- Set bounded recursion budgets for `solve_shape`.
+---@param opts table Optional `max_nodes`, `max_depth`, `max_ms`, and `max_candidates_per_cell` fields.
+function LMapBlockGenerator:setSolverBudget(opts) end
+
 --- Set tile pixel dimensions for this object.
 ---@param w number Pixel width.
 ---@param h number Pixel height.
 function LMapBlockGenerator:setTileSize(w, h) end
+
+--- Serialize generation diagnostics into a plain Lua table.
+---@return table Report fields and nested diagnostics counters.
+function LMapBlockReport:toTable() end
 
 --- Get number of blocks placed for this object.
 ---@return number Blocks placed.
@@ -22765,7 +22787,7 @@ function LWorld:addWheelJoint(bodyA, bodyB, anchorX, anchorY, axisX, axisY) end
 ---@return LZone The zone handle.
 function LWorld:addZone(x, y, w, h) end
 
---- Removes all bodies and joints from the world, resetting it to an empty state.
+--- Removes bodies, joints, terrain colliders, and zones while preserving world-level settings.
 function LWorld:clear() end
 
 --- Removes the begin-contact callback so it is no longer called.
@@ -23016,6 +23038,9 @@ function LWorld:raycastAll(x, y, dx, dy, maxDist, filter) end
 ---@param filter? table Optional query filter: {layer?, mask?, includeSensors?}.
 ---@return LWorldRaycastClosestResult Hit info {bodyId, x, y, normalX, normalY, toi} or nil if no hit.
 function LWorld:raycastClosest(x, y, dx, dy, maxDist, filter) end
+
+--- Fully resets the world to its post-construction state.
+function LWorld:resetWorld() end
 
 --- Registers a callback function invoked whenever two bodies begin touching.
 ---@param callback function Called with (bodyIdA, bodyIdB) on each new contact.
@@ -29028,6 +29053,9 @@ function LTileMap:fireTileStep(gid, entity, tx, ty) end
 ---@return number Chunk size in tiles per side.
 function LTileMap:getChunkSize() end
 
+--- Returns tilemap diagnostics counters for invalid calls, unknown gids, and lazy index rebuilds.
+function LTileMap:getDiagnostics() end
+
 --- Returns the tint color of a layer as four RGBA components.
 ---@param idx number Layer index (1-based).
 ---@return number Red (0..1).
@@ -29225,6 +29253,48 @@ function LTileMap:tileTypeIndex(layer) end
 ---@return boolean[] Flat walkable grid (true = walkable), row-major order.
 function LTileMap:toNavGrid(layer, gids) end
 
+--- Creates a new tile layer and returns `nil, error` instead of throwing on invalid dimensions or layer limits.
+---@param name string Layer name.
+---@param w number Width in tiles.
+---@param h number Height in tiles.
+---@return number? Index of the new layer (1-based).
+---@return string? Error message when validation fails.
+function LTileMap:tryAddLayer(name, w, h) end
+
+--- Returns the tile GID at a specific grid position, or `nil, error` when the layer or coord is invalid.
+---@param layer number Layer index (1-based).
+---@param x number Column (1-based).
+---@param y number Row (1-based).
+---@return number? Global tile ID at that position.
+---@return string? Error message on failure.
+function LTileMap:tryGetTile(layer, x, y) end
+
+--- Sets a tile and returns `false, error` instead of throwing on invalid layer or coordinate input.
+---@param layer number Layer index (1-based).
+---@param x number Column (1-based).
+---@param y number Row (1-based).
+---@param gid number Global tile ID to place.
+---@return boolean True on success.
+---@return string? Error message on failure.
+function LTileMap:trySetTile(layer, x, y, gid) end
+
+--- Sets a per-cell tint override and returns `false, error` instead of throwing on invalid input.
+---@param layer any
+---@param x any
+---@param y any
+---@param r any
+---@param g any
+---@param b any
+---@param a any
+function LTileMap:trySetTileTint(layer, x, y, r, g, b, a) end
+
+--- Converts world-space pixel coordinates to tile-grid coordinates, returning nils for negative or non-finite input.
+---@param wx number World X position in pixels.
+---@param wy number World Y position in pixels.
+---@return number? Tile column (1-based).
+---@return number? Tile row (1-based).
+function LTileMap:tryWorldToTile(wx, wy) end
+
 --- Returns the type name of this userdata.
 ---@return string Always `"LTileMap"`.
 function LTileMap:type() end
@@ -29339,9 +29409,10 @@ function LTileSet:typeOf(name) end
 --- Loads a tilemap from an LDtk JSON string, optionally targeting a specific level.
 ---@param jsonStr string Raw LDtk JSON content.
 ---@param levelName? string Level name to load, or nil for the first level.
+---@param opts? any Optional limits table used to bound imported layer size, chunk allocation, and decoded input bytes.
 ---@return LTileMap Loaded tilemap; or nil when import fails.
 ---@return LTilemapFromLDtkResult Structured import error table on import failure; or nil on success.
-lurek.tilemap.fromLDtk = function(jsonStr, levelName) end
+lurek.tilemap.fromLDtk = function(jsonStr, levelName, opts) end
 
 --- Converts screen-space pixel coordinates to axial hex coordinates.
 ---@param sx number Screen X.
@@ -29448,9 +29519,10 @@ lurek.tilemap.isoRotate = function(direction, steps) end
 
 --- Parses a TMX (Tiled XML) string and returns a table describing the map structure.
 ---@param xml string Raw TMX XML content.
+---@param opts? any Optional import policy table (`strictLayerSize`, `allowExternalTilesets`, `safePaths`, `assetRoot`) plus byte/size limits.
 ---@return LTilemapLoadTMXResult Parsed map with `width`; `height`; `tileWidth`; `tileHeight`; `orientation`; and `layers`; or nil on parse failure.
 ---@return LTilemapLoadTMXResult Structured import error table on parse failure; or nil on success.
-lurek.tilemap.loadTMX = function(xml) end
+lurek.tilemap.loadTMX = function(xml, opts) end
 
 --- Creates an auto-tile sheet with a given tile size and layout.
 ---@param tileW number Tile width in pixels.
@@ -29461,8 +29533,9 @@ lurek.tilemap.newAutoTileSheet = function(tileW, tileH, layout) end
 
 --- Creates a new infinite chunk-based tile map.
 ---@param chunkSize? number Tiles per chunk side (default 16).
+---@param opts? any Optional limits table (`maxChunkCells`, `maxChunks`, `maxCollisionTileChecks`, and related tilemap ceilings).
 ---@return LChunkMap New chunk map.
-lurek.tilemap.newChunkMap = function(chunkSize) end
+lurek.tilemap.newChunkMap = function(chunkSize, opts) end
 
 --- Creates a new isometric map with the given dimensions and tile geometry.
 ---@param width number Map width in tiles.
@@ -29509,8 +29582,9 @@ lurek.tilemap.newMapScript = function() end
 ---@param tileWidth number Tile width in pixels.
 ---@param tileHeight number Tile height in pixels.
 ---@param chunkSize? number Internal chunk size in tiles (default 16).
+---@param opts? any Optional limits table (`maxLayers`, `maxTiles`, `maxImagePixels`, `maxImportBytes`, `maxDecodedBytes`, `maxChunkCells`, `maxChunks`, `maxCollisionTileChecks`).
 ---@return LTileMap New tilemap.
-lurek.tilemap.newTileMap = function(tileWidth, tileHeight, chunkSize) end
+lurek.tilemap.newTileMap = function(tileWidth, tileHeight, chunkSize, opts) end
 
 --- Creates a new tileset from atlas parameters.
 ---@param firstGid number First global tile ID.

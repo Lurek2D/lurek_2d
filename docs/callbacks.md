@@ -6,15 +6,13 @@
 - Source path: `src/app/`
 - Binding: Global engine callback registration (no dedicated `src/lua_api/<module>_api.rs` spec target)
 - Namespace: `lurek.<callback>` (global callbacks)
-- Callback surface: `30` engine callbacks
+- Callback surface: `0` engine callbacks
 - Rust test path(s): None found in the workspace
 - Lua test path(s): None found in the workspace
 
 ## Summary
 
-This spec documents global `lurek.*` lifecycle/input/render callbacks exposed by the engine runtime. It is generated from `logs/data/lua_api_data.json` (`engine_callbacks`) so callback contracts stay in sync with Rust+Lua API extraction without hardcoded lists.
-
-Scope boundary: this file owns only callback inventory and ownership context. Detailed callback signatures/parameters belong to generated API references (`docs/api/lurek.md`, `docs/api/lurek.lua`).
+Documents global `lurek.*` engine callbacks. Read it as the inventory for lifecycle, input, and render hooks.
 
 ## Callback Inventory
 

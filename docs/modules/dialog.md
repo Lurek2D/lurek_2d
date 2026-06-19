@@ -2,20 +2,14 @@
 
 ## Summary
 
-- This module gives users a structured dialogue runtime for branching conversations and narrative progression.
-- Dialogue trees support conditional gates, weighted branch selection, and context-sensitive topic choice.
-- Speaker registries decouple character metadata from authored dialogue content.
-- State tracking preserves visited nodes, active position, and runtime variables across interactions.
-- Sequencer support enables typewriter reveal, line advance, and choice-based branching playback.
-- Event hooks allow scripts to react to narrative milestones and user selections.
-- Utility-style branch scoring supports dynamic conversational behavior.
-- Callback nodes support embedding scripted side effects within dialogue flow.
-- Jump and wait nodes allow cinematic pacing and control-flow shaping.
-- The module is useful for RPG conversations, tutorials, and story-driven UI interactions.
-- For users, it centralizes narrative logic instead of scattering dialogue state across scripts.
-- It supports both authored story content and reactive systems-driven chatter.
-
-This module is mostly self-contained inside the `Edge/Integration` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
+- The `dialog` module is the conversation-runtime surface for users building branching narrative, tutorial flows, reactive chatter, or choice-driven exchanges.
+- Dialogue trees, speaker metadata, conditional gates, weighted branching, callbacks, waits, and jumps work together so conversations can be authored as explicit progression instead of scattered local state checks.
+- Sequencing is a core part of the value: reveal timing, advancement, and event hooks let dialogue participate in pacing, scripting, and gameplay rather than acting as a static text lookup table.
+- Variable-aware flow and state tracking make it practical to mix authored story beats with runtime-driven responses, which is important for larger RPG, strategy, and simulation interfaces.
+- That same explicit flow is useful for branch testing and replay.
+- It also helps keep dialogue progression inspectable in larger projects.
+- The module therefore fits narrative scenes, tutorials, reactive barks, negotiation flows, and tool-driven branch inspection wherever text progression should remain a first-class runtime structure.
+- Read `dialog` as the owner of conversation structure and progression.
 
 ## Functions
 
@@ -45,8 +39,10 @@ lurek.dialog.call(fn_name, opts)
 ```lua
 do
     local node = lurek.dialog.call("on_quest_accepted")
-    print("lurek.dialog.call type=" .. node.type)
-    print("name=" .. node.name)
+    local timeline = { lurek.dialog.choice("Accept quest?", {"Yes", "No"}), node }
+    local callback = timeline[2]
+    lurek.log.info("call node type = " .. callback.type)
+    lurek.log.info("callback name = " .. callback.name)
 end
 ```
 
@@ -79,9 +75,12 @@ lurek.dialog.choice(prompt, options, opts)
 ```lua
 do
     local node = lurek.dialog.choice("What do you do?", {"Fight", "Flee", "Talk"})
-    print("lurek.dialog.choice type=" .. node.type)
-    print("prompt=" .. node.prompt)
-    print("options=" .. #node.options)
+    local seq = lurek.dialog.newSequencer()
+    seq:load({ node })
+    seq:start()
+    local labels = seq:getChoiceLabels()
+    lurek.log.info("choice node type = " .. node.type)
+    lurek.log.info("prompt=" .. seq:getChoiceText() .. " options=" .. #labels)
 end
 ```
 
@@ -114,9 +113,10 @@ lurek.dialog.event(name, data, opts)
 ```lua
 do
     local node = lurek.dialog.event("combat_end", "victory")
-    print("lurek.dialog.event type=" .. node.type)
-    print("name=" .. node.name)
-    print("data=" .. tostring(node.data))
+    local timeline = { lurek.dialog.say("Hero", "We did it."), node }
+    local last = timeline[#timeline]
+    lurek.log.info("event node type = " .. last.type)
+    lurek.log.info("event name=" .. last.name .. " data=" .. tostring(last.data))
 end
 ```
 
@@ -148,8 +148,10 @@ lurek.dialog.jump(target, opts)
 ```lua
 do
     local node = lurek.dialog.jump("ending_good")
-    print("lurek.dialog.jump type=" .. node.type)
-    print("target=" .. node.target)
+    local timeline = { lurek.dialog.say("Guide", "Choose your fate."), node }
+    local jump = timeline[2]
+    lurek.log.info("jump node type = " .. jump.type)
+    lurek.log.info("jump target = " .. jump.target)
 end
 ```
 
@@ -175,8 +177,11 @@ lurek.dialog.newAI()
 do
     local ai = lurek.dialog.newAI()
     ai:addTopic("greeting", 1.0)
-    print("lurek.dialog.newAI type=" .. ai:type())
-    print("topics=" .. ai:getTopicCount())
+    ai:addTopic("quest_offer", 0.7)
+    local type_name = ai:type()
+    local topic_count = ai:getTopicCount()
+    lurek.log.info("dialog AI ready: " .. type_name)
+    lurek.log.info("topics prepared for tavern NPC = " .. topic_count)
 end
 ```
 
@@ -201,8 +206,12 @@ lurek.dialog.newSequencer()
 ```lua
 do
     local seq = lurek.dialog.newSequencer()
-    print("lurek.dialog.newSequencer type=" .. seq:type())
-    print("state=" .. seq:getState())
+    seq:load({ lurek.dialog.say("Guide", "Welcome to the inn.") })
+    local type_name = seq:type()
+    local state = seq:getState()
+    local active = seq:isActive()
+    lurek.log.info("sequencer type = " .. type_name)
+    lurek.log.info("initial state = " .. state .. ", active=" .. tostring(active))
 end
 ```
 
@@ -228,8 +237,11 @@ lurek.dialog.newSpeakerRegistry()
 do
     local sr = lurek.dialog.newSpeakerRegistry()
     sr:add("guide", "Guide", "portraits/guide.png", "npc.guide")
-    print("lurek.dialog.newSpeakerRegistry type=" .. sr:type())
-    print("count=" .. sr:count())
+    local speaker = sr:get("guide")
+    local type_name = sr:type()
+    local count = sr:count()
+    lurek.log.info("speaker registry type = " .. type_name)
+    lurek.log.info("registered " .. speaker.name .. ", count=" .. count)
 end
 ```
 
@@ -255,8 +267,11 @@ lurek.dialog.newState()
 do
     local ds = lurek.dialog.newState()
     ds:start("greeting")
-    print("lurek.dialog.newState type=" .. ds:type())
-    print("active=" .. tostring(ds:isActive()))
+    ds:setVariable("speaker", "guide")
+    local type_name = ds:type()
+    local current = ds:current()
+    lurek.log.info("dialog state type = " .. type_name)
+    lurek.log.info("active=" .. tostring(ds:isActive()) .. " current=" .. tostring(current))
 end
 ```
 
@@ -289,9 +304,11 @@ lurek.dialog.say(actor, text, opts)
 ```lua
 do
     local node = lurek.dialog.say("Hero", "I'm ready!")
-    print("lurek.dialog.say type=" .. node.type)
-    print("actor=" .. node.actor)
-    print("text=" .. node.text)
+    local seq = lurek.dialog.newSequencer()
+    seq:load({ node })
+    seq:start()
+    lurek.log.info("say node type = " .. node.type)
+    lurek.log.info("speaker=" .. node.actor .. " text=" .. seq:currentText())
 end
 ```
 
@@ -323,8 +340,11 @@ lurek.dialog.wait(seconds, opts)
 ```lua
 do
     local node = lurek.dialog.wait(3.0)
-    print("lurek.dialog.wait type=" .. node.type)
-    print("seconds=" .. node.seconds)
+    local timeline = { lurek.dialog.say("Guide", "Hold on."), node, lurek.dialog.say("Guide", "Done.") }
+    local total_nodes = #timeline
+    local seconds = node.seconds
+    lurek.log.info("wait node type = " .. node.type)
+    lurek.log.info("pause seconds = " .. seconds .. " across " .. total_nodes .. " timeline nodes")
 end
 ```
 
@@ -378,7 +398,7 @@ do
     seq:start()
     seq:advance()
     seq:advance()
-    print("LDialogSequencer:advance text=" .. seq:currentText())
+    lurek.log.info("LDialogSequencer:advance text=" .. seq:currentText())
 end
 ```
 
@@ -409,7 +429,7 @@ do
     })
     seq:start()
     seq:choose(2)
-    print("LDialogSequencer:choose state=" .. seq:getState())
+    lurek.log.info("LDialogSequencer:choose state=" .. seq:getState())
 end
 ```
 
@@ -436,7 +456,11 @@ do
     local seq = lurek.dialog.newSequencer()
     seq:load({ lurek.dialog.say("Warrior", "At last!") })
     seq:start()
-    print("LDialogSequencer:currentSpeaker=" .. tostring(seq:currentSpeaker()))
+    local speaker = seq:currentSpeaker()
+    local text = seq:currentText()
+    local state = seq:getState()
+    lurek.log.info("current speaker = " .. tostring(speaker))
+    lurek.log.info("state=" .. state .. " text=" .. text)
 end
 ```
 
@@ -463,7 +487,11 @@ do
     local seq = lurek.dialog.newSequencer()
     seq:load({ lurek.dialog.say("NPC", "The full line here") })
     seq:start()
-    print("LDialogSequencer:currentText=" .. seq:currentText())
+    local text = seq:currentText()
+    local revealed = seq:revealedText()
+    local speaker = seq:currentSpeaker()
+    lurek.log.info("current text = " .. text)
+    lurek.log.info("speaker=" .. tostring(speaker) .. " revealed=" .. revealed)
 end
 ```
 
@@ -491,8 +519,8 @@ do
     seq:load({ lurek.dialog.choice("Pick:", {"Option A", "Option B", "Option C"}) })
     seq:start()
     local labels = seq:getChoiceLabels()
-    print("LDialogSequencer:getChoiceLabels count=" .. #labels)
-    print("first=" .. labels[1])
+    lurek.log.info("LDialogSequencer:getChoiceLabels count=" .. #labels)
+    lurek.log.info("first=" .. labels[1])
 end
 ```
 
@@ -519,7 +547,11 @@ do
     local seq = lurek.dialog.newSequencer()
     seq:load({ lurek.dialog.choice("Your move?", {"Attack", "Defend"}) })
     seq:start()
-    print("LDialogSequencer:getChoiceText=" .. tostring(seq:getChoiceText()))
+    local prompt = seq:getChoiceText()
+    local labels = seq:getChoiceLabels()
+    local waiting = seq:isWaitingForChoice()
+    lurek.log.info("choice prompt = " .. tostring(prompt))
+    lurek.log.info("waiting=" .. tostring(waiting) .. " options=" .. #labels)
 end
 ```
 
@@ -545,7 +577,12 @@ LDialogSequencer:getSpeed()
 do
     local seq = lurek.dialog.newSequencer()
     seq:setSpeed(25.0)
-    print("LDialogSequencer:getSpeed=" .. seq:getSpeed())
+    seq:load({ lurek.dialog.say("Guide", "Measured reveal") })
+    seq:start()
+    local speed = seq:getSpeed()
+    local state = seq:getState()
+    lurek.log.info("sequencer speed = " .. speed)
+    lurek.log.info("state while typing = " .. state)
 end
 ```
 
@@ -572,7 +609,11 @@ do
     local seq = lurek.dialog.newSequencer()
     seq:load({ lurek.dialog.say("NPC", "Text") })
     seq:start()
-    print("LDialogSequencer:getState=" .. seq:getState())
+    local state = seq:getState()
+    local active = seq:isActive()
+    local speaker = seq:currentSpeaker()
+    lurek.log.info("sequencer state = " .. state)
+    lurek.log.info("active=" .. tostring(active) .. " speaker=" .. tostring(speaker))
 end
 ```
 
@@ -597,10 +638,10 @@ LDialogSequencer:isActive()
 ```lua
 do
     local seq = lurek.dialog.newSequencer()
-    print("idle active=" .. tostring(seq:isActive()))
+    lurek.log.info("idle active=" .. tostring(seq:isActive()))
     seq:load({ lurek.dialog.say("NPC", "Started") })
     seq:start()
-    print("started active=" .. tostring(seq:isActive()))
+    lurek.log.info("started active=" .. tostring(seq:isActive()))
 end
 ```
 
@@ -627,7 +668,11 @@ do
     local seq = lurek.dialog.newSequencer()
     seq:load({ lurek.dialog.choice("Pick:", {"Yes", "No"}) })
     seq:start()
-    print("LDialogSequencer:isWaitingForChoice=" .. tostring(seq:isWaitingForChoice()))
+    local waiting = seq:isWaitingForChoice()
+    local prompt = seq:getChoiceText()
+    local labels = seq:getChoiceLabels()
+    lurek.log.info("waiting for choice = " .. tostring(waiting))
+    lurek.log.info("prompt=" .. tostring(prompt) .. " options=" .. #labels)
 end
 ```
 
@@ -657,7 +702,7 @@ do
         lurek.dialog.choice("How are you?", {"Good", "Bad"})
     }
     seq:load(nodes)
-    print("LDialogSequencer:load ok")
+    lurek.log.info("LDialogSequencer:load ok")
 end
 ```
 
@@ -686,7 +731,7 @@ do
     seq:load({ lurek.dialog.say("NPC", "Slowly revealed") })
     seq:start()
     seq:update(0.2)
-    print("LDialogSequencer:revealedText=" .. seq:revealedText())
+    lurek.log.info("LDialogSequencer:revealedText=" .. seq:revealedText())
 end
 ```
 
@@ -712,7 +757,11 @@ LDialogSequencer:setSpeed(cps)
 do
     local seq = lurek.dialog.newSequencer()
     seq:setSpeed(50.0)
-    print("LDialogSequencer:setSpeed speed=" .. seq:getSpeed())
+    seq:load({ lurek.dialog.say("Guide", "Fast line reveal") })
+    seq:start()
+    seq:update(0.1)
+    lurek.log.info("configured speed = " .. seq:getSpeed())
+    lurek.log.info("revealed text after tick = " .. seq:revealedText())
 end
 ```
 
@@ -735,7 +784,7 @@ do
     seq:load({ lurek.dialog.say("NPC", "Instant reveal") })
     seq:start()
     seq:skip()
-    print("LDialogSequencer:skip revealed=" .. seq:revealedText())
+    lurek.log.info("LDialogSequencer:skip revealed=" .. seq:revealedText())
 end
 ```
 
@@ -756,7 +805,11 @@ do
     local seq = lurek.dialog.newSequencer()
     seq:load({ lurek.dialog.say("NPC", "Beginning...") })
     seq:start()
-    print("LDialogSequencer:start state=" .. seq:getState())
+    local state = seq:getState()
+    local speaker = seq:currentSpeaker()
+    local text = seq:currentText()
+    lurek.log.info("state after start = " .. state)
+    lurek.log.info("speaker=" .. tostring(speaker) .. " text=" .. text)
 end
 ```
 
@@ -781,7 +834,11 @@ LDialogSequencer:type()
 ```lua
 do
     local seq = lurek.dialog.newSequencer()
-    print("LDialogSequencer:type=" .. seq:type())
+    seq:load({ lurek.dialog.say("Guide", "Status check") })
+    local type_name = seq:type()
+    local state = seq:getState()
+    lurek.log.info("sequencer type = " .. type_name)
+    lurek.log.info("current state before start = " .. state)
 end
 ```
 
@@ -812,7 +869,11 @@ LDialogSequencer:typeOf(name)
 ```lua
 do
     local seq = lurek.dialog.newSequencer()
-    print("LDialogSequencer:typeOf LDialogSequencer=" .. tostring(seq:typeOf("LDialogSequencer")))
+    local is_seq = seq:typeOf("LDialogSequencer")
+    local is_object = seq:typeOf("LObject")
+    local is_ai = seq:typeOf("LDialogueAI")
+    lurek.log.info("is sequencer = " .. tostring(is_seq))
+    lurek.log.info("topic count = " .. ai:getTopicCount() .. ", ai=" .. tostring(is_ai))
 end
 ```
 
@@ -841,7 +902,7 @@ do
     seq:load({ lurek.dialog.say("NPC", "Hello") })
     seq:start()
     seq:update(0.15)
-    print("LDialogSequencer:update revealed=" .. seq:revealedText())
+    lurek.log.info("LDialogSequencer:update revealed=" .. seq:revealedText())
 end
 ```
 
@@ -887,7 +948,11 @@ do
     local ai = lurek.dialog.newAI()
     ai:addTopic("greeting", 1.0)
     local added = ai:addBranch("greeting", "hello_once", 2.0, "idle")
-    print("LDialogueAI:addBranch ok=" .. tostring(added))
+    ai:setFSMState("idle")
+    local branch = ai:selectBranch("greeting")
+    local topics = ai:getTopicCount()
+    lurek.log.info("branch added = " .. tostring(added))
+    lurek.log.info("selected branch = " .. tostring(branch) .. ", topics=" .. topics)
 end
 ```
 
@@ -917,7 +982,12 @@ LDialogueAI:addTopic(id, weight, fsm_state, bt_status, utility_key)
 do
     local ai = lurek.dialog.newAI()
     ai:addTopic("weather", 0.5, "idle")
-    print("LDialogueAI:addTopic count=" .. ai:getTopicCount())
+    ai:addTopic("trade", 0.8, "idle")
+    ai:setFSMState("idle")
+    local count = ai:getTopicCount()
+    local topic = ai:selectTopic()
+    lurek.log.info("topic count = " .. count)
+    lurek.log.info("selected idle topic = " .. tostring(topic))
 end
 ```
 
@@ -939,8 +1009,8 @@ do
     ai:addTopic("weather", 1.0, nil, nil, "weather_score")
     ai:setUtilityScore("weather_score", 0.9)
     ai:clearUtilityScores()
-    print("LDialogueAI:clearUtilityScores ok")
-    print("selected=" .. tostring(ai:selectTopic()))
+    lurek.log.info("LDialogueAI:clearUtilityScores ok")
+    lurek.log.info("selected=" .. tostring(ai:selectTopic()))
 end
 ```
 
@@ -967,7 +1037,11 @@ do
     local ai = lurek.dialog.newAI()
     ai:addTopic("weather", 0.5)
     ai:addTopic("quest", 0.8)
-    print("LDialogueAI:getTopicCount=" .. ai:getTopicCount())
+    ai:addTopic("rumor", 0.2)
+    local count = ai:getTopicCount()
+    local topic = ai:selectTopic()
+    lurek.log.info("topic count = " .. count)
+    lurek.log.info("currently selected topic = " .. tostring(topic))
 end
 ```
 
@@ -1003,7 +1077,7 @@ do
     ai:addBranch("friendly", "quest_prompt", 0.5, "idle")
     ai:setFSMState("idle")
     local branch = ai:selectBranch("friendly")
-    print("LDialogueAI:selectBranch=" .. tostring(branch))
+    lurek.log.info("LDialogueAI:selectBranch=" .. tostring(branch))
 end
 ```
 
@@ -1032,7 +1106,7 @@ do
     ai:addTopic("trade", 1.0, nil, nil, "trade_score")
     ai:setUtilityScore("trade_score", 1.5)
     local topic = ai:selectTopic()
-    print("LDialogueAI:selectTopic=" .. tostring(topic))
+    lurek.log.info("LDialogueAI:selectTopic=" .. tostring(topic))
 end
 ```
 
@@ -1059,8 +1133,8 @@ do
     local ai = lurek.dialog.newAI()
     ai:addTopic("combat_bark", 1.0, nil, "running")
     ai:setBTStatus("running")
-    print("LDialogueAI:setBTStatus ok")
-    print("selected=" .. tostring(ai:selectTopic()))
+    lurek.log.info("LDialogueAI:setBTStatus ok")
+    lurek.log.info("selected=" .. tostring(ai:selectTopic()))
 end
 ```
 
@@ -1087,8 +1161,8 @@ do
     local ai = lurek.dialog.newAI()
     ai:addTopic("shop", 1.0, "shop")
     ai:setFSMState("shop")
-    print("LDialogueAI:setFSMState ok")
-    print("selected=" .. tostring(ai:selectTopic()))
+    lurek.log.info("LDialogueAI:setFSMState ok")
+    lurek.log.info("selected=" .. tostring(ai:selectTopic()))
 end
 ```
 
@@ -1117,7 +1191,7 @@ do
     ai:addTopic("danger", 0.3, nil, nil, "danger")
     ai:setUtilityScore("danger", 0.95)
     local topic = ai:selectTopic()
-    print("LDialogueAI:setUtilityScore topic=" .. tostring(topic))
+    lurek.log.info("LDialogueAI:setUtilityScore topic=" .. tostring(topic))
 end
 ```
 
@@ -1142,7 +1216,11 @@ LDialogueAI:type()
 ```lua
 do
     local ai = lurek.dialog.newAI()
-    print("LDialogueAI:type=" .. ai:type())
+    ai:addTopic("greeting", 1.0)
+    local type_name = ai:type()
+    local count = ai:getTopicCount()
+    lurek.log.info("dialog AI type = " .. type_name)
+    lurek.log.info("registered topics = " .. count)
 end
 ```
 
@@ -1173,7 +1251,11 @@ LDialogueAI:typeOf(name)
 ```lua
 do
     local ai = lurek.dialog.newAI()
-    print("LDialogueAI:typeOf LDialogueAI=" .. tostring(ai:typeOf("LDialogueAI")))
+    local is_ai = ai:typeOf("LDialogueAI")
+    local is_object = ai:typeOf("LObject")
+    local is_seq = ai:typeOf("LDialogSequencer")
+    lurek.log.info("is dialogue AI = " .. tostring(is_ai))
+    lurek.log.info("active branch after cast = " .. tostring(ai:selectBranch("weather")) .. ", sequencer=" .. tostring(is_seq))
 end
 ```
 
@@ -1208,7 +1290,11 @@ do
     local ds = lurek.dialog.newState()
     ds:start("chat_intro")
     ds:advance("chat_reply")
-    print("LDialogueState:advance current=" .. tostring(ds:current()))
+    local current = ds:current()
+    local visited_intro = ds:hasVisited("chat_intro")
+    local visits = ds:visitCount()
+    lurek.log.info("advanced to " .. tostring(current))
+    lurek.log.info("intro visited=" .. tostring(visited_intro) .. " total=" .. visits)
 end
 ```
 
@@ -1234,7 +1320,11 @@ LDialogueState:current()
 do
     local ds = lurek.dialog.newState()
     ds:start("quest_offer")
-    print("LDialogueState:current=" .. tostring(ds:current()))
+    ds:advance("quest_reward")
+    local current = ds:current()
+    local reward_path = ds:hasVisited("quest_reward")
+    lurek.log.info("current node = " .. tostring(current))
+    lurek.log.info("reward path active = " .. tostring(reward_path))
 end
 ```
 
@@ -1254,8 +1344,12 @@ LDialogueState:end_()
 do
     local ds = lurek.dialog.newState()
     ds:start("farewell")
+    local before = ds:isActive()
     ds:end_()
-    print("LDialogueState:end_ isActive=" .. tostring(ds:isActive()))
+    local after = ds:isActive()
+    local current = ds:current()
+    lurek.log.info("dialog active before end = " .. tostring(before))
+    lurek.log.info("after end active=" .. tostring(after) .. " current=" .. tostring(current))
 end
 ```
 
@@ -1287,7 +1381,11 @@ LDialogueState:getVariable(key)
 do
     local ds = lurek.dialog.newState()
     ds:setVariable("coins", "50")
-    print("LDialogueState:getVariable=" .. tostring(ds:getVariable("coins")))
+    ds:setVariable("discount", "10")
+    local coins = ds:getVariable("coins")
+    local discount = ds:getVariable("discount")
+    lurek.log.info("merchant coins = " .. tostring(coins))
+    lurek.log.info("discount percent = " .. tostring(discount))
 end
 ```
 
@@ -1320,8 +1418,8 @@ do
     local ds = lurek.dialog.newState()
     ds:start("info")
     ds:advance("bridge_warning")
-    print("visited info=" .. tostring(ds:hasVisited("info")))
-    print("visited bridge_warning=" .. tostring(ds:hasVisited("bridge_warning")))
+    lurek.log.info("visited info=" .. tostring(ds:hasVisited("info")))
+    lurek.log.info("visited bridge_warning=" .. tostring(ds:hasVisited("bridge_warning")))
 end
 ```
 
@@ -1347,7 +1445,11 @@ LDialogueState:isActive()
 do
     local ds = lurek.dialog.newState()
     ds:start("greeting")
-    print("LDialogueState:isActive=" .. tostring(ds:isActive()))
+    local active_before = ds:isActive()
+    ds:end_()
+    local active_after = ds:isActive()
+    lurek.log.info("state active before end = " .. tostring(active_before))
+    lurek.log.info("state active after end = " .. tostring(active_after))
 end
 ```
 
@@ -1369,8 +1471,8 @@ do
     ds:start("cycle_a")
     ds:advance("cycle_b")
     ds:reset()
-    print("LDialogueState:reset isActive=" .. tostring(ds:isActive()))
-    print("visit count=" .. ds:visitCount())
+    lurek.log.info("LDialogueState:reset isActive=" .. tostring(ds:isActive()))
+    lurek.log.info("visit count=" .. ds:visitCount())
 end
 ```
 
@@ -1397,7 +1499,11 @@ LDialogueState:setVariable(key, value)
 do
     local ds = lurek.dialog.newState()
     ds:setVariable("accepted", "no")
-    print("LDialogueState:setVariable=" .. tostring(ds:getVariable("accepted")))
+    ds:setVariable("quest_id", "find-relic")
+    local accepted = ds:getVariable("accepted")
+    local quest_id = ds:getVariable("quest_id")
+    lurek.log.info("accepted flag = " .. tostring(accepted))
+    lurek.log.info("quest variable = " .. tostring(quest_id))
 end
 ```
 
@@ -1423,8 +1529,12 @@ LDialogueState:start(node_id)
 do
     local ds = lurek.dialog.newState()
     ds:start("intro")
-    print("LDialogueState:start isActive=" .. tostring(ds:isActive()))
-    print("current=" .. tostring(ds:current()))
+    ds:setVariable("branch", "intro")
+    local active = ds:isActive()
+    local current = ds:current()
+    local visits = ds:visitCount()
+    lurek.log.info("conversation started at " .. tostring(current))
+    lurek.log.info("active=" .. tostring(active) .. " visits=" .. visits)
 end
 ```
 
@@ -1449,7 +1559,12 @@ LDialogueState:type()
 ```lua
 do
     local ds = lurek.dialog.newState()
-    print("LDialogueState:type=" .. ds:type())
+    ds:start("intro")
+    local type_name = ds:type()
+    local current = ds:current()
+    local active = ds:isActive()
+    lurek.log.info("state handle type = " .. type_name)
+    lurek.log.info("active=" .. tostring(active) .. " current=" .. tostring(current))
 end
 ```
 
@@ -1480,7 +1595,11 @@ LDialogueState:typeOf(name)
 ```lua
 do
     local ds = lurek.dialog.newState()
-    print("LDialogueState:typeOf LDialogueState=" .. tostring(ds:typeOf("LDialogueState")))
+    local is_state = ds:typeOf("LDialogueState")
+    local is_object = ds:typeOf("LObject")
+    local is_registry = ds:typeOf("LSpeakerRegistry")
+    lurek.log.info("is state = " .. tostring(is_state))
+    lurek.log.info("registry cast valid = " .. tostring(is_registry) .. ", active=" .. tostring(ds:isActive()))
 end
 ```
 
@@ -1508,7 +1627,7 @@ do
     ds:start("rumor_intro")
     ds:advance("rumor_detail")
     ds:advance("rumor_exit")
-    print("LDialogueState:visitCount=" .. ds:visitCount())
+    lurek.log.info("LDialogueState:visitCount=" .. ds:visitCount())
 end
 ```
 
@@ -1545,7 +1664,10 @@ LSpeakerRegistry:add(id, name, portrait, voice_id)
 do
     local sr = lurek.dialog.newSpeakerRegistry()
     sr:add("blacksmith", "Gordan", "gordan.png", "smith.voice")
-    print("LSpeakerRegistry:add count=" .. sr:count())
+    local speaker = sr:get("blacksmith")
+    local count = sr:count()
+    lurek.log.info("added speaker " .. speaker.name)
+    lurek.log.info("registry count = " .. count)
 end
 ```
 
@@ -1577,7 +1699,10 @@ LSpeakerRegistry:contains(id)
 do
     local sr = lurek.dialog.newSpeakerRegistry()
     sr:add("merchant", "Henri")
-    print("LSpeakerRegistry:contains=" .. tostring(sr:contains("merchant")))
+    local has_merchant = sr:contains("merchant")
+    local has_guard = sr:contains("guard")
+    lurek.log.info("merchant registered = " .. tostring(has_merchant))
+    lurek.log.info("guard registered = " .. tostring(has_guard))
 end
 ```
 
@@ -1604,7 +1729,10 @@ do
     local sr = lurek.dialog.newSpeakerRegistry()
     sr:add("npc1", "Anna")
     sr:add("npc2", "Bob")
-    print("LSpeakerRegistry:count=" .. sr:count())
+    local total = sr:count()
+    local anna = sr:get("npc1")
+    lurek.log.info("registry size = " .. total)
+    lurek.log.info("first speaker in scene = " .. anna.name)
 end
 ```
 
@@ -1637,7 +1765,10 @@ do
     local sr = lurek.dialog.newSpeakerRegistry()
     sr:add("guard", "Marcus")
     local spk = sr:get("guard")
-    print("LSpeakerRegistry:get name=" .. tostring(spk and spk.name))
+    local exists = sr:contains("guard")
+    local count = sr:count()
+    lurek.log.info("speaker fetched = " .. tostring(spk and spk.name))
+    lurek.log.info("exists=" .. tostring(exists) .. " count=" .. count)
 end
 ```
 
@@ -1669,8 +1800,11 @@ LSpeakerRegistry:remove(id)
 do
     local sr = lurek.dialog.newSpeakerRegistry()
     sr:add("temp", "Temp")
-    sr:remove("temp")
-    print("LSpeakerRegistry:remove count=" .. sr:count())
+    local before = sr:count()
+    local removed = sr:remove("temp")
+    local after = sr:count()
+    lurek.log.info("removed temp speaker = " .. tostring(removed))
+    lurek.log.info("count " .. before .. " -> " .. after)
 end
 ```
 
@@ -1695,7 +1829,11 @@ LSpeakerRegistry:type()
 ```lua
 do
     local sr = lurek.dialog.newSpeakerRegistry()
-    print("LSpeakerRegistry:type=" .. sr:type())
+    sr:add("healer", "Mira")
+    local type_name = sr:type()
+    local count = sr:count()
+    lurek.log.info("speaker registry type = " .. type_name)
+    lurek.log.info("healer board count = " .. count)
 end
 ```
 
@@ -1726,7 +1864,11 @@ LSpeakerRegistry:typeOf(name)
 ```lua
 do
     local sr = lurek.dialog.newSpeakerRegistry()
-    print("LSpeakerRegistry:typeOf LSpeakerRegistry=" .. tostring(sr:typeOf("LSpeakerRegistry")))
+    local is_registry = sr:typeOf("LSpeakerRegistry")
+    local is_object = sr:typeOf("LObject")
+    local is_state = sr:typeOf("LDialogueState")
+    lurek.log.info("is speaker registry = " .. tostring(is_registry))
+    lurek.log.info("speaker registry count = " .. sr:count() .. ", state=" .. tostring(is_state))
 end
 ```
 

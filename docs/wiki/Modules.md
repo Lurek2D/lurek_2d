@@ -88,7 +88,7 @@ Modules are grouped by runtime layer. Each module page includes its spec Purpose
 | [spine](Module-spine) | `lurek.spine` | Hierarchical skeletal animation (own implementation; not the official Spine SDK â€” A-02 + licensing). |
 | [sprite](Module-sprite) | `lurek.sprite` | Sprite and sprite-batch rendering above the render command queue. |
 | [terminal](Module-terminal) | `lurek.terminal` | Character-cell text-mode terminal for roguelikes, debug consoles, ASCII rendering. |
-| [physics](Module-tilemap) | `lurek.physics` | Single- to multi-layer tile maps with animated tiles, TMX/LDtk import, autotile, iso sort. |
+| [tilemap](Module-tilemap) | `lurek.tilemap` | Single- to multi-layer tile maps with animated tiles, TMX/LDtk import, autotile, iso sort. |
 | [tween](Module-tween) | `lurek.tween` | Property animation: interpolated transitions on Lua table fields without per-frame lerp code. |
 | [ui](Module-ui) | `lurek.ui` | Retained-mode widget system; rendering deferred through RenderCommand. |
 | [validator](Module-validator) | `lurek.validator` | Content validation engine: asset checks, import resolution, API compliance, custom rules. |

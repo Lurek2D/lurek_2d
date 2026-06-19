@@ -9,6 +9,8 @@
 use super::block::{Edge, MapBlock};
 use super::constraints::{opposite_edge, NeighborRules};
 use std::collections::{HashMap, HashSet};
+use std::error::Error;
+use std::fmt;
 
 /// A block that has been placed on the map.
 #[derive(Debug, Clone)]
@@ -69,6 +71,68 @@ pub struct PlacementSearch<'a> {
     pub mirrors: &'a [bool],
 }
 
+#[derive(Debug, Clone)]
+struct CachedBlockTransform {
+    footprint: Vec<(i32, i32)>,
+    footprint_lookup: HashSet<(i32, i32)>,
+    socket_map: HashMap<(i32, i32, Edge), u32>,
+}
+
+/// Reusable cache for transformed block footprint/socket payloads across placement searches.
+#[derive(Debug, Clone, Default)]
+pub struct PlacementTransformCache {
+    entries: HashMap<(usize, u32, bool), CachedBlockTransform>,
+    hits: u32,
+    misses: u32,
+}
+
+impl PlacementTransformCache {
+    /// Drop all cached transform payloads and reset hit/miss counters.
+    pub fn clear(&mut self) {
+        self.entries.clear();
+        self.hits = 0;
+        self.misses = 0;
+    }
+
+    /// Return the number of cache hits observed since the last clear.
+    pub fn hits(&self) -> u32 {
+        self.hits
+    }
+
+    /// Return the number of cache misses observed since the last clear.
+    pub fn misses(&self) -> u32 {
+        self.misses
+    }
+
+    fn get_transform(
+        &mut self,
+        block: &MapBlock,
+        rotation: u32,
+        mirrored: bool,
+    ) -> &CachedBlockTransform {
+        let key = (block as *const MapBlock as usize, rotation % 4, mirrored);
+        if self.entries.contains_key(&key) {
+            self.hits = self.hits.saturating_add(1);
+        } else {
+            self.misses = self.misses.saturating_add(1);
+            let footprint = block.transformed_footprint(rotation, mirrored);
+            let footprint_lookup = footprint.iter().copied().collect();
+            let socket_map = block.transformed_socket_map(rotation, mirrored);
+            self.entries.insert(
+                key,
+                CachedBlockTransform {
+                    footprint,
+                    footprint_lookup,
+                    socket_map,
+                },
+            );
+        }
+        self.entries
+            .get(&key)
+            .expect("placement transform cache inserted an entry for the requested key")
+    }
+}
+
 /// The placement grid defines available positions and tracks placed blocks.
 ///
 /// The grid does not need to be rectangular. Available positions are defined by
@@ -84,6 +148,85 @@ pub struct PlacementGrid {
     /// Map from grid position to index in `placed`.
     position_map: HashMap<(i32, i32), usize>,
 }
+
+/// Validation failures for `PlacementGrid` internal invariants.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum PlacementGridValidationError {
+    /// An occupied cell was not present in the available shape.
+    OccupiedOutsideAvailable { cell: (i32, i32) },
+    /// An occupied cell had no reverse-map entry.
+    MissingPositionMapEntry { cell: (i32, i32) },
+    /// A reverse-map entry pointed beyond the placed block list.
+    PositionMapIndexOutOfBounds {
+        cell: (i32, i32),
+        index: usize,
+        placed_count: usize,
+    },
+    /// A reverse-map entry pointed at a block that does not cover the cell.
+    PositionMapCellMismatch { cell: (i32, i32), index: usize },
+    /// A placed block claims a cell that is not part of the available shape.
+    PlacedCellOutsideAvailable { cell: (i32, i32), index: usize },
+    /// A placed block claims a cell that is not marked occupied.
+    PlacedCellMissingOccupiedFlag { cell: (i32, i32), index: usize },
+    /// A placed block cell points at the wrong reverse-map index.
+    PlacedCellWrongPositionMap {
+        cell: (i32, i32),
+        index: usize,
+        mapped_index: Option<usize>,
+    },
+}
+
+impl fmt::Display for PlacementGridValidationError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::OccupiedOutsideAvailable { cell } => {
+                write!(f, "occupied cell {:?} is outside the available shape", cell)
+            }
+            Self::MissingPositionMapEntry { cell } => {
+                write!(
+                    f,
+                    "occupied cell {:?} is missing from the reverse map",
+                    cell
+                )
+            }
+            Self::PositionMapIndexOutOfBounds {
+                cell,
+                index,
+                placed_count,
+            } => write!(
+                f,
+                "reverse map cell {:?} points to placed index {} but only {} blocks exist",
+                cell, index, placed_count
+            ),
+            Self::PositionMapCellMismatch { cell, index } => write!(
+                f,
+                "reverse map cell {:?} points to block {} that does not cover the cell",
+                cell, index
+            ),
+            Self::PlacedCellOutsideAvailable { cell, index } => write!(
+                f,
+                "placed block {} covers {:?} outside the available shape",
+                index, cell
+            ),
+            Self::PlacedCellMissingOccupiedFlag { cell, index } => write!(
+                f,
+                "placed block {} covers {:?} but the occupied flag is missing",
+                index, cell
+            ),
+            Self::PlacedCellWrongPositionMap {
+                cell,
+                index,
+                mapped_index,
+            } => write!(
+                f,
+                "placed block {} covers {:?} but the reverse map points to {:?}",
+                index, cell, mapped_index
+            ),
+        }
+    }
+}
+
+impl Error for PlacementGridValidationError {}
 
 impl PlacementGrid {
     /// Create a new empty placement grid.
@@ -178,7 +321,7 @@ impl PlacementGrid {
 
     /// Get the number of available (unfilled) positions.
     pub fn available_count(&self) -> usize {
-        self.available.len() - self.occupied.len()
+        self.available.len().saturating_sub(self.occupied.len())
     }
 
     /// Get all available (unfilled) positions.
@@ -222,6 +365,56 @@ impl PlacementGrid {
         self.placed.clear();
         self.position_map.clear();
     }
+
+    /// Validate the internal subset and reverse-map invariants of the placement grid.
+    pub fn validate(&self) -> Result<(), PlacementGridValidationError> {
+        for &cell in &self.occupied {
+            if !self.available.contains(&cell) {
+                return Err(PlacementGridValidationError::OccupiedOutsideAvailable { cell });
+            }
+            if !self.position_map.contains_key(&cell) {
+                return Err(PlacementGridValidationError::MissingPositionMapEntry { cell });
+            }
+        }
+
+        for (&cell, &index) in &self.position_map {
+            let Some(placed) = self.placed.get(index) else {
+                return Err(PlacementGridValidationError::PositionMapIndexOutOfBounds {
+                    cell,
+                    index,
+                    placed_count: self.placed.len(),
+                });
+            };
+            if !placed.occupied_cells.contains(&cell) {
+                return Err(PlacementGridValidationError::PositionMapCellMismatch { cell, index });
+            }
+        }
+
+        for (index, placed) in self.placed.iter().enumerate() {
+            for &cell in &placed.occupied_cells {
+                if !self.available.contains(&cell) {
+                    return Err(PlacementGridValidationError::PlacedCellOutsideAvailable {
+                        cell,
+                        index,
+                    });
+                }
+                if !self.occupied.contains(&cell) {
+                    return Err(
+                        PlacementGridValidationError::PlacedCellMissingOccupiedFlag { cell, index },
+                    );
+                }
+                let mapped_index = self.position_map.get(&cell).copied();
+                if mapped_index != Some(index) {
+                    return Err(PlacementGridValidationError::PlacedCellWrongPositionMap {
+                        cell,
+                        index,
+                        mapped_index,
+                    });
+                }
+            }
+        }
+        Ok(())
+    }
 }
 
 impl Default for PlacementGrid {
@@ -234,6 +427,16 @@ impl Default for PlacementGrid {
 pub fn find_valid_placements(
     grid: &PlacementGrid,
     search: &PlacementSearch<'_>,
+) -> Vec<PlacementCandidate> {
+    let mut cache = PlacementTransformCache::default();
+    find_valid_placements_cached(grid, search, &mut cache)
+}
+
+/// Find valid placements while reusing transformed footprint/socket data across repeated searches.
+pub fn find_valid_placements_cached(
+    grid: &PlacementGrid,
+    search: &PlacementSearch<'_>,
+    cache: &mut PlacementTransformCache,
 ) -> Vec<PlacementCandidate> {
     let Some(group) = search.groups.get(search.group_name) else {
         return Vec::new();
@@ -249,7 +452,8 @@ pub fn find_valid_placements(
     for (anchor_x, anchor_y) in grid.available_positions() {
         for &rotation in search.rotations {
             for &mirrored in search.mirrors {
-                let footprint = block.transformed_footprint(rotation, mirrored);
+                let transform = cache.get_transform(block, rotation, mirrored);
+                let footprint = &transform.footprint;
                 let occupied_cells: Vec<_> = footprint
                     .iter()
                     .map(|&(dx, dy)| (anchor_x + dx, anchor_y + dy))
@@ -269,7 +473,7 @@ pub fn find_valid_placements(
                     continue;
                 }
                 if !check_neighbors_compatible(
-                    grid, search, block, anchor_x, anchor_y, rotation, mirrored,
+                    grid, search, anchor_x, anchor_y, rotation, mirrored, cache,
                 ) {
                     continue;
                 }
@@ -294,21 +498,26 @@ pub fn find_valid_placements(
 fn check_neighbors_compatible(
     grid: &PlacementGrid,
     search: &PlacementSearch<'_>,
-    block: &MapBlock,
     anchor_x: i32,
     anchor_y: i32,
     rotation: u32,
     mirrored: bool,
+    cache: &mut PlacementTransformCache,
 ) -> bool {
     if !search.match_sides {
         return true;
     }
 
-    let footprint = block.transformed_footprint(rotation, mirrored);
-    let occupied_lookup: HashSet<_> = footprint
-        .iter()
-        .map(|&(dx, dy)| (anchor_x + dx, anchor_y + dy))
-        .collect();
+    let Some(group) = search.groups.get(search.group_name) else {
+        return false;
+    };
+    let Some(block) = group.get_block(search.block_index) else {
+        return false;
+    };
+    let transform = cache.get_transform(block, rotation, mirrored);
+    let footprint = transform.footprint.clone();
+    let footprint_lookup = transform.footprint_lookup.clone();
+    let socket_map = transform.socket_map.clone();
 
     for &(dx, dy) in &footprint {
         let cell_x = anchor_x + dx;
@@ -321,25 +530,25 @@ fn check_neighbors_compatible(
         ];
 
         for (my_edge, nx, ny) in neighbors {
-            if occupied_lookup.contains(&(nx, ny)) {
+            if footprint_lookup.contains(&(nx - anchor_x, ny - anchor_y)) {
                 continue;
             }
-            let my_type = block.transformed_socket(dx, dy, my_edge, rotation, mirrored);
+            let my_type = socket_map.get(&(dx, dy, my_edge)).copied().unwrap_or(0);
             if let Some(placed) = grid.get_block_at(nx, ny) {
                 if let Some(neighbor_block) = search
                     .groups
                     .get(&placed.group_name)
                     .and_then(|group| group.get_block(placed.block_index))
                 {
+                    let neighbor_transform =
+                        cache.get_transform(neighbor_block, placed.rotation, placed.mirrored);
                     let neighbor_dx = nx - placed.grid_x;
                     let neighbor_dy = ny - placed.grid_y;
-                    let their_type = neighbor_block.transformed_socket(
-                        neighbor_dx,
-                        neighbor_dy,
-                        opposite_edge(my_edge),
-                        placed.rotation,
-                        placed.mirrored,
-                    );
+                    let their_type = neighbor_transform
+                        .socket_map
+                        .get(&(neighbor_dx, neighbor_dy, opposite_edge(my_edge)))
+                        .copied()
+                        .unwrap_or(0);
                     if !search.rules.is_compatible(my_type, their_type) {
                         return false;
                     }

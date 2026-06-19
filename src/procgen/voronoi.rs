@@ -4,6 +4,10 @@
 //! Hash-based warp noise also belongs here since boundary distortion is part of Voronoi output semantics.
 
 use super::lcg::Lcg;
+use crate::procgen::{
+    limits::{checked_cell_count, validate_finite, validate_positive},
+    ProcgenError, ProcgenLimits,
+};
 
 /// Options controlling domain warp applied before Voronoi distance computation.
 #[derive(Debug, Clone)]
@@ -27,6 +31,29 @@ impl Default for VoronoiOpts {
     }
 }
 
+impl VoronoiOpts {
+    /// Validate warp settings before diagram generation.
+    pub fn validate(&self) -> Result<(), ProcgenError> {
+        validate_finite("warp_scale", self.warp_scale as f64)?;
+        validate_finite("warp_strength", self.warp_strength as f64)?;
+        if self.warp_strength < 0.0 {
+            return Err(ProcgenError::ValueOutOfRange {
+                field: "warp_strength",
+                min: 0.0,
+                max: f32::MAX as f64,
+                value: self.warp_strength as f64,
+            });
+        }
+        if self.warp_strength > 0.0 {
+            validate_positive("warp_scale", self.warp_scale as f64)?;
+        }
+        Ok(())
+    }
+}
+
+/// Flat Voronoi outputs: region ownership, nearest distance, and second-nearest distance.
+pub type VoronoiDiagram = (Vec<u32>, Vec<f32>, Vec<f32>);
+
 /// Compute a Voronoi diagram for `points` on a `width × height` grid.
 ///
 /// Returns `(region_indices, f1_distances, f2_distances)` where each element
@@ -36,8 +63,25 @@ pub fn voronoi_diagram(
     height: u32,
     points: &[(f32, f32)],
     opts: &VoronoiOpts,
-) -> (Vec<u32>, Vec<f32>, Vec<f32>) {
-    let size = (width * height) as usize;
+) -> VoronoiDiagram {
+    try_voronoi_diagram(width, height, points, opts, &ProcgenLimits::default())
+        .expect("voronoi_diagram received invalid dimensions, warp settings, or points")
+}
+
+/// Compute a Voronoi diagram after validating dimensions, warp settings, and point coordinates.
+pub fn try_voronoi_diagram(
+    width: u32,
+    height: u32,
+    points: &[(f32, f32)],
+    opts: &VoronoiOpts,
+    limits: &ProcgenLimits,
+) -> Result<VoronoiDiagram, ProcgenError> {
+    let size = checked_cell_count(width, height, limits)?;
+    opts.validate()?;
+    for &(x, y) in points {
+        validate_finite("point_x", x as f64)?;
+        validate_finite("point_y", y as f64)?;
+    }
     let mut regions = vec![0u32; size];
     let mut distances = vec![0.0f32; size];
     let mut second_distances = vec![0.0f32; size];
@@ -83,7 +127,7 @@ pub fn voronoi_diagram(
             second_distances[idx] = second_dist.sqrt();
         }
     }
-    (regions, distances, second_distances)
+    Ok((regions, distances, second_distances))
 }
 /// Hash `(x, y)` and `seed` to a [-1, 1) float for domain-warp displacement.
 fn simple_hash_noise(x: f32, y: f32, seed: u64) -> f32 {

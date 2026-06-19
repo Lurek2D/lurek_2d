@@ -4,6 +4,7 @@
 //! Acts as the LDtk boundary between authored project files and the engine layered tilemap representation.
 //! Open this file when LDtk levels, layer placement, or imported tileset reconstruction behaves incorrectly.
 
+use super::limits::TileMapLimits;
 use super::tilemap::TileMap;
 use super::tileset::TileSet;
 use std::fmt;
@@ -34,6 +35,25 @@ impl std::error::Error for LdtkImportError {}
 
 /// Parse `json_str` as an LDtk project, import the level named `level_name` (or the first level when `None`), and return a `TileMap`.
 pub fn load_ldtk(json_str: &str, level_name: Option<&str>) -> Result<TileMap, LdtkImportError> {
+    load_ldtk_with_limits(json_str, level_name, &TileMapLimits::default())
+}
+
+/// Parse `json_str` as an LDtk project using explicit tilemap limits.
+pub fn load_ldtk_with_limits(
+    json_str: &str,
+    level_name: Option<&str>,
+    limits: &TileMapLimits,
+) -> Result<TileMap, LdtkImportError> {
+    if json_str.len() > limits.max_import_bytes {
+        return Err(LdtkImportError::new(
+            "ldtk_input_too_large",
+            format!(
+                "LDtk JSON uses {} bytes, exceeding limit {}",
+                json_str.len(),
+                limits.max_import_bytes
+            ),
+        ));
+    }
     let root: serde_json::Value = serde_json::from_str(json_str).map_err(|e| {
         LdtkImportError::new("ldtk_json_parse", format!("LDtk JSON parse error: {e}"))
     })?;
@@ -80,7 +100,8 @@ pub fn load_ldtk(json_str: &str, level_name: Option<&str>) -> Result<TileMap, Ld
             "LDtk level contains no tile or auto-layer layers",
         ));
     };
-    let mut map = TileMap::new(grid_size, grid_size, 16);
+    let mut map = TileMap::try_new_with_limits(grid_size, grid_size, 16, *limits)
+        .map_err(|err| LdtkImportError::new("ldtk_invalid_map_config", err.to_string()))?;
     for layer in layer_instances.iter().rev() {
         if !is_tile_layer(layer) {
             continue;
@@ -89,7 +110,9 @@ pub fn load_ldtk(json_str: &str, level_name: Option<&str>) -> Result<TileMap, Ld
             .get("__identifier")
             .and_then(|v| v.as_str())
             .unwrap_or("layer");
-        let layer_idx = map.add_layer(layer_name, map_width, map_height);
+        let layer_idx = map
+            .try_add_layer(layer_name, map_width, map_height)
+            .map_err(|err| LdtkImportError::new("ldtk_invalid_layer", err.to_string()))?;
         let grid_tiles = layer
             .get("gridTiles")
             .or_else(|| layer.get("autoLayerTiles"))

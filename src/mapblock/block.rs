@@ -11,6 +11,8 @@ use super::config::MapBlockConfig;
 use super::constraints::EdgeConstraint;
 use super::layer::BlockLayer;
 use std::collections::{HashMap, HashSet};
+use std::error::Error;
+use std::fmt;
 
 /// Cardinal direction for block edges.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -24,6 +26,237 @@ pub enum Edge {
     /// West edge (left).
     West,
 }
+
+/// Hard ceilings that prevent pathological mapblock allocations and malformed geometry payloads.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct MapBlockLimits {
+    /// Maximum tile width accepted for one block.
+    pub max_block_width: u32,
+    /// Maximum tile height accepted for one block.
+    pub max_block_height: u32,
+    /// Maximum tile cells accepted for one block layer.
+    pub max_cells_per_block: usize,
+    /// Maximum layer count accepted for one block.
+    pub max_layers: u32,
+    /// Maximum slot count accepted per tile.
+    pub max_slots_per_tile: usize,
+    /// Maximum number of cells accepted in a normalized footprint.
+    pub max_footprint_cells: usize,
+}
+
+impl Default for MapBlockLimits {
+    fn default() -> Self {
+        Self {
+            max_block_width: 8_192,
+            max_block_height: 8_192,
+            max_cells_per_block: 4_194_304,
+            max_layers: 64,
+            max_slots_per_tile: 512,
+            max_footprint_cells: 4_194_304,
+        }
+    }
+}
+
+impl MapBlockLimits {
+    /// Validate one layer shape and return the checked cell count.
+    pub fn validate_layer(
+        &self,
+        width: u32,
+        height: u32,
+        slot_count: usize,
+    ) -> Result<usize, MapBlockError> {
+        if width == 0 {
+            return Err(MapBlockError::ZeroWidth);
+        }
+        if height == 0 {
+            return Err(MapBlockError::ZeroHeight);
+        }
+        if width > self.max_block_width || height > self.max_block_height {
+            return Err(MapBlockError::DimensionsTooLarge {
+                width,
+                height,
+                max_width: self.max_block_width,
+                max_height: self.max_block_height,
+            });
+        }
+        if slot_count == 0 {
+            return Err(MapBlockError::ZeroSlots);
+        }
+        if slot_count > self.max_slots_per_tile {
+            return Err(MapBlockError::TooManySlots {
+                slots: slot_count,
+                max_slots: self.max_slots_per_tile,
+            });
+        }
+
+        let count = width
+            .checked_mul(height)
+            .ok_or(MapBlockError::CellCountOverflow { width, height })?
+            as usize;
+        if count > self.max_cells_per_block {
+            return Err(MapBlockError::TooManyCells {
+                cells: count,
+                max_cells: self.max_cells_per_block,
+            });
+        }
+        Ok(count)
+    }
+}
+
+/// Validation and construction failures for mapblock authored content.
+#[derive(Debug, Clone, PartialEq)]
+pub enum MapBlockError {
+    /// Block width cannot be zero.
+    ZeroWidth,
+    /// Block height cannot be zero.
+    ZeroHeight,
+    /// Block layer count cannot be zero.
+    ZeroLayerCount,
+    /// Width/height exceed configured safety ceilings.
+    DimensionsTooLarge {
+        width: u32,
+        height: u32,
+        max_width: u32,
+        max_height: u32,
+    },
+    /// `width * height` overflowed while computing the layer allocation size.
+    CellCountOverflow { width: u32, height: u32 },
+    /// The checked cell count exceeded the allowed ceiling.
+    TooManyCells { cells: usize, max_cells: usize },
+    /// Layer count exceeded the accepted limit.
+    TooManyLayers { layers: u32, max_layers: u32 },
+    /// Tile slot count cannot be zero.
+    ZeroSlots,
+    /// Slot count exceeded the accepted limit.
+    TooManySlots { slots: usize, max_slots: usize },
+    /// A layer index was outside the authored layer array.
+    LayerIndexOutOfBounds { layer: usize, layer_count: usize },
+    /// Tile coordinates were outside the block bounds.
+    TileCoordinatesOutOfBounds {
+        x: u32,
+        y: u32,
+        width: u32,
+        height: u32,
+    },
+    /// Slot index was outside the configured slot count.
+    SlotIndexOutOfBounds { slot: usize, slot_count: usize },
+    /// Legacy import supplied a malformed tile layer payload.
+    MalformedLegacyTileLayer {
+        layer_index: usize,
+        expected: usize,
+        actual: usize,
+    },
+    /// Weight must be finite and non-negative.
+    InvalidWeight { weight: f32 },
+    /// Footprints must contain at least one occupied cell.
+    EmptyFootprint,
+    /// Footprints exceeded the accepted safety ceiling.
+    TooManyFootprintCells { cells: usize, max_cells: usize },
+    /// Socket coordinates must refer to normalized footprint cells.
+    SocketOutsideFootprint { x: i32, y: i32, edge: Edge },
+    /// Edge segment indices must stay within the transformed footprint span.
+    EdgeSegmentOutOfRange {
+        edge: Edge,
+        segment: u32,
+        max_segments: u32,
+    },
+    /// Vertical span must be at least one level.
+    ZeroLevelSpan,
+}
+
+impl fmt::Display for MapBlockError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::ZeroWidth => write!(f, "mapblock width must be greater than zero"),
+            Self::ZeroHeight => write!(f, "mapblock height must be greater than zero"),
+            Self::ZeroLayerCount => write!(f, "mapblock layer count must be greater than zero"),
+            Self::DimensionsTooLarge {
+                width,
+                height,
+                max_width,
+                max_height,
+            } => write!(
+                f,
+                "mapblock dimensions {width}x{height} exceed the limit {max_width}x{max_height}"
+            ),
+            Self::CellCountOverflow { width, height } => {
+                write!(f, "mapblock cell count overflow for {width}x{height}")
+            }
+            Self::TooManyCells { cells, max_cells } => {
+                write!(
+                    f,
+                    "mapblock cell count {cells} exceeds the limit {max_cells}"
+                )
+            }
+            Self::TooManyLayers { layers, max_layers } => {
+                write!(
+                    f,
+                    "mapblock layer count {layers} exceeds the limit {max_layers}"
+                )
+            }
+            Self::ZeroSlots => write!(f, "mapblock slot count must be greater than zero"),
+            Self::TooManySlots { slots, max_slots } => {
+                write!(
+                    f,
+                    "mapblock slot count {slots} exceeds the limit {max_slots}"
+                )
+            }
+            Self::LayerIndexOutOfBounds { layer, layer_count } => write!(
+                f,
+                "mapblock layer index {layer} is outside the available layer count {layer_count}"
+            ),
+            Self::TileCoordinatesOutOfBounds {
+                x,
+                y,
+                width,
+                height,
+            } => write!(
+                f,
+                "mapblock tile coordinates ({x}, {y}) are outside the block bounds {width}x{height}"
+            ),
+            Self::SlotIndexOutOfBounds { slot, slot_count } => write!(
+                f,
+                "mapblock slot index {slot} is outside the slot count {slot_count}"
+            ),
+            Self::MalformedLegacyTileLayer {
+                layer_index,
+                expected,
+                actual,
+            } => write!(
+                f,
+                "legacy tile layer {layer_index} has {actual} entries but expected {expected}"
+            ),
+            Self::InvalidWeight { weight } => {
+                write!(
+                    f,
+                    "mapblock weight must be finite and non-negative, got {weight}"
+                )
+            }
+            Self::EmptyFootprint => write!(f, "mapblock footprint must contain at least one cell"),
+            Self::TooManyFootprintCells { cells, max_cells } => write!(
+                f,
+                "mapblock footprint cell count {cells} exceeds the limit {max_cells}"
+            ),
+            Self::SocketOutsideFootprint { x, y, edge } => write!(
+                f,
+                "socket {:?} at ({x}, {y}) is outside the normalized footprint",
+                edge
+            ),
+            Self::EdgeSegmentOutOfRange {
+                edge,
+                segment,
+                max_segments,
+            } => write!(
+                f,
+                "edge {:?} segment {} is outside the valid range 0..{}",
+                edge, segment, max_segments
+            ),
+            Self::ZeroLevelSpan => write!(f, "mapblock level span must be at least one"),
+        }
+    }
+}
+
+impl Error for MapBlockError {}
 
 /// A composable map block containing layers of tiles with edge constraints.
 #[derive(Debug, Clone)]
@@ -59,14 +292,41 @@ pub struct MapBlock {
 impl MapBlock {
     /// Create a new map block with given dimensions and layer count.
     pub fn new(width: u32, height: u32, layer_count: u32, config: &MapBlockConfig) -> Self {
+        Self::try_new(width, height, layer_count, config)
+            .expect("MapBlock::new received invalid dimensions or configuration")
+    }
+
+    /// Create a new map block after validating dimensions and checked layer allocation math.
+    pub fn try_new(
+        width: u32,
+        height: u32,
+        layer_count: u32,
+        config: &MapBlockConfig,
+    ) -> Result<Self, MapBlockError> {
+        if layer_count == 0 {
+            return Err(MapBlockError::ZeroLayerCount);
+        }
+        let limits = MapBlockLimits::default();
         let slot_count = config.slot_count();
-        let layer_count = layer_count.clamp(1, config.max_layers);
+        if layer_count > config.max_layers {
+            return Err(MapBlockError::TooManyLayers {
+                layers: layer_count,
+                max_layers: config.max_layers,
+            });
+        }
+        if layer_count > limits.max_layers {
+            return Err(MapBlockError::TooManyLayers {
+                layers: layer_count,
+                max_layers: limits.max_layers,
+            });
+        }
+        limits.validate_layer(width, height, slot_count)?;
         let layers = (0..layer_count)
-            .map(|_| BlockLayer::new(width, height, slot_count))
-            .collect();
+            .map(|_| BlockLayer::try_new(width, height, slot_count))
+            .collect::<Result<Vec<_>, _>>()?;
         let segment_size = config.default_segment_size.max(1);
 
-        Self {
+        let block = Self {
             name: String::new(),
             width,
             height,
@@ -80,7 +340,9 @@ impl MapBlock {
             interior_only: false,
             level_span: 1,
             segment_size,
-        }
+        };
+        block.validate()?;
+        Ok(block)
     }
 
     /// Create a block from legacy mapgen format (single layer, raw GID data).
@@ -93,15 +355,38 @@ impl MapBlock {
         name: &str,
         weight: f32,
     ) -> Self {
+        Self::try_from_legacy(width, height, segment_size, tile_data, sides, name, weight)
+            .expect("legacy mapblock input failed validation")
+    }
+
+    /// Create a block from legacy mapgen data after validating dimensions and layer payload sizes.
+    pub fn try_from_legacy(
+        width: u32,
+        height: u32,
+        segment_size: u32,
+        tile_data: &[Vec<u32>],
+        sides: &HashMap<(Edge, u32), u32>,
+        name: &str,
+        weight: f32,
+    ) -> Result<Self, MapBlockError> {
+        let limits = MapBlockLimits::default();
         let slot_count = 1; // Legacy uses single slot (floor only)
+        let expected_cells = limits.validate_layer(width, height, slot_count)?;
         let mut layers = Vec::new();
 
-        for layer_data in tile_data {
-            let mut layer = BlockLayer::new(width, height, slot_count);
+        for (layer_index, layer_data) in tile_data.iter().enumerate() {
+            if layer_data.len() != expected_cells {
+                return Err(MapBlockError::MalformedLegacyTileLayer {
+                    layer_index,
+                    expected: expected_cells,
+                    actual: layer_data.len(),
+                });
+            }
+            let mut layer = BlockLayer::try_new(width, height, slot_count)?;
             for y in 0..height {
                 for x in 0..width {
                     let idx = (y * width + x) as usize;
-                    if idx < layer_data.len() && layer_data[idx] != 0 {
+                    if layer_data[idx] != 0 {
                         layer.set_tile_slot(x, y, 0, 1, layer_data[idx]);
                     }
                 }
@@ -110,10 +395,10 @@ impl MapBlock {
         }
 
         if layers.is_empty() {
-            layers.push(BlockLayer::new(width, height, slot_count));
+            layers.push(BlockLayer::try_new(width, height, slot_count)?);
         }
 
-        Self {
+        let block = Self {
             name: name.to_string(),
             width,
             height,
@@ -127,7 +412,10 @@ impl MapBlock {
             interior_only: false,
             level_span: 1,
             segment_size,
-        }
+        };
+        block.validate_weight(weight)?;
+        block.validate()?;
+        Ok(block)
     }
 
     /// Get the block width in tile units.
@@ -157,13 +445,21 @@ impl MapBlock {
 
     /// Add a new empty layer. Returns false if max layers reached.
     pub fn add_layer(&mut self, max_layers: u32) -> bool {
-        if self.layers.len() < max_layers as usize {
-            self.layers
-                .push(BlockLayer::new(self.width, self.height, self.slot_count));
-            true
-        } else {
-            false
+        self.try_add_layer(max_layers).is_ok()
+    }
+
+    /// Add a new empty layer after validating the configured layer ceiling.
+    pub fn try_add_layer(&mut self, max_layers: u32) -> Result<(), MapBlockError> {
+        let allowed_layers = max_layers.min(MapBlockLimits::default().max_layers);
+        if self.layers.len() as u32 >= allowed_layers {
+            return Err(MapBlockError::TooManyLayers {
+                layers: self.layers.len() as u32 + 1,
+                max_layers: allowed_layers,
+            });
         }
+        self.layers
+            .push(BlockLayer::new(self.width, self.height, self.slot_count));
+        Ok(())
     }
 
     /// Set a tile slot value at (layer, x, y, slot).
@@ -176,9 +472,39 @@ impl MapBlock {
         tileset_id: u32,
         gid: u32,
     ) {
-        if let Some(l) = self.layers.get_mut(layer) {
-            l.set_tile_slot(x, y, slot_index, tileset_id, gid);
+        let _ = self.try_set_tile(layer, x, y, slot_index, tileset_id, gid);
+    }
+
+    /// Set a tile slot value after validating the addressed layer, tile, and slot.
+    pub fn try_set_tile(
+        &mut self,
+        layer: usize,
+        x: u32,
+        y: u32,
+        slot_index: usize,
+        tileset_id: u32,
+        gid: u32,
+    ) -> Result<(), MapBlockError> {
+        let layer_count = self.layers.len();
+        let Some(l) = self.layers.get_mut(layer) else {
+            return Err(MapBlockError::LayerIndexOutOfBounds { layer, layer_count });
+        };
+        if x >= self.width || y >= self.height {
+            return Err(MapBlockError::TileCoordinatesOutOfBounds {
+                x,
+                y,
+                width: self.width,
+                height: self.height,
+            });
         }
+        if slot_index >= self.slot_count {
+            return Err(MapBlockError::SlotIndexOutOfBounds {
+                slot: slot_index,
+                slot_count: self.slot_count,
+            });
+        }
+        l.set_tile_slot(x, y, slot_index, tileset_id, gid);
+        Ok(())
     }
 
     /// Get a tile GID at (layer, x, y, slot).
@@ -196,7 +522,19 @@ impl MapBlock {
 
     /// Set edge type for a given side and segment index.
     pub fn set_edge(&mut self, edge: Edge, segment: u32, edge_type: u32) {
+        let _ = self.try_set_edge(edge, segment, edge_type);
+    }
+
+    /// Set edge type for a given side and segment index after validating the segment span.
+    pub fn try_set_edge(
+        &mut self,
+        edge: Edge,
+        segment: u32,
+        edge_type: u32,
+    ) -> Result<(), MapBlockError> {
+        self.validate_edge_segment(edge, segment)?;
         self.sides.insert((edge, segment), edge_type);
+        Ok(())
     }
 
     /// Get edge type for a given side and segment index.
@@ -228,7 +566,18 @@ impl MapBlock {
 
     /// Set the random selection weight.
     pub fn set_weight(&mut self, weight: f32) {
-        self.weight = weight.max(0.0);
+        self.weight = if weight.is_finite() {
+            weight.max(0.0)
+        } else {
+            0.0
+        };
+    }
+
+    /// Set the random selection weight after validating finiteness and sign.
+    pub fn set_weight_checked(&mut self, weight: f32) -> Result<(), MapBlockError> {
+        self.validate_weight(weight)?;
+        self.weight = weight;
+        Ok(())
     }
 
     /// Return the random selection weight.
@@ -360,6 +709,67 @@ impl MapBlock {
         Self::cell_bounds(&self.footprint)
     }
 
+    /// Validate block geometry, sockets, and weight without mutating state.
+    pub fn validate(&self) -> Result<(), MapBlockError> {
+        let limits = MapBlockLimits::default();
+        limits.validate_layer(self.width, self.height, self.slot_count)?;
+        if self.layers.is_empty() {
+            return Err(MapBlockError::ZeroLayerCount);
+        }
+        if self.layers.len() as u32 > limits.max_layers {
+            return Err(MapBlockError::TooManyLayers {
+                layers: self.layers.len() as u32,
+                max_layers: limits.max_layers,
+            });
+        }
+        self.validate_weight(self.weight)?;
+        if self.level_span == 0 {
+            return Err(MapBlockError::ZeroLevelSpan);
+        }
+        if self.footprint.is_empty() {
+            return Err(MapBlockError::EmptyFootprint);
+        }
+
+        let normalized = Self::normalize_cells(&self.footprint);
+        if normalized.len() > limits.max_footprint_cells {
+            return Err(MapBlockError::TooManyFootprintCells {
+                cells: normalized.len(),
+                max_cells: limits.max_footprint_cells,
+            });
+        }
+
+        let footprint_lookup: HashSet<_> = normalized.iter().copied().collect();
+        for &(edge, segment) in self.sides.keys() {
+            self.validate_edge_segment(edge, segment)?;
+        }
+        for &(x, y, edge) in self.sockets.keys() {
+            if !footprint_lookup.contains(&(x, y)) {
+                return Err(MapBlockError::SocketOutsideFootprint { x, y, edge });
+            }
+        }
+        Ok(())
+    }
+
+    fn validate_edge_segment(&self, edge: Edge, segment: u32) -> Result<(), MapBlockError> {
+        let max_segments = self.edge_segment_count(edge);
+        if segment >= max_segments {
+            return Err(MapBlockError::EdgeSegmentOutOfRange {
+                edge,
+                segment,
+                max_segments,
+            });
+        }
+        Ok(())
+    }
+
+    fn edge_segment_count(&self, edge: Edge) -> u32 {
+        let (width, height) = self.footprint_bounds();
+        match edge {
+            Edge::North | Edge::South => width.max(1),
+            Edge::East | Edge::West => height.max(1),
+        }
+    }
+
     fn rect_footprint_for_dims(width: u32, height: u32, segment_size: u32) -> Vec<(i32, i32)> {
         let seg = segment_size.max(1);
         let cells_w = width.max(1).div_ceil(seg);
@@ -470,5 +880,12 @@ impl MapBlock {
         }
 
         sockets
+    }
+
+    fn validate_weight(&self, weight: f32) -> Result<(), MapBlockError> {
+        if !weight.is_finite() || weight < 0.0 {
+            return Err(MapBlockError::InvalidWeight { weight });
+        }
+        Ok(())
     }
 }

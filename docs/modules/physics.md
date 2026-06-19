@@ -2,49 +2,22 @@
 
 ## Summary
 
-- The physics module provides 2D rigid-body simulation, collision, and query services for gameplay systems.
-- It supports dynamic, static, kinematic, and sensor body roles.
-- The world steps on a fixed timestep to keep simulation deterministic across frame rates.
-- Bodies carry type, transform, collision filtering, and motion configuration.
-- Shape support includes circles, rectangles, polygons, edges, and chain boundaries.
-- Shape material settings include density, friction, and restitution.
-- Continuous collision detection is available for fast-moving bodies.
-- Broad and narrow phase collision processing is owned by the world runtime.
-- Contact events are captured and exposed as stable post-step records.
-- Lua callbacks can subscribe to begin-contact and end-contact transitions.
-- Spatial queries include raycast, point test, and area overlap helpers.
-- Lightweight geometry helpers are available outside the full world object.
-- Joint support enables hinges, sliders, ropes, welds, and motorized constraints.
-- Joint limits and break thresholds support mechanical gameplay behaviors.
-- Sleeping policies reduce CPU load for resting bodies.
-- Wake/sleep controls are script-accessible when deterministic activation is required.
-- Layer/mask filtering controls collision participation between groups.
-- Zone systems apply local gravity and damping overrides by area.
-- Zone priorities and masks resolve overlapping environmental effects.
-- Terrain integration supports destructible cell maps linked to collider rebuilds.
-- Chunk-local terrain updates avoid global rebuild cost.
-- Merged terrain spans reduce static collider count.
-- Terrain supports serialization and diagnostic image export.
-- Debug rendering exposes bodies, vectors, and contact-oriented visuals.
-- Diagnostic colors help separate body categories in dense scenes.
-- Pixels-to-meters mapping keeps gameplay and solver scales coherent.
-- The module owns physical simulation and queries, not game-domain policy.
-- It collaborates with render/runtime/math/image through bounded interfaces.
-- Error handling and validation protect against invalid shape/world inputs.
-- APIs support both high-level helpers and detailed body control.
-- The module is suitable for platformers, top-down motion, and destructible worlds.
-- Contracts are tuned for deterministic tests and reproducible runtime behavior.
-- Physics remains a Platform Services backend used by many feature modules.
-- Overall, physics is the authoritative source of movement and collision truth.
-- It provides performance-aware simulation with practical debugging support.
-- It is designed for production stability under mixed gameplay workloads.
-- The module keeps integration explicit to reduce hidden side effects.
-- Invariants prioritize stable step ordering and predictable contact semantics.
-- Query results are aligned with the same world state used by solver progression.
-- This consistency is critical for AI, gameplay, and tool integrations.
-- Physics is a core technical pillar for interactive 2D experiences.
-
-This module primarily collaborates with `image`, `math`, `render`, `runtime`. Its responsibility should stay inside the Platform Services group rather than absorb behavior owned by those neighbors.
+- The `physics` module is the engine's 2D simulation authority for users who want motion, contact, shapes, joints, and collision queries to live inside one consistent world model.
+- Bodies, colliders, forces, terrain, joints, sensors, and collision layers all belong to the same simulation step, which keeps movement and contact rules coherent across the engine.
+- The module supports dynamic, static, kinematic, and sensor-style roles so projects can mix actors, level geometry, triggers, platforms, and detection-only regions inside one physical space without switching subsystems.
+- Practical physics also depends on querying the world, not only advancing it. Raycasts, overlap checks, sweep-style tests, and contact inspection let gameplay ask what was hit, what overlaps, and why motion changed.
+- Shape support, terrain integration, and joints give the system expressive range for characters, bullets, walls, pickups, hazards, linked mechanisms, and authored environment collision.
+- Contact data is one of the main user-facing outputs because systems often need normals, hit points, and begin or end state changes to react meaningfully.
+- That query surface is a major part of the module's identity. Many gameplay features care less about rigid-body theory than about dependable answers to questions such as where movement will stop, whether a region is occupied, what a sensor can currently detect, or which body pair produced a specific contact event.
+- The module therefore acts as both simulator and spatial authority. It advances bodies through time, but it also explains the world back to scripts in terms of overlaps, hits, filters, material response, joints, and collision-layer policy.
+- Terrain support matters because a large share of game physics is really about how actors relate to authored space. Ground, ramps, tile-derived obstacles, one-way behavior, ledges, and sensor volumes all need to participate in the same contact model or movement quickly becomes inconsistent.
+- Joints and constraints extend the feature beyond isolated bodies into coupled systems such as hinges, chains, levers, suspended loads, doors, and puzzle machinery. Without that layer, several gameplay designs would need bespoke approximations instead of sharing engine-owned physical semantics.
+- Filtering rules are equally important because not every shape should collide, trigger, block, or report in the same way. Keeping collision layers and response policy near world state lets projects express interaction rules explicitly rather than hiding them in scattered caller-side checks.
+- Debug visualization is not just a convenience but a necessary part of the contract because collision tuning mistakes are difficult to reason about from code alone. Seeing shapes, sensors, normals, joints, and query paths turns the simulation into something inspectable instead of opaque.
+- This makes `physics` especially important for grounded locomotion, projectile travel, hazard interaction, puzzle systems, traversal mechanics, and any design where contact semantics are part of gameplay rather than an incidental backend.
+- The shared step loop gives other systems one trusted spatial authority for grounded movement, projectiles, puzzle machinery, and hazards instead of several drifting approximations.
+- That authority is what lets gameplay, tools, and effects ask the same world-state questions without maintaining parallel collision logic.
+- Other systems consume the results, but `physics` owns the source of truth for what counts as solid, colliding, constrained, or detectable in 2D space.
 
 ## Functions
 
@@ -72,8 +45,8 @@ do
     local shape = lurek.physics.newCircleShape(10)
     shape:setDensity(1.5)
     lurek.physics.attachShape(body, shape)
-    print("fixture_count", world:fixtureCount(body:getId()))
-    print("position", body:getPosition())
+    example_print_log("fixture_count", world:fixtureCount(body:getId()))
+    example_print_log("position", body:getPosition())
 end
 ```
 
@@ -101,7 +74,7 @@ do
     world:newCircleBody(100, 100, 15, "dynamic")
     lurek.physics.debugDraw(true)
     lurek.physics.drawDebugGpu(world, { lineWidth = 2 })
-    print("body_count", world:getBodyCount())
+    example_print_log("body_count", world:getBodyCount())
 end
 ```
 
@@ -127,9 +100,9 @@ lurek.physics.destroyWorld(world)
 do
     local world = lurek.physics.newWorld(0, 400)
     world:newCircleBody(100, 100, 10, "dynamic")
-    print("before", world:getBodyCount())
+    example_print_log("before", world:getBodyCount())
     lurek.physics.destroyWorld(world)
-    print("after", world:getBodyCount())
+    example_print_log("after", world:getBodyCount())
 end
 ```
 
@@ -155,8 +128,12 @@ lurek.physics.drawDebugGpu(world, config)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 9.8)
+    world:newBody(120, 200, "static")
+    world:newCircleBody(120, 120, 10, "dynamic")
     lurek.physics.drawDebugGpu(world, {})
-    print("body_count", world:getBodyCount())
+    world:step(1 / 60)
+    physics_log("gpu debug scene bodies=" .. world:getBodyCount())
+    physics_log("world type=" .. world:type())
 end
 ```
 
@@ -193,7 +170,10 @@ do
     local world = lurek.physics.newWorld(0, 9.8)
     local body = lurek.physics.newBody(world, 0, 0, "dynamic")
     body:setVelocity(10, 5)
-    print("body", lurek.physics.getBody(world, body))
+    world:step(1 / 60)
+    local x, y, vx, vy = lurek.physics.getBody(world, body)
+    physics_log("free-function body pos=" .. x .. "," .. y)
+    physics_log("free-function velocity=" .. vx .. "," .. vy)
 end
 ```
 
@@ -230,9 +210,9 @@ do
         lurek.physics.step(world, 1 / 60)
     end
     local collisions = lurek.physics.getCollisions(world)
-    print("count", #collisions)
+    example_print_log("count", #collisions)
     if collisions[1] then
-        print("first", collisions[1].body_a, collisions[1].body_b)
+        example_print_log("first", collisions[1].body_a, collisions[1].body_b)
     end
 end
 ```
@@ -267,9 +247,9 @@ do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newCircleBody(100, 100, 10, "dynamic")
     lurek.physics.setSleepingAllowed(world, body, true)
-    print("allowed", lurek.physics.isSleepingAllowed(world, body))
+    example_print_log("allowed", lurek.physics.isSleepingAllowed(world, body))
     lurek.physics.setSleepingAllowed(world, body, false)
-    print("allowed_after", lurek.physics.isSleepingAllowed(world, body))
+    example_print_log("allowed_after", lurek.physics.isSleepingAllowed(world, body))
 end
 ```
 
@@ -304,8 +284,10 @@ lurek.physics.newBody(world, x, y, bodyType)
 do
     local world = lurek.physics.newWorld(0, 0)
     local body = lurek.physics.newBody(world, 50, 50, "static")
-    print("id", body:getId())
-    print("type", body:getType())
+    local checkpoint = lurek.physics.newBody(world, 80, 50, "sensor")
+    world:step(1 / 60)
+    physics_log("spawned wall id=" .. body:getId() .. " type=" .. body:getType())
+    physics_log("checkpoint type=" .. checkpoint:getType() .. " bodies=" .. world:getBodyCount())
 end
 ```
 
@@ -338,8 +320,10 @@ lurek.physics.newChainShape(closed, ...)
 do
     local chain = lurek.physics.newChainShape(false, 0, 100, 50, 80, 100, 90, 150, 70, 200, 100)
     local loop = lurek.physics.newChainShape(true, 0, 0, 100, 0, 100, 100, 0, 100)
-    print("open_type", chain:getType())
-    print("closed_type", loop:getType())
+    local minX, minY, maxX, maxY = chain:getBoundingBox()
+    local loopMinX, loopMinY, loopMaxX, loopMaxY = loop:getBoundingBox()
+    physics_log("spline type=" .. chain:getType() .. " bounds=" .. minX .. "," .. minY .. " -> " .. maxX .. "," .. maxY)
+    physics_log("pit loop type=" .. loop:getType() .. " bounds=" .. loopMinX .. "," .. loopMinY .. " -> " .. loopMaxX .. "," .. loopMaxY)
 end
 ```
 
@@ -371,9 +355,9 @@ lurek.physics.newCircleShape(r)
 do
     local circle = lurek.physics.newCircleShape(16)
     local minX, minY, maxX, maxY = circle:getBoundingBox()
-    print("type", circle:getType())
-    print("radius", circle:getRadius())
-    print("bounds", minX, minY, maxX, maxY)
+    example_print_log("type", circle:getType())
+    example_print_log("radius", circle:getRadius())
+    example_print_log("bounds", minX, minY, maxX, maxY)
 end
 ```
 
@@ -408,8 +392,10 @@ lurek.physics.newEdgeShape(x1, y1, x2, y2)
 do
     local edge = lurek.physics.newEdgeShape(0, 0, 100, 0)
     local minX, minY, maxX, maxY = edge:getBoundingBox()
-    print("type", edge:getType())
-    print("bounds", minX, minY, maxX, maxY)
+    edge:setFriction(0.6)
+    edge:setSensor(false)
+    physics_log("ledge edge type=" .. edge:getType())
+    physics_log("ledge bounds=" .. minX .. "," .. minY .. " -> " .. maxX .. "," .. maxY)
 end
 ```
 
@@ -441,8 +427,10 @@ lurek.physics.newPolygonShape(...)
 do
     local triangle = lurek.physics.newPolygonShape(0, -20, -15, 15, 15, 15)
     local minX, minY, maxX, maxY = triangle:getBoundingBox()
-    print("type", triangle:getType())
-    print("bounds", minX, minY, maxX, maxY)
+    triangle:setDensity(1.2)
+    triangle:setRestitution(0.1)
+    physics_log("roof wedge type=" .. triangle:getType())
+    physics_log("roof bounds=" .. minX .. "," .. minY .. " -> " .. maxX .. "," .. maxY)
 end
 ```
 
@@ -475,8 +463,10 @@ lurek.physics.newRectangleShape(w, h)
 do
     local rect = lurek.physics.newRectangleShape(64, 32)
     local minX, minY, maxX, maxY = rect:getBoundingBox()
-    print("type", rect:getType())
-    print("bounds", minX, minY, maxX, maxY)
+    rect:setFriction(0.8)
+    rect:setDensity(2.0)
+    physics_log("crate collider type=" .. rect:getType())
+    physics_log("crate bounds=" .. minX .. "," .. minY .. " -> " .. maxX .. "," .. maxY)
 end
 ```
 
@@ -514,8 +504,8 @@ do
     terrain:fillAll(true)
     terrain:fillCircle(256, 128, 40, false)
     terrain:flush()
-    print("dirty", terrain:isDirty())
-    print("type", terrain:type())
+    example_print_log("dirty", terrain:isDirty())
+    example_print_log("type", terrain:type())
 end
 ```
 
@@ -547,9 +537,12 @@ lurek.physics.newWorld(gx, gy)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
+    local floor = world:newBody(320, 520, "static")
+    local crate = world:newCircleBody(320, 120, 14, "dynamic")
     local gx, gy = world:getGravity()
-    print("gravity", gx, gy)
-    print("type", world:type())
+    world:step(1 / 60)
+    physics_log("training room gravity=" .. gx .. "," .. gy)
+    physics_log("floor=" .. floor:getType() .. " crate_y=" .. select(2, crate:getPosition()))
 end
 ```
 
@@ -579,7 +572,10 @@ do
     local world = lurek.physics.newWorld(0, 9.8)
     local body = lurek.physics.newBody(world, 0, 0, "dynamic")
     lurek.physics.setBodyVelocity(world, body, 10, 5)
-    print("velocity", body:getVelocity())
+    world:step(1 / 60)
+    local vx, vy = body:getVelocity()
+    physics_log("dash velocity=" .. vx .. "," .. vy)
+    physics_log("dash position=" .. body:getX() .. "," .. body:getY())
 end
 ```
 
@@ -608,7 +604,11 @@ do
     local world = lurek.physics.newWorld(0, 9.8)
     local body = lurek.physics.newBody(world, 0, 0, "dynamic")
     lurek.physics.setSleepingAllowed(world, body, false)
-    print("allowed", body:isSleepingAllowed())
+    world:step(1 / 60)
+    local allowed = body:isSleepingAllowed()
+    local valid = body:isValid()
+    physics_log("always-awake enemy allowed=" .. tostring(allowed))
+    physics_log("body still valid=" .. tostring(valid))
 end
 ```
 
@@ -635,8 +635,12 @@ lurek.physics.step(world, dt)
 do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newCircleBody(100, 100, 10, "dynamic")
+    local floor = world:newBody(100, 240, "static")
+    body:setVelocity(20, -30)
     lurek.physics.step(world, 1 / 60)
-    print("body", lurek.physics.getBody(world, body))
+    local x, y, vx, vy = lurek.physics.getBody(world, body)
+    physics_log("module step pos=" .. x .. "," .. y)
+    physics_log("velocity=" .. vx .. "," .. vy .. " floor=" .. floor:getType())
 end
 ```
 
@@ -675,8 +679,10 @@ lurek.physics.testAABB(ax, ay, aw, ah, bx, by, bw, bh)
 do
     local overlap = lurek.physics.testAABB(0, 0, 50, 50, 25, 25, 50, 50)
     local miss = lurek.physics.testAABB(0, 0, 10, 10, 100, 100, 10, 10)
-    print("overlap", overlap)
-    print("miss", miss)
+    local playerInsideHazard = lurek.physics.testAABB(30, 30, 16, 16, 20, 20, 40, 40)
+    local pickupFarAway = lurek.physics.testAABB(30, 30, 16, 16, 120, 120, 8, 8)
+    physics_log("hazard overlap=" .. tostring(overlap) .. " player overlap=" .. tostring(playerInsideHazard))
+    physics_log("miss=" .. tostring(miss) .. " pickup far=" .. tostring(pickupFarAway))
 end
 ```
 
@@ -714,8 +720,10 @@ lurek.physics.testCircleAABB(cx, cy, cr, ax, ay, aw, ah)
 do
     local hit = lurek.physics.testCircleAABB(50, 50, 20, 30, 30, 40, 40)
     local miss = lurek.physics.testCircleAABB(0, 0, 5, 100, 100, 10, 10)
-    print("hit", hit)
-    print("miss", miss)
+    local explosionHitsDoor = lurek.physics.testCircleAABB(160, 96, 24, 150, 80, 40, 60)
+    local explosionMissesTower = lurek.physics.testCircleAABB(160, 96, 24, 260, 80, 40, 60)
+    physics_log("door splash hit=" .. tostring(hit) .. " explosion door=" .. tostring(explosionHitsDoor))
+    physics_log("miss=" .. tostring(miss) .. " tower miss=" .. tostring(explosionMissesTower))
 end
 ```
 
@@ -752,8 +760,10 @@ lurek.physics.testCircles(ax, ay, ar, bx, by, br)
 do
     local touching = lurek.physics.testCircles(0, 0, 20, 30, 0, 20)
     local apart = lurek.physics.testCircles(0, 0, 5, 100, 0, 5)
-    print("touching", touching)
-    print("apart", apart)
+    local bombHitsShield = lurek.physics.testCircles(200, 200, 18, 214, 200, 12)
+    local bombMissesPlayer = lurek.physics.testCircles(200, 200, 18, 260, 200, 12)
+    physics_log("touching=" .. tostring(touching) .. " shield hit=" .. tostring(bombHitsShield))
+    physics_log("apart=" .. tostring(apart) .. " player miss=" .. tostring(bombMissesPlayer))
 end
 ```
 
@@ -790,8 +800,10 @@ lurek.physics.testPoint(px, py, ax, ay, aw, ah)
 do
     local inside = lurek.physics.testPoint(5, 5, 0, 0, 10, 10)
     local outside = lurek.physics.testPoint(20, 20, 0, 0, 10, 10)
-    print("inside", inside)
-    print("outside", outside)
+    local buttonHover = lurek.physics.testPoint(42, 18, 32, 8, 24, 24)
+    local missHover = lurek.physics.testPoint(80, 18, 32, 8, 24, 24)
+    physics_log("inside tile=" .. tostring(inside) .. " ui hover=" .. tostring(buttonHover))
+    physics_log("outside tile=" .. tostring(outside) .. " hover miss=" .. tostring(missHover))
 end
 ```
 
@@ -847,8 +859,8 @@ do
     local body = world:newCircleBody(200, 200, 10, "dynamic")
     body:applyAngularImpulse(5.0)
     world:step(1 / 60)
-    print("angular_velocity", body:getAngularVelocity())
-    print("angle", body:getAngle())
+    example_print_log("angular_velocity", body:getAngularVelocity())
+    example_print_log("angle", body:getAngle())
 end
 ```
 
@@ -877,8 +889,8 @@ do
     local body = world:newCircleBody(200, 200, 10, "dynamic")
     body:applyForce(100, 0)
     world:step(1 / 60)
-    print("velocity", body:getVelocity())
-    print("position", body:getPosition())
+    example_print_log("velocity", body:getVelocity())
+    example_print_log("position", body:getPosition())
 end
 ```
 
@@ -909,8 +921,8 @@ do
     local body = world:newCircleBody(200, 200, 10, "dynamic")
     body:applyForceAtPoint(0, -50, 210, 200)
     world:step(1 / 60)
-    print("velocity", body:getVelocity())
-    print("angular_velocity", body:getAngularVelocity())
+    example_print_log("velocity", body:getVelocity())
+    example_print_log("angular_velocity", body:getAngularVelocity())
 end
 ```
 
@@ -939,8 +951,8 @@ do
     local body = world:newCircleBody(200, 200, 10, "dynamic")
     body:applyImpulse(0, -200)
     world:step(1 / 60)
-    print("velocity", body:getVelocity())
-    print("position", body:getPosition())
+    example_print_log("velocity", body:getVelocity())
+    example_print_log("position", body:getPosition())
 end
 ```
 
@@ -968,8 +980,8 @@ do
     local body = world:newCircleBody(200, 200, 10, "dynamic")
     body:applyTorque(10.0)
     world:step(1 / 60)
-    print("angular_velocity", body:getAngularVelocity())
-    print("angle", body:getAngle())
+    example_print_log("angular_velocity", body:getAngularVelocity())
+    example_print_log("angle", body:getAngle())
 end
 ```
 
@@ -989,9 +1001,9 @@ LBody:destroy()
 do
     local world = lurek.physics.newWorld(0, 400)
     local temp = world:newBody(400, 400, "dynamic")
-    print("before", world:getBodyCount())
+    example_print_log("before", world:getBodyCount())
     temp:destroy()
-    print("after", world:getBodyCount())
+    example_print_log("after", world:getBodyCount())
 end
 ```
 
@@ -1018,8 +1030,8 @@ do
     local world = lurek.physics.newWorld(0, 0)
     local body = world:newBody(100, 100, "dynamic")
     body:setAngle(math.pi / 6)
-    print("angle", body:getAngle())
-    print("position", body:getPosition())
+    example_print_log("angle", body:getAngle())
+    example_print_log("position", body:getPosition())
 end
 ```
 
@@ -1046,8 +1058,8 @@ do
     local world = lurek.physics.newWorld(0, 0)
     local body = world:newBody(100, 100, "dynamic")
     body:setAngularDamping(0.9)
-    print("angular_damping", body:getAngularDamping())
-    print("linear_damping", body:getLinearDamping())
+    example_print_log("angular_damping", body:getAngularDamping())
+    example_print_log("linear_damping", body:getLinearDamping())
 end
 ```
 
@@ -1074,8 +1086,8 @@ do
     local world = lurek.physics.newWorld(0, 0)
     local body = world:newBody(100, 100, "dynamic")
     body:setAngularVelocity(1.25)
-    print("angular_velocity", body:getAngularVelocity())
-    print("angle", body:getAngle())
+    example_print_log("angular_velocity", body:getAngularVelocity())
+    example_print_log("angle", body:getAngle())
 end
 ```
 
@@ -1102,8 +1114,8 @@ do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newCircleBody(100, 100, 20, "dynamic")
     body:setFriction(0.25)
-    print("friction", body:getFriction())
-    print("restitution", body:getRestitution())
+    example_print_log("friction", body:getFriction())
+    example_print_log("restitution", body:getRestitution())
 end
 ```
 
@@ -1130,8 +1142,8 @@ do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, "dynamic")
     body:setGravityScale(-1.0)
-    print("gravity_scale", body:getGravityScale())
-    print("type", body:getType())
+    example_print_log("gravity_scale", body:getGravityScale())
+    example_print_log("type", body:getType())
 end
 ```
 
@@ -1157,8 +1169,11 @@ LBody:getHeight()
 do
     local world = lurek.physics.newWorld(0, 9.8)
     local body = lurek.physics.newBody(world, 100, 100, "dynamic")
-    print("position", body:getPosition())
-    print("size", body:getWidth(), body:getHeight())
+    local collider = lurek.physics.newRectangleShape(32, 48)
+    lurek.physics.attachShape(body, collider)
+    world:step(1 / 60)
+    physics_log("character height=" .. body:getHeight() .. " width=" .. body:getWidth())
+    physics_log("spawn pos=" .. select(1, body:getPosition()) .. "," .. select(2, body:getPosition()))
 end
 ```
 
@@ -1184,8 +1199,11 @@ LBody:getId()
 do
     local world = lurek.physics.newWorld(0, 9.8)
     local body = lurek.physics.newBody(world, 100, 100, "dynamic")
-    print("id", body:getId())
-    print("position", body:getPosition())
+    world:setBodyData(body:getId(), { kind = "spawn_marker" })
+    local data = world:getBodyData(body:getId())
+    world:step(1 / 60)
+    physics_log("body id=" .. body:getId() .. " kind=" .. data.kind)
+    physics_log("spawn x=" .. body:getX() .. " y=" .. body:getY())
 end
 ```
 
@@ -1212,8 +1230,8 @@ do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, "dynamic")
     body:setLayer(4)
-    print("layer", body:getLayer())
-    print("type", body:getType())
+    example_print_log("layer", body:getLayer())
+    example_print_log("type", body:getType())
 end
 ```
 
@@ -1240,8 +1258,8 @@ do
     local world = lurek.physics.newWorld(0, 0)
     local body = world:newBody(100, 100, "dynamic")
     body:setLinearDamping(0.75)
-    print("linear_damping", body:getLinearDamping())
-    print("velocity", body:getVelocity())
+    example_print_log("linear_damping", body:getLinearDamping())
+    example_print_log("velocity", body:getVelocity())
 end
 ```
 
@@ -1268,8 +1286,8 @@ do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, "dynamic")
     body:setMask(7)
-    print("mask", body:getMask())
-    print("id", body:getId())
+    example_print_log("mask", body:getMask())
+    example_print_log("id", body:getId())
 end
 ```
 
@@ -1296,9 +1314,9 @@ do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newCircleBody(100, 100, 20, "dynamic")
     body:setMass(5.0)
-    print("mass", body:getMass())
-    print("friction", body:getFriction())
-    print("restitution", body:getRestitution())
+    example_print_log("mass", body:getMass())
+    example_print_log("friction", body:getFriction())
+    example_print_log("restitution", body:getRestitution())
 end
 ```
 
@@ -1325,8 +1343,11 @@ LBody:getPosition()
 do
     local world = lurek.physics.newWorld(0, 9.8)
     local body = lurek.physics.newBody(world, 100, 100, "dynamic")
-    print("position", body:getPosition())
-    print("id", body:getId())
+    body:setVelocity(14, -8)
+    world:step(1 / 60)
+    local x, y = body:getPosition()
+    physics_log("patrol body id=" .. body:getId())
+    physics_log("current position=" .. x .. "," .. y)
 end
 ```
 
@@ -1353,8 +1374,8 @@ do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newCircleBody(100, 100, 20, "dynamic")
     body:setRestitution(0.15)
-    print("restitution", body:getRestitution())
-    print("friction", body:getFriction())
+    example_print_log("restitution", body:getRestitution())
+    example_print_log("friction", body:getFriction())
 end
 ```
 
@@ -1380,8 +1401,11 @@ LBody:getType()
 do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, "sensor")
-    print("type", body:getType())
-    print("id", body:getId())
+    body:setLayer(8)
+    world:setBodyData(body:getId(), { role = "checkpoint" })
+    local data = world:getBodyData(body:getId())
+    physics_log("checkpoint type=" .. body:getType() .. " id=" .. body:getId())
+    physics_log("layer=" .. body:getLayer() .. " role=" .. data.role)
 end
 ```
 
@@ -1409,8 +1433,8 @@ do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(0, 0, "dynamic")
     body:setVelocity(25, -50)
-    print("velocity", body:getVelocity())
-    print("type", body:getType())
+    example_print_log("velocity", body:getVelocity())
+    example_print_log("type", body:getType())
 end
 ```
 
@@ -1436,8 +1460,11 @@ LBody:getWidth()
 do
     local world = lurek.physics.newWorld(0, 9.8)
     local body = lurek.physics.newBody(world, 100, 100, "dynamic")
-    print("width", body:getWidth())
-    print("height", body:getHeight())
+    local collider = lurek.physics.newRectangleShape(48, 20)
+    lurek.physics.attachShape(body, collider)
+    world:step(1 / 60)
+    physics_log("bridge plank width=" .. body:getWidth())
+    physics_log("bridge plank height=" .. body:getHeight())
 end
 ```
 
@@ -1463,8 +1490,12 @@ LBody:getX()
 do
     local world = lurek.physics.newWorld(0, 9.8)
     local body = lurek.physics.newBody(world, 100, 100, "dynamic")
-    print("x", body:getX())
-    print("y", body:getY())
+    body:setVelocity(12, 0)
+    world:step(1 / 60)
+    local x = body:getX()
+    local y = body:getY()
+    physics_log("spawn marker x=" .. x)
+    physics_log("paired y=" .. y)
 end
 ```
 
@@ -1490,8 +1521,12 @@ LBody:getY()
 do
     local world = lurek.physics.newWorld(0, 9.8)
     local body = lurek.physics.newBody(world, 100, 100, "dynamic")
-    print("y", body:getY())
-    print("x", body:getX())
+    body:setVelocity(0, -10)
+    world:step(1 / 60)
+    local y = body:getY()
+    local x = body:getX()
+    physics_log("spawn marker y=" .. y)
+    physics_log("paired x=" .. x)
 end
 ```
 
@@ -1518,8 +1553,8 @@ do
     local world = lurek.physics.newWorld(0, 400)
     local bullet = world:newCircleBody(100, 100, 4, "dynamic")
     bullet:setBullet(true)
-    print("is_bullet", bullet:isBullet())
-    print("position", bullet:getPosition())
+    example_print_log("is_bullet", bullet:isBullet())
+    example_print_log("position", bullet:getPosition())
 end
 ```
 
@@ -1546,8 +1581,8 @@ do
     local world = lurek.physics.newWorld(0, 400)
     local player = world:newBody(200, 200, "dynamic")
     player:setFixedRotation(true)
-    print("fixed_rotation", player:isFixedRotation())
-    print("type", player:getType())
+    example_print_log("fixed_rotation", player:isFixedRotation())
+    example_print_log("type", player:getType())
 end
 ```
 
@@ -1575,8 +1610,8 @@ do
     local body = world:newBody(100, 100, "dynamic")
     body:setSleepingAllowed(true)
     body:sleep()
-    print("sleeping", body:isSleeping())
-    print("id", body:getId())
+    example_print_log("sleeping", body:isSleeping())
+    example_print_log("id", body:getId())
 end
 ```
 
@@ -1603,8 +1638,8 @@ do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, "dynamic")
     body:setSleepingAllowed(true)
-    print("allowed", body:isSleepingAllowed())
-    print("type", body:getType())
+    example_print_log("allowed", body:isSleepingAllowed())
+    example_print_log("type", body:getType())
 end
 ```
 
@@ -1630,9 +1665,9 @@ LBody:isValid()
 do
     local world = lurek.physics.newWorld(0, 400)
     local temp = world:newBody(400, 400, "dynamic")
-    print("valid", temp:isValid())
+    example_print_log("valid", temp:isValid())
     temp:destroy()
-    print("valid_after_destroy", temp:isValid())
+    example_print_log("valid_after_destroy", temp:isValid())
 end
 ```
 
@@ -1659,8 +1694,8 @@ do
     local world = lurek.physics.newWorld(0, 0)
     local body = world:newBody(100, 100, "dynamic")
     body:setAngle(math.pi / 4)
-    print("angle", body:getAngle())
-    print("angular_velocity", body:getAngularVelocity())
+    example_print_log("angle", body:getAngle())
+    example_print_log("angular_velocity", body:getAngularVelocity())
 end
 ```
 
@@ -1687,8 +1722,8 @@ do
     local world = lurek.physics.newWorld(0, 0)
     local body = world:newBody(100, 100, "dynamic")
     body:setAngularDamping(0.3)
-    print("angular_damping", body:getAngularDamping())
-    print("angle", body:getAngle())
+    example_print_log("angular_damping", body:getAngularDamping())
+    example_print_log("angle", body:getAngle())
 end
 ```
 
@@ -1715,9 +1750,9 @@ do
     local world = lurek.physics.newWorld(0, 0)
     local body = world:newBody(100, 100, "dynamic")
     body:setAngularVelocity(2.0)
-    print("angular_velocity", body:getAngularVelocity())
+    example_print_log("angular_velocity", body:getAngularVelocity())
     world:step(1 / 60)
-    print("angle", body:getAngle())
+    example_print_log("angle", body:getAngle())
 end
 ```
 
@@ -1744,8 +1779,8 @@ do
     local world = lurek.physics.newWorld(0, 400)
     local bullet = world:newCircleBody(100, 100, 4, "dynamic")
     bullet:setBullet(true)
-    print("is_bullet", bullet:isBullet())
-    print("type", bullet:getType())
+    example_print_log("is_bullet", bullet:isBullet())
+    example_print_log("type", bullet:getType())
 end
 ```
 
@@ -1772,8 +1807,8 @@ do
     local world = lurek.physics.newWorld(0, 400)
     local player = world:newBody(200, 200, "dynamic")
     player:setFixedRotation(true)
-    print("fixed_rotation", player:isFixedRotation())
-    print("angle", player:getAngle())
+    example_print_log("fixed_rotation", player:isFixedRotation())
+    example_print_log("angle", player:getAngle())
 end
 ```
 
@@ -1800,8 +1835,8 @@ do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newCircleBody(100, 100, 20, "dynamic")
     body:setFriction(0.8)
-    print("friction", body:getFriction())
-    print("mass", body:getMass())
+    example_print_log("friction", body:getFriction())
+    example_print_log("mass", body:getMass())
 end
 ```
 
@@ -1829,8 +1864,8 @@ do
     local normal = world:newBody(100, 100, "dynamic")
     local floaty = world:newBody(200, 100, "dynamic")
     floaty:setGravityScale(0.2)
-    print("normal", normal:getGravityScale())
-    print("floaty", floaty:getGravityScale())
+    example_print_log("normal", normal:getGravityScale())
+    example_print_log("floaty", floaty:getGravityScale())
 end
 ```
 
@@ -1857,8 +1892,8 @@ do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, "dynamic")
     body:setLayer(2)
-    print("layer", body:getLayer())
-    print("mask", body:getMask())
+    example_print_log("layer", body:getLayer())
+    example_print_log("mask", body:getMask())
 end
 ```
 
@@ -1885,8 +1920,8 @@ do
     local world = lurek.physics.newWorld(0, 0)
     local body = world:newBody(100, 100, "dynamic")
     body:setLinearDamping(0.5)
-    print("linear_damping", body:getLinearDamping())
-    print("angular_damping", body:getAngularDamping())
+    example_print_log("linear_damping", body:getLinearDamping())
+    example_print_log("angular_damping", body:getAngularDamping())
 end
 ```
 
@@ -1913,8 +1948,8 @@ do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, "dynamic")
     body:setMask(3)
-    print("mask", body:getMask())
-    print("layer", body:getLayer())
+    example_print_log("mask", body:getMask())
+    example_print_log("layer", body:getLayer())
 end
 ```
 
@@ -1941,8 +1976,8 @@ do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newCircleBody(100, 100, 20, "dynamic")
     body:setMass(7.5)
-    print("mass", body:getMass())
-    print("type", body:getType())
+    example_print_log("mass", body:getMass())
+    example_print_log("type", body:getType())
 end
 ```
 
@@ -1970,8 +2005,8 @@ do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(0, 0, "dynamic")
     body:setPosition(200, 100)
-    print("position", body:getPosition())
-    print("velocity", body:getVelocity())
+    example_print_log("position", body:getPosition())
+    example_print_log("velocity", body:getVelocity())
 end
 ```
 
@@ -1998,8 +2033,8 @@ do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newCircleBody(100, 100, 20, "dynamic")
     body:setRestitution(0.6)
-    print("restitution", body:getRestitution())
-    print("mass", body:getMass())
+    example_print_log("restitution", body:getRestitution())
+    example_print_log("mass", body:getMass())
 end
 ```
 
@@ -2026,8 +2061,8 @@ do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, "dynamic")
     body:setSleepingAllowed(false)
-    print("allowed", body:isSleepingAllowed())
-    print("sleeping", body:isSleeping())
+    example_print_log("allowed", body:isSleepingAllowed())
+    example_print_log("sleeping", body:isSleeping())
 end
 ```
 
@@ -2054,8 +2089,8 @@ do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, "dynamic")
     body:setType("kinematic")
-    print("type", body:getType())
-    print("layer", body:getLayer())
+    example_print_log("type", body:getType())
+    example_print_log("layer", body:getLayer())
 end
 ```
 
@@ -2083,9 +2118,9 @@ do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(0, 0, "dynamic")
     body:setVelocity(50, -100)
-    print("velocity", body:getVelocity())
+    example_print_log("velocity", body:getVelocity())
     world:step(1 / 60)
-    print("position", body:getPosition())
+    example_print_log("position", body:getPosition())
 end
 ```
 
@@ -2107,8 +2142,8 @@ do
     local body = world:newBody(100, 100, "dynamic")
     body:setSleepingAllowed(true)
     body:sleep()
-    print("sleeping", body:isSleeping())
-    print("allowed", body:isSleepingAllowed())
+    example_print_log("sleeping", body:isSleeping())
+    example_print_log("allowed", body:isSleepingAllowed())
 end
 ```
 
@@ -2134,8 +2169,11 @@ LBody:type()
 do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(0, 0, "dynamic")
-    print("type", body:type())
-    print("type_of", body:typeOf("LBody"), body:typeOf("LObject"))
+    body:setVelocity(12, -6)
+    world:step(1 / 60)
+    local vx, vy = body:getVelocity()
+    physics_log("userdata type=" .. body:type() .. " object=" .. tostring(body:typeOf("LObject")))
+    physics_log("motion sample=" .. vx .. "," .. vy)
 end
 ```
 
@@ -2167,8 +2205,12 @@ LBody:typeOf(name)
 do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(0, 0, "dynamic")
-    print("type_of", body:typeOf("LBody"), body:typeOf("LObject"))
-    print("type", body:type())
+    body:setGravityScale(0.5)
+    local isBody = body:typeOf("LBody")
+    local isObject = body:typeOf("LObject")
+    local isWorld = body:typeOf("LWorld")
+    physics_log("body handle checks body=" .. tostring(isBody) .. " object=" .. tostring(isObject))
+    physics_log("world check=" .. tostring(isWorld) .. " type=" .. body:type())
 end
 ```
 
@@ -2191,8 +2233,8 @@ do
     body:setSleepingAllowed(true)
     body:sleep()
     body:wakeUp()
-    print("sleeping", body:isSleeping())
-    print("allowed", body:isSleepingAllowed())
+    example_print_log("sleeping", body:isSleeping())
+    example_print_log("allowed", body:isSleepingAllowed())
 end
 ```
 
@@ -2219,8 +2261,12 @@ LPhysicsShape:destroy()
 ```lua
 do
     local shape = lurek.physics.newCircleShape(10)
+    local before = shape:type()
+    local radius = shape:getRadius()
     shape:destroy()
-    print("type", shape:getType())
+    local after = shape:getType()
+    physics_log("temporary shape type before=" .. before .. " after=" .. after)
+    physics_log("radius sample=" .. radius)
 end
 ```
 
@@ -2248,8 +2294,10 @@ LPhysicsShape:getBoundingBox()
 ```lua
 do
     local circle = lurek.physics.newCircleShape(10.0)
-    print("bounds", circle:getBoundingBox())
-    print("type", circle:getType())
+    circle:setSensor(true)
+    local minX, minY, maxX, maxY = circle:getBoundingBox()
+    physics_log("sensor bounds=" .. minX .. "," .. minY .. " -> " .. maxX .. "," .. maxY)
+    physics_log("shape type=" .. circle:getType())
 end
 ```
 
@@ -2274,8 +2322,11 @@ LPhysicsShape:getRadius()
 ```lua
 do
     local circle = lurek.physics.newCircleShape(10.0)
-    print("radius", circle:getRadius())
-    print("type", circle:getType())
+    circle:setDensity(1.5)
+    local radius = circle:getRadius()
+    local minX, minY, maxX, maxY = circle:getBoundingBox()
+    physics_log("blast radius=" .. radius)
+    physics_log("bounds=" .. minX .. "," .. minY .. " -> " .. maxX .. "," .. maxY)
 end
 ```
 
@@ -2300,8 +2351,10 @@ LPhysicsShape:getType()
 ```lua
 do
     local circle = lurek.physics.newCircleShape(10.0)
-    print("type", circle:getType())
-    print("bounds", circle:getBoundingBox())
+    circle:setRestitution(0.2)
+    local minX, minY, maxX, maxY = circle:getBoundingBox()
+    physics_log("collider kind=" .. circle:getType())
+    physics_log("preview bounds=" .. minX .. "," .. minY .. " -> " .. maxX .. "," .. maxY)
 end
 ```
 
@@ -2327,8 +2380,10 @@ LPhysicsShape:setDensity(density)
 do
     local shape = lurek.physics.newCircleShape(12)
     shape:setDensity(2.5)
-    print("type", shape:getType())
-    print("radius", shape:getRadius())
+    shape:setFriction(0.4)
+    local minX, minY, maxX, maxY = shape:getBoundingBox()
+    physics_log("heavy boulder density prepared for " .. shape:getType())
+    physics_log("radius=" .. shape:getRadius() .. " bounds=" .. minX .. "," .. minY .. " -> " .. maxX .. "," .. maxY)
 end
 ```
 
@@ -2354,8 +2409,10 @@ LPhysicsShape:setFriction(friction)
 do
     local shape = lurek.physics.newCircleShape(12)
     shape:setFriction(0.9)
-    print("type", shape:getType())
-    print("radius", shape:getRadius())
+    shape:setDensity(1.0)
+    local minX, minY, maxX, maxY = shape:getBoundingBox()
+    physics_log("sticky tire friction tuned on " .. shape:getType())
+    physics_log("radius=" .. shape:getRadius() .. " bounds=" .. minX .. "," .. minY .. " -> " .. maxX .. "," .. maxY)
 end
 ```
 
@@ -2381,8 +2438,10 @@ LPhysicsShape:setRestitution(restitution)
 do
     local shape = lurek.physics.newCircleShape(12)
     shape:setRestitution(0.3)
-    print("type", shape:getType())
-    print("radius", shape:getRadius())
+    shape:setDensity(0.8)
+    local minX, minY, maxX, maxY = shape:getBoundingBox()
+    physics_log("pickup bounce tuned on " .. shape:getType())
+    physics_log("radius=" .. shape:getRadius() .. " bounds=" .. minX .. "," .. minY .. " -> " .. maxX .. "," .. maxY)
 end
 ```
 
@@ -2408,8 +2467,10 @@ LPhysicsShape:setSensor(sensor)
 do
     local shape = lurek.physics.newCircleShape(12)
     shape:setSensor(true)
-    print("type", shape:getType())
-    print("bounds", shape:getBoundingBox())
+    shape:setDensity(0.2)
+    local minX, minY, maxX, maxY = shape:getBoundingBox()
+    physics_log("trigger volume type=" .. shape:getType())
+    physics_log("sensor bounds=" .. minX .. "," .. minY .. " -> " .. maxX .. "," .. maxY)
 end
 ```
 
@@ -2434,7 +2495,10 @@ LPhysicsShape:type()
 ```lua
 do
     local shape = lurek.physics.newCircleShape(10)
-    print("type", shape:type())
+    shape:setSensor(true)
+    local minX, minY, maxX, maxY = shape:getBoundingBox()
+    physics_log("shape userdata=" .. shape:type())
+    physics_log("bounds=" .. minX .. "," .. minY .. " -> " .. maxX .. "," .. maxY)
 end
 ```
 
@@ -2465,8 +2529,12 @@ LPhysicsShape:typeOf(name)
 ```lua
 do
     local shape = lurek.physics.newCircleShape(10)
-    print("type_of", shape:typeOf("LPhysicsShape"))
-    print("type", shape:type())
+    shape:setSensor(true)
+    local isShape = shape:typeOf("LPhysicsShape")
+    local isObject = shape:typeOf("LObject")
+    local isBody = shape:typeOf("LBody")
+    physics_log("shape checks shape=" .. tostring(isShape) .. " object=" .. tostring(isObject))
+    physics_log("body check=" .. tostring(isBody) .. " userdata=" .. shape:type())
 end
 ```
 
@@ -2503,8 +2571,8 @@ do
     terrain:fillAll(true)
     terrain:fillRect(80, 0, 96, 120, false)
     terrain:flush()
-    print("collapsed", terrain:collapseColumns())
-    print("dirty", terrain:isDirty())
+    example_print_log("collapsed", terrain:collapseColumns())
+    example_print_log("dirty", terrain:isDirty())
 end
 ```
 
@@ -2531,8 +2599,8 @@ do
     local world = lurek.physics.newWorld(0, 9.8)
     local terrain = lurek.physics.newTerrain(32, 32, 16, world)
     terrain:fillAll(true)
-    print("dirty", terrain:isDirty())
-    print("type", terrain:type())
+    example_print_log("dirty", terrain:isDirty())
+    example_print_log("type", terrain:type())
 end
 ```
 
@@ -2563,8 +2631,8 @@ do
     local terrain = lurek.physics.newTerrain(32, 32, 16, world)
     terrain:fillAll(true)
     terrain:fillCircle(256, 256, 50, false)
-    print("dirty", terrain:isDirty())
-    print("type", terrain:type())
+    example_print_log("dirty", terrain:isDirty())
+    example_print_log("type", terrain:type())
 end
 ```
 
@@ -2595,8 +2663,8 @@ do
     local world = lurek.physics.newWorld(0, 400)
     local terrain = lurek.physics.newTerrain(64, 64, 8, world)
     terrain:fillRect(80, 80, 40, 40, false)
-    print("dirty", terrain:isDirty())
-    print("cell", terrain:getCell(10, 10))
+    example_print_log("dirty", terrain:isDirty())
+    example_print_log("cell", terrain:getCell(10, 10))
 end
 ```
 
@@ -2618,8 +2686,8 @@ do
     local terrain = lurek.physics.newTerrain(32, 32, 16, world)
     terrain:fillAll(true)
     terrain:flush()
-    print("dirty", terrain:isDirty())
-    print("type", terrain:type())
+    example_print_log("dirty", terrain:isDirty())
+    example_print_log("type", terrain:type())
 end
 ```
 
@@ -2653,8 +2721,8 @@ do
     local world = lurek.physics.newWorld(0, 400)
     local terrain = lurek.physics.newTerrain(64, 64, 8, world)
     terrain:setCell(5, 5, true)
-    print("cell", terrain:getCell(5, 5))
-    print("type", terrain:type())
+    example_print_log("cell", terrain:getCell(5, 5))
+    example_print_log("type", terrain:type())
 end
 ```
 
@@ -2681,8 +2749,8 @@ do
     local world = lurek.physics.newWorld(0, 9.8)
     local terrain = lurek.physics.newTerrain(32, 32, 16, world)
     terrain:fillAll(true)
-    print("dirty", terrain:isDirty())
-    print("type", terrain:type())
+    example_print_log("dirty", terrain:isDirty())
+    example_print_log("type", terrain:type())
 end
 ```
 
@@ -2717,8 +2785,8 @@ do
     terrain:fillAll(true)
     local bytes = terrain:toBytes()
     local clone = lurek.physics.newTerrain(32, 32, 4, world)
-    print("loaded", clone:loadFromBytes(bytes))
-    print("cell", clone:getCell(0, 0))
+    example_print_log("loaded", clone:loadFromBytes(bytes))
+    example_print_log("cell", clone:getCell(0, 0))
 end
 ```
 
@@ -2747,8 +2815,8 @@ do
     local world = lurek.physics.newWorld(0, 400)
     local terrain = lurek.physics.newTerrain(64, 64, 8, world)
     terrain:setCell(5, 5, true)
-    print("cell", terrain:getCell(5, 5))
-    print("dirty", terrain:isDirty())
+    example_print_log("cell", terrain:getCell(5, 5))
+    example_print_log("dirty", terrain:isDirty())
 end
 ```
 
@@ -2777,9 +2845,9 @@ do
     terrain:fillAll(true)
     terrain:fillRect(80, 0, 96, 120, false)
     local solids = terrain:solidPositions()
-    print("count", #solids)
+    example_print_log("count", #solids)
     if solids[1] then
-        print("first", solids[1].x, solids[1].y)
+        example_print_log("first", solids[1].x, solids[1].y)
     end
 end
 ```
@@ -2817,8 +2885,8 @@ do
     terrain:fillAll(true)
     terrain:flush()
     local debris = terrain:spawnDebris({ { x = 64, y = 64 }, { x = 72, y = 64 } }, 1.0, 0.2)
-    print("count", #debris)
-    print("body_count", world:getBodyCount())
+    example_print_log("count", #debris)
+    example_print_log("body_count", world:getBodyCount())
 end
 ```
 
@@ -2847,8 +2915,8 @@ do
     terrain:fillAll(true)
     terrain:fillCircle(64, 64, 24, false)
     local bytes = terrain:toBytes()
-    print("bytes", #bytes)
-    print("dirty", terrain:isDirty())
+    example_print_log("bytes", #bytes)
+    example_print_log("dirty", terrain:isDirty())
 end
 ```
 
@@ -2888,8 +2956,8 @@ do
     terrain:fillAll(true)
     terrain:fillCircle(64, 64, 24, false)
     local pixels = terrain:toImageData(255, 255, 255, 0, 0, 0)
-    print("bytes", #pixels)
-    print("type", terrain:type())
+    example_print_log("bytes", #pixels)
+    example_print_log("type", terrain:type())
 end
 ```
 
@@ -2915,8 +2983,10 @@ LTerrain:type()
 do
     local world = lurek.physics.newWorld(0, 9.8)
     local terrain = lurek.physics.newTerrain(32, 32, 16, world)
-    print("type", terrain:type())
-    print("type_of", terrain:typeOf("LTerrain"))
+    terrain:fillRect(32, 400, 96, 32, true)
+    terrain:flush()
+    physics_log("terrain userdata=" .. terrain:type())
+    physics_log("terrain inheritance=" .. tostring(terrain:typeOf("LTerrain")))
 end
 ```
 
@@ -2948,8 +3018,12 @@ LTerrain:typeOf(name)
 do
     local world = lurek.physics.newWorld(0, 9.8)
     local terrain = lurek.physics.newTerrain(32, 32, 16, world)
-    print("type_of", terrain:typeOf("LTerrain"), terrain:typeOf("LObject"))
-    print("type", terrain:type())
+    terrain:fillAll(false)
+    terrain:setCell(1, 1, true)
+    local isTerrain = terrain:typeOf("LTerrain")
+    local isObject = terrain:typeOf("LObject")
+    physics_log("terrain check=" .. tostring(isTerrain) .. " object=" .. tostring(isObject))
+    physics_log("terrain userdata=" .. terrain:type())
 end
 ```
 
@@ -2997,8 +3071,8 @@ do
     local bodyA = world:newCircleBody(100, 100, 10, "dynamic")
     local bodyB = world:newCircleBody(200, 100, 10, "dynamic")
     local jointId = world:addDistanceJoint(bodyA:getId(), bodyB:getId(), 0, 0, 0, 0, 100)
-    print("joint_id", jointId)
-    print("joint_type", world:getJointType(jointId))
+    example_print_log("joint_id", jointId)
+    example_print_log("joint_type", world:getJointType(jointId))
 end
 ```
 
@@ -3037,8 +3111,8 @@ do
     local world = lurek.physics.newWorld(0, 9.8)
     local body = world:newBody(0, 0, "dynamic")
     local fid = world:addFixture(body:getId(), "circle", 1.0, 0.3, 0.5, false, 5.0)
-    print("fixture", fid)
-    print("count", world:fixtureCount(body:getId()))
+    example_print_log("fixture", fid)
+    example_print_log("count", world:fixtureCount(body:getId()))
 end
 ```
 
@@ -3077,8 +3151,8 @@ do
     local ground = world:newBody(200, 400, "static")
     local puck = world:newCircleBody(200, 400, 10, "dynamic")
     local jointId = world:addFrictionJoint(ground:getId(), puck:getId(), 200, 400, 100, 50)
-    print("joint_id", jointId)
-    print("joint_type", world:getJointType(jointId))
+    example_print_log("joint_id", jointId)
+    example_print_log("joint_type", world:getJointType(jointId))
 end
 ```
 
@@ -3115,8 +3189,8 @@ do
     local gearA = world:newCircleBody(100, 200, 20, "dynamic")
     local gearB = world:newCircleBody(200, 200, 20, "dynamic")
     local jointId = world:addGearJoint(gearA:getId(), gearB:getId(), 150, 200)
-    print("joint_id", jointId)
-    print("joint_type", world:getJointType(jointId))
+    example_print_log("joint_id", jointId)
+    example_print_log("joint_type", world:getJointType(jointId))
 end
 ```
 
@@ -3152,8 +3226,8 @@ do
     local platform = world:newBody(200, 200, "static")
     local mover = world:newBody(200, 200, "dynamic")
     local jointId = world:addMotorJoint(platform:getId(), mover:getId(), 0.5)
-    print("joint_id", jointId)
-    print("joint_type", world:getJointType(jointId))
+    example_print_log("joint_id", jointId)
+    example_print_log("joint_type", world:getJointType(jointId))
 end
 ```
 
@@ -3190,8 +3264,8 @@ do
     local box = world:newCircleBody(200, 200, 15, "dynamic")
     local jointId = world:addMouseJoint(box:getId(), 300, 100, 500)
     world:setMouseJointTarget(jointId, 400, 150)
-    print("joint_id", jointId)
-    print("joint_type", world:getJointType(jointId))
+    example_print_log("joint_id", jointId)
+    example_print_log("joint_type", world:getJointType(jointId))
 end
 ```
 
@@ -3230,8 +3304,8 @@ do
     local rail = world:newBody(300, 300, "static")
     local slider = world:newBody(300, 300, "dynamic")
     local jointId = world:addPrismaticJoint(rail:getId(), slider:getId(), 300, 300, 1, 0)
-    print("joint_id", jointId)
-    print("joint_type", world:getJointType(jointId))
+    example_print_log("joint_id", jointId)
+    example_print_log("joint_type", world:getJointType(jointId))
 end
 ```
 
@@ -3268,8 +3342,8 @@ do
     local boxA = world:newCircleBody(100, 200, 10, "dynamic")
     local boxB = world:newCircleBody(300, 200, 10, "dynamic")
     local jointId = world:addPulleyJoint(boxA:getId(), boxB:getId(), 200, 50)
-    print("joint_id", jointId)
-    print("joint_type", world:getJointType(jointId))
+    example_print_log("joint_id", jointId)
+    example_print_log("joint_type", world:getJointType(jointId))
 end
 ```
 
@@ -3306,8 +3380,8 @@ do
     local pivot = world:newBody(200, 150, "static")
     local arm = world:newBody(200, 200, "dynamic")
     local jointId = world:addRevoluteJoint(pivot:getId(), arm:getId(), 200, 150)
-    print("joint_id", jointId)
-    print("joint_type", world:getJointType(jointId))
+    example_print_log("joint_id", jointId)
+    example_print_log("joint_type", world:getJointType(jointId))
 end
 ```
 
@@ -3347,8 +3421,8 @@ do
     local ceiling = world:newBody(300, 50, "static")
     local weight = world:newCircleBody(300, 150, 8, "dynamic")
     local jointId = world:addRopeJoint(ceiling:getId(), weight:getId(), 0, 0, 0, 0, 120)
-    print("joint_id", jointId)
-    print("joint_type", world:getJointType(jointId))
+    example_print_log("joint_id", jointId)
+    example_print_log("joint_type", world:getJointType(jointId))
 end
 ```
 
@@ -3385,8 +3459,8 @@ do
     local chassis = world:newBody(200, 200, "dynamic")
     local turret = world:newBody(200, 180, "dynamic")
     local jointId = world:addWeldJoint(chassis:getId(), turret:getId(), 200, 190)
-    print("joint_id", jointId)
-    print("joint_type", world:getJointType(jointId))
+    example_print_log("joint_id", jointId)
+    example_print_log("joint_type", world:getJointType(jointId))
 end
 ```
 
@@ -3425,8 +3499,8 @@ do
     local car = world:newBody(200, 200, "dynamic")
     local wheel = world:newCircleBody(200, 230, 12, "dynamic")
     local jointId = world:addWheelJoint(car:getId(), wheel:getId(), 200, 230, 0, 1)
-    print("joint_id", jointId)
-    print("joint_type", world:getJointType(jointId))
+    example_print_log("joint_id", jointId)
+    example_print_log("joint_type", world:getJointType(jointId))
 end
 ```
 
@@ -3462,8 +3536,8 @@ do
     local world = lurek.physics.newWorld(0, 400)
     local zone = world:addZone(100, 100, 200, 200)
     zone:setPriority(10)
-    print("zone_id", zone:getId())
-    print("type", zone:type())
+    example_print_log("zone_id", zone:getId())
+    example_print_log("type", zone:type())
 end
 ```
 
@@ -3471,7 +3545,7 @@ end
 
 #### `LWorld:clear`
 
-Removes all bodies and joints from the world, resetting it to an empty state.
+Removes bodies, joints, terrain colliders, and zones while preserving world-level settings.
 
 ```lua
 LWorld:clear()
@@ -3483,9 +3557,9 @@ LWorld:clear()
 do
     local world = lurek.physics.newWorld(0, 400)
     world:newCircleBody(100, 100, 10, "dynamic")
-    print("before", world:getBodyCount())
+    example_print_log("before", world:getBodyCount())
     world:clear()
-    print("after", world:getBodyCount())
+    example_print_log("after", world:getBodyCount())
 end
 ```
 
@@ -3514,7 +3588,7 @@ do
     for _ = 1, 120 do
         world:step(1 / 60)
     end
-    print("count", count)
+    example_print_log("count", count)
 end
 ```
 
@@ -3542,7 +3616,7 @@ do
     local player = world:newCircleBody(100, 100, 10, "dynamic")
     world:setBodyData(player:getId(), { tag = "player" })
     world:clearBodyData(player:getId())
-    print("data", world:getBodyData(player:getId()))
+    example_print_log("data", world:getBodyData(player:getId()))
 end
 ```
 
@@ -3570,7 +3644,7 @@ do
     local platform = world:newBody(200, 400, "static")
     world:setBodyOneWay(platform:getId(), 0, -1)
     world:clearBodyOneWay(platform:getId())
-    print("normal", world:getBodyOneWay(platform:getId()))
+    example_print_log("normal", world:getBodyOneWay(platform:getId()))
 end
 ```
 
@@ -3600,7 +3674,7 @@ do
     for _ = 1, 300 do
         world:step(1 / 60)
     end
-    print("count", count)
+    example_print_log("count", count)
 end
 ```
 
@@ -3626,9 +3700,9 @@ LWorld:destroyBody(id)
 do
     local world = lurek.physics.newWorld(0, 9.8)
     local body = world:newBody(0, 0, "dynamic")
-    print("before", world:getBodyCount())
+    example_print_log("before", world:getBodyCount())
     world:destroyBody(body:getId())
-    print("after", world:getBodyCount())
+    example_print_log("after", world:getBodyCount())
 end
 ```
 
@@ -3656,9 +3730,9 @@ do
     local a = world:newBody(100, 100, "static")
     local b = world:newBody(100, 200, "dynamic")
     local jid = world:addRevoluteJoint(a:getId(), b:getId(), 100, 100)
-    print("before", world:jointCount())
+    example_print_log("before", world:jointCount())
     world:destroyJoint(jid)
-    print("after", world:jointCount())
+    example_print_log("after", world:jointCount())
 end
 ```
 
@@ -3690,7 +3764,7 @@ do
     world:newCircleBody(200, 200, 20, "dynamic")
     local img = lurek.image.newImageData(800, 600)
     local ok, err = pcall(function() world:drawDebug(img, 0, 255, 0, 200) end)
-    if ok then print("image", img:type()) else print("drawDebug skipped: " .. tostring(err)) end
+    if ok then example_print_log("image", img:type()) else example_print_log("drawDebug skipped: " .. tostring(err)) end
 end
 ```
 
@@ -3723,7 +3797,10 @@ do
     local world = lurek.physics.newWorld(0, 9.8)
     local body = world:newBody(0, 0, "dynamic")
     world:addFixture(body:getId(), "circle", 1.0, 0.3, 0.5, false, 5.0)
-    print("count", world:fixtureCount(body:getId()))
+    world:addFixture(body:getId(), "rectangle", 1.0, 0.6, 0.1, false, 12.0, 4.0)
+    world:step(1 / 60)
+    physics_log("fixture count=" .. world:fixtureCount(body:getId()))
+    physics_log("body type=" .. body:getType())
 end
 ```
 
@@ -3759,7 +3836,7 @@ do
             break
         end
     end
-    print("count", count)
+    example_print_log("count", count)
 end
 ```
 
@@ -3796,8 +3873,8 @@ do
     body:setLayer(0x2)
     local hitId = world:getBodyAtPoint(210, 205, { layer = 0x1, mask = 0x2 })
     local missId = world:getBodyAtPoint(0, 0, { layer = 0x1, mask = 0x2 })
-    print("hit", hitId)
-    print("miss", missId)
+    example_print_log("hit", hitId)
+    example_print_log("miss", missId)
 end
 ```
 
@@ -3830,8 +3907,8 @@ do
     local world = lurek.physics.newWorld(0, 0)
     local bullet = world:newCircleBody(100, 100, 3, "dynamic")
     world:setBodyCCD(bullet:getId(), true)
-    print("ccd", world:getBodyCCD(bullet:getId()))
-    print("velocity", bullet:getVelocity())
+    example_print_log("ccd", world:getBodyCCD(bullet:getId()))
+    example_print_log("velocity", bullet:getVelocity())
 end
 ```
 
@@ -3868,9 +3945,9 @@ do
         world:step(1 / 60)
     end
     local contacts = world:getBodyContacts(ball:getId())
-    print("count", #contacts)
+    example_print_log("count", #contacts)
     if contacts[1] then
-        print("first", contacts[1].bodyA, contacts[1].bodyB)
+        example_print_log("first", contacts[1].bodyA, contacts[1].bodyB)
     end
 end
 ```
@@ -3896,9 +3973,12 @@ LWorld:getBodyCount()
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    world:newBody(100, 100, "dynamic")
-    world:newBody(200, 200, "static")
-    print("body_count", world:getBodyCount())
+    local player = world:newBody(100, 100, "dynamic")
+    local floor = world:newBody(200, 200, "static")
+    local pickup = world:newBody(240, 140, "sensor")
+    world:step(1 / 60)
+    physics_log("arena bodies=" .. world:getBodyCount())
+    physics_log("player=" .. player:getType() .. " floor=" .. floor:getType() .. " pickup=" .. pickup:getType())
 end
 ```
 
@@ -3932,8 +4012,8 @@ do
     local enemy = world:newCircleBody(300, 100, 10, "dynamic")
     world:setBodyData(enemy:getId(), { tag = "enemy", hp = 50 })
     local data = world:getBodyData(enemy:getId())
-    print("tag", data.tag)
-    print("hp", data.hp)
+    example_print_log("tag", data.tag)
+    example_print_log("hp", data.hp)
 end
 ```
 
@@ -3961,8 +4041,8 @@ do
     world:newBody(100, 100, "dynamic")
     world:newBody(200, 200, "static")
     local ids = world:getBodyIds()
-    print("count", #ids)
-    print("first", ids[1])
+    example_print_log("count", #ids)
+    example_print_log("first", ids[1])
 end
 ```
 
@@ -3996,7 +4076,11 @@ do
     local world = lurek.physics.newWorld(0, 400)
     local platform = world:newBody(200, 400, "static")
     world:setBodyOneWay(platform:getId(), 0, -1)
-    print("normal", world:getBodyOneWay(platform:getId()))
+    local nx, ny = world:getBodyOneWay(platform:getId())
+    local coin = world:newBody(220, 360, "sensor")
+    world:step(1 / 60)
+    physics_log("queried one-way normal=" .. nx .. "," .. ny)
+    physics_log("platform=" .. platform:getType() .. " helper=" .. coin:getType())
 end
 ```
 
@@ -4028,8 +4112,11 @@ LWorld:getBodyType(id)
 do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, "dynamic")
-    print("type", world:getBodyType(body:getId()))
-    print("id", body:getId())
+    world:newBody(100, 220, "static")
+    world:setBodyData(body:getId(), { role = "crate" })
+    local data = world:getBodyData(body:getId())
+    physics_log("body type lookup=" .. world:getBodyType(body:getId()) .. " id=" .. body:getId())
+    physics_log("role=" .. data.role .. " world bodies=" .. world:getBodyCount())
 end
 ```
 
@@ -4066,7 +4153,7 @@ do
             break
         end
     end
-    print("count", count)
+    example_print_log("count", count)
 end
 ```
 
@@ -4097,10 +4184,10 @@ do
         world:step(1 / 60)
     end
     local contacts = world:getContacts()
-    print("count", #contacts)
-    print("ball", ball:getId())
+    example_print_log("count", #contacts)
+    example_print_log("ball", ball:getId())
     if contacts[1] then
-        print("touching", contacts[1].isTouching)
+        example_print_log("touching", contacts[1].isTouching)
     end
 end
 ```
@@ -4138,7 +4225,7 @@ do
             break
         end
     end
-    print("count", count)
+    example_print_log("count", count)
 end
 ```
 
@@ -4165,9 +4252,9 @@ LWorld:getGravity()
 do
     local world = lurek.physics.newWorld(0, 400)
     local gx, gy = world:getGravity()
-    print("gravity", gx, gy)
+    example_print_log("gravity", gx, gy)
     world:setGravity(10, 800)
-    print("updated", world:getGravity())
+    example_print_log("updated", world:getGravity())
 end
 ```
 
@@ -4202,7 +4289,7 @@ do
     local a = world:newBody(100, 100, "static")
     local b = world:newCircleBody(100, 200, 10, "dynamic")
     local jid = world:addRevoluteJoint(a:getId(), b:getId(), 100, 100)
-    print("bodies", world:getJointBodies(jid))
+    example_print_log("bodies", world:getJointBodies(jid))
 end
 ```
 
@@ -4237,7 +4324,7 @@ do
     local weight = world:newCircleBody(200, 100, 10, "dynamic")
     local jid = world:addDistanceJoint(ceiling:getId(), weight:getId(), 0, 0, 0, 0, 50)
     world:setJointBreakForce(jid, 500)
-    print("break_force", world:getJointBreakForce(jid))
+    example_print_log("break_force", world:getJointBreakForce(jid))
 end
 ```
 
@@ -4266,8 +4353,8 @@ do
     local b = world:newCircleBody(100, 200, 10, "dynamic")
     world:addRevoluteJoint(a:getId(), b:getId(), 100, 100)
     local ids = world:getJointIds()
-    print("count", #ids)
-    print("first", ids[1])
+    example_print_log("count", #ids)
+    example_print_log("first", ids[1])
 end
 ```
 
@@ -4303,7 +4390,7 @@ do
     local arm = world:newBody(200, 200, "dynamic")
     local jid = world:addRevoluteJoint(anchor:getId(), arm:getId(), 200, 100)
     world:setJointLimits(jid, -math.pi / 4, math.pi / 4)
-    print("limits", world:getJointLimits(jid))
+    example_print_log("limits", world:getJointLimits(jid))
 end
 ```
 
@@ -4338,7 +4425,7 @@ do
     local blade = world:newBody(200, 200, "dynamic")
     local jid = world:addRevoluteJoint(hub:getId(), blade:getId(), 200, 200)
     world:setJointMotorSpeed(jid, 5.0)
-    print("motor_speed", world:getJointMotorSpeed(jid))
+    example_print_log("motor_speed", world:getJointMotorSpeed(jid))
 end
 ```
 
@@ -4372,7 +4459,7 @@ do
     local a = world:newBody(100, 100, "static")
     local b = world:newCircleBody(100, 200, 10, "dynamic")
     local jid = world:addRevoluteJoint(a:getId(), b:getId(), 100, 100)
-    print("joint_type", world:getJointType(jid))
+    example_print_log("joint_type", world:getJointType(jid))
 end
 ```
 
@@ -4398,8 +4485,11 @@ LWorld:getMeter()
 do
     local world = lurek.physics.newWorld(0, 9.81)
     world:setMeter(64)
-    print("meter", world:getMeter())
-    print("pixels", world:toPixels(2.0))
+    local bridgeSpanMeters = 2.0
+    local bridgeSpanPixels = world:toPixels(bridgeSpanMeters)
+    local rampHeightPixels = world:toPixels(0.75)
+    physics_log("builder meter=" .. world:getMeter() .. " bridge_px=" .. bridgeSpanPixels)
+    physics_log("ramp height px=" .. rampHeightPixels)
 end
 ```
 
@@ -4425,7 +4515,11 @@ LWorld:getSolverIterations()
 do
     local world = lurek.physics.newWorld(0, 400)
     world:setSolverIterations(10)
-    print("solver_iterations", world:getSolverIterations())
+    local floor = world:newBody(200, 420, "static")
+    local ball = world:newCircleBody(200, 120, 8, "dynamic")
+    world:step(1 / 60)
+    physics_log("solver iterations=" .. world:getSolverIterations())
+    physics_log("scene bodies=" .. world:getBodyCount() .. " floor=" .. floor:getType() .. " ball_y=" .. select(2, ball:getPosition()))
 end
 ```
 
@@ -4452,12 +4546,12 @@ do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, "dynamic")
     local stats = world:getStats()
-    print("bodies", stats.bodies, "slots", stats.bodySlots, "colliders", stats.colliders)
-    print("joints", stats.joints, "joint_slots", stats.jointSlots)
-    print("zones", stats.zones, "sleeping", stats.sleepingBodies)
+    example_print_log("bodies", stats.bodies, "slots", stats.bodySlots, "colliders", stats.colliders)
+    example_print_log("joints", stats.joints, "joint_slots", stats.jointSlots)
+    example_print_log("zones", stats.zones, "sleeping", stats.sleepingBodies)
     body:destroy()
     stats = world:getStats()
-    print("after_destroy", stats.bodies, "slots", stats.bodySlots)
+    example_print_log("after_destroy", stats.bodies, "slots", stats.bodySlots)
 end
 ```
 
@@ -4491,7 +4585,7 @@ do
         local events = world:getZoneEvents()
         count = count + #events
     end
-    print("count", count)
+    example_print_log("count", count)
 end
 ```
 
@@ -4523,9 +4617,9 @@ LWorld:hasBody(id)
 do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, "dynamic")
-    print("has_body", world:hasBody(body:getId()))
+    example_print_log("has_body", world:hasBody(body:getId()))
     body:destroy()
-    print("has_body_after_destroy", world:hasBody(body:getId()))
+    example_print_log("has_body_after_destroy", world:hasBody(body:getId()))
 end
 ```
 
@@ -4559,9 +4653,9 @@ do
     local a = world:newBody(100, 100, "static")
     local b = world:newBody(100, 200, "dynamic")
     local jid = world:addRevoluteJoint(a:getId(), b:getId(), 100, 100)
-    print("has_joint", world:hasJoint(jid))
+    example_print_log("has_joint", world:hasJoint(jid))
     world:destroyJoint(jid)
-    print("has_joint_after_destroy", world:hasJoint(jid))
+    example_print_log("has_joint_after_destroy", world:hasJoint(jid))
 end
 ```
 
@@ -4595,7 +4689,7 @@ do
     local body = world:newCircleBody(100, 100, 10, "dynamic")
     body:setSleepingAllowed(true)
     world:sleepBody(body:getId())
-    print("sleeping", world:isBodySleeping(body:getId()))
+    example_print_log("sleeping", world:isBodySleeping(body:getId()))
 end
 ```
 
@@ -4623,7 +4717,7 @@ do
     local a = world:newBody(100, 100, "static")
     local b = world:newCircleBody(100, 200, 10, "dynamic")
     world:addRevoluteJoint(a:getId(), b:getId(), 100, 100)
-    print("joint_count", world:jointCount())
+    example_print_log("joint_count", world:jointCount())
 end
 ```
 
@@ -4659,8 +4753,8 @@ do
         { 30, 50, 12, 12, "dynamic" },
         { 45, 50, 12, 12, "static" },
     })
-    print("created", #ids)
-    print("body_count", world:getBodyCount())
+    example_print_log("created", #ids)
+    example_print_log("body_count", world:getBodyCount())
 end
 ```
 
@@ -4695,9 +4789,9 @@ do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 50, "dynamic")
     world:step(1 / 60)
-    print("id", body:getId())
-    print("type", body:getType())
-    print("position", body:getPosition())
+    example_print_log("id", body:getId())
+    example_print_log("type", body:getType())
+    example_print_log("position", body:getPosition())
 end
 ```
 
@@ -4733,8 +4827,11 @@ LWorld:newChainBody(x, y, vertices, closed, bodyType)
 do
     local world = lurek.physics.newWorld(0, 400)
     local ground = world:newChainBody(0, 500, { 0, 100, 100, 80, 200, 90, 300, 60, 400, 100 }, false, "static")
-    print("position", ground:getPosition())
-    print("type", ground:getType())
+    local bike = world:newCircleBody(120, 420, 8, "dynamic")
+    bike:setVelocity(30, 0)
+    world:step(1 / 60)
+    physics_log("track body type=" .. ground:getType() .. " start_y=" .. select(2, ground:getPosition()))
+    physics_log("bike pos=" .. select(1, bike:getPosition()) .. "," .. select(2, bike:getPosition()))
 end
 ```
 
@@ -4769,8 +4866,11 @@ LWorld:newCircleBody(x, y, radius, bodyType)
 do
     local world = lurek.physics.newWorld(0, 400)
     local ball = world:newCircleBody(200, 100, 16, "dynamic")
-    print("position", ball:getPosition())
-    print("size", ball:getWidth(), ball:getHeight())
+    local target = world:newBody(200, 260, "static")
+    ball:setVelocity(15, -20)
+    world:step(1 / 60)
+    physics_log("projectile pos=" .. select(1, ball:getPosition()) .. "," .. select(2, ball:getPosition()))
+    physics_log("projectile size=" .. ball:getWidth() .. "x" .. ball:getHeight() .. " target=" .. target:getType())
 end
 ```
 
@@ -4808,8 +4908,11 @@ LWorld:newEdgeBody(x, y, x1, y1, x2, y2, bodyType)
 do
     local world = lurek.physics.newWorld(0, 400)
     local wall = world:newEdgeBody(0, 500, 0, 0, 800, 0, "static")
-    print("position", wall:getPosition())
-    print("type", wall:getType())
+    local player = world:newCircleBody(100, 420, 10, "dynamic")
+    player:setVelocity(40, 0)
+    world:step(1 / 60)
+    physics_log("ledge body type=" .. wall:getType() .. " pos_y=" .. select(2, wall:getPosition()))
+    physics_log("runner pos=" .. select(1, player:getPosition()) .. "," .. select(2, player:getPosition()))
 end
 ```
 
@@ -4844,8 +4947,11 @@ LWorld:newPolygonBody(x, y, vertices, bodyType)
 do
     local world = lurek.physics.newWorld(0, 400)
     local tri = world:newPolygonBody(100, 200, { 0, -20, -15, 15, 15, 15 }, "dynamic")
-    print("position", tri:getPosition())
-    print("type", tri:getType())
+    tri:setAngularVelocity(1.5)
+    world:step(1 / 60)
+    local x, y = tri:getPosition()
+    physics_log("falling wedge pos=" .. x .. "," .. y)
+    physics_log("body type=" .. tri:getType() .. " angle=" .. tri:getAngle())
 end
 ```
 
@@ -4887,8 +4993,8 @@ do
     b:setLayer(0x2)
     c:setLayer(0x4)
     local found = world:queryAABB(50, 50, 200, 200, { layer = 0x1, mask = 0x2 })
-    print("count", #found)
-    print("first", found[1])
+    example_print_log("count", #found)
+    example_print_log("first", found[1])
 end
 ```
 
@@ -4927,11 +5033,11 @@ do
     body:setLayer(0x2)
     local hit = world:raycast(0, 200, 600, 200, { layer = 0x1, mask = 0x2 })
     if hit then
-        print("body", hit.bodyId)
-        print("point", hit.x, hit.y)
-        print("normal", hit.normalX, hit.normalY)
+        example_print_log("body", hit.bodyId)
+        example_print_log("point", hit.x, hit.y)
+        example_print_log("normal", hit.normalX, hit.normalY)
     else
-        print("body", nil)
+        example_print_log("body", nil)
     end
 end
 ```
@@ -4973,9 +5079,9 @@ do
         body:setLayer(0x2)
     end
     local hits = world:raycastAll(50, 200, 1, 0, 600, { layer = 0x1, mask = 0x2 })
-    print("count", #hits)
+    example_print_log("count", #hits)
     if hits[1] then
-        print("first", hits[1].bodyId, hits[1].x, hits[1].y)
+        example_print_log("first", hits[1].bodyId, hits[1].x, hits[1].y)
     end
 end
 ```
@@ -5016,13 +5122,23 @@ do
     body:setLayer(0x2)
     local hit = world:raycastClosest(200, 100, 0, 1, 500, { layer = 0x1, mask = 0x2 })
     if hit then
-        print("body", hit.bodyId)
-        print("point", hit.x, hit.y)
-        print("toi", hit.toi)
+        example_print_log("body", hit.bodyId)
+        example_print_log("point", hit.x, hit.y)
+        example_print_log("toi", hit.toi)
     else
-        print("body", nil)
+        example_print_log("body", nil)
     end
 end
+```
+
+---
+
+#### `LWorld:resetWorld`
+
+Fully resets the world to its post-construction state.
+
+```lua
+LWorld:resetWorld()
 ```
 
 ---
@@ -5051,12 +5167,12 @@ do
     local contactCount = 0
     world:setBeginContact(function(bodyA, bodyB)
         contactCount = contactCount + 1
-        print("callback", bodyA, bodyB)
+        example_print_log("callback", bodyA, bodyB)
     end)
     for _ = 1, 120 do
         world:step(1 / 60)
     end
-    print("count", contactCount)
+    example_print_log("count", contactCount)
 end
 ```
 
@@ -5084,8 +5200,8 @@ do
     local world = lurek.physics.newWorld(0, 0)
     local bullet = world:newCircleBody(100, 100, 3, "dynamic")
     world:setBodyCCD(bullet:getId(), true)
-    print("ccd", world:getBodyCCD(bullet:getId()))
-    print("id", bullet:getId())
+    example_print_log("ccd", world:getBodyCCD(bullet:getId()))
+    example_print_log("id", bullet:getId())
 end
 ```
 
@@ -5114,8 +5230,8 @@ do
     local player = world:newCircleBody(100, 100, 10, "dynamic")
     world:setBodyData(player:getId(), { tag = "player", hp = 100 })
     local data = world:getBodyData(player:getId())
-    print("tag", data.tag)
-    print("hp", data.hp)
+    example_print_log("tag", data.tag)
+    example_print_log("hp", data.hp)
 end
 ```
 
@@ -5143,8 +5259,12 @@ LWorld:setBodyOneWay(id, nx, ny)
 do
     local world = lurek.physics.newWorld(0, 400)
     local platform = world:newBody(200, 400, "static")
+    local player = world:newCircleBody(200, 320, 10, "dynamic")
     world:setBodyOneWay(platform:getId(), 0, -1)
-    print("normal", world:getBodyOneWay(platform:getId()))
+    local nx, ny = world:getBodyOneWay(platform:getId())
+    world:step(1 / 60)
+    physics_log("one-way normal=" .. nx .. "," .. ny)
+    physics_log("player above platform y=" .. select(2, player:getPosition()))
 end
 ```
 
@@ -5172,7 +5292,10 @@ do
     local world = lurek.physics.newWorld(0, 9.8)
     local body = world:newBody(0, 0, "dynamic")
     world:setBodyType(body:getId(), "static")
-    print("type", world:getBodyType(body:getId()))
+    body:setPosition(32, 64)
+    world:step(1 / 60)
+    physics_log("builder converted type=" .. world:getBodyType(body:getId()))
+    physics_log("placement=" .. body:getX() .. "," .. body:getY())
 end
 ```
 
@@ -5203,12 +5326,12 @@ do
     local endCount = 0
     world:setEndContact(function(bodyA, bodyB)
         endCount = endCount + 1
-        print("callback", bodyA, bodyB)
+        example_print_log("callback", bodyA, bodyB)
     end)
     for _ = 1, 300 do
         world:step(1 / 60)
     end
-    print("count", endCount)
+    example_print_log("count", endCount)
 end
 ```
 
@@ -5238,8 +5361,8 @@ do
     local body = world:newBody(100, 100, "dynamic")
     local fixture = world:addFixture(body:getId(), "circle", 1.0, 0.3, 0.5, false, 10)
     world:setFixtureFriction(body:getId(), fixture, 0.8)
-    print("fixture", fixture)
-    print("fixture_count", world:fixtureCount(body:getId()))
+    example_print_log("fixture", fixture)
+    example_print_log("fixture_count", world:fixtureCount(body:getId()))
 end
 ```
 
@@ -5269,8 +5392,8 @@ do
     local body = world:newBody(100, 100, "dynamic")
     local fixture = world:addFixture(body:getId(), "circle", 1.0, 0.3, 0.5, false, 10)
     world:setFixtureRestitution(body:getId(), fixture, 0.9)
-    print("fixture", fixture)
-    print("fixture_count", world:fixtureCount(body:getId()))
+    example_print_log("fixture", fixture)
+    example_print_log("fixture_count", world:fixtureCount(body:getId()))
 end
 ```
 
@@ -5300,8 +5423,8 @@ do
     local body = world:newBody(100, 100, "dynamic")
     local fixture = world:addFixture(body:getId(), "circle", 1.0, 0.3, 0.5, false, 10)
     world:setFixtureSensor(body:getId(), fixture, true)
-    print("fixture", fixture)
-    print("fixture_count", world:fixtureCount(body:getId()))
+    example_print_log("fixture", fixture)
+    example_print_log("fixture_count", world:fixtureCount(body:getId()))
 end
 ```
 
@@ -5329,8 +5452,8 @@ do
     local world = lurek.physics.newWorld(0, 200)
     world:setGravity(25, 600)
     local gx, gy = world:getGravity()
-    print("gravity", gx, gy)
-    print("body_count", world:getBodyCount())
+    example_print_log("gravity", gx, gy)
+    example_print_log("body_count", world:getBodyCount())
 end
 ```
 
@@ -5360,7 +5483,7 @@ do
     local weight = world:newCircleBody(200, 100, 10, "dynamic")
     local jid = world:addDistanceJoint(ceiling:getId(), weight:getId(), 0, 0, 0, 0, 50)
     world:setJointBreakForce(jid, 500)
-    print("break_force", world:getJointBreakForce(jid))
+    example_print_log("break_force", world:getJointBreakForce(jid))
 end
 ```
 
@@ -5391,7 +5514,7 @@ do
     local arm = world:newBody(200, 200, "dynamic")
     local jid = world:addRevoluteJoint(anchor:getId(), arm:getId(), 200, 100)
     world:setJointLimits(jid, -math.pi / 4, math.pi / 4)
-    print("limits", world:getJointLimits(jid))
+    example_print_log("limits", world:getJointLimits(jid))
 end
 ```
 
@@ -5421,7 +5544,7 @@ do
     local arm = world:newBody(200, 200, "dynamic")
     local jid = world:addRevoluteJoint(anchor:getId(), arm:getId(), 200, 100)
     world:setJointLimitsEnabled(jid, true)
-    print("limits", world:getJointLimits(jid))
+    example_print_log("limits", world:getJointLimits(jid))
 end
 ```
 
@@ -5451,7 +5574,7 @@ do
     local blade = world:newBody(200, 200, "dynamic")
     local jid = world:addRevoluteJoint(hub:getId(), blade:getId(), 200, 200)
     world:setJointMotorSpeed(jid, 5.0)
-    print("motor_speed", world:getJointMotorSpeed(jid))
+    example_print_log("motor_speed", world:getJointMotorSpeed(jid))
 end
 ```
 
@@ -5477,8 +5600,11 @@ LWorld:setMeter(ppm)
 do
     local world = lurek.physics.newWorld(0, 9.81)
     world:setMeter(64)
-    print("meter", world:getMeter())
-    print("physics", world:toPhysics(128))
+    local playerWidthPixels = 128
+    local playerWidthMeters = world:toPhysics(playerWidthPixels)
+    local jumpArcPixels = world:toPixels(1.5)
+    physics_log("platformer meter=" .. world:getMeter() .. " player_width_m=" .. playerWidthMeters)
+    physics_log("jump arc preview px=" .. jumpArcPixels)
 end
 ```
 
@@ -5508,8 +5634,8 @@ do
     local body = world:newBody(0, 0, "dynamic")
     local jid = world:addMouseJoint(body:getId(), 0, 0, 1000)
     world:setMouseJointTarget(jid, 50, 50)
-    print("joint", jid)
-    print("type", world:getJointType(jid))
+    example_print_log("joint", jid)
+    example_print_log("type", world:getJointType(jid))
 end
 ```
 
@@ -5534,8 +5660,12 @@ LWorld:setSolverIterations(n)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
+    local crate = world:newCircleBody(160, 80, 10, "dynamic")
     world:setSolverIterations(8)
-    print("solver_iterations", world:getSolverIterations())
+    crate:setVelocity(0, 20)
+    world:step(1 / 60)
+    physics_log("solver iterations=" .. world:getSolverIterations())
+    physics_log("crate velocity y=" .. select(2, crate:getVelocity()))
 end
 ```
 
@@ -5563,7 +5693,7 @@ do
     local body = world:newCircleBody(100, 100, 10, "dynamic")
     body:setSleepingAllowed(true)
     world:sleepBody(body:getId())
-    print("sleeping", world:isBodySleeping(body:getId()))
+    example_print_log("sleeping", world:isBodySleeping(body:getId()))
 end
 ```
 
@@ -5590,8 +5720,8 @@ do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newCircleBody(100, 100, 12, "dynamic")
     world:step(1 / 60)
-    print("position", body:getPosition())
-    print("velocity", body:getVelocity())
+    example_print_log("position", body:getPosition())
+    example_print_log("velocity", body:getVelocity())
 end
 ```
 
@@ -5624,9 +5754,12 @@ LWorld:stepFixed(accumulator, stepDt, maxSteps)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
+    local ball = world:newCircleBody(200, 120, 10, "dynamic")
     local remainder = world:stepFixed(0.025, 1 / 60, 4)
-    print("remainder", remainder)
-    print("iterations", world:getSolverIterations())
+    local x, y = ball:getPosition()
+    local vx, vy = ball:getVelocity()
+    physics_log("fixed-step remainder=" .. remainder .. " pos=" .. x .. "," .. y)
+    physics_log("post-step velocity=" .. vx .. "," .. vy .. " iterations=" .. world:getSolverIterations())
 end
 ```
 
@@ -5658,8 +5791,12 @@ LWorld:toPhysics(px)
 do
     local world = lurek.physics.newWorld(0, 9.81)
     world:setMeter(64)
-    print("meters", world:toPhysics(96))
-    print("pixels", world:toPixels(1.5))
+    local doorWidthPx = 96
+    local doorWidthMeters = world:toPhysics(doorWidthPx)
+    local heroRadiusMeters = world:toPhysics(24)
+    physics_log("door width meters=" .. doorWidthMeters)
+    physics_log("hero radius meters=" .. heroRadiusMeters)
+    physics_log("reference pixels=" .. world:toPixels(1.5))
 end
 ```
 
@@ -5691,8 +5828,12 @@ LWorld:toPixels(m)
 do
     local world = lurek.physics.newWorld(0, 9.81)
     world:setMeter(64)
-    print("pixels", world:toPixels(2.5))
-    print("meters", world:toPhysics(160))
+    local ropeLengthMeters = 2.5
+    local ropeLengthPixels = world:toPixels(ropeLengthMeters)
+    local ledgeDepthPixels = world:toPixels(0.5)
+    physics_log("rope length px=" .. ropeLengthPixels)
+    physics_log("ledge depth px=" .. ledgeDepthPixels)
+    physics_log("reverse sample meters=" .. world:toPhysics(160))
 end
 ```
 
@@ -5717,8 +5858,11 @@ LWorld:type()
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    print("type", world:type())
-    print("type_of", world:typeOf("LWorld"))
+    local floor = world:newBody(160, 300, "static")
+    local ball = world:newCircleBody(160, 120, 10, "dynamic")
+    world:step(1 / 60)
+    physics_log("world userdata=" .. world:type() .. " world_check=" .. tostring(world:typeOf("LWorld")))
+    physics_log("scene bodies=" .. world:getBodyCount() .. " first=" .. floor:getType() .. " ball_y=" .. select(2, ball:getPosition()))
 end
 ```
 
@@ -5749,8 +5893,12 @@ LWorld:typeOf(name)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    print("type_of", world:typeOf("LWorld"), world:typeOf("LObject"))
-    print("type", world:type())
+    world:newBody(160, 300, "static")
+    world:newCircleBody(160, 120, 10, "dynamic")
+    local isWorld = world:typeOf("LWorld")
+    local isObject = world:typeOf("LObject")
+    physics_log("world check=" .. tostring(isWorld) .. " object check=" .. tostring(isObject))
+    physics_log("runtime kind=" .. world:type() .. " bodies=" .. world:getBodyCount())
 end
 ```
 
@@ -5779,7 +5927,7 @@ do
     body:setSleepingAllowed(true)
     world:sleepBody(body:getId())
     world:wakeUpBody(body:getId())
-    print("sleeping", world:isBodySleeping(body:getId()))
+    example_print_log("sleeping", world:isBodySleeping(body:getId()))
 end
 ```
 
@@ -5807,9 +5955,9 @@ LZone:destroy()
 do
     local world = lurek.physics.newWorld(0, 400)
     local zone = world:addZone(0, 0, 100, 100)
-    print("zone_id", zone:getId())
+    example_print_log("zone_id", zone:getId())
     zone:destroy()
-    print("events", #world:getZoneEvents())
+    example_print_log("events", #world:getZoneEvents())
 end
 ```
 
@@ -5835,8 +5983,11 @@ LZone:getId()
 do
     local world = lurek.physics.newWorld(0, 9.8)
     local zone = world:addZone(0, 0, 200, 200)
-    print("zone_id", zone:getId())
-    print("type", zone:type())
+    zone:setGravityZero()
+    local scout = world:newCircleBody(60, 60, 8, "dynamic")
+    world:step(1 / 60)
+    physics_log("zone id=" .. zone:getId() .. " type=" .. zone:type())
+    physics_log("scout y=" .. select(2, scout:getPosition()))
 end
 ```
 
@@ -5868,8 +6019,8 @@ do
     for _ = 1, 120 do
         world:step(1 / 60)
     end
-    print("angular_velocity", diver:getAngularVelocity())
-    print("angle", diver:getAngle())
+    example_print_log("angular_velocity", diver:getAngularVelocity())
+    example_print_log("angle", diver:getAngle())
 end
 ```
 
@@ -5899,8 +6050,8 @@ do
     local zone = world:addZone(200, 200, 100, 100)
     zone:setCircle(250, 250, 80)
     zone:setGravityZero()
-    print("zone_id", zone:getId())
-    print("type", zone:type())
+    example_print_log("zone_id", zone:getId())
+    example_print_log("type", zone:type())
 end
 ```
 
@@ -5927,8 +6078,8 @@ do
     local world = lurek.physics.newWorld(0, 9.8)
     local zone = world:addZone(0, 0, 200, 200)
     zone:setEnabled(true)
-    print("zone_id", zone:getId())
-    print("type", zone:type())
+    example_print_log("zone_id", zone:getId())
+    example_print_log("type", zone:type())
 end
 ```
 
@@ -5960,8 +6111,8 @@ do
     for _ = 1, 60 do
         world:step(1 / 60)
     end
-    print("position", ball:getPosition())
-    print("velocity", ball:getVelocity())
+    example_print_log("position", ball:getPosition())
+    example_print_log("velocity", ball:getVelocity())
 end
 ```
 
@@ -5994,8 +6145,8 @@ do
     for _ = 1, 60 do
         world:step(1 / 60)
     end
-    print("position", ball:getPosition())
-    print("velocity", ball:getVelocity())
+    example_print_log("position", ball:getPosition())
+    example_print_log("velocity", ball:getVelocity())
 end
 ```
 
@@ -6028,8 +6179,8 @@ do
     for _ = 1, 60 do
         world:step(1 / 60)
     end
-    print("position", ball:getPosition())
-    print("velocity", ball:getVelocity())
+    example_print_log("position", ball:getPosition())
+    example_print_log("velocity", ball:getVelocity())
 end
 ```
 
@@ -6054,8 +6205,8 @@ do
     for _ = 1, 60 do
         world:step(1 / 60)
     end
-    print("position", ball:getPosition())
-    print("velocity", ball:getVelocity())
+    example_print_log("position", ball:getPosition())
+    example_print_log("velocity", ball:getVelocity())
 end
 ```
 
@@ -6082,8 +6233,8 @@ do
     local world = lurek.physics.newWorld(0, 9.8)
     local zone = world:addZone(0, 0, 200, 200)
     zone:setLayerMask(0xFF)
-    print("zone_id", zone:getId())
-    print("type", zone:type())
+    example_print_log("zone_id", zone:getId())
+    example_print_log("type", zone:type())
 end
 ```
 
@@ -6115,8 +6266,8 @@ do
     for _ = 1, 120 do
         world:step(1 / 60)
     end
-    print("velocity", diver:getVelocity())
-    print("position", diver:getPosition())
+    example_print_log("velocity", diver:getVelocity())
+    example_print_log("position", diver:getPosition())
 end
 ```
 
@@ -6143,8 +6294,8 @@ do
     local world = lurek.physics.newWorld(0, 9.8)
     local zone = world:addZone(0, 0, 200, 200)
     zone:setPriority(1)
-    print("zone_id", zone:getId())
-    print("type", zone:type())
+    example_print_log("zone_id", zone:getId())
+    example_print_log("type", zone:type())
 end
 ```
 
@@ -6170,8 +6321,11 @@ LZone:type()
 do
     local world = lurek.physics.newWorld(0, 9.8)
     local zone = world:addZone(0, 0, 200, 200)
-    print("type", zone:type())
-    print("type_of", zone:typeOf("LZone"))
+    zone:setPriority(2)
+    zone:setGravityDirectional(0, -50)
+    local probe = world:newCircleBody(40, 40, 8, "dynamic")
+    physics_log("zone userdata=" .. zone:type())
+    physics_log("zone check=" .. tostring(zone:typeOf("LZone")) .. " probe=" .. probe:getType())
 end
 ```
 
@@ -6203,8 +6357,12 @@ LZone:typeOf(name)
 do
     local world = lurek.physics.newWorld(0, 9.8)
     local zone = world:addZone(0, 0, 200, 200)
-    print("type_of", zone:typeOf("LZone"), zone:typeOf("LObject"))
-    print("type", zone:type())
+    zone:setEnabled(true)
+    local isZone = zone:typeOf("LZone")
+    local isObject = zone:typeOf("LObject")
+    local isWorld = zone:typeOf("LWorld")
+    physics_log("zone checks zone=" .. tostring(isZone) .. " object=" .. tostring(isObject))
+    physics_log("world check=" .. tostring(isWorld) .. " userdata=" .. zone:type())
 end
 ```
 

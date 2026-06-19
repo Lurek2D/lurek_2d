@@ -2,50 +2,23 @@
 
 ## Summary
 
-- This module gives users the shared numeric foundation used by movement, collision, rendering, AI, and procedural systems.
-- Vec2 and Vec3 types provide common vector operations for positions, directions, and velocity calculations.
-- Mat3 and transform utilities support 2D affine composition for translation, rotation, scale, and shear workflows.
-- Scalar helpers cover clamp, remap, interpolation, inverse interpolation, and smoothstep-style value shaping.
-- Easing utilities provide standardized motion curves for animation and UI transitions.
-- Tween helpers support consistent timing math for value progression over runtime updates.
-- Bézier and spline primitives support authored paths and smooth camera or object trajectories.
-- Geometry helpers support line tests, segment queries, and circle interactions.
-- Rectangle and circle primitives provide reliable containment and overlap checks.
-- Polygon operations support hulls, winding, triangulation, and shape analysis use cases.
-- Delaunay and Voronoi utilities support procedural region generation and spatial partition workflows.
-- AABB tree support enables dynamic broad-phase spatial queries over moving entities.
-- Spatial hash support enables efficient neighborhood and occupancy-style lookups.
-- Both spatial indices are useful for reducing expensive all-to-all collision checks.
-- Random utilities provide deterministic seeded generation for reproducible simulation and content workflows.
-- Gaussian and uniform sampling helpers support varied procedural distributions.
-- Loot table support implements weighted sampling with efficient runtime draws.
-- Pity-tracking helpers support predictable reward behavior over repeated rolls.
-- Math functions are designed to remain deterministic and side-effect free.
-- This keeps subsystems aligned on shared numeric semantics.
-- It reduces subtle divergence between physics, rendering, and gameplay calculations.
-- The module is useful for both low-level engine code and high-level gameplay scripts.
-- It supports debugging by making core geometric and numeric operations explicit and reusable.
-- It improves maintainability by avoiding ad-hoc reimplementation of common formulas.
-- Consistent helper APIs reduce cognitive load when switching between engine domains.
-- Curve and interpolation features support expressive but controlled runtime motion.
-- Spatial structures support scalability as world density and actor counts grow.
-- Deterministic random support helps test reproducibility and save/load continuity.
-- The module acts as a single source for core math contracts used throughout the project.
-- Users can build advanced systems without importing separate math stacks.
-- It bridges authored data and runtime simulation with consistent numeric behavior.
-- It is especially valuable in projects with pathfinding, tactics, and procedural generation layers.
-- Shared conventions improve cross-team collaboration and bug diagnosis.
-- The practical result is fewer numeric edge-case regressions.
-- It also improves performance by reusing optimized foundational primitives.
-- Overall, this module is the backbone for reliable, composable engine mathematics.
-- It underpins gameplay feel, simulation accuracy, and visual coherence.
-- Users benefit from one coherent math vocabulary across all major subsystems.
-- That coherence is critical for long-lived projects with many interacting systems.
-- The module enables growth from simple prototypes to complex simulations.
-- It keeps mathematical behavior predictable as feature complexity increases.
-- In short, it is the engine's core quantitative infrastructure.
-
-This module primarily collaborates with `globe`, `image`. Its responsibility should stay inside the Foundations group rather than absorb behavior owned by those neighbors.
+- The `math` module is the engine's shared numerical and geometric foundation for users who need consistent rules for coordinates, shapes, transforms, interpolation, sampling, and spatial reasoning across many feature areas.
+- Its primary role is standardization. When rendering, physics, pathfinding, camera logic, UI layout, procedural generation, and gameplay helpers all rely on the same vector, matrix, angle, and shape vocabulary, the rest of the engine can cooperate without hidden conversions or drifting assumptions.
+- Core vector and matrix types provide the base language for position, direction, orientation, scale, projection, and composition. They are the primitives that let modules talk about where something is, how it is rotated, how it moves, and how one space maps into another.
+- Geometry helpers extend the module beyond raw numbers into practical spatial entities such as rectangles, circles, polygons, bounds, overlap tests, distance checks, clipping helpers, and containment queries used across collision, UI, culling, and selection.
+- Transform logic is another major category. Translation, rotation, scale, matrix composition, inversion, and coordinate-space conversion allow scripts and subsystems to move between local, world, map, and screen representations without ambiguous manual math.
+- Curve, easing, interpolation, and value-shaping helpers matter because motion paths, camera rails, UI transitions, scripted effects, and numeric blending all depend on shared progression rules rather than bespoke formulas.
+- Spatial indexing and applied algorithms broaden the module from calculation into organization, giving larger systems reusable structures and geometric building blocks for broad phases, region construction, and procedural workflows.
+- That common layer is important because spatial bugs usually come from disagreement, not from missing arithmetic. If one system treats a rectangle as inclusive, another applies a different rotation convention, and a third projects coordinates with a slightly different transform order, the engine becomes hard to trust even when each local feature appears reasonable in isolation.
+- The module therefore acts as an agreement surface as much as a utility library. It gives neighboring systems one place to inherit conventions for handedness, angle normalization, interpolation behavior, projection rules, and coordinate conversion semantics.
+- For rendering-oriented code this means predictable transforms and projection helpers. For physics-adjacent code it means stable distances and shape math. For UI and tooling code it means reliable hit testing and viewport conversion.
+- Curve support broadens the module from rigid geometry into authored motion and data shaping. Bézier curves, splines, and similar helpers give camera paths, animation support systems, road generation, region shaping, and tool previews a common language for smooth trajectories and contours.
+- Broad-phase and indexing helpers give the module a structural role too. Large feature sets often need partitioning, bucketing, or neighborhood lookup before they can do more expensive per-object reasoning, and those patterns are easier to keep correct when they reuse engine-level math primitives and bounds semantics.
+- Determinism is another reason the module matters. Tests, replays, serialized tools, and visual evidence workflows depend on math behavior that is reproducible enough to compare, inspect, and trust across runs.
+- Sampling and value-shaping helpers belong here for the same reason: even small operations such as remapping, clamping, wrapping, and parameter evaluation become more reliable when they reuse one engine-wide numeric vocabulary.
+- World generation and simulation tools also lean on this layer because geometric construction rarely stays confined to one subsystem. Voronoi-like helpers, region assembly, contour processing, and transform composition often need to interoperate with render views, province maps, physics queries, or camera framing.
+- The module therefore acts as a substrate for both high-level and low-level work, and it gives tools and tests a deterministic numerical layer they can trust.
+- Read `math` as the place where the engine standardizes numeric and geometric reasoning across the rest of the project for code, tools, and tests alike.
 
 ## Functions
 
@@ -75,8 +48,10 @@ lurek.math.Vec2(x, y)
 ```lua
 do
     local v = lurek.math.Vec2(3, 4)
-    print("vec2 = " .. v.x .. "," .. v.y)
-    print("lua type = " .. type(v))
+    example_print_log("vec2 = " .. v.x .. "," .. v.y)
+    example_print_log("heading = " .. v:angle())
+    example_print_log("vector length = " .. v:length())
+    example_print_log("unit x = " .. v:normalized().x)
 end
 ```
 
@@ -109,8 +84,10 @@ lurek.math.Vec3(x, y, z)
 ```lua
 do
     local v = lurek.math.Vec3(1, 2, 3)
-    print("vec3 = " .. v.x .. "," .. v.y .. "," .. v.z)
-    print("lua type = " .. type(v))
+    example_print_log("vec3 = " .. v.x .. "," .. v.y .. "," .. v.z)
+    example_print_log("heading = " .. v:angle())
+    example_print_log("vector length = " .. v:length())
+    example_print_log("unit x = " .. v:normalize().x)
 end
 ```
 
@@ -137,8 +114,8 @@ do
     local tree = lurek.math.aabbTree()
     tree:insert(1, 0, 0, 10, 10)
     tree:insert(2, 5, 5, 15, 15)
-    print("len = " .. tree:len())
-    print("empty = " .. tostring(tree:isEmpty()))
+    example_print_log("len = " .. tree:len())
+    example_print_log("empty = " .. tostring(tree:isEmpty()))
 end
 ```
 
@@ -168,9 +145,11 @@ lurek.math.abs(x)
 
 ```lua
 do
-    print("abs(-5) = " .. lurek.math.abs(-5))
-    print("abs(3) = " .. lurek.math.abs(3))
-    print("lua type = " .. type(lurek.math.abs(3)))
+    example_print_log("abs(-5) = " .. lurek.math.abs(-5))
+    example_print_log("abs(3) = " .. lurek.math.abs(3))
+    example_print_log("abs(-12) keeps motion positive = " .. lurek.math.abs(-12))
+    local knockback = lurek.math.abs(-12)
+    example_print_log("knockback magnitude = " .. knockback)
 end
 ```
 
@@ -200,9 +179,11 @@ lurek.math.acos(x)
 
 ```lua
 do
-    print("acos(1) = " .. lurek.math.acos(1))
-    print("acos(0) = " .. lurek.math.acos(0))
-    print("lua type = " .. type(lurek.math.acos(0)))
+    example_print_log("acos(1) = " .. lurek.math.acos(1))
+    example_print_log("acos(0) = " .. lurek.math.acos(0))
+    example_print_log("acos(0.5) = " .. lurek.math.acos(0.5))
+    local cone_edge = lurek.math.acos(0.5)
+    example_print_log("vision cone edge = " .. cone_edge)
 end
 ```
 
@@ -236,9 +217,10 @@ lurek.math.angleBetween(x1, y1, x2, y2)
 ```lua
 do
     local a = lurek.math.angleBetween(0, 0, 1, 0)
-    print("angle to right = " .. a)
+    example_print_log("angle to right = " .. a)
     local b = lurek.math.angleBetween(0, 0, 0, 1)
-    print("angle down = " .. b)
+    example_print_log("angle down = " .. b)
+    local turn_delta = b - a
 end
 ```
 
@@ -271,8 +253,9 @@ lurek.math.applyEasing(name, t)
 do
     local linear = lurek.math.applyEasing("linear", 0.5)
     local eased = lurek.math.applyEasing("inOutCubic", 0.5)
-    print("linear = " .. linear)
-    print("inOutCubic = " .. eased)
+    example_print_log("linear = " .. linear)
+    example_print_log("inOutCubic = " .. eased)
+    local finish = lurek.math.applyEasing("inOutCubic", 1.0)
 end
 ```
 
@@ -302,9 +285,11 @@ lurek.math.asin(x)
 
 ```lua
 do
-    print("asin(1) = " .. lurek.math.asin(1))
-    print("asin(0) = " .. lurek.math.asin(0))
-    print("lua type = " .. type(lurek.math.asin(0)))
+    example_print_log("asin(1) = " .. lurek.math.asin(1))
+    example_print_log("asin(0) = " .. lurek.math.asin(0))
+    example_print_log("asin(0.5) = " .. lurek.math.asin(0.5))
+    local half_arc = lurek.math.asin(0.5)
+    example_print_log("half arc = " .. half_arc)
 end
 ```
 
@@ -335,9 +320,11 @@ lurek.math.atan(y, x)
 
 ```lua
 do
-    print("atan(1) = " .. lurek.math.atan(1))
-    print("atan(1, 1) = " .. lurek.math.atan(1, 1))
-    print("lua type = " .. type(lurek.math.atan(1, 1)))
+    example_print_log("atan(1) = " .. lurek.math.atan(1))
+    example_print_log("atan(1, 1) = " .. lurek.math.atan(1, 1))
+    example_print_log("atan(0.25) = " .. lurek.math.atan(0.25))
+    local aim_pitch = lurek.math.atan(0.5)
+    example_print_log("aim pitch = " .. aim_pitch)
 end
 ```
 
@@ -368,9 +355,11 @@ lurek.math.atan2(y, x)
 
 ```lua
 do
-    print("atan2(1, 0) = " .. lurek.math.atan2(1, 0))
-    print("atan2(0, 1) = " .. lurek.math.atan2(0, 1))
-    print("lua type = " .. type(lurek.math.atan2(0, 1)))
+    example_print_log("atan2(1, 0) = " .. lurek.math.atan2(1, 0))
+    example_print_log("atan2(0, 1) = " .. lurek.math.atan2(0, 1))
+    example_print_log("heading to top-right = " .. lurek.math.atan2(-1, 1))
+    local diagonal_heading = lurek.math.atan2(10, 10)
+    example_print_log("diagonal heading = " .. diagonal_heading)
 end
 ```
 
@@ -404,9 +393,9 @@ lurek.math.bresenham(x1, y1, x2, y2)
 ```lua
 do
     local pts = lurek.math.bresenham(0, 0, 5, 3)
-    print("bresenham points = " .. #pts)
+    example_print_log("bresenham points = " .. #pts)
     for _, p in ipairs(pts) do
-        print("  " .. p.x .. "," .. p.y)
+        example_print_log("  " .. p.x .. "," .. p.y)
     end
 end
 ```
@@ -438,9 +427,10 @@ lurek.math.catmullRom(points)
 ```lua
 do
     local spline = lurek.math.catmullRom({{x = 0, y = 0}, {x = 50, y = 80}, {x = 100, y = 20}, {x = 150, y = 60}})
-    print("points = " .. spline:len())
+    example_print_log("points = " .. spline:len())
     local x, y = spline:sample(0.5)
-    print("mid = " .. x .. "," .. y)
+    example_print_log("mid = " .. x .. "," .. y)
+    example_print_log("spline points = " .. spline:len())
 end
 ```
 
@@ -470,9 +460,11 @@ lurek.math.ceil(x)
 
 ```lua
 do
-    print("ceil(2.3) = " .. lurek.math.ceil(2.3))
-    print("ceil(-1.7) = " .. lurek.math.ceil(-1.7))
-    print("lua type = " .. type(lurek.math.ceil(-1.7)))
+    example_print_log("ceil(2.3) = " .. lurek.math.ceil(2.3))
+    example_print_log("ceil(-1.7) = " .. lurek.math.ceil(-1.7))
+    example_print_log("ceil keeps partial row = " .. lurek.math.ceil(2.01))
+    local rows = lurek.math.ceil(13 / 5)
+    example_print_log("rows for 13 items in 5 columns = " .. rows)
 end
 ```
 
@@ -507,8 +499,10 @@ lurek.math.circleContainsPoint(cx, cy, r, px, py)
 ```lua
 do
     local inside = lurek.math.circleContainsPoint(5, 5, 10, 6, 6)
-    print("inside = " .. tostring(inside))
-    print("lua type = " .. type(inside))
+    example_print_log("inside = " .. tostring(inside))
+    example_print_log("outside = " .. tostring(lurek.math.circleContainsPoint(5, 5, 10, 20, 20)))
+    local border = lurek.math.circleContainsPoint(5, 5, 10, 15, 5)
+    example_print_log("border point = " .. tostring(border))
 end
 ```
 
@@ -544,8 +538,10 @@ lurek.math.circleIntersectsCircle(x1, y1, r1, x2, y2, r2)
 ```lua
 do
     local hit = lurek.math.circleIntersectsCircle(0, 0, 5, 8, 0, 5)
-    print("circles overlap = " .. tostring(hit))
-    print("lua type = " .. type(hit))
+    example_print_log("circles overlap = " .. tostring(hit))
+    example_print_log("touching circles overlap = " .. tostring(lurek.math.circleIntersectsCircle(0, 0, 5, 10, 0, 5)))
+    local separated_overlap = lurek.math.circleIntersectsCircle(0, 0, 5, 20, 0, 5)
+    example_print_log("separated overlap = " .. tostring(separated_overlap))
 end
 ```
 
@@ -586,9 +582,10 @@ lurek.math.circleIntersectsLine(cx, cy, r, lx1, ly1, lx2, ly2)
 ```lua
 do
     local hit, hx1, hy1, hx2, hy2 = lurek.math.circleIntersectsLine(5, 5, 3, 0, 5, 10, 5)
-    print("circle/line hit = " .. tostring(hit))
-    if hx1 then print("  hit1 = " .. hx1 .. "," .. hy1) end
-    if hx2 then print("  hit2 = " .. hx2 .. "," .. hy2) end
+    example_print_log("circle/line hit = " .. tostring(hit))
+    if hx1 then example_print_log("  hit1 = " .. hx1 .. "," .. hy1) end
+    if hx2 then example_print_log("  hit2 = " .. hx2 .. "," .. hy2) end
+    local two_hits = hx2 ~= nil and hy2 ~= nil
 end
 ```
 
@@ -629,8 +626,8 @@ lurek.math.circleIntersectsSegment(cx, cy, r, sx1, sy1, sx2, sy2)
 ```lua
 do
     local hit, hx1, hy1, hx2, hy2 = lurek.math.circleIntersectsSegment(5, 5, 3, 0, 5, 10, 5)
-    print("circle/seg hit = " .. tostring(hit))
-    if hx1 then print("  seg hit1 = " .. hx1 .. "," .. hy1) end
+    example_print_log("circle/seg hit = " .. tostring(hit))
+    if hx1 then example_print_log("  seg hit1 = " .. hx1 .. "," .. hy1) end
     _ = hx2
     _ = hy2
 end
@@ -664,9 +661,11 @@ lurek.math.clamp(v, min, max)
 
 ```lua
 do
-    print("clamp(15, 0, 10) = " .. lurek.math.clamp(15, 0, 10))
-    print("clamp(-3, 0, 10) = " .. lurek.math.clamp(-3, 0, 10))
-    print("clamp(5, 0, 10) = " .. lurek.math.clamp(5, 0, 10))
+    example_print_log("clamp(15, 0, 10) = " .. lurek.math.clamp(15, 0, 10))
+    example_print_log("clamp(-3, 0, 10) = " .. lurek.math.clamp(-3, 0, 10))
+    example_print_log("clamp(5, 0, 10) = " .. lurek.math.clamp(5, 0, 10))
+    local health = lurek.math.clamp(118, 0, 100)
+    example_print_log("health cap = " .. health)
 end
 ```
 
@@ -703,8 +702,10 @@ lurek.math.closestPointOnSegment(px, py, x1, y1, x2, y2)
 ```lua
 do
     local cx, cy = lurek.math.closestPointOnSegment(5, 5, 0, 0, 10, 0)
-    print("closest on segment = " .. cx .. "," .. cy)
-    print("value types = " .. type(cx) .. "," .. type(cy))
+    example_print_log("closest on segment = " .. cx .. "," .. cy)
+    example_print_log("value types = " .. type(cx) .. "," .. type(cy))
+    local snap_distance = lurek.math.distance(5, 5, cx, cy)
+    example_print_log("snap distance = " .. snap_distance)
 end
 ```
 
@@ -736,7 +737,9 @@ lurek.math.convexHull(pts)
 do
     local pts = {0, 0, 5, 5, 10, 0, 3, 2, 7, 2, 5, 10}
     local hull = lurek.math.convexHull(pts)
-    print("hull vertices = " .. #hull / 2)
+    example_print_log("hull vertices = " .. #hull / 2)
+    local input_points = #pts / 2
+    example_print_log("input points = " .. input_points)
 end
 ```
 
@@ -766,9 +769,11 @@ lurek.math.cos(x)
 
 ```lua
 do
-    print("cos(0) = " .. lurek.math.cos(0))
-    print("cos(pi) = " .. lurek.math.cos(lurek.math.pi))
-    print("lua type = " .. type(lurek.math.cos(lurek.math.pi)))
+    example_print_log("cos(0) = " .. lurek.math.cos(0))
+    example_print_log("cos(pi) = " .. lurek.math.cos(lurek.math.pi))
+    example_print_log("cos facing up = " .. lurek.math.cos(lurek.math.rad(90)))
+    local facing_x = lurek.math.cos(lurek.math.rad(60))
+    example_print_log("facing x = " .. facing_x)
 end
 ```
 
@@ -803,8 +808,10 @@ lurek.math.cubicBezier(p1x, p1y, p2x, p2y, t)
 ```lua
 do
     local y = lurek.math.cubicBezier(0.25, 0.1, 0.25, 1.0, 0.5)
-    print("cubicBezier(0.5) = " .. y)
-    print("lua type = " .. type(y))
+    example_print_log("cubicBezier(0.5) = " .. y)
+    example_print_log("ease sample at 0.2 = " .. lurek.math.cubicBezier(0.42, 0.0, 0.58, 1.0, 0.2))
+    local late_curve = lurek.math.cubicBezier(0.42, 0.0, 0.58, 1.0, 0.8)
+    example_print_log("ease in-out at 0.8 = " .. late_curve)
 end
 ```
 
@@ -834,9 +841,11 @@ lurek.math.deg(rad)
 
 ```lua
 do
-    print("deg(pi) = " .. lurek.math.deg(lurek.math.pi))
-    print("deg(pi/2) = " .. lurek.math.deg(lurek.math.pi / 2))
-    print("lua type = " .. type(lurek.math.deg(lurek.math.pi / 2)))
+    example_print_log("deg(pi) = " .. lurek.math.deg(lurek.math.pi))
+    example_print_log("deg(pi/2) = " .. lurek.math.deg(lurek.math.pi / 2))
+    example_print_log("45deg from rad = " .. lurek.math.deg(lurek.math.rad(45)))
+    local ui_angle = lurek.math.deg(lurek.math.pi / 3)
+    example_print_log("ui angle = " .. ui_angle)
 end
 ```
 
@@ -868,7 +877,9 @@ lurek.math.delaunayTriangulate(pts)
 do
     local pts = {0, 0, 10, 0, 5, 10, 3, 5, 7, 5}
     local tris = lurek.math.delaunayTriangulate(pts)
-    print("delaunay triangles = " .. #tris)
+    example_print_log("delaunay triangles = " .. #tris)
+    local input_vertices = #pts / 2
+    example_print_log("input vertices = " .. input_vertices)
 end
 ```
 
@@ -902,8 +913,10 @@ lurek.math.distance(x1, y1, x2, y2)
 ```lua
 do
     local d = lurek.math.distance(0, 0, 3, 4)
-    print("distance = " .. d)
-    print("lua type = " .. type(d))
+    example_print_log("distance = " .. d)
+    example_print_log("distance to 6,8 = " .. lurek.math.distance(0, 0, 6, 8))
+    local tiles_apart = d / 5
+    example_print_log("5-unit tiles apart = " .. tiles_apart)
 end
 ```
 
@@ -937,8 +950,10 @@ lurek.math.distanceSq(x1, y1, x2, y2)
 ```lua
 do
     local d2 = lurek.math.distanceSq(0, 0, 3, 4)
-    print("distanceSq = " .. d2)
-    print("lua type = " .. type(d2))
+    example_print_log("distanceSq = " .. d2)
+    example_print_log("distanceSq to 6,8 = " .. lurek.math.distanceSq(0, 0, 6, 8))
+    local exact_distance = lurek.math.sqrt(d2)
+    example_print_log("distance from sq = " .. exact_distance)
 end
 ```
 
@@ -963,8 +978,10 @@ lurek.math.easingNames()
 ```lua
 do
     local names = lurek.math.easingNames()
-    print("easing count = " .. #names)
-    print("lua type = " .. type(names))
+    example_print_log("easing count = " .. #names)
+    example_print_log("contains linear = " .. tostring(names[1] ~= nil))
+    local first_name = names[1] or "none"
+    example_print_log("first easing = " .. first_name)
 end
 ```
 
@@ -994,9 +1011,11 @@ lurek.math.exp(x)
 
 ```lua
 do
-    print("exp(1) = " .. lurek.math.exp(1))
-    print("exp(0) = " .. lurek.math.exp(0))
-    print("lua type = " .. type(lurek.math.exp(0)))
+    example_print_log("exp(1) = " .. lurek.math.exp(1))
+    example_print_log("exp(0) = " .. lurek.math.exp(0))
+    example_print_log("growth step for 2 = " .. lurek.math.exp(2))
+    local growth_factor = lurek.math.exp(2)
+    example_print_log("growth factor = " .. growth_factor)
 end
 ```
 
@@ -1026,9 +1045,11 @@ lurek.math.floor(x)
 
 ```lua
 do
-    print("floor(2.9) = " .. lurek.math.floor(2.9))
-    print("floor(-1.1) = " .. lurek.math.floor(-1.1))
-    print("lua type = " .. type(lurek.math.floor(-1.1)))
+    example_print_log("floor(2.9) = " .. lurek.math.floor(2.9))
+    example_print_log("floor(-1.1) = " .. lurek.math.floor(-1.1))
+    example_print_log("floor drops partial tile = " .. lurek.math.floor(2.99))
+    local full_tiles = lurek.math.floor(13 / 5)
+    example_print_log("full tiles = " .. full_tiles)
 end
 ```
 
@@ -1059,9 +1080,11 @@ lurek.math.fmod(x, y)
 
 ```lua
 do
-    print("fmod(7, 3) = " .. lurek.math.fmod(7, 3))
-    print("fmod(10.5, 3) = " .. lurek.math.fmod(10.5, 3))
-    print("lua type = " .. type(lurek.math.fmod(10.5, 3)))
+    example_print_log("fmod(7, 3) = " .. lurek.math.fmod(7, 3))
+    example_print_log("fmod(10.5, 3) = " .. lurek.math.fmod(10.5, 3))
+    example_print_log("looped timer = " .. lurek.math.fmod(9.75, 2.0))
+    local animation_phase = lurek.math.fmod(13.5, 2.0)
+    example_print_log("animation phase = " .. animation_phase)
 end
 ```
 
@@ -1102,9 +1125,9 @@ do
     local x0, y0 = spline:sample(0)
     local xm, ym = spline:sample(0.5)
     local x1, y1 = spline:sample(1)
-    print("start = " .. x0 .. "," .. y0)
-    print("mid = " .. xm .. "," .. ym)
-    print("end = " .. x1 .. "," .. y1)
+    example_print_log("start = " .. x0 .. "," .. y0)
+    example_print_log("mid = " .. xm .. "," .. ym)
+    example_print_log("end = " .. x1 .. "," .. y1)
 end
 ```
 
@@ -1134,9 +1157,11 @@ lurek.math.inBack(t)
 
 ```lua
 do
-    print("t=0.25 = " .. lurek.math.inBack(0.25))
-    print("t=0.75 = " .. lurek.math.inBack(0.75))
-    print("lua type = " .. type(lurek.math.inBack(0.75)))
+    example_print_log("t=0.25 = " .. lurek.math.inBack(0.25))
+    example_print_log("t=0.75 = " .. lurek.math.inBack(0.75))
+    example_print_log("finish = " .. lurek.math.inBack(1.0))
+    local ease_start = lurek.math.inBack(0.0)
+    example_print_log("start = " .. ease_start)
 end
 ```
 
@@ -1166,9 +1191,11 @@ lurek.math.inBounce(t)
 
 ```lua
 do
-    print("t=0.25 = " .. lurek.math.inBounce(0.25))
-    print("t=0.75 = " .. lurek.math.inBounce(0.75))
-    print("lua type = " .. type(lurek.math.inBounce(0.75)))
+    example_print_log("t=0.25 = " .. lurek.math.inBounce(0.25))
+    example_print_log("t=0.75 = " .. lurek.math.inBounce(0.75))
+    example_print_log("finish = " .. lurek.math.inBounce(1.0))
+    local ease_start = lurek.math.inBounce(0.0)
+    example_print_log("start = " .. ease_start)
 end
 ```
 
@@ -1198,9 +1225,11 @@ lurek.math.inCubic(t)
 
 ```lua
 do
-    print("t=0.25 = " .. lurek.math.inCubic(0.25))
-    print("t=0.75 = " .. lurek.math.inCubic(0.75))
-    print("lua type = " .. type(lurek.math.inCubic(0.75)))
+    example_print_log("t=0.25 = " .. lurek.math.inCubic(0.25))
+    example_print_log("t=0.75 = " .. lurek.math.inCubic(0.75))
+    example_print_log("finish = " .. lurek.math.inCubic(1.0))
+    local ease_start = lurek.math.inCubic(0.0)
+    example_print_log("start = " .. ease_start)
 end
 ```
 
@@ -1230,9 +1259,11 @@ lurek.math.inElastic(t)
 
 ```lua
 do
-    print("t=0.25 = " .. lurek.math.inElastic(0.25))
-    print("t=0.75 = " .. lurek.math.inElastic(0.75))
-    print("lua type = " .. type(lurek.math.inElastic(0.75)))
+    example_print_log("t=0.25 = " .. lurek.math.inElastic(0.25))
+    example_print_log("t=0.75 = " .. lurek.math.inElastic(0.75))
+    example_print_log("finish = " .. lurek.math.inElastic(1.0))
+    local ease_start = lurek.math.inElastic(0.0)
+    example_print_log("start = " .. ease_start)
 end
 ```
 
@@ -1262,9 +1293,11 @@ lurek.math.inExpo(t)
 
 ```lua
 do
-    print("t=0.25 = " .. lurek.math.inExpo(0.25))
-    print("t=0.75 = " .. lurek.math.inExpo(0.75))
-    print("lua type = " .. type(lurek.math.inExpo(0.75)))
+    example_print_log("t=0.25 = " .. lurek.math.inExpo(0.25))
+    example_print_log("t=0.75 = " .. lurek.math.inExpo(0.75))
+    example_print_log("finish = " .. lurek.math.inExpo(1.0))
+    local ease_start = lurek.math.inExpo(0.0)
+    example_print_log("start = " .. ease_start)
 end
 ```
 
@@ -1294,9 +1327,11 @@ lurek.math.inOutBack(t)
 
 ```lua
 do
-    print("t=0.25 = " .. lurek.math.inOutBack(0.25))
-    print("t=0.75 = " .. lurek.math.inOutBack(0.75))
-    print("lua type = " .. type(lurek.math.inOutBack(0.75)))
+    example_print_log("t=0.25 = " .. lurek.math.inOutBack(0.25))
+    example_print_log("t=0.75 = " .. lurek.math.inOutBack(0.75))
+    example_print_log("finish = " .. lurek.math.inOutBack(1.0))
+    local ease_start = lurek.math.inOutBack(0.0)
+    example_print_log("start = " .. ease_start)
 end
 ```
 
@@ -1326,9 +1361,11 @@ lurek.math.inOutBounce(t)
 
 ```lua
 do
-    print("t=0.25 = " .. lurek.math.inOutBounce(0.25))
-    print("t=0.75 = " .. lurek.math.inOutBounce(0.75))
-    print("lua type = " .. type(lurek.math.inOutBounce(0.75)))
+    example_print_log("t=0.25 = " .. lurek.math.inOutBounce(0.25))
+    example_print_log("t=0.75 = " .. lurek.math.inOutBounce(0.75))
+    example_print_log("finish = " .. lurek.math.inOutBounce(1.0))
+    local ease_start = lurek.math.inOutBounce(0.0)
+    example_print_log("start = " .. ease_start)
 end
 ```
 
@@ -1358,9 +1395,11 @@ lurek.math.inOutCubic(t)
 
 ```lua
 do
-    print("t=0.25 = " .. lurek.math.inOutCubic(0.25))
-    print("t=0.75 = " .. lurek.math.inOutCubic(0.75))
-    print("lua type = " .. type(lurek.math.inOutCubic(0.75)))
+    example_print_log("t=0.25 = " .. lurek.math.inOutCubic(0.25))
+    example_print_log("t=0.75 = " .. lurek.math.inOutCubic(0.75))
+    example_print_log("finish = " .. lurek.math.inOutCubic(1.0))
+    local ease_start = lurek.math.inOutCubic(0.0)
+    example_print_log("start = " .. ease_start)
 end
 ```
 
@@ -1390,9 +1429,11 @@ lurek.math.inOutElastic(t)
 
 ```lua
 do
-    print("t=0.25 = " .. lurek.math.inOutElastic(0.25))
-    print("t=0.75 = " .. lurek.math.inOutElastic(0.75))
-    print("lua type = " .. type(lurek.math.inOutElastic(0.75)))
+    example_print_log("t=0.25 = " .. lurek.math.inOutElastic(0.25))
+    example_print_log("t=0.75 = " .. lurek.math.inOutElastic(0.75))
+    example_print_log("finish = " .. lurek.math.inOutElastic(1.0))
+    local ease_start = lurek.math.inOutElastic(0.0)
+    example_print_log("start = " .. ease_start)
 end
 ```
 
@@ -1422,9 +1463,11 @@ lurek.math.inOutExpo(t)
 
 ```lua
 do
-    print("t=0.25 = " .. lurek.math.inOutExpo(0.25))
-    print("t=0.75 = " .. lurek.math.inOutExpo(0.75))
-    print("lua type = " .. type(lurek.math.inOutExpo(0.75)))
+    example_print_log("t=0.25 = " .. lurek.math.inOutExpo(0.25))
+    example_print_log("t=0.75 = " .. lurek.math.inOutExpo(0.75))
+    example_print_log("finish = " .. lurek.math.inOutExpo(1.0))
+    local ease_start = lurek.math.inOutExpo(0.0)
+    example_print_log("start = " .. ease_start)
 end
 ```
 
@@ -1454,9 +1497,11 @@ lurek.math.inOutQuad(t)
 
 ```lua
 do
-    print("t=0.25 = " .. lurek.math.inOutQuad(0.25))
-    print("t=0.75 = " .. lurek.math.inOutQuad(0.75))
-    print("lua type = " .. type(lurek.math.inOutQuad(0.75)))
+    example_print_log("t=0.25 = " .. lurek.math.inOutQuad(0.25))
+    example_print_log("t=0.75 = " .. lurek.math.inOutQuad(0.75))
+    example_print_log("finish = " .. lurek.math.inOutQuad(1.0))
+    local ease_start = lurek.math.inOutQuad(0.0)
+    example_print_log("start = " .. ease_start)
 end
 ```
 
@@ -1486,9 +1531,11 @@ lurek.math.inOutQuart(t)
 
 ```lua
 do
-    print("t=0.25 = " .. lurek.math.inOutQuart(0.25))
-    print("t=0.75 = " .. lurek.math.inOutQuart(0.75))
-    print("lua type = " .. type(lurek.math.inOutQuart(0.75)))
+    example_print_log("t=0.25 = " .. lurek.math.inOutQuart(0.25))
+    example_print_log("t=0.75 = " .. lurek.math.inOutQuart(0.75))
+    example_print_log("finish = " .. lurek.math.inOutQuart(1.0))
+    local ease_start = lurek.math.inOutQuart(0.0)
+    example_print_log("start = " .. ease_start)
 end
 ```
 
@@ -1518,9 +1565,11 @@ lurek.math.inOutSine(t)
 
 ```lua
 do
-    print("t=0.25 = " .. lurek.math.inOutSine(0.25))
-    print("t=0.75 = " .. lurek.math.inOutSine(0.75))
-    print("lua type = " .. type(lurek.math.inOutSine(0.75)))
+    example_print_log("t=0.25 = " .. lurek.math.inOutSine(0.25))
+    example_print_log("t=0.75 = " .. lurek.math.inOutSine(0.75))
+    example_print_log("finish = " .. lurek.math.inOutSine(1.0))
+    local ease_start = lurek.math.inOutSine(0.0)
+    example_print_log("start = " .. ease_start)
 end
 ```
 
@@ -1550,9 +1599,11 @@ lurek.math.inQuad(t)
 
 ```lua
 do
-    print("t=0.25 = " .. lurek.math.inQuad(0.25))
-    print("t=0.75 = " .. lurek.math.inQuad(0.75))
-    print("lua type = " .. type(lurek.math.inQuad(0.75)))
+    example_print_log("t=0.25 = " .. lurek.math.inQuad(0.25))
+    example_print_log("t=0.75 = " .. lurek.math.inQuad(0.75))
+    example_print_log("finish = " .. lurek.math.inQuad(1.0))
+    local ease_start = lurek.math.inQuad(0.0)
+    example_print_log("start = " .. ease_start)
 end
 ```
 
@@ -1582,9 +1633,11 @@ lurek.math.inQuart(t)
 
 ```lua
 do
-    print("t=0.25 = " .. lurek.math.inQuart(0.25))
-    print("t=0.75 = " .. lurek.math.inQuart(0.75))
-    print("lua type = " .. type(lurek.math.inQuart(0.75)))
+    example_print_log("t=0.25 = " .. lurek.math.inQuart(0.25))
+    example_print_log("t=0.75 = " .. lurek.math.inQuart(0.75))
+    example_print_log("finish = " .. lurek.math.inQuart(1.0))
+    local ease_start = lurek.math.inQuart(0.0)
+    example_print_log("start = " .. ease_start)
 end
 ```
 
@@ -1614,9 +1667,11 @@ lurek.math.inSine(t)
 
 ```lua
 do
-    print("t=0.25 = " .. lurek.math.inSine(0.25))
-    print("t=0.75 = " .. lurek.math.inSine(0.75))
-    print("lua type = " .. type(lurek.math.inSine(0.75)))
+    example_print_log("t=0.25 = " .. lurek.math.inSine(0.25))
+    example_print_log("t=0.75 = " .. lurek.math.inSine(0.75))
+    example_print_log("finish = " .. lurek.math.inSine(1.0))
+    local ease_start = lurek.math.inSine(0.0)
+    example_print_log("start = " .. ease_start)
 end
 ```
 
@@ -1648,9 +1703,11 @@ lurek.math.inverseLerp(a, b, v)
 
 ```lua
 do
-    print("inverseLerp(0, 100, 50) = " .. lurek.math.inverseLerp(0, 100, 50))
-    print("inverseLerp(10, 20, 15) = " .. lurek.math.inverseLerp(10, 20, 15))
-    print("lua type = " .. type(lurek.math.inverseLerp(10, 20, 15)))
+    example_print_log("inverseLerp(0, 100, 50) = " .. lurek.math.inverseLerp(0, 100, 50))
+    example_print_log("inverseLerp(10, 20, 15) = " .. lurek.math.inverseLerp(10, 20, 15))
+    example_print_log("progress at 75/100 = " .. lurek.math.inverseLerp(0, 100, 75))
+    local charge_fill = lurek.math.inverseLerp(0, 3, 1.5)
+    example_print_log("charge fill = " .. charge_fill)
 end
 ```
 
@@ -1681,9 +1738,10 @@ lurek.math.isConvex(pts)
 ```lua
 do
     local square = {0, 0, 10, 0, 10, 10, 0, 10}
-    print("square convex = " .. tostring(lurek.math.isConvex(square)))
+    example_print_log("square convex = " .. tostring(lurek.math.isConvex(square)))
     local concave = {0, 0, 5, 3, 10, 0, 10, 10, 0, 10}
-    print("concave = " .. tostring(lurek.math.isConvex(concave)))
+    example_print_log("concave = " .. tostring(lurek.math.isConvex(concave)))
+    local triangle = {0, 0, 6, 0, 3, 5}
 end
 ```
 
@@ -1715,9 +1773,11 @@ lurek.math.lerp(a, b, t)
 
 ```lua
 do
-    print("lerp(0, 100, 0.5) = " .. lurek.math.lerp(0, 100, 0.5))
-    print("lerp(10, 20, 0.25) = " .. lurek.math.lerp(10, 20, 0.25))
-    print("lua type = " .. type(lurek.math.lerp(10, 20, 0.25)))
+    example_print_log("lerp(0, 100, 0.5) = " .. lurek.math.lerp(0, 100, 0.5))
+    example_print_log("lerp(10, 20, 0.25) = " .. lurek.math.lerp(10, 20, 0.25))
+    example_print_log("enemy moves 75% across = " .. lurek.math.lerp(0, 100, 0.75))
+    local ui_fade = lurek.math.lerp(0, 1, 0.3)
+    example_print_log("ui fade alpha = " .. ui_fade)
 end
 ```
 
@@ -1756,8 +1816,10 @@ lurek.math.lineIntersect(x1, y1, x2, y2, x3, y3, x4, y4)
 ```lua
 do
     local ix, iy = lurek.math.lineIntersect(0, 0, 10, 10, 0, 10, 10, 0)
-    if ix then print("lines cross at " .. ix .. "," .. iy) else print("lines are parallel") end
-    print("value types = " .. type(ix) .. "," .. type(iy))
+    if ix then example_print_log("lines cross at " .. ix .. "," .. iy) else example_print_log("lines are parallel") end
+    example_print_log("value types = " .. type(ix) .. "," .. type(iy))
+    local crossed = ix ~= nil and iy ~= nil
+    example_print_log("crossed = " .. tostring(crossed))
 end
 ```
 
@@ -1787,9 +1849,11 @@ lurek.math.linear(t)
 
 ```lua
 do
-    print("t=0.25 = " .. lurek.math.linear(0.25))
-    print("t=0.75 = " .. lurek.math.linear(0.75))
-    print("lua type = " .. type(lurek.math.linear(0.75)))
+    example_print_log("t=0.25 = " .. lurek.math.linear(0.25))
+    example_print_log("t=0.75 = " .. lurek.math.linear(0.75))
+    example_print_log("finish = " .. lurek.math.linear(1.0))
+    local ease_start = lurek.math.linear(0.0)
+    example_print_log("start = " .. ease_start)
 end
 ```
 
@@ -1820,9 +1884,11 @@ lurek.math.log(x, b)
 
 ```lua
 do
-    print("log(e) = " .. lurek.math.log(lurek.math.exp(1)))
-    print("log(100, 10) = " .. lurek.math.log(100, 10))
-    print("lua type = " .. type(lurek.math.log(100, 10)))
+    example_print_log("log(e) = " .. lurek.math.log(lurek.math.exp(1)))
+    example_print_log("log(100, 10) = " .. lurek.math.log(100, 10))
+    example_print_log("log2(8) = " .. lurek.math.log(8, 2))
+    local digits_scale = lurek.math.log(1000, 10)
+    example_print_log("digits scale = " .. digits_scale)
 end
 ```
 
@@ -1856,7 +1922,7 @@ do
         { id = "gold", weight = 20.0, meta = { kind = "currency" } },
         { id = "gem", weight = 2.0, meta = { kind = "currency" } },
     })
-    print("fromList count = " .. loot:entryCount())
+    example_print_log("fromList count = " .. loot:entryCount())
 end
 ```
 
@@ -1887,8 +1953,10 @@ lurek.math.lootFromToml(path)
 ```lua
 do
     local tbl = lurek.math.lootFromToml("save/loot_table_unit_test.toml")
-    print("lootFromToml entries = " .. tostring(tbl:entryCount()))
-    print("lua type = " .. type(tbl))
+    example_print_log("lootFromToml entries = " .. tostring(tbl:entryCount()))
+    example_print_log("sample preview = " .. tostring(tbl:sample()))
+    example_print_log("entries = " .. tostring(tbl:entryCount()))
+    example_print_log("sample now = " .. tostring(tbl:sample()))
 end
 ```
 
@@ -1918,9 +1986,11 @@ lurek.math.max(...)
 
 ```lua
 do
-    print("max(3, 7, 1, 9) = " .. lurek.math.max(3, 7, 1, 9))
-    print("max(0, -5) = " .. lurek.math.max(0, -5))
-    print("lua type = " .. type(lurek.math.max(0, -5)))
+    example_print_log("max(3, 7, 1, 9) = " .. lurek.math.max(3, 7, 1, 9))
+    example_print_log("max(0, -5) = " .. lurek.math.max(0, -5))
+    example_print_log("highest cooldown = " .. lurek.math.max(0.8, 1.1, 0.6))
+    local fastest_speed = lurek.math.max(8, 5, 12)
+    example_print_log("fastest speed = " .. fastest_speed)
 end
 ```
 
@@ -1950,9 +2020,11 @@ lurek.math.min(...)
 
 ```lua
 do
-    print("min(3, 7, 1, 9) = " .. lurek.math.min(3, 7, 1, 9))
-    print("min(0, -5) = " .. lurek.math.min(0, -5))
-    print("lua type = " .. type(lurek.math.min(0, -5)))
+    example_print_log("min(3, 7, 1, 9) = " .. lurek.math.min(3, 7, 1, 9))
+    example_print_log("min(0, -5) = " .. lurek.math.min(0, -5))
+    example_print_log("lowest cooldown = " .. lurek.math.min(0.8, 1.1, 0.6))
+    local slowest_speed = lurek.math.min(8, 5, 12)
+    example_print_log("slowest speed = " .. slowest_speed)
 end
 ```
 
@@ -1983,9 +2055,10 @@ lurek.math.newBezierCurve(points)
 ```lua
 do
     local curve = lurek.math.newBezierCurve({0, 0, 30, 60, 70, 60, 100, 0})
-    print("control points = " .. curve:getControlPointCount())
+    example_print_log("control points = " .. curve:getControlPointCount())
     local x, y = curve:evaluate(0.5)
-    print("mid = " .. x .. "," .. y)
+    example_print_log("mid = " .. x .. "," .. y)
+    example_print_log("curve points = " .. curve:getControlPointCount())
 end
 ```
 
@@ -2018,8 +2091,10 @@ lurek.math.newCircle(x, y, radius)
 ```lua
 do
     local c = lurek.math.newCircle(50, 50, 25)
-    print("circle at " .. c:x() .. "," .. c:y() .. " r=" .. c:radius())
-    print("lua type = " .. type(c))
+    example_print_log("circle at " .. c:x() .. "," .. c:y() .. " r=" .. c:radius())
+    example_print_log("area = " .. c:area())
+    example_print_log("radius = " .. c:radius())
+    example_print_log("center x = " .. c:x())
 end
 ```
 
@@ -2054,7 +2129,7 @@ do
     loot:add("rare", 1.0, { tier = "r" })
     loot:build()
     local pick = loot:sample()
-    print("loot pick = " .. tostring(pick and pick.id))
+    example_print_log("loot pick = " .. tostring(pick and pick.id))
 end
 ```
 
@@ -2094,7 +2169,7 @@ do
     pity:notice("common")
     pity:notice("common")
     local id = lurek.math.sampleWithPity(loot, pity)
-    print("pity sample = " .. tostring(id))
+    example_print_log("pity sample = " .. tostring(id))
 end
 ```
 
@@ -2125,8 +2200,10 @@ lurek.math.newRandomGenerator(seed)
 ```lua
 do
     local rng = lurek.math.newRandomGenerator(42)
-    print("seed = " .. rng:getSeed())
-    print("lua type = " .. type(rng))
+    example_print_log("seed = " .. rng:getSeed())
+    example_print_log("seed = " .. rng:getSeed())
+    example_print_log("d6 preview = " .. rng:randomInt(1, 6))
+    example_print_log("coin flip = " .. tostring(rng:chance(0.5)))
 end
 ```
 
@@ -2160,8 +2237,9 @@ lurek.math.newRectPacker(width, height, padding)
 do
     local rp = lurek.math.newRectPacker(256, 256, 1)
     local x, y = rp:pack(32, 32, "icon1")
-    print("icon1 = " .. tostring(x) .. "," .. tostring(y))
-    print("occupancy = " .. rp:occupancy())
+    example_print_log("icon1 = " .. tostring(x) .. "," .. tostring(y))
+    example_print_log("occupancy = " .. rp:occupancy())
+    example_print_log("occupancy = " .. rp:occupancy())
 end
 ```
 
@@ -2194,7 +2272,8 @@ do
     local sh = lurek.math.newSpatialHash(32)
     sh:insert("a", 10, 10, 20, 20)
     sh:insert("b", 50, 50, 30, 30)
-    print("cell size = " .. sh:getCellSize() .. " items = " .. sh:getItemCount())
+    example_print_log("cell size = " .. sh:getCellSize() .. " items = " .. sh:getItemCount())
+    example_print_log("cell size = " .. sh:getCellSize())
 end
 ```
 
@@ -2234,7 +2313,9 @@ lurek.math.newTransform(x, y, angle, sx, sy, ox, oy, kx, ky)
 do
     local t = lurek.math.newTransform(100, 200, lurek.math.pi / 4, 2, 2)
     local x, y = t:transformPoint(0, 0)
-    print("origin transformed = " .. x .. "," .. y)
+    example_print_log("origin transformed = " .. x .. "," .. y)
+    example_print_log("origin x = " .. select(1, t:transformPoint(0, 0)))
+    example_print_log("origin y = " .. select(2, t:transformPoint(0, 0)))
 end
 ```
 
@@ -2266,8 +2347,10 @@ lurek.math.newTween(duration, easing_name)
 ```lua
 do
     local tw = lurek.math.newTween(2.0, "inOutCubic")
-    print("duration = " .. tw:getDuration())
-    print("easing = " .. tw:getEasingName())
+    example_print_log("duration = " .. tw:getDuration())
+    example_print_log("easing = " .. tw:getEasingName())
+    example_print_log("tween time = " .. tw:getTime())
+    example_print_log("value count = " .. tw:getValueCount())
 end
 ```
 
@@ -2297,9 +2380,11 @@ lurek.math.outBack(t)
 
 ```lua
 do
-    print("t=0.25 = " .. lurek.math.outBack(0.25))
-    print("t=0.75 = " .. lurek.math.outBack(0.75))
-    print("lua type = " .. type(lurek.math.outBack(0.75)))
+    example_print_log("t=0.25 = " .. lurek.math.outBack(0.25))
+    example_print_log("t=0.75 = " .. lurek.math.outBack(0.75))
+    example_print_log("finish = " .. lurek.math.outBack(1.0))
+    local ease_start = lurek.math.outBack(0.0)
+    example_print_log("start = " .. ease_start)
 end
 ```
 
@@ -2329,9 +2414,11 @@ lurek.math.outBounce(t)
 
 ```lua
 do
-    print("t=0.25 = " .. lurek.math.outBounce(0.25))
-    print("t=0.75 = " .. lurek.math.outBounce(0.75))
-    print("lua type = " .. type(lurek.math.outBounce(0.75)))
+    example_print_log("t=0.25 = " .. lurek.math.outBounce(0.25))
+    example_print_log("t=0.75 = " .. lurek.math.outBounce(0.75))
+    example_print_log("finish = " .. lurek.math.outBounce(1.0))
+    local ease_start = lurek.math.outBounce(0.0)
+    example_print_log("start = " .. ease_start)
 end
 ```
 
@@ -2361,9 +2448,11 @@ lurek.math.outCubic(t)
 
 ```lua
 do
-    print("t=0.25 = " .. lurek.math.outCubic(0.25))
-    print("t=0.75 = " .. lurek.math.outCubic(0.75))
-    print("lua type = " .. type(lurek.math.outCubic(0.75)))
+    example_print_log("t=0.25 = " .. lurek.math.outCubic(0.25))
+    example_print_log("t=0.75 = " .. lurek.math.outCubic(0.75))
+    example_print_log("finish = " .. lurek.math.outCubic(1.0))
+    local ease_start = lurek.math.outCubic(0.0)
+    example_print_log("start = " .. ease_start)
 end
 ```
 
@@ -2393,9 +2482,11 @@ lurek.math.outElastic(t)
 
 ```lua
 do
-    print("t=0.25 = " .. lurek.math.outElastic(0.25))
-    print("t=0.75 = " .. lurek.math.outElastic(0.75))
-    print("lua type = " .. type(lurek.math.outElastic(0.75)))
+    example_print_log("t=0.25 = " .. lurek.math.outElastic(0.25))
+    example_print_log("t=0.75 = " .. lurek.math.outElastic(0.75))
+    example_print_log("finish = " .. lurek.math.outElastic(1.0))
+    local ease_start = lurek.math.outElastic(0.0)
+    example_print_log("start = " .. ease_start)
 end
 ```
 
@@ -2425,9 +2516,11 @@ lurek.math.outExpo(t)
 
 ```lua
 do
-    print("t=0.25 = " .. lurek.math.outExpo(0.25))
-    print("t=0.75 = " .. lurek.math.outExpo(0.75))
-    print("lua type = " .. type(lurek.math.outExpo(0.75)))
+    example_print_log("t=0.25 = " .. lurek.math.outExpo(0.25))
+    example_print_log("t=0.75 = " .. lurek.math.outExpo(0.75))
+    example_print_log("finish = " .. lurek.math.outExpo(1.0))
+    local ease_start = lurek.math.outExpo(0.0)
+    example_print_log("start = " .. ease_start)
 end
 ```
 
@@ -2457,9 +2550,11 @@ lurek.math.outQuad(t)
 
 ```lua
 do
-    print("t=0.25 = " .. lurek.math.outQuad(0.25))
-    print("t=0.75 = " .. lurek.math.outQuad(0.75))
-    print("lua type = " .. type(lurek.math.outQuad(0.75)))
+    example_print_log("t=0.25 = " .. lurek.math.outQuad(0.25))
+    example_print_log("t=0.75 = " .. lurek.math.outQuad(0.75))
+    example_print_log("finish = " .. lurek.math.outQuad(1.0))
+    local ease_start = lurek.math.outQuad(0.0)
+    example_print_log("start = " .. ease_start)
 end
 ```
 
@@ -2489,9 +2584,11 @@ lurek.math.outQuart(t)
 
 ```lua
 do
-    print("t=0.25 = " .. lurek.math.outQuart(0.25))
-    print("t=0.75 = " .. lurek.math.outQuart(0.75))
-    print("lua type = " .. type(lurek.math.outQuart(0.75)))
+    example_print_log("t=0.25 = " .. lurek.math.outQuart(0.25))
+    example_print_log("t=0.75 = " .. lurek.math.outQuart(0.75))
+    example_print_log("finish = " .. lurek.math.outQuart(1.0))
+    local ease_start = lurek.math.outQuart(0.0)
+    example_print_log("start = " .. ease_start)
 end
 ```
 
@@ -2521,9 +2618,11 @@ lurek.math.outSine(t)
 
 ```lua
 do
-    print("t=0.25 = " .. lurek.math.outSine(0.25))
-    print("t=0.75 = " .. lurek.math.outSine(0.75))
-    print("lua type = " .. type(lurek.math.outSine(0.75)))
+    example_print_log("t=0.25 = " .. lurek.math.outSine(0.25))
+    example_print_log("t=0.75 = " .. lurek.math.outSine(0.75))
+    example_print_log("finish = " .. lurek.math.outSine(1.0))
+    local ease_start = lurek.math.outSine(0.0)
+    example_print_log("start = " .. ease_start)
 end
 ```
 
@@ -2558,7 +2657,8 @@ do
     local pts = {0, 0, 10, 0, 10, 10, 0, 10}
     local inside = lurek.math.pointInPolygon(pts, 5, 5)
     local outside = lurek.math.pointInPolygon(pts, 15, 5)
-    print("inside = " .. tostring(inside) .. " outside = " .. tostring(outside))
+    example_print_log("inside = " .. tostring(inside) .. " outside = " .. tostring(outside))
+    local edge = lurek.math.pointInPolygon(pts, 0, 5)
 end
 ```
 
@@ -2590,7 +2690,9 @@ lurek.math.polygonArea(pts)
 do
     local pts = {0, 0, 10, 0, 10, 10, 0, 10}
     local area = lurek.math.polygonArea(pts)
-    print("area = " .. area)
+    example_print_log("area = " .. area)
+    local triangle_area = lurek.math.polygonArea({0, 0, 8, 0, 0, 8})
+    example_print_log("triangle area = " .. triangle_area)
 end
 ```
 
@@ -2623,7 +2725,9 @@ lurek.math.polygonCentroid(pts)
 do
     local pts = {0, 0, 10, 0, 10, 10, 0, 10}
     local cx, cy = lurek.math.polygonCentroid(pts)
-    print("centroid = " .. cx .. "," .. cy)
+    example_print_log("centroid = " .. cx .. "," .. cy)
+    local cx2, cy2 = lurek.math.polygonCentroid({0, 0, 8, 0, 8, 8, 0, 8})
+    example_print_log("square center = " .. cx2 .. "," .. cy2)
 end
 ```
 
@@ -2658,7 +2762,9 @@ lurek.math.polygonClip(pts, nx, ny, d)
 do
     local pts = {0, 0, 10, 0, 10, 10, 0, 10}
     local clipped = lurek.math.polygonClip(pts, 1, 0, -5)
-    print("clipped vertices = " .. #clipped / 2)
+    example_print_log("clipped vertices = " .. #clipped / 2)
+    local original_points = #pts / 2
+    example_print_log("original points = " .. original_points)
 end
 ```
 
@@ -2692,7 +2798,8 @@ do
     local a = {{x=0,y=0}, {x=10,y=0}, {x=10,y=10}, {x=0,y=10}}
     local b = {{x=5,y=5}, {x=15,y=5}, {x=15,y=15}, {x=5,y=15}}
     local result = lurek.math.polygonDifference(a, b)
-    print("difference vertices = " .. #result)
+    example_print_log("difference vertices = " .. #result)
+    example_print_log("source polygons = " .. #a .. " + " .. #b)
 end
 ```
 
@@ -2726,7 +2833,8 @@ do
     local a = {{x=0,y=0}, {x=10,y=0}, {x=10,y=10}, {x=0,y=10}}
     local b = {{x=5,y=5}, {x=15,y=5}, {x=15,y=15}, {x=5,y=15}}
     local result = lurek.math.polygonIntersection(a, b)
-    print("intersection vertices = " .. #result)
+    example_print_log("intersection vertices = " .. #result)
+    example_print_log("source polygons = " .. #a .. " + " .. #b)
 end
 ```
 
@@ -2760,7 +2868,8 @@ do
     local a = {{x=0,y=0}, {x=10,y=0}, {x=10,y=10}, {x=0,y=10}}
     local b = {{x=5,y=5}, {x=15,y=5}, {x=15,y=15}, {x=5,y=15}}
     local result = lurek.math.polygonUnion(a, b)
-    print("union vertices = " .. #result)
+    example_print_log("union vertices = " .. #result)
+    example_print_log("source polygons = " .. #a .. " + " .. #b)
 end
 ```
 
@@ -2791,9 +2900,11 @@ lurek.math.pow(x, y)
 
 ```lua
 do
-    print("pow(2, 10) = " .. lurek.math.pow(2, 10))
-    print("pow(3, 3) = " .. lurek.math.pow(3, 3))
-    print("lua type = " .. type(lurek.math.pow(3, 3)))
+    example_print_log("pow(2, 10) = " .. lurek.math.pow(2, 10))
+    example_print_log("pow(3, 3) = " .. lurek.math.pow(3, 3))
+    example_print_log("crit multiplier tier 4 = " .. lurek.math.pow(1.25, 4))
+    local stacked_multiplier = lurek.math.pow(1.1, 5)
+    example_print_log("stacked multiplier = " .. stacked_multiplier)
 end
 ```
 
@@ -2823,9 +2934,11 @@ lurek.math.rad(deg)
 
 ```lua
 do
-    print("rad(180) = " .. lurek.math.rad(180))
-    print("rad(90) = " .. lurek.math.rad(90))
-    print("lua type = " .. type(lurek.math.rad(90)))
+    example_print_log("rad(180) = " .. lurek.math.rad(180))
+    example_print_log("rad(90) = " .. lurek.math.rad(90))
+    example_print_log("30deg in radians = " .. lurek.math.rad(30))
+    local turret_turn = lurek.math.rad(45)
+    example_print_log("turret turn = " .. turret_turn)
 end
 ```
 
@@ -2859,7 +2972,8 @@ do
     local r1 = lurek.math.random()
     local r2 = lurek.math.random(10)
     local r3 = lurek.math.random(5, 15)
-    print("random = " .. r1 .. ", " .. r2 .. ", " .. r3)
+    example_print_log("random = " .. r1 .. ", " .. r2 .. ", " .. r3)
+    local loot_roll = lurek.math.random(100)
 end
 ```
 
@@ -2891,8 +3005,10 @@ lurek.math.randomInt(lo, hi)
 ```lua
 do
     local r = lurek.math.randomInt(1, 6)
-    print("randomInt(1,6) = " .. r)
-    print("lua type = " .. type(r))
+    example_print_log("randomInt(1,6) = " .. r)
+    example_print_log("second die = " .. lurek.math.randomInt(1, 6))
+    local reroll = lurek.math.randomInt(1, 6)
+    example_print_log("reroll = " .. reroll)
 end
 ```
 
@@ -2929,8 +3045,10 @@ lurek.math.rectFromCenter(cx, cy, w, h)
 ```lua
 do
     local x, y, w, h = lurek.math.rectFromCenter(50, 50, 20, 10)
-    print("rect = " .. x .. "," .. y .. " " .. w .. "x" .. h)
-    print("value types = " .. type(x) .. "," .. type(y) .. "," .. type(w) .. "," .. type(h))
+    example_print_log("rect = " .. x .. "," .. y .. " " .. w .. "x" .. h)
+    example_print_log("value types = " .. type(x) .. "," .. type(y) .. "," .. type(w) .. "," .. type(h))
+    local center_x = x + w / 2
+    example_print_log("center x = " .. center_x)
 end
 ```
 
@@ -2971,8 +3089,10 @@ lurek.math.rectUnion(x1, y1, w1, h1, x2, y2, w2, h2)
 ```lua
 do
     local x, y, w, h = lurek.math.rectUnion(0, 0, 10, 10, 5, 5, 10, 10)
-    print("union rect = " .. x .. "," .. y .. " " .. w .. "x" .. h)
-    print("value types = " .. type(x) .. "," .. type(y) .. "," .. type(w) .. "," .. type(h))
+    example_print_log("union rect = " .. x .. "," .. y .. " " .. w .. "x" .. h)
+    example_print_log("value types = " .. type(x) .. "," .. type(y) .. "," .. type(w) .. "," .. type(h))
+    local union_area = w * h
+    example_print_log("union area = " .. union_area)
 end
 ```
 
@@ -3007,8 +3127,10 @@ lurek.math.remap(v, in_min, in_max, out_min, out_max)
 ```lua
 do
     local v = lurek.math.remap(5, 0, 10, 0, 100)
-    print("remap(5, 0-10 â†’ 0-100) = " .. v)
-    print("lua type = " .. type(v))
+    example_print_log("remap(5, 0-10 â†’ 0-100) = " .. v)
+    example_print_log("thumbstick 0.25 -> percent = " .. lurek.math.remap(0.25, 0, 1, 0, 100))
+    local volume_percent = lurek.math.remap(0.75, 0, 1, 0, 100)
+    example_print_log("volume percent = " .. volume_percent)
 end
 ```
 
@@ -3038,9 +3160,11 @@ lurek.math.round(x)
 
 ```lua
 do
-    print("round(2.4) = " .. lurek.math.round(2.4))
-    print("round(2.5) = " .. lurek.math.round(2.5))
-    print("lua type = " .. type(lurek.math.round(2.5)))
+    example_print_log("round(2.4) = " .. lurek.math.round(2.4))
+    example_print_log("round(2.5) = " .. lurek.math.round(2.5))
+    example_print_log("round snaps grid coord = " .. lurek.math.round(6.51))
+    local snapped = lurek.math.round(12.6)
+    example_print_log("snapped tile = " .. snapped)
 end
 ```
 
@@ -3077,7 +3201,7 @@ do
     loot:build()
     local pity = lurek.math.newPityTracker("a", 1)
     local id = lurek.math.sampleWithPity(loot, pity)
-    print("sampleWithPity = " .. tostring(id))
+    example_print_log("sampleWithPity = " .. tostring(id))
 end
 ```
 
@@ -3117,8 +3241,10 @@ lurek.math.segmentIntersectsSegment(x1, y1, x2, y2, x3, y3, x4, y4)
 ```lua
 do
     local hit, ix, iy = lurek.math.segmentIntersectsSegment( 0, 0, 10, 10, 0, 10, 10, 0 )
-    if hit and ix then print("segments cross at " .. ix .. "," .. iy) else print("segments do not cross") end
-    print("value types = " .. type(hit) .. "," .. type(ix) .. "," .. type(iy))
+    if hit and ix then example_print_log("segments cross at " .. ix .. "," .. iy) else example_print_log("segments do not cross") end
+    example_print_log("value types = " .. type(hit) .. "," .. type(ix) .. "," .. type(iy))
+    local crossed = hit and ix ~= nil
+    example_print_log("crossed = " .. tostring(crossed))
 end
 ```
 
@@ -3148,9 +3274,11 @@ lurek.math.sign(v)
 
 ```lua
 do
-    print("sign(-7) = " .. lurek.math.sign(-7))
-    print("sign(0) = " .. lurek.math.sign(0))
-    print("sign(3) = " .. lurek.math.sign(3))
+    example_print_log("sign(-7) = " .. lurek.math.sign(-7))
+    example_print_log("sign(0) = " .. lurek.math.sign(0))
+    example_print_log("sign(3) = " .. lurek.math.sign(3))
+    local input_x = -42
+    example_print_log("input x direction = " .. lurek.math.sign(input_x))
 end
 ```
 
@@ -3180,9 +3308,11 @@ lurek.math.sin(x)
 
 ```lua
 do
-    print("sin(0) = " .. lurek.math.sin(0))
-    print("sin(pi/2) = " .. lurek.math.sin(lurek.math.pi / 2))
-    print("lua type = " .. type(lurek.math.sin(lurek.math.pi / 2)))
+    example_print_log("sin(0) = " .. lurek.math.sin(0))
+    example_print_log("sin(pi/2) = " .. lurek.math.sin(lurek.math.pi / 2))
+    example_print_log("sine wave at pi = " .. lurek.math.sin(lurek.math.pi))
+    local jump_arc = lurek.math.sin(lurek.math.pi / 6)
+    example_print_log("jump arc = " .. jump_arc)
 end
 ```
 
@@ -3214,9 +3344,11 @@ lurek.math.smoothstep(edge0, edge1, x)
 
 ```lua
 do
-    print("smoothstep(0, 1, 0.5) = " .. lurek.math.smoothstep(0, 1, 0.5))
-    print("smoothstep(0, 1, 0.0) = " .. lurek.math.smoothstep(0, 1, 0.0))
-    print("smoothstep(0, 1, 1.0) = " .. lurek.math.smoothstep(0, 1, 1.0))
+    example_print_log("smoothstep(0, 1, 0.5) = " .. lurek.math.smoothstep(0, 1, 0.5))
+    example_print_log("smoothstep(0, 1, 0.0) = " .. lurek.math.smoothstep(0, 1, 0.0))
+    example_print_log("smoothstep(0, 1, 1.0) = " .. lurek.math.smoothstep(0, 1, 1.0))
+    local fade_distance = lurek.math.smoothstep(0, 10, 3)
+    example_print_log("fade at distance 3 = " .. fade_distance)
 end
 ```
 
@@ -3246,9 +3378,11 @@ lurek.math.sqrt(x)
 
 ```lua
 do
-    print("sqrt(144) = " .. lurek.math.sqrt(144))
-    print("sqrt(2) = " .. lurek.math.sqrt(2))
-    print("lua type = " .. type(lurek.math.sqrt(2)))
+    example_print_log("sqrt(144) = " .. lurek.math.sqrt(144))
+    example_print_log("sqrt(2) = " .. lurek.math.sqrt(2))
+    example_print_log("speed from sq length 25 = " .. lurek.math.sqrt(25))
+    local tile_diagonal = lurek.math.sqrt(25)
+    example_print_log("tile diagonal = " .. tile_diagonal)
 end
 ```
 
@@ -3278,9 +3412,11 @@ lurek.math.tan(x)
 
 ```lua
 do
-    print("tan(0) = " .. lurek.math.tan(0))
-    print("tan(pi/4) = " .. lurek.math.tan(lurek.math.pi / 4))
-    print("lua type = " .. type(lurek.math.tan(lurek.math.pi / 4)))
+    example_print_log("tan(0) = " .. lurek.math.tan(0))
+    example_print_log("tan(pi/4) = " .. lurek.math.tan(lurek.math.pi / 4))
+    example_print_log("tan aiming slope = " .. lurek.math.tan(lurek.math.rad(15)))
+    local camera_slope = lurek.math.tan(lurek.math.rad(30))
+    example_print_log("camera slope = " .. camera_slope)
 end
 ```
 
@@ -3312,7 +3448,9 @@ lurek.math.triangulate(pts)
 do
     local pts = {0, 0, 10, 0, 10, 10, 0, 10}
     local tris = lurek.math.triangulate(pts)
-    print("triangles = " .. #tris)
+    example_print_log("triangles = " .. #tris)
+    local source_vertices = #pts / 2
+    example_print_log("source vertices = " .. source_vertices)
 end
 ```
 
@@ -3344,8 +3482,10 @@ lurek.math.vec2(x, y)
 ```lua
 do
     local v = lurek.math.vec2(3, 4)
-    print("vec2 = " .. v.x .. "," .. v.y)
-    print("lua type = " .. type(v))
+    example_print_log("vec2 = " .. v.x .. "," .. v.y)
+    example_print_log("heading = " .. v:angle())
+    example_print_log("vector length = " .. v:length())
+    example_print_log("unit x = " .. v:normalized().x)
 end
 ```
 
@@ -3378,8 +3518,10 @@ lurek.math.vec3(x, y, z)
 ```lua
 do
     local v = lurek.math.vec3(1, 2, 3)
-    print("vec3 = " .. v.x .. "," .. v.y .. "," .. v.z)
-    print("lua type = " .. type(v))
+    example_print_log("vec3 = " .. v.x .. "," .. v.y .. "," .. v.z)
+    example_print_log("heading = " .. v:angle())
+    example_print_log("vector length = " .. v:length())
+    example_print_log("unit x = " .. v:normalize().x)
 end
 ```
 
@@ -3437,7 +3579,8 @@ do
     local tree = lurek.math.aabbTree()
     tree:insert(1, 0, 0, 50, 50)
     tree:clear()
-    print("empty = " .. tostring(tree:isEmpty()))
+    example_print_log("empty = " .. tostring(tree:isEmpty()))
+    example_print_log("tree len = " .. tree:len())
 end
 ```
 
@@ -3469,7 +3612,9 @@ LAabbTree:contains(id)
 do
     local tree = lurek.math.aabbTree()
     tree:insert(1, 0, 0, 10, 10)
-    print("contains 1 = " .. tostring(tree:contains(1)))
+    example_print_log("contains 1 = " .. tostring(tree:contains(1)))
+    example_print_log("tree len = " .. tree:len())
+    example_print_log("tree empty = " .. tostring(tree:isEmpty()))
 end
 ```
 
@@ -3499,7 +3644,9 @@ LAabbTree:insert(id, min_x, min_y, max_x, max_y)
 do
     local tree = lurek.math.aabbTree()
     tree:insert(1, 0, 0, 50, 50)
-    print("len = " .. tree:len())
+    example_print_log("len = " .. tree:len())
+    example_print_log("tree len = " .. tree:len())
+    example_print_log("tree empty = " .. tostring(tree:isEmpty()))
 end
 ```
 
@@ -3524,8 +3671,10 @@ LAabbTree:isEmpty()
 ```lua
 do
     local tree = lurek.math.aabbTree()
-    print("empty = " .. tostring(tree:isEmpty()))
-    print("owner type = " .. tostring(tree:type()))
+    example_print_log("empty = " .. tostring(tree:isEmpty()))
+    example_print_log("tree len = " .. tree:len())
+    example_print_log("tree empty = " .. tostring(tree:isEmpty()))
+    example_print_log("query origin hits = " .. #tree:query(0, 0, 1, 1))
 end
 ```
 
@@ -3552,7 +3701,8 @@ do
     local tree = lurek.math.aabbTree()
     tree:insert(1, 0, 0, 50, 50)
     tree:insert(2, 30, 30, 80, 80)
-    print("len = " .. tree:len())
+    example_print_log("len = " .. tree:len())
+    example_print_log("tree len = " .. tree:len())
 end
 ```
 
@@ -3589,7 +3739,7 @@ do
     tree:insert(1, 0, 0, 10, 10)
     tree:insert(2, 5, 5, 15, 15)
     local hits = tree:query(4, 4, 6, 6)
-    print("query hits = " .. #hits)
+    example_print_log("query hits = " .. #hits)
 end
 ```
 
@@ -3624,7 +3774,7 @@ do
     tree:insert(1, 0, 0, 10, 10)
     tree:insert(2, 5, 5, 15, 15)
     local hits = tree:queryPoint(7, 7)
-    print("point hits = " .. #hits)
+    example_print_log("point hits = " .. #hits)
 end
 ```
 
@@ -3658,7 +3808,7 @@ do
     tree:insert(1, 0, 0, 10, 10)
     tree:insert(2, 5, 5, 15, 15)
     tree:remove(2)
-    print("len = " .. tree:len())
+    example_print_log("len = " .. tree:len())
 end
 ```
 
@@ -3683,8 +3833,10 @@ LAabbTree:type()
 ```lua
 do
     local tree = lurek.math.aabbTree()
-    print(tree:type())
-    print("typeOf LObject = " .. tostring(tree:typeOf("LObject")))
+    example_print_log(tree:type())
+    example_print_log("tree len = " .. tree:len())
+    example_print_log("tree empty = " .. tostring(tree:isEmpty()))
+    example_print_log("query origin hits = " .. #tree:query(0, 0, 1, 1))
 end
 ```
 
@@ -3715,8 +3867,10 @@ LAabbTree:typeOf(name)
 ```lua
 do
     local tree = lurek.math.aabbTree()
-    print(tostring(tree:typeOf("LAabbTree")))
-    print("type = " .. tostring(tree:type()))
+    example_print_log(tostring(tree:typeOf("LAabbTree")))
+    example_print_log("type = " .. tostring(tree:type()))
+    example_print_log("tree len = " .. tree:len())
+    example_print_log("tree empty = " .. tostring(tree:isEmpty()))
 end
 ```
 
@@ -3754,7 +3908,7 @@ do
     tree:insert(1, 0, 0, 10, 10)
     tree:update(1, 20, 20, 30, 30)
     local hits = tree:query(19, 19, 21, 21)
-    print("query hits = " .. #hits)
+    example_print_log("query hits = " .. #hits)
 end
 ```
 
@@ -3795,7 +3949,9 @@ LBezierCurve:evaluate(t)
 do
     local curve = lurek.math.newBezierCurve({0, 0, 50, 100, 100, 0})
     local x, y = curve:evaluate(0.25)
-    print("t=0.25 = " .. x .. "," .. y)
+    example_print_log("t=0.25 = " .. x .. "," .. y)
+    example_print_log("curve points = " .. curve:getControlPointCount())
+    example_print_log("curve length = " .. curve:length())
 end
 ```
 
@@ -3830,8 +3986,8 @@ do
     local curve = lurek.math.newBezierCurve({0, 0, 50, 100, 100, 0})
     local length = curve:length()
     local x, y = curve:evaluateAtDistance(length * 0.5, 32)
-    print("length = " .. length)
-    print("halfway = " .. x .. "," .. y)
+    example_print_log("length = " .. length)
+    example_print_log("halfway = " .. x .. "," .. y)
 end
 ```
 
@@ -3864,7 +4020,9 @@ LBezierCurve:getControlPoint(index)
 do
     local curve = lurek.math.newBezierCurve({0, 0, 50, 50, 100, 0})
     local x, y = curve:getControlPoint(2)
-    print("cp2 = " .. x .. "," .. y)
+    example_print_log("cp2 = " .. x .. "," .. y)
+    example_print_log("curve points = " .. curve:getControlPointCount())
+    example_print_log("curve length = " .. curve:length())
 end
 ```
 
@@ -3889,8 +4047,10 @@ LBezierCurve:getControlPointCount()
 ```lua
 do
     local curve = lurek.math.newBezierCurve({0, 0, 100, 50, 200, 0})
-    print("count = " .. curve:getControlPointCount())
-    print("owner type = " .. tostring(curve:type()))
+    example_print_log("count = " .. curve:getControlPointCount())
+    example_print_log("curve points = " .. curve:getControlPointCount())
+    example_print_log("curve length = " .. curve:length())
+    example_print_log("curve midpoint x = " .. select(1, curve:evaluate(0.5)))
 end
 ```
 
@@ -3917,8 +4077,8 @@ do
     local curve = lurek.math.newBezierCurve({0, 0, 50, 100, 100, 0})
     local derivative = curve:getDerivative()
     local x, y = derivative:evaluate(0.5)
-    print("derivative control points = " .. derivative:getControlPointCount())
-    print("tangent = " .. x .. "," .. y)
+    example_print_log("derivative control points = " .. derivative:getControlPointCount())
+    example_print_log("tangent = " .. x .. "," .. y)
 end
 ```
 
@@ -3945,11 +4105,11 @@ LBezierCurve:insertControlPoint(x, y, index)
 ```lua
 do
     local curve = lurek.math.newBezierCurve({0, 0, 100, 0})
-    print("count before = " .. curve:getControlPointCount())
+    example_print_log("count before = " .. curve:getControlPointCount())
     curve:insertControlPoint(50, 50, 2)
     local x, y = curve:getControlPoint(2)
-    print("inserted = " .. x .. "," .. y)
-    print("count after = " .. curve:getControlPointCount())
+    example_print_log("inserted = " .. x .. "," .. y)
+    example_print_log("count after = " .. curve:getControlPointCount())
 end
 ```
 
@@ -3974,8 +4134,10 @@ LBezierCurve:length()
 ```lua
 do
     local curve = lurek.math.newBezierCurve({0, 0, 100, 0})
-    print("length = " .. curve:length())
-    print("owner type = " .. tostring(curve:type()))
+    example_print_log("length = " .. curve:length())
+    example_print_log("curve points = " .. curve:getControlPointCount())
+    example_print_log("curve length = " .. curve:length())
+    example_print_log("curve midpoint x = " .. select(1, curve:evaluate(0.5)))
 end
 ```
 
@@ -4006,9 +4168,10 @@ LBezierCurve:removeControlPoint(index)
 ```lua
 do
     local curve = lurek.math.newBezierCurve({0, 0, 50, 50, 100, 0})
-    print("count before = " .. curve:getControlPointCount())
+    example_print_log("count before = " .. curve:getControlPointCount())
     curve:removeControlPoint(2)
-    print("count after = " .. curve:getControlPointCount())
+    example_print_log("count after = " .. curve:getControlPointCount())
+    example_print_log("curve points = " .. curve:getControlPointCount())
 end
 ```
 
@@ -4041,8 +4204,8 @@ do
     local curve = lurek.math.newBezierCurve({0, 0, 50, 80, 100, 0})
     local points = curve:render(4)
     local sample = points[3]
-    print("samples = " .. #points)
-    print("sample 3 = " .. sample[1] .. "," .. sample[2])
+    example_print_log("samples = " .. #points)
+    example_print_log("sample 3 = " .. sample[1] .. "," .. sample[2])
 end
 ```
 
@@ -4071,7 +4234,8 @@ do
     local curve = lurek.math.newBezierCurve({0, 0, 100, 0})
     curve:rotate(lurek.math.pi / 2, 0, 0)
     local x, y = curve:getControlPoint(2)
-    print("end point = " .. x .. "," .. y)
+    example_print_log("end point = " .. x .. "," .. y)
+    example_print_log("curve points = " .. curve:getControlPointCount())
 end
 ```
 
@@ -4100,7 +4264,8 @@ do
     local curve = lurek.math.newBezierCurve({0, 0, 100, 0})
     curve:scale(2, 0, 0)
     local x, y = curve:getControlPoint(2)
-    print("end point = " .. x .. "," .. y)
+    example_print_log("end point = " .. x .. "," .. y)
+    example_print_log("curve points = " .. curve:getControlPointCount())
 end
 ```
 
@@ -4136,8 +4301,8 @@ do
     local beforeX, beforeY = curve:getControlPoint(2)
     curve:setControlPoint(2, 50, 80)
     local afterX, afterY = curve:getControlPoint(2)
-    print("before = " .. beforeX .. "," .. beforeY)
-    print("after = " .. afterX .. "," .. afterY)
+    example_print_log("before = " .. beforeX .. "," .. beforeY)
+    example_print_log("after = " .. afterX .. "," .. afterY)
 end
 ```
 
@@ -4166,8 +4331,8 @@ do
     local beforeX, beforeY = curve:evaluate(0)
     curve:translate(10, 20)
     local afterX, afterY = curve:evaluate(0)
-    print("before = " .. beforeX .. "," .. beforeY)
-    print("after = " .. afterX .. "," .. afterY)
+    example_print_log("before = " .. beforeX .. "," .. beforeY)
+    example_print_log("after = " .. afterX .. "," .. afterY)
 end
 ```
 
@@ -4192,8 +4357,10 @@ LBezierCurve:type()
 ```lua
 do
     local curve = lurek.math.newBezierCurve({0, 0, 100, 50, 200, 0})
-    print(curve:type())
-    print("typeOf LObject = " .. tostring(curve:typeOf("LObject")))
+    example_print_log(curve:type())
+    example_print_log("curve points = " .. curve:getControlPointCount())
+    example_print_log("curve length = " .. curve:length())
+    example_print_log("curve midpoint x = " .. select(1, curve:evaluate(0.5)))
 end
 ```
 
@@ -4224,8 +4391,10 @@ LBezierCurve:typeOf(name)
 ```lua
 do
     local curve = lurek.math.newBezierCurve({0, 0, 100, 50, 200, 0})
-    print(tostring(curve:typeOf("LBezierCurve")))
-    print("type = " .. tostring(curve:type()))
+    example_print_log(tostring(curve:typeOf("LBezierCurve")))
+    example_print_log("type = " .. tostring(curve:type()))
+    example_print_log("curve points = " .. curve:getControlPointCount())
+    example_print_log("curve length = " .. curve:length())
 end
 ```
 
@@ -4259,9 +4428,10 @@ LCatmullRom:addPoint(x, y)
 ```lua
 do
     local spline = lurek.math.catmullRom({{x = 0, y = 0}, {x = 50, y = 80}, {x = 100, y = 20}})
-    print("before = " .. spline:len())
+    example_print_log("before = " .. spline:len())
     spline:addPoint(150, 60)
-    print("after = " .. spline:len())
+    example_print_log("after = " .. spline:len())
+    example_print_log("spline points = " .. spline:len())
 end
 ```
 
@@ -4286,8 +4456,10 @@ LCatmullRom:len()
 ```lua
 do
     local spline = lurek.math.catmullRom({{x = 0, y = 0}, {x = 50, y = 100}, {x = 150, y = 100}, {x = 200, y = 0}})
-    print("len = " .. spline:len())
-    print("owner type = " .. tostring(spline:type()))
+    example_print_log("len = " .. spline:len())
+    example_print_log("spline points = " .. spline:len())
+    example_print_log("sample x at 0.5 = " .. select(1, spline:sample(0.5)))
+    example_print_log("sample y at 0.5 = " .. select(2, spline:sample(0.5)))
 end
 ```
 
@@ -4320,8 +4492,9 @@ LCatmullRom:removePoint(idx)
 do
     local spline = lurek.math.catmullRom({{x = 0, y = 0}, {x = 50, y = 80}, {x = 100, y = 20}, {x = 150, y = 60}})
     local x, y = spline:removePoint(1)
-    print("removed = " .. x .. "," .. y)
-    print("after = " .. spline:len())
+    example_print_log("removed = " .. x .. "," .. y)
+    example_print_log("after = " .. spline:len())
+    example_print_log("spline points = " .. spline:len())
 end
 ```
 
@@ -4354,7 +4527,9 @@ LCatmullRom:sample(t)
 do
     local spline = lurek.math.catmullRom({{x = 0, y = 0}, {x = 50, y = 80}, {x = 100, y = 20}, {x = 150, y = 60}})
     local x, y = spline:sample(0.25)
-    print("t=0.25 = " .. x .. "," .. y)
+    example_print_log("t=0.25 = " .. x .. "," .. y)
+    example_print_log("spline points = " .. spline:len())
+    example_print_log("sample x at 0.5 = " .. select(1, spline:sample(0.5)))
 end
 ```
 
@@ -4388,7 +4563,9 @@ LCatmullRom:sampleSegment(seg, t)
 do
     local spline = lurek.math.catmullRom({{x = 0, y = 0}, {x = 50, y = 80}, {x = 100, y = 20}, {x = 150, y = 60}})
     local x, y = spline:sampleSegment(1, 0.5)
-    print("segment 1 = " .. x .. "," .. y)
+    example_print_log("segment 1 = " .. x .. "," .. y)
+    example_print_log("spline points = " .. spline:len())
+    example_print_log("sample x at 0.5 = " .. select(1, spline:sample(0.5)))
 end
 ```
 
@@ -4413,8 +4590,10 @@ LCatmullRom:type()
 ```lua
 do
     local spline = lurek.math.catmullRom({{x = 0, y = 0}, {x = 50, y = 100}, {x = 150, y = 100}, {x = 200, y = 0}})
-    print(spline:type())
-    print("typeOf LObject = " .. tostring(spline:typeOf("LObject")))
+    example_print_log(spline:type())
+    example_print_log("spline points = " .. spline:len())
+    example_print_log("sample x at 0.5 = " .. select(1, spline:sample(0.5)))
+    example_print_log("sample y at 0.5 = " .. select(2, spline:sample(0.5)))
 end
 ```
 
@@ -4445,8 +4624,10 @@ LCatmullRom:typeOf(name)
 ```lua
 do
     local spline = lurek.math.catmullRom({{x = 0, y = 0}, {x = 50, y = 100}, {x = 150, y = 100}, {x = 200, y = 0}})
-    print(tostring(spline:typeOf("LCatmullRom")))
-    print("type = " .. tostring(spline:type()))
+    example_print_log(tostring(spline:typeOf("LCatmullRom")))
+    example_print_log("type = " .. tostring(spline:type()))
+    example_print_log("spline points = " .. spline:len())
+    example_print_log("sample x at 0.5 = " .. select(1, spline:sample(0.5)))
 end
 ```
 
@@ -4483,7 +4664,9 @@ LCircle:aabb()
 do
     local c1 = lurek.math.newCircle(0, 0, 10)
     local minx, miny, maxx, maxy = c1:aabb()
-    print("aabb = " .. minx .. "," .. miny .. " " .. maxx .. "," .. maxy)
+    example_print_log("aabb = " .. minx .. "," .. miny .. " " .. maxx .. "," .. maxy)
+    example_print_log("radius = " .. c1:radius())
+    example_print_log("center x = " .. c1:x())
 end
 ```
 
@@ -4508,8 +4691,10 @@ LCircle:area()
 ```lua
 do
     local c = lurek.math.newCircle(100, 100, 50)
-    print("area = " .. c:area())
-    print("owner type = " .. tostring(c:type()))
+    example_print_log("area = " .. c:area())
+    example_print_log("radius = " .. c:radius())
+    example_print_log("center x = " .. c:x())
+    example_print_log("center y = " .. c:y())
 end
 ```
 
@@ -4541,8 +4726,10 @@ LCircle:contains(px, py)
 ```lua
 do
     local circle = lurek.math.newCircle(0, 0, 10)
-    print("contains = " .. tostring(circle:contains(5, 5)))
-    print("owner type = " .. tostring(circle:type()))
+    example_print_log("contains = " .. tostring(circle:contains(5, 5)))
+    example_print_log("radius = " .. circle:radius())
+    example_print_log("center x = " .. circle:x())
+    example_print_log("center y = " .. circle:y())
 end
 ```
 
@@ -4574,7 +4761,9 @@ LCircle:intersects(other)
 do
     local a = lurek.math.newCircle(0, 0, 10)
     local b = lurek.math.newCircle(15, 0, 10)
-    print("intersects = " .. tostring(a:intersects(b)))
+    example_print_log("intersects = " .. tostring(a:intersects(b)))
+    example_print_log("radius = " .. a:radius())
+    example_print_log("center x = " .. a:x())
 end
 ```
 
@@ -4599,8 +4788,10 @@ LCircle:perimeter()
 ```lua
 do
     local c = lurek.math.newCircle(100, 100, 50)
-    print("perimeter = " .. c:perimeter())
-    print("owner type = " .. tostring(c:type()))
+    example_print_log("perimeter = " .. c:perimeter())
+    example_print_log("radius = " .. c:radius())
+    example_print_log("center x = " .. c:x())
+    example_print_log("center y = " .. c:y())
 end
 ```
 
@@ -4625,8 +4816,10 @@ LCircle:radius()
 ```lua
 do
     local c = lurek.math.newCircle(100, 100, 50)
-    print("radius = " .. c:radius())
-    print("owner type = " .. tostring(c:type()))
+    example_print_log("radius = " .. c:radius())
+    example_print_log("radius = " .. c:radius())
+    example_print_log("center x = " .. c:x())
+    example_print_log("center y = " .. c:y())
 end
 ```
 
@@ -4651,8 +4844,10 @@ LCircle:type()
 ```lua
 do
     local c = lurek.math.newCircle(100, 100, 50)
-    print(c:type())
-    print("typeOf LObject = " .. tostring(c:typeOf("LObject")))
+    example_print_log(c:type())
+    example_print_log("radius = " .. c:radius())
+    example_print_log("center x = " .. c:x())
+    example_print_log("center y = " .. c:y())
 end
 ```
 
@@ -4683,8 +4878,10 @@ LCircle:typeOf(name)
 ```lua
 do
     local c = lurek.math.newCircle(100, 100, 50)
-    print(tostring(c:typeOf("LCircle")))
-    print("type = " .. tostring(c:type()))
+    example_print_log(tostring(c:typeOf("LCircle")))
+    example_print_log("type = " .. tostring(c:type()))
+    example_print_log("radius = " .. c:radius())
+    example_print_log("center x = " .. c:x())
 end
 ```
 
@@ -4709,8 +4906,10 @@ LCircle:x()
 ```lua
 do
     local c = lurek.math.newCircle(100, 100, 50)
-    print("x = " .. c:x())
-    print("owner type = " .. tostring(c:type()))
+    example_print_log("x = " .. c:x())
+    example_print_log("radius = " .. c:radius())
+    example_print_log("center x = " .. c:x())
+    example_print_log("center y = " .. c:y())
 end
 ```
 
@@ -4735,8 +4934,10 @@ LCircle:y()
 ```lua
 do
     local c = lurek.math.newCircle(100, 100, 50)
-    print("y = " .. c:y())
-    print("owner type = " .. tostring(c:type()))
+    example_print_log("y = " .. c:y())
+    example_print_log("radius = " .. c:radius())
+    example_print_log("center x = " .. c:x())
+    example_print_log("center y = " .. c:y())
 end
 ```
 
@@ -4777,7 +4978,9 @@ LHermite:sample(t)
 do
     local h = lurek.math.hermite(0, 0, 200, 0, 1, 2, -1, 2)
     local x, y = h:sample(0.5)
-    print("sample = " .. x .. "," .. y)
+    example_print_log("sample = " .. x .. "," .. y)
+    example_print_log("sample x at 0.25 = " .. select(1, h:sample(0.25)))
+    example_print_log("sample y at 0.25 = " .. select(2, h:sample(0.25)))
 end
 ```
 
@@ -4802,8 +5005,10 @@ LHermite:type()
 ```lua
 do
     local h = lurek.math.hermite(0, 0, 200, 0, 1, 2, -1, 2)
-    print(h:type())
-    print("typeOf LObject = " .. tostring(h:typeOf("LObject")))
+    example_print_log(h:type())
+    example_print_log("sample x at 0.25 = " .. select(1, h:sample(0.25)))
+    example_print_log("sample y at 0.25 = " .. select(2, h:sample(0.25)))
+    example_print_log("sample x at 0.75 = " .. select(1, h:sample(0.75)))
 end
 ```
 
@@ -4834,8 +5039,10 @@ LHermite:typeOf(name)
 ```lua
 do
     local h = lurek.math.hermite(0, 0, 200, 0, 1, 2, -1, 2)
-    print(tostring(h:typeOf("LHermite")))
-    print("type = " .. tostring(h:type()))
+    example_print_log(tostring(h:typeOf("LHermite")))
+    example_print_log("type = " .. tostring(h:type()))
+    example_print_log("sample x at 0.25 = " .. select(1, h:sample(0.25)))
+    example_print_log("sample y at 0.25 = " .. select(2, h:sample(0.25)))
 end
 ```
 
@@ -4871,7 +5078,9 @@ LLootTable:add(id, weight, meta)
 do
     local tbl = lurek.math.newLootTable(1)
     tbl:add("wood", 1.0)
-    print("add ok")
+    example_print_log("add ok")
+    example_print_log("entries = " .. tostring(tbl:entryCount()))
+    example_print_log("sample now = " .. tostring(tbl:sample()))
 end
 ```
 
@@ -4892,7 +5101,8 @@ do
     local tbl = lurek.math.newLootTable(1)
     tbl:add("wood", 1.0)
     tbl:build()
-    print("build ok")
+    example_print_log("build ok")
+    example_print_log("entries = " .. tostring(tbl:entryCount()))
 end
 ```
 
@@ -4918,7 +5128,9 @@ LLootTable:entryCount()
 do
     local tbl = lurek.math.newLootTable(1)
     tbl:add("wood", 1.0)
-    print("entryCount = " .. tostring(tbl:entryCount()))
+    example_print_log("entryCount = " .. tostring(tbl:entryCount()))
+    example_print_log("entries = " .. tostring(tbl:entryCount()))
+    example_print_log("sample now = " .. tostring(tbl:sample()))
 end
 ```
 
@@ -4948,7 +5160,7 @@ do
     b:add("b", 1.0)
     a:merge(b)
     a:build()
-    print("merged entries = " .. tostring(a:entryCount()))
+    example_print_log("merged entries = " .. tostring(a:entryCount()))
 end
 ```
 
@@ -4981,7 +5193,8 @@ do
     local tbl = lurek.math.newLootTable(1)
     tbl:add("wood", 1.0)
     tbl:remove("wood")
-    print("remove ok")
+    example_print_log("remove ok")
+    example_print_log("entries = " .. tostring(tbl:entryCount()))
 end
 ```
 
@@ -5011,7 +5224,7 @@ do
     local blob = a:save()
     local restored = lurek.math.newLootTable()
     restored:restore(blob)
-    print("restore count = " .. tostring(restored:entryCount()))
+    example_print_log("restore count = " .. tostring(restored:entryCount()))
 end
 ```
 
@@ -5038,7 +5251,8 @@ do
     local tbl = lurek.math.newLootTable(1)
     tbl:add("wood", 1.0)
     tbl:build()
-    print("sample = " .. tostring(tbl:sample()))
+    example_print_log("sample = " .. tostring(tbl:sample()))
+    example_print_log("entries = " .. tostring(tbl:entryCount()))
 end
 ```
 
@@ -5073,7 +5287,7 @@ do
     tbl:add("stone", 1.0)
     tbl:build()
     local picks = tbl:sampleN(2)
-    print("sampleN = " .. tostring(#picks))
+    example_print_log("sampleN = " .. tostring(#picks))
 end
 ```
 
@@ -5108,7 +5322,7 @@ do
     tbl:add("stone", 1.0)
     tbl:build()
     local picks = tbl:sampleUnique(2)
-    print("sampleUnique = " .. tostring(#picks))
+    example_print_log("sampleUnique = " .. tostring(#picks))
 end
 ```
 
@@ -5136,7 +5350,7 @@ do
     a:add("a", 1.0)
     a:build()
     local blob = a:save()
-    print("save blob = " .. tostring(blob))
+    example_print_log("save blob = " .. tostring(blob))
 end
 ```
 
@@ -5162,7 +5376,9 @@ LLootTable:setSeed(seed)
 do
     local tbl = lurek.math.newLootTable(1)
     tbl:setSeed(7)
-    print("setSeed ok")
+    example_print_log("setSeed ok")
+    example_print_log("entries = " .. tostring(tbl:entryCount()))
+    example_print_log("sample now = " .. tostring(tbl:sample()))
 end
 ```
 
@@ -5196,7 +5412,8 @@ do
     local tbl = lurek.math.newLootTable(1)
     tbl:add("wood", 1.0)
     tbl:setWeight("wood", 2.0)
-    print("setWeight ok")
+    example_print_log("setWeight ok")
+    example_print_log("entries = " .. tostring(tbl:entryCount()))
 end
 ```
 
@@ -5221,8 +5438,10 @@ LLootTable:type()
 ```lua
 do
     local tbl = lurek.math.newLootTable(1)
-    print("type = " .. tostring(tbl:type()))
-    print("typeOf LObject = " .. tostring(tbl:typeOf("LObject")))
+    example_print_log("type = " .. tostring(tbl:type()))
+    example_print_log("entries = " .. tostring(tbl:entryCount()))
+    example_print_log("sample now = " .. tostring(tbl:sample()))
+    example_print_log("save blob exists = " .. tostring(tbl:save() ~= nil))
 end
 ```
 
@@ -5253,8 +5472,10 @@ LLootTable:typeOf(name)
 ```lua
 do
     local tbl = lurek.math.newLootTable(1)
-    print("typeOf = " .. tostring(tbl:typeOf("LLootTable")))
-    print("type = " .. tostring(tbl:type()))
+    example_print_log("typeOf = " .. tostring(tbl:typeOf("LLootTable")))
+    example_print_log("type = " .. tostring(tbl:type()))
+    example_print_log("entries = " .. tostring(tbl:entryCount()))
+    example_print_log("sample now = " .. tostring(tbl:sample()))
 end
 ```
 
@@ -5287,8 +5508,10 @@ LPityTracker:counter()
 ```lua
 do
     local pity = lurek.math.newPityTracker("rare", 2)
-    print("counter = " .. tostring(pity:counter()))
-    print("owner type = " .. tostring(pity:type()))
+    example_print_log("counter = " .. tostring(pity:counter()))
+    example_print_log("counter = " .. tostring(pity:counter()))
+    example_print_log("primed = " .. tostring(pity:isPrimed()))
+    example_print_log("export exists = " .. tostring(pity:export() ~= nil))
 end
 ```
 
@@ -5314,7 +5537,9 @@ LPityTracker:export()
 do
     local pity = lurek.math.newPityTracker("rare", 2)
     local snapshot = pity:export()
-    print("export ok = " .. tostring(snapshot ~= nil))
+    example_print_log("export ok = " .. tostring(snapshot ~= nil))
+    example_print_log("counter = " .. tostring(pity:counter()))
+    example_print_log("primed = " .. tostring(pity:isPrimed()))
 end
 ```
 
@@ -5341,7 +5566,8 @@ do
     local pity = lurek.math.newPityTracker("rare", 2)
     local snapshot = pity:export()
     pity:import(snapshot)
-    print("import ok")
+    example_print_log("import ok")
+    example_print_log("counter = " .. tostring(pity:counter()))
 end
 ```
 
@@ -5367,7 +5593,9 @@ LPityTracker:isPrimed()
 do
     local pity = lurek.math.newPityTracker("rare", 1)
     pity:notice("common")
-    print("isPrimed = " .. tostring(pity:isPrimed()))
+    example_print_log("isPrimed = " .. tostring(pity:isPrimed()))
+    example_print_log("counter = " .. tostring(pity:counter()))
+    example_print_log("primed = " .. tostring(pity:isPrimed()))
 end
 ```
 
@@ -5399,7 +5627,9 @@ LPityTracker:notice(result_id)
 do
     local pity = lurek.math.newPityTracker("rare", 2)
     pity:notice("common")
-    print("notice ok")
+    example_print_log("notice ok")
+    example_print_log("counter = " .. tostring(pity:counter()))
+    example_print_log("primed = " .. tostring(pity:isPrimed()))
 end
 ```
 
@@ -5420,7 +5650,8 @@ do
     local pity = lurek.math.newPityTracker("rare", 2)
     pity:notice("common")
     pity:reset()
-    print("reset counter = " .. tostring(pity:counter()))
+    example_print_log("reset counter = " .. tostring(pity:counter()))
+    example_print_log("counter = " .. tostring(pity:counter()))
 end
 ```
 
@@ -5447,7 +5678,8 @@ do
     local pity = lurek.math.newPityTracker("b", 1)
     local pity_blob = pity:save()
     pity:restore(pity_blob)
-    print("pity restore ok")
+    example_print_log("pity restore ok")
+    example_print_log("counter = " .. tostring(pity:counter()))
 end
 ```
 
@@ -5473,7 +5705,9 @@ LPityTracker:save()
 do
     local pity = lurek.math.newPityTracker("b", 1)
     local pity_blob = pity:save()
-    print("pity save blob = " .. tostring(pity_blob))
+    example_print_log("pity save blob = " .. tostring(pity_blob))
+    example_print_log("counter = " .. tostring(pity:counter()))
+    example_print_log("primed = " .. tostring(pity:isPrimed()))
 end
 ```
 
@@ -5498,8 +5732,10 @@ LPityTracker:type()
 ```lua
 do
     local pity = lurek.math.newPityTracker("rare", 2)
-    print("type = " .. tostring(pity:type()))
-    print("typeOf LObject = " .. tostring(pity:typeOf("LObject")))
+    example_print_log("type = " .. tostring(pity:type()))
+    example_print_log("counter = " .. tostring(pity:counter()))
+    example_print_log("primed = " .. tostring(pity:isPrimed()))
+    example_print_log("export exists = " .. tostring(pity:export() ~= nil))
 end
 ```
 
@@ -5530,8 +5766,10 @@ LPityTracker:typeOf(name)
 ```lua
 do
     local pity = lurek.math.newPityTracker("rare", 2)
-    print("typeOf = " .. tostring(pity:typeOf("LPityTracker")))
-    print("type = " .. tostring(pity:type()))
+    example_print_log("typeOf = " .. tostring(pity:typeOf("LPityTracker")))
+    example_print_log("type = " .. tostring(pity:type()))
+    example_print_log("counter = " .. tostring(pity:counter()))
+    example_print_log("primed = " .. tostring(pity:isPrimed()))
 end
 ```
 
@@ -5571,7 +5809,9 @@ LRandomGenerator:chance(probability)
 do
     local rng = lurek.math.newRandomGenerator(10)
     local crit = rng:chance(0.05)
-    print("critical hit (5%) = " .. tostring(crit))
+    example_print_log("critical hit (5%) = " .. tostring(crit))
+    example_print_log("d6 preview = " .. rng:randomInt(1, 6))
+    example_print_log("coin flip = " .. tostring(rng:chance(0.5)))
 end
 ```
 
@@ -5605,7 +5845,9 @@ LRandomGenerator:countSuccesses(count, sides, target)
 do
     local rng = lurek.math.newRandomGenerator(9)
     local hits = rng:countSuccesses(5, 10, 7)
-    print("5d10 successes (7+) = " .. hits)
+    example_print_log("5d10 successes (7+) = " .. hits)
+    example_print_log("d6 preview = " .. rng:randomInt(1, 6))
+    example_print_log("coin flip = " .. tostring(rng:chance(0.5)))
 end
 ```
 
@@ -5630,8 +5872,10 @@ LRandomGenerator:getSeed()
 ```lua
 do
     local rng = lurek.math.newRandomGenerator(77)
-    print("seed = " .. rng:getSeed())
-    print("owner type = " .. tostring(rng:type()))
+    example_print_log("seed = " .. rng:getSeed())
+    example_print_log("d6 preview = " .. rng:randomInt(1, 6))
+    example_print_log("coin flip = " .. tostring(rng:chance(0.5)))
+    example_print_log("state token exists = " .. tostring(rng:getState() ~= nil))
 end
 ```
 
@@ -5656,8 +5900,10 @@ LRandomGenerator:getState()
 ```lua
 do
     local rng = lurek.math.newRandomGenerator(999)
-    print("state = " .. rng:getState())
-    print("owner type = " .. tostring(rng:type()))
+    example_print_log("state = " .. rng:getState())
+    example_print_log("d6 preview = " .. rng:randomInt(1, 6))
+    example_print_log("coin flip = " .. tostring(rng:chance(0.5)))
+    example_print_log("state token exists = " .. tostring(rng:getState() ~= nil))
 end
 ```
 
@@ -5682,8 +5928,10 @@ LRandomGenerator:random()
 ```lua
 do
     local rng = lurek.math.newRandomGenerator(100)
-    print("random = " .. rng:random())
-    print("owner type = " .. tostring(rng:type()))
+    example_print_log("random = " .. rng:random())
+    example_print_log("d6 preview = " .. rng:randomInt(1, 6))
+    example_print_log("coin flip = " .. tostring(rng:chance(0.5)))
+    example_print_log("state token exists = " .. tostring(rng:getState() ~= nil))
 end
 ```
 
@@ -5715,8 +5963,10 @@ LRandomGenerator:randomFloat(min, max)
 ```lua
 do
     local rng = lurek.math.newRandomGenerator(100)
-    print("float = " .. rng:randomFloat(1.0, 5.0))
-    print("owner type = " .. tostring(rng:type()))
+    example_print_log("float = " .. rng:randomFloat(1.0, 5.0))
+    example_print_log("d6 preview = " .. rng:randomInt(1, 6))
+    example_print_log("coin flip = " .. tostring(rng:chance(0.5)))
+    example_print_log("state token exists = " .. tostring(rng:getState() ~= nil))
 end
 ```
 
@@ -5748,8 +5998,10 @@ LRandomGenerator:randomInt(min, max)
 ```lua
 do
     local rng = lurek.math.newRandomGenerator(100)
-    print("int = " .. rng:randomInt(1, 100))
-    print("owner type = " .. tostring(rng:type()))
+    example_print_log("int = " .. rng:randomInt(1, 100))
+    example_print_log("d6 preview = " .. rng:randomInt(1, 6))
+    example_print_log("coin flip = " .. tostring(rng:chance(0.5)))
+    example_print_log("state token exists = " .. tostring(rng:getState() ~= nil))
 end
 ```
 
@@ -5781,8 +6033,10 @@ LRandomGenerator:randomNormal(stddev, mean)
 ```lua
 do
     local rng = lurek.math.newRandomGenerator(100)
-    print("normal = " .. rng:randomNormal(1.0, 0.0))
-    print("owner type = " .. tostring(rng:type()))
+    example_print_log("normal = " .. rng:randomNormal(1.0, 0.0))
+    example_print_log("d6 preview = " .. rng:randomInt(1, 6))
+    example_print_log("coin flip = " .. tostring(rng:chance(0.5)))
+    example_print_log("state token exists = " .. tostring(rng:getState() ~= nil))
 end
 ```
 
@@ -5814,7 +6068,9 @@ LRandomGenerator:roll(sides)
 do
     local rng = lurek.math.newRandomGenerator(1)
     local d20 = rng:roll(20)
-    print("d20 = " .. d20)
+    example_print_log("d20 = " .. d20)
+    example_print_log("d6 preview = " .. rng:randomInt(1, 6))
+    example_print_log("coin flip = " .. tostring(rng:chance(0.5)))
 end
 ```
 
@@ -5846,7 +6102,9 @@ LRandomGenerator:rollAdvantage(sides)
 do
     local rng = lurek.math.newRandomGenerator(6)
     local adv = rng:rollAdvantage(20)
-    print("d20 advantage = " .. adv)
+    example_print_log("d20 advantage = " .. adv)
+    example_print_log("d6 preview = " .. rng:randomInt(1, 6))
+    example_print_log("coin flip = " .. tostring(rng:chance(0.5)))
 end
 ```
 
@@ -5878,7 +6136,9 @@ LRandomGenerator:rollDisadvantage(sides)
 do
     local rng = lurek.math.newRandomGenerator(7)
     local dis = rng:rollDisadvantage(20)
-    print("d20 disadvantage = " .. dis)
+    example_print_log("d20 disadvantage = " .. dis)
+    example_print_log("d6 preview = " .. rng:randomInt(1, 6))
+    example_print_log("coin flip = " .. tostring(rng:chance(0.5)))
 end
 ```
 
@@ -5911,7 +6171,9 @@ LRandomGenerator:rollExploding(count, sides)
 do
     local rng = lurek.math.newRandomGenerator(8)
     local ex = rng:rollExploding(3, 6)
-    print("3d6 exploding = " .. ex)
+    example_print_log("3d6 exploding = " .. ex)
+    example_print_log("d6 preview = " .. rng:randomInt(1, 6))
+    example_print_log("coin flip = " .. tostring(rng:chance(0.5)))
 end
 ```
 
@@ -5945,7 +6207,9 @@ LRandomGenerator:rollKeepHighest(count, sides, keep)
 do
     local rng = lurek.math.newRandomGenerator(4)
     local stat = rng:rollKeepHighest(4, 6, 3)
-    print("4d6 keep 3 highest = " .. stat)
+    example_print_log("4d6 keep 3 highest = " .. stat)
+    example_print_log("d6 preview = " .. rng:randomInt(1, 6))
+    example_print_log("coin flip = " .. tostring(rng:chance(0.5)))
 end
 ```
 
@@ -5979,7 +6243,9 @@ LRandomGenerator:rollKeepLowest(count, sides, keep)
 do
     local rng = lurek.math.newRandomGenerator(5)
     local penalty = rng:rollKeepLowest(4, 6, 3)
-    print("4d6 keep 3 lowest = " .. penalty)
+    example_print_log("4d6 keep 3 lowest = " .. penalty)
+    example_print_log("d6 preview = " .. rng:randomInt(1, 6))
+    example_print_log("coin flip = " .. tostring(rng:chance(0.5)))
 end
 ```
 
@@ -6012,7 +6278,9 @@ LRandomGenerator:rollN(count, sides)
 do
     local rng = lurek.math.newRandomGenerator(2)
     local dice = rng:rollN(3, 6)
-    print("3d6 = " .. dice[1] .. ", " .. dice[2] .. ", " .. dice[3])
+    example_print_log("3d6 = " .. dice[1] .. ", " .. dice[2] .. ", " .. dice[3])
+    example_print_log("d6 preview = " .. rng:randomInt(1, 6))
+    example_print_log("coin flip = " .. tostring(rng:chance(0.5)))
 end
 ```
 
@@ -6045,7 +6313,9 @@ LRandomGenerator:rollSum(count, sides)
 do
     local rng = lurek.math.newRandomGenerator(3)
     local total = rng:rollSum(4, 6)
-    print("4d6 sum = " .. total)
+    example_print_log("4d6 sum = " .. total)
+    example_print_log("d6 preview = " .. rng:randomInt(1, 6))
+    example_print_log("coin flip = " .. tostring(rng:chance(0.5)))
 end
 ```
 
@@ -6071,7 +6341,9 @@ LRandomGenerator:setSeed(seed)
 do
     local rng = lurek.math.newRandomGenerator(1)
     rng:setSeed(999)
-    print("seed = " .. rng:getSeed())
+    example_print_log("seed = " .. rng:getSeed())
+    example_print_log("d6 preview = " .. rng:randomInt(1, 6))
+    example_print_log("coin flip = " .. tostring(rng:chance(0.5)))
 end
 ```
 
@@ -6101,8 +6373,8 @@ do
     local skipped = rng:random()
     rng:setState(state)
     local restored = rng:random()
-    print("restored = " .. tostring(skipped == restored))
-    print("first = " .. first)
+    example_print_log("restored = " .. tostring(skipped == restored))
+    example_print_log("first = " .. first)
 end
 ```
 
@@ -6127,8 +6399,10 @@ LRandomGenerator:type()
 ```lua
 do
     local rng = lurek.math.newRandomGenerator(77)
-    print("type = " .. rng:type())
-    print("typeOf LObject = " .. tostring(rng:typeOf("LObject")))
+    example_print_log("type = " .. rng:type())
+    example_print_log("d6 preview = " .. rng:randomInt(1, 6))
+    example_print_log("coin flip = " .. tostring(rng:chance(0.5)))
+    example_print_log("state token exists = " .. tostring(rng:getState() ~= nil))
 end
 ```
 
@@ -6159,8 +6433,10 @@ LRandomGenerator:typeOf(name)
 ```lua
 do
     local rng = lurek.math.newRandomGenerator(77)
-    print("typeOf = " .. tostring(rng:typeOf("LRandomGenerator")))
-    print("type = " .. tostring(rng:type()))
+    example_print_log("typeOf = " .. tostring(rng:typeOf("LRandomGenerator")))
+    example_print_log("type = " .. tostring(rng:type()))
+    example_print_log("d6 preview = " .. rng:randomInt(1, 6))
+    example_print_log("coin flip = " .. tostring(rng:chance(0.5)))
 end
 ```
 
@@ -6189,7 +6465,8 @@ do
     local rp = lurek.math.newRectPacker(512, 512, 2)
     rp:pack(64, 64, "box")
     rp:clear()
-    print("packed = " .. #rp:getPacked())
+    example_print_log("packed = " .. #rp:getPacked())
+    example_print_log("occupancy = " .. rp:occupancy())
 end
 ```
 
@@ -6216,7 +6493,8 @@ do
     local rp = lurek.math.newRectPacker(512, 512, 2)
     rp:pack(64, 64, "box")
     local packed = rp:getPacked()
-    print("packed = " .. #packed)
+    example_print_log("packed = " .. #packed)
+    example_print_log("occupancy = " .. rp:occupancy())
 end
 ```
 
@@ -6242,7 +6520,9 @@ LRectPacker:occupancy()
 do
     local rp = lurek.math.newRectPacker(512, 512, 2)
     rp:pack(64, 64, "box")
-    print("occupancy = " .. rp:occupancy())
+    example_print_log("occupancy = " .. rp:occupancy())
+    example_print_log("occupancy = " .. rp:occupancy())
+    example_print_log("packed count = " .. #rp:getPacked())
 end
 ```
 
@@ -6277,7 +6557,9 @@ LRectPacker:pack(w, h, id)
 do
     local rp = lurek.math.newRectPacker(512, 512, 2)
     local x, y = rp:pack(64, 64, "box")
-    print("pack = " .. tostring(x) .. "," .. tostring(y))
+    example_print_log("pack = " .. tostring(x) .. "," .. tostring(y))
+    example_print_log("occupancy = " .. rp:occupancy())
+    example_print_log("packed count = " .. #rp:getPacked())
 end
 ```
 
@@ -6306,7 +6588,8 @@ do
     local sh = lurek.math.newSpatialHash(32)
     sh:insert("a", 50, 50, 10, 10)
     sh:clear()
-    print("count = " .. sh:getItemCount())
+    example_print_log("count = " .. sh:getItemCount())
+    example_print_log("cell size = " .. sh:getCellSize())
 end
 ```
 
@@ -6331,8 +6614,10 @@ LSpatialHash:getCellSize()
 ```lua
 do
     local sh = lurek.math.newSpatialHash(32)
-    print("cell size = " .. sh:getCellSize())
-    print("owner type = " .. tostring(sh:type()))
+    example_print_log("cell size = " .. sh:getCellSize())
+    example_print_log("cell size = " .. sh:getCellSize())
+    example_print_log("item count = " .. sh:getItemCount())
+    example_print_log("origin hits = " .. #sh:queryRect(0, 0, 1, 1))
 end
 ```
 
@@ -6358,7 +6643,9 @@ LSpatialHash:getItemCount()
 do
     local sh = lurek.math.newSpatialHash(32)
     sh:insert("a", 50, 50, 10, 10)
-    print("items = " .. sh:getItemCount())
+    example_print_log("items = " .. sh:getItemCount())
+    example_print_log("cell size = " .. sh:getCellSize())
+    example_print_log("item count = " .. sh:getItemCount())
 end
 ```
 
@@ -6388,7 +6675,9 @@ LSpatialHash:insert(id, x, y, w, h)
 do
     local sh = lurek.math.newSpatialHash(32)
     sh:insert("a", 50, 50, 10, 10)
-    print("items = " .. sh:getItemCount())
+    example_print_log("items = " .. sh:getItemCount())
+    example_print_log("cell size = " .. sh:getCellSize())
+    example_print_log("item count = " .. sh:getItemCount())
 end
 ```
 
@@ -6424,7 +6713,7 @@ do
     sh:insert("a", 0, 0, 10, 10)
     sh:insert("b", 5, 5, 10, 10)
     local hits = sh:queryCircle(5, 5, 10)
-    print("circle hits = " .. #hits)
+    example_print_log("circle hits = " .. #hits)
 end
 ```
 
@@ -6461,7 +6750,7 @@ do
     sh:insert("a", 0, 0, 10, 10)
     sh:insert("b", 5, 5, 10, 10)
     local hits = sh:queryRect(0, 0, 12, 12)
-    print("rect hits = " .. #hits)
+    example_print_log("rect hits = " .. #hits)
 end
 ```
 
@@ -6498,7 +6787,7 @@ do
     sh:insert("a", 0, 0, 10, 10)
     sh:insert("b", 5, 5, 10, 10)
     local hits = sh:querySegment(0, 0, 50, 50)
-    print("segment hits = " .. #hits)
+    example_print_log("segment hits = " .. #hits)
 end
 ```
 
@@ -6526,7 +6815,7 @@ do
     sh:insert("a", 0, 0, 10, 10)
     sh:insert("b", 5, 5, 10, 10)
     sh:remove("b")
-    print("items = " .. sh:getItemCount())
+    example_print_log("items = " .. sh:getItemCount())
 end
 ```
 
@@ -6551,8 +6840,10 @@ LSpatialHash:type()
 ```lua
 do
     local sh = lurek.math.newSpatialHash(32)
-    print(sh:type())
-    print("typeOf LObject = " .. tostring(sh:typeOf("LObject")))
+    example_print_log(sh:type())
+    example_print_log("cell size = " .. sh:getCellSize())
+    example_print_log("item count = " .. sh:getItemCount())
+    example_print_log("origin hits = " .. #sh:queryRect(0, 0, 1, 1))
 end
 ```
 
@@ -6583,8 +6874,10 @@ LSpatialHash:typeOf(name)
 ```lua
 do
     local sh = lurek.math.newSpatialHash(32)
-    print(tostring(sh:typeOf("LSpatialHash")))
-    print("type = " .. tostring(sh:type()))
+    example_print_log(tostring(sh:typeOf("LSpatialHash")))
+    example_print_log("type = " .. tostring(sh:type()))
+    example_print_log("cell size = " .. sh:getCellSize())
+    example_print_log("item count = " .. sh:getItemCount())
 end
 ```
 
@@ -6616,7 +6909,7 @@ do
     sh:insert("a", 0, 0, 10, 10)
     sh:update("a", 200, 200, 10, 10)
     local hits = sh:queryRect(190, 190, 20, 20)
-    print("rect hits = " .. #hits)
+    example_print_log("rect hits = " .. #hits)
 end
 ```
 
@@ -6651,7 +6944,8 @@ do
     local t = lurek.math.newTransform(10, 20, 0.5)
     local clone = t:clone()
     local x, y = clone:transformPoint(0, 0)
-    print("clone point = " .. x .. "," .. y)
+    example_print_log("clone point = " .. x .. "," .. y)
+    example_print_log("origin x = " .. select(1, t:transformPoint(0, 0)))
 end
 ```
 
@@ -6681,7 +6975,9 @@ LTransform:decompose()
 do
     local t = lurek.math.newTransform(10, 20, 1.5, 3, 4)
     local x, y, angle, sx, sy = t:decompose()
-    print("pos=" .. x .. "," .. y .. " angle=" .. angle .. " scale=" .. sx .. "," .. sy)
+    example_print_log("pos=" .. x .. "," .. y .. " angle=" .. angle .. " scale=" .. sx .. "," .. sy)
+    example_print_log("origin x = " .. select(1, t:transformPoint(0, 0)))
+    example_print_log("origin y = " .. select(2, t:transformPoint(0, 0)))
 end
 ```
 
@@ -6707,8 +7003,9 @@ LTransform:getMatrix()
 do
     local t = lurek.math.newTransform(5, 10)
     local m = t:getMatrix()
-    print("matrix elements = " .. #m)
-    print("first row = " .. m[1] .. "," .. m[2] .. "," .. m[3])
+    example_print_log("matrix elements = " .. #m)
+    example_print_log("first row = " .. m[1] .. "," .. m[2] .. "," .. m[3])
+    example_print_log("origin x = " .. select(1, t:transformPoint(0, 0)))
 end
 ```
 
@@ -6736,7 +7033,7 @@ do
     local inv = t:inverse()
     local x, y = t:transformPoint(5, 0)
     local rx, ry = inv:transformPoint(x, y)
-    print("roundtrip = " .. rx .. "," .. ry)
+    example_print_log("roundtrip = " .. rx .. "," .. ry)
 end
 ```
 
@@ -6771,8 +7068,8 @@ do
     local t = lurek.math.newTransform(100, 0, 0, 2, 2)
     local fx, fy = t:transformPoint(5, 0)
     local ix, iy = t:inverseTransformPoint(fx, fy)
-    print("forward = " .. fx .. "," .. fy)
-    print("inverse = " .. ix .. "," .. iy)
+    example_print_log("forward = " .. fx .. "," .. fy)
+    example_print_log("inverse = " .. ix .. "," .. iy)
 end
 ```
 
@@ -6793,7 +7090,8 @@ do
     local t = lurek.math.newTransform(50, 50, 1.0, 2, 2)
     t:reset()
     local x, y = t:transformPoint(10, 10)
-    print("after reset = " .. x .. "," .. y)
+    example_print_log("after reset = " .. x .. "," .. y)
+    example_print_log("origin x = " .. select(1, t:transformPoint(0, 0)))
 end
 ```
 
@@ -6820,7 +7118,8 @@ do
     local t = lurek.math.newTransform()
     t:rotate(lurek.math.pi / 2)
     local x, y = t:transformPoint(10, 0)
-    print("point = " .. x .. "," .. y)
+    example_print_log("point = " .. x .. "," .. y)
+    example_print_log("origin x = " .. select(1, t:transformPoint(0, 0)))
 end
 ```
 
@@ -6848,7 +7147,8 @@ do
     local t = lurek.math.newTransform()
     t:scale(2, 3)
     local x, y = t:transformPoint(10, 5)
-    print("point = " .. x .. "," .. y)
+    example_print_log("point = " .. x .. "," .. y)
+    example_print_log("origin x = " .. select(1, t:transformPoint(0, 0)))
 end
 ```
 
@@ -6883,7 +7183,8 @@ do
     local t = lurek.math.newTransform()
     t:setTransformation(0, 0, lurek.math.pi, 1, 1)
     local x, y = t:transformPoint(10, 0)
-    print("after set = " .. x .. "," .. y)
+    example_print_log("after set = " .. x .. "," .. y)
+    example_print_log("origin x = " .. select(1, t:transformPoint(0, 0)))
 end
 ```
 
@@ -6911,7 +7212,8 @@ do
     local t = lurek.math.newTransform()
     t:shear(0.25, 0)
     local x, y = t:transformPoint(10, 10)
-    print("point = " .. x .. "," .. y)
+    example_print_log("point = " .. x .. "," .. y)
+    example_print_log("origin x = " .. select(1, t:transformPoint(0, 0)))
 end
 ```
 
@@ -6946,8 +7248,8 @@ do
     local t = lurek.math.newTransform(100, 0, 0, 2, 2)
     local fx, fy = t:transformPoint(5, 0)
     local ix, iy = t:inverseTransformPoint(fx, fy)
-    print("forward = " .. fx .. "," .. fy)
-    print("inverse = " .. ix .. "," .. iy)
+    example_print_log("forward = " .. fx .. "," .. fy)
+    example_print_log("inverse = " .. ix .. "," .. iy)
 end
 ```
 
@@ -6975,7 +7277,8 @@ do
     local t = lurek.math.newTransform()
     t:translate(50, 50)
     local x, y = t:transformPoint(0, 0)
-    print("point = " .. x .. "," .. y)
+    example_print_log("point = " .. x .. "," .. y)
+    example_print_log("origin x = " .. select(1, t:transformPoint(0, 0)))
 end
 ```
 
@@ -7000,8 +7303,10 @@ LTransform:type()
 ```lua
 do
     local tf = lurek.math.newTransform()
-    print(tf:type())
-    print("typeOf LObject = " .. tostring(tf:typeOf("LObject")))
+    example_print_log(tf:type())
+    example_print_log("origin x = " .. select(1, tf:transformPoint(0, 0)))
+    example_print_log("origin y = " .. select(2, tf:transformPoint(0, 0)))
+    example_print_log("unit x after transform = " .. select(1, tf:transformPoint(1, 0)))
 end
 ```
 
@@ -7032,8 +7337,10 @@ LTransform:typeOf(name)
 ```lua
 do
     local tf = lurek.math.newTransform()
-    print(tostring(tf:typeOf("LTransform")))
-    print("type = " .. tostring(tf:type()))
+    example_print_log(tostring(tf:typeOf("LTransform")))
+    example_print_log("type = " .. tostring(tf:type()))
+    example_print_log("origin x = " .. select(1, tf:transformPoint(0, 0)))
+    example_print_log("origin y = " .. select(2, tf:transformPoint(0, 0)))
 end
 ```
 
@@ -7074,8 +7381,9 @@ LTween:addValue(start, target)
 do
     local tw = lurek.math.newTween(1.0, "linear")
     local index = tw:addValue(0, 100)
-    print("index = " .. index)
-    print("channels = " .. tw:getValueCount())
+    example_print_log("index = " .. index)
+    example_print_log("channels = " .. tw:getValueCount())
+    example_print_log("tween time = " .. tw:getTime())
 end
 ```
 
@@ -7124,8 +7432,8 @@ do
     tw:addValue(50, 200)
     tw:setTime(0.5)
     local values = tw:getAllValues()
-    print("count = " .. #values)
-    print("first = " .. values[1])
+    example_print_log("count = " .. #values)
+    example_print_log("first = " .. values[1])
 end
 ```
 
@@ -7152,7 +7460,8 @@ do
     local tw = lurek.math.newTween(2.0)
     tw:addValue(0, 100)
     tw:setTime(1.0)
-    print("clock = " .. tw:getClock())
+    example_print_log("clock = " .. tw:getClock())
+    example_print_log("tween time = " .. tw:getTime())
 end
 ```
 
@@ -7275,7 +7584,8 @@ do
     local tw = lurek.math.newTween(2.0)
     tw:addValue(0, 100)
     tw:setTime(1.0)
-    print("time = " .. tw:getTime())
+    example_print_log("time = " .. tw:getTime())
+    example_print_log("tween time = " .. tw:getTime())
 end
 ```
 
@@ -7308,7 +7618,8 @@ do
     local tw = lurek.math.newTween(1.0, "linear")
     local index = tw:addValue(0, 100)
     tw:setTime(0.5)
-    print("value = " .. tw:getValue(index))
+    example_print_log("value = " .. tw:getValue(index))
+    example_print_log("tween time = " .. tw:getTime())
 end
 ```
 
@@ -7335,7 +7646,8 @@ do
     local tw = lurek.math.newTween(1.0, "linear")
     tw:addValue(0, 100)
     tw:addValue(50, 200)
-    print("channels = " .. tw:getValueCount())
+    example_print_log("channels = " .. tw:getValueCount())
+    example_print_log("tween time = " .. tw:getTime())
 end
 ```
 
@@ -7378,7 +7690,8 @@ do
     local tw = lurek.math.newTween(1.0, "outBounce")
     tw:addValue(0, 10)
     tw:update(1.1)
-    print("complete = " .. tostring(tw:isComplete()))
+    example_print_log("complete = " .. tostring(tw:isComplete()))
+    example_print_log("tween time = " .. tw:getTime())
 end
 ```
 
@@ -7498,7 +7811,7 @@ do
     tw:addValue(0, 10)
     tw:update(0.5)
     tw:reset()
-    print("clock = " .. tw:getClock())
+    example_print_log("clock = " .. tw:getClock())
 end
 ```
 
@@ -7535,7 +7848,8 @@ do
     local tw = lurek.math.newTween(2.0)
     tw:addValue(0, 100)
     tw:set(0.75)
-    print("value = " .. tw:getValue(1))
+    example_print_log("value = " .. tw:getValue(1))
+    example_print_log("tween time = " .. tw:getTime())
 end
 ```
 
@@ -7594,7 +7908,8 @@ do
     local tw = lurek.math.newTween(2.0)
     tw:addValue(0, 100)
     tw:setTime(1.0)
-    print("time = " .. tw:getTime())
+    example_print_log("time = " .. tw:getTime())
+    example_print_log("tween time = " .. tw:getTime())
 end
 ```
 
@@ -7681,8 +7996,8 @@ do
     local tw = lurek.math.newTween(1.0, "outBounce")
     tw:addValue(0, 10)
     local done = tw:update(0.5)
-    print("done = " .. tostring(done))
-    print("value = " .. tw:getValue(1))
+    example_print_log("done = " .. tostring(done))
+    example_print_log("value = " .. tw:getValue(1))
 end
 ```
 
@@ -7718,8 +8033,10 @@ LVec2:angle()
 ```lua
 do
     local v = lurek.math.vec2(1, 1)
-    print("angle = " .. v:angle())
-    print("owner type = " .. tostring(v:type()))
+    example_print_log("angle = " .. v:angle())
+    example_print_log("vector length = " .. v:length())
+    example_print_log("unit x = " .. v:normalized().x)
+    example_print_log("unit y = " .. v:normalized().y)
 end
 ```
 
@@ -7751,7 +8068,9 @@ LVec2:cross(other)
 do
     local a = lurek.math.vec2(1, 0)
     local b = lurek.math.vec2(0, 1)
-    print("cross = " .. a:cross(b))
+    example_print_log("cross = " .. a:cross(b))
+    example_print_log("vector length = " .. a:length())
+    example_print_log("unit x = " .. a:normalized().x)
 end
 ```
 
@@ -7783,7 +8102,9 @@ LVec2:distance(other)
 do
     local a = lurek.math.vec2(0, 0)
     local b = lurek.math.vec2(3, 4)
-    print("distance = " .. a:distance(b))
+    example_print_log("distance = " .. a:distance(b))
+    example_print_log("vector length = " .. a:length())
+    example_print_log("unit x = " .. a:normalized().x)
 end
 ```
 
@@ -7815,7 +8136,9 @@ LVec2:dot(other)
 do
     local a = lurek.math.vec2(1, 0)
     local b = lurek.math.vec2(0, 1)
-    print("dot = " .. a:dot(b))
+    example_print_log("dot = " .. a:dot(b))
+    example_print_log("vector length = " .. a:length())
+    example_print_log("unit x = " .. a:normalized().x)
 end
 ```
 
@@ -7847,7 +8170,9 @@ LVec2:fromAngle(radians)
 do
     local v = lurek.math.vec2(0, 0)
     local unit = v:fromAngle(lurek.math.pi / 4)
-    print("fromAngle(pi/4) = " .. unit.x .. "," .. unit.y)
+    example_print_log("fromAngle(pi/4) = " .. unit.x .. "," .. unit.y)
+    example_print_log("vector length = " .. v:length())
+    example_print_log("unit x = " .. v:normalized().x)
 end
 ```
 
@@ -7872,8 +8197,10 @@ LVec2:length()
 ```lua
 do
     local v = lurek.math.Vec2(3, 4)
-    print("length = " .. v:length())
-    print("owner type = " .. tostring(v:type()))
+    example_print_log("length = " .. v:length())
+    example_print_log("vector length = " .. v:length())
+    example_print_log("unit x = " .. v:normalized().x)
+    example_print_log("unit y = " .. v:normalized().y)
 end
 ```
 
@@ -7898,8 +8225,10 @@ LVec2:lengthSquared()
 ```lua
 do
     local v = lurek.math.Vec2(3, 4)
-    print("lengthSq = " .. v:lengthSquared())
-    print("owner type = " .. tostring(v:type()))
+    example_print_log("lengthSq = " .. v:lengthSquared())
+    example_print_log("vector length = " .. v:length())
+    example_print_log("unit x = " .. v:normalized().x)
+    example_print_log("unit y = " .. v:normalized().y)
 end
 ```
 
@@ -7933,7 +8262,8 @@ do
     local a = lurek.math.vec2(0, 0)
     local b = lurek.math.vec2(10, 20)
     local mid = a:lerp(b, 0.5)
-    print("lerp = " .. mid.x .. "," .. mid.y)
+    example_print_log("lerp = " .. mid.x .. "," .. mid.y)
+    example_print_log("vector length = " .. a:length())
 end
 ```
 
@@ -7959,7 +8289,9 @@ LVec2:normalize()
 do
     local v = lurek.math.vec2(3, 4)
     local n = v:normalize()
-    print("normalized = " .. n.x .. "," .. n.y)
+    example_print_log("normalized = " .. n.x .. "," .. n.y)
+    example_print_log("vector length = " .. v:length())
+    example_print_log("unit x = " .. v:normalized().x)
 end
 ```
 
@@ -7985,7 +8317,9 @@ LVec2:normalized()
 do
     local v = lurek.math.vec2(3, 4)
     local n = v:normalized()
-    print("normalized = " .. n.x .. "," .. n.y)
+    example_print_log("normalized = " .. n.x .. "," .. n.y)
+    example_print_log("vector length = " .. v:length())
+    example_print_log("unit x = " .. v:normalized().x)
 end
 ```
 
@@ -8011,7 +8345,9 @@ LVec2:perpendicular()
 do
     local v = lurek.math.vec2(3, 4)
     local p = v:perpendicular()
-    print("perp = " .. p.x .. "," .. p.y)
+    example_print_log("perp = " .. p.x .. "," .. p.y)
+    example_print_log("vector length = " .. v:length())
+    example_print_log("unit x = " .. v:normalized().x)
 end
 ```
 
@@ -8044,7 +8380,8 @@ do
     local v = lurek.math.vec2(1, -1)
     local n = lurek.math.vec2(0, 1)
     local ref = v:reflect(n)
-    print("reflected = " .. ref.x .. "," .. ref.y)
+    example_print_log("reflected = " .. ref.x .. "," .. ref.y)
+    example_print_log("vector length = " .. v:length())
 end
 ```
 
@@ -8076,7 +8413,9 @@ LVec2:rotate(angle)
 do
     local v = lurek.math.vec2(1, 0)
     local r = v:rotate(lurek.math.pi / 2)
-    print("rotated = " .. r.x .. "," .. r.y)
+    example_print_log("rotated = " .. r.x .. "," .. r.y)
+    example_print_log("vector length = " .. v:length())
+    example_print_log("unit x = " .. v:normalized().x)
 end
 ```
 
@@ -8101,8 +8440,10 @@ LVec2:type()
 ```lua
 do
     local v = lurek.math.Vec2(3, 4)
-    print(v:type())
-    print("typeOf LObject = " .. tostring(v:typeOf("LObject")))
+    example_print_log(v:type())
+    example_print_log("vector length = " .. v:length())
+    example_print_log("unit x = " .. v:normalized().x)
+    example_print_log("unit y = " .. v:normalized().y)
 end
 ```
 
@@ -8133,8 +8474,10 @@ LVec2:typeOf(name)
 ```lua
 do
     local v = lurek.math.Vec2(3, 4)
-    print(v:typeOf("LVec2"))
-    print("type = " .. tostring(v:type()))
+    example_print_log(v:typeOf("LVec2"))
+    example_print_log("type = " .. tostring(v:type()))
+    example_print_log("vector length = " .. v:length())
+    example_print_log("unit x = " .. v:normalized().x)
 end
 ```
 
@@ -8159,8 +8502,10 @@ LVec2:x()
 ```lua
 do
     local v = lurek.math.Vec2(3, 4)
-    print("x=" .. v.x)
-    print("owner type = " .. tostring(v:type()))
+    example_print_log("x=" .. v.x)
+    example_print_log("vector length = " .. v:length())
+    example_print_log("unit x = " .. v:normalized().x)
+    example_print_log("unit y = " .. v:normalized().y)
 end
 ```
 
@@ -8185,8 +8530,10 @@ LVec2:y()
 ```lua
 do
     local v = lurek.math.Vec2(3, 4)
-    print("y=" .. v.y)
-    print("owner type = " .. tostring(v:type()))
+    example_print_log("y=" .. v.y)
+    example_print_log("vector length = " .. v:length())
+    example_print_log("unit x = " .. v:normalized().x)
+    example_print_log("unit y = " .. v:normalized().y)
 end
 ```
 
@@ -8231,7 +8578,8 @@ do
     local a = lurek.math.vec3(1, 2, 3)
     local b = lurek.math.vec3(4, 5, 6)
     local sum = a:add(b)
-    print("add = " .. sum.x .. "," .. sum.y .. "," .. sum.z)
+    example_print_log("add = " .. sum.x .. "," .. sum.y .. "," .. sum.z)
+    example_print_log("vector length = " .. a:length())
 end
 ```
 
@@ -8264,7 +8612,8 @@ do
     local a = lurek.math.vec3(1, 0, 0)
     local b = lurek.math.vec3(0, 1, 0)
     local c = a:cross(b)
-    print("cross = " .. c.x .. "," .. c.y .. "," .. c.z)
+    example_print_log("cross = " .. c.x .. "," .. c.y .. "," .. c.z)
+    example_print_log("vector length = " .. a:length())
 end
 ```
 
@@ -8296,7 +8645,9 @@ LVec3:distance(other)
 do
     local a = lurek.math.vec3(0, 0, 0)
     local b = lurek.math.vec3(3, 4, 0)
-    print("distance = " .. a:distance(b))
+    example_print_log("distance = " .. a:distance(b))
+    example_print_log("vector length = " .. a:length())
+    example_print_log("unit x = " .. a:normalize().x)
 end
 ```
 
@@ -8328,7 +8679,9 @@ LVec3:dot(other)
 do
     local a = lurek.math.vec3(1, 0, 0)
     local b = lurek.math.vec3(0, 1, 0)
-    print("dot = " .. a:dot(b))
+    example_print_log("dot = " .. a:dot(b))
+    example_print_log("vector length = " .. a:length())
+    example_print_log("unit x = " .. a:normalize().x)
 end
 ```
 
@@ -8353,8 +8706,10 @@ LVec3:length()
 ```lua
 do
     local v = lurek.math.Vec3(1, 2, 2)
-    print("length = " .. v:length())
-    print("owner type = " .. tostring(v:type()))
+    example_print_log("length = " .. v:length())
+    example_print_log("vector length = " .. v:length())
+    example_print_log("unit x = " .. v:normalize().x)
+    example_print_log("unit z = " .. v:normalize().z)
 end
 ```
 
@@ -8379,8 +8734,10 @@ LVec3:lengthSquared()
 ```lua
 do
     local v = lurek.math.Vec3(1, 2, 2)
-    print("lengthSq = " .. v:lengthSquared())
-    print("owner type = " .. tostring(v:type()))
+    example_print_log("lengthSq = " .. v:lengthSquared())
+    example_print_log("vector length = " .. v:length())
+    example_print_log("unit x = " .. v:normalize().x)
+    example_print_log("unit z = " .. v:normalize().z)
 end
 ```
 
@@ -8414,7 +8771,8 @@ do
     local a = lurek.math.vec3(0, 0, 0)
     local b = lurek.math.vec3(3, 4, 0)
     local mid = a:lerp(b, 0.5)
-    print("lerp = " .. mid.x .. "," .. mid.y .. "," .. mid.z)
+    example_print_log("lerp = " .. mid.x .. "," .. mid.y .. "," .. mid.z)
+    example_print_log("vector length = " .. a:length())
 end
 ```
 
@@ -8440,7 +8798,9 @@ LVec3:normalize()
 do
     local v = lurek.math.vec3(3, 0, 4)
     local n = v:normalize()
-    print("normalized = " .. n.x .. "," .. n.y .. "," .. n.z)
+    example_print_log("normalized = " .. n.x .. "," .. n.y .. "," .. n.z)
+    example_print_log("vector length = " .. v:length())
+    example_print_log("unit x = " .. v:normalize().x)
 end
 ```
 
@@ -8472,7 +8832,9 @@ LVec3:scale(s)
 do
     local v = lurek.math.vec3(1, 2, 3)
     local scaled = v:scale(2)
-    print("scale = " .. scaled.x .. "," .. scaled.y .. "," .. scaled.z)
+    example_print_log("scale = " .. scaled.x .. "," .. scaled.y .. "," .. scaled.z)
+    example_print_log("vector length = " .. v:length())
+    example_print_log("unit x = " .. v:normalize().x)
 end
 ```
 
@@ -8504,7 +8866,9 @@ LVec3:splat(v)
 do
     local v = lurek.math.vec3(0, 0, 0)
     local s = v:splat(5)
-    print("splat = " .. s.x .. "," .. s.y .. "," .. s.z)
+    example_print_log("splat = " .. s.x .. "," .. s.y .. "," .. s.z)
+    example_print_log("vector length = " .. v:length())
+    example_print_log("unit x = " .. v:normalize().x)
 end
 ```
 
@@ -8537,7 +8901,8 @@ do
     local a = lurek.math.vec3(1, 2, 3)
     local b = lurek.math.vec3(4, 5, 6)
     local diff = a:sub(b)
-    print("sub = " .. diff.x .. "," .. diff.y .. "," .. diff.z)
+    example_print_log("sub = " .. diff.x .. "," .. diff.y .. "," .. diff.z)
+    example_print_log("vector length = " .. a:length())
 end
 ```
 
@@ -8562,8 +8927,10 @@ LVec3:type()
 ```lua
 do
     local v = lurek.math.Vec3(1, 2, 3)
-    print(v:type())
-    print("typeOf LObject = " .. tostring(v:typeOf("LObject")))
+    example_print_log(v:type())
+    example_print_log("vector length = " .. v:length())
+    example_print_log("unit x = " .. v:normalize().x)
+    example_print_log("unit z = " .. v:normalize().z)
 end
 ```
 
@@ -8594,8 +8961,10 @@ LVec3:typeOf(name)
 ```lua
 do
     local v = lurek.math.Vec3(1, 2, 3)
-    print(tostring(v:typeOf("LVec3")))
-    print("type = " .. tostring(v:type()))
+    example_print_log(tostring(v:typeOf("LVec3")))
+    example_print_log("type = " .. tostring(v:type()))
+    example_print_log("vector length = " .. v:length())
+    example_print_log("unit x = " .. v:normalize().x)
 end
 ```
 

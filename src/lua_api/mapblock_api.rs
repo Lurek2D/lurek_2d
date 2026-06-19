@@ -2,8 +2,8 @@
 
 use super::SharedState;
 use crate::mapblock::{
-    Edge, MapBlock, MapBlockConfig, MapBlockGenerator, MapGroup, MapOrientation, MapScript,
-    NeighborRules, PlacementGrid, ScriptStep, StepType, TilesetRef,
+    Edge, MapBlock, MapBlockConfig, MapBlockGenerator, MapBlockReport, MapGroup, MapOrientation,
+    MapScript, NeighborRules, PlacementGrid, ScriptStep, SolveFailureReason, StepType, TilesetRef,
 };
 use mlua::prelude::*;
 use std::cell::RefCell;
@@ -56,6 +56,11 @@ struct LuaMapBlockResult {
     inner: Rc<crate::mapblock::MapBlockResult>,
 }
 
+/// Lua-facing generation diagnostics exposed by the lurek engine.
+struct LuaMapBlockReport {
+    inner: Rc<MapBlockReport>,
+}
+
 fn parse_edge(edge_str: &str) -> LuaResult<Edge> {
     match edge_str.to_lowercase().as_str() {
         "north" | "n" => Ok(Edge::North),
@@ -63,6 +68,14 @@ fn parse_edge(edge_str: &str) -> LuaResult<Edge> {
         "south" | "s" => Ok(Edge::South),
         "west" | "w" => Ok(Edge::West),
         _ => Err(LuaError::RuntimeError(format!("Invalid edge: {edge_str}"))),
+    }
+}
+
+fn solve_failure_reason_name(reason: SolveFailureReason) -> &'static str {
+    match reason {
+        SolveFailureReason::BudgetExceeded => "budget_exceeded",
+        SolveFailureReason::NoCandidates => "no_candidates",
+        SolveFailureReason::Contradiction => "contradiction",
     }
 }
 
@@ -144,7 +157,8 @@ impl LuaUserData for LuaMapBlock {
             |_, this, (layer, x, y, slot, tileset_id, gid): (usize, u32, u32, usize, u32, u32)| {
                 this.inner
                     .borrow_mut()
-                    .set_tile(layer, x, y, slot, tileset_id, gid);
+                    .try_set_tile(layer, x, y, slot, tileset_id, gid)
+                    .map_err(|err| LuaError::RuntimeError(err.to_string()))?;
                 Ok(())
             },
         );
@@ -172,7 +186,10 @@ impl LuaUserData for LuaMapBlock {
             "setEdge",
             |_, this, (edge_str, segment, edge_type): (String, u32, u32)| {
                 let edge = parse_edge(&edge_str)?;
-                this.inner.borrow_mut().set_edge(edge, segment, edge_type);
+                this.inner
+                    .borrow_mut()
+                    .try_set_edge(edge, segment, edge_type)
+                    .map_err(|err| LuaError::RuntimeError(err.to_string()))?;
                 Ok(())
             },
         );
@@ -196,7 +213,10 @@ impl LuaUserData for LuaMapBlock {
         /// Set block weight for random selection.
         /// @param | weight | number | Weight value (higher = more likely).
         methods.add_method_mut("setWeight", |_, this, weight: f32| {
-            this.inner.borrow_mut().set_weight(weight);
+            this.inner
+                .borrow_mut()
+                .set_weight_checked(weight)
+                .map_err(|err| LuaError::RuntimeError(err.to_string()))?;
             Ok(())
         });
 
@@ -281,6 +301,11 @@ impl LuaUserData for LuaMapBlock {
         /// Set multi-level span for this object.
         /// @param | levels | integer | Number of levels this block spans.
         methods.add_method_mut("setLevelSpan", |_, this, levels: u32| {
+            if levels == 0 {
+                return Err(LuaError::RuntimeError(
+                    "mapblock level span must be at least one".to_string(),
+                ));
+            }
             this.inner.borrow_mut().level_span = levels;
             Ok(())
         });
@@ -641,6 +666,27 @@ impl LuaUserData for LuaMapBlockGenerator {
             Ok(())
         });
 
+        // -- setSolverBudget --
+        /// Set bounded recursion budgets for `solve_shape`.
+        /// @param | opts | table | Optional `max_nodes`, `max_depth`, `max_ms`, and `max_candidates_per_cell` fields.
+        methods.add_method_mut("setSolverBudget", |_, this, opts: LuaTable| {
+            let mut budget = this.inner.borrow().solver_budget();
+            if let Ok(value) = opts.get::<_, u32>("max_nodes") {
+                budget.max_nodes = value.max(1);
+            }
+            if let Ok(value) = opts.get::<_, u32>("max_depth") {
+                budget.max_depth = value.max(1);
+            }
+            if let Ok(value) = opts.get::<_, u64>("max_ms") {
+                budget.max_ms = value.max(1);
+            }
+            if let Ok(value) = opts.get::<_, usize>("max_candidates_per_cell") {
+                budget.max_candidates_per_cell = value.max(1);
+            }
+            this.inner.borrow_mut().set_solver_budget(budget);
+            Ok(())
+        });
+
         // -- addGroup --
         /// Add a named block group definition to this map generator.
         /// @param | group | MapGroup | Group of blocks.
@@ -664,11 +710,41 @@ impl LuaUserData for LuaMapBlockGenerator {
             })
         });
 
+        // -- generateWithReport --
+        /// Generate map using a script and return runtime diagnostics for this object.
+        /// @param | script | MapScript | Script to execute.
+        /// @return | MapBlockResult | Generation result.
+        /// @return | MapBlockReport | Diagnostics report.
+        methods.add_method_mut("generateWithReport", |_, this, script: LuaAnyUserData| {
+            let lua_script = script.borrow::<LuaMapScript>()?;
+            let (result, report) = this
+                .inner
+                .borrow_mut()
+                .generate_with_report(&lua_script.inner.borrow());
+            Ok((
+                LuaMapBlockResult {
+                    inner: Rc::new(result),
+                },
+                LuaMapBlockReport {
+                    inner: Rc::new(report),
+                },
+            ))
+        });
+
         // -- getLastPlacedCount --
         /// Get last placement count for this object.
         /// @return | integer | Blocks placed in last generation.
         methods.add_method("getLastPlacedCount", |_, this, ()| {
             Ok(this.inner.borrow().last_placed_count())
+        });
+
+        // -- getLastReport --
+        /// Get the diagnostic report captured during the previous generation run.
+        /// @return | MapBlockReport | Last diagnostics report.
+        methods.add_method("getLastReport", |_, this, ()| {
+            Ok(LuaMapBlockReport {
+                inner: Rc::new(this.inner.borrow().last_report().clone()),
+            })
         });
     }
 }
@@ -753,6 +829,74 @@ impl LuaUserData for LuaMapBlockResult {
     }
 }
 
+impl LuaUserData for LuaMapBlockReport {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- toTable --
+        /// Serialize generation diagnostics into a plain Lua table.
+        /// @return | table | Report fields and nested diagnostics counters.
+        methods.add_method("toTable", |lua, this, ()| {
+            let diagnostics = lua.create_table()?;
+            diagnostics.set(
+                "unsupported_steps",
+                this.inner.diagnostics.unsupported_steps,
+            )?;
+            diagnostics.set("missing_groups", this.inner.diagnostics.missing_groups)?;
+            diagnostics.set("empty_groups", this.inner.diagnostics.empty_groups)?;
+            diagnostics.set(
+                "invalid_block_indices",
+                this.inner.diagnostics.invalid_block_indices,
+            )?;
+            diagnostics.set("no_candidates", this.inner.diagnostics.no_candidates)?;
+            diagnostics.set("failed_places", this.inner.diagnostics.failed_places)?;
+            diagnostics.set("solve_failures", this.inner.diagnostics.solve_failures)?;
+            diagnostics.set("invalid_weights", this.inner.diagnostics.invalid_weights)?;
+            diagnostics.set(
+                "zero_weight_fallbacks",
+                this.inner.diagnostics.zero_weight_fallbacks,
+            )?;
+            diagnostics.set(
+                "no_progress_breaks",
+                this.inner.diagnostics.no_progress_breaks,
+            )?;
+            diagnostics.set("level_overflows", this.inner.diagnostics.level_overflows)?;
+            diagnostics.set(
+                "invalid_paint_ops",
+                this.inner.diagnostics.invalid_paint_ops,
+            )?;
+            diagnostics.set(
+                "rejected_paint_ops",
+                this.inner.diagnostics.rejected_paint_ops,
+            )?;
+            diagnostics.set(
+                "clipped_paint_ops",
+                this.inner.diagnostics.clipped_paint_ops,
+            )?;
+
+            let report = lua.create_table()?;
+            report.set("seed", this.inner.seed)?;
+            report.set("rng_version", this.inner.rng_version)?;
+            report.set("script_steps", this.inner.script_steps)?;
+            report.set(
+                "executed_step_iterations",
+                this.inner.executed_step_iterations,
+            )?;
+            report.set("placements_committed", this.inner.placements_committed)?;
+            report.set("visited_nodes", this.inner.visited_nodes)?;
+            report.set("max_depth_reached", this.inner.max_depth_reached)?;
+            report.set("candidates_tested", this.inner.candidates_tested)?;
+            report.set("transform_cache_hits", this.inner.transform_cache_hits)?;
+            report.set("transform_cache_misses", this.inner.transform_cache_misses)?;
+            if let Some(reason) = this.inner.solve_failure_reason {
+                report.set("solve_failure_reason", solve_failure_reason_name(reason))?;
+            } else {
+                report.set("solve_failure_reason", LuaValue::Nil)?;
+            }
+            report.set("diagnostics", diagnostics)?;
+            Ok(report)
+        });
+    }
+}
+
 impl LuaUserData for LuaTilesetRef {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         // -- getId --
@@ -818,7 +962,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         lua.create_function(
             |_, (w, h, layers, config): (u32, u32, u32, LuaAnyUserData)| {
                 let lua_config = config.borrow::<LuaMapBlockConfig>()?;
-                let block = MapBlock::new(w, h, layers, &lua_config.inner.borrow());
+                let block = MapBlock::try_new(w, h, layers, &lua_config.inner.borrow())
+                    .map_err(|err| LuaError::RuntimeError(err.to_string()))?;
                 Ok(LuaMapBlock {
                     inner: Rc::new(RefCell::new(block)),
                 })

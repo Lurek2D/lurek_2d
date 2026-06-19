@@ -9,6 +9,11 @@
 //! Acts as the operational boundary for layered tile storage rather than external import or large-map chunk policy.
 //! Open this file when layered map state, autotiling, collisions, or coordinate conversion behaves incorrectly.
 
+use super::error::TileMapError;
+use super::limits::{
+    checked_image_pixels, checked_layer_cells, validate_finite, validate_positive_rect,
+    TileMapLimits,
+};
 use super::mapgen::MapOrientation;
 use super::tilemap_collision::sweep_aabb_vs_aabb;
 use super::tilemap_index::remove_pos_from_gid;
@@ -16,6 +21,7 @@ use super::tileset::TileSet;
 use crate::log_msg;
 use crate::math::{Rect, Vec2};
 use crate::runtime::log_messages::{TM01_TILEMAP_INIT, TM02_TILESET_ADD, TM03_LAYER_ADD};
+use std::cell::Cell;
 use std::collections::{BTreeSet, HashMap};
 
 /// A single tile layer with per-tile GID and optional per-tile tint data.
@@ -42,9 +48,24 @@ pub struct TileLayer {
 }
 impl TileLayer {
     /// Create a fully-empty `TileLayer` of `width × height` tiles with all GIDs set to `0`.
-    fn new(name: &str, width: u32, height: u32) -> Self {
-        let cap = (width * height) as usize;
-        Self {
+    /// Convert `(x, y)` into a flat index; returns `None` when out of bounds.
+    fn index(&self, x: u32, y: u32) -> Option<usize> {
+        if x < self.width && y < self.height {
+            Some((y * self.width + x) as usize)
+        } else {
+            None
+        }
+    }
+
+    /// Create a fully-empty `TileLayer` with checked dimensions and configured limits.
+    fn try_new(
+        name: &str,
+        width: u32,
+        height: u32,
+        limits: &TileMapLimits,
+    ) -> Result<Self, TileMapError> {
+        let cap = checked_layer_cells(width, height, limits)?;
+        Ok(Self {
             name: name.to_string(),
             width,
             height,
@@ -54,14 +75,56 @@ impl TileLayer {
             parallax: Vec2::new(1.0, 1.0),
             tiles: vec![0u32; cap],
             tile_tints: vec![None; cap],
-        }
+        })
     }
-    /// Convert `(x, y)` into a flat index; returns `None` when out of bounds.
-    fn index(&self, x: u32, y: u32) -> Option<usize> {
-        if x < self.width && y < self.height {
-            Some((y * self.width + x) as usize)
-        } else {
-            None
+}
+
+/// Policy controlling when the reverse GID index is materialized.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum TileIndexPolicy {
+    /// Keep the reverse index incrementally updated.
+    Eager,
+    /// Rebuild the reverse index only when a query needs it.
+    Lazy,
+}
+
+/// Snapshot of tilemap diagnostics counters used to surface silent fallbacks and guarded queries.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub struct TileMapDiagnosticsSnapshot {
+    /// Count of operations targeting a missing layer.
+    pub invalid_layer: u64,
+    /// Count of operations targeting out-of-bounds coordinates.
+    pub invalid_coord: u64,
+    /// Count of GID resolutions that failed because no tileset owned the GID.
+    pub unknown_gid: u64,
+    /// Count of collision or coordinate queries rejected by input validation.
+    pub invalid_queries: u64,
+    /// Count of lazy reverse-index rebuilds triggered by read paths.
+    pub lazy_index_rebuilds: u64,
+}
+
+/// Interior-mutable diagnostics counters used by both mutating and read-only tilemap methods.
+#[derive(Debug, Clone, Default)]
+struct TileMapDiagnostics {
+    invalid_layer: Cell<u64>,
+    invalid_coord: Cell<u64>,
+    unknown_gid: Cell<u64>,
+    invalid_queries: Cell<u64>,
+    lazy_index_rebuilds: Cell<u64>,
+}
+
+impl TileMapDiagnostics {
+    fn bump(cell: &Cell<u64>) {
+        cell.set(cell.get().saturating_add(1));
+    }
+
+    fn snapshot(&self) -> TileMapDiagnosticsSnapshot {
+        TileMapDiagnosticsSnapshot {
+            invalid_layer: self.invalid_layer.get(),
+            invalid_coord: self.invalid_coord.get(),
+            unknown_gid: self.unknown_gid.get(),
+            invalid_queries: self.invalid_queries.get(),
+            lazy_index_rebuilds: self.lazy_index_rebuilds.get(),
         }
     }
 }
@@ -96,6 +159,10 @@ pub struct TileMap {
     layers: Vec<TileLayer>,
     /// Per-layer GID-to-position reverse index for fast `find_tiles_by_gid`.
     tile_type_index_cache: Vec<HashMap<u32, Vec<(u32, u32)>>>,
+    /// Tracks which per-layer reverse indexes require a lazy rebuild before reads.
+    tile_type_index_dirty: Vec<bool>,
+    /// Controls whether the reverse index is eagerly maintained or lazily rebuilt.
+    index_policy: TileIndexPolicy,
     /// Optional viewport rect for camera-culled render-command generation.
     viewport: Option<Rect>,
     /// Per-GID animation state `(frame_index, elapsed_ms)`.
@@ -104,10 +171,21 @@ pub struct TileMap {
     visible_animated_gids: Vec<u32>,
     /// Marks whether visible animated GIDs must be rebuilt before the next update.
     anim_visibility_dirty: bool,
+    /// Shared tilemap sizing and query limits.
+    limits: TileMapLimits,
+    /// Diagnostics counters for guarded fallbacks and invalid calls.
+    diagnostics: TileMapDiagnostics,
 }
 impl TileMap {
     /// Create an empty `TileMap` with the given tile dimensions and chunk size.
     pub fn new(tile_width: u32, tile_height: u32, chunk_size: u32) -> Self {
+        debug_assert!(
+            tile_width > 0 && tile_height > 0 && chunk_size > 0,
+            "tilemap dimensions must be positive"
+        );
+        let tile_width = tile_width.max(1);
+        let tile_height = tile_height.max(1);
+        let chunk_size = chunk_size.max(1);
         log_msg!(
             debug,
             TM01_TILEMAP_INIT,
@@ -124,15 +202,177 @@ impl TileMap {
             tilesets: Vec::new(),
             layers: Vec::new(),
             tile_type_index_cache: Vec::new(),
+            tile_type_index_dirty: Vec::new(),
+            index_policy: TileIndexPolicy::Lazy,
             viewport: None,
             anim_timers: HashMap::new(),
             visible_animated_gids: Vec::new(),
             anim_visibility_dirty: true,
+            limits: TileMapLimits::default(),
+            diagnostics: TileMapDiagnostics::default(),
         }
+    }
+
+    /// Create a validated `TileMap` that rejects zero tile sizes and invalid chunk sizes.
+    pub fn try_new(
+        tile_width: u32,
+        tile_height: u32,
+        chunk_size: u32,
+    ) -> Result<Self, TileMapError> {
+        Self::try_new_with_limits(tile_width, tile_height, chunk_size, TileMapLimits::default())
+    }
+
+    /// Create a validated `TileMap` using explicit limits.
+    pub fn try_new_with_limits(
+        tile_width: u32,
+        tile_height: u32,
+        chunk_size: u32,
+        limits: TileMapLimits,
+    ) -> Result<Self, TileMapError> {
+        if tile_width == 0 || tile_height == 0 {
+            return Err(TileMapError::InvalidTileSize {
+                tile_width,
+                tile_height,
+            });
+        }
+        if chunk_size == 0 {
+            return Err(TileMapError::InvalidChunkSize { chunk_size });
+        }
+        let mut map = Self::new(tile_width, tile_height, chunk_size);
+        map.limits = limits;
+        Ok(map)
     }
 
     fn mark_anim_visibility_dirty(&mut self) {
         self.anim_visibility_dirty = true;
+    }
+
+    fn mark_layer_index_dirty(&mut self, layer: usize) {
+        if let Some(dirty) = self.tile_type_index_dirty.get_mut(layer) {
+            *dirty = true;
+        }
+    }
+
+    fn ensure_index(&mut self, layer: usize) -> Result<(), TileMapError> {
+        let layer_ref = self
+            .layers
+            .get(layer)
+            .ok_or_else(|| self.invalid_layer_error(layer))?;
+        let needs_rebuild = self
+            .tile_type_index_dirty
+            .get(layer)
+            .copied()
+            .unwrap_or_default();
+        if !needs_rebuild {
+            return Ok(());
+        }
+        let mut rebuilt = HashMap::<u32, Vec<(u32, u32)>>::new();
+        for y in 0..layer_ref.height {
+            for x in 0..layer_ref.width {
+                let idx = (y * layer_ref.width + x) as usize;
+                let gid = layer_ref.tiles[idx];
+                if gid != 0 {
+                    rebuilt.entry(gid).or_default().push((x, y));
+                }
+            }
+        }
+        self.tile_type_index_cache[layer] = rebuilt;
+        self.tile_type_index_dirty[layer] = false;
+        TileMapDiagnostics::bump(&self.diagnostics.lazy_index_rebuilds);
+        Ok(())
+    }
+
+    fn invalid_layer_error(&self, layer: usize) -> TileMapError {
+        TileMapDiagnostics::bump(&self.diagnostics.invalid_layer);
+        TileMapError::InvalidLayerIndex {
+            layer,
+            layer_count: self.layers.len(),
+        }
+    }
+
+    fn invalid_coord_error(&self, layer: usize, x: u32, y: u32) -> TileMapError {
+        let (width, height) = self
+            .layers
+            .get(layer)
+            .map(|tile_layer| (tile_layer.width, tile_layer.height))
+            .unwrap_or((0, 0));
+        TileMapDiagnostics::bump(&self.diagnostics.invalid_coord);
+        TileMapError::InvalidTileCoord {
+            layer,
+            x,
+            y,
+            width,
+            height,
+        }
+    }
+
+    fn validate_collision_query(&self, rect: Rect) -> Result<(), TileMapError> {
+        validate_finite("rect.x", rect.x as f64)?;
+        validate_finite("rect.y", rect.y as f64)?;
+        validate_positive_rect("rect.width", rect.width as f64)?;
+        validate_positive_rect("rect.height", rect.height as f64)?;
+        Ok(())
+    }
+
+    fn validate_sweep_query(&self, rect: Rect, dx: f32, dy: f32) -> Result<(), TileMapError> {
+        self.validate_collision_query(rect)?;
+        validate_finite("dx", dx as f64)?;
+        validate_finite("dy", dy as f64)?;
+        Ok(())
+    }
+
+    fn checked_query_span(
+        &self,
+        tx0: u32,
+        ty0: u32,
+        tx1: u32,
+        ty1: u32,
+    ) -> Result<(), TileMapError> {
+        let width = u64::from(tx1.saturating_sub(tx0)) + 1;
+        let height = u64::from(ty1.saturating_sub(ty0)) + 1;
+        let checks = width
+            .checked_mul(height)
+            .ok_or(TileMapError::CollisionQueryLimitExceeded {
+                checks: u64::MAX,
+                max_checks: self.limits.max_collision_tile_checks,
+            })?;
+        if checks > self.limits.max_collision_tile_checks {
+            return Err(TileMapError::CollisionQueryLimitExceeded {
+                checks,
+                max_checks: self.limits.max_collision_tile_checks,
+            });
+        }
+        Ok(())
+    }
+
+    /// Return the current tilemap diagnostics counters.
+    pub fn diagnostics_snapshot(&self) -> TileMapDiagnosticsSnapshot {
+        self.diagnostics.snapshot()
+    }
+
+    /// Override the shared tilemap limits used by safe helpers and guarded queries.
+    pub fn set_limits(&mut self, limits: TileMapLimits) {
+        self.limits = limits;
+    }
+
+    /// Return the active tilemap limits.
+    pub fn limits(&self) -> TileMapLimits {
+        self.limits
+    }
+
+    /// Set the reverse-index maintenance policy.
+    pub fn set_index_policy(&mut self, policy: TileIndexPolicy) {
+        self.index_policy = policy;
+        if policy == TileIndexPolicy::Lazy {
+            for dirty in &mut self.tile_type_index_dirty {
+                *dirty = true;
+            }
+        }
+    }
+
+    /// Return the reverse-index maintenance policy.
+    pub fn index_policy(&self) -> TileIndexPolicy {
+        self.index_policy
     }
 
     /// Append a tileset and take ownership; called during map load or runtime attachment.
@@ -151,11 +391,30 @@ impl TileMap {
     }
     /// Add a new empty layer of `width × height` tiles; return its layer index.
     pub fn add_layer(&mut self, name: &str, width: u32, height: u32) -> usize {
+        self.try_add_layer(name, width, height)
+            .unwrap_or_else(|_| self.layers.len().saturating_sub(1))
+    }
+
+    /// Add a new empty layer with checked dimensions and configured limits.
+    pub fn try_add_layer(
+        &mut self,
+        name: &str,
+        width: u32,
+        height: u32,
+    ) -> Result<usize, TileMapError> {
+        if self.layers.len() >= self.limits.max_layers {
+            return Err(TileMapError::MaxLayersExceeded {
+                requested: self.layers.len() + 1,
+                max_layers: self.limits.max_layers,
+            });
+        }
         log_msg!(debug, TM03_LAYER_ADD, "{}", name);
-        self.layers.push(TileLayer::new(name, width, height));
+        self.layers
+            .push(TileLayer::try_new(name, width, height, &self.limits)?);
         self.tile_type_index_cache.push(HashMap::new());
+        self.tile_type_index_dirty.push(false);
         self.mark_anim_visibility_dirty();
-        self.layers.len() - 1
+        Ok(self.layers.len() - 1)
     }
     /// Return the total number of layers.
     pub fn get_layer_count(&self) -> usize {
@@ -167,10 +426,7 @@ impl TileMap {
     }
     /// Set the visibility flag on layer `idx`; no-op when out of range.
     pub fn set_layer_visible(&mut self, idx: usize, visible: bool) {
-        if let Some(layer) = self.layers.get_mut(idx) {
-            layer.visible = visible;
-            self.mark_anim_visibility_dirty();
-        }
+        let _ = self.try_set_layer_visible(idx, visible);
     }
     /// Return `true` when layer `idx` is visible; returns `false` when out of range.
     pub fn get_layer_visible(&self, idx: usize) -> bool {
@@ -178,9 +434,7 @@ impl TileMap {
     }
     /// Set the tint RGBA of layer `idx`; no-op when out of range.
     pub fn set_layer_color(&mut self, idx: usize, r: f32, g: f32, b: f32, a: f32) {
-        if let Some(layer) = self.layers.get_mut(idx) {
-            layer.tint = [r, g, b, a];
-        }
+        let _ = self.try_set_layer_color(idx, r, g, b, a);
     }
     /// Return the tint `[r, g, b, a]` of layer `idx`; returns `[0; 4]` when out of range.
     pub fn get_layer_color(&self, idx: usize) -> [f32; 4] {
@@ -198,9 +452,7 @@ impl TileMap {
 
     /// Set the world-space draw offset `(ox, oy)` of layer `idx`; no-op when out of range.
     pub fn set_layer_offset(&mut self, idx: usize, ox: f32, oy: f32) {
-        if let Some(layer) = self.layers.get_mut(idx) {
-            layer.offset = Vec2::new(ox, oy);
-        }
+        let _ = self.try_set_layer_offset(idx, ox, oy);
     }
     /// Return the draw offset of layer `idx`; returns `Vec2::ZERO` when out of range.
     pub fn get_layer_offset(&self, idx: usize) -> Vec2 {
@@ -208,9 +460,7 @@ impl TileMap {
     }
     /// Set the parallax factor `(px, py)` of layer `idx`; no-op when out of range.
     pub fn set_layer_parallax(&mut self, idx: usize, px: f32, py: f32) {
-        if let Some(layer) = self.layers.get_mut(idx) {
-            layer.parallax = Vec2::new(px, py);
-        }
+        let _ = self.try_set_layer_parallax(idx, px, py);
     }
     /// Return the parallax factor of layer `idx`; returns `(1, 1)` when out of range.
     pub fn get_layer_parallax(&self, idx: usize) -> Vec2 {
@@ -224,39 +474,16 @@ impl TileMap {
     }
     /// Write GID `gid` at `(x, y)` in layer `layer`; updates the type-index cache; no-op when out of bounds.
     pub fn set_tile(&mut self, layer: usize, x: u32, y: u32, gid: u32) {
-        if let Some(l) = self.layers.get_mut(layer) {
-            if let Some(idx) = l.index(x, y) {
-                let old_gid = l.tiles[idx];
-                l.tiles[idx] = gid;
-                if let Some(layer_index) = self.tile_type_index_cache.get_mut(layer) {
-                    if old_gid != 0 {
-                        remove_pos_from_gid(layer_index, old_gid, x, y);
-                    }
-                    if gid != 0 {
-                        layer_index.entry(gid).or_default().push((x, y));
-                    }
-                }
-                self.mark_anim_visibility_dirty();
-            }
-        }
+        let _ = self.try_set_tile(layer, x, y, gid);
     }
     /// Return the GID at `(x, y)` in layer `layer`; returns `0` when out of bounds.
     pub fn get_tile(&self, layer: usize, x: u32, y: u32) -> u32 {
-        if let Some(l) = self.layers.get(layer) {
-            if let Some(idx) = l.index(x, y) {
-                return l.tiles[idx];
-            }
-        }
-        0
+        self.try_get_tile(layer, x, y).unwrap_or(0)
     }
     #[allow(clippy::too_many_arguments)]
     /// Set a per-tile RGBA tint override at `(x, y)` in `layer`; no-op when out of bounds.
     pub fn set_tile_tint(&mut self, layer: usize, x: u32, y: u32, r: f32, g: f32, b: f32, a: f32) {
-        if let Some(l) = self.layers.get_mut(layer) {
-            if let Some(idx) = l.index(x, y) {
-                l.tile_tints[idx] = Some([r, g, b, a]);
-            }
-        }
+        let _ = self.try_set_tile_tint(layer, x, y, r, g, b, a);
     }
     /// Set the tile at `(x, y)` in `layer` to GID `0`; updates the type-index cache.
     pub fn clear_tile(&mut self, layer: usize, x: u32, y: u32) {
@@ -270,32 +497,162 @@ impl TileMap {
             }
             if let Some(layer_index) = self.tile_type_index_cache.get_mut(layer) {
                 layer_index.clear();
-                if gid != 0 {
-                    let mut positions = Vec::with_capacity((l.width * l.height) as usize);
-                    for y in 0..l.height {
-                        for x in 0..l.width {
-                            positions.push((x, y));
-                        }
-                    }
-                    layer_index.insert(gid, positions);
-                }
             }
+            self.mark_layer_index_dirty(layer);
             self.mark_anim_visibility_dirty();
+        } else {
+            TileMapDiagnostics::bump(&self.diagnostics.invalid_layer);
         }
     }
     /// Return a copy of the GID-to-positions index for `layer`; empty map when out of range.
-    pub fn tile_type_index(&self, layer: usize) -> HashMap<u32, Vec<(u32, u32)>> {
+    pub fn tile_type_index(&mut self, layer: usize) -> HashMap<u32, Vec<(u32, u32)>> {
+        if self.ensure_index(layer).is_err() {
+            return HashMap::new();
+        }
         self.tile_type_index_cache
             .get(layer)
             .cloned()
             .unwrap_or_default()
     }
     /// Return all `(x, y)` positions for tiles matching `gid` in `layer`; empty vec when not found.
-    pub fn find_tiles_by_gid(&self, layer: usize, gid: u32) -> Vec<(u32, u32)> {
+    pub fn find_tiles_by_gid(&mut self, layer: usize, gid: u32) -> Vec<(u32, u32)> {
+        if self.ensure_index(layer).is_err() {
+            return Vec::new();
+        }
         self.tile_type_index_cache
             .get(layer)
             .and_then(|idx| idx.get(&gid).cloned())
             .unwrap_or_default()
+    }
+
+    /// Set the visibility flag on layer `idx`, returning a typed error when the layer is missing.
+    pub fn try_set_layer_visible(
+        &mut self,
+        idx: usize,
+        visible: bool,
+    ) -> Result<(), TileMapError> {
+        if idx >= self.layers.len() {
+            return Err(self.invalid_layer_error(idx));
+        }
+        let layer = &mut self.layers[idx];
+        layer.visible = visible;
+        self.mark_anim_visibility_dirty();
+        Ok(())
+    }
+
+    /// Set the tint RGBA of layer `idx`, returning a typed error when the layer is missing.
+    pub fn try_set_layer_color(
+        &mut self,
+        idx: usize,
+        r: f32,
+        g: f32,
+        b: f32,
+        a: f32,
+    ) -> Result<(), TileMapError> {
+        if idx >= self.layers.len() {
+            return Err(self.invalid_layer_error(idx));
+        }
+        let layer = &mut self.layers[idx];
+        layer.tint = [r, g, b, a];
+        Ok(())
+    }
+
+    /// Set the world-space draw offset `(ox, oy)` of layer `idx`, returning a typed error when the layer is missing.
+    pub fn try_set_layer_offset(
+        &mut self,
+        idx: usize,
+        ox: f32,
+        oy: f32,
+    ) -> Result<(), TileMapError> {
+        if idx >= self.layers.len() {
+            return Err(self.invalid_layer_error(idx));
+        }
+        let layer = &mut self.layers[idx];
+        layer.offset = Vec2::new(ox, oy);
+        Ok(())
+    }
+
+    /// Set the parallax factor `(px, py)` of layer `idx`, returning a typed error when the layer is missing.
+    pub fn try_set_layer_parallax(
+        &mut self,
+        idx: usize,
+        px: f32,
+        py: f32,
+    ) -> Result<(), TileMapError> {
+        if idx >= self.layers.len() {
+            return Err(self.invalid_layer_error(idx));
+        }
+        let layer = &mut self.layers[idx];
+        layer.parallax = Vec2::new(px, py);
+        Ok(())
+    }
+
+    /// Write GID `gid` at `(x, y)` in layer `layer` and return a typed error on invalid layer or coord.
+    pub fn try_set_tile(
+        &mut self,
+        layer: usize,
+        x: u32,
+        y: u32,
+        gid: u32,
+    ) -> Result<(), TileMapError> {
+        if layer >= self.layers.len() {
+            return Err(self.invalid_layer_error(layer));
+        }
+        let l = &mut self.layers[layer];
+        let idx = match l.index(x, y) {
+            Some(idx) => idx,
+            None => return Err(self.invalid_coord_error(layer, x, y)),
+        };
+        let old_gid = l.tiles[idx];
+        l.tiles[idx] = gid;
+        if self.index_policy == TileIndexPolicy::Eager && !self.tile_type_index_dirty[layer] {
+            if let Some(layer_index) = self.tile_type_index_cache.get_mut(layer) {
+                if old_gid != 0 {
+                    remove_pos_from_gid(layer_index, old_gid, x, y);
+                }
+                if gid != 0 {
+                    layer_index.entry(gid).or_default().push((x, y));
+                }
+            }
+        } else {
+            self.mark_layer_index_dirty(layer);
+        }
+        self.mark_anim_visibility_dirty();
+        Ok(())
+    }
+
+    /// Return the GID at `(x, y)` in layer `layer`, or a typed error when the layer or coord is invalid.
+    pub fn try_get_tile(&self, layer: usize, x: u32, y: u32) -> Result<u32, TileMapError> {
+        let l = self
+            .layers
+            .get(layer)
+            .ok_or_else(|| self.invalid_layer_error(layer))?;
+        let idx = l.index(x, y).ok_or_else(|| self.invalid_coord_error(layer, x, y))?;
+        Ok(l.tiles[idx])
+    }
+
+    /// Set a per-tile RGBA tint override at `(x, y)` in `layer`, or return a typed error on invalid input.
+    #[allow(clippy::too_many_arguments)]
+    pub fn try_set_tile_tint(
+        &mut self,
+        layer: usize,
+        x: u32,
+        y: u32,
+        r: f32,
+        g: f32,
+        b: f32,
+        a: f32,
+    ) -> Result<(), TileMapError> {
+        if layer >= self.layers.len() {
+            return Err(self.invalid_layer_error(layer));
+        }
+        let l = &mut self.layers[layer];
+        let idx = match l.index(x, y) {
+            Some(idx) => idx,
+            None => return Err(self.invalid_coord_error(layer, x, y)),
+        };
+        l.tile_tints[idx] = Some([r, g, b, a]);
+        Ok(())
     }
     /// Set the active camera viewport rect; enables culled render-command generation.
     pub fn set_viewport(&mut self, x: f32, y: f32, w: f32, h: f32) {
@@ -311,6 +668,9 @@ impl TileMap {
         if self.anim_visibility_dirty {
             self.rebuild_visible_animated_gids();
         }
+        if !dt.is_finite() || dt <= 0.0 {
+            return;
+        }
         let dt_ms = dt * 1000.0;
         for &gid in &self.visible_animated_gids {
             if let Some((ts_idx, local_id)) = self.resolve_gid(gid) {
@@ -322,26 +682,39 @@ impl TileMap {
                 }
                 let (frame_idx, elapsed) = self.anim_timers.entry(gid).or_insert((0, 0.0));
                 *elapsed += dt_ms;
-                if *elapsed >= frames[*frame_idx].duration_ms {
-                    *elapsed -= frames[*frame_idx].duration_ms;
+                let mut guard = frames.len().saturating_mul(32).max(1);
+                while guard > 0 {
+                    let duration_ms = frames[*frame_idx].duration_ms;
+                    if !duration_ms.is_finite() || duration_ms <= 0.0 {
+                        *frame_idx = (*frame_idx + 1) % frames.len();
+                        guard -= 1;
+                        continue;
+                    }
+                    if *elapsed < duration_ms {
+                        break;
+                    }
+                    *elapsed -= duration_ms;
                     *frame_idx = (*frame_idx + 1) % frames.len();
+                    guard -= 1;
                 }
             }
         }
     }
     /// Convert world position `(wx, wy)` to tile grid coordinates; clamps negative values to `0`.
     pub fn world_to_tile(&self, wx: f32, wy: f32) -> (u32, u32) {
-        let tx = if wx < 0.0 {
-            0
-        } else {
-            (wx / self.tile_width as f32) as u32
-        };
-        let ty = if wy < 0.0 {
-            0
-        } else {
-            (wy / self.tile_height as f32) as u32
-        };
-        (tx, ty)
+        self.try_world_to_tile(wx, wy).unwrap_or((0, 0))
+    }
+
+    /// Convert world position `(wx, wy)` to tile grid coordinates, returning `None` for negative or non-finite input.
+    pub fn try_world_to_tile(&self, wx: f32, wy: f32) -> Option<(u32, u32)> {
+        if !wx.is_finite() || !wy.is_finite() || wx < 0.0 || wy < 0.0 {
+            TileMapDiagnostics::bump(&self.diagnostics.invalid_queries);
+            return None;
+        }
+        Some((
+            (wx / self.tile_width as f32) as u32,
+            (wy / self.tile_height as f32) as u32,
+        ))
     }
     /// Convert tile grid coordinates `(tx, ty)` to world-space top-left pixel position.
     pub fn tile_to_world(&self, tx: u32, ty: u32) -> (f32, f32) {
@@ -412,22 +785,33 @@ impl TileMap {
 
     fn rebuild_visible_animated_gids(&mut self) {
         let mut visible = BTreeSet::new();
-        for (layer_idx, layer) in self.layers.iter().enumerate() {
-            if !layer.visible {
+        let animated_gids: Vec<u32> = self
+            .tilesets
+            .iter()
+            .flat_map(|ts| {
+                ts.iter_animated_local_ids()
+                    .map(move |local_id| ts.get_first_gid() + local_id)
+            })
+            .collect();
+        for layer_idx in 0..self.layers.len() {
+            if !self.layers[layer_idx].visible {
                 continue;
             }
-            for y in 0..layer.height {
-                for x in 0..layer.width {
-                    let gid = self.get_tile(layer_idx, x, y);
-                    if gid == 0 || !self.tile_visible_in_viewport(x, y) {
-                        continue;
-                    }
-                    let Some((ts_idx, local_id)) = self.resolve_gid(gid) else {
-                        continue;
-                    };
-                    if self.tilesets[ts_idx].get_animation(local_id).is_some() {
-                        visible.insert(gid);
-                    }
+            if self.ensure_index(layer_idx).is_err() {
+                continue;
+            }
+            let Some(layer_index) = self.tile_type_index_cache.get(layer_idx) else {
+                continue;
+            };
+            for gid in &animated_gids {
+                let Some(positions) = layer_index.get(gid) else {
+                    continue;
+                };
+                if positions
+                    .iter()
+                    .any(|&(x, y)| self.tile_visible_in_viewport(x, y))
+                {
+                    visible.insert(*gid);
                 }
             }
         }
@@ -461,6 +845,7 @@ impl TileMap {
                 return Some((i, gid - first));
             }
         }
+        TileMapDiagnostics::bump(&self.diagnostics.unknown_gid);
         None
     }
     /// Return `true` when the tile at `(x, y)` in `layer` is marked solid in its tileset.
@@ -474,29 +859,78 @@ impl TileMap {
     }
     /// Return `true` when any tile overlapped by `rect` in `layer` is solid.
     pub fn rect_overlaps_solid(&self, layer: usize, rect: Rect) -> bool {
-        let (tx0, ty0) = self.world_to_tile(rect.x, rect.y);
-        let (tx1, ty1) =
-            self.world_to_tile(rect.x + rect.width - 0.001, rect.y + rect.height - 0.001);
+        self.try_rect_overlaps_solid(layer, rect).unwrap_or(false)
+    }
+
+    /// Return `true` when any tile overlapped by `rect` in `layer` is solid, or a typed error for invalid input.
+    pub fn try_rect_overlaps_solid(
+        &self,
+        layer: usize,
+        rect: Rect,
+    ) -> Result<bool, TileMapError> {
+        if self.validate_collision_query(rect).is_err() {
+            TileMapDiagnostics::bump(&self.diagnostics.invalid_queries);
+            self.validate_collision_query(rect)?;
+        }
+        let Some((tx0, ty0)) = self.try_world_to_tile(rect.x, rect.y) else {
+            TileMapDiagnostics::bump(&self.diagnostics.invalid_queries);
+            return Err(TileMapError::InvalidFloat {
+                field: "rect.origin",
+                value: f64::NAN,
+            });
+        };
+        let Some((tx1, ty1)) =
+            self.try_world_to_tile(rect.x + rect.width - 0.001, rect.y + rect.height - 0.001)
+        else {
+            TileMapDiagnostics::bump(&self.diagnostics.invalid_queries);
+            return Err(TileMapError::InvalidFloat {
+                field: "rect.max",
+                value: f64::NAN,
+            });
+        };
+        self.checked_query_span(tx0, ty0, tx1, ty1)?;
         for ty in ty0..=ty1 {
             for tx in tx0..=tx1 {
                 if self.is_solid(layer, tx, ty) {
-                    return true;
+                    return Ok(true);
                 }
             }
         }
-        false
+        Ok(false)
     }
     /// Continuous AABB sweep through solid tiles in `layer` along `(dx, dy)`; returns the earliest hit or `None`.
     pub fn sweep_rect(&self, layer: usize, rect: Rect, dx: f32, dy: f32) -> Option<SweepResult> {
+        self.try_sweep_rect(layer, rect, dx, dy).ok().flatten()
+    }
+
+    /// Continuous AABB sweep through solid tiles in `layer` along `(dx, dy)`, or a typed error for invalid input.
+    pub fn try_sweep_rect(
+        &self,
+        layer: usize,
+        rect: Rect,
+        dx: f32,
+        dy: f32,
+    ) -> Result<Option<SweepResult>, TileMapError> {
         if dx == 0.0 && dy == 0.0 {
-            return None;
+            return Ok(None);
+        }
+        if self.validate_sweep_query(rect, dx, dy).is_err() {
+            TileMapDiagnostics::bump(&self.diagnostics.invalid_queries);
+            self.validate_sweep_query(rect, dx, dy)?;
         }
         let min_x = rect.x.min(rect.x + dx);
         let min_y = rect.y.min(rect.y + dy);
         let max_x = (rect.x + rect.width).max(rect.x + rect.width + dx);
         let max_y = (rect.y + rect.height).max(rect.y + rect.height + dy);
-        let (tx0, ty0) = self.world_to_tile(min_x, min_y);
-        let (tx1, ty1) = self.world_to_tile(max_x, max_y);
+        let Some((tx0, ty0)) = self.try_world_to_tile(min_x, min_y) else {
+            TileMapDiagnostics::bump(&self.diagnostics.invalid_queries);
+            return Ok(None);
+        };
+        let Some((tx1, ty1)) = self.try_world_to_tile(max_x, max_y) else {
+            TileMapDiagnostics::bump(&self.diagnostics.invalid_queries);
+            return Ok(None);
+        };
+        self.checked_query_span(tx0, ty0, tx1, ty1)?;
         let tw = self.tile_width as f32;
         let th = self.tile_height as f32;
         let mut best: Option<SweepResult> = None;
@@ -515,7 +949,7 @@ impl TileMap {
                 }
             }
         }
-        best
+        Ok(best)
     }
     /// Apply 4-neighbour autotile GID substitution to all non-empty tiles in `layer` matching `type_name`.
     pub fn apply_autotile(&mut self, layer: usize, type_name: &str) {
@@ -545,6 +979,9 @@ impl TileMap {
             Some(l) => (l.width, l.height),
             None => return,
         };
+        if width == 0 || height == 0 {
+            return;
+        }
         let mut replacements = Vec::new();
         let x_start = x.saturating_sub(1);
         let y_start = y.saturating_sub(1);
@@ -593,6 +1030,9 @@ impl TileMap {
             Some(l) => (l.width, l.height),
             None => return,
         };
+        if width == 0 || height == 0 {
+            return;
+        }
         let mut replacements = Vec::new();
         let x_start = x.saturating_sub(1);
         let y_start = y.saturating_sub(1);
@@ -683,12 +1123,28 @@ impl TileMap {
     }
     /// Render all layers to an `ImageData` using the debug color palette; `tile_size` is the render pixel size per tile.
     pub fn draw_to_image(&self, tile_size: u32) -> crate::image::ImageData {
+        self.try_draw_to_image(tile_size)
+            .unwrap_or_else(|_| crate::image::ImageData::new(1, 1))
+    }
+
+    /// Render all layers to an `ImageData` using the debug color palette; rejects zero or oversized output dimensions.
+    pub fn try_draw_to_image(
+        &self,
+        tile_size: u32,
+    ) -> Result<crate::image::ImageData, TileMapError> {
         if self.layers.is_empty() {
-            return crate::image::ImageData::new(1, 1);
+            return Ok(crate::image::ImageData::new(1, 1));
+        }
+        if tile_size == 0 {
+            return Err(TileMapError::NonPositiveRect {
+                field: "tile_size",
+                value: 0.0,
+            });
         }
         let lw = self.layers[0].width;
         let lh = self.layers[0].height;
-        let mut img = crate::image::ImageData::new(lw * tile_size, lh * tile_size);
+        let (img_w, img_h) = checked_image_pixels(lw, lh, tile_size, &self.limits)?;
+        let mut img = crate::image::ImageData::new(img_w, img_h);
         img.fill(20, 20, 30, 255);
         for (li, layer) in self.layers.iter().enumerate() {
             let w = layer.width.min(lw);
@@ -733,7 +1189,7 @@ impl TileMap {
                 }
             }
         }
-        img
+        Ok(img)
     }
     /// Render world-space highlight points and a grid overlay into an `ImageData` of `img_width × img_height`.
     pub fn draw_with_highlight_to_image(

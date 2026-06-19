@@ -14,13 +14,14 @@ use crate::procgen::noise::{
 use crate::procgen::noise::{simplex_noise_2d, simplex_noise_3d};
 use crate::procgen::world_graph::generate_world_graph;
 use crate::procgen::{
-    bsp_dungeon, bsp_dungeon_with_prefabs, cellular_automata, flood_fill,
-    generate_noise_map_parallel, perlin_noise_periodic, poisson_disk, rooms_dungeon,
-    rooms_dungeon_with_prefabs, voronoi_diagram, BspOpts, BspPrefabStamp, CellType, CellularOpts,
-    CellularWorld, DistType, FractalType, HeightmapOpts, MapGenOptions, NoiseGenerator, NoiseKind,
-    RoomPrefabStamp, RoomsOpts, VoronoiOpts, WfcOpts, WfcRules, WfcTile,
+    bsp_dungeon, bsp_dungeon_with_prefabs, flood_fill, perlin_noise_periodic,
+    rooms_dungeon_with_prefabs, try_cellular_automata, try_generate_noise_map_parallel,
+    try_parse_llm_constraints, try_parse_llm_wfc_response, try_poisson_disk, try_rooms_dungeon,
+    try_voronoi_diagram, try_wfc_generate, BspOpts, BspPrefabStamp, CellType, CellularOpts,
+    CellularWorld, DistType, ErosionMode, FractalType, HeightmapOpts, MapGenOptions,
+    NoiseGenerator, NoiseKind, ProcgenLimits, RoomPrefabStamp, RoomsOpts, VoronoiOpts, WfcOpts,
+    WfcRules, WfcTile,
 };
-use crate::procgen::{parse_llm_constraints, parse_llm_wfc_response, wfc_generate};
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -158,6 +159,14 @@ fn resolve_fractal_type(name: &str) -> FractalType {
         "turbulence" => FractalType::Turbulence,
         _ => FractalType::Fbm,
     }
+}
+
+fn procgen_limits() -> ProcgenLimits {
+    ProcgenLimits::default()
+}
+
+fn lua_procgen_error(err: crate::procgen::ProcgenError) -> LuaError {
+    LuaError::RuntimeError(err.to_string())
 }
 /// Provides Lua methods for procedural noise sampling and map generation.
 impl LuaUserData for LuaNoiseGenerator {
@@ -396,6 +405,8 @@ impl LuaUserData for LuaNoiseGenerator {
                             .unwrap_or(FractalType::Fbm),
                         offset_x: t.get::<_, Option<f64>>("offsetX")?.unwrap_or(0.0),
                         offset_y: t.get::<_, Option<f64>>("offsetY")?.unwrap_or(0.0),
+                        parallel_enabled: t.get::<_, Option<bool>>("parallel")?.unwrap_or(true),
+                        parallel_chunk_size: t.get::<_, Option<usize>>("parallelChunkSize")?,
                     }
                 } else {
                     MapGenOptions::default()
@@ -404,7 +415,10 @@ impl LuaUserData for LuaNoiseGenerator {
                     .as_ref()
                     .and_then(|t| t.get::<_, Option<String>>("backend").ok().flatten())
                     .unwrap_or_else(|| "cpu".to_string());
-                let data = this.inner.generate_map_parallel(w, h, &map_opts);
+                let data = this
+                    .inner
+                    .try_generate_map_parallel(w, h, &map_opts, &procgen_limits())
+                    .map_err(lua_procgen_error)?;
                 let result = lua.create_table()?;
                 for (i, v) in data.iter().enumerate() {
                     result.set(i + 1, *v)?;
@@ -440,11 +454,16 @@ impl LuaUserData for LuaNoiseGenerator {
                             .unwrap_or(FractalType::Fbm),
                         offset_x: t.get::<_, Option<f64>>("offsetX")?.unwrap_or(0.0),
                         offset_y: t.get::<_, Option<f64>>("offsetY")?.unwrap_or(0.0),
+                        parallel_enabled: t.get::<_, Option<bool>>("parallel")?.unwrap_or(true),
+                        parallel_chunk_size: t.get::<_, Option<usize>>("parallelChunkSize")?,
                     }
                 } else {
                     MapGenOptions::default()
                 };
-                let data = this.inner.generate_map_parallel(w, h, &map_opts);
+                let data = this
+                    .inner
+                    .try_generate_map_parallel(w, h, &map_opts, &procgen_limits())
+                    .map_err(lua_procgen_error)?;
                 let result = lua.create_table()?;
                 for (i, v) in data.iter().enumerate() {
                     result.set(i + 1, *v)?;
@@ -548,7 +567,11 @@ impl LuaUserData for LuaCellular {
         /// Renders the entire cellular grid to raw RGBA pixel data using the default material palette.
         /// @return | string | Raw RGBA pixel bytes (width * height * 4).
         methods.add_method("toImageData", |lua, this, ()| {
-            let buf = this.sim.borrow().to_image_data(cellular_default_palette);
+            let buf = this
+                .sim
+                .borrow()
+                .try_to_image_data(cellular_default_palette, &procgen_limits())
+                .map_err(lua_procgen_error)?;
             lua.create_string(&buf)
         });
         // -- toImageDataRegion --
@@ -561,13 +584,18 @@ impl LuaUserData for LuaCellular {
         methods.add_method(
             "toImageDataRegion",
             |lua, this, (cx0, cy0, cw, ch): (u32, u32, u32, u32)| {
-                let buf = this.sim.borrow().to_image_data_region(
-                    cx0,
-                    cy0,
-                    cw,
-                    ch,
-                    cellular_default_palette,
-                );
+                let buf = this
+                    .sim
+                    .borrow()
+                    .try_to_image_data_region(
+                        cx0,
+                        cy0,
+                        cw,
+                        ch,
+                        cellular_default_palette,
+                        &procgen_limits(),
+                    )
+                    .map_err(lua_procgen_error)?;
                 lua.create_string(&buf)
             },
         );
@@ -606,12 +634,12 @@ impl LuaUserData for LuaCellular {
         /// @param | data | string | Binary cellular data.
         /// @return | boolean | True if loading succeeded, false if data was invalid.
         methods.add_method_mut("loadFromBytes", |_, this, data: LuaString| {
-            match CellularWorld::from_bytes(data.as_bytes()) {
-                Some(loaded) => {
+            match CellularWorld::from_bytes_with_limits(data.as_bytes(), &procgen_limits()) {
+                Ok(loaded) => {
                     *this.sim.borrow_mut() = loaded;
                     Ok(true)
                 }
-                None => Ok(false),
+                Err(_) => Ok(false),
             }
         });
         // -- type --
@@ -643,7 +671,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
                 .map(|t| CellularOpts::from_lua_table(&t))
                 .transpose()?
                 .unwrap_or_default();
-            let data = cellular_automata(w, h, &cfg);
+            let data =
+                try_cellular_automata(w, h, &cfg, &procgen_limits()).map_err(lua_procgen_error)?;
             let out = lua.create_table()?;
             for (i, v) in data.iter().enumerate() {
                 out.set(i + 1, *v)?;
@@ -720,7 +749,15 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @field | y | number | Y.
     tbl.set("poissonDisk", lua.create_function(
             |lua, (w, h, min_dist, max_attempts, seed): (f32, f32, f32, Option<u32>, Option<u64>)| {
-                let points = poisson_disk(w, h, min_dist, max_attempts.unwrap_or(30), seed.unwrap_or(0));
+                let points = try_poisson_disk(
+                    w,
+                    h,
+                    min_dist,
+                    max_attempts.unwrap_or(30),
+                    seed.unwrap_or(0),
+                    &procgen_limits(),
+                )
+                .map_err(lua_procgen_error)?;
                 let out = lua.create_table()?;
                 for (i, (px, py)) in points.iter().enumerate() {
                     let pt = lua.create_table()?;
@@ -758,7 +795,9 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
                     .map(|t| VoronoiOpts::from_lua_table(&t))
                     .transpose()?
                     .unwrap_or_default();
-                let (regions, distances, distances2) = voronoi_diagram(w, h, &points, &vopts);
+                let (regions, distances, distances2) =
+                    try_voronoi_diagram(w, h, &points, &vopts, &procgen_limits())
+                        .map_err(lua_procgen_error)?;
                 let r_tbl = lua.create_table()?;
                 let d_tbl = lua.create_table()?;
                 let d2_tbl = lua.create_table()?;
@@ -971,7 +1010,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
                     cfg.seed = v;
                 }
             }
-            let d = rooms_dungeon(&cfg);
+            let d = try_rooms_dungeon(&cfg, &procgen_limits()).map_err(lua_procgen_error)?;
             let rooms_tbl = lua.create_table()?;
             for (i, r) in d.rooms.iter().enumerate() {
                 let rt = lua.create_table()?;
@@ -1170,8 +1209,15 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
                 if let Ok(v) = t.get::<_, u32>("erosion_passes") {
                     cfg.erosion_passes = v;
                 }
+                if let Ok(mode) = t.get::<_, String>("erosion_mode") {
+                    cfg.erosion_mode = if mode.eq_ignore_ascii_case("buffered") {
+                        ErosionMode::Buffered
+                    } else {
+                        ErosionMode::InPlace
+                    };
+                }
             }
-            let hm = Heightmap::generate(&cfg);
+            let hm = Heightmap::try_generate(&cfg, &procgen_limits()).map_err(lua_procgen_error)?;
             let out = lua.create_table()?;
             for (i, &v) in hm.cells.iter().enumerate() {
                 out.set(i + 1, v)?;
@@ -1204,7 +1250,14 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
                 for v in cells_tbl.sequence_values::<u8>() {
                     cells.push(v?);
                 }
-                let hm = Heightmap::from_cellular(width, height, &cells, floor_value.unwrap_or(0));
+                let hm = Heightmap::try_from_cellular(
+                    width,
+                    height,
+                    &cells,
+                    floor_value.unwrap_or(0),
+                    &procgen_limits(),
+                )
+                .map_err(lua_procgen_error)?;
                 let out_cells = lua.create_table()?;
                 for (i, &v) in hm.cells.iter().enumerate() {
                     out_cells.set(i + 1, v)?;
@@ -1268,7 +1321,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
                 seed,
                 max_attempts,
             };
-            let grid = crate::procgen::wfc_generate(&wfc_opts);
+            let grid = try_wfc_generate(&wfc_opts, &procgen_limits()).map_err(lua_procgen_error)?;
             let out = lua.create_table()?;
             for (i, c) in grid.cells.iter().enumerate() {
                 out.set(i + 1, c.unwrap_or(0))?;
@@ -1511,9 +1564,17 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
                 if let Ok(v) = t.get::<_, f64>("offset_y") {
                     cfg.offset_y = v;
                 }
+                if let Ok(v) = t.get::<_, bool>("parallel") {
+                    cfg.parallel_enabled = v;
+                }
+                if let Ok(v) = t.get::<_, usize>("parallel_chunk_size") {
+                    cfg.parallel_chunk_size = Some(v);
+                }
                 if let Ok(v) = t.get::<_, u64>("seed") {
                     let g = NoiseGenerator::new(v);
-                    let map = g.generate_map(width, height, &cfg);
+                    let map = g
+                        .try_generate_map(width, height, &cfg, &procgen_limits())
+                        .map_err(lua_procgen_error)?;
                     let out = lua.create_table()?;
                     for (i, &val) in map.iter().enumerate() {
                         out.set(i + 1, val)?;
@@ -1522,7 +1583,9 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
                 }
             }
             let g = NoiseGenerator::new(0);
-            let map = g.generate_map(width, height, &cfg);
+            let map = g
+                .try_generate_map(width, height, &cfg, &procgen_limits())
+                .map_err(lua_procgen_error)?;
             let out = lua.create_table()?;
             for (i, &val) in map.iter().enumerate() {
                 out.set(i + 1, val)?;
@@ -1562,8 +1625,15 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
                 if let Ok(v) = t.get::<_, f64>("offset_y") {
                     cfg.offset_y = v;
                 }
+                if let Ok(v) = t.get::<_, bool>("parallel") {
+                    cfg.parallel_enabled = v;
+                }
+                if let Ok(v) = t.get::<_, usize>("parallel_chunk_size") {
+                    cfg.parallel_chunk_size = Some(v);
+                }
             }
-            let map = generate_noise_map_parallel(width, height, &cfg);
+            let map = try_generate_noise_map_parallel(width, height, &cfg, &procgen_limits())
+                .map_err(lua_procgen_error)?;
             let out = lua.create_table()?;
             for (i, &val) in map.iter().enumerate() {
                 out.set(i + 1, val)?;
@@ -1609,7 +1679,9 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
                 }
             }
             let g = NoiseGenerator::new(seed);
-            let map = g.generate_map_parallel(width, height, &cfg);
+            let map = g
+                .try_generate_map_parallel(width, height, &cfg, &procgen_limits())
+                .map_err(lua_procgen_error)?;
             let out = lua.create_table()?;
             for (i, &val) in map.iter().enumerate() {
                 out.set(i + 1, val)?;
@@ -1774,7 +1846,10 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         "newCellular",
         lua.create_function(|_, (width, height): (u32, u32)| {
             Ok(LuaCellular {
-                sim: Rc::new(RefCell::new(CellularWorld::new(width, height))),
+                sim: Rc::new(RefCell::new(
+                    CellularWorld::try_new(width, height, &procgen_limits())
+                        .map_err(lua_procgen_error)?,
+                )),
             })
         })?,
     )?;
@@ -1805,7 +1880,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
             let result = ollama_generate_json(&cfg.base_url, &cfg.model, &prompt, system, timeout);
             let out = lua.create_table()?;
             if let Ok(val) = result {
-                let constraints = parse_llm_constraints(&val);
+                let constraints =
+                    try_parse_llm_constraints(&val, &procgen_limits()).unwrap_or_default();
                 for (id, neighbors) in &constraints {
                     let neighbors_tbl = lua.create_table()?;
                     for (i, n) in neighbors.iter().enumerate() {
@@ -1848,26 +1924,34 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
             let failed = lua.create_table()?;
 
             if let Ok(val) = result {
-                if let Some(opts) = parse_llm_wfc_response(&val, width, height, seed, max_attempts) {
-                    let grid = wfc_generate(&opts);
-                    let mut ci = 1usize;
-                    let mut fi = 1usize;
-                    for (i, cell) in grid.cells.iter().enumerate() {
-                        let x = (i as u32) % width;
-                        let y = (i as u32) / width;
-                        if let Some(tile_id) = cell {
-                            let c = lua.create_table()?;
-                            c.set("x", x)?;
-                            c.set("y", y)?;
-                            c.set("tile", *tile_id)?;
-                            cells.set(ci, c)?;
-                            ci += 1;
-                        } else {
-                            let f = lua.create_table()?;
-                            f.set("x", x)?;
-                            f.set("y", y)?;
-                            failed.set(fi, f)?;
-                            fi += 1;
+                if let Ok(opts) = try_parse_llm_wfc_response(
+                    &val,
+                    width,
+                    height,
+                    seed,
+                    max_attempts,
+                    &procgen_limits(),
+                ) {
+                    if let Ok(grid) = try_wfc_generate(&opts, &procgen_limits()) {
+                        let mut ci = 1usize;
+                        let mut fi = 1usize;
+                        for (i, cell) in grid.cells.iter().enumerate() {
+                            let x = (i as u32) % width;
+                            let y = (i as u32) / width;
+                            if let Some(tile_id) = cell {
+                                let c = lua.create_table()?;
+                                c.set("x", x)?;
+                                c.set("y", y)?;
+                                c.set("tile", *tile_id)?;
+                                cells.set(ci, c)?;
+                                ci += 1;
+                            } else {
+                                let f = lua.create_table()?;
+                                f.set("x", x)?;
+                                f.set("y", y)?;
+                                failed.set(fi, f)?;
+                                fi += 1;
+                            }
                         }
                     }
                 }

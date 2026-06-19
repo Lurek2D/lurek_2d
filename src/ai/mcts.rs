@@ -5,7 +5,13 @@
 //! This file matters when rollout budgets, exploration pressure, or visit accounting stop producing sane choices.
 //! Open this owner when search-policy behavior changes without affecting deterministic planners like GOAP or HTN.
 
+use crate::ai::diagnostics::{CallbackErrorTrace, MctsDecisionTrace};
+use crate::ai::validation::{
+    finite_f32, validate_count, validate_depth, AiValidationLimits,
+};
+
 /// Configuration for one MCTS search run.
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct MCTSConfig {
     /// Number of iterations to execute.
     pub iterations: u32,
@@ -26,6 +32,25 @@ impl Default for MCTSConfig {
             rollout_depth: 10,
             seed: 42,
         }
+    }
+}
+
+impl MCTSConfig {
+    /// Validate search parameters against shared AI limits.
+    pub fn validate(&self, limits: &AiValidationLimits) -> Result<(), String> {
+        validate_count(
+            "mcts iterations",
+            self.iterations as usize,
+            limits.max_mcts_iterations as usize,
+        )
+        .map_err(|err| err.to_string())?;
+        finite_f32("mcts uct_c", self.uct_c).map_err(|err| err.to_string())?;
+        if self.uct_c < 0.0 {
+            return Err("mcts uct_c must be >= 0".to_string());
+        }
+        validate_depth("mcts rollout depth", self.rollout_depth, limits.max_mcts_rollout_depth)
+            .map_err(|err| err.to_string())?;
+        Ok(())
     }
 }
 /// Internal tree node used by `MCTSEngine`.
@@ -77,16 +102,31 @@ pub struct MCTSEngine {
     arena: Vec<MCTSNode>,
     /// Internal RNG state.
     rng: u64,
+    /// Shared safety limits for MCTS budgets and validation.
+    pub limits: AiValidationLimits,
+    /// Last structured search trace.
+    pub last_trace: MctsDecisionTrace,
 }
 impl MCTSEngine {
     /// Create a search engine with the provided config.
     pub fn new(config: MCTSConfig) -> Self {
+        let limits = AiValidationLimits::default();
+        let _ = config.validate(&limits);
         let rng = config.seed;
         Self {
             config,
             arena: Vec::new(),
             rng,
+            limits,
+            last_trace: MctsDecisionTrace::default(),
         }
+    }
+
+    /// Create a search engine after validating the provided configuration.
+    pub fn try_new(config: MCTSConfig) -> Result<Self, String> {
+        let limits = AiValidationLimits::default();
+        config.validate(&limits)?;
+        Ok(Self::new(config))
     }
     /// Return the active config. This function is part of the public API.
     pub fn config(&self) -> &MCTSConfig {
@@ -107,22 +147,46 @@ impl MCTSEngine {
         FC: FnMut(&S) -> f32,
     {
         self.arena.clear();
+        self.last_trace = MctsDecisionTrace::default();
         let root_actions = get_actions(&root_state);
         if root_actions.is_empty() {
+            self.last_trace.failure_reason = Some("no_actions".to_string());
             return None;
         }
         self.arena.push(MCTSNode::new(None, None, root_actions));
-        for _ in 0..self.config.iterations {
+        let mut invalid_score_count = 0usize;
+        let mut iterations_run = 0u32;
+        for _ in 0..self.config.iterations.min(self.limits.max_mcts_iterations) {
+            if self.arena.len() >= self.limits.max_mcts_nodes {
+                self.last_trace.failure_reason = Some("budget_exhausted".to_string());
+                break;
+            }
             let (node_idx, state) = self.select(0, root_state.clone(), apply_action);
             let (node_idx, state) = self.expand(node_idx, state, get_actions, apply_action);
             let score = self.rollout(&state, get_actions, apply_action, evaluate);
-            self.backpropagate(node_idx, score as f64);
+            let score = if score.is_finite() {
+                score as f64
+            } else {
+                invalid_score_count += 1;
+                0.0
+            };
+            self.backpropagate(node_idx, score);
+            iterations_run += 1;
         }
         let root = &self.arena[0];
-        root.children
+        let chosen_action = root
+            .children
             .iter()
             .max_by_key(|&&c| self.arena[c].visits)
-            .and_then(|&c| self.arena[c].action)
+            .and_then(|&c| self.arena[c].action);
+        self.last_trace.chosen_action = chosen_action;
+        self.last_trace.iterations_run = iterations_run;
+        self.last_trace.nodes_expanded = self.arena.len();
+        self.last_trace.invalid_score_count = invalid_score_count;
+        if chosen_action.is_none() && self.last_trace.failure_reason.is_none() {
+            self.last_trace.failure_reason = Some("no_choice".to_string());
+        }
+        chosen_action
     }
     /// Follow UCT until an expandable node is reached.
     fn select<S, FB>(&self, mut idx: usize, mut state: S, apply_action: &mut FB) -> (usize, S)
@@ -219,5 +283,10 @@ impl MCTSEngine {
         self.rng ^= self.rng >> 7;
         self.rng ^= self.rng << 17;
         (self.rng as usize) % n
+    }
+
+    /// Replace the callback errors recorded by the most recent Lua-facing wrapper call.
+    pub fn set_last_callback_errors(&mut self, callback_errors: Vec<CallbackErrorTrace>) {
+        self.last_trace.callback_errors = callback_errors;
     }
 }

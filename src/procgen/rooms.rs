@@ -6,6 +6,10 @@
 //! Open it when room-based dungeon semantics change; BSP splitting and WFC tiling live in sibling modules.
 
 use crate::procgen::lcg::Lcg;
+use crate::procgen::{
+    limits::{checked_cell_count, validate_iterations, validate_non_zero_dimensions},
+    ProcgenError, ProcgenLimits,
+};
 
 /// Axis-aligned room rectangle placed in a rooms dungeon grid.
 #[derive(Debug, Clone)]
@@ -67,6 +71,32 @@ impl Default for RoomsOpts {
     }
 }
 
+impl RoomsOpts {
+    /// Validate dimensions, room-size bounds, and grid allocation budgets.
+    pub fn validate(&self, limits: &ProcgenLimits) -> Result<(), ProcgenError> {
+        validate_non_zero_dimensions(self.width, self.height)?;
+        checked_cell_count(self.width, self.height, limits)?;
+        validate_iterations(self.max_rooms.saturating_mul(4), limits)?;
+        if self.min_room_size == 0 || self.max_room_size == 0 {
+            return Err(ProcgenError::ValueOutOfRange {
+                field: "room_size",
+                min: 1.0,
+                max: u32::MAX as f64,
+                value: 0.0,
+            });
+        }
+        if self.max_room_size < self.min_room_size {
+            return Err(ProcgenError::ValueOutOfRange {
+                field: "max_room_size",
+                min: self.min_room_size as f64,
+                max: u32::MAX as f64,
+                value: self.max_room_size as f64,
+            });
+        }
+        Ok(())
+    }
+}
+
 /// Completed rooms dungeon: placed rooms, corridor segments, and the flat tile grid.
 #[derive(Debug, Clone)]
 pub struct RoomsDungeon {
@@ -108,21 +138,32 @@ pub struct PlacedRoomPrefab {
 
 /// Generate a rooms dungeon from `opts`; returns rooms, L-shaped corridors, and the tile grid.
 pub fn rooms_dungeon(opts: &RoomsOpts) -> RoomsDungeon {
+    try_rooms_dungeon(opts, &ProcgenLimits::default())
+        .expect("rooms_dungeon received invalid dimensions or room options")
+}
+
+/// Generate a rooms dungeon after validating grid allocation and room-size contracts.
+pub fn try_rooms_dungeon(
+    opts: &RoomsOpts,
+    limits: &ProcgenLimits,
+) -> Result<RoomsDungeon, ProcgenError> {
+    opts.validate(limits)?;
     let mut rng = Lcg::new(opts.seed);
-    let mut grid = vec![0u8; (opts.width * opts.height) as usize];
+    let grid_len = checked_cell_count(opts.width, opts.height, limits)?;
+    let mut grid = vec![0u8; grid_len];
     let mut rooms: Vec<Room> = Vec::new();
     let size_range = opts.max_room_size - opts.min_room_size + 1;
     for _ in 0..opts.max_rooms * 4 {
         if rooms.len() as u32 >= opts.max_rooms {
             break;
         }
-        let rw = opts.min_room_size + (rng.next() as u32) % size_range.max(1);
-        let rh = opts.min_room_size + (rng.next() as u32) % size_range.max(1);
+        let rw = opts.min_room_size + rng.next_bounded_u32(size_range.max(1));
+        let rh = opts.min_room_size + rng.next_bounded_u32(size_range.max(1));
         if opts.width <= rw + 2 || opts.height <= rh + 2 {
             continue;
         }
-        let rx = 1 + (rng.next() as u32) % (opts.width - rw - 2).max(1);
-        let ry = 1 + (rng.next() as u32) % (opts.height - rh - 2).max(1);
+        let rx = 1 + rng.next_bounded_u32((opts.width - rw - 2).max(1));
+        let ry = 1 + rng.next_bounded_u32((opts.height - rh - 2).max(1));
         let candidate = Room {
             x: rx,
             y: ry,
@@ -160,11 +201,11 @@ pub fn rooms_dungeon(opts: &RoomsOpts) -> RoomsDungeon {
             }
         }
     }
-    RoomsDungeon {
+    Ok(RoomsDungeon {
         rooms,
         corridors,
         grid,
-    }
+    })
 }
 /// Generate a rooms dungeon, centre-stamp `prefabs` (round-robin) in each room, and return `(dungeon, placements)`.
 pub fn rooms_dungeon_with_prefabs(

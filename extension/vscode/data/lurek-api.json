@@ -27946,7 +27946,7 @@
         {
           "name": "newTileMap",
           "fullPath": "lurek.tilemap.newTileMap",
-          "signature": "(tile_width, tile_height, [chunk_size])",
+          "signature": "lurek.tilemap.newTileMap(tileWidth, tileHeight, [chunkSize], [opts])",
           "description": "Creates a new empty tilemap with the given tile dimensions.",
           "parameters": [
             {
@@ -27965,6 +27965,12 @@
               "name": "chunkSize",
               "type": "integer",
               "description": "Internal chunk size in tiles (default 16).",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "any",
+              "description": "Optional limits table (`maxLayers`, `maxTiles`, `maxImagePixels`, `maxImportBytes`, `maxDecodedBytes`, `maxChunkCells`, `maxChunks`, `maxCollisionTileChecks`).",
               "optional": true
             }
           ],
@@ -28006,13 +28012,19 @@
         {
           "name": "newChunkMap",
           "fullPath": "lurek.tilemap.newChunkMap",
-          "signature": "([chunk_size])",
+          "signature": "([chunk_size], [opts])",
           "description": "Creates a new infinite chunk-based tile map.",
           "parameters": [
             {
               "name": "chunkSize",
               "type": "integer",
               "description": "Tiles per chunk side (default 16).",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "any",
+              "description": "Optional limits table (`maxChunkCells`, `maxChunks`, `maxCollisionTileChecks`, and related tilemap ceilings).",
               "optional": true
             }
           ],
@@ -28659,7 +28671,7 @@
         {
           "name": "loadTMX",
           "fullPath": "lurek.tilemap.loadTMX",
-          "signature": "(xml)",
+          "signature": "(xml, [opts])",
           "description": "Parses a TMX (Tiled XML) string and returns a table describing the map structure.",
           "parameters": [
             {
@@ -28667,6 +28679,12 @@
               "type": "string",
               "description": "Raw TMX XML content.",
               "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "any",
+              "description": "Optional import policy table (`strictLayerSize`, `allowExternalTilesets`, `safePaths`, `assetRoot`) plus byte/size limits.",
+              "optional": true
             }
           ],
           "returns": "table",
@@ -28677,7 +28695,7 @@
         {
           "name": "fromLDtk",
           "fullPath": "lurek.tilemap.fromLDtk",
-          "signature": "(json_str, [level_name])",
+          "signature": "(json_str, [level_name], [opts])",
           "description": "Loads a tilemap from an LDtk JSON string, optionally targeting a specific level.",
           "parameters": [
             {
@@ -28690,6 +28708,12 @@
               "name": "levelName",
               "type": "string",
               "description": "Level name to load, or nil for the first level.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "any",
+              "description": "Optional limits table used to bound imported layer size, chunk allocation, and decoded input bytes.",
               "optional": true
             }
           ],
@@ -88387,6 +88411,24 @@
           "objectType": "LMapBlockGenerator"
         },
         {
+          "name": "setSolverBudget",
+          "fullPath": "LMapBlockGenerator:setSolverBudget",
+          "signature": "(opts)",
+          "description": "Set bounded recursion budgets for `solve_shape`.",
+          "parameters": [
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional `max_nodes`, `max_depth`, `max_ms`, and `max_candidates_per_cell` fields.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LMapBlockGenerator"
+        },
+        {
           "name": "addGroup",
           "fullPath": "LMapBlockGenerator:addGroup",
           "signature": "(group)",
@@ -88423,6 +88465,24 @@
           "objectType": "LMapBlockGenerator"
         },
         {
+          "name": "generateWithReport",
+          "fullPath": "LMapBlockGenerator:generateWithReport",
+          "signature": "(script)",
+          "description": "Generate map using a script and return runtime diagnostics for this object.",
+          "parameters": [
+            {
+              "name": "script",
+              "type": "MapScript",
+              "description": "Script to execute.",
+              "optional": false
+            }
+          ],
+          "returns": "MapBlockResult",
+          "returnType": "MapBlockResult",
+          "isMethod": true,
+          "objectType": "LMapBlockGenerator"
+        },
+        {
           "name": "getLastPlacedCount",
           "fullPath": "LMapBlockGenerator:getLastPlacedCount",
           "signature": "()",
@@ -88432,6 +88492,34 @@
           "returnType": "integer",
           "isMethod": true,
           "objectType": "LMapBlockGenerator"
+        },
+        {
+          "name": "getLastReport",
+          "fullPath": "LMapBlockGenerator:getLastReport",
+          "signature": "()",
+          "description": "Get the diagnostic report captured during the previous generation run.",
+          "parameters": [],
+          "returns": "MapBlockReport",
+          "returnType": "MapBlockReport",
+          "isMethod": true,
+          "objectType": "LMapBlockGenerator"
+        }
+      ]
+    },
+    {
+      "name": "LMapBlockReport",
+      "description": "Lua-facing generation diagnostics exposed by the lurek engine.",
+      "methods": [
+        {
+          "name": "toTable",
+          "fullPath": "LMapBlockReport:toTable",
+          "signature": "()",
+          "description": "Serialize generation diagnostics into a plain Lua table.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LMapBlockReport"
         }
       ]
     },
@@ -142875,6 +142963,36 @@
           "objectType": "LTileMap"
         },
         {
+          "name": "tryAddLayer",
+          "fullPath": "LTileMap:tryAddLayer",
+          "signature": "(name, w, h)",
+          "description": "Creates a new tile layer and returns `nil, error` instead of throwing on invalid dimensions or layer limits.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Layer name.",
+              "optional": false
+            },
+            {
+              "name": "w",
+              "type": "integer",
+              "description": "Width in tiles.",
+              "optional": false
+            },
+            {
+              "name": "h",
+              "type": "integer",
+              "description": "Height in tiles.",
+              "optional": false
+            }
+          ],
+          "returns": "integer?",
+          "returnType": "integer?",
+          "isMethod": true,
+          "objectType": "LTileMap"
+        },
+        {
           "name": "getLayerCount",
           "fullPath": "LTileMap:getLayerCount",
           "signature": "()",
@@ -143138,6 +143256,42 @@
           "objectType": "LTileMap"
         },
         {
+          "name": "trySetTile",
+          "fullPath": "LTileMap:trySetTile",
+          "signature": "(layer, x, y, gid)",
+          "description": "Sets a tile and returns `false, error` instead of throwing on invalid layer or coordinate input.",
+          "parameters": [
+            {
+              "name": "layer",
+              "type": "integer",
+              "description": "Layer index (1-based).",
+              "optional": false
+            },
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "Column (1-based).",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "Row (1-based).",
+              "optional": false
+            },
+            {
+              "name": "gid",
+              "type": "integer",
+              "description": "Global tile ID to place.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LTileMap"
+        },
+        {
           "name": "getTile",
           "fullPath": "LTileMap:getTile",
           "signature": "(layer, x, y)",
@@ -143164,6 +143318,36 @@
           ],
           "returns": "integer",
           "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LTileMap"
+        },
+        {
+          "name": "tryGetTile",
+          "fullPath": "LTileMap:tryGetTile",
+          "signature": "(layer, x, y)",
+          "description": "Returns the tile GID at a specific grid position, or `nil, error` when the layer or coord is invalid.",
+          "parameters": [
+            {
+              "name": "layer",
+              "type": "integer",
+              "description": "Layer index (1-based).",
+              "optional": false
+            },
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "Column (1-based).",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "Row (1-based).",
+              "optional": false
+            }
+          ],
+          "returns": "integer?",
+          "returnType": "integer?",
           "isMethod": true,
           "objectType": "LTileMap"
         },
@@ -143349,6 +143533,30 @@
           ],
           "returns": "integer",
           "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LTileMap"
+        },
+        {
+          "name": "tryWorldToTile",
+          "fullPath": "LTileMap:tryWorldToTile",
+          "signature": "(wx, wy)",
+          "description": "Converts world-space pixel coordinates to tile-grid coordinates, returning nils for negative or non-finite input.",
+          "parameters": [
+            {
+              "name": "wx",
+              "type": "number",
+              "description": "World X position in pixels.",
+              "optional": false
+            },
+            {
+              "name": "wy",
+              "type": "number",
+              "description": "World Y position in pixels.",
+              "optional": false
+            }
+          ],
+          "returns": "integer?",
+          "returnType": "integer?",
           "isMethod": true,
           "objectType": "LTileMap"
         },
@@ -143750,6 +143958,60 @@
           "objectType": "LTileMap"
         },
         {
+          "name": "trySetTileTint",
+          "fullPath": "LTileMap:trySetTileTint",
+          "signature": "(layer, x, y, r, g, b, a)",
+          "description": "Sets a per-cell tint override and returns `false, error` instead of throwing on invalid input.",
+          "parameters": [
+            {
+              "name": "layer",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "x",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "r",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "g",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "b",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "a",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileMap"
+        },
+        {
           "name": "render",
           "fullPath": "LTileMap:render",
           "signature": "([ox], [oy])",
@@ -143788,6 +144050,17 @@
           ],
           "returns": "LImage",
           "returnType": "LImage",
+          "isMethod": true,
+          "objectType": "LTileMap"
+        },
+        {
+          "name": "getDiagnostics",
+          "fullPath": "LTileMap:getDiagnostics",
+          "signature": "()",
+          "description": "Returns tilemap diagnostics counters for invalid calls, unknown gids, and lazy index rebuilds.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
           "isMethod": true,
           "objectType": "LTileMap"
         },
@@ -158262,7 +158535,18 @@
           "name": "clear",
           "fullPath": "LWorld:clear",
           "signature": "()",
-          "description": "Removes all bodies and joints from the world, resetting it to an empty state.",
+          "description": "Removes bodies, joints, terrain colliders, and zones while preserving world-level settings.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LWorld"
+        },
+        {
+          "name": "resetWorld",
+          "fullPath": "LWorld:resetWorld",
+          "signature": "()",
+          "description": "Fully resets the world to its post-construction state.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",

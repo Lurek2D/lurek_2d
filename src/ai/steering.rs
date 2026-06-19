@@ -10,6 +10,8 @@
 
 use std::collections::HashMap;
 
+use crate::ai::validation::{finite_f32, validate_count, AiValidationLimits};
+
 /// Force vector used by steering systems.
 pub type Force = (f32, f32);
 
@@ -236,6 +238,9 @@ impl SteeringBehaviorType {
                 slowing_radius,
                 ..
             } => {
+                if *slowing_radius <= 0.0 || !slowing_radius.is_finite() || !max_speed.is_finite() {
+                    return (0.0, 0.0);
+                }
                 let dx = target.0 - agent_pos.0;
                 let dy = target.1 - agent_pos.1;
                 let dist = (dx * dx + dy * dy).sqrt();
@@ -304,6 +309,10 @@ pub struct SteeringManager {
     pub path_weight: f32,
     /// Named entities available to context-aware steering behaviors.
     pub entities: HashMap<String, SteeringEntity>,
+    /// Shared safety limits for behaviors and entity context.
+    pub limits: AiValidationLimits,
+    /// Last validation or runtime diagnostic emitted by the manager.
+    pub last_diagnostic: Option<String>,
 }
 impl SteeringManager {
     /// Create a steering manager with default parameters.
@@ -319,6 +328,8 @@ impl SteeringManager {
             path_reach_radius: 12.0,
             path_weight: 1.0,
             entities: HashMap::new(),
+            limits: AiValidationLimits::default(),
+            last_diagnostic: None,
         }
     }
     /// Combine all enabled behaviors and clamp the result to `max_force`.
@@ -373,6 +384,19 @@ impl SteeringManager {
     }
     /// Set or replace one named entity in the steering context.
     pub fn set_entity(&mut self, name: String, position: (f32, f32), velocity: (f32, f32)) {
+        if validate_count(
+            "steering entities",
+            self.entities.len() + usize::from(!self.entities.contains_key(&name)),
+            self.limits.max_steering_entities,
+        )
+        .is_err()
+        {
+            self.last_diagnostic = Some(format!(
+                "steering entity limit {} reached",
+                self.limits.max_steering_entities
+            ));
+            return;
+        }
         self.entities.insert(
             name.clone(),
             SteeringEntity {
@@ -396,6 +420,9 @@ impl SteeringManager {
     }
     /// Add a seek behavior. This function is part of the public API.
     pub fn add_seek(&mut self, tx: f32, ty: f32, weight: f32) {
+        if !self.can_add_behavior() {
+            return;
+        }
         self.behaviors.push(SteeringBehaviorType::Seek {
             target: (tx, ty),
             base: SteeringBase {
@@ -406,6 +433,9 @@ impl SteeringManager {
     }
     /// Add a flee behavior. This function is part of the public API.
     pub fn add_flee(&mut self, tx: f32, ty: f32, panic_dist: f32, weight: f32) {
+        if !self.can_add_behavior() {
+            return;
+        }
         self.behaviors.push(SteeringBehaviorType::Flee {
             target: (tx, ty),
             panic_dist,
@@ -417,6 +447,20 @@ impl SteeringManager {
     }
     /// Add an arrive behavior. This function is part of the public API.
     pub fn add_arrive(&mut self, tx: f32, ty: f32, slowing_radius: f32, weight: f32) {
+        if !self.can_add_behavior() {
+            return;
+        }
+        let slowing_radius = if finite_f32("steering slowing_radius", slowing_radius).is_ok()
+            && slowing_radius > self.limits.min_positive as f32
+        {
+            slowing_radius
+        } else {
+            self.last_diagnostic = Some(format!(
+                "invalid arrive slowing radius {}; arrive will yield zero force",
+                slowing_radius
+            ));
+            0.0
+        };
         self.behaviors.push(SteeringBehaviorType::Arrive {
             target: (tx, ty),
             slowing_radius,
@@ -428,6 +472,9 @@ impl SteeringManager {
     }
     /// Add a wander behavior. This function is part of the public API.
     pub fn add_wander(&mut self, radius: f32, distance: f32, jitter: f32, weight: f32) {
+        if !self.can_add_behavior() {
+            return;
+        }
         self.behaviors.push(SteeringBehaviorType::Wander {
             wander_radius: radius,
             wander_distance: distance,
@@ -441,6 +488,9 @@ impl SteeringManager {
     }
     /// Add a pursue behavior. This function is part of the public API.
     pub fn add_pursue(&mut self, target_name: Option<String>, weight: f32) {
+        if !self.can_add_behavior() {
+            return;
+        }
         self.behaviors.push(SteeringBehaviorType::Pursue {
             target_name,
             base: SteeringBase {
@@ -451,6 +501,9 @@ impl SteeringManager {
     }
     /// Add an evade behavior. This function is part of the public API.
     pub fn add_evade(&mut self, threat_name: Option<String>, weight: f32) {
+        if !self.can_add_behavior() {
+            return;
+        }
         self.behaviors.push(SteeringBehaviorType::Evade {
             threat_name,
             base: SteeringBase {
@@ -461,6 +514,9 @@ impl SteeringManager {
     }
     /// Add a flock behavior. This function is part of the public API.
     pub fn add_flock(&mut self, neighbor_radius: f32, sep: f32, align: f32, coh: f32, weight: f32) {
+        if !self.can_add_behavior() {
+            return;
+        }
         self.behaviors.push(SteeringBehaviorType::Flock {
             neighbor_radius,
             sep_weight: sep,
@@ -715,6 +771,23 @@ impl SteeringManager {
         }
         out
     }
+
+    fn can_add_behavior(&mut self) -> bool {
+        if validate_count(
+            "steering behaviors",
+            self.behaviors.len() + 1,
+            self.limits.max_steering_behaviors,
+        )
+        .is_err()
+        {
+            self.last_diagnostic = Some(format!(
+                "steering behavior limit {} reached",
+                self.limits.max_steering_behaviors
+            ));
+            return false;
+        }
+        true
+    }
 }
 
 fn seek_force(
@@ -723,6 +796,9 @@ fn seek_force(
     target: (f32, f32),
     max_speed: f32,
 ) -> Force {
+    if !max_speed.is_finite() || max_speed <= 0.0 {
+        return (0.0, 0.0);
+    }
     let dx = target.0 - agent_pos.0;
     let dy = target.1 - agent_pos.1;
     let dist = (dx * dx + dy * dy).sqrt();
@@ -740,6 +816,9 @@ fn flee_force(
     threat: (f32, f32),
     max_speed: f32,
 ) -> Force {
+    if !max_speed.is_finite() || max_speed <= 0.0 {
+        return (0.0, 0.0);
+    }
     let dx = agent_pos.0 - threat.0;
     let dy = agent_pos.1 - threat.1;
     let dist = (dx * dx + dy * dy).sqrt();

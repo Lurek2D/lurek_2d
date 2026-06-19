@@ -2,19 +2,121 @@
 
 use super::SharedState;
 use crate::ai::{
-    AIDirector, AILod, AIWorld, BTNode, Bandit, BanditStrategy, BehaviorTree, Blackboard,
-    CommandQueue, Consideration, ContextSteering, DecisionModel, DialogueAI, Emotion, EmotionModel,
-    FormationType, GOAPAction, GOAPGoal, GOAPPlanner, GeneticAlgorithm, HTNDomain, HTNMethod,
-    HTNPlanner, MCTSConfig, MCTSEngine, Need, NeedSystem, NeuralNet, Neuroevolution, ORCAAgent,
-    ORCASolver, ParallelPolicy, QLearner, ResponseCurve, Squad, SteeringManager, StimulusWorld,
-    StrategyAI, TraitProfile, UAAction, UtilityAI, WorldState,
+    AIDirector, AILod, AIWorld, AiValidationLimits, BTNode, Bandit, BanditStrategy, BehaviorTree,
+    Blackboard, CallbackErrorTrace, CommandQueue, Consideration, ContextSteering, DecisionModel,
+    DialogueAI, Emotion, EmotionModel, FormationType, GOAPPlanner, GeneticAlgorithm, HTNDomain,
+    HTNMethod, HTNPlanner, MCTSConfig, MCTSEngine, Need, NeedSystem, NeuralNet, Neuroevolution,
+    ORCAAgent, ORCASolver, ParallelPolicy, QLearner, ResponseCurve, Squad, SteeringManager,
+    StimulusWorld, StrategyAI, TraitProfile, UtilityAI, WorldState,
 };
+use crate::ai::validation::{finite_f32, finite_f64, non_negative, positive_nonzero};
 use crate::lua_api::callback_registry::CallbackRegistry;
 use crate::pathfind::InfluenceMap;
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
+
+fn lua_ai_runtime_error(message: impl Into<String>) -> LuaError {
+    LuaError::RuntimeError(message.into())
+}
+
+fn lua_require_finite_f32(field: &'static str, value: f32) -> LuaResult<f32> {
+    finite_f32(field, value).map_err(|err| lua_ai_runtime_error(err.to_string()))
+}
+
+fn lua_require_finite_f64(field: &'static str, value: f64) -> LuaResult<f64> {
+    finite_f64(field, value).map_err(|err| lua_ai_runtime_error(err.to_string()))
+}
+
+fn lua_require_non_negative_f64(field: &'static str, value: f64) -> LuaResult<f64> {
+    non_negative(field, value).map_err(|err| lua_ai_runtime_error(err.to_string()))
+}
+
+fn lua_require_positive_f32(field: &'static str, value: f32) -> LuaResult<f32> {
+    positive_nonzero(field, f64::from(value), &AiValidationLimits::default())
+        .map(|_| value)
+        .map_err(|err| lua_ai_runtime_error(err.to_string()))
+}
+
+fn callback_errors_to_lua<'lua>(
+    lua: &'lua Lua,
+    errors: &[CallbackErrorTrace],
+) -> LuaResult<LuaTable<'lua>> {
+    let out = lua.create_table()?;
+    for (i, error) in errors.iter().enumerate() {
+        let entry = lua.create_table()?;
+        entry.set("context", error.context.as_str())?;
+        entry.set("message", error.message.as_str())?;
+        out.set(i + 1, entry)?;
+    }
+    Ok(out)
+}
+
+fn utility_trace_to_lua<'lua>(
+    lua: &'lua Lua,
+    trace: &crate::ai::UtilityDecisionTrace,
+) -> LuaResult<LuaTable<'lua>> {
+    let out = lua.create_table()?;
+    out.set("chosen_action", trace.chosen_action.clone())?;
+    out.set("callbacks_used", trace.callbacks_used as u32)?;
+    out.set("callback_errors", callback_errors_to_lua(lua, &trace.callback_errors)?)?;
+    let actions = lua.create_table()?;
+    for (i, action) in trace.actions.iter().enumerate() {
+        let entry = lua.create_table()?;
+        entry.set("name", action.name.as_str())?;
+        entry.set("raw_score", action.raw_score)?;
+        entry.set("consideration_score", action.consideration_score)?;
+        entry.set("momentum_multiplier", action.momentum_multiplier)?;
+        entry.set("final_score", action.final_score)?;
+        entry.set("invalid_scorer", action.invalid_scorer)?;
+        let considerations = lua.create_table()?;
+        for (j, consideration) in action.considerations.iter().enumerate() {
+            let c = lua.create_table()?;
+            c.set("name", consideration.name.as_str())?;
+            c.set("raw_score", consideration.raw_score)?;
+            c.set("final_score", consideration.final_score)?;
+            c.set("weight", consideration.weight)?;
+            c.set("invalid_input", consideration.invalid_input)?;
+            considerations.set(j + 1, c)?;
+        }
+        entry.set("considerations", considerations)?;
+        actions.set(i + 1, entry)?;
+    }
+    out.set("actions", actions)?;
+    Ok(out)
+}
+
+fn goap_trace_to_lua<'lua>(
+    lua: &'lua Lua,
+    trace: &crate::ai::GoapPlanTrace,
+) -> LuaResult<LuaTable<'lua>> {
+    let out = lua.create_table()?;
+    out.set("selected_goal", trace.selected_goal.clone())?;
+    let plan = lua.create_table()?;
+    for (i, action) in trace.chosen_plan.iter().enumerate() {
+        plan.set(i + 1, action.as_str())?;
+    }
+    out.set("chosen_plan", plan)?;
+    out.set("iterations", trace.iterations as u32)?;
+    out.set("expanded_nodes", trace.expanded_nodes as u32)?;
+    out.set("failure_reason", trace.failure_reason.clone())?;
+    Ok(out)
+}
+
+fn mcts_trace_to_lua<'lua>(
+    lua: &'lua Lua,
+    trace: &crate::ai::MctsDecisionTrace,
+) -> LuaResult<LuaTable<'lua>> {
+    let out = lua.create_table()?;
+    out.set("chosen_action", trace.chosen_action.map(i64::from))?;
+    out.set("iterations_run", trace.iterations_run)?;
+    out.set("nodes_expanded", trace.nodes_expanded as u32)?;
+    out.set("invalid_score_count", trace.invalid_score_count as u32)?;
+    out.set("callback_errors", callback_errors_to_lua(lua, &trace.callback_errors)?)?;
+    out.set("failure_reason", trace.failure_reason.clone())?;
+    Ok(out)
+}
 /// Lua handle for an AI world that owns named agents, global blackboard data, and custom callback registrations.
 #[derive(Clone)]
 struct LuaAIWorld {
@@ -22,6 +124,8 @@ struct LuaAIWorld {
     inner: Rc<RefCell<AIWorld>>,
     /// Registry of Lua callbacks used by custom agent decision models created through this world.
     custom_callbacks: Rc<RefCell<CallbackRegistry>>,
+    /// Callback errors recorded during the most recent world update.
+    last_callback_errors: Rc<RefCell<Vec<CallbackErrorTrace>>>,
 }
 impl LuaUserData for LuaAIWorld {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
@@ -81,7 +185,9 @@ impl LuaUserData for LuaAIWorld {
         /// Advances the world simulation and invokes custom decision callbacks for agents that use a custom model.
         /// @param | dt | number | Elapsed simulation time in seconds for this update step.
         methods.add_method("update", |lua, this, dt: f32| {
+            lua_require_finite_f32("ai world dt", dt)?;
             this.inner.borrow_mut().update(dt);
+            this.last_callback_errors.borrow_mut().clear();
             let custom_agents: Vec<(String, u32)> = {
                 let w = this.inner.borrow();
                 w.agents
@@ -117,11 +223,29 @@ impl LuaUserData for LuaAIWorld {
                 };
                 if let Some(func) = func_opt {
                     if let Err(e) = func.call::<_, ()>((lua_agent, lua_bb, dt)) {
-                        eprintln!("[lurek.ai] custom model callback error for '{name}': {e}");
+                        this.last_callback_errors
+                            .borrow_mut()
+                            .push(CallbackErrorTrace {
+                                context: format!("world.custom.{name}"),
+                                message: e.to_string(),
+                            });
                     }
                 }
             }
             Ok(())
+        });
+        // -- getLastCallbackErrors --
+        /// Returns callback errors recorded during the most recent `update` call.
+        /// @return | table | Array of `{ context, message }` tables.
+        methods.add_method("getLastCallbackErrors", |lua, this, ()| {
+            let out = lua.create_table()?;
+            for (i, error) in this.last_callback_errors.borrow().iter().enumerate() {
+                let entry = lua.create_table()?;
+                entry.set("context", error.context.as_str())?;
+                entry.set("message", error.message.as_str())?;
+                out.set(i + 1, entry)?;
+            }
+            Ok(out)
         });
         // -- type --
         /// Returns the Lua-visible type name for this AI world handle.
@@ -157,6 +281,8 @@ impl LuaUserData for LuaAgent {
         /// @param | x | number | New X position in world units.
         /// @param | y | number | New Y position in world units.
         methods.add_method("setPosition", |_, this, (x, y): (f32, f32)| {
+            let x = lua_require_finite_f32("agent position.x", x)?;
+            let y = lua_require_finite_f32("agent position.y", y)?;
             if let Some(agent) = this.world.borrow_mut().agent_mut(&this.name) {
                 agent.position = (x, y);
             }
@@ -177,6 +303,8 @@ impl LuaUserData for LuaAgent {
         /// @param | x | number | New X velocity in world units per second.
         /// @param | y | number | New Y velocity in world units per second.
         methods.add_method("setVelocity", |_, this, (x, y): (f32, f32)| {
+            let x = lua_require_finite_f32("agent velocity.x", x)?;
+            let y = lua_require_finite_f32("agent velocity.y", y)?;
             if let Some(agent) = this.world.borrow_mut().agent_mut(&this.name) {
                 agent.velocity = (x, y);
             }
@@ -196,6 +324,7 @@ impl LuaUserData for LuaAgent {
         /// Sets this agent's maximum movement speed when the agent still exists in its world.
         /// @param | v | number | Maximum speed in world units per second.
         methods.add_method("setMaxSpeed", |_, this, v: f32| {
+            let v = lua_require_positive_f32("agent max_speed", v)?;
             if let Some(agent) = this.world.borrow_mut().agent_mut(&this.name) {
                 agent.max_speed = v;
             }
@@ -215,6 +344,7 @@ impl LuaUserData for LuaAgent {
         /// Sets this agent's maximum steering force when the agent still exists in its world.
         /// @param | v | number | Maximum steering force applied during steering calculations.
         methods.add_method("setMaxForce", |_, this, v: f32| {
+            let v = lua_require_positive_f32("agent max_force", v)?;
             if let Some(agent) = this.world.borrow_mut().agent_mut(&this.name) {
                 agent.max_force = v;
             }
@@ -556,7 +686,10 @@ impl LuaUserData for LuaBehaviorTree {
                     running_idx: 0,
                 },
             );
-            this.inner.borrow_mut().root = Some(taken);
+            this.inner
+                .borrow_mut()
+                .set_root_checked(taken)
+                .map_err(lua_ai_runtime_error)?;
             Ok(())
         });
         // -- getLastStatus --
@@ -575,8 +708,17 @@ impl LuaUserData for LuaBehaviorTree {
             let t = lua.create_table()?;
             /// Performs the 'node_count' operation.
             t.set("node_count", dbg.node_count as u32)?;
+            /// Performs the 'max_depth' operation.
+            t.set("max_depth", dbg.max_depth as u32)?;
             /// Performs the 'last_status' operation.
             t.set("last_status", dbg.last_status)?;
+            /// Performs the 'limit_exceeded' operation.
+            t.set("limit_exceeded", dbg.limit_exceeded)?;
+            /// Performs the 'validation_error' operation.
+            t.set(
+                "validation_error",
+                this.inner.borrow().last_validation_error.clone(),
+            )?;
             Ok(t)
         });
         // -- type --
@@ -762,9 +904,13 @@ impl LuaUserData for LuaSteeringManager {
         methods.add_method(
             "addSeek",
             |_, this, (tx, ty, weight): (f32, f32, Option<f32>)| {
-                this.inner
-                    .borrow_mut()
-                    .add_seek(tx, ty, weight.unwrap_or(1.0));
+                let tx = lua_require_finite_f32("steering seek target.x", tx)?;
+                let ty = lua_require_finite_f32("steering seek target.y", ty)?;
+                let weight = lua_require_non_negative_f64(
+                    "steering seek weight",
+                    f64::from(weight.unwrap_or(1.0)),
+                )? as f32;
+                this.inner.borrow_mut().add_seek(tx, ty, weight);
                 Ok(())
             },
         );
@@ -777,11 +923,21 @@ impl LuaUserData for LuaSteeringManager {
         methods.add_method(
             "addFlee",
             |_, this, (tx, ty, panic_dist, weight): (f32, f32, Option<f32>, Option<f32>)| {
+                let tx = lua_require_finite_f32("steering flee target.x", tx)?;
+                let ty = lua_require_finite_f32("steering flee target.y", ty)?;
+                let panic_dist = lua_require_non_negative_f64(
+                    "steering panic_dist",
+                    f64::from(panic_dist.unwrap_or(200.0)),
+                )? as f32;
+                let weight = lua_require_non_negative_f64(
+                    "steering flee weight",
+                    f64::from(weight.unwrap_or(1.0)),
+                )? as f32;
                 this.inner.borrow_mut().add_flee(
                     tx,
                     ty,
-                    panic_dist.unwrap_or(200.0),
-                    weight.unwrap_or(1.0),
+                    panic_dist,
+                    weight,
                 );
                 Ok(())
             },
@@ -795,11 +951,21 @@ impl LuaUserData for LuaSteeringManager {
         methods.add_method(
             "addArrive",
             |_, this, (tx, ty, slowing, weight): (f32, f32, Option<f32>, Option<f32>)| {
+                let tx = lua_require_finite_f32("steering arrive target.x", tx)?;
+                let ty = lua_require_finite_f32("steering arrive target.y", ty)?;
+                let slowing = lua_require_positive_f32(
+                    "steering slowing_radius",
+                    slowing.unwrap_or(50.0),
+                )?;
+                let weight = lua_require_non_negative_f64(
+                    "steering arrive weight",
+                    f64::from(weight.unwrap_or(1.0)),
+                )? as f32;
                 this.inner.borrow_mut().add_arrive(
                     tx,
                     ty,
-                    slowing.unwrap_or(50.0),
-                    weight.unwrap_or(1.0),
+                    slowing,
+                    weight,
                 );
                 Ok(())
             },
@@ -820,11 +986,23 @@ impl LuaUserData for LuaSteeringManager {
                 Option<f32>,
                 Option<f32>,
             )| {
+                let radius =
+                    lua_require_positive_f32("steering wander_radius", radius.unwrap_or(20.0))?;
+                let dist =
+                    lua_require_positive_f32("steering wander_distance", dist.unwrap_or(40.0))?;
+                let jitter = lua_require_non_negative_f64(
+                    "steering wander_jitter",
+                    f64::from(jitter.unwrap_or(5.0)),
+                )? as f32;
+                let weight = lua_require_non_negative_f64(
+                    "steering wander weight",
+                    f64::from(weight.unwrap_or(1.0)),
+                )? as f32;
                 this.inner.borrow_mut().add_wander(
-                    radius.unwrap_or(20.0),
-                    dist.unwrap_or(40.0),
-                    jitter.unwrap_or(5.0),
-                    weight.unwrap_or(1.0),
+                    radius,
+                    dist,
+                    jitter,
+                    weight,
                 );
                 Ok(())
             },
@@ -920,6 +1098,13 @@ impl LuaUserData for LuaSteeringManager {
         /// @param | dt | number | Elapsed time in seconds for this steering step.
         /// @return | number, number | X and Y steering force.
         methods.add_method("calculate", |_, this, (px, py, vx, vy, max_speed, max_force, dt): (f32, f32, f32, f32, f32, f32, f32)| {
+                let px = lua_require_finite_f32("steering position.x", px)?;
+                let py = lua_require_finite_f32("steering position.y", py)?;
+                let vx = lua_require_finite_f32("steering velocity.x", vx)?;
+                let vy = lua_require_finite_f32("steering velocity.y", vy)?;
+                let max_speed = lua_require_positive_f32("steering max_speed", max_speed)?;
+                let max_force = lua_require_non_negative_f64("steering max_force", f64::from(max_force))? as f32;
+                let dt = lua_require_finite_f32("steering dt", dt)?;
                 let force = this.inner.borrow_mut().calculate(
                     (px, py),
                     (vx, vy),
@@ -990,10 +1175,14 @@ impl LuaUserData for LuaSteeringManager {
         methods.add_method_mut(
             "setEntity",
             |_, this, (name, x, y, vx, vy): (String, f32, f32, Option<f32>, Option<f32>)| {
+                let x = lua_require_finite_f32("steering entity.x", x)?;
+                let y = lua_require_finite_f32("steering entity.y", y)?;
+                let vx = lua_require_finite_f32("steering entity.vx", vx.unwrap_or(0.0))?;
+                let vy = lua_require_finite_f32("steering entity.vy", vy.unwrap_or(0.0))?;
                 this.inner.borrow_mut().set_entity(
                     name,
                     (x, y),
-                    (vx.unwrap_or(0.0), vy.unwrap_or(0.0)),
+                    (vx, vy),
                 );
                 Ok(())
             },
@@ -1016,6 +1205,12 @@ impl LuaUserData for LuaSteeringManager {
         /// @return | integer | Entity count.
         methods.add_method("entityCount", |_, this, ()| {
             Ok(this.inner.borrow().entity_count() as i64)
+        });
+        // -- getLastDiagnostic --
+        /// Returns the most recent steering validation or runtime diagnostic.
+        /// @return | LuaValue | Diagnostic string, or nil when no diagnostic has been recorded.
+        methods.add_method("getLastDiagnostic", |_, this, ()| {
+            Ok(this.inner.borrow().last_diagnostic.clone())
         });
         // -- type --
         /// Returns the Lua-visible type name for this steering manager handle.
@@ -1104,7 +1299,8 @@ impl LuaUserData for LuaSteeringManager {
                                 force.1 += fy * weight;
                             }
                             Err(e) => {
-                                eprintln!("[lurek.ai] custom steering callback error: {e}");
+                                this.inner.borrow_mut().last_diagnostic =
+                                    Some(format!("custom steering callback error: {e}"));
                             }
                         }
                     }
@@ -1139,12 +1335,14 @@ impl LuaUserData for LuaUtilityAI {
             "addAction",
             |lua, this, (name, scorer_fn, weight): (String, LuaFunction, Option<f64>)| {
                 let key = lua.create_registry_value(scorer_fn)?;
-                this.inner.borrow_mut().actions.push(UAAction {
-                    name,
-                    scorer: key,
-                    considerations: Vec::new(),
-                    momentum_bonus: weight.unwrap_or(1.0),
-                });
+                let momentum_bonus = lua_require_non_negative_f64(
+                    "utility momentum_bonus",
+                    weight.unwrap_or(1.0),
+                )?;
+                this.inner
+                    .borrow_mut()
+                    .add_action(name, key, momentum_bonus)
+                    .map_err(lua_ai_runtime_error)?;
                 Ok(())
             },
         );
@@ -1169,6 +1367,13 @@ impl LuaUserData for LuaUtilityAI {
         methods.add_method("getLastAction", |_, this, ()| {
             let ai = this.inner.borrow();
             Ok(ai.last_action.map(|i| ai.actions[i].name.clone()))
+        });
+        // -- getLastTrace --
+        /// Returns the last structured utility evaluation trace.
+        /// @return | table | Table containing `chosen_action`, `callbacks_used`, `actions`, and `callback_errors`.
+        methods.add_method("getLastTrace", |lua, this, ()| {
+            let trace = this.inner.borrow().last_trace.clone();
+            utility_trace_to_lua(lua, &trace)
         });
         // -- addConsideration --
         /// Adds a consideration scorer and response curve to an existing utility action.
@@ -1200,17 +1405,31 @@ impl LuaUserData for LuaUtilityAI {
                         let curve_key = lua.create_registry_value(f)?;
                         let callback_id = this.custom_callbacks.borrow_mut().register(curve_key);
                         let curve = ResponseCurve::Custom { callback_id };
+                        let p1 = lua_require_finite_f64("utility consideration p1", p1.unwrap_or(1.0))?;
+                        let p2 = lua_require_finite_f64("utility consideration p2", p2.unwrap_or(0.0))?;
+                        let p3 = lua_require_finite_f64("utility consideration p3", p3.unwrap_or(0.0))?;
+                        let weight = lua_require_non_negative_f64(
+                            "utility consideration weight",
+                            weight.unwrap_or(1.0),
+                        )?;
                         let mut ua = this.inner.borrow_mut();
+                        let max_considerations = ua.limits.max_utility_considerations;
                         if let Some(action) = ua.actions.iter_mut().find(|a| a.name == action_name)
                         {
+                            if action.considerations.len() >= max_considerations {
+                                return Err(lua_ai_runtime_error(format!(
+                                    "utility considerations exceed limit {}",
+                                    max_considerations
+                                )));
+                            }
                             action.considerations.push(Consideration {
                                 name,
                                 callback: scorer_key,
                                 curve,
-                                p1: p1.unwrap_or(1.0),
-                                p2: p2.unwrap_or(0.0),
-                                p3: p3.unwrap_or(0.0),
-                                weight: weight.unwrap_or(1.0),
+                                p1,
+                                p2,
+                                p3,
+                                weight,
                             });
                         }
                     }
@@ -1225,7 +1444,8 @@ impl LuaUserData for LuaUtilityAI {
                             p2.unwrap_or(0.0),
                             p3.unwrap_or(0.0),
                             weight.unwrap_or(1.0),
-                        );
+                        )
+                        .map_err(lua_ai_runtime_error)?;
                     }
                     _ => {
                         this.inner.borrow_mut().add_consideration(
@@ -1237,7 +1457,8 @@ impl LuaUserData for LuaUtilityAI {
                             p2.unwrap_or(0.0),
                             p3.unwrap_or(0.0),
                             weight.unwrap_or(1.0),
-                        );
+                        )
+                        .map_err(lua_ai_runtime_error)?;
                     }
                 }
                 Ok(())
@@ -1273,13 +1494,11 @@ impl LuaUserData for LuaGOAPPlanner {
             "addAction",
             |lua, this, (name, cost, callback): (String, Option<f64>, Option<LuaFunction>)| {
                 let cb_key = callback.map(|f| lua.create_registry_value(f)).transpose()?;
-                this.inner.borrow_mut().actions.push(GOAPAction {
-                    name,
-                    cost: cost.unwrap_or(1.0),
-                    callback: cb_key,
-                    preconditions: HashMap::new(),
-                    effects: HashMap::new(),
-                });
+                let cost = lua_require_non_negative_f64("goap action cost", cost.unwrap_or(1.0))?;
+                this.inner
+                    .borrow_mut()
+                    .add_action(name, cost, cb_key)
+                    .map_err(lua_ai_runtime_error)?;
                 Ok(())
             },
         );
@@ -1320,11 +1539,12 @@ impl LuaUserData for LuaGOAPPlanner {
         methods.add_method(
             "addGoal",
             |_, this, (name, priority): (String, Option<f64>)| {
-                this.inner.borrow_mut().goals.push(GOAPGoal {
-                    name,
-                    priority: priority.unwrap_or(1.0),
-                    state: HashMap::new(),
-                });
+                let priority =
+                    lua_require_non_negative_f64("goap goal priority", priority.unwrap_or(1.0))?;
+                this.inner
+                    .borrow_mut()
+                    .add_goal(name, priority)
+                    .map_err(lua_ai_runtime_error)?;
                 Ok(())
             },
         );
@@ -1356,8 +1576,10 @@ impl LuaUserData for LuaGOAPPlanner {
                     let (k, v) = pair?;
                     world_state.insert(k, v);
                 }
-                let planner = this.inner.borrow();
-                let plan = planner.plan(&world_state, max_depth.unwrap_or(10));
+                let plan = this
+                    .inner
+                    .borrow_mut()
+                    .plan(&world_state, max_depth.unwrap_or(10));
                 let tbl = lua.create_table()?;
                 for (i, name) in plan.iter().enumerate() {
                     tbl.set(i as i64 + 1, name.as_str())?;
@@ -1389,6 +1611,23 @@ impl LuaUserData for LuaGOAPPlanner {
         methods.add_method_mut("setMaxIterations", |_, this, n: u64| {
             this.inner.borrow_mut().set_max_iterations(n as usize);
             Ok(())
+        });
+        // -- getLastFailureReason --
+        /// Returns the last planner failure reason string when planning did not succeed.
+        /// @return | LuaValue | Failure reason string, or nil when the last plan succeeded.
+        methods.add_method("getLastFailureReason", |_, this, ()| {
+            Ok(this
+                .inner
+                .borrow()
+                .last_failure_reason
+                .as_ref()
+                .map(|reason| reason.as_str()))
+        });
+        // -- getLastTrace --
+        /// Returns the last structured GOAP planning trace.
+        /// @return | table | Table containing `selected_goal`, `chosen_plan`, `iterations`, `expanded_nodes`, and `failure_reason`.
+        methods.add_method("getLastTrace", |lua, this, ()| {
+            goap_trace_to_lua(lua, &this.inner.borrow().last_trace)
         });
         // -- type --
         /// Returns the Lua-visible type name for this GOAP planner handle.
@@ -2356,22 +2595,59 @@ impl LuaUserData for LuaMCTSEngine {
                 LuaFunction,
             )| {
                 let mut engine = this.inner.borrow_mut();
+                let callback_errors = Rc::new(RefCell::new(Vec::<CallbackErrorTrace>::new()));
                 let mut get_actions = |s: &i64| -> Vec<i32> {
-                    get_actions_fn.call::<_, Vec<i32>>(*s).unwrap_or_default()
+                    match get_actions_fn.call::<_, Vec<i32>>(*s) {
+                        Ok(actions) => actions,
+                        Err(err) => {
+                            callback_errors.borrow_mut().push(CallbackErrorTrace {
+                                context: "mcts.get_actions".to_string(),
+                                message: err.to_string(),
+                            });
+                            Vec::new()
+                        }
+                    }
                 };
                 let mut apply_action = |s: &i64, action: i32| -> i64 {
-                    apply_fn.call::<_, i64>((*s, action)).unwrap_or(*s)
+                    match apply_fn.call::<_, i64>((*s, action)) {
+                        Ok(next_state) => next_state,
+                        Err(err) => {
+                            callback_errors.borrow_mut().push(CallbackErrorTrace {
+                                context: format!("mcts.apply_action.{action}"),
+                                message: err.to_string(),
+                            });
+                            *s
+                        }
+                    }
                 };
-                let mut evaluate = |s: &i64| -> f32 { eval_fn.call::<_, f32>(*s).unwrap_or(0.0) };
+                let mut evaluate = |s: &i64| -> f32 {
+                    match eval_fn.call::<_, f32>(*s) {
+                        Ok(score) => score,
+                        Err(err) => {
+                            callback_errors.borrow_mut().push(CallbackErrorTrace {
+                                context: "mcts.evaluate".to_string(),
+                                message: err.to_string(),
+                            });
+                            0.0
+                        }
+                    }
+                };
                 let result = engine.search(
                     root_state,
                     &mut get_actions,
                     &mut apply_action,
                     &mut evaluate,
                 );
+                engine.set_last_callback_errors(callback_errors.borrow().clone());
                 Ok(result.map(|a| a as i64))
             },
         );
+        // -- getLastTrace --
+        /// Returns the last structured MCTS search trace.
+        /// @return | table | Table containing `chosen_action`, `iterations_run`, `nodes_expanded`, `invalid_score_count`, `callback_errors`, and `failure_reason`.
+        methods.add_method("getLastTrace", |lua, this, ()| {
+            mcts_trace_to_lua(lua, &this.inner.borrow().last_trace)
+        });
         // -- type --
         /// Returns the Lua-visible type name for this MCTS engine handle.
         /// @return | string | The string `LMCTSEngine`.
@@ -2690,6 +2966,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
             Ok(LuaAIWorld {
                 inner: Rc::new(RefCell::new(AIWorld::new())),
                 custom_callbacks: Rc::new(RefCell::new(CallbackRegistry::new())),
+                last_callback_errors: Rc::new(RefCell::new(Vec::new())),
             })
         })?,
     )?;
@@ -3060,7 +3337,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
                 seed,
             };
             Ok(LuaMCTSEngine {
-                inner: Rc::new(RefCell::new(MCTSEngine::new(cfg))),
+                inner: Rc::new(RefCell::new(
+                    MCTSEngine::try_new(cfg).map_err(lua_ai_runtime_error)?,
+                )),
             })
         })?,
     )?;

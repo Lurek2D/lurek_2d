@@ -2,25 +2,18 @@
 
 ## Summary
 
-- This module gives users a full ECS world model for organizing gameplay state at scale.
-- Entities use generational identities, which helps prevent stale-handle bugs after deletion and reuse.
-- Components can be attached and queried dynamically, enabling data-driven behavior composition.
-- Hierarchy, tags, and layers support practical grouping for rendering, logic, and tooling workflows.
-- Relationship support lets systems model directed links and graph-like ownership between entities.
-- Standalone relationship-manager handles are owned here through `lurek.ecs.newRelationshipManager()`.
-- Query APIs support include/exclude filtering so systems can target the exact data shape they need.
-- Cached query-view handles can reuse component-query results until the world query-change tick advances.
-- System registration and ordering rules provide deterministic update and render phase execution.
-- Dependency-aware scheduling reduces order-related bugs in multi-system simulations.
-- Blueprint and bulk-spawn features speed up content-heavy spawning scenarios.
-- Snapshot and serialization flows support save/restore, rollback, and sync-style workflows.
-- Dirty tracking and observer hooks help downstream systems react to world mutations efficiently.
-- For users, the value is one coherent world-state core instead of scattered object tables.
-- It scales from simple prototypes to larger simulations with many interacting subsystems.
-- The module keeps ECS ergonomics script-friendly while preserving predictable runtime behavior.
-- In practice, it enables maintainable gameplay architecture with better queryability and control.
-
-This module primarily collaborates with `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
+- The `ecs` module is the engine's entity-component world model for users who want gameplay state to scale through entities, components, queries, and scheduled systems.
+- Its core value is separation of identity from data. Entities provide stable handles, components hold structured state, and systems or queries interpret that state without forcing one rigid object hierarchy.
+- Generational handles, dynamic component attachment, tags, layers, and relationships make the model practical for varied world populations such as actors, props, projectiles, and temporary runtime markers.
+- Query views and dirty tracking are especially important because downstream systems need efficient access to exactly the slices of world state they care about.
+- Blueprints, bulk spawning, snapshots, and serialization broaden the module from live simulation into save/load, rollback, reset, and data-driven population workflows.
+- Hierarchy and relationship support matter because game worlds are rarely flat; parent-child links, semantic grouping, and layered ownership all need to remain queryable as the world grows.
+- The module also improves feature isolation, because several systems can share the same entities without collapsing their state into one oversized object model.
+- That makes the ECS world a stable meeting point for subsystems that need different views of the same population.
+- The model is especially strong when many systems need partial views of the same population without inheriting each other's update logic.
+- That shared world model keeps those views aligned.
+- The ECS world becomes a shared substrate for other systems, but `ecs` owns its organization.
+- Read `ecs` as the authority for entity identity, component storage, queries, and shared world composition.
 
 ## Functions
 
@@ -45,7 +38,10 @@ do
     local rm = lurek.ecs.newRelationshipManager()
     rm:defineType("stance", {"hostile", "neutral", "friendly"}, "neutral")
     rm:setLevel(1, 2, "stance", "friendly")
-    print("stance 1->2 = " .. tostring(rm:getLevel(1, 2, "stance")))
+    rm:setValue(1, 2, 25)
+    local level = rm:getLevel(1, 2, "stance")
+    local score = rm:getValue(1, 2)
+    ecs_log("relationship manager level=" .. tostring(level) .. " score=" .. tostring(score) .. " pairs=" .. tostring(rm:pairCount()))
 end
 ```
 
@@ -70,7 +66,11 @@ lurek.ecs.newUniverse()
 ```lua
 do
     local uni = lurek.ecs.newUniverse()
-    print("universe created, entities = " .. uni:getEntityCount())
+    local hero = uni:spawn()
+    uni:set(hero, "name", "hero")
+    local entities = uni:getEntities()
+    local count = uni:getEntityCount()
+    ecs_log("universe created count=" .. tostring(count) .. " first_id=" .. tostring(entities[1]) .. " hero_name=" .. tostring(uni:get(hero, "name")))
 end
 ```
 
@@ -124,7 +124,7 @@ do
     local id = uni:spawn()
     uni:set(id, "pos", {x = 3, y = 4})
     local view = uni:newQueryView({"pos"})
-    print("cached ids = " .. #view:ids())
+    example_print_log("cached ids = " .. #view:ids())
 end
 ```
 
@@ -152,7 +152,7 @@ do
     local id = uni:spawn()
     uni:set(id, "pos", {x = 3, y = 4})
     local view = uni:newQueryView({"pos"})
-    print("view tick = " .. tostring(view:lastTick()))
+    example_print_log("view tick = " .. tostring(view:lastTick()))
 end
 ```
 
@@ -180,7 +180,7 @@ do
     local id = uni:spawn()
     uni:set(id, "pos", {x = 3, y = 4})
     local view = uni:newQueryView({"pos"})
-    print("query view type = " .. view:type())
+    example_print_log("query view type = " .. view:type())
 end
 ```
 
@@ -214,7 +214,7 @@ do
     local id = uni:spawn()
     uni:set(id, "pos", {x = 3, y = 4})
     local view = uni:newQueryView({"pos"})
-    print("is query view = " .. tostring(view:typeOf("LQueryView")))
+    example_print_log("is query view = " .. tostring(view:typeOf("LQueryView")))
 end
 ```
 
@@ -251,8 +251,8 @@ do
     local rm = lurek.ecs.newRelationshipManager()
     rm:setValue(1, 2, 50)
     rm:adjustValue(1, 2, 10)
-    print("1->2 = " .. rm:getValue(1, 2))
-    print("pairs = " .. rm:pairCount())
+    example_print_log("1->2 = " .. rm:getValue(1, 2))
+    example_print_log("pairs = " .. rm:pairCount())
 end
 ```
 
@@ -280,7 +280,11 @@ LRelationshipManager:defineType(name, levels, default_level)
 do
     local rm = lurek.ecs.newRelationshipManager()
     rm:defineType("friendship", {"hostile", "neutral", "friendly"}, "neutral")
-    print("types = " .. #rm:typeNames())
+    rm:defineType("trust", {"low", "medium", "high"}, "medium")
+    local types = rm:typeNames()
+    local first = types[1]
+    local second = types[2]
+    ecs_log("defined relationship types count=" .. tostring(#types) .. " first=" .. tostring(first) .. " second=" .. tostring(second))
 end
 ```
 
@@ -315,8 +319,8 @@ do
     local rm = lurek.ecs.newRelationshipManager()
     rm:defineType("friendship", {"hostile", "neutral", "friendly"}, "neutral")
     rm:setLevel(1, 2, "friendship", "friendly")
-    print("level = " .. tostring(rm:getLevel(1, 2, "friendship")))
-    print("types = " .. #rm:typeNames())
+    example_print_log("level = " .. tostring(rm:getLevel(1, 2, "friendship")))
+    example_print_log("types = " .. #rm:typeNames())
 end
 ```
 
@@ -350,8 +354,8 @@ do
     local rm = lurek.ecs.newRelationshipManager()
     rm:setValue(1, 2, 50)
     rm:setValue(1, 3, -20)
-    print("1->2 = " .. rm:getValue(1, 2))
-    print("1->3 = " .. rm:getValue(1, 3))
+    example_print_log("1->2 = " .. rm:getValue(1, 2))
+    example_print_log("1->3 = " .. rm:getValue(1, 3))
 end
 ```
 
@@ -379,8 +383,8 @@ do
     rm:defineType("friendship", {"hostile", "neutral", "friendly"}, "neutral")
     rm:setLevel(1, 2, "friendship", "friendly")
     rm:setLevel(1, 3, "friendship", "hostile")
-    print("pairs = " .. rm:pairCount())
-    print("level = " .. tostring(rm:getLevel(1, 2, "friendship")))
+    example_print_log("pairs = " .. rm:pairCount())
+    example_print_log("level = " .. tostring(rm:getLevel(1, 2, "friendship")))
 end
 ```
 
@@ -409,9 +413,9 @@ do
     rm:defineType("friendship", {"hostile", "neutral", "friendly"}, "neutral")
     rm:setLevel(1, 2, "friendship", "friendly")
     rm:setLevel(1, 3, "friendship", "hostile")
-    print("before = " .. rm:pairCount())
+    example_print_log("before = " .. rm:pairCount())
     rm:removePair(1, 3)
-    print("after = " .. rm:pairCount())
+    example_print_log("after = " .. rm:pairCount())
 end
 ```
 
@@ -438,9 +442,9 @@ do
     local rm = lurek.ecs.newRelationshipManager()
     rm:defineType("friendship", {"hostile", "neutral", "friendly"}, "neutral")
     rm:defineType("trust", {"low", "medium", "high"}, "medium")
-    print("before = " .. #rm:typeNames())
+    example_print_log("before = " .. #rm:typeNames())
     rm:removeType("friendship")
-    print("after = " .. #rm:typeNames())
+    example_print_log("after = " .. #rm:typeNames())
 end
 ```
 
@@ -476,8 +480,8 @@ do
     local rm = lurek.ecs.newRelationshipManager()
     rm:defineType("friendship", {"hostile", "neutral", "friendly"}, "neutral")
     rm:setLevel(1, 2, "friendship", "friendly")
-    print("level = " .. tostring(rm:getLevel(1, 2, "friendship")))
-    print("pairs = " .. rm:pairCount())
+    example_print_log("level = " .. tostring(rm:getLevel(1, 2, "friendship")))
+    example_print_log("pairs = " .. rm:pairCount())
 end
 ```
 
@@ -506,8 +510,8 @@ do
     local rm = lurek.ecs.newRelationshipManager()
     rm:setValue(1, 2, 50)
     rm:setValue(1, 3, -20)
-    print("1->2 = " .. rm:getValue(1, 2))
-    print("1->3 = " .. rm:getValue(1, 3))
+    example_print_log("1->2 = " .. rm:getValue(1, 2))
+    example_print_log("1->3 = " .. rm:getValue(1, 3))
 end
 ```
 
@@ -532,7 +536,11 @@ LRelationshipManager:type()
 ```lua
 do
     local rm = lurek.ecs.newRelationshipManager()
-    print("type = " .. rm:type())
+    rm:defineType("trust", {"low", "medium", "high"}, "medium")
+    local type_name = rm:type()
+    local is_rm = rm:typeOf("LRelationshipManager")
+    local type_count = #rm:typeNames()
+    ecs_log("relationship manager type=" .. tostring(type_name) .. " is_rm=" .. tostring(is_rm) .. " type_count=" .. tostring(type_count))
 end
 ```
 
@@ -560,8 +568,8 @@ do
     rm:defineType("friendship", {"hostile", "neutral", "friendly"}, "neutral")
     rm:defineType("trust", {"low", "medium", "high"}, "medium")
     local types = rm:typeNames()
-    print("types = " .. #types)
-    print("first = " .. tostring(types[1]))
+    example_print_log("types = " .. #types)
+    example_print_log("first = " .. tostring(types[1]))
 end
 ```
 
@@ -592,8 +600,11 @@ LRelationshipManager:typeOf(name)
 ```lua
 do
     local rm = lurek.ecs.newRelationshipManager()
-    print("is_relationship_manager = " .. tostring(rm:typeOf("LRelationshipManager")))
-    print("is_object = " .. tostring(rm:typeOf("LObject")))
+    rm:defineType("stance", {"hostile", "neutral", "friendly"}, "neutral")
+    local is_relationship_manager = rm:typeOf("LRelationshipManager")
+    local is_object = rm:typeOf("LObject")
+    local is_universe = rm:typeOf("LUniverse")
+    ecs_log("relationship manager type guard rm=" .. tostring(is_relationship_manager) .. " object=" .. tostring(is_object) .. " universe=" .. tostring(is_universe))
 end
 ```
 
@@ -631,7 +642,7 @@ do
     local a = uni:spawn()
     local b = uni:spawn()
     uni:addRelation(a, "likes", b)
-    print("relation added")
+    example_print_log("relation added")
 end
 ```
 
@@ -657,9 +668,12 @@ LUniverse:addSystem(system, opts)
 ```lua
 do
     local uni = lurek.ecs.newUniverse()
-    local sys = { update = function(self, universe, dt) end }
+    local sys = { update = function(self, universe, dt) universe:emit("on_tick", dt) end }
     uni:addSystem(sys, {name = "movement", priority = 1})
-    print("systems = " .. uni:getSystemCount())
+    uni:addSystem({ render = function() end }, {name = "draw", priority = 2})
+    local count = uni:getSystemCount()
+    uni:update(1 / 60)
+    ecs_log("systems registered count=" .. tostring(count) .. " query_tick=" .. tostring(uni:getQueryChangeTick()))
 end
 ```
 
@@ -688,7 +702,7 @@ do
     u:defineTag("enemy")
     local e = u:spawn()
     u:addTag(e, "enemy")
-    print(u:hasTag(e, "enemy"))
+    example_print_log(u:hasTag(e, "enemy"))
 end
 ```
 
@@ -718,7 +732,7 @@ do
     local snap = u:snapshot()
     u:clear()
     u:applySnapshot(snap)
-    print("entities after apply = " .. u:getEntityCount())
+    example_print_log("entities after apply = " .. u:getEntityCount())
 end
 ```
 
@@ -753,7 +767,7 @@ do
     u:defineTag("enemy")
     local e = u:spawn()
     u:bitmapTag(e, "enemy")
-    print(u:hasBitmapTag(e, "enemy"))
+    example_print_log(u:hasBitmapTag(e, "enemy"))
 end
 ```
 
@@ -783,7 +797,7 @@ do
     local e = u:spawn()
     u:bitmapTag(e, "enemy")
     u:bitmapUntag(e, "enemy")
-    print(u:hasBitmapTag(e, "enemy"))
+    example_print_log(u:hasBitmapTag(e, "enemy"))
 end
 ```
 
@@ -802,9 +816,13 @@ LUniverse:clear()
 ```lua
 do
     local u = lurek.ecs.newUniverse()
-    u:spawn()
+    local entity = u:spawn()
+    u:set(entity, "hp", 10)
+    local before = u:getEntityCount()
     u:clear()
-    print("entities after clear = " .. u:getEntityCount())
+    local after = u:getEntityCount()
+    local alive = u:isAlive(entity)
+    ecs_log("clear world before=" .. tostring(before) .. " after=" .. tostring(after) .. " old_entity_alive=" .. tostring(alive))
 end
 ```
 
@@ -835,7 +853,7 @@ do
     uni:addRelation(a, "sees", b)
     uni:clearRelations(a, "sees")
     local targets = uni:getRelated(a, "sees")
-    print("after clear = " .. #targets)
+    example_print_log("after clear = " .. #targets)
 end
 ```
 
@@ -862,7 +880,10 @@ LUniverse:defineBlueprint(name, components)
 do
     local uni = lurek.ecs.newUniverse()
     uni:defineBlueprint("enemy", {pos = {x = 0, y = 0}, hp = {value = 50}, tag = {value = "hostile"}})
-    print("blueprint defined")
+    local comps = uni:getBlueprintComponents("enemy")
+    local spawned = uni:spawnBlueprint("enemy")
+    local hp = uni:get(spawned, "hp")
+    ecs_log("blueprint enemy defined hp=" .. tostring(comps.hp.value) .. " spawned=" .. tostring(spawned) .. " live_hp=" .. tostring(hp.value))
 end
 ```
 
@@ -896,7 +917,7 @@ do
     u:defineTag("enemy")
     local e = u:spawn()
     u:addTag(e, "enemy")
-    print(u:hasTag(e, "enemy"))
+    example_print_log(u:hasTag(e, "enemy"))
 end
 ```
 
@@ -924,7 +945,7 @@ do
     local id = uni:spawn()
     uni:set(id, "score", {value = 99})
     uni:deserialize(uni:serialize())
-    print("deserialized, count = " .. uni:getEntityCount())
+    example_print_log("deserialized, count = " .. uni:getEntityCount())
 end
 ```
 
@@ -955,10 +976,10 @@ do
     local count = 0
     uni:each("name", function(entity_id, name_value)
         count = count + 1
-        print("visited entity = " .. tostring(entity_id))
-        print("name.value = " .. tostring(name_value.value))
+        example_print_log("visited entity = " .. tostring(entity_id))
+        example_print_log("name.value = " .. tostring(name_value.value))
     end)
-    print("each count = " .. count)
+    example_print_log("each count = " .. count)
 end
 ```
 
@@ -987,7 +1008,7 @@ do
     local got = false
     uni:addSystem({on_damage = function() got = true end})
     uni:emit("on_damage")
-    print("emit received = " .. tostring(got))
+    example_print_log("emit received = " .. tostring(got))
 end
 ```
 
@@ -1016,7 +1037,10 @@ do
     local u = lurek.ecs.newUniverse()
     u:defineBlueprint("base", { hp = 100 })
     u:extendBlueprint("enemy", "base", { damage = 10 })
-    print(u:hasBlueprint("enemy"))
+    local id = u:spawnBlueprint("enemy")
+    local hp = u:get(id, "hp")
+    local damage = u:get(id, "damage")
+    ecs_log("extended blueprint exists=" .. tostring(u:hasBlueprint("enemy")) .. " hp=" .. tostring(hp) .. " damage=" .. tostring(damage))
 end
 ```
 
@@ -1035,8 +1059,12 @@ LUniverse:flushObservers()
 ```lua
 do
     local uni = lurek.ecs.newUniverse()
+    local fired = 0
+    uni:onComponentAdded("hp", function() fired = fired + 1 end)
+    local id = uni:spawn()
+    uni:set(id, "hp", {value = 100})
     uni:flushObservers()
-    print("observers flushed")
+    ecs_log("observers flushed fired=" .. tostring(fired) .. " entity=" .. tostring(id) .. " dirty=" .. tostring(#uni:getDirtyEntities()))
 end
 ```
 
@@ -1071,7 +1099,7 @@ do
     local id = uni:spawn()
     uni:set(id, "hp", {value = 100})
     local hp = uni:get(id, "hp")
-    print("hp.value = " .. tostring(hp.value))
+    example_print_log("hp.value = " .. tostring(hp.value))
 end
 ```
 
@@ -1102,8 +1130,12 @@ LUniverse:getBitmapTagBit(name)
 ```lua
 do
     local u = lurek.ecs.newUniverse()
-    u:defineTag("enemy")
-    print("bit = " .. tostring(u:getBitmapTagBit("enemy")))
+    local bit = u:defineTag("enemy")
+    local e = u:spawn()
+    u:bitmapTag(e, "enemy")
+    local queried_bit = u:getBitmapTagBit("enemy")
+    local has_tag = u:hasBitmapTag(e, "enemy")
+    ecs_log("bitmap tag bit defined=" .. tostring(bit) .. " queried=" .. tostring(queried_bit) .. " has_tag=" .. tostring(has_tag))
 end
 ```
 
@@ -1136,8 +1168,8 @@ do
     local uni = lurek.ecs.newUniverse()
     uni:defineBlueprint("item", {name = {value = "sword"}, damage = {value = 10}})
     local comps = uni:getBlueprintComponents("item")
-    print("blueprint comps type = " .. type(comps))
-    print("damage = " .. tostring(comps.damage.value))
+    example_print_log("blueprint comps type = " .. type(comps))
+    example_print_log("damage = " .. tostring(comps.damage.value))
 end
 ```
 
@@ -1174,7 +1206,7 @@ do
     uni:setParent(c1, parent)
     uni:setParent(c2, parent)
     local children = uni:getChildren(parent)
-    print("children = " .. #children)
+    example_print_log("children = " .. #children)
 end
 ```
 
@@ -1209,7 +1241,7 @@ do
     uni:set(id, "pos", {x = 0, y = 0})
     uni:set(id, "vel", {x = 1, y = 0})
     local names = uni:getComponents(id)
-    print("components = " .. #names)
+    example_print_log("components = " .. #names)
 end
 ```
 
@@ -1237,7 +1269,7 @@ do
     local id = uni:spawn()
     uni:set(id, "x", {value = 1})
     local dirty = uni:getDirtyEntities()
-    print("dirty = " .. #dirty)
+    example_print_log("dirty = " .. #dirty)
 end
 ```
 
@@ -1265,7 +1297,7 @@ do
     uni:spawn()
     uni:spawn()
     local all = uni:getEntities()
-    print("entities = " .. #all)
+    example_print_log("entities = " .. #all)
 end
 ```
 
@@ -1296,9 +1328,13 @@ LUniverse:getEntitiesByLayer(layer)
 ```lua
 do
     local u = lurek.ecs.newUniverse()
-    local e = u:spawn()
-    u:setLayer(e, 2)
-    print(#u:getEntitiesByLayer(2))
+    local low = u:spawn()
+    local high = u:spawn()
+    u:setLayer(low, 2)
+    u:setLayer(high, 5)
+    local ids = u:getEntitiesByLayer(2)
+    local sorted = u:getEntitiesSorted()
+    ecs_log("entities by layer count=" .. tostring(#ids) .. " first_layer_two=" .. tostring(ids[1]) .. " sorted_first=" .. tostring(sorted[1]))
 end
 ```
 
@@ -1332,7 +1368,7 @@ do
     u:defineTag("unit")
     local e = u:spawn()
     u:addTag(e, "unit")
-    print(#u:getEntitiesByTag("unit"))
+    example_print_log(#u:getEntitiesByTag("unit"))
 end
 ```
 
@@ -1357,9 +1393,14 @@ LUniverse:getEntitiesSorted()
 ```lua
 do
     local u = lurek.ecs.newUniverse()
-    local e = u:spawn()
-    u:setLayer(e, 2)
-    print("sorted count = " .. #u:getEntitiesSorted())
+    local high = u:spawn()
+    local low = u:spawn()
+    u:setLayer(high, 5)
+    u:setLayer(low, 1)
+    local sorted = u:getEntitiesSorted()
+    local first = sorted[1]
+    local second = sorted[2]
+    ecs_log("sorted entities count=" .. tostring(#sorted) .. " first=" .. tostring(first) .. " second=" .. tostring(second))
 end
 ```
 
@@ -1387,7 +1428,7 @@ do
     uni:spawn()
     uni:spawn()
     uni:spawn()
-    print("count = " .. uni:getEntityCount())
+    example_print_log("count = " .. uni:getEntityCount())
 end
 ```
 
@@ -1420,7 +1461,10 @@ do
     local u = lurek.ecs.newUniverse()
     local e = u:spawn()
     u:setLayer(e, 2)
-    print("layer = " .. tostring(u:getLayer(e)))
+    local layer = u:getLayer(e)
+    local count = #u:getEntitiesByLayer(2)
+    local sorted = u:getEntitiesSorted()
+    ecs_log("entity layer=" .. tostring(layer) .. " same_layer_count=" .. tostring(count) .. " sorted_first=" .. tostring(sorted[1]))
 end
 ```
 
@@ -1455,7 +1499,7 @@ do
     local child = uni:spawn()
     uni:setParent(child, parent)
     local p = uni:getParent(child)
-    print("parent = " .. p)
+    example_print_log("parent = " .. p)
 end
 ```
 
@@ -1483,7 +1527,7 @@ do
     local id = uni:spawn()
     uni:set(id, "pos", {x = 3, y = 4})
     uni:newQueryView({"pos"})
-    print("query tick = " .. tostring(uni:getQueryChangeTick()))
+    example_print_log("query tick = " .. tostring(uni:getQueryChangeTick()))
 end
 ```
 
@@ -1521,7 +1565,7 @@ do
     uni:addRelation(a, "friend", b)
     uni:addRelation(a, "friend", c)
     local friends = uni:getRelated(a, "friend")
-    print("friends = " .. #friends)
+    example_print_log("friends = " .. #friends)
 end
 ```
 
@@ -1546,9 +1590,12 @@ LUniverse:getSystemCount()
 ```lua
 do
     local uni = lurek.ecs.newUniverse()
-    uni:addSystem({update = function() end})
-    uni:addSystem({draw = function() end})
-    print("system count = " .. uni:getSystemCount())
+    uni:addSystem({update = function() end}, {name = "movement", priority = 1})
+    uni:addSystem({draw = function() end}, {name = "render", priority = 2})
+    local count = uni:getSystemCount()
+    local hero = uni:spawn()
+    uni:set(hero, "name", "hero")
+    ecs_log("system count=" .. tostring(count) .. " hero_alive=" .. tostring(uni:isAlive(hero)))
 end
 ```
 
@@ -1582,7 +1629,7 @@ do
     u:defineTag("enemy")
     local e = u:spawn()
     u:addTag(e, "enemy")
-    print(#u:getTags(e))
+    example_print_log(#u:getTags(e))
 end
 ```
 
@@ -1616,7 +1663,11 @@ do
     local uni = lurek.ecs.newUniverse()
     local id = uni:spawn()
     uni:set(id, "speed", {value = 5})
-    print("has speed = " .. tostring(uni:has(id, "speed")))
+    uni:set(id, "hp", {value = 20})
+    local has_speed = uni:has(id, "speed")
+    local has_hp = uni:has(id, "hp")
+    local has_mp = uni:has(id, "mp")
+    ecs_log("component presence speed=" .. tostring(has_speed) .. " hp=" .. tostring(has_hp) .. " mp=" .. tostring(has_mp))
 end
 ```
 
@@ -1651,7 +1702,7 @@ do
     u:defineTag("enemy")
     local e = u:spawn()
     u:bitmapTag(e, "enemy")
-    print(u:hasBitmapTag(e, "enemy"))
+    example_print_log(u:hasBitmapTag(e, "enemy"))
 end
 ```
 
@@ -1684,7 +1735,10 @@ do
     local u = lurek.ecs.newUniverse()
     u:defineBlueprint("base", { hp = 100 })
     u:extendBlueprint("enemy", "base", { damage = 10 })
-    print(u:hasBlueprint("enemy"))
+    local has_enemy = u:hasBlueprint("enemy")
+    local has_boss = u:hasBlueprint("boss")
+    local names = u:listBlueprints()
+    ecs_log("has blueprint enemy=" .. tostring(has_enemy) .. " boss=" .. tostring(has_boss) .. " total=" .. tostring(#names))
 end
 ```
 
@@ -1720,7 +1774,7 @@ do
     local a = uni:spawn()
     local b = uni:spawn()
     uni:addRelation(a, "attacks", b)
-    print("has relation = " .. tostring(uni:hasRelation(a, "attacks", b)))
+    example_print_log("has relation = " .. tostring(uni:hasRelation(a, "attacks", b)))
 end
 ```
 
@@ -1755,7 +1809,7 @@ do
     u:defineTag("enemy")
     local e = u:spawn()
     u:addTag(e, "enemy")
-    print(u:hasTag(e, "enemy"))
+    example_print_log(u:hasTag(e, "enemy"))
 end
 ```
 
@@ -1786,8 +1840,12 @@ LUniverse:isAlive(id)
 ```lua
 do
     local uni = lurek.ecs.newUniverse()
-    local id = uni:spawn()
-    print("alive = " .. tostring(uni:isAlive(id)))
+    local hero = uni:spawn()
+    local prop = uni:spawn()
+    local hero_alive = uni:isAlive(hero)
+    uni:kill(prop)
+    local prop_alive = uni:isAlive(prop)
+    ecs_log("liveness hero=" .. tostring(hero_alive) .. " prop=" .. tostring(prop_alive) .. " entity_count=" .. tostring(uni:getEntityCount()))
 end
 ```
 
@@ -1812,9 +1870,13 @@ LUniverse:kill(id)
 ```lua
 do
     local uni = lurek.ecs.newUniverse()
-    local id = uni:spawn()
-    uni:kill(id)
-    print("killed, alive = " .. tostring(uni:isAlive(id)))
+    local owner = uni:spawn()
+    local minion = uni:spawn()
+    uni:addRelation(owner, "owns", minion)
+    uni:kill(minion)
+    local alive = uni:isAlive(minion)
+    local owned = #uni:getRelated(owner, "owns")
+    ecs_log("kill removed minion alive=" .. tostring(alive) .. " owner_links=" .. tostring(owned) .. " entity_count=" .. tostring(uni:getEntityCount()))
 end
 ```
 
@@ -1843,7 +1905,7 @@ do
     local child = uni:spawn()
     uni:setParent(child, root)
     uni:killRecursive(root)
-    print("child alive = " .. tostring(uni:isAlive(child)))
+    example_print_log("child alive = " .. tostring(uni:isAlive(child)))
 end
 ```
 
@@ -1870,7 +1932,11 @@ do
     local u = lurek.ecs.newUniverse()
     u:defineBlueprint("base", { hp = 100 })
     u:extendBlueprint("enemy", "base", { damage = 10 })
-    print(#u:listBlueprints())
+    u:defineBlueprint("bullet", { speed = 50 })
+    local names = u:listBlueprints()
+    local first = names[1]
+    local last = names[#names]
+    ecs_log("blueprint names total=" .. tostring(#names) .. " first=" .. tostring(first) .. " last=" .. tostring(last))
 end
 ```
 
@@ -1905,7 +1971,7 @@ do
     local id = uni:spawn()
     uni:set(id, "pos", {x = 3, y = 4})
     local view = uni:newQueryView({"pos"})
-    print("view created = " .. tostring(view ~= nil))
+    example_print_log("view created = " .. tostring(view ~= nil))
 end
 ```
 
@@ -1936,7 +2002,7 @@ do
     local id = uni:spawn()
     uni:set(id, "hp", {value = 100})
     uni:flushObservers()
-    print("added callback fired = " .. tostring(added))
+    example_print_log("added callback fired = " .. tostring(added))
 end
 ```
 
@@ -1968,7 +2034,7 @@ do
     uni:set(id, "hp", {value = 50})
     uni:remove(id, "hp")
     uni:flushObservers()
-    print("removed callback fired = " .. tostring(removed))
+    example_print_log("removed callback fired = " .. tostring(removed))
 end
 ```
 
@@ -2004,7 +2070,7 @@ do
     uni:set(a, "vel", {x = 1, y = 0})
     local b = uni:spawn()
     uni:set(b, "pos", {x = 5, y = 5})
-    print("with pos+vel = " .. #uni:query("pos", "vel"))
+    example_print_log("with pos+vel = " .. #uni:query("pos", "vel"))
 end
 ```
 
@@ -2038,7 +2104,7 @@ do
     u:defineTag("enemy")
     local e = u:spawn()
     u:bitmapTag(e, "enemy")
-    print(#u:queryBitmapAll({"enemy"}))
+    example_print_log(#u:queryBitmapAll({"enemy"}))
 end
 ```
 
@@ -2072,7 +2138,7 @@ do
     u:defineTag("enemy")
     local e = u:spawn()
     u:bitmapTag(e, "enemy")
-    print(#u:queryBitmapAny({"enemy"}))
+    example_print_log(#u:queryBitmapAny({"enemy"}))
 end
 ```
 
@@ -2106,7 +2172,7 @@ do
     u:defineTag("enemy")
     local e = u:spawn()
     u:bitmapTag(e, "enemy")
-    print(#u:queryBitmapTag("enemy"))
+    example_print_log(#u:queryBitmapTag("enemy"))
 end
 ```
 
@@ -2138,10 +2204,10 @@ do
     local count = 0
     uni:queryMulti({"a", "b"}, function(entity_id, a_value, b_value)
         count = count + 1
-        print("queryMulti entity = " .. tostring(entity_id))
-        print("values = " .. tostring(a_value.value) .. "," .. tostring(b_value.value))
+        example_print_log("queryMulti entity = " .. tostring(entity_id))
+        example_print_log("values = " .. tostring(a_value.value) .. "," .. tostring(b_value.value))
     end)
-    print("queryMulti = " .. count)
+    example_print_log("queryMulti = " .. count)
 end
 ```
 
@@ -2178,7 +2244,7 @@ do
     uni:set(a, "pos", {x = 0, y = 0})
     uni:set(a, "static", {flag = true})
     uni:set(b, "pos", {x = 1, y = 1})
-    print("moving entities = " .. #uni:queryNot({"pos"}, {"static"}))
+    example_print_log("moving entities = " .. #uni:queryNot({"pos"}, {"static"}))
 end
 ```
 
@@ -2197,8 +2263,13 @@ LUniverse:release()
 ```lua
 do
     local u = lurek.ecs.newUniverse()
+    local entity = u:spawn()
+    u:set(entity, "name", "temp")
+    local before = u:getEntityCount()
     u:release()
-    print("released")
+    local after = u:getEntityCount()
+    local alive = u:isAlive(entity)
+    ecs_log("release world before=" .. tostring(before) .. " after=" .. tostring(after) .. " old_entity_alive=" .. tostring(alive))
 end
 ```
 
@@ -2227,7 +2298,7 @@ do
     local id = uni:spawn()
     uni:set(id, "temp", {flag = true})
     uni:remove(id, "temp")
-    print("after remove has = " .. tostring(uni:has(id, "temp")))
+    example_print_log("after remove has = " .. tostring(uni:has(id, "temp")))
 end
 ```
 
@@ -2261,7 +2332,7 @@ do
     u:defineBlueprint("base", { hp = 100 })
     u:extendBlueprint("enemy", "base", { damage = 10 })
     u:removeBlueprint("enemy")
-    print(u:hasBlueprint("enemy"))
+    example_print_log(u:hasBlueprint("enemy"))
 end
 ```
 
@@ -2291,7 +2362,7 @@ do
     local a, b = uni:spawn(), uni:spawn()
     uni:addRelation(a, "owns", b)
     uni:removeRelation(a, "owns", b)
-    print("relation removed")
+    example_print_log("relation removed")
 end
 ```
 
@@ -2319,7 +2390,7 @@ do
     local sys = {update = function() end}
     uni:addSystem(sys)
     uni:removeSystem(sys)
-    print("after remove systems = " .. uni:getSystemCount())
+    example_print_log("after remove systems = " .. uni:getSystemCount())
 end
 ```
 
@@ -2349,7 +2420,7 @@ do
     local e = u:spawn()
     u:addTag(e, "enemy")
     u:removeTag(e, "enemy")
-    print(u:hasTag(e, "enemy"))
+    example_print_log(u:hasTag(e, "enemy"))
 end
 ```
 
@@ -2371,7 +2442,7 @@ do
     local drawn = false
     uni:addSystem({draw = function() drawn = true end})
     uni:render()
-    print("render called = " .. tostring(drawn))
+    example_print_log("render called = " .. tostring(drawn))
 end
 ```
 
@@ -2399,7 +2470,7 @@ do
     local id = uni:spawn()
     uni:set(id, "data", {k = "v"})
     local snap = uni:serialize()
-    print("entities in snapshot = " .. #snap.entities)
+    example_print_log("entities in snapshot = " .. #snap.entities)
 end
 ```
 
@@ -2428,7 +2499,10 @@ do
     local uni = lurek.ecs.newUniverse()
     local id = uni:spawn()
     uni:set(id, "position", {x = 10, y = 20})
-    print("position set")
+    uni:set(id, "hp", {value = 100})
+    local pos = uni:get(id, "position")
+    local hp = uni:get(id, "hp")
+    ecs_log("components set pos=" .. tostring(pos.x) .. "," .. tostring(pos.y) .. " hp=" .. tostring(hp.value))
 end
 ```
 
@@ -2456,7 +2530,11 @@ do
     local u = lurek.ecs.newUniverse()
     local e = u:spawn()
     u:setLayer(e, 2)
-    print("layer = " .. tostring(u:getLayer(e)))
+    local before = u:getLayer(e)
+    u:setLayer(e, 4)
+    local after = u:getLayer(e)
+    local layer_entities = u:getEntitiesByLayer(4)
+    ecs_log("set layer before=" .. tostring(before) .. " after=" .. tostring(after) .. " layer_entities=" .. tostring(#layer_entities))
 end
 ```
 
@@ -2485,7 +2563,7 @@ do
     local parent = uni:spawn()
     local child = uni:spawn()
     uni:setParent(child, parent)
-    print("parent set")
+    example_print_log("parent set")
 end
 ```
 
@@ -2513,8 +2591,8 @@ do
     local id = uni:spawn()
     uni:set(id, "val", {value = 42})
     local snap = uni:snapshot()
-    print("snapshot type = " .. type(snap))
-    print("snapshot entities = " .. #snap.entities)
+    example_print_log("snapshot type = " .. type(snap))
+    example_print_log("snapshot entities = " .. #snap.entities)
 end
 ```
 
@@ -2539,8 +2617,12 @@ LUniverse:spawn()
 ```lua
 do
     local uni = lurek.ecs.newUniverse()
-    local id = uni:spawn()
-    print("spawned entity id = " .. id)
+    local hero = uni:spawn()
+    local enemy = uni:spawn()
+    uni:set(hero, "name", "hero")
+    uni:set(enemy, "name", "enemy")
+    local ids = uni:getEntities()
+    ecs_log("spawned entities hero=" .. tostring(hero) .. " enemy=" .. tostring(enemy) .. " live_count=" .. tostring(#ids))
 end
 ```
 
@@ -2574,7 +2656,10 @@ do
     local uni = lurek.ecs.newUniverse()
     uni:defineBlueprint("npc", {pos = {x = 0, y = 0}})
     local id = uni:spawnBlueprint("npc", {pos = {x = 5, y = 5}})
-    print("spawned from blueprint id = " .. id)
+    local pos = uni:get(id, "pos")
+    local components = uni:getComponents(id)
+    local alive = uni:isAlive(id)
+    ecs_log("spawned blueprint id=" .. tostring(id) .. " pos=" .. tostring(pos.x) .. "," .. tostring(pos.y) .. " components=" .. tostring(#components) .. " alive=" .. tostring(alive))
 end
 ```
 
@@ -2609,7 +2694,10 @@ do
     local uni = lurek.ecs.newUniverse()
     uni:defineBlueprint("bullet", {pos = {x = 0, y = 0}})
     local ids = uni:spawnBulk("bullet", 10)
-    print("bulk spawned = " .. #ids)
+    local first = ids[1]
+    local first_pos = first and uni:get(first, "pos") or nil
+    local count = uni:getEntityCount()
+    ecs_log("bulk spawned count=" .. tostring(#ids) .. " first=" .. tostring(first) .. " first_pos_x=" .. tostring(first_pos and first_pos.x) .. " live_count=" .. tostring(count))
 end
 ```
 
@@ -2637,7 +2725,7 @@ do
     local e = u:spawn()
     u:set(e, "pos", { x = 1, y = 2 })
     local diff = u:takeSnapshotDiff()
-    print("dirty entities = " .. tostring(#diff.dirty_entities))
+    example_print_log("dirty entities = " .. tostring(#diff.dirty_entities))
 end
 ```
 
@@ -2662,7 +2750,10 @@ LUniverse:type()
 ```lua
 do
     local uni = lurek.ecs.newUniverse()
-    print("type = " .. uni:type())
+    local type_name = uni:type()
+    local entity = uni:spawn()
+    local count = uni:getEntityCount()
+    ecs_log("universe type=" .. tostring(type_name) .. " entity=" .. tostring(entity) .. " count=" .. tostring(count))
 end
 ```
 
@@ -2693,7 +2784,10 @@ LUniverse:typeOf(name)
 ```lua
 do
     local uni = lurek.ecs.newUniverse()
-    print("is LUniverse = " .. tostring(uni:typeOf("LUniverse")))
+    local is_universe = uni:typeOf("LUniverse")
+    local is_object = uni:typeOf("LObject")
+    local is_rm = uni:typeOf("LRelationshipManager")
+    ecs_log("universe type guard universe=" .. tostring(is_universe) .. " object=" .. tostring(is_object) .. " rm=" .. tostring(is_rm))
 end
 ```
 
@@ -2721,7 +2815,7 @@ do
     local called = false
     uni:addSystem({update = function() called = true end})
     uni:update(1 / 60)
-    print("update called = " .. tostring(called))
+    example_print_log("update called = " .. tostring(called))
 end
 ```
 
@@ -2750,7 +2844,7 @@ do
     local ran = false
     uni:addSystem({update = function() ran = true end}, {phase = "physics"})
     uni:updatePhase("physics", 1 / 60)
-    print("phase ran = " .. tostring(ran))
+    example_print_log("phase ran = " .. tostring(ran))
 end
 ```
 

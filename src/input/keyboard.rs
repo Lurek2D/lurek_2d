@@ -16,6 +16,11 @@ pub const MOD_CTRL: u8 = 0b0010;
 pub const MOD_ALT: u8 = 0b0100;
 /// Bitmask flag for the Meta/Super modifier.
 pub const MOD_META: u8 = 0b1000;
+/// Bitmask flag for the AltGraph modifier.
+pub const MOD_ALTGR: u8 = 0b1_0000;
+
+const MAX_TEXT_INPUT_SEGMENTS_PER_FRAME: usize = 32;
+const MAX_TEXT_INPUT_SEGMENT_CHARS: usize = 256;
 
 /// Per-frame keyboard state: held keys, per-frame deltas, modifier flags, and text input buffer.
 pub struct KeyboardState {
@@ -124,7 +129,11 @@ impl KeyboardState {
 
     /// Append a character string to the text-input buffer for this frame.
     pub(crate) fn push_text_input(&mut self, text: String) {
-        self.text_input_buffer.push(text);
+        if self.text_input_buffer.len() >= MAX_TEXT_INPUT_SEGMENTS_PER_FRAME {
+            return;
+        }
+        let trimmed: String = text.chars().take(MAX_TEXT_INPUT_SEGMENT_CHARS).collect();
+        self.text_input_buffer.push(trimmed);
     }
 
     /// Return all text-input characters delivered this frame.
@@ -137,6 +146,7 @@ impl KeyboardState {
         if self.keys_down.insert(key.to_string()) {
             self.keys_pressed.push(key.to_string());
         }
+        self.update_modifier_from_key(key, true);
     }
 
     /// Record a logical key release; adds to the released delta list only when it was down.
@@ -144,6 +154,7 @@ impl KeyboardState {
         if self.keys_down.remove(key) {
             self.keys_released.push(key.to_string());
         }
+        self.update_modifier_from_key(key, false);
     }
 
     /// Return true when `key` is currently held down.
@@ -166,8 +177,13 @@ impl KeyboardState {
         &self.keys_released
     }
 
-    /// Clear all held-key sets and delta lists; does not reset modifier flags.
+    /// Clear all held-key sets, delta lists, buffered text, and modifier flags.
     pub fn clear(&mut self) {
+        self.clear_all();
+    }
+
+    /// Clear all held-key sets, delta lists, buffered text, and modifier flags.
+    pub fn clear_all(&mut self) {
         self.keys_down.clear();
         self.keys_pressed.clear();
         self.keys_released.clear();
@@ -175,6 +191,7 @@ impl KeyboardState {
         self.scancodes_pressed.clear();
         self.scancodes_released.clear();
         self.text_input_buffer.clear();
+        self.modifiers = 0;
     }
 
     /// Return true when `modifier` name (`"shift"`, `"ctrl"`, `"alt"`, `"meta"`) flag is set.
@@ -183,6 +200,7 @@ impl KeyboardState {
             "shift" => MOD_SHIFT,
             "ctrl" => MOD_CTRL,
             "alt" => MOD_ALT,
+            "altgr" => MOD_ALTGR,
             "meta" | "super" => MOD_META,
             _ => return false,
         };
@@ -191,6 +209,7 @@ impl KeyboardState {
 
     /// Update the packed modifier bitmask from four individual boolean flags.
     pub fn set_modifiers(&mut self, shift: bool, ctrl: bool, alt: bool, meta: bool) {
+        let altgr = self.modifiers & MOD_ALTGR;
         self.modifiers = 0;
         if shift {
             self.modifiers |= MOD_SHIFT;
@@ -203,6 +222,23 @@ impl KeyboardState {
         }
         if meta {
             self.modifiers |= MOD_META;
+        }
+        self.modifiers |= altgr;
+    }
+
+    fn update_modifier_from_key(&mut self, key: &str, active: bool) {
+        let mask = match key {
+            "shift" => MOD_SHIFT,
+            "ctrl" => MOD_CTRL,
+            "alt" => MOD_ALT,
+            "super" | "meta" => MOD_META,
+            "altgr" => MOD_ALTGR,
+            _ => return,
+        };
+        if active {
+            self.modifiers |= mask;
+        } else {
+            self.modifiers &= !mask;
         }
     }
 }

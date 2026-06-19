@@ -2,28 +2,17 @@
 
 ## Summary
 
-- This module gives users a unified input layer across keyboard, mouse, gamepad, and touch devices.
-- It normalizes hardware-specific events into stable runtime-facing controls.
-- Keyboard state includes held/pressed/released tracking, modifiers, and optional text input behavior.
-- Mouse APIs cover position, wheel, visibility, lock/grab state, and cursor management.
-- Gamepad support includes connection lifecycle, axis/button polling, mapping, and vibration requests.
-- Touch APIs expose active points, pressure, and per-frame transition state.
-- Action bindings map logical commands to multiple physical inputs.
-- Binding definitions can be serialized and restored, enabling rebindable controls and user presets.
-- Action query helpers support common checks like down, pressed, released, and timing-window variants.
-- Combo detection enables timed gesture sequences for fighting-game or rhythm-style interactions.
-- Input recording and playback support deterministic replay for automation and debugging.
-- Frame-indexed replay helps reproduce issues without manual re-entry.
-- Category and conflict helpers support tooling around control-map maintenance.
-- The module is useful for gameplay, UI navigation, accessibility mapping, and test automation.
-- For users, it centralizes all input concerns into one scriptable control surface.
-- It reduces per-device branching code and keeps behavior consistent across platforms.
-- The practical value is faster control iteration and more reliable input diagnostics.
-- It also supports robust QA through record/replay and deterministic input timelines.
-- Overall, users get both ergonomic control APIs and advanced tooling hooks in one module.
-- This makes input behavior easier to tune, test, and ship confidently.
-
-This module primarily collaborates with `runtime`. Its responsibility should stay inside the Platform Services group rather than absorb behavior owned by those neighbors.
+- The `input` module is the engine's unified control surface for users who need keyboard, mouse, gamepad, and touch state to behave as one coherent runtime system.
+- Its main job is normalization. Device-specific events become stable engine-side state so scripts can ask about buttons, axes, touches, combos, and actions through one consistent vocabulary.
+- Per-frame snapshots matter because gameplay, UI, replays, and tools all need deterministic control state rather than raw transient platform events.
+- Action mapping, rebinding, presets, and conflict handling are central because real projects care about intent and user-configurable schemes more than about hardwired physical keys.
+- Mouse, pointer, touch, and compound input remain part of the same model, which keeps interaction semantics consistent across device families and helps accessibility layers share the same action surface.
+- Recording and playback make the module useful for debugging, tests, automation, tutorials, and deterministic repro workflows as well as for live play.
+- That normalization layer protects higher-level systems from platform detail churn. Gameplay and UI code can ask for stable actions instead of reinventing per-device handling every time a new device family or interaction surface appears.
+- Rebinding is especially important because modern projects often need several physical inputs to express the same logical action under explicit precedence, accessibility, or user-preference rules.
+- Input capture and replay also make the module one of the cleanest sources of truth for what happened during a failing run, a scripted demonstration, or a tool-driven automation pass.
+- The result is a surface that serves players, tools, and tests at the same time: it turns noisy device events into deterministic, serializable, reusable intent.
+- Other systems consume the result, but `input` owns normalization, mapping, serialization, and replay semantics for device-originated intent.
 
 ## Functions
 
@@ -52,7 +41,9 @@ do
         lurek.input.startPlayback()
     end
     local events = lurek.input.advancePlayback()
-    print("events = " .. #events)
+    local frame = lurek.input.getPlaybackFrame()
+    lurek.log.info("playback events=" .. #events)
+    lurek.log.info("playback advanced frame=" .. tostring(frame))
     lurek.input.stopPlayback()
 end
 ```
@@ -80,7 +71,11 @@ lurek.input.bind(action, keys)
 do
     lurek.input.bind("jump", "space")
     lurek.input.bind("move_left", {"a", "left"})
-    print("actions bound")
+    local bindings = lurek.input.getBindings()
+    local jumpBindings = rawget(bindings, "jump") or {}
+    lurek.log.info("actions bound total=" .. tostring(#jumpBindings))
+    lurek.log.info("actions bound has move_left=" .. tostring(rawget(bindings, "move_left") ~= nil))
+    lurek.input.reset()
 end
 ```
 
@@ -100,8 +95,11 @@ lurek.input.clearBindings()
 do
     lurek.input.bind("a1", "q")
     lurek.input.bind("a2", "e")
+    local before = lurek.input.getBindings()
     lurek.input.clearBindings()
-    print("all bindings cleared")
+    local after = lurek.input.getBindings()
+    lurek.log.info("clearBindings before a1=" .. tostring(rawget(before, "a1") ~= nil))
+    lurek.log.info("clearBindings after a1=" .. tostring(rawget(after, "a1") ~= nil))
 end
 ```
 
@@ -128,7 +126,11 @@ lurek.input.define(name, bindings, category)
 ```lua
 do
     lurek.input.define("jump", {"space", "up"}, "movement")
-    print("define ok")
+    lurek.input.define("pause", {"escape", "p"}, "system")
+    local movement = lurek.input.getByCategory("movement")
+    local system = lurek.input.getByCategory("system")
+    lurek.log.info("define movement count=" .. tostring(#movement))
+    lurek.log.info("define system count=" .. tostring(#system))
     lurek.input.reset()
 end
 ```
@@ -163,7 +165,7 @@ do
     local json = lurek.input.serializeBindings()
     lurek.input.reset()
     local ok = lurek.input.deserializeBindings(json)
-    print("deserializeBindings=" .. tostring(ok))
+    example_print_log("deserializeBindings=" .. tostring(ok))
     lurek.input.reset()
 end
 ```
@@ -196,7 +198,9 @@ lurek.input.getAxis(name)
 do
     lurek.input.bind("move_x", {"d", "a"})
     local v = lurek.input.getAxis("move_x")
-    print("getAxis=" .. tostring(v))
+    local mapping = rawget(lurek.input.getBindings(), "move_x") or {}
+    lurek.log.info("axis move_x value=" .. tostring(v))
+    lurek.log.info("axis move_x bindings=" .. tostring(#mapping))
     lurek.input.reset()
 end
 ```
@@ -224,8 +228,8 @@ do
     lurek.input.bind("shoot", "x")
     local bindings = lurek.input.getBindings()
     local shoot = rawget(bindings, "shoot") or {}
-    print("has shoot = " .. tostring(rawget(bindings, "shoot") ~= nil))
-    print("shoot bindings = " .. #shoot)
+    example_print_log("has shoot = " .. tostring(rawget(bindings, "shoot") ~= nil))
+    example_print_log("shoot bindings = " .. #shoot)
 end
 ```
 
@@ -257,7 +261,10 @@ lurek.input.getByCategory(category)
 do
     lurek.input.define("run", "lshift", "movement")
     local cats = lurek.input.getByCategory("movement")
-    print("getByCategory count=" .. #cats)
+    lurek.input.define("jump", "space", "movement")
+    local first = cats[1] or "none"
+    lurek.log.info("getByCategory count=" .. #cats)
+    lurek.log.info("getByCategory first=" .. tostring(first))
     lurek.input.reset()
 end
 ```
@@ -285,7 +292,7 @@ do
     lurek.input.bind("act_a", "x")
     lurek.input.bind("act_b", "x")
     local c = lurek.input.getConflicts()
-    print("getConflicts type=" .. type(c))
+    example_print_log("getConflicts type=" .. type(c))
     lurek.input.reset()
 end
 ```
@@ -311,8 +318,10 @@ lurek.input.getPlaybackFrame()
 ```lua
 do
     local frame = lurek.input.getPlaybackFrame()
-    print("playback frame = " .. frame)
-    print("lua type = " .. type(frame))
+    local playing = lurek.input.isPlayingBack()
+    local recording = lurek.input.isRecording()
+    lurek.log.info("playback frame=" .. frame)
+    lurek.log.info("playback active=" .. tostring(playing) .. " recording=" .. tostring(recording))
 end
 ```
 
@@ -347,7 +356,7 @@ do
     lurek.input.bind("haxis", {"d", "a"})
     lurek.input.bind("vaxis", {"s", "w"})
     local h, v = lurek.input.getVector("haxis", "vaxis")
-    print("getVector=" .. tostring(h) .. "," .. tostring(v))
+    example_print_log("getVector=" .. tostring(h) .. "," .. tostring(v))
     lurek.input.reset()
 end
 ```
@@ -380,7 +389,10 @@ lurek.input.isActionDown(action)
 do
     lurek.input.bind("fire", "space")
     local down = lurek.input.isActionDown("fire")
-    print("fire down = " .. tostring(down))
+    local exists = rawget(lurek.input.getBindings(), "fire") ~= nil
+    lurek.log.info("combat fire bound=" .. tostring(exists))
+    lurek.log.info("combat fire down=" .. tostring(down))
+    lurek.input.reset()
 end
 ```
 
@@ -404,10 +416,12 @@ lurek.input.isDown()
 
 ```lua
 do
-    -- isDown() returns true while any key is held; check inside an input event callback
-    local v = lurek.input.keyboard.isDown("a")
-    print("isDown available = " .. tostring(type(lurek.input.keyboard.isDown) == "function"))
-    print("result type = " .. type(v))
+    local hasHelper = type(lurek.input.isDown) == "function"
+    local keyboardDown = lurek.input.keyboard.isDown("a")
+    local mapping = lurek.input.newMapping("move_left", {"a", "left"})
+    local mappingDown = mapping.isDown()
+    lurek.log.info("mapping isDown helper=" .. tostring(hasHelper) .. " keyboardDown=" .. tostring(keyboardDown))
+    lurek.log.info("mapping move_left down=" .. tostring(mappingDown))
 end
 ```
 
@@ -437,7 +451,10 @@ do
         lurek.input.loadRecording(rec:toJson())
         lurek.input.startPlayback()
     end
-    print("is_playing=" .. tostring(lurek.input.isPlayingBack()))
+    local playing = lurek.input.isPlayingBack()
+    local frame = lurek.input.getPlaybackFrame()
+    lurek.log.info("isPlayingBack=" .. tostring(playing))
+    lurek.log.info("playback frame=" .. tostring(frame))
     lurek.input.stopPlayback()
 end
 ```
@@ -462,9 +479,12 @@ lurek.input.isRecording()
 
 ```lua
 do
-    print("recording = " .. tostring(lurek.input.isRecording()))
-    print("playing = " .. tostring(lurek.input.isPlayingBack()))
-    print("lua type = " .. type(tostring(lurek.input.isPlayingBack())))
+    local before = lurek.input.isRecording()
+    lurek.input.startRecording()
+    local during = lurek.input.isRecording()
+    local rec = lurek.input.stopRecording()
+    lurek.log.info("recording before=" .. tostring(before) .. " during=" .. tostring(during))
+    lurek.log.info("recording object returned=" .. tostring(rec ~= nil))
 end
 ```
 
@@ -491,7 +511,10 @@ do
     lurek.input.startRecording()
     local rec = lurek.input.stopRecording()
     if rec then lurek.input.loadRecording(rec:toJson()) end
-    print("recording loaded = " .. tostring(rec ~= nil))
+    local frame = lurek.input.getPlaybackFrame()
+    local loaded = rec ~= nil
+    lurek.log.info("recording loaded=" .. tostring(loaded))
+    lurek.log.info("recording playback frame=" .. tostring(frame))
 end
 ```
 
@@ -523,9 +546,10 @@ lurek.input.newCombo(steps, opts)
 ```lua
 do
     local combo = lurek.input.newCombo({"down", "right", "z"}, {total_gap = 500})
-    print("combo steps = " .. combo:totalSteps())
-    print("in progress = " .. tostring(combo:isInProgress()))
-    print("progress = " .. combo:progress())
+    local step1 = combo:getStep(1)
+    local progress = combo:progress()
+    lurek.log.info("combo total steps=" .. combo:totalSteps() .. " first=" .. tostring(step1.key))
+    lurek.log.info("combo in progress=" .. tostring(combo:isInProgress()) .. " progress=" .. progress)
 end
 ```
 
@@ -560,7 +584,7 @@ do
     local held = mapping.isDown()
     local just = mapping.wasPressed()
     local done = mapping.wasReleased()
-    print("held=" .. tostring(held) .. " just=" .. tostring(just) .. " done=" .. tostring(done))
+    example_print_log("held=" .. tostring(held) .. " just=" .. tostring(just) .. " done=" .. tostring(done))
 end
 ```
 
@@ -584,10 +608,16 @@ lurek.input.onRebind(callback)
 
 ```lua
 do
+    local firedAction = "none"
+    local firedCount = 0
     lurek.input.onRebind(function(action, keys)
-        print("rebind: " .. action .. " keys=" .. #keys)
+        firedAction = action
+        firedCount = #keys
     end)
-    print("onRebind registered")
+    lurek.input.define("menu_confirm", {"return", "space"}, "ui")
+    lurek.log.info("onRebind action=" .. tostring(firedAction))
+    lurek.log.info("onRebind key_count=" .. tostring(firedCount))
+    lurek.input.reset()
 end
 ```
 
@@ -613,9 +643,9 @@ lurek.input.reset(name)
 do
     lurek.input.bind("temp", "t")
     lurek.input.reset("temp")
-    print("reset(name) ok")
+    example_print_log("reset(name) ok")
     lurek.input.reset()
-    print("reset() ok")
+    example_print_log("reset() ok")
 end
 ```
 
@@ -641,7 +671,9 @@ lurek.input.serializeBindings()
 do
     lurek.input.bind("test_ser", "s")
     local json = lurek.input.serializeBindings()
-    print("serializeBindings len=" .. #json)
+    local hasAction = json:find("test_ser", 1, true) ~= nil
+    lurek.log.info("serializeBindings len=" .. #json)
+    lurek.log.info("serializeBindings has action=" .. tostring(hasAction))
     lurek.input.reset()
 end
 ```
@@ -666,7 +698,10 @@ do
         lurek.input.loadRecording(rec:toJson())
         lurek.input.startPlayback()
     end
-    print("playing = " .. tostring(lurek.input.isPlayingBack()))
+    local playing = lurek.input.isPlayingBack()
+    local frame = lurek.input.getPlaybackFrame()
+    lurek.log.info("playback started=" .. tostring(playing))
+    lurek.log.info("playback frame=" .. tostring(frame))
     lurek.input.stopPlayback()
 end
 ```
@@ -687,7 +722,10 @@ lurek.input.startRecording()
 do
     lurek.input.startRecording()
     local recording = lurek.input.stopRecording()
-    print("captured = " .. tostring(recording ~= nil))
+    local frames = recording and recording:frameCount() or 0
+    local typeName = recording and recording:type() or "nil"
+    lurek.log.info("recording captured=" .. tostring(recording ~= nil))
+    lurek.log.info("recording frames=" .. tostring(frames) .. " type=" .. tostring(typeName))
 end
 ```
 
@@ -708,8 +746,11 @@ do
     lurek.input.startRecording()
     local rec = lurek.input.stopRecording()
     if rec then lurek.input.loadRecording(rec:toJson()); lurek.input.startPlayback() end
+    local before = lurek.input.isPlayingBack()
     lurek.input.stopPlayback()
-    print("is_playing=" .. tostring(lurek.input.isPlayingBack()))
+    local after = lurek.input.isPlayingBack()
+    lurek.log.info("stopPlayback before=" .. tostring(before))
+    lurek.log.info("stopPlayback after=" .. tostring(after))
 end
 ```
 
@@ -735,7 +776,10 @@ lurek.input.stopRecording()
 do
     lurek.input.startRecording()
     local rec = lurek.input.stopRecording()
-    print("stopped recording=" .. tostring(rec ~= nil))
+    local frames = rec and rec:frameCount() or 0
+    local json = rec and rec:toJson() or ""
+    lurek.log.info("stopped recording=" .. tostring(rec ~= nil))
+    lurek.log.info("stopped recording frames=" .. tostring(frames) .. " json_len=" .. tostring(#json))
 end
 ```
 
@@ -767,7 +811,11 @@ lurek.input.unbind(action)
 do
     lurek.input.bind("temp", "t")
     local had = lurek.input.unbind("temp")
-    print("unbind had bindings = " .. tostring(had))
+    local bindings = lurek.input.getBindings()
+    local stillPresent = rawget(bindings, "temp") ~= nil
+    lurek.log.info("unbind had bindings=" .. tostring(had))
+    lurek.log.info("unbind still present=" .. tostring(stillPresent))
+    lurek.input.reset()
 end
 ```
 
@@ -799,7 +847,10 @@ lurek.input.wasActionPressed(action)
 do
     lurek.input.bind("jump", "space")
     local pressed = lurek.input.wasActionPressed("jump")
-    print("jump pressed = " .. tostring(pressed))
+    local recent = lurek.input.wasActionPressedWithin("jump", 5)
+    lurek.log.info("platform jump pressed=" .. tostring(pressed))
+    lurek.log.info("platform jump recent=" .. tostring(recent))
+    lurek.input.reset()
 end
 ```
 
@@ -832,7 +883,10 @@ lurek.input.wasActionPressedWithin(action, frames)
 do
     lurek.input.bind("dodge", "shift")
     local recent = lurek.input.wasActionPressedWithin("dodge", 10)
-    print("dodge recent = " .. tostring(recent))
+    local pressed = lurek.input.wasActionPressed("dodge")
+    lurek.log.info("action dodge recent=" .. tostring(recent))
+    lurek.log.info("action dodge pressed_now=" .. tostring(pressed))
+    lurek.input.reset()
 end
 ```
 
@@ -864,7 +918,10 @@ lurek.input.wasActionReleased(action)
 do
     lurek.input.bind("run", "shift")
     local released = lurek.input.wasActionReleased("run")
-    print("run released = " .. tostring(released))
+    local down = lurek.input.isActionDown("run")
+    lurek.log.info("action run released=" .. tostring(released))
+    lurek.log.info("action run down=" .. tostring(down))
+    lurek.input.reset()
 end
 ```
 
@@ -890,8 +947,10 @@ lurek.input.wasPressed()
 do
     local has_was_pressed = type(lurek.input.wasPressed) == "function"
     local v = has_was_pressed and lurek.input.wasPressed() or false
-    print("wasPressed available = " .. tostring(has_was_pressed))
-    print("result type = " .. type(v))
+    local mapping = lurek.input.newMapping("attack", {"z", "button1"})
+    local mappingPressed = mapping.wasPressed()
+    lurek.log.info("wasPressed available=" .. tostring(has_was_pressed))
+    lurek.log.info("wasPressed result=" .. tostring(v) .. " mappingPressed=" .. tostring(mappingPressed))
 end
 ```
 
@@ -917,8 +976,10 @@ lurek.input.wasReleased()
 do
     local has_was_released = type(lurek.input.wasReleased) == "function"
     local v = has_was_released and lurek.input.wasReleased() or false
-    print("wasReleased available = " .. tostring(has_was_released))
-    print("space released = " .. tostring(v))
+    local mapping = lurek.input.newMapping("attack", {"z", "button1"})
+    local mappingReleased = mapping.wasReleased()
+    lurek.log.info("wasReleased available=" .. tostring(has_was_released))
+    lurek.log.info("wasReleased result=" .. tostring(v) .. " mappingReleased=" .. tostring(mappingReleased))
 end
 ```
 
@@ -976,7 +1037,10 @@ LCombo:feed(key)
 do
     local combo = lurek.input.newCombo({"a", "b", "c"})
     local result = combo:feed("a")
-    print("feed a → " .. result)
+    local progress = combo:progress()
+    local inProgress = combo:isInProgress()
+    lurek.log.info("combo feed a->" .. tostring(result))
+    lurek.log.info("combo progress=" .. tostring(progress) .. " inProgress=" .. tostring(inProgress))
 end
 ```
 
@@ -1008,7 +1072,9 @@ LCombo:getStep(index)
 do
     local combo = lurek.input.newCombo({"a", "b"})
     local step = combo:getStep(1)
-    print("step 1 key = " .. step.key .. " gap = " .. step.gap_ms)
+    local step2 = combo:getStep(2)
+    lurek.log.info("combo step1 key=" .. tostring(step.key) .. " gap=" .. tostring(step.gap_ms))
+    lurek.log.info("combo step2 key=" .. tostring(step2.key) .. " gap=" .. tostring(step2.gap_ms))
 end
 ```
 
@@ -1035,7 +1101,10 @@ do
     local combo = lurek.input.newCombo({ "a", "b", "c" })
     combo:feed("a")
     combo:tick(0.016)
-    print("in_progress=" .. tostring(combo:isInProgress()))
+    local progress = combo:progress()
+    local total = combo:totalSteps()
+    lurek.log.info("combo in progress=" .. tostring(combo:isInProgress()))
+    lurek.log.info("combo progress=" .. tostring(progress) .. " total=" .. tostring(total))
 end
 ```
 
@@ -1062,8 +1131,8 @@ do
     local combo = lurek.input.newCombo({ "a", "b", "c" })
     combo:feed("a")
     combo:tick(0.016)
-    print("in_progress=" .. tostring(combo:isInProgress()))
-    print("progress=" .. combo:progress())
+    example_print_log("in_progress=" .. tostring(combo:isInProgress()))
+    example_print_log("progress=" .. combo:progress())
 end
 ```
 
@@ -1083,8 +1152,11 @@ LCombo:reset()
 do
     local combo = lurek.input.newCombo({"q", "w", "e"})
     combo:feed("q")
+    local before = combo:progress()
     combo:reset()
-    print("progress after reset = " .. combo:progress())
+    local after = combo:progress()
+    lurek.log.info("combo progress before reset=" .. tostring(before))
+    lurek.log.info("combo progress after reset=" .. tostring(after))
 end
 ```
 
@@ -1116,7 +1188,10 @@ LCombo:tick(dt)
 do
     local combo = lurek.input.newCombo({"x", "y"}, {total_gap = 300})
     local result = combo:tick(0.016)
-    print("tick → " .. result)
+    local progress = combo:progress()
+    local total = combo:totalSteps()
+    lurek.log.info("combo tick->" .. tostring(result))
+    lurek.log.info("combo progress=" .. tostring(progress) .. " total=" .. tostring(total))
 end
 ```
 
@@ -1143,7 +1218,10 @@ do
     local combo = lurek.input.newCombo({ "a", "b", "c" })
     combo:feed("a")
     combo:tick(0.016)
-    print("total=" .. combo:totalSteps())
+    local progress = combo:progress()
+    local inProgress = combo:isInProgress()
+    lurek.log.info("combo total=" .. combo:totalSteps())
+    lurek.log.info("combo progress=" .. tostring(progress) .. " inProgress=" .. tostring(inProgress))
 end
 ```
 
@@ -1168,8 +1246,10 @@ LCombo:type()
 ```lua
 do
     local combo = lurek.input.newCombo({"a"})
-    print("type = " .. combo:type())
-    print("is Combo = " .. tostring(combo:typeOf("LCombo")))
+    local total = combo:totalSteps()
+    local progress = combo:progress()
+    lurek.log.info("combo type=" .. combo:type() .. " total=" .. tostring(total))
+    lurek.log.info("combo is LCombo=" .. tostring(combo:typeOf("LCombo")) .. " progress=" .. tostring(progress))
 end
 ```
 
@@ -1200,8 +1280,10 @@ LCombo:typeOf(name)
 ```lua
 do
     local combo = lurek.input.newCombo({"a"})
-    print("type = " .. combo:type())
-    print("is Combo = " .. tostring(combo:typeOf("LCombo")))
+    local total = combo:totalSteps()
+    local progress = combo:progress()
+    lurek.log.info("combo typeOf LCombo=" .. tostring(combo:typeOf("LCombo")))
+    lurek.log.info("combo type=" .. combo:type() .. " progress=" .. tostring(progress) .. " total=" .. tostring(total))
 end
 ```
 
@@ -1234,9 +1316,9 @@ LCursor:getType()
 ```lua
 do
     local sys_cursor = lurek.input.mouse.getSystemCursor("arrow")
-    print("cursor type=" .. sys_cursor:type())
-    print("cursor kind=" .. sys_cursor:getType())
-    print("typeOf=" .. tostring(sys_cursor:typeOf("LCursor")))
+    example_print_log("cursor type=" .. sys_cursor:type())
+    example_print_log("cursor kind=" .. sys_cursor:getType())
+    example_print_log("typeOf=" .. tostring(sys_cursor:typeOf("LCursor")))
     sys_cursor:release()
 end
 ```
@@ -1256,9 +1338,9 @@ LCursor:release()
 ```lua
 do
     local sys_cursor = lurek.input.mouse.getSystemCursor("arrow")
-    print("cursor type=" .. sys_cursor:type())
-    print("cursor kind=" .. sys_cursor:getType())
-    print("typeOf=" .. tostring(sys_cursor:typeOf("LCursor")))
+    example_print_log("cursor type=" .. sys_cursor:type())
+    example_print_log("cursor kind=" .. sys_cursor:getType())
+    example_print_log("typeOf=" .. tostring(sys_cursor:typeOf("LCursor")))
     sys_cursor:release()
 end
 ```
@@ -1284,9 +1366,9 @@ LCursor:type()
 ```lua
 do
     local sys_cursor = lurek.input.mouse.getSystemCursor("arrow")
-    print("cursor type=" .. sys_cursor:type())
-    print("cursor kind=" .. sys_cursor:getType())
-    print("typeOf=" .. tostring(sys_cursor:typeOf("LCursor")))
+    example_print_log("cursor type=" .. sys_cursor:type())
+    example_print_log("cursor kind=" .. sys_cursor:getType())
+    example_print_log("typeOf=" .. tostring(sys_cursor:typeOf("LCursor")))
     sys_cursor:release()
 end
 ```
@@ -1318,9 +1400,9 @@ LCursor:typeOf(name)
 ```lua
 do
     local sys_cursor = lurek.input.mouse.getSystemCursor("arrow")
-    print("cursor type=" .. sys_cursor:type())
-    print("cursor kind=" .. sys_cursor:getType())
-    print("typeOf=" .. tostring(sys_cursor:typeOf("LCursor")))
+    example_print_log("cursor type=" .. sys_cursor:type())
+    example_print_log("cursor kind=" .. sys_cursor:getType())
+    example_print_log("typeOf=" .. tostring(sys_cursor:typeOf("LCursor")))
     sys_cursor:release()
 end
 ```
@@ -1355,7 +1437,10 @@ LInputRecording:frameCount()
 do
     lurek.input.startRecording()
     local rec = lurek.input.stopRecording()
-    print("frames=" .. tostring(rec and rec:frameCount() or 0))
+    local frames = rec and rec:frameCount() or 0
+    local total = rec and rec:totalFrames() or 0
+    lurek.log.info("recording frameCount=" .. tostring(frames))
+    lurek.log.info("recording totalFrames=" .. tostring(total))
 end
 ```
 
@@ -1382,7 +1467,10 @@ do
     lurek.input.startRecording()
     local rec = lurek.input.stopRecording()
     local json = rec and rec:toJson() or ""
-    print("json length = " .. #json)
+    local frames = rec and rec:frameCount() or 0
+    local total = rec and rec:totalFrames() or 0
+    lurek.log.info("recording json length=" .. #json)
+    lurek.log.info("recording frames=" .. tostring(frames) .. " total=" .. tostring(total))
 end
 ```
 
@@ -1408,7 +1496,10 @@ LInputRecording:totalFrames()
 do
     lurek.input.startRecording()
     local rec = lurek.input.stopRecording()
-    print("total=" .. tostring(rec and rec:totalFrames() or 0))
+    local total = rec and rec:totalFrames() or 0
+    local frames = rec and rec:frameCount() or 0
+    lurek.log.info("recording totalFrames=" .. tostring(total))
+    lurek.log.info("recording frameCount=" .. tostring(frames))
 end
 ```
 
@@ -1434,7 +1525,10 @@ LInputRecording:type()
 do
     lurek.input.startRecording()
     local rec = lurek.input.stopRecording()
-    print("type=" .. tostring(rec and rec:type() or nil))
+    local typeName = rec and rec:type() or "nil"
+    local frames = rec and rec:frameCount() or 0
+    lurek.log.info("recording type=" .. tostring(typeName))
+    lurek.log.info("recording frames=" .. tostring(frames))
 end
 ```
 
@@ -1466,7 +1560,10 @@ LInputRecording:typeOf(name)
 do
     lurek.input.startRecording()
     local rec = lurek.input.stopRecording()
-    print("typeOf=" .. tostring(rec and rec:typeOf("LInputRecording") or false))
+    local isRecording = rec and rec:typeOf("LInputRecording") or false
+    local typeName = rec and rec:type() or "nil"
+    lurek.log.info("recording typeOf LInputRecording=" .. tostring(isRecording))
+    lurek.log.info("recording type=" .. tostring(typeName))
 end
 ```
 

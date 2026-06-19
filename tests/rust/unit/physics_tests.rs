@@ -4,6 +4,7 @@
 
 use lurek2d::physics::zone::ZoneTracker;
 use lurek2d::physics::*;
+use mlua::FromLua;
 use std::collections::HashSet;
 
 // â”€â”€ body â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -273,6 +274,112 @@ mod world_tests {
     }
 
     #[test]
+    fn step_rejects_nan_dt() {
+        let mut w = World::new(0.0, 10.0);
+        let id = w.add_body(Body::new(0.0, 0.0, 10.0, 10.0, BodyType::Dynamic));
+        w.step(f32::NAN);
+        let stats = w.get_stats();
+        assert_eq!(stats.skipped_steps, 1);
+        let body = w.get_body(id.0).unwrap();
+        assert!(body.position.y.abs() < 1e-6);
+    }
+
+    #[test]
+    fn dynamic_body_not_resynced_without_dirty_flag() {
+        let mut w = World::new(0.0, 0.0);
+        let id = w.add_body(Body::new(0.0, 0.0, 10.0, 10.0, BodyType::Dynamic));
+        w.get_body_mut(id.0).unwrap().position.x = 1000.0;
+        w.step(1.0 / 60.0);
+        let body = w.get_body(id.0).unwrap();
+        assert!(body.position.x.abs() < 1.0);
+    }
+
+    #[test]
+    fn try_add_joint_invalid_body_returns_error_not_zero() {
+        let mut w = World::new(0.0, 0.0);
+        let a = w.add_body(Body::new(0.0, 0.0, 10.0, 10.0, BodyType::Dynamic));
+        assert_eq!(w.add_revolute_joint(a.0, 999, 0.0, 0.0), 0);
+        let err = w.try_add_revolute_joint(a.0, 999, 0.0, 0.0).unwrap_err();
+        assert!(err.to_string().contains("not active"));
+    }
+
+    #[test]
+    fn try_add_fixture_invalid_body_returns_error() {
+        let mut w = World::new(0.0, 0.0);
+        let err = w
+            .try_add_fixture(
+                999,
+                Shape::Rect {
+                    width: 1.0,
+                    height: 1.0,
+                },
+                1.0,
+                0.5,
+                0.0,
+                false,
+            )
+            .unwrap_err();
+        assert!(err.to_string().contains("body id 999"));
+    }
+
+    #[test]
+    fn zone_restores_previous_gravity_scale() {
+        let mut w = World::new(0.0, 9.8);
+        let id = w.add_body(Body::new(0.0, 0.0, 10.0, 10.0, BodyType::Dynamic));
+        w.set_gravity_scale(id.0, 0.25);
+        let zone_id = w
+            .try_add_zone(PhysicsZone::try_new_rect(0, -20.0, -20.0, 40.0, 40.0).unwrap())
+            .unwrap();
+        w.zone_mut(zone_id).unwrap().set_gravity_zero();
+        w.step(1.0 / 60.0);
+        assert_eq!(w.get_gravity_scale(id.0), 0.0);
+        w.set_body_position(id.0, 100.0, 100.0);
+        w.step(1.0 / 60.0);
+        assert!((w.get_gravity_scale(id.0) - 0.25).abs() < 1e-6);
+    }
+
+    #[test]
+    fn clear_preserves_world_settings_but_removes_runtime_state() {
+        let mut w = World::new(0.0, 9.8);
+        let id = w.add_body(Body::new(0.0, 0.0, 10.0, 10.0, BodyType::Dynamic));
+        w.set_gravity(-3.0, 4.0);
+        w.set_meter(96.0);
+        w.set_solver_iterations(12);
+        w.try_add_zone(PhysicsZone::try_new_rect(0, -10.0, -10.0, 20.0, 20.0).unwrap())
+            .unwrap();
+
+        w.clear();
+
+        assert_eq!(w.body_count(), 0);
+        assert!(!w.has_body(id.0));
+        assert_eq!(w.joint_count(), 0);
+        assert_eq!(w.get_stats().zones, 0);
+        assert_eq!(w.get_gravity(), (-3.0, 4.0));
+        assert!((w.get_meter() - 96.0).abs() < 1e-6);
+        assert_eq!(w.get_solver_iterations(), 12);
+    }
+
+    #[test]
+    fn reset_world_restores_constructor_settings() {
+        let mut w = World::new(0.0, 9.8);
+        w.add_body(Body::new(0.0, 0.0, 10.0, 10.0, BodyType::Dynamic));
+        w.set_gravity(-3.0, 4.0);
+        w.set_meter(96.0);
+        w.set_solver_iterations(12);
+        w.try_add_zone(PhysicsZone::try_new_rect(0, -10.0, -10.0, 20.0, 20.0).unwrap())
+            .unwrap();
+
+        w.reset_world();
+
+        assert_eq!(w.body_count(), 0);
+        assert_eq!(w.joint_count(), 0);
+        assert_eq!(w.get_stats().zones, 0);
+        assert_eq!(w.get_gravity(), (0.0, 9.8));
+        assert!((w.get_meter() - 1.0).abs() < 1e-6);
+        assert_eq!(w.get_solver_iterations(), 4);
+    }
+
+    #[test]
     fn collision_events_empty_without_step() {
         let w = World::new(0.0, 0.0);
         assert!(w.get_collision_events().is_empty());
@@ -309,6 +416,17 @@ mod type_tests {
         assert_eq!(id.to_string(), "42");
         assert_eq!(usize::from(id), 42);
         assert_eq!(BodyId::from(42usize), id);
+    }
+
+    #[test]
+    fn body_id_from_lua_rejects_negative() {
+        let lua = mlua::Lua::new();
+        let err = BodyId::from_lua(mlua::Value::Integer(-1), &lua).unwrap_err();
+        assert!(err.to_string().contains("non-negative"));
+        let zero = BodyId::from_lua(mlua::Value::Integer(0), &lua).unwrap();
+        assert_eq!(zero.raw(), 0);
+        let huge = BodyId::from_lua(mlua::Value::Integer(i64::MAX), &lua).unwrap();
+        assert_eq!(huge.raw(), i64::MAX as usize);
     }
 }
 
@@ -372,6 +490,18 @@ mod body_tests {
         assert!((body.width - 4.0).abs() < 1e-6);
         assert!((body.height - 4.0).abs() < 1e-6);
         assert_eq!(body.shape_ext, Some(Shape::Polygon { vertices }));
+    }
+
+    #[test]
+    fn try_new_rejects_negative_dimensions() {
+        let err = Body::try_new(0.0, 0.0, -1.0, 2.0, BodyType::Dynamic)
+            .err()
+            .expect("negative width should fail");
+        assert!(err.to_string().contains("width"));
+        let err = Body::try_new_circle(0.0, 0.0, -2.0, BodyType::Dynamic)
+            .err()
+            .expect("negative radius should fail");
+        assert!(err.to_string().contains("radius"));
     }
 }
 
@@ -448,6 +578,27 @@ mod shape_tests {
         assert!((max_x - 4.0).abs() < 1e-6);
         assert!((max_y - 3.0).abs() < 1e-6);
     }
+
+    #[test]
+    fn validate_rejects_nan_and_degenerate_polygon() {
+        let limits = PhysicsLimits::default();
+        let nan_shape = Shape::Polygon {
+            vertices: vec![
+                lurek2d::math::Vec2::new(0.0, 0.0),
+                lurek2d::math::Vec2::new(f32::NAN, 1.0),
+                lurek2d::math::Vec2::new(1.0, 0.0),
+            ],
+        };
+        assert!(nan_shape.validate(&limits).is_err());
+        let flat = Shape::Polygon {
+            vertices: vec![
+                lurek2d::math::Vec2::new(0.0, 0.0),
+                lurek2d::math::Vec2::new(1.0, 0.0),
+                lurek2d::math::Vec2::new(2.0, 0.0),
+            ],
+        };
+        assert!(flat.validate(&limits).is_err());
+    }
 }
 
 mod terrain_tests {
@@ -505,6 +656,32 @@ mod terrain_tests {
         assert_eq!(terrain.collapse_columns(), 1);
         assert!(!terrain.get_cell(1, 1));
     }
+
+    #[test]
+    fn try_new_rejects_zero_cell_size() {
+        let err = TerrainMap::try_new(4, 4, 0.0)
+            .err()
+            .expect("zero cell size should fail");
+        assert!(err.to_string().contains("cell_size"));
+    }
+
+    #[test]
+    fn from_bytes_rejects_huge_dimensions_and_short_payload() {
+        let mut huge = Vec::new();
+        huge.extend_from_slice(&1u32.to_le_bytes());
+        huge.extend_from_slice(&u32::MAX.to_le_bytes());
+        huge.extend_from_slice(&u32::MAX.to_le_bytes());
+        huge.extend_from_slice(&1.0f32.to_bits().to_le_bytes());
+        assert!(TerrainMap::from_bytes(&huge).is_none());
+
+        let mut short = Vec::new();
+        short.extend_from_slice(&1u32.to_le_bytes());
+        short.extend_from_slice(&8u32.to_le_bytes());
+        short.extend_from_slice(&8u32.to_le_bytes());
+        short.extend_from_slice(&1.0f32.to_bits().to_le_bytes());
+        short.push(0xFF);
+        assert!(TerrainMap::from_bytes(&short).is_none());
+    }
 }
 
 mod zone_boundary_tests {
@@ -551,5 +728,12 @@ mod zone_boundary_tests {
         assert_eq!(events.len(), 1);
         assert_eq!(events[0].kind, ZoneEventKind::Enter);
         assert_eq!(events[0].zone_id, 2);
+    }
+
+    #[test]
+    fn try_set_circle_rejects_negative_radius() {
+        let mut zone = PhysicsZone::try_new_rect(0, 0.0, 0.0, 10.0, 10.0).unwrap();
+        let err = zone.try_set_circle(0.0, 0.0, -1.0).unwrap_err();
+        assert!(err.to_string().contains("radius"));
     }
 }

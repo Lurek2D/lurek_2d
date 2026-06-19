@@ -98,6 +98,16 @@ describe("lurek.mapblock module", function()
         expect_equal(2, block:getLayerCount())
     end)
 
+    -- @covers lurek.mapblock.newBlock
+    it("newBlock rejects zero dimensions", function()
+        expect_error(function()
+            lurek.mapblock.newBlock(0, 2, 1, new_config())
+        end)
+        expect_error(function()
+            lurek.mapblock.newBlock(2, 0, 1, new_config())
+        end)
+    end)
+
     -- @covers lurek.mapblock.newGroup
     it("newGroup creates a named map group", function()
         expect_equal("userdata", type(new_group("props")))
@@ -163,11 +173,12 @@ describe("mapblock config methods", function()
     end)
 
     -- @covers LMapBlockConfig:setMaxLayers
-    it("setMaxLayers clamps block layer count through the config", function()
+    it("setMaxLayers rejects block layer counts above the config ceiling", function()
         local config = new_config()
         config:setMaxLayers(3)
-        local block = new_block(config, 4, 3, 9)
-        expect_equal(3, block:getLayerCount())
+        expect_error(function()
+            new_block(config, 4, 3, 9)
+        end)
     end)
 
     -- @covers LMapBlockConfig:setDefaultSegmentSize
@@ -189,6 +200,17 @@ describe("mapblock block methods", function()
         expect_equal(42, block:getTile(0, 1, 2, 0))
     end)
 
+    -- @covers LMapBlock:setTile
+    it("setTile rejects invalid layer and slot addresses", function()
+        local block = new_block()
+        expect_error(function()
+            block:setTile(9, 0, 0, 0, 1, 7)
+        end)
+        expect_error(function()
+            block:setTile(0, 0, 0, 99, 1, 7)
+        end)
+    end)
+
     -- @covers LMapBlock:setEdge
     it("setEdge accepts valid names and rejects unknown ones", function()
         local block = new_block()
@@ -197,6 +219,14 @@ describe("mapblock block methods", function()
         end)
         expect_error(function()
             block:setEdge("upward", 0, 2)
+        end)
+    end)
+
+    -- @covers LMapBlock:setEdge
+    it("setEdge rejects segment indices outside the footprint span", function()
+        local block = new_block()
+        expect_error(function()
+            block:setEdge("north", 1, 2)
         end)
     end)
 
@@ -219,6 +249,17 @@ describe("mapblock block methods", function()
         local block = new_block()
         expect_no_error(function()
             block:setWeight(2.5)
+        end)
+    end)
+
+    -- @covers LMapBlock:setWeight
+    it("setWeight rejects non-finite and negative weights", function()
+        local block = new_block()
+        expect_error(function()
+            block:setWeight(0 / 0)
+        end)
+        expect_error(function()
+            block:setWeight(-1)
         end)
     end)
 
@@ -284,6 +325,14 @@ describe("mapblock block methods", function()
         local block = new_block(new_config(), 4, 3, 2)
         expect_no_error(function()
             block:setLevelSpan(2)
+        end)
+    end)
+
+    -- @covers LMapBlock:setLevelSpan
+    it("setLevelSpan rejects zero", function()
+        local block = new_block(new_config(), 4, 3, 2)
+        expect_error(function()
+            block:setLevelSpan(0)
         end)
     end)
 
@@ -504,6 +553,19 @@ describe("mapblock generator and result methods", function()
         end)
     end)
 
+    -- @covers LMapBlockGenerator:setSolverBudget
+    it("setSolverBudget accepts explicit solve limits", function()
+        local gen = new_generator()
+        expect_no_error(function()
+            gen:setSolverBudget({
+                max_nodes = 4,
+                max_depth = 3,
+                max_ms = 50,
+                max_candidates_per_cell = 2,
+            })
+        end)
+    end)
+
     -- @covers LMapBlockGenerator:addGroup
     it("addGroup accepts a named group definition", function()
         local gen = new_generator()
@@ -522,12 +584,57 @@ describe("mapblock generator and result methods", function()
         expect_equal("userdata", type(result))
     end)
 
+    -- @covers LMapBlockGenerator:generateWithReport
+    it("generateWithReport returns result and diagnostics report", function()
+        local gen = new_generator()
+        gen:setRectShape(1, 1)
+        local script = new_script("missing_group")
+        script:addStep("place_random", { group = "missing" })
+        local result, report = gen:generateWithReport(script)
+        expect_equal("userdata", type(result))
+        expect_equal("userdata", type(report))
+    end)
+
     -- @covers LMapBlockGenerator:getLastPlacedCount
     it("getLastPlacedCount starts at zero for an empty run", function()
         local gen = new_generator()
         gen:setRectShape(2, 1)
         gen:generate(new_script("empty"))
         expect_equal(0, gen:getLastPlacedCount())
+    end)
+
+    -- @covers LMapBlockGenerator:getLastReport
+    it("getLastReport exposes the most recent diagnostics", function()
+        local gen = new_generator()
+        gen:setRectShape(1, 1)
+        local script = new_script("missing_group")
+        script:addStep("place_random", { group = "missing" })
+        gen:generateWithReport(script)
+        local report = gen:getLastReport()
+        expect_equal("userdata", type(report))
+    end)
+
+    -- @covers LMapBlockGenerator:generateWithReport
+    it("generateWithReport exposes solve budget failures and paint diagnostics", function()
+        local gen = new_generator()
+        gen:setRectShape(2, 2)
+        gen:setSolverBudget({ max_nodes = 1, max_depth = 16, max_ms = 1000, max_candidates_per_cell = 8 })
+
+        local group = new_group("terrain")
+        group:addBlock(new_block())
+        gen:addGroup(group)
+
+        local script = new_script("budget")
+        script:addStep("solve_shape", { group = "terrain" })
+        script:addStep("fill_rect", { x = -1, y = 0, width = 2, height = 1, layer = 0, level = 0, slot = 0 })
+
+        local _, report = gen:generateWithReport(script)
+        local tbl = report:toTable()
+        expect_equal("budget_exceeded", tbl.solve_failure_reason)
+        expect_equal(1, tbl.diagnostics.solve_failures)
+        expect_equal(1, tbl.diagnostics.clipped_paint_ops)
+        expect_true(tbl.transform_cache_hits >= 0)
+        expect_true(tbl.transform_cache_misses >= 1)
     end)
 
     -- @covers LMapBlockResult:getWidth
@@ -572,6 +679,29 @@ describe("mapblock generator and result methods", function()
         expect_equal("terrain", placements[1].group_name)
         expect_equal("seed", placements[1].block_name)
         expect_equal(1, #placements[1].cells)
+    end)
+end)
+
+-- @describe mapblock diagnostics report methods
+describe("mapblock diagnostics report methods", function()
+    local function make_report()
+        local gen = new_generator()
+        gen:setRectShape(1, 1)
+        local script = new_script("missing_group")
+        script:addStep("place_random", { group = "missing" })
+        local _, report = gen:generateWithReport(script)
+        return report
+    end
+
+    -- @covers LMapBlockReport:toTable
+    it("toTable serializes diagnostics counters", function()
+        local tbl = make_report():toTable()
+        expect_equal(1, tbl.diagnostics.missing_groups)
+        expect_equal(0, tbl.placements_committed)
+        expect_equal(1, tbl.script_steps)
+        expect_equal("procgen.lcg.v1", tbl.rng_version)
+        expect_true(tbl.transform_cache_hits >= 0)
+        expect_true(tbl.transform_cache_misses >= 0)
     end)
 end)
 

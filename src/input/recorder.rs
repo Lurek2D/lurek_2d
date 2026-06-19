@@ -27,6 +27,36 @@ pub struct RecordedFrame {
     pub mouse_y: Option<f64>,
 }
 
+/// Determinism and provenance metadata stored alongside a serialized input recording.
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize, PartialEq, Eq)]
+pub struct InputRecordingMetadata {
+    /// Engine version that created the recording.
+    pub engine_version: String,
+    /// Input schema version carried by the recording payload.
+    pub input_schema: u32,
+    /// Frame-timing mode such as `variable` or `fixed`.
+    pub timestep_mode: String,
+    /// Optional locale hint captured when the recording started.
+    pub locale_hint: Option<String>,
+    /// Optional keyboard-layout hint captured when the recording started.
+    pub keyboard_layout_hint: Option<String>,
+}
+
+/// JSON schema version embedded in the serialisation envelope.
+const INPUT_RECORDING_SCHEMA_VERSION: u32 = 2;
+
+impl Default for InputRecordingMetadata {
+    fn default() -> Self {
+        Self {
+            engine_version: env!("CARGO_PKG_VERSION").to_string(),
+            input_schema: INPUT_RECORDING_SCHEMA_VERSION,
+            timestep_mode: "variable".to_string(),
+            locale_hint: None,
+            keyboard_layout_hint: None,
+        }
+    }
+}
+
 /// Complete input recording: sparse frame list and total frame count.
 #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize, PartialEq)]
 pub struct InputRecording {
@@ -34,10 +64,40 @@ pub struct InputRecording {
     pub frames: Vec<RecordedFrame>,
     /// Total number of frames captured, including silent frames.
     pub total_frames: u64,
+    /// Metadata required to reason about replay determinism and compatibility.
+    #[serde(default)]
+    pub metadata: InputRecordingMetadata,
 }
 
-/// JSON schema version embedded in the serialisation envelope.
-const INPUT_RECORDING_SCHEMA_VERSION: u32 = 1;
+/// Validation limits enforced when loading recording JSON from an untrusted source.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct InputRecordingLimits {
+    /// Maximum total frame count accepted by the parser.
+    pub max_frames: u64,
+    /// Maximum number of sparse frame entries accepted by the parser.
+    pub max_sparse_frames: usize,
+    /// Maximum number of events accepted in one frame.
+    pub max_events_per_frame: usize,
+    /// Maximum allowed character length for an input event name or kind.
+    pub max_event_name_len: usize,
+    /// Maximum JSON byte size accepted by the parser before deserializing.
+    pub max_json_bytes: usize,
+    /// Maximum length allowed for metadata strings.
+    pub max_metadata_len: usize,
+}
+
+impl Default for InputRecordingLimits {
+    fn default() -> Self {
+        Self {
+            max_frames: 100_000,
+            max_sparse_frames: 100_000,
+            max_events_per_frame: 512,
+            max_event_name_len: 128,
+            max_json_bytes: 2 * 1024 * 1024,
+            max_metadata_len: 128,
+        }
+    }
+}
 
 /// Internal JSON wrapper that adds a version field around the recording data.
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
@@ -48,6 +108,9 @@ struct RecordingEnvelope {
     frames: Vec<RecordedFrame>,
     /// Total frames including silent ones.
     total_frames: u64,
+    /// Recording metadata carried in schema version 2 and newer.
+    #[serde(default)]
+    metadata: InputRecordingMetadata,
 }
 
 /// Serialisation and deserialisation of input recordings.
@@ -58,12 +121,28 @@ impl InputRecording {
             version: INPUT_RECORDING_SCHEMA_VERSION,
             frames: self.frames.clone(),
             total_frames: self.total_frames,
+            metadata: self.metadata.clone(),
         };
         serde_json::to_string(&envelope).map_err(|e| format!("InputRecording serialize error: {e}"))
     }
 
     /// Deserialise from JSON; returns error when the version field is unsupported.
     pub fn from_json(json: &str) -> Result<Self, String> {
+        Self::from_json_with_limits(json, InputRecordingLimits::default())
+    }
+
+    /// Deserialise from JSON using explicit validation limits.
+    pub fn from_json_with_limits(
+        json: &str,
+        limits: InputRecordingLimits,
+    ) -> Result<Self, String> {
+        if json.len() > limits.max_json_bytes {
+            return Err(format!(
+                "InputRecording parse error: JSON size {} exceeds limit {}",
+                json.len(),
+                limits.max_json_bytes
+            ));
+        }
         if let Ok(envelope) = serde_json::from_str::<RecordingEnvelope>(json) {
             if envelope.version != INPUT_RECORDING_SCHEMA_VERSION {
                 return Err(format!(
@@ -71,13 +150,105 @@ impl InputRecording {
                     envelope.version
                 ));
             }
-            return Ok(Self {
+            return Self {
                 frames: envelope.frames,
                 total_frames: envelope.total_frames,
-            });
+                metadata: envelope.metadata,
+            }
+            .validate(limits);
         }
-        serde_json::from_str(json).map_err(|e| format!("InputRecording parse error: {e}"))
+        let mut recording: Self =
+            serde_json::from_str(json).map_err(|e| format!("InputRecording parse error: {e}"))?;
+        recording.metadata = InputRecordingMetadata::default();
+        recording.validate(limits)
     }
+
+    fn validate(self, limits: InputRecordingLimits) -> Result<Self, String> {
+        if self.total_frames > limits.max_frames {
+            return Err(format!(
+                "InputRecording parse error: total_frames {} exceeds limit {}",
+                self.total_frames, limits.max_frames
+            ));
+        }
+        if self.frames.len() > limits.max_sparse_frames {
+            return Err(format!(
+                "InputRecording parse error: sparse frame count {} exceeds limit {}",
+                self.frames.len(),
+                limits.max_sparse_frames
+            ));
+        }
+        let mut previous_frame = None;
+        for frame in &self.frames {
+            if frame.key_events.len() > limits.max_events_per_frame {
+                return Err(format!(
+                    "InputRecording parse error: frame {} has {} events, limit is {}",
+                    frame.frame,
+                    frame.key_events.len(),
+                    limits.max_events_per_frame
+                ));
+            }
+            if frame.frame >= self.total_frames && self.total_frames > 0 {
+                return Err(format!(
+                    "InputRecording parse error: frame {} is outside total_frames {}",
+                    frame.frame, self.total_frames
+                ));
+            }
+            if let Some(prev) = previous_frame {
+                if frame.frame < prev {
+                    return Err("InputRecording parse error: frames must be sorted".to_string());
+                }
+            }
+            previous_frame = Some(frame.frame);
+            for event in &frame.key_events {
+                if event.name.chars().count() > limits.max_event_name_len {
+                    return Err(format!(
+                        "InputRecording parse error: event name '{}' exceeds limit {}",
+                        event.name, limits.max_event_name_len
+                    ));
+                }
+                if event.kind.chars().count() > limits.max_event_name_len {
+                    return Err(format!(
+                        "InputRecording parse error: event kind '{}' exceeds limit {}",
+                        event.kind, limits.max_event_name_len
+                    ));
+                }
+            }
+        }
+        for value in [&self.metadata.engine_version, &self.metadata.timestep_mode] {
+            if value.chars().count() > limits.max_metadata_len {
+                return Err(format!(
+                    "InputRecording parse error: metadata value '{}' exceeds limit {}",
+                    value, limits.max_metadata_len
+                ));
+            }
+        }
+        for value in [
+            self.metadata.locale_hint.as_deref(),
+            self.metadata.keyboard_layout_hint.as_deref(),
+        ]
+        .into_iter()
+        .flatten()
+        {
+            if value.chars().count() > limits.max_metadata_len {
+                return Err(format!(
+                    "InputRecording parse error: metadata value '{}' exceeds limit {}",
+                    value, limits.max_metadata_len
+                ));
+            }
+        }
+        Ok(self)
+    }
+}
+
+/// Input data replayed for one frame, including sparse mouse coordinates.
+#[derive(Debug, Clone, Default, PartialEq)]
+pub struct PlaybackFrame {
+    /// Events emitted on this frame.
+    pub key_events: Vec<InputEvent>,
+    /// Replayed mouse X coordinate when captured.
+    pub mouse_x: Option<f64>,
+    /// Replayed mouse Y coordinate when captured.
+    pub mouse_y: Option<f64>,
 }
 
 /// Stateful recorder and playback cursor for one input recording session.
@@ -120,7 +291,7 @@ impl InputRecorder {
         mouse_y: Option<f64>,
     ) {
         if let Some(rec) = &mut self.current {
-            if !key_events.is_empty() || mouse_x.is_some() {
+            if !key_events.is_empty() || mouse_x.is_some() || mouse_y.is_some() {
                 rec.frames.push(RecordedFrame {
                     frame: self.frame,
                     key_events,
@@ -179,17 +350,24 @@ impl InputRecorder {
         self.frame
     }
 
-    /// Return all events for the current playback frame and advance; stops playback at the end.
-    pub fn playback_frame(&mut self) -> Vec<InputEvent> {
+    /// Return all replay data for the current playback frame and advance; stops playback at the end.
+    pub fn playback_frame(&mut self) -> PlaybackFrame {
         if !self.playing {
-            return Vec::new();
+            return PlaybackFrame::default();
         }
-        let mut events: Vec<InputEvent> = Vec::new();
+        let mut frame = PlaybackFrame::default();
         if let Some(rec) = &self.playback {
             while self.playback_idx < rec.frames.len()
                 && rec.frames[self.playback_idx].frame == self.frame
             {
-                events.extend(rec.frames[self.playback_idx].key_events.clone());
+                let source = &rec.frames[self.playback_idx];
+                frame.key_events.extend(source.key_events.clone());
+                if source.mouse_x.is_some() {
+                    frame.mouse_x = source.mouse_x;
+                }
+                if source.mouse_y.is_some() {
+                    frame.mouse_y = source.mouse_y;
+                }
                 self.playback_idx += 1;
             }
             if self.frame + 1 >= rec.total_frames {
@@ -197,6 +375,6 @@ impl InputRecorder {
             }
         }
         self.frame += 1;
-        events
+        frame
     }
 }

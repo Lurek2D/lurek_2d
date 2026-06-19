@@ -200,7 +200,28 @@ impl BiomeClassifier {
         moisture: &[f32],
         temperature: &[f32],
     ) -> Vec<BiomeType> {
-        let n = (width * height_map) as usize;
+        self.try_classify_map(
+            width,
+            height_map,
+            heights,
+            moisture,
+            temperature,
+            &ProcgenLimits::default(),
+        )
+        .unwrap_or_default()
+    }
+
+    /// Classify every cell in a flat `width × height_map` grid after validating the output size.
+    pub fn try_classify_map(
+        &self,
+        width: u32,
+        height_map: u32,
+        heights: &[f32],
+        moisture: &[f32],
+        temperature: &[f32],
+        limits: &ProcgenLimits,
+    ) -> Result<Vec<BiomeType>, ProcgenError> {
+        let n = checked_cell_count(width, height_map, limits)?;
         let mut biomes = Vec::with_capacity(n);
         for i in 0..n {
             let h = heights.get(i).copied().unwrap_or(0.0);
@@ -208,7 +229,7 @@ impl BiomeClassifier {
             let t = temperature.get(i).copied().unwrap_or(0.5);
             biomes.push(self.classify(h, m, t));
         }
-        biomes
+        Ok(biomes)
     }
 
     /// Return a shared reference to the active `BiomeRules`.
@@ -225,3 +246,4 @@ pub fn biome_map_to_rgba(biomes: &[BiomeType]) -> Vec<u8> {
     }
     out
 }
+use crate::procgen::{limits::checked_cell_count, ProcgenError, ProcgenLimits};

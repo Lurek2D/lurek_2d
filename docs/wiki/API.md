@@ -17,13 +17,13 @@ The API index is generated from machine-readable Lua API data and links back to 
 ## Source Artifacts
 
 - Lua API data: [logs/data/lua_api_data.json](../blob/main/logs/data/lua_api_data.json)
-- Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (9084 lines)
-- LuaCATS stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (32538 lines)
+- Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (9102 lines)
+- LuaCATS stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (32612 lines)
 
 ## Coverage
 
 - 70 modules
-- 6032 functions and methods
+- 6043 functions and methods
 - 100.0% documented
 
 ## API Module Index
@@ -39,10 +39,10 @@ The API index is generated from machine-readable Lua API data and links back to 
 | [lurek.binary](Module-binary) | 22 | 4 | Binary data toolkit: byte buffers, compression, hashing, encoding, structured pack / unpack. |
 | [lurek.camera](Module-camera) | 4 | 3 | 2D camera and viewport types. Pure data; no GPU resources. |
 | [lurek.charts](Module-charts) | 9 | 7 | Software-rasterized chart renderers (line, bar, scatter, pie, area) to RGBA8 pixel buffers. |
-| [lurek.cinematic](Module-cinematic) | 2 | 2 | The cinematic module provides scriptable timelines for cutscenes and other authored sequences. |
+| [lurek.cinematic](Module-cinematic) | 2 | 2 | The cinematic module is the timeline authoring surface for cutscenes, scripted reveals, and other multi-system sequences. |
 | [lurek.color](Module-color) | 19 | 0 | RGBA color primitives with color-space conversions, blending modes, and predefined palettes. |
 | [lurek.compute](Module-compute) | 13 | 1 | Dense N-D numerical array library exposed as lurek.compute.*; CPU-only matrix / signal workloads. |
-| [lurek.cursor](Module-cursor) | 4 | 3 | Lets users shape pointer behavior as part of UX, not just rely on default OS cursor visuals. |
+| [lurek.cursor](Module-cursor) | 4 | 3 | The cursor module is the pointer-behavior surface for users who want the cursor to feel like part of the game UX rather than a fixed OS artifact. |
 | [lurek.dataframe](Module-dataframe) | 15 | 6 | In-memory column-major tabular data with lightweight SQL-style queries (lurek.dataframe.*). |
 | [lurek.debugbridge](Module-debugbridge) | 16 | 0 | TCP debug bridge (127.0.0.1, JSON-over-TCP) for the VS Code extension and MCP server. |
 | [lurek.devtools](Module-devtools) | 50 | 2 | In-process logger, frame profiler, rolling stats, hot-reload file watcher (lurek.devtools.*). |
@@ -58,7 +58,7 @@ The API index is generated from machine-readable Lua API data and links back to 
 | [lurek.font](Module-font) | 11 | 1 | CPU-side font loading, glyph metrics, text measurement, and shaping for bitmap fonts. |
 | [lurek.globe](Module-globe) | 12 | 2 | XCOM-style Geoscape province sphere: topology, orbit camera, fog-of-war, markers, day/night. |
 | [lurek.grep](Module-grep) | 7 | 2 | Literal-first text search engine for game content with lightweight regex/glob/fuzzy helpers. |
-| [lurek.html](Module-html) | 6 | 2 | This module gives users an in-engine HTML/CSS UI layer for menus, HUDs, and tool panels. |
+| [lurek.html](Module-html) | 6 | 2 | The html module is the in-engine document-style UI surface for users who want markup, styles, and DOM-like interaction inside the runtime. |
 | [lurek.i18n](Module-i18n) | 36 | 0 | Internationalisation and localisation; user-facing text in locale data files (lurek.i18n.*). |
 | [lurek.image](Module-image) | 13 | 5 | CPU-side ImageData (RGBA8 buffer) with blit, resize, fill, region, diff, PNG encode. |
 | [lurek.input](Module-input) | 89 | 3 | Per-frame keyboard / mouse / gamepad / touch state translated from winit events. |
@@ -66,7 +66,7 @@ The API index is generated from machine-readable Lua API data and links back to 
 | [lurek.learning](Module-learning) | 21 | 19 | Machine learning and evolutionary computation: neural nets, genetic algorithms, Q-learning, bandits. |
 | [lurek.light](Module-light) | 20 | 2 | 2D point-light data model. Pure container; renderer owns all GPU work. |
 | [lurek.log](Module-log) | 18 | 0 | Lua-accessible logging facade over the Rust log crate, controlled via RUST_LOG. |
-| [lurek.mapblock](Module-mapblock) | 10 | 9 | Procedural map block generation: configurable tiles, constraints, multi-level, scripted pipelines. |
+| [lurek.mapblock](Module-mapblock) | 10 | 10 | Procedural map block generation: configurable tiles, constraints, multi-level, scripted pipelines. |
 | [lurek.math](Module-math) | 97 | 14 | Foundational 2D math, geometry, and color types. Leaf of the engine dependency graph. |
 | [lurek.midi](Module-midi) | 4 | 0 | MIDI file playback via software synthesis using SoundFont data; transport and per-channel controls. |
 | [lurek.minimap](Module-minimap) | 1 | 1 | Grid-based minimap data model: fog of war, tracked objects, pings, viewport overlay. |
@@ -93,7 +93,7 @@ The API index is generated from machine-readable Lua API data and links back to 
 | [lurek.runtime](Module-system) | 28 | 0 | Registers the lurek.system Lua API for host utilities, process helpers, and runtime environment queries. |
 | [lurek.terminal](Module-terminal) | 29 | 2 | Character-cell text-mode terminal for roguelikes, debug consoles, ASCII rendering. |
 | [lurek.thread](Module-thread) | 7 | 4 | Background threading with per-thread isolated Lua VMs (B-04: VMs cannot be shared). |
-| [lurek.physics](Module-tilemap) | 29 | 10 | Single- to multi-layer tile maps with animated tiles, TMX/LDtk import, autotile, iso sort. |
+| [lurek.tilemap](Module-tilemap) | 29 | 10 | Single- to multi-layer tile maps with animated tiles, TMX/LDtk import, autotile, iso sort. |
 | [lurek.timer](Module-timer) | 21 | 1 | Frame-timing (Clock) and deferred / repeating callback scheduling (Scheduler). |
 | [lurek.tween](Module-tween) | 15 | 6 | Property animation: interpolated transitions on Lua table fields without per-frame lerp code. |
 | [lurek.ui](Module-ui) | 90 | 36 | Retained-mode widget system; rendering deferred through RenderCommand. |

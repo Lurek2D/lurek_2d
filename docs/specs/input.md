@@ -23,6 +23,7 @@
 - Action mapping, rebinding, presets, and conflict handling are central because real projects care about intent and user-configurable schemes more than about hardwired physical keys.
 - Mouse, pointer, touch, and compound input remain part of the same model, which keeps interaction semantics consistent across device families and helps accessibility layers share the same action surface.
 - Recording and playback make the module useful for debugging, tests, automation, tutorials, and deterministic repro workflows as well as for live play.
+- Replay payloads also carry schema and provenance metadata so tools can reason about compatibility, timing assumptions, and keyboard-layout risk before treating a recording as deterministic.
 - That normalization layer protects higher-level systems from platform detail churn. Gameplay and UI code can ask for stable actions instead of reinventing per-device handling every time a new device family or interaction surface appears.
 - Rebinding is especially important because modern projects often need several physical inputs to express the same logical action under explicit precedence, accessibility, or user-preference rules.
 - Input capture and replay also make the module one of the cleanest sources of truth for what happened during a failing run, a scripted demonstration, or a tool-driven automation pass.
@@ -343,4 +344,8 @@
 
 ## Notes
 
-- No additional module-specific notes.
+- Action bindings are canonicalized at the API boundary. Alias key names collapse to one stored spelling, malformed structured bindings are rejected, and reserved binding families stay unavailable to action queries until the engine supports them end to end.
+- Custom cursor creation validates image dimensions, RGBA byte length, and hotspot bounds before the request becomes a runtime cursor handle.
+- Gamepad mapping import and export use sandboxed `GameFS` path resolution instead of arbitrary host filesystem paths, and mapping lines must pass GUID and token validation before they are stored.
+- Losing window focus clears held keyboard keys and modifier state so stale `ctrl`, `alt`, `shift`, `meta`, and `altgr` flags do not leak across blur events.
+- Replay playback preserves sparse mouse coordinates, and recording JSON loading enforces byte, frame-count, event-count, and metadata-length limits before accepting untrusted payloads.

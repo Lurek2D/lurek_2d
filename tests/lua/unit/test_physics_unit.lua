@@ -1824,4 +1824,114 @@ end)
 end
 -- END test_physics_worms_unit.lua
 
+-- BEGIN test_physics_validation_unit.lua
+do
+-- Validation and strict error-path coverage for lurek.physics public APIs.
+
+-- @describe physics validation
+describe("physics validation", function()
+    -- @covers lurek.physics.newTerrain
+    it("newTerrain rejects zero cell size", function()
+        local ok, err = pcall(function()
+            lurek.physics.newTerrain(4, 4, 0, lurek.physics.newWorld(0, 0))
+        end)
+        expect_false(ok)
+        expect_true(string.find(tostring(err), "newTerrain", 1, true) ~= nil)
+    end)
+
+    -- @covers lurek.physics.step
+    it("step rejects invalid dt", function()
+        local world = lurek.physics.newWorld(0, 0)
+        local ok, err = pcall(function()
+            lurek.physics.step(world, 0 / 0)
+        end)
+        expect_false(ok)
+        expect_true(string.find(tostring(err), "step", 1, true) ~= nil)
+    end)
+
+    -- @covers LWorld:addFixture
+    it("addFixture errors for invalid body ids", function()
+        local world = lurek.physics.newWorld(0, 0)
+        local ok, err = pcall(function()
+            world:addFixture(999, "circle", 1.0, 0.5, 0.0, false, 1.0)
+        end)
+        expect_false(ok)
+        expect_true(string.find(tostring(err), "addFixture", 1, true) ~= nil)
+    end)
+
+    -- @covers LWorld:addRevoluteJoint
+    it("addRevoluteJoint errors for invalid body ids", function()
+        local world = lurek.physics.newWorld(0, 0)
+        local body = world:newBody(0, 0, "dynamic")
+        local ok, err = pcall(function()
+            world:addRevoluteJoint(body:getId(), 999, 0, 0)
+        end)
+        expect_false(ok)
+        expect_true(string.find(tostring(err), "addRevoluteJoint", 1, true) ~= nil)
+    end)
+
+    -- @covers LZone:setCircle
+    it("zone setters reject invalid radius", function()
+        local zone = lurek.physics.newWorld(0, 0):addZone(0, 0, 10, 10)
+        local ok, err = pcall(function()
+            zone:setCircle(0, 0, -1)
+        end)
+        expect_false(ok)
+        expect_true(string.find(tostring(err), "setCircle", 1, true) ~= nil)
+    end)
+end)
+end
+-- END test_physics_validation_unit.lua
+
+-- BEGIN test_physics_reset_policy_unit.lua
+do
+-- Clear-vs-reset contract coverage for lurek.physics world state management.
+
+-- @describe physics world reset policy
+describe("physics world reset policy", function()
+    -- @covers LWorld:clear
+    it("clear preserves world settings while removing runtime state", function()
+        local world = lurek.physics.newWorld(0, 100)
+        world:setGravity(5, 6)
+        world:setMeter(96)
+        world:setSolverIterations(12)
+        world:newBody(0, 0, "dynamic")
+        world:addZone(-10, -10, 20, 20)
+
+        world:clear()
+
+        expect_equal(0, world:getBodyCount())
+        expect_equal(0, world:jointCount())
+        local gx, gy = world:getGravity()
+        expect_equal(5, gx)
+        expect_equal(6, gy)
+        expect_equal(96, world:getMeter())
+        expect_equal(12, world:getSolverIterations())
+        expect_equal(0, world:getStats().zones)
+    end)
+
+    -- @covers LWorld:resetWorld
+    it("resetWorld restores constructor defaults", function()
+        local world = lurek.physics.newWorld(0, 100)
+        world:setGravity(5, 6)
+        world:setMeter(96)
+        world:setSolverIterations(12)
+        world:newBody(0, 0, "dynamic")
+        world:addZone(-10, -10, 20, 20)
+
+        world:resetWorld()
+
+        expect_equal(0, world:getBodyCount())
+        expect_equal(0, world:jointCount())
+        local gx, gy = world:getGravity()
+        expect_equal(0, gx)
+        expect_equal(100, gy)
+        expect_equal(1, world:getMeter())
+        expect_equal(4, world:getSolverIterations())
+        expect_equal(0, world:getStats().zones)
+    end)
+end)
+end
+-- END test_physics_reset_policy_unit.lua
+
 test_summary()

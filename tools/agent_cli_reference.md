@@ -14,7 +14,7 @@ Quick entrypoint for repo tools. Start with `tools/python.cmd tools/<path>.py --
 
 ## /audit
 - `audit/api_occurrence_validator.py` - API Occurrence Validator -- Check that each lurek.* API has examples. [durable; mcp:no]
-- `audit/api_stub_validator.py` - API Stub Validator -- Validate --@api-stub: block structure and content. [durable; mcp:no]
+- `audit/api_stub_validator.py` - API Stub Validator -- Validate pending --@api-stub: block structure and content. [durable; mcp:no]
 - `audit/audit_module.py` - audit_module.py — Lurek2D module quality audit tool. [durable; mcp:no]
 - `audit/cag_coverage.py` - cag_coverage.py — required-section coverage analytics for CAG files. [durable; mcp:no]
 - `audit/cag_link_check.py` - cag_link_check.py — broken-link checker for the CAG layer. [durable; mcp:candidate]
@@ -28,7 +28,6 @@ Quick entrypoint for repo tools. Start with `tools/python.cmd tools/<path>.py --
 - `audit/example_coverage.py` - Cross-reference Lua example scripts against the lurek.* Lua API. [durable; mcp:candidate]
 - `audit/extract_constructors.py` - Extract all lurek.module.function signatures from docs/api/lurek.lua [durable; mcp:no]
 - `audit/gen_coverage_gaps.py` - gen_coverage_gaps.py — Generate an API gap report for Lurek2D. [durable; mcp:no]
-
 - `audit/gen_lua_contract_tests.py` - gen_lua_contract_tests.py — generate Lua contract smoke tests from lua_api_data.json. [durable; mcp:no]
 - `audit/get_api_sigs.py` - Extract all lurek.* namespace-level function signatures from docs/api/lurek.lua [durable; mcp:no]
 - `audit/golden_test.py` - golden_test.py — Lurek2D golden file comparison tests. [durable; mcp:no]
@@ -42,7 +41,7 @@ Quick entrypoint for repo tools. Start with `tools/python.cmd tools/<path>.py --
 - `audit/lua_nonunit_test_coverage.py` - lua_nonunit_test_coverage.py - Audit canonical non-unit Lua tests in tests/lua. [durable; mcp:no]
 - `audit/lua_spec_coverage.py` - lua_spec_coverage.py — Measure how completely docs/specs/<module>.md covers the lurek.* Lua API. [durable; mcp:candidate]
 - `audit/lua_test_structure_audit.py` - Audit and normalize Lua BDD test structure under tests/lua. [durable; mcp:no]
-- `audit/module_docstring_audit.py` - Audit Rust file-level //! coverage with exact LOC tiers, 90-120 character bodies, mod.rs doubling, and lua_api exceptions. [durable; mcp:candidate]
+- `audit/module_docstring_audit.py` - Audit Rust source files for exact file-level //! documentation coverage. [durable; mcp:no]
 - `audit/mutation_report.py` - mutation_report.py — run cargo-mutants for selected priority modules. [durable; mcp:no]
 - `audit/parse_test_log.py` - tools/audit/parse_test_log.py — Parse `cargo test` output into a structured summary. [durable; mcp:no]
 - `audit/perf_regression_gate.py` - perf_regression_gate.py — lightweight perf/stress regression gate for CI. [durable; mcp:no]
@@ -54,7 +53,7 @@ Quick entrypoint for repo tools. Start with `tools/python.cmd tools/<path>.py --
 - `audit/scan_sigs.py` - Find exact function registrations for failing APIs in Rust source files. [durable; mcp:no]
 - `audit/snippet_coverage.py` - Report snippet coverage per Lua API module based on -- @snippet markers. [durable; mcp:candidate]
 - `audit/stress_report.py` - stress_report.py — Lurek2D stress test runner and reporter. [durable; mcp:no]
-- `audit/strict_api_check.py` - Validate all lurek.* API stubs in content/examples/ against the master API data. [durable; mcp:no]
+- `audit/strict_api_check.py` - Validate fleshed-out lurek.* API examples in content/examples/. [durable; mcp:no]
 - `audit/strict_api_check_math.py` - Validate math-module API stubs in content/examples/math.lua. [durable; mcp:no]
 - `audit/test_analytics.py` - test_analytics.py — Lurek2D comprehensive test analytics. [durable; mcp:no]
 - `audit/test_coverage.py` - test_coverage.py — Lurek2D test coverage analysis. [durable; mcp:candidate]
@@ -71,6 +70,7 @@ Quick entrypoint for repo tools. Start with `tools/python.cmd tools/<path>.py --
 - `demos/smoke_sweep.py` - Smoke-sweep every playable project under content/games/ and every single-file [targeted-maintenance; mcp:no]
 
 ## /dev
+- `dev/headroom_runtime.py` - Manage a repo-local Headroom runtime for Codex and MCP workflows. [developer-workflow; mcp:no]
 - `dev/parallel_cargo.py` - Repository-owned cargo orchestration for build, run, test, lint, fmt, and doc. [developer-workflow; mcp:no]
 - `dev/test_fix_loop.py` - Agent-friendly test-run / fix / re-run loop for cargo test. [developer-workflow; mcp:no]
 
@@ -114,7 +114,7 @@ Quick entrypoint for repo tools. Start with `tools/python.cmd tools/<path>.py --
 - `fix/format_examples.py` - tools/fix/format_examples.py [targeted-maintenance; mcp:no]
 - `fix/improve_examples.py` - tools/fix/improve_examples.py [targeted-maintenance; mcp:no]
 - `fix/improve_lua_docstrings.py` - improve_lua_docstrings.py — Rewrites existing thin/incorrect /// docstrings in [targeted-maintenance; mcp:no]
-- `fix/module_docstring_fix.py` - Apply manually authored Rust file-level //! docs from a JSON manifest after policy validation. [targeted-maintenance; mcp:no]
+- `fix/module_docstring_fix.py` - Apply manually authored Rust file-level //! docs from a manifest. [targeted-maintenance; mcp:no]
 - `fix/spec_docstring_apply.py` - spec_docstring_apply.py -- Apply Source Documentation from specs to Rust //! docstrings. [targeted-maintenance; mcp:no]
 - `fix/strip_garbage_doc_lines.py` - strip_garbage_doc_lines.py -- Remove auto-generated garbage lines from //! docstrings. [targeted-maintenance; mcp:no]
 
@@ -129,12 +129,12 @@ Quick entrypoint for repo tools. Start with `tools/python.cmd tools/<path>.py --
 - `mods/mod_init.py` - mod_init.py — Scaffold a minimal Lurek2D mod project. [durable; mcp:no]
 
 ## /rag
-- `rag/build_index.py` - Build the local SQLite FTS5 RAG index for Lurek2D docs, code, tests, and Codex assets. [durable; mcp:no]
-- `rag/contract.py` - Shared RAG contract constants and defaults for query/read/context tooling. [durable; mcp:no]
+- `rag/build_index.py` - Build the local DuckDB RAG index for Lurek2D docs, code, tests, and Codex assets. [durable; mcp:no]
 - `rag/context.py` - Build an agent-friendly context bundle from the local Lurek2D RAG index. [durable; mcp:no]
+- `rag/contract.py` - Shared RAG contract constants loaded from ``rag_contract.json``. [durable; mcp:no]
 - `rag/eval.py` - Evaluate local RAG recall against a prompt baseline for agent workflows. [durable; mcp:no]
 - `rag/insights.py` - Run SQL insights and audits over the local DuckDB RAG index. [durable; mcp:no]
-- `rag/query.py` - Query and read the local SQLite FTS5 RAG index for Lurek2D. [durable; mcp:candidate]
+- `rag/query.py` - Query and read the local DuckDB RAG index for Lurek2D. [durable; mcp:candidate]
 - `rag/read.py` - Read full chunks from the local Lurek2D RAG index by chunk id. [durable; mcp:no]
 
 ## /root
@@ -170,3 +170,4 @@ Quick entrypoint for repo tools. Start with `tools/python.cmd tools/<path>.py --
 - `validate/validate_rust_file_docs.py` - Validate Rust file-level //! docs with the repository docstring coverage policy. [durable; mcp:no]
 - `validate/validate_rust_source_docs.py` - Validate file-level and public-item Rust docs-general under src/. [durable; mcp:no]
 - `validate/validate_snippets.py` - Validate content/snippets marker structure and VS Code snippet output freshness. [durable; mcp:candidate]
+

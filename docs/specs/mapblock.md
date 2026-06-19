@@ -21,12 +21,33 @@
 - The module is especially useful for dungeons, modular interiors, overworld chunks, and other generators where the meaningful unit is a room or chunk rather than an individual tile.
 - Constraint and socket logic are central because modular generation only works when legal adjacency, facing, and connector rules remain explicit and enforceable.
 - Placement state and output shaping matter because the system must not only choose valid pieces, but also produce results that downstream tilemap, navigation, and render workflows can use safely.
+- Construction and generation now reject oversized block requests, invalid weights, and level-span overflow before they can degrade into silent no-ops or unchecked allocation paths.
+- Rust callers can inspect per-run generator diagnostics for missing groups, unsupported steps, invalid weights, placement stalls, and rejected paint operations.
 - Script hooks and grouping support make the system adaptable to thematic or progression-aware generation, which is important when modular pieces need more nuance than simple random choice.
 - Orientation and multilevel handling matter because reusable blocks often connect vertically or directionally, and the legality of the final layout depends on those relationships being tracked explicitly.
 - This makes the module useful whenever designed pieces need to stay meaningful after recombination. A corridor, room, bridge, or stair block can keep its authored purpose while still participating in procedural assembly.
 - It preserves authored intent while still enabling recombination.
 - Neighboring modules consume the output, but `mapblock` owns the modular grammar that decides how authored fragments connect into a legal larger space.
 - Read `mapblock` as the subsystem that turns reusable map pieces into generated layouts with explicit connection rules.
+
+## Validation And Limits
+
+- `MapBlock::try_new` and `BlockLayer::try_new` reject zero dimensions, zero-slot configs, oversized cell counts, and layer counts above configured ceilings before allocation.
+- `MapBlock::validate` enforces finite non-negative weights, non-empty normalized footprints, sockets on footprint cells only, and edge segment indices inside the footprint span for that side.
+- Legacy imports use strict layer-length validation; malformed raw tile payloads are rejected instead of partially ignored.
+
+## Solver And Determinism
+
+- `LMapBlockGenerator:setSolverBudget` configures bounded `solve_shape` recursion through `max_nodes`, `max_depth`, `max_ms`, and `max_candidates_per_cell`.
+- `SolveShape` reports `budget_exceeded`, `no_candidates`, or `contradiction` as the last failure reason when a solve pass cannot finish.
+- Mapblock generation uses the shared `procgen.lcg.v1` RNG contract; reports include `seed` and `rng_version`, so repeated runs with the same inputs remain reproducible.
+- Placement searches reuse cached transformed footprints and socket maps across repeated searches in the same generation pass; reports expose cache hit/miss counters.
+
+## Output And Diagnostics
+
+- `generateWithReport` and `getLastReport` expose step counters, placement counts, solver stats, cache stats, and diagnostic counters for missing groups, invalid weights, no-progress stalls, and rejected placements.
+- `FillRect` now distinguishes invalid operations from out-of-bounds behavior: bad slot/layer/level or zero-area ops are rejected, fully outside rectangles are rejected, and partially outside rectangles are reported as clipped.
+- Multi-level placement rejects blocks whose `level + level_span` would exceed the configured storey count; overflow is reported instead of silently dropped.
 
 ## Imports
 

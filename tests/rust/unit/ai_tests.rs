@@ -1,4 +1,8 @@
-use lurek2d::ai::{MCTSConfig, MCTSEngine, SteeringManager};
+use lurek2d::ai::{
+    BehaviorTree, BTNode, GOAPPlanner, MCTSConfig, MCTSEngine, PlanFailureReason, SteeringManager,
+    UtilityAI,
+};
+use mlua::Lua;
 
 fn near(a: f32, b: f32) {
     assert!((a - b).abs() < 0.001, "expected {a} near {b}");
@@ -84,4 +88,185 @@ fn mcts_empty_action_space_returns_none() {
     let result = engine.search(0, &mut |_| Vec::new(), &mut |state, _| *state, &mut |_| 0.0);
 
     assert_eq!(result, None);
+}
+
+#[test]
+fn utility_ai_considerations_affect_score() {
+    let lua = Lua::new();
+    let mut ai = UtilityAI::new();
+    let attack = lua
+        .create_registry_value(lua.create_function(|_, ()| Ok(0.9f64)).unwrap())
+        .unwrap();
+    let heal = lua
+        .create_registry_value(lua.create_function(|_, ()| Ok(0.8f64)).unwrap())
+        .unwrap();
+    ai.add_action("attack".to_string(), attack, 1.0).unwrap();
+    ai.add_action("heal".to_string(), heal, 1.0).unwrap();
+    let heal_consideration = lua
+        .create_registry_value(lua.create_function(|_, ()| Ok(1.0f64)).unwrap())
+        .unwrap();
+    let attack_consideration = lua
+        .create_registry_value(lua.create_function(|_, ()| Ok(0.1f64)).unwrap())
+        .unwrap();
+    ai.add_consideration(
+        "heal",
+        "low_health".to_string(),
+        heal_consideration,
+        "linear",
+        1.0,
+        0.0,
+        0.0,
+        1.0,
+    )
+    .unwrap();
+    ai.add_consideration(
+        "attack",
+        "safe_window".to_string(),
+        attack_consideration,
+        "linear",
+        1.0,
+        0.0,
+        0.0,
+        1.0,
+    )
+    .unwrap();
+
+    let chosen = ai.evaluate(&lua).unwrap();
+
+    assert_eq!(chosen.as_deref(), Some("heal"));
+    assert_eq!(ai.last_trace.chosen_action.as_deref(), Some("heal"));
+    assert_eq!(ai.last_trace.actions[0].considerations.len(), 1);
+    assert_eq!(ai.last_trace.actions[1].considerations.len(), 1);
+}
+
+#[test]
+fn utility_ai_rejects_nan_score() {
+    let lua = Lua::new();
+    let mut ai = UtilityAI::new();
+    let bad = lua
+        .create_registry_value(lua.create_function(|_, ()| Ok(f64::NAN)).unwrap())
+        .unwrap();
+    let good = lua
+        .create_registry_value(lua.create_function(|_, ()| Ok(0.4f64)).unwrap())
+        .unwrap();
+    ai.add_action("bad".to_string(), bad, 1.0).unwrap();
+    ai.add_action("good".to_string(), good, 1.0).unwrap();
+
+    let chosen = ai.evaluate(&lua).unwrap();
+
+    assert_eq!(chosen.as_deref(), Some("good"));
+    assert!(ai.last_trace.actions.iter().any(|entry| entry.invalid_scorer));
+}
+
+#[test]
+fn steering_arrive_zero_radius_no_nan() {
+    let mut manager = SteeringManager::new();
+    manager.add_arrive(10.0, 0.0, 0.0, 1.0);
+
+    let (fx, fy) = manager.calculate((0.0, 0.0), (0.0, 0.0), 5.0, 10.0, 0.016);
+
+    assert!(fx.is_finite());
+    assert!(fy.is_finite());
+    near(fx, 0.0);
+    near(fy, 0.0);
+}
+
+#[test]
+fn goap_rejects_nan_priority_and_cost() {
+    let mut planner = GOAPPlanner::new();
+
+    let cost_err = planner.add_action("bad".to_string(), f64::NAN, None);
+    let priority_err = planner.add_goal("goal".to_string(), f64::NAN);
+
+    assert!(cost_err.is_err());
+    assert!(priority_err.is_err());
+}
+
+#[test]
+fn goap_budget_returns_failure_reason() {
+    let mut planner = GOAPPlanner::new();
+    planner.set_max_iterations(1);
+    planner
+        .add_action("get_axe".to_string(), 1.0, None)
+        .unwrap();
+    planner.add_effect("get_axe", "has_axe".to_string(), true);
+    planner
+        .add_action("chop".to_string(), 1.0, None)
+        .unwrap();
+    planner.add_precondition("chop", "has_axe".to_string(), true);
+    planner.add_effect("chop", "has_wood".to_string(), true);
+    planner
+        .add_action("build".to_string(), 1.0, None)
+        .unwrap();
+    planner.add_precondition("build", "has_wood".to_string(), true);
+    planner.add_effect("build", "has_house".to_string(), true);
+    planner.add_goal("house".to_string(), 1.0).unwrap();
+    planner.set_goal_state("house", "has_house".to_string(), true);
+
+    let plan = planner.plan(
+        &std::collections::HashMap::from([
+            ("has_axe".to_string(), false),
+            ("has_wood".to_string(), false),
+            ("has_house".to_string(), false),
+        ]),
+        8,
+    );
+
+    assert!(plan.is_empty());
+    assert_eq!(planner.last_failure_reason, Some(PlanFailureReason::BudgetExhausted));
+    assert_eq!(
+        planner.last_trace.failure_reason.as_deref(),
+        Some("budget_exhausted")
+    );
+}
+
+#[test]
+fn bt_deep_tree_depth_limit() {
+    let mut node = BTNode::Sequence {
+        children: Vec::new(),
+        running_idx: 0,
+    };
+    for _ in 0..130 {
+        node = BTNode::Sequence {
+            children: vec![node],
+            running_idx: 0,
+        };
+    }
+    let mut tree = BehaviorTree::new();
+
+    let result = tree.set_root_checked(node);
+
+    assert!(result.is_err());
+}
+
+#[test]
+fn mcts_invalid_config_rejected() {
+    let config = MCTSConfig {
+        iterations: 20_000,
+        ..MCTSConfig::default()
+    };
+
+    let result = MCTSEngine::try_new(config);
+
+    assert!(result.is_err());
+}
+
+#[test]
+fn mcts_nan_score_policy() {
+    let mut engine = MCTSEngine::try_new(MCTSConfig {
+        iterations: 8,
+        rollout_depth: 4,
+        ..MCTSConfig::default()
+    })
+    .unwrap();
+
+    let chosen = engine.search(
+        0i32,
+        &mut |_| vec![1, 2],
+        &mut |state, action| *state + action,
+        &mut |_| f32::NAN,
+    );
+
+    assert!(chosen.is_some());
+    assert!(engine.last_trace.invalid_score_count > 0);
 }

@@ -1,38 +1,91 @@
 //! This file owns the JSON parsing bridge from LLM-produced tile specs into concrete WFC options and constraints.
-//! It converts loose response objects into `WfcTile`, `WfcRules`, and `WfcOpts` so generation stays deterministic.
-//! Adjacency parsing remains local because malformed or partial LLM output must collapse into one structured boundary.
+//! It converts response objects into `WfcTile`, `WfcRules`, and `WfcOpts` so generation stays deterministic.
+//! Strict schema and parser limits remain local because malformed or oversized LLM output must stop at one boundary.
 //! Open it when AI-assisted tiling input changes; the actual collapse algorithm lives in `wfc.rs`.
 
-use crate::procgen::{WfcOpts, WfcRules, WfcTile};
+use crate::procgen::{
+    limits::{validate_count, validate_non_zero_dimensions},
+    ProcgenError, ProcgenLimits, WfcOpts, WfcRules, WfcTile,
+};
 use std::collections::HashMap;
 
-/// Parse a `serde_json::Value` LLM response into [`WfcOpts`].
-///
-/// Expected JSON format:
-/// `{"tiles":[{"id":0,"weight":1.0},...], "adjacencies":{"0":[1,2,3],...}}`
-///
-/// Returns `None` if the tile list is absent or empty.
-pub fn parse_llm_wfc_response(
+fn json_size_bytes(val: &serde_json::Value) -> usize {
+    serde_json::to_vec(val)
+        .map(|bytes| bytes.len())
+        .unwrap_or(0)
+}
+
+/// Strictly parse a `serde_json::Value` LLM response into [`WfcOpts`].
+pub fn try_parse_llm_wfc_response(
     val: &serde_json::Value,
     width: u32,
     height: u32,
     seed: u64,
     max_attempts: u32,
-) -> Option<WfcOpts> {
-    let tiles_arr = val.get("tiles")?.as_array()?;
-    let mut tiles: Vec<WfcTile> = Vec::new();
-    for t in tiles_arr {
-        let id = t.get("id")?.as_u64()? as u32;
-        let weight = t.get("weight").and_then(|v| v.as_f64()).unwrap_or(1.0) as f32;
-        tiles.push(WfcTile { id, weight });
-    }
-    if tiles.is_empty() {
-        return None;
+    limits: &ProcgenLimits,
+) -> Result<WfcOpts, ProcgenError> {
+    validate_non_zero_dimensions(width, height)?;
+    let byte_len = json_size_bytes(val);
+    if byte_len > limits.max_parser_input_bytes {
+        return Err(ProcgenError::OversizedInput {
+            context: "wfc_llm response",
+            bytes: byte_len,
+            max_bytes: limits.max_parser_input_bytes,
+        });
     }
 
-    let adjacencies = parse_adjacency_object(val.get("adjacencies"));
+    let root = val.as_object().ok_or_else(|| ProcgenError::InvalidSchema {
+        context: "wfc_llm response",
+        detail: "root must be a JSON object".to_string(),
+    })?;
+    let tiles_val = root
+        .get("tiles")
+        .ok_or_else(|| ProcgenError::InvalidSchema {
+            context: "wfc_llm response",
+            detail: "missing 'tiles' array".to_string(),
+        })?;
+    let tiles_arr = tiles_val
+        .as_array()
+        .ok_or_else(|| ProcgenError::InvalidSchema {
+            context: "wfc_llm response",
+            detail: "'tiles' must be an array".to_string(),
+        })?;
+    validate_count("wfc_llm tiles", tiles_arr.len(), limits.max_wfc_tiles)?;
 
-    Some(WfcOpts {
+    let mut tiles = Vec::with_capacity(tiles_arr.len());
+    for (index, tile_val) in tiles_arr.iter().enumerate() {
+        let tile_obj = tile_val
+            .as_object()
+            .ok_or_else(|| ProcgenError::InvalidSchema {
+                context: "wfc_llm tile",
+                detail: format!("tile at index {index} must be an object"),
+            })?;
+        let id = tile_obj
+            .get("id")
+            .and_then(|value| value.as_u64())
+            .ok_or_else(|| ProcgenError::InvalidSchema {
+                context: "wfc_llm tile",
+                detail: format!("tile at index {index} is missing integer 'id'"),
+            })?;
+        let weight = tile_obj
+            .get("weight")
+            .and_then(|value| value.as_f64())
+            .ok_or_else(|| ProcgenError::InvalidSchema {
+                context: "wfc_llm tile",
+                detail: format!("tile {id} is missing numeric 'weight'"),
+            })?;
+        tiles.push(WfcTile {
+            id: u32::try_from(id).map_err(|_| ProcgenError::InvalidSchema {
+                context: "wfc_llm tile",
+                detail: format!("tile id {id} does not fit into u32"),
+            })?,
+            weight: weight as f32,
+        });
+    }
+
+    let adjacencies = try_parse_llm_constraints(val, limits)?;
+
+    Ok(WfcOpts {
         width,
         height,
         tiles,
@@ -42,28 +95,95 @@ pub fn parse_llm_wfc_response(
     })
 }
 
-/// Parse only the adjacency rules from an LLM response.
-///
-/// Expected JSON: `{"adjacencies":{"0":[1,2],...}}`
-///
-/// Returns an empty map when the field is absent or malformed.
-pub fn parse_llm_constraints(val: &serde_json::Value) -> HashMap<u32, Vec<u32>> {
-    parse_adjacency_object(val.get("adjacencies"))
+/// Parse a `serde_json::Value` LLM response into [`WfcOpts`], returning `None` on strict-parse failure.
+pub fn parse_llm_wfc_response(
+    val: &serde_json::Value,
+    width: u32,
+    height: u32,
+    seed: u64,
+    max_attempts: u32,
+) -> Option<WfcOpts> {
+    try_parse_llm_wfc_response(
+        val,
+        width,
+        height,
+        seed,
+        max_attempts,
+        &ProcgenLimits::default(),
+    )
+    .ok()
 }
 
-fn parse_adjacency_object(obj_val: Option<&serde_json::Value>) -> HashMap<u32, Vec<u32>> {
-    let mut out = HashMap::new();
-    let Some(obj) = obj_val.and_then(|v| v.as_object()) else {
-        return out;
-    };
-    for (k, v) in obj {
-        let Ok(id) = k.parse::<u32>() else { continue };
-        let Some(arr) = v.as_array() else { continue };
-        let neighbors: Vec<u32> = arr
-            .iter()
-            .filter_map(|n| n.as_u64().map(|x| x as u32))
-            .collect();
-        out.insert(id, neighbors);
+/// Strictly parse only the adjacency rules from an LLM response.
+pub fn try_parse_llm_constraints(
+    val: &serde_json::Value,
+    limits: &ProcgenLimits,
+) -> Result<HashMap<u32, Vec<u32>>, ProcgenError> {
+    let byte_len = json_size_bytes(val);
+    if byte_len > limits.max_parser_input_bytes {
+        return Err(ProcgenError::OversizedInput {
+            context: "wfc_llm adjacencies",
+            bytes: byte_len,
+            max_bytes: limits.max_parser_input_bytes,
+        });
     }
-    out
+    let root = val.as_object().ok_or_else(|| ProcgenError::InvalidSchema {
+        context: "wfc_llm adjacencies",
+        detail: "root must be a JSON object".to_string(),
+    })?;
+    let adj_val = root
+        .get("adjacencies")
+        .ok_or_else(|| ProcgenError::InvalidSchema {
+            context: "wfc_llm adjacencies",
+            detail: "missing 'adjacencies' object".to_string(),
+        })?;
+    let obj = adj_val
+        .as_object()
+        .ok_or_else(|| ProcgenError::InvalidSchema {
+            context: "wfc_llm adjacencies",
+            detail: "'adjacencies' must be an object".to_string(),
+        })?;
+
+    let mut out = HashMap::with_capacity(obj.len());
+    let mut total_refs = 0usize;
+    for (owner, value) in obj {
+        let owner_id = owner
+            .parse::<u32>()
+            .map_err(|_| ProcgenError::InvalidSchema {
+                context: "wfc_llm adjacency key",
+                detail: format!("adjacency key '{owner}' is not a u32 tile id"),
+            })?;
+        let arr = value
+            .as_array()
+            .ok_or_else(|| ProcgenError::InvalidSchema {
+                context: "wfc_llm adjacency value",
+                detail: format!("adjacency list for tile {owner_id} must be an array"),
+            })?;
+        total_refs = total_refs.saturating_add(arr.len());
+        validate_count(
+            "wfc_llm adjacency refs",
+            total_refs,
+            limits.max_wfc_adjacency_refs,
+        )?;
+        let mut neighbors = Vec::with_capacity(arr.len());
+        for entry in arr {
+            let tile_id = entry.as_u64().ok_or_else(|| ProcgenError::InvalidSchema {
+                context: "wfc_llm adjacency entry",
+                detail: format!("adjacency entry for tile {owner_id} must be an integer"),
+            })?;
+            neighbors.push(
+                u32::try_from(tile_id).map_err(|_| ProcgenError::InvalidSchema {
+                    context: "wfc_llm adjacency entry",
+                    detail: format!("adjacency tile id {tile_id} does not fit into u32"),
+                })?,
+            );
+        }
+        out.insert(owner_id, neighbors);
+    }
+    Ok(out)
+}
+
+/// Parse only the adjacency rules from an LLM response, returning an empty map on strict-parse failure.
+pub fn parse_llm_constraints(val: &serde_json::Value) -> HashMap<u32, Vec<u32>> {
+    try_parse_llm_constraints(val, &ProcgenLimits::default()).unwrap_or_default()
 }

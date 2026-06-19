@@ -2,15 +2,10 @@
 
 ## Summary
 
-- The font module gives users a stable typography layer for loading fonts and measuring text reliably.
-- It supports vector and bitmap font workflows, making UI and retro text rendering equally practical.
-- Registry-based lookup keeps font usage consistent across menus, HUDs, and overlays.
-- Measurement and shaping helpers provide kerning-aware dimensions for accurate layout decisions.
-- Wrap modes support fitting long text into constrained UI regions without manual splitting.
-- Script APIs expose line height, glyph availability, and metadata for fallback logic.
-- The module keeps text layout predictable and easier to iterate on.
-
-This module is mostly self-contained inside the `Platform Services` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
+- The `font` module is the typography layer for users who need predictable text behavior in UI, HUDs, overlays, or retro-style screens.
+- It covers loading and registering fonts, so scripts can reuse named font resources instead of rebuilding text setup at every draw site.
+- Measurement and shaping are just as important as loading here: glyph metrics, wrapping, line sizing, and text geometry helpers let layout code make reliable decisions before anything is rendered.
+- Read this module as the place where text data becomes stable and reusable. Rendering and UI systems still decide where text appears, but `font` keeps measurement consistent.
 
 ## Functions
 
@@ -33,8 +28,11 @@ lurek.font.availableSizes()
 ```lua
 do
     local sizes = lurek.font.availableSizes()
-    print("available sizes = " .. #sizes)
-    print("first size = " .. tostring(sizes[1]))
+    local smallest = sizes[1]
+    local largest = sizes[#sizes]
+    local requested = 14
+    local fallback = largest and math.min(requested, largest) or requested
+    font_log("built-in menu sizes count=" .. tostring(#sizes) .. " smallest=" .. tostring(smallest) .. " largest=" .. tostring(largest) .. " fallback_for_14=" .. tostring(fallback))
 end
 ```
 
@@ -67,8 +65,11 @@ lurek.font.charAdvance(font, char, scale)
 ```lua
 do
     local font = lurek.font.getDefault()
-    local adv = lurek.font.charAdvance(font, "W", 1.0)
-    print("charAdvance W = " .. adv)
+    local advance_w = lurek.font.charAdvance(font, "W", 1.0)
+    local advance_space = lurek.font.charAdvance(font, " ", 1.0)
+    local cursor_after = advance_w + advance_space + advance_w
+    local initials = "W W"
+    font_log("nameplate cursor advance text=" .. initials .. " first=" .. tostring(advance_w) .. " space=" .. tostring(advance_space) .. " cursor_after=" .. tostring(cursor_after))
 end
 ```
 
@@ -93,7 +94,11 @@ lurek.font.getDefault()
 ```lua
 do
     local font = lurek.font.getDefault()
-    print("default font = " .. tostring(font ~= nil))
+    local name = font:getName()
+    local size = font:getSize()
+    local line_height = font:lineHeight()
+    local title_width = select(1, font:measure(ui_title(), 1.0))
+    font_log("default ui font name=" .. tostring(name) .. " size=" .. tostring(size) .. " line_height=" .. tostring(line_height) .. " title_width=" .. tostring(title_width))
 end
 ```
 
@@ -124,8 +129,11 @@ lurek.font.lineHeight(font)
 ```lua
 do
     local font = lurek.font.getDefault()
-    local lh = lurek.font.lineHeight(font)
-    print("lineHeight = " .. lh)
+    local line_height = lurek.font.lineHeight(font)
+    local visible_rows = math.floor(160 / math.max(line_height, 1))
+    local title_height = select(2, lurek.font.measure(font, ui_title(), 1.0))
+    local spacing_budget = visible_rows * line_height
+    font_log("quest log spacing line_height=" .. tostring(line_height) .. " rows_in_160px=" .. tostring(visible_rows) .. " title_height=" .. tostring(title_height) .. " budget=" .. tostring(spacing_budget))
 end
 ```
 
@@ -149,8 +157,12 @@ lurek.font.list()
 
 ```lua
 do
-    local fonts = lurek.font.list()
-    print("registered fonts = " .. #fonts)
+    local before = lurek.font.list()
+    local runtime_font = lurek.font.load(sample_font_path(), 16)
+    local after = lurek.font.list()
+    local first = after[1] or {}
+    local grew = #after > #before
+    font_log("font catalog refresh count_before=" .. tostring(#before) .. " count_after=" .. tostring(#after) .. " grew=" .. tostring(grew) .. " first_name=" .. tostring(first.name or runtime_font:getName()))
 end
 ```
 
@@ -181,12 +193,12 @@ lurek.font.load(path, size)
 
 ```lua
 do
-    local ok, font = pcall(lurek.font.load, "assets/fonts/default.ttf", 16)
-    if ok then
-        print("loaded font = " .. font:getName())
-    else
-        print("load error (expected if file missing): " .. tostring(font))
-    end
+    local font = lurek.font.load(sample_font_path(), 14)
+    local name = font:getName()
+    local style = font:getStyle()
+    local preview_width = select(1, font:measure("Campaign report", 1.0))
+    local preview_height = select(2, font:measure("Campaign report", 1.0))
+    font_log("loaded ttf for codex preview name=" .. tostring(name) .. " style=" .. tostring(style) .. " preview=" .. tostring(preview_width) .. "x" .. tostring(preview_height))
 end
 ```
 
@@ -218,12 +230,12 @@ lurek.font.loadBitmap(path, cellWidth, cellHeight)
 
 ```lua
 do
-    local ok, font = pcall(lurek.font.loadBitmap, "assets/fonts/bitmap8x8.png", 8, 8)
-    if ok then
-        print("bitmap font = " .. tostring(font ~= nil))
-    else
-        print("bitmap load error (expected if file missing): " .. tostring(font))
-    end
+    local atlas_path = "content/examples/assets/fonts/missing_bitmap_font.png"
+    local cell_width = 8
+    local cell_height = 8
+    local ok, result = pcall(lurek.font.loadBitmap, atlas_path, cell_width, cell_height)
+    local reason = ok and "loaded" or tostring(result)
+    font_log("bitmap atlas import for retro hud path=" .. atlas_path .. " cell=" .. tostring(cell_width) .. "x" .. tostring(cell_height) .. " ok=" .. tostring(ok) .. " result=" .. reason)
 end
 ```
 
@@ -256,8 +268,11 @@ lurek.font.measure(font, text, scale)
 ```lua
 do
     local font = lurek.font.getDefault()
-    local w, h = lurek.font.measure(font, "Hello, Lurek!", 1.0)
-    print("measure w=" .. w .. " h=" .. h)
+    local title = ui_title()
+    local width, height = lurek.font.measure(font, title, 1.0)
+    local scale = 1.5
+    local scaled_width = select(1, lurek.font.measure(font, title, scale))
+    font_log("panel title measurement text=" .. title .. " width=" .. tostring(width) .. " height=" .. tostring(height) .. " scaled_width=" .. tostring(scaled_width))
 end
 ```
 
@@ -290,8 +305,11 @@ lurek.font.measureLine(font, text, scale)
 ```lua
 do
     local font = lurek.font.getDefault()
-    local w, h = lurek.font.measureLine(font, "Single line text", 1.0)
-    print("measureLine w=" .. w .. " h=" .. h)
+    local status_line = "Supply 120  Morale 78%"
+    local width, height = lurek.font.measureLine(font, status_line, 1.0)
+    local per_char = width / math.max(#status_line, 1)
+    local line_height = lurek.font.lineHeight(font)
+    font_log("status bar line text_width=" .. tostring(width) .. " height=" .. tostring(height) .. " avg_char=" .. tostring(per_char) .. " line_height=" .. tostring(line_height))
 end
 ```
 
@@ -327,18 +345,12 @@ lurek.font.shapeText(font, text, maxWidth, scale, align, wrap)
 ```lua
 do
     local font = lurek.font.getDefault()
-    local shaped = lurek.font.shapeText(
-        font,
-        "Centered text for layout",
-        200,
-        1.0,
-        lurek.font.ALIGN_CENTER,
-        lurek.font.WRAP_WORD
-    )
-    print("shaped lines = " .. #shaped)
-    if #shaped > 0 then
-        print("first line width = " .. shaped[1].width)
-    end
+    local banner = "Victory Forecast"
+    local shaped = lurek.font.shapeText(font, banner, 180, 1.0, "center", "word")
+    local first = shaped[1] or {}
+    local offset = first.xOffset or 0
+    local width = first.width or 0
+    font_log("dialog banner shaping lines=" .. tostring(#shaped) .. " first_width=" .. tostring(width) .. " center_offset=" .. tostring(offset))
 end
 ```
 
@@ -373,14 +385,11 @@ lurek.font.wrapText(font, text, maxWidth, scale, mode)
 ```lua
 do
     local font = lurek.font.getDefault()
-    local lines = lurek.font.wrapText(
-        font,
-        "This is a long text that should wrap at a reasonable width for display.",
-        100,
-        1.0,
-        lurek.font.WRAP_WORD
-    )
-    print("wrapped lines = " .. #lines)
+    local briefing = ui_briefing()
+    local max_width = 120
+    local lines = lurek.font.wrapText(font, briefing, max_width, 1.0, "word")
+    local first_line = lines[1] or ""
+    font_log("briefing wrap width=" .. tostring(max_width) .. " lines=" .. tostring(#lines) .. " first_line=" .. tostring(first_line))
 end
 ```
 
@@ -434,9 +443,12 @@ LFont:containsGlyph(char)
 
 ```lua
 do
-    local fnt = lurek.font.getDefault()
-    print("font name = " .. fnt:getName())
-    print("LFont:containsGlyph A=" .. tostring(fnt:containsGlyph("A")))
+    local font = lurek.font.load(sample_font_path(), 18)
+    local has_r = font:containsGlyph("R")
+    local has_dash = font:containsGlyph("-")
+    local has_control = font:containsGlyph(string.char(1))
+    local name = font:getName()
+    font_log("loaded handle glyph scan name=" .. tostring(name) .. " R=" .. tostring(has_r) .. " dash=" .. tostring(has_dash) .. " control=" .. tostring(has_control))
 end
 ```
 
@@ -524,9 +536,12 @@ LFont:getName()
 
 ```lua
 do
-    local fnt = lurek.font.getDefault()
-    print("font handle = " .. tostring(fnt ~= nil))
-    print("LFont:getName=" .. fnt:getName())
+    local font = lurek.font.load(sample_font_path(), 18)
+    local name = font:getName()
+    local size = font:getSize()
+    local preview = select(1, font:measure("Council", 1.0))
+    local summary = name .. "@" .. tostring(size)
+    font_log("loaded handle name=" .. tostring(name) .. " size=" .. tostring(size) .. " preview_width=" .. tostring(preview) .. " summary=" .. summary)
 end
 ```
 
@@ -550,9 +565,12 @@ LFont:getSize()
 
 ```lua
 do
-    local fnt = lurek.font.getDefault()
-    print("font name = " .. fnt:getName())
-    print("LFont:getSize=" .. fnt:getSize())
+    local font = lurek.font.load(sample_font_path(), 18)
+    local size = font:getSize()
+    local line_height = font:lineHeight()
+    local style = font:getStyle()
+    local rows = math.floor(220 / math.max(line_height, 1))
+    font_log("loaded handle size=" .. tostring(size) .. " style=" .. tostring(style) .. " line_height=" .. tostring(line_height) .. " rows_in_220px=" .. tostring(rows))
 end
 ```
 
@@ -576,9 +594,12 @@ LFont:getStyle()
 
 ```lua
 do
-    local fnt = lurek.font.getDefault()
-    print("font size = " .. fnt:getSize())
-    print("LFont:getStyle=" .. fnt:getStyle())
+    local font = lurek.font.load(sample_font_path(), 18)
+    local style = font:getStyle()
+    local bold = font:isBold()
+    local title_width = select(1, font:measure("Operations", 1.0))
+    local usage = bold and "headline" or "body"
+    font_log("loaded handle style=" .. tostring(style) .. " bold=" .. tostring(bold) .. " title_width=" .. tostring(title_width) .. " usage=" .. usage)
 end
 ```
 
@@ -648,9 +669,12 @@ LFont:isBold()
 
 ```lua
 do
-    local fnt = lurek.font.getDefault()
-    print("font style = " .. fnt:getStyle())
-    print("LFont:isBold=" .. tostring(fnt:isBold()))
+    local font = lurek.font.load(sample_font_path(), 18)
+    local bold = font:isBold()
+    local style = font:getStyle()
+    local emphasis = bold and "warning_banner" or "ledger_body"
+    local glyph_ok = font:containsGlyph("W")
+    font_log("loaded handle bold=" .. tostring(bold) .. " style=" .. tostring(style) .. " emphasis=" .. emphasis .. " glyph_W=" .. tostring(glyph_ok))
 end
 ```
 
@@ -674,9 +698,12 @@ LFont:lineHeight()
 
 ```lua
 do
-    local fnt = lurek.font.getDefault()
-    print("font size = " .. fnt:getSize())
-    print("LFont:lineHeight=" .. fnt:lineHeight())
+    local font = lurek.font.load(sample_font_path(), 18)
+    local line_height = font:lineHeight()
+    local paragraph = font:wrapText(ui_briefing(), 160, 1.0)
+    local paragraph_height = #paragraph * line_height
+    local visible_rows = math.floor(240 / math.max(line_height, 1))
+    font_log("loaded handle line height=" .. tostring(line_height) .. " paragraph_lines=" .. tostring(#paragraph) .. " paragraph_height=" .. tostring(paragraph_height) .. " rows_in_240px=" .. tostring(visible_rows))
 end
 ```
 
@@ -708,9 +735,12 @@ LFont:measure(text, scale)
 
 ```lua
 do
-    local fnt = lurek.font.getDefault()
-    local w, h = fnt:measure("Hello, World!", 1.0)
-    print("LFont:measure w=" .. w .. " h=" .. h)
+    local font = lurek.font.load(sample_font_path(), 18)
+    local label = "Treasury Update"
+    local width, height = font:measure(label, 1.0)
+    local scaled_width = select(1, font:measure(label, 0.75))
+    local shorter = scaled_width < width
+    font_log("loaded handle measure label=" .. label .. " width=" .. tostring(width) .. " height=" .. tostring(height) .. " scaled_width=" .. tostring(scaled_width) .. " scaled_shorter=" .. tostring(shorter))
 end
 ```
 
@@ -812,9 +842,12 @@ LFont:wrapText(text, maxWidth, scale)
 
 ```lua
 do
-    local fnt = lurek.font.getDefault()
-    local lines = fnt:wrapText("This is a long line that needs wrapping.", 200, 1.0)
-    print("LFont:wrapText lines=" .. #lines)
+    local font = lurek.font.load(sample_font_path(), 18)
+    local width = 150
+    local lines = font:wrapText("Reinforcements arrive tomorrow if the northern road stays open.", width, 1.0)
+    local first = lines[1] or ""
+    local last = lines[#lines] or ""
+    font_log("loaded handle wrap width=" .. tostring(width) .. " lines=" .. tostring(#lines) .. " first=" .. tostring(first) .. " last=" .. tostring(last))
 end
 ```
 

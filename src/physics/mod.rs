@@ -11,6 +11,10 @@ pub mod body;
 pub mod collision;
 /// AABB, circle, and point-AABB collision helpers.
 pub mod collision_helpers;
+/// Shared typed physics errors.
+pub mod error;
+/// Shared sizing and validation limits.
+pub mod limits;
 /// Debug render helpers for physics shapes.
 pub mod render;
 /// Shape definitions for bodies and standalone queries.
@@ -28,6 +32,8 @@ pub mod zone;
 pub use body::{Body, BodyShape, BodyType};
 pub use collision::CollisionInfo;
 pub use collision_helpers::{test_aabb, test_circle_aabb, test_circles, test_point_aabb};
+pub use error::PhysicsError;
+pub use limits::PhysicsLimits;
 pub use shape::{Shape, StandaloneShape};
 pub use terrain::TerrainMap;
 pub use world::BodyContact as CollisionEvent;

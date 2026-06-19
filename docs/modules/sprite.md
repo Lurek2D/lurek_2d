@@ -2,27 +2,14 @@
 
 ## Summary
 
-- This module gives users reusable 2D sprite primitives for atlases, sheets, batches, and UI panel slicing.
-- Atlas support maps semantic names to texture regions from common export formats.
-- Rotation and flip metadata handling keeps packed-atlas imports accurate.
-- Sprite-sheet utilities precompute frame regions for fast animation frame access.
-- Row/column access helpers support character-sheet and strip-based animation workflows.
-- Nine-slice support enables scalable UI panels without border distortion.
-- Lightweight sprite records support transform and tint usage with low overhead.
-- Batch support groups shared-texture quads for more efficient draw submission.
-- Normal-map fields allow lit-sprite workflows without changing base sprite usage.
-- Runtime atlas packing supports dynamic region allocation and optional nine-slice metadata.
-- Animator support provides named clip playback, stepping, and callback hooks.
-- This module is useful for character rendering, VFX sprites, and UI skinning.
-- For users, it centralizes texture-region management and sprite playback logic.
-- It reduces manual UV bookkeeping and per-frame draw boilerplate.
-- Overall, users get a practical 2D sprite toolkit with both runtime and pipeline integration.
-- The module helps bridge authored assets and efficient in-engine rendering behavior.
-- It supports both simple sprite use cases and advanced packed-content workflows.
-- This makes sprite-heavy projects easier to scale and maintain.
-- Users gain consistent APIs from import through playback to batching.
-
-This module primarily collaborates with `animation`, `color`, `image`, `math`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
+- The `sprite` module is the engine's textured-2D surface for users who want single sprites, sheets, atlases, scalable panels, and batched instances to share one coherent runtime model.
+- It unifies several common 2D visual patterns that often become fragmented in smaller engines: stand-alone images, atlas regions, sheet-based animation helpers, batched draws, and resizable textured panels all belong to the same family here.
+- Atlas support matters because production assets are frequently packed, and a sprite system that does not understand regions and packing semantics quickly forces users into repetitive coordinate plumbing.
+- Sheet-oriented helpers broaden the feature into frame-driven presentation while still staying lighter-weight than the more general `animation` module.
+- Nine-slice and panel-oriented support matter because many projects mix game objects with UI-like scalable textured elements and still want one shared textured-visual layer.
+- Batching support gives the module practical performance value while keeping atlas, panel, and instance behavior inside one shared textured-2D model.
+- That shared model is especially useful when gameplay visuals and UI-adjacent textured elements overlap, because one subsystem can describe ordinary sprites, atlas regions, simple frame sequences, and scalable panels without forcing users to jump between unrelated feature surfaces.
+- `image` owns raw pixel assets and `render` performs final drawing, while `sprite` owns the runtime model for textured 2D instances, atlases, sheets, and related presentation helpers.
 
 ## Functions
 
@@ -50,10 +37,11 @@ lurek.sprite.newAnimator(clips)
 
 ```lua
 do
-    local anim = lurek.sprite.newAnimator({
-        idle = { row = 1, from = 1, to = 3, fps = 10, loop = true }
-    })
-    print("animator type = " .. anim:type())
+    local animator = lurek.sprite.newAnimator(make_clips())
+    local kind = animator:type()
+    local clip = animator:currentClip()
+    local playing = animator:isPlaying()
+    sprite_log("newAnimator type=" .. kind .. " clip=" .. tostring(clip) .. " playing=" .. tostring(playing))
 end
 ```
 
@@ -86,7 +74,10 @@ lurek.sprite.newAtlasPacker(width, height, padding)
 ```lua
 do
     local packer = lurek.sprite.newAtlasPacker(128, 64, 1)
-    print("atlas packer type = " .. packer:type())
+    local width, height = packer:getDimensions()
+    local count = packer:regionCount()
+    local kind = packer:type()
+    sprite_log("newAtlasPacker type=" .. kind .. " size=" .. width .. "x" .. height .. " regions=" .. count)
 end
 ```
 
@@ -118,10 +109,12 @@ lurek.sprite.newAtlasSheet(atlas, sw, sh)
 
 ```lua
 do
-    local atlas = lurek.sprite.parseAtlas(lurek.serial.toJson({ frames = { { filename = "f0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false } }, meta = { size = { w = 32, h = 32 } } }))
-    local sheet = lurek.sprite.newAtlasSheet(atlas, 128, 32)
-    print("frame count = " .. sheet:getFrameCount())
-    print("atlas sheet type = " .. sheet:type())
+    local atlas = lurek.sprite.parseAtlas(make_texturepacker_json())
+    local sheet = lurek.sprite.newAtlasSheet(atlas, 64, 64)
+    local count = sheet:getFrameCount()
+    local first = sheet:getFrame(0)
+    local fw, fh = sheet:getFrameSize()
+    sprite_log("newAtlasSheet type=" .. sheet:type() .. " frames=" .. count .. " frame=" .. fw .. "x" .. fh .. " first=" .. first.x .. "," .. first.y)
 end
 ```
 
@@ -152,11 +145,11 @@ lurek.sprite.newRPGMakerSheet(tw, th)
 
 ```lua
 do
-    local rpg = lurek.sprite.newRPGMakerSheet(384, 256)
-    print("frame count = " .. rpg:getFrameCount())
-    local fw, fh = rpg:getFrameSize()
-    local cols, rows = rpg:getGridSize()
-    print("frame size = " .. fw .. "x" .. fh .. " grid = " .. cols .. "x" .. rows)
+    local sheet = lurek.sprite.newRPGMakerSheet(144, 192)
+    local count = sheet:getFrameCount()
+    local fw, fh = sheet:getFrameSize()
+    local names = sheet:getGroupNames()
+    sprite_log("newRPGMakerSheet frames=" .. count .. " frame=" .. fw .. "x" .. fh .. " first_group=" .. tostring(names[1]))
 end
 ```
 
@@ -189,10 +182,11 @@ lurek.sprite.newSheet(tw, th, fw, fh)
 
 ```lua
 do
-    ---@type LSpriteSheet
-    local sheet = lurek.sprite.newSheet(512, 512, 64, 64)
-    print("type = " .. sheet:type())
-    print("frame count = " .. sheet:getFrameCount())
+    local sheet = lurek.sprite.newSheet(128, 64, 32, 32)
+    local frames = sheet:getFrameCount()
+    local cols, rows = sheet:getGridSize()
+    local fw, fh = sheet:getFrameSize()
+    sprite_log("newSheet type=" .. sheet:type() .. " frames=" .. frames .. " grid=" .. cols .. "x" .. rows .. " frame=" .. fw .. "x" .. fh)
 end
 ```
 
@@ -225,7 +219,10 @@ lurek.sprite.newSprite(texture_id, x, y)
 ```lua
 do
     local sprite = lurek.sprite.newSprite(7, 10, 20)
-    print("sprite created = " .. tostring(sprite ~= nil))
+    local x, y = sprite:getPosition()
+    local has_normal = sprite:hasNormalMap()
+    local kind = sprite:type()
+    sprite_log("newSprite type=" .. kind .. " pos=" .. x .. "," .. y .. " has_normal=" .. tostring(has_normal))
 end
 ```
 
@@ -255,11 +252,11 @@ lurek.sprite.parseAsepriteAtlas(json_str)
 
 ```lua
 do
-    ---@type LSpriteAtlas
-    local atlas = lurek.sprite.parseAsepriteAtlas(lurek.serial.toJson({ frames = { ["hero_idle_0.png"] = { frame = { x = 0, y = 0, w = 48, h = 48 }, rotated = false, sourceSize = { w = 48, h = 48 } } }, meta = { image = "hero.png", size = { w = 48, h = 48 }, scale = "1" } }))
-    local entry = atlas:getEntry("hero_idle_0.png")
-    print("aseprite atlas entries = " .. atlas:entryCount())
-    print("hero_idle_0.png = " .. entry.w .. "x" .. entry.h)
+    local atlas = lurek.sprite.parseAsepriteAtlas(make_aseprite_json())
+    local entry = atlas:getEntry("hero_walk_0001.png")
+    local names = atlas:entryNames()
+    local count = atlas:entryCount()
+    sprite_log("parseAsepriteAtlas count=" .. count .. " first=" .. tostring(names[1]) .. " hero=" .. entry.w .. "x" .. entry.h)
 end
 ```
 
@@ -289,11 +286,11 @@ lurek.sprite.parseAtlas(json_str)
 
 ```lua
 do
-    ---@type LSpriteAtlas
-    local atlas = lurek.sprite.parseAtlas(lurek.serial.toJson({ frames = { { filename = "player_idle_0", frame = { x = 0, y = 0, w = 64, h = 64 }, rotated = false } }, meta = { size = { w = 64, h = 64 } } }))
-    local entry = atlas:getEntry("player_idle_0")
-    print("entry count = " .. atlas:entryCount())
-    print("player_idle_0 = " .. entry.w .. "x" .. entry.h)
+    local atlas = lurek.sprite.parseAtlas(make_texturepacker_json())
+    local entry = atlas:getEntry("hero_idle_0")
+    local count = atlas:entryCount()
+    local names = atlas:entryNames()
+    sprite_log("parseAtlas count=" .. count .. " first=" .. tostring(names[1]) .. " hero=" .. entry.w .. "x" .. entry.h)
 end
 ```
 
@@ -341,11 +338,10 @@ LAtlasPacker:clear()
 do
     local packer = lurek.sprite.newAtlasPacker(128, 64, 1)
     packer:pack("hero", 24, 24)
-    if packer:getRegion("hero") ~= nil and packer:getRegion("hero").nine_slice ~= nil then
-        print("hero nine-slice left = " .. packer:getRegion("hero").nine_slice.left)
-    end
+    packer:pack("coin", 16, 16)
+    local before = packer:regionCount()
     packer:clear()
-    print("after clear count = " .. packer:regionCount())
+    sprite_log("clear before=" .. before .. " after=" .. packer:regionCount() .. " hero_exists=" .. tostring(packer:getRegion("hero") ~= nil))
 end
 ```
 
@@ -371,8 +367,10 @@ LAtlasPacker:getDimensions()
 ```lua
 do
     local packer = lurek.sprite.newAtlasPacker(128, 64, 1)
-    local w, h = packer:getDimensions()
-    print("dimensions = " .. w .. "x" .. h)
+    local width, height = packer:getDimensions()
+    local kind = packer:type()
+    local count = packer:regionCount()
+    sprite_log("getDimensions type=" .. kind .. " size=" .. width .. "x" .. height .. " regions=" .. count)
 end
 ```
 
@@ -405,7 +403,8 @@ do
     local packer = lurek.sprite.newAtlasPacker(128, 64, 1)
     packer:pack("hero", 24, 24)
     local region = packer:getRegion("hero")
-    print("region x = " .. (region and region.x or -1))
+    local width, height = packer:getDimensions()
+    sprite_log("getRegion hero=" .. region.name .. " at " .. region.x .. "," .. region.y .. " atlas=" .. width .. "x" .. height)
 end
 ```
 
@@ -439,7 +438,9 @@ LAtlasPacker:pack(name, w, h)
 do
     local packer = lurek.sprite.newAtlasPacker(128, 64, 1)
     local ok = packer:pack("hero", 24, 24)
-    print("packed hero = " .. tostring(ok))
+    local region = packer:getRegion("hero")
+    local count = packer:regionCount()
+    sprite_log("pack ok=" .. tostring(ok) .. " count=" .. count .. " hero=" .. region.x .. "," .. region.y .. "," .. region.w .. "x" .. region.h)
 end
 ```
 
@@ -465,7 +466,9 @@ LAtlasPacker:regionCount()
 do
     local packer = lurek.sprite.newAtlasPacker(128, 64, 1)
     packer:pack("hero", 24, 24)
-    print("region count = " .. packer:regionCount())
+    packer:pack("coin", 16, 16)
+    local count = packer:regionCount()
+    sprite_log("regionCount count=" .. count .. " has_coin=" .. tostring(packer:getRegion("coin") ~= nil))
 end
 ```
 
@@ -500,9 +503,10 @@ LAtlasPacker:setNineSlice(name, left, right, top, bottom)
 ```lua
 do
     local packer = lurek.sprite.newAtlasPacker(128, 64, 1)
-    packer:pack("hero", 24, 24)
-    local ok = packer:setNineSlice("hero", 4, 4, 4, 4)
-    print("set nine-slice = " .. tostring(ok))
+    packer:pack("panel", 24, 24)
+    local ok = packer:setNineSlice("panel", 4, 4, 4, 4)
+    local region = packer:getRegion("panel")
+    sprite_log("setNineSlice ok=" .. tostring(ok) .. " region=" .. region.name .. " has_nine_slice=" .. tostring(region.nine_slice ~= nil))
 end
 ```
 
@@ -527,7 +531,10 @@ LAtlasPacker:type()
 ```lua
 do
     local packer = lurek.sprite.newAtlasPacker(128, 64, 1)
-    print("type = " .. packer:type())
+    local width, height = packer:getDimensions()
+    local kind = packer:type()
+    local count = packer:regionCount()
+    sprite_log("type kind=" .. kind .. " size=" .. width .. "x" .. height .. " regions=" .. count)
 end
 ```
 
@@ -558,7 +565,10 @@ LAtlasPacker:typeOf(name)
 ```lua
 do
     local packer = lurek.sprite.newAtlasPacker(128, 64, 1)
-    print("typeOf LAtlasPacker = " .. tostring(packer:typeOf("LAtlasPacker")))
+    local is_packer = packer:typeOf("LAtlasPacker")
+    local is_object = packer:typeOf("LObject")
+    local width, height = packer:getDimensions()
+    sprite_log("typeOf packer=" .. tostring(is_packer) .. " object=" .. tostring(is_object) .. " size=" .. width .. "x" .. height)
 end
 ```
 
@@ -586,8 +596,9 @@ LSprite:clearNormalMap()
 do
     local sprite = lurek.sprite.newSprite(7, 10, 20)
     sprite:setNormalMap(3)
+    local before = sprite:hasNormalMap()
     sprite:clearNormalMap()
-    print("has normal after clear = " .. tostring(sprite:hasNormalMap()))
+    sprite_log("clearNormalMap before=" .. tostring(before) .. " after=" .. tostring(sprite:hasNormalMap()))
 end
 ```
 
@@ -613,7 +624,9 @@ LSprite:getNormalIntensity()
 do
     local sprite = lurek.sprite.newSprite(7, 10, 20)
     sprite:setNormalIntensity(2.5)
-    print("normal intensity = " .. tostring(sprite:getNormalIntensity()))
+    local intensity = sprite:getNormalIntensity()
+    local x, y = sprite:getPosition()
+    sprite_log("getNormalIntensity intensity=" .. tostring(intensity) .. " pos=" .. x .. "," .. y)
 end
 ```
 
@@ -639,7 +652,9 @@ LSprite:getNormalMap()
 do
     local sprite = lurek.sprite.newSprite(7, 10, 20)
     sprite:setNormalMap(11)
-    print("normal map = " .. tostring(sprite:getNormalMap()))
+    local texture = sprite:getNormalMap()
+    local intensity = sprite:getNormalIntensity()
+    sprite_log("getNormalMap texture=" .. tostring(texture) .. " intensity=" .. tostring(intensity))
 end
 ```
 
@@ -666,7 +681,9 @@ LSprite:getPosition()
 do
     local sprite = lurek.sprite.newSprite(7, 10, 20)
     local x, y = sprite:getPosition()
-    print("position = " .. x .. "," .. y)
+    local has_normal = sprite:hasNormalMap()
+    local kind = sprite:type()
+    sprite_log("getPosition type=" .. kind .. " pos=" .. x .. "," .. y .. " has_normal=" .. tostring(has_normal))
 end
 ```
 
@@ -691,9 +708,10 @@ LSprite:hasNormalMap()
 ```lua
 do
     local sprite = lurek.sprite.newSprite(7, 10, 20)
-    print("has normal before = " .. tostring(sprite:hasNormalMap()))
+    local before = sprite:hasNormalMap()
     sprite:setNormalMap(3)
-    print("has normal after = " .. tostring(sprite:hasNormalMap()))
+    local after = sprite:hasNormalMap()
+    sprite_log("hasNormalMap before=" .. tostring(before) .. " after=" .. tostring(after))
 end
 ```
 
@@ -718,8 +736,10 @@ LSprite:setNormalIntensity(intensity)
 ```lua
 do
     local sprite = lurek.sprite.newSprite(7, 10, 20)
+    sprite:setNormalMap(11)
     sprite:setNormalIntensity(2.5)
-    print("normal intensity set")
+    local intensity = sprite:getNormalIntensity()
+    sprite_log("setNormalIntensity intensity=" .. tostring(intensity) .. " texture=" .. tostring(sprite:getNormalMap()))
 end
 ```
 
@@ -745,7 +765,9 @@ LSprite:setNormalMap(texture_id)
 do
     local sprite = lurek.sprite.newSprite(7, 10, 20)
     sprite:setNormalMap(11)
-    print("normal map set = " .. tostring(sprite:getNormalMap() == 11))
+    local texture = sprite:getNormalMap()
+    local has_normal = sprite:hasNormalMap()
+    sprite_log("setNormalMap texture=" .. tostring(texture) .. " has_normal=" .. tostring(has_normal))
 end
 ```
 
@@ -773,7 +795,8 @@ do
     local sprite = lurek.sprite.newSprite(7, 10, 20)
     sprite:setPosition(32, 48)
     local x, y = sprite:getPosition()
-    print("position = " .. x .. "," .. y)
+    local kind = sprite:type()
+    sprite_log("setPosition type=" .. kind .. " pos=" .. x .. "," .. y)
 end
 ```
 
@@ -798,7 +821,10 @@ LSprite:type()
 ```lua
 do
     local sprite = lurek.sprite.newSprite(7, 10, 20)
-    print("type = " .. sprite:type())
+    local kind = sprite:type()
+    local x, y = sprite:getPosition()
+    local has_normal = sprite:hasNormalMap()
+    sprite_log("sprite type=" .. kind .. " pos=" .. x .. "," .. y .. " has_normal=" .. tostring(has_normal))
 end
 ```
 
@@ -829,7 +855,10 @@ LSprite:typeOf(name)
 ```lua
 do
     local sprite = lurek.sprite.newSprite(7, 10, 20)
-    print("typeOf LSprite = " .. tostring(sprite:typeOf("LSprite")))
+    local is_sprite = sprite:typeOf("LSprite")
+    local is_object = sprite:typeOf("LObject")
+    local x, y = sprite:getPosition()
+    sprite_log("sprite typeOf sprite=" .. tostring(is_sprite) .. " object=" .. tostring(is_object) .. " pos=" .. x .. "," .. y)
 end
 ```
 
@@ -862,10 +891,11 @@ LSpriteAnimator:addClip(name, def)
 
 ```lua
 do
-    local anim = lurek.sprite.newAnimator()
-    anim:addClip("run", { row = 3, from = 1, to = 4, fps = 12, loop = true })
-    anim:play("run")
-    print("current clip after add = " .. tostring(anim:currentClip()))
+    local animator = lurek.sprite.newAnimator(make_clips())
+    animator:addClip("run", { row = 3, from = 1, to = 4, fps = 12, loop = true })
+    animator:play("run")
+    local row, col = animator:currentFrame()
+    sprite_log("addClip clip=" .. tostring(animator:currentClip()) .. " frame=" .. row .. "," .. col)
 end
 ```
 
@@ -889,9 +919,11 @@ LSpriteAnimator:clipDuration()
 
 ```lua
 do
-    local anim = lurek.sprite.newAnimator({ idle = { row = 1, from = 1, to = 3, fps = 6, loop = true } })
-    anim:play("idle")
-    print("clip duration = " .. tostring(anim:clipDuration()))
+    local animator = lurek.sprite.newAnimator(make_clips())
+    animator:play("jump")
+    local clip_duration = animator:clipDuration()
+    local frame_duration = animator:frameDuration()
+    sprite_log("clipDuration clip=" .. tostring(clip_duration) .. " frame=" .. tostring(frame_duration))
 end
 ```
 
@@ -915,9 +947,11 @@ LSpriteAnimator:currentClip()
 
 ```lua
 do
-    local anim = lurek.sprite.newAnimator({ idle = { row = 1, from = 1, to = 3, fps = 10, loop = true } })
-    anim:play("idle")
-    print("current clip = " .. tostring(anim:currentClip()))
+    local animator = lurek.sprite.newAnimator(make_clips())
+    local before = animator:currentClip()
+    animator:play("idle")
+    local after = animator:currentClip()
+    sprite_log("currentClip before=" .. tostring(before) .. " after=" .. tostring(after))
 end
 ```
 
@@ -942,10 +976,12 @@ LSpriteAnimator:currentFrame()
 
 ```lua
 do
-    local anim = lurek.sprite.newAnimator({ idle = { row = 2, from = 3, to = 4, fps = 10, loop = true } })
-    anim:play("idle")
-    local row, col = anim:currentFrame()
-    print("frame = " .. row .. "," .. col)
+    local animator = lurek.sprite.newAnimator(make_clips())
+    animator:play("idle")
+    local row1, col1 = animator:currentFrame()
+    animator:update(0.11)
+    local row2, col2 = animator:currentFrame()
+    sprite_log("currentFrame before=" .. row1 .. "," .. col1 .. " after=" .. row2 .. "," .. col2)
 end
 ```
 
@@ -969,9 +1005,11 @@ LSpriteAnimator:frameDuration()
 
 ```lua
 do
-    local anim = lurek.sprite.newAnimator({ idle = { row = 1, from = 1, to = 3, fps = 20, loop = true } })
-    anim:play("idle")
-    print("frame duration = " .. tostring(anim:frameDuration()))
+    local animator = lurek.sprite.newAnimator(make_clips())
+    animator:play("idle")
+    local frame_duration = animator:frameDuration()
+    local clip_duration = animator:clipDuration()
+    sprite_log("frameDuration frame=" .. tostring(frame_duration) .. " clip=" .. tostring(clip_duration))
 end
 ```
 
@@ -995,9 +1033,11 @@ LSpriteAnimator:isPlaying()
 
 ```lua
 do
-    local anim = lurek.sprite.newAnimator({ idle = { row = 1, from = 1, to = 3, fps = 10, loop = true } })
-    anim:play("idle")
-    print("is playing = " .. tostring(anim:isPlaying()))
+    local animator = lurek.sprite.newAnimator(make_clips())
+    local before = animator:isPlaying()
+    animator:play("idle")
+    local after = animator:isPlaying()
+    sprite_log("isPlaying before=" .. tostring(before) .. " after=" .. tostring(after))
 end
 ```
 
@@ -1021,12 +1061,12 @@ LSpriteAnimator:onEnd(fn)
 
 ```lua
 do
-    local anim = lurek.sprite.newAnimator({ jump = { row = 1, from = 1, to = 2, fps = 10, loop = false } })
-    anim:onEnd(function(clip)
-        print("onEnd " .. clip)
-    end)
-    anim:play("jump")
-    anim:update(0.5)
+    local animator = lurek.sprite.newAnimator(make_clips())
+    local ended = 0
+    animator:onEnd(function() ended = ended + 1 end)
+    animator:play("jump")
+    animator:update(1.0)
+    sprite_log("onEnd callbacks=" .. ended .. " clip=" .. tostring(animator:currentClip()))
 end
 ```
 
@@ -1050,12 +1090,12 @@ LSpriteAnimator:onFrame(fn)
 
 ```lua
 do
-    local anim = lurek.sprite.newAnimator({ idle = { row = 1, from = 1, to = 3, fps = 10, loop = true } })
-    anim:onFrame(function(row, col, clip)
-        print("onFrame " .. clip .. " " .. row .. ":" .. col)
-    end)
-    anim:play("idle")
-    anim:update(0.11)
+    local animator = lurek.sprite.newAnimator(make_clips())
+    local received = 0
+    animator:onFrame(function() received = received + 1 end)
+    animator:play("idle")
+    animator:update(0.21)
+    sprite_log("onFrame callbacks=" .. received .. " clip=" .. tostring(animator:currentClip()))
 end
 ```
 
@@ -1079,12 +1119,12 @@ LSpriteAnimator:onLoop(fn)
 
 ```lua
 do
-    local anim = lurek.sprite.newAnimator({ idle = { row = 1, from = 1, to = 2, fps = 10, loop = true } })
-    anim:onLoop(function(clip)
-        print("onLoop " .. clip)
-    end)
-    anim:play("idle")
-    anim:update(0.25)
+    local animator = lurek.sprite.newAnimator(make_clips())
+    local loops = 0
+    animator:onLoop(function() loops = loops + 1 end)
+    animator:play("idle")
+    animator:update(0.31)
+    sprite_log("onLoop callbacks=" .. loops .. " clip=" .. tostring(animator:currentClip()))
 end
 ```
 
@@ -1102,10 +1142,12 @@ LSpriteAnimator:pause()
 
 ```lua
 do
-    local anim = lurek.sprite.newAnimator({ idle = { row = 1, from = 1, to = 3, fps = 10, loop = true } })
-    anim:play("idle")
-    anim:pause()
-    print("is playing after pause = " .. tostring(anim:isPlaying()))
+    local animator = lurek.sprite.newAnimator(make_clips())
+    animator:play("idle")
+    animator:pause()
+    local clip = animator:currentClip()
+    local playing = animator:isPlaying()
+    sprite_log("pause clip=" .. tostring(clip) .. " playing=" .. tostring(playing))
 end
 ```
 
@@ -1130,9 +1172,11 @@ LSpriteAnimator:play(name, restart)
 
 ```lua
 do
-    local anim = lurek.sprite.newAnimator({ idle = { row = 1, from = 1, to = 3, fps = 10, loop = true } })
-    anim:play("idle")
-    print("clip after play = " .. tostring(anim:currentClip()))
+    local animator = lurek.sprite.newAnimator(make_clips())
+    animator:play("idle")
+    local clip = animator:currentClip()
+    local row, col = animator:currentFrame()
+    sprite_log("play clip=" .. tostring(clip) .. " frame=" .. row .. "," .. col)
 end
 ```
 
@@ -1150,11 +1194,11 @@ LSpriteAnimator:resume()
 
 ```lua
 do
-    local anim = lurek.sprite.newAnimator({ idle = { row = 1, from = 1, to = 3, fps = 10, loop = true } })
-    anim:play("idle")
-    anim:pause()
-    anim:resume()
-    print("is playing after resume = " .. tostring(anim:isPlaying()))
+    local animator = lurek.sprite.newAnimator(make_clips())
+    animator:play("idle")
+    animator:pause()
+    animator:resume()
+    sprite_log("resume clip=" .. tostring(animator:currentClip()) .. " playing=" .. tostring(animator:isPlaying()))
 end
 ```
 
@@ -1172,12 +1216,12 @@ LSpriteAnimator:stop()
 
 ```lua
 do
-    local anim = lurek.sprite.newAnimator({ idle = { row = 1, from = 1, to = 3, fps = 10, loop = true } })
-    anim:play("idle")
-    anim:update(0.2)
-    anim:stop()
-    local _, col = anim:currentFrame()
-    print("frame after stop = " .. tostring(col))
+    local animator = lurek.sprite.newAnimator(make_clips())
+    animator:play("idle")
+    animator:update(0.2)
+    animator:stop()
+    local row, col = animator:currentFrame()
+    sprite_log("stop frame_reset=" .. row .. "," .. col .. " playing=" .. tostring(animator:isPlaying()))
 end
 ```
 
@@ -1201,8 +1245,11 @@ LSpriteAnimator:type()
 
 ```lua
 do
-    local anim = lurek.sprite.newAnimator()
-    print("type = " .. anim:type())
+    local animator = lurek.sprite.newAnimator(make_clips())
+    local kind = animator:type()
+    local clip = animator:currentClip()
+    local playing = animator:isPlaying()
+    sprite_log("animator type=" .. kind .. " clip=" .. tostring(clip) .. " playing=" .. tostring(playing))
 end
 ```
 
@@ -1232,8 +1279,11 @@ LSpriteAnimator:typeOf(name)
 
 ```lua
 do
-    local anim = lurek.sprite.newAnimator()
-    print("typeOf LSpriteAnimator = " .. tostring(anim:typeOf("LSpriteAnimator")))
+    local animator = lurek.sprite.newAnimator(make_clips())
+    local is_animator = animator:typeOf("LSpriteAnimator")
+    local is_object = animator:typeOf("LObject")
+    local kind = animator:type()
+    sprite_log("animator typeOf animator=" .. tostring(is_animator) .. " object=" .. tostring(is_object) .. " type=" .. kind)
 end
 ```
 
@@ -1257,11 +1307,12 @@ LSpriteAnimator:update(dt)
 
 ```lua
 do
-    local anim = lurek.sprite.newAnimator({ idle = { row = 1, from = 1, to = 3, fps = 10, loop = true } })
-    anim:play("idle")
-    anim:update(0.11)
-    local _, col = anim:currentFrame()
-    print("frame after update = " .. tostring(col))
+    local animator = lurek.sprite.newAnimator(make_clips())
+    animator:play("idle")
+    animator:update(0.11)
+    local row, col = animator:currentFrame()
+    local frame_duration = animator:frameDuration()
+    sprite_log("update frame=" .. row .. "," .. col .. " frame_duration=" .. tostring(frame_duration))
 end
 ```
 
@@ -1293,9 +1344,11 @@ LSpriteAtlas:entryCount()
 
 ```lua
 do
-    local json = [[{"frames":[{"filename":"hero_walk_0001.png","frame":{"x":0,"y":0,"w":16,"h":16},"duration":100},{"filename":"hero_walk_0002.png","frame":{"x":16,"y":0,"w":16,"h":16},"duration":100}],"meta":{"size":{"w":32,"h":16}}}]]
-    local atlas = lurek.sprite.parseAsepriteAtlas(json)
-    print("aseprite_count = " .. atlas:entryCount())
+    local atlas = lurek.sprite.parseAsepriteAtlas(make_aseprite_json())
+    local count = atlas:entryCount()
+    local names = atlas:entryNames()
+    local entry = atlas:getEntry(names[1])
+    sprite_log("entryCount count=" .. count .. " first=" .. tostring(names[1]) .. " size=" .. entry.w .. "x" .. entry.h)
 end
 ```
 
@@ -1319,11 +1372,11 @@ LSpriteAtlas:entryNames()
 
 ```lua
 do
-    local json = [[{"frames":[{"filename":"hero_walk_0001.png","frame":{"x":0,"y":0,"w":16,"h":16},"duration":100},{"filename":"hero_walk_0002.png","frame":{"x":16,"y":0,"w":16,"h":16},"duration":100}],"meta":{"size":{"w":32,"h":16}}}]]
-    local atlas = lurek.sprite.parseAsepriteAtlas(json)
+    local atlas = lurek.sprite.parseAsepriteAtlas(make_aseprite_json())
     local names = atlas:entryNames()
-    print("aseprite_names = " .. #names)
-    print("first name = " .. tostring(names[1]))
+    local count = atlas:entryCount()
+    local second = names[2] or "none"
+    sprite_log("entryNames count=" .. count .. " first=" .. tostring(names[1]) .. " second=" .. tostring(second))
 end
 ```
 
@@ -1353,10 +1406,11 @@ LSpriteAtlas:getByIndex(index)
 
 ```lua
 do
-    ---@type LSpriteAtlas
-    local atlas = lurek.sprite.parseAtlas(lurek.serial.toJson({ frames = { { filename = "coin_0", frame = { x = 0, y = 0, w = 16, h = 16 }, rotated = false } }, meta = { size = { w = 16, h = 16 } } }))
-    local byIdx = atlas:getByIndex(1)
-    print("index 1 name = " .. byIdx.name)
+    local atlas = lurek.sprite.parseAtlas(make_texturepacker_json())
+    local first = atlas:getByIndex(1)
+    local second = atlas:getByIndex(2)
+    local count = atlas:entryCount()
+    sprite_log("getByIndex count=" .. count .. " first=" .. first.name .. " second=" .. second.name)
 end
 ```
 
@@ -1386,11 +1440,11 @@ LSpriteAtlas:getEntry(name)
 
 ```lua
 do
-    ---@type LSpriteAtlas
-    local atlas = lurek.sprite.parseAtlas(lurek.serial.toJson({ frames = { { filename = "coin_0", frame = { x = 0, y = 0, w = 16, h = 16 }, rotated = false } }, meta = { size = { w = 16, h = 16 } } }))
-    local coin = atlas:getEntry("coin_0")
-    print("coin_0: x=" .. coin.x .. " y=" .. coin.y .. " w=" .. coin.w .. " h=" .. coin.h)
-    print("rotated = " .. tostring(coin.rotated))
+    local atlas = lurek.sprite.parseAtlas(make_texturepacker_json())
+    local entry = atlas:getEntry("hero_idle_1")
+    local count = atlas:entryCount()
+    local names = atlas:entryNames()
+    sprite_log("getEntry names=" .. #names .. " count=" .. count .. " hero_idle_1=" .. entry.x .. "," .. entry.y .. "," .. entry.w .. "x" .. entry.h)
 end
 ```
 
@@ -1422,11 +1476,11 @@ LSpriteAtlas:getFlipped(name, flip_x, flip_y)
 
 ```lua
 do
-    ---@type LSpriteAtlas
-    local atlas = lurek.sprite.parseAtlas(lurek.serial.toJson({ frames = { { filename = "arrow_right", frame = { x = 0, y = 0, w = 32, h = 16 }, rotated = false } }, meta = { size = { w = 32, h = 16 } } }))
-    local flippedH = atlas:getFlipped("arrow_right", true, false)
-    print("flip_x = " .. tostring(flippedH.flip_x) .. " flip_y = " .. tostring(flippedH.flip_y))
-    print("still same coords: x=" .. flippedH.x .. " w=" .. flippedH.w)
+    local atlas = lurek.sprite.parseAtlas(make_texturepacker_json())
+    local flipped = atlas:getFlipped("arrow_right", true, false)
+    local base = atlas:getEntry("arrow_right")
+    local same_size = flipped.w == base.w and flipped.h == base.h
+    sprite_log("getFlipped flip_x=" .. tostring(flipped.flip_x) .. " flip_y=" .. tostring(flipped.flip_y) .. " same_size=" .. tostring(same_size))
 end
 ```
 
@@ -1450,9 +1504,11 @@ LSpriteAtlas:type()
 
 ```lua
 do
-    local json = [[{"frames":[{"filename":"hero_walk_0001.png","frame":{"x":0,"y":0,"w":16,"h":16},"duration":100},{"filename":"hero_walk_0002.png","frame":{"x":16,"y":0,"w":16,"h":16},"duration":100}],"meta":{"size":{"w":32,"h":16}}}]]
-    local atlas = lurek.sprite.parseAsepriteAtlas(json)
-    print("type = " .. atlas:type())
+    local atlas = lurek.sprite.parseAsepriteAtlas(make_aseprite_json())
+    local kind = atlas:type()
+    local count = atlas:entryCount()
+    local names = atlas:entryNames()
+    sprite_log("atlas type=" .. kind .. " count=" .. count .. " first=" .. tostring(names[1]))
 end
 ```
 
@@ -1482,9 +1538,11 @@ LSpriteAtlas:typeOf(name)
 
 ```lua
 do
-    local json = [[{"frames":[{"filename":"hero_walk_0001.png","frame":{"x":0,"y":0,"w":16,"h":16},"duration":100},{"filename":"hero_walk_0002.png","frame":{"x":16,"y":0,"w":16,"h":16},"duration":100}],"meta":{"size":{"w":32,"h":16}}}]]
-    local atlas = lurek.sprite.parseAsepriteAtlas(json)
-    print("typeOf = " .. tostring(atlas:typeOf("LSpriteAtlas")))
+    local atlas = lurek.sprite.parseAsepriteAtlas(make_aseprite_json())
+    local is_atlas = atlas:typeOf("LSpriteAtlas")
+    local is_object = atlas:typeOf("LObject")
+    local count = atlas:entryCount()
+    sprite_log("atlas typeOf atlas=" .. tostring(is_atlas) .. " object=" .. tostring(is_object) .. " count=" .. count)
 end
 ```
 
@@ -1523,11 +1581,12 @@ LSpriteSheet:drawToImage(w, h)
 
 ```lua
 do
-    ---@type LSpriteSheet
-    local sheet = lurek.sprite.newSheet(256, 256, 32, 32)
-    local img = sheet:drawToImage(256, 256)
-    print("preview image width = " .. img:getWidth())
-    print("preview image height = " .. img:getHeight())
+    local sheet = lurek.sprite.newSheet(64, 64, 16, 16)
+    sheet:nameGroup("idle", 0, 2)
+    local image = sheet:drawToImage(64, 64)
+    local width = image:getWidth()
+    local height = image:getHeight()
+    sprite_log("drawToImage preview=" .. width .. "x" .. height .. " groups=" .. #sheet:getGroupNames())
 end
 ```
 
@@ -1557,11 +1616,11 @@ LSpriteSheet:getColumn(col)
 
 ```lua
 do
-    ---@type LSpriteSheet
-    local sheet = lurek.sprite.newSheet(192, 192, 64, 64)
-    local col0 = sheet:getColumn(0)
-    print("col 0 frames = " .. #col0)
-    print("col 0 second frame = " .. col0[2].x .. "," .. col0[2].y)
+    local sheet = lurek.sprite.newSheet(64, 64, 16, 16)
+    local column = sheet:getColumn(1)
+    local first = column[1]
+    local last = column[#column]
+    sprite_log("getColumn size=" .. #column .. " first=" .. first.x .. "," .. first.y .. " last=" .. last.x .. "," .. last.y)
 end
 ```
 
@@ -1591,10 +1650,11 @@ LSpriteSheet:getFrame(index)
 
 ```lua
 do
-    ---@type LSpriteSheet
-    local sheet = lurek.sprite.newSheet(256, 128, 32, 32)
-    local frame1 = sheet:getFrame(1)
-    print("frame 1: x=" .. frame1.x .. " y=" .. frame1.y .. " w=" .. frame1.w .. " h=" .. frame1.h)
+    local sheet = lurek.sprite.newSheet(64, 64, 16, 16)
+    local first = sheet:getFrame(0)
+    local second = sheet:getFrame(1)
+    local count = sheet:getFrameCount()
+    sprite_log("getFrame count=" .. count .. " first=" .. first.x .. "," .. first.y .. " second=" .. second.x .. "," .. second.y)
 end
 ```
 
@@ -1619,7 +1679,10 @@ LSpriteSheet:getFrameCount()
 ```lua
 do
     local sheet = lurek.sprite.newSheet(128, 64, 32, 32)
-    print("frame_count = " .. sheet:getFrameCount())
+    local count = sheet:getFrameCount()
+    local cols, rows = sheet:getGridSize()
+    local fw, fh = sheet:getFrameSize()
+    sprite_log("getFrameCount count=" .. count .. " grid=" .. cols .. "x" .. rows .. " frame=" .. fw .. "x" .. fh)
 end
 ```
 
@@ -1646,7 +1709,9 @@ LSpriteSheet:getFrameSize()
 do
     local sheet = lurek.sprite.newSheet(128, 64, 32, 32)
     local fw, fh = sheet:getFrameSize()
-    print("frame_size = " .. fw .. "x" .. fh)
+    local cols, rows = sheet:getGridSize()
+    local count = sheet:getFrameCount()
+    sprite_log("getFrameSize frame=" .. fw .. "x" .. fh .. " grid=" .. cols .. "x" .. rows .. " count=" .. count)
 end
 ```
 
@@ -1672,8 +1737,10 @@ LSpriteSheet:getGridSize()
 ```lua
 do
     local sheet = lurek.sprite.newSheet(128, 64, 32, 32)
-    local gw, gh = sheet:getGridSize()
-    print("grid = " .. gw .. "x" .. gh)
+    local cols, rows = sheet:getGridSize()
+    local count = sheet:getFrameCount()
+    local fw, fh = sheet:getFrameSize()
+    sprite_log("getGridSize grid=" .. cols .. "x" .. rows .. " count=" .. count .. " frame=" .. fw .. "x" .. fh)
 end
 ```
 
@@ -1703,11 +1770,11 @@ LSpriteSheet:getGroupFrames(name)
 
 ```lua
 do
-    ---@type LSpriteSheet
-    local sheet = lurek.sprite.newSheet(512, 256, 64, 64)
-    sheet:nameGroup("walk", 5, 8)
-    local walkFrames = sheet:getGroupFrames("walk")
-    print("walk frames = " .. #walkFrames)
+    local sheet = lurek.sprite.newSheet(64, 64, 16, 16)
+    sheet:nameGroup("idle", 0, 2)
+    sheet:nameGroup("walk", 2, 4)
+    local walk = sheet:getGroupFrames("walk")
+    sprite_log("getGroupFrames walk_size=" .. #walk .. " first=" .. walk[1].x .. "," .. walk[1].y .. " last=" .. walk[#walk].x .. "," .. walk[#walk].y)
 end
 ```
 
@@ -1731,12 +1798,11 @@ LSpriteSheet:getGroupNames()
 
 ```lua
 do
-    ---@type LSpriteSheet
-    local sheet = lurek.sprite.newSheet(512, 256, 64, 64)
-    sheet:nameGroup("idle", 1, 4)
+    local sheet = lurek.sprite.newRPGMakerSheet(144, 192)
     local names = sheet:getGroupNames()
-    print("groups = " .. #names)
-    print("first group = " .. tostring(names[1]))
+    local count = sheet:getFrameCount()
+    local cols, rows = sheet:getGridSize()
+    sprite_log("getGroupNames count=" .. #names .. " first=" .. tostring(names[1]) .. " frames=" .. count .. " grid=" .. cols .. "x" .. rows)
 end
 ```
 
@@ -1766,11 +1832,11 @@ LSpriteSheet:getRow(row)
 
 ```lua
 do
-    ---@type LSpriteSheet
-    local sheet = lurek.sprite.newSheet(192, 192, 64, 64)
-    local row0 = sheet:getRow(0)
-    print("row 0 frames = " .. #row0)
-    print("row 0 first frame = " .. row0[1].x .. "," .. row0[1].y)
+    local sheet = lurek.sprite.newSheet(64, 64, 16, 16)
+    local row = sheet:getRow(0)
+    local first = row[1]
+    local last = row[#row]
+    sprite_log("getRow size=" .. #row .. " first=" .. first.x .. "," .. first.y .. " last=" .. last.x .. "," .. last.y)
 end
 ```
 
@@ -1796,10 +1862,11 @@ LSpriteSheet:nameGroup(name, start, count)
 
 ```lua
 do
-    ---@type LSpriteSheet
-    local sheet = lurek.sprite.newSheet(512, 256, 64, 64)
-    sheet:nameGroup("idle", 1, 4)
-    print("group named = idle")
+    local sheet = lurek.sprite.newSheet(64, 64, 16, 16)
+    sheet:nameGroup("run", 0, 4)
+    local names = sheet:getGroupNames()
+    local frames = sheet:getGroupFrames("run")
+    sprite_log("nameGroup groups=" .. #names .. " run_frames=" .. #frames .. " first_group=" .. tostring(names[1]))
 end
 ```
 
@@ -1824,7 +1891,10 @@ LSpriteSheet:type()
 ```lua
 do
     local sheet = lurek.sprite.newSheet(128, 64, 32, 32)
-    print("type = " .. sheet:type())
+    local kind = sheet:type()
+    local count = sheet:getFrameCount()
+    local cols, rows = sheet:getGridSize()
+    sprite_log("sheet type=" .. kind .. " frames=" .. count .. " grid=" .. cols .. "x" .. rows)
 end
 ```
 
@@ -1855,7 +1925,10 @@ LSpriteSheet:typeOf(name)
 ```lua
 do
     local sheet = lurek.sprite.newSheet(128, 64, 32, 32)
-    print("typeOf = " .. tostring(sheet:typeOf("LSpriteSheet")))
+    local is_sheet = sheet:typeOf("LSpriteSheet")
+    local is_object = sheet:typeOf("LObject")
+    local count = sheet:getFrameCount()
+    sprite_log("sheet typeOf sheet=" .. tostring(is_sheet) .. " object=" .. tostring(is_object) .. " frames=" .. count)
 end
 ```
 

@@ -248,6 +248,19 @@ describe("ai world", function()
         expect_near(10.0, y, 0.01)
     end)
 
+    -- @covers LAIWorld:getLastCallbackErrors
+    it("getLastCallbackErrors records custom model callback failures without crashing update", function()
+        local world, agent = new_world_agent("broken")
+        agent:setCustomModel(function()
+            error("boom")
+        end)
+        world:update(0.1)
+        local errors = world:getLastCallbackErrors()
+        expect_equal(1, #errors)
+        expect_true(type(errors[1].context) == "string")
+        expect_true(type(errors[1].message) == "string")
+    end)
+
     -- @covers LAIWorld:type
     it("type returns LAIWorld", function()
         expect_equal("LAIWorld", lurek.ai.newWorld():type())
@@ -752,6 +765,17 @@ describe("ai steering manager", function()
         expect_equal(1, sm:entityCount())
     end)
 
+    -- @covers LSteeringManager:getLastDiagnostic
+    it("getLastDiagnostic records custom steering callback failures", function()
+        local sm = lurek.ai.newSteeringManager()
+        local _, agent = new_world_agent("steer_diagnostic")
+        sm:addCustomBehavior(function()
+            error("bad steer")
+        end, 1.0)
+        sm:applyCustomSteering(agent, 1 / 60)
+        expect_true(type(sm:getLastDiagnostic()) == "string")
+    end)
+
     -- @covers LSteeringManager:getBehaviorCount
     it("getBehaviorCount returns zero for a new manager", function()
         expect_equal(0, lurek.ai.newSteeringManager():getBehaviorCount())
@@ -944,6 +968,35 @@ describe("ai goap planner", function()
         local planner = lurek.ai.newGOAPPlanner()
         planner:setMaxIterations(500)
         expect_equal(500, planner:getMaxIterations())
+    end)
+
+    -- @covers LGOAPPlanner:getLastFailureReason
+    it("getLastFailureReason reports budget exhaustion after a truncated search", function()
+        local planner = lurek.ai.newGOAPPlanner()
+        planner:setMaxIterations(1)
+        planner:addAction("get_axe", 1.0)
+        planner:setEffect("get_axe", "has_axe", true)
+        planner:addAction("chop", 1.0)
+        planner:setPrecondition("chop", "has_axe", true)
+        planner:setEffect("chop", "has_wood", true)
+        planner:addAction("build", 1.0)
+        planner:setPrecondition("build", "has_wood", true)
+        planner:setEffect("build", "has_house", true)
+        planner:addGoal("house", 1.0)
+        planner:setGoalState("house", "has_house", true)
+        local plan = planner:plan({ has_axe = false, has_wood = false, has_house = false }, 8)
+        expect_equal(0, #plan)
+        expect_equal("budget_exhausted", planner:getLastFailureReason())
+    end)
+
+    -- @covers LGOAPPlanner:getLastTrace
+    it("getLastTrace exposes failure reason and iteration counters", function()
+        local planner = lurek.ai.newGOAPPlanner()
+        local plan = planner:plan({}, 4)
+        local trace = planner:getLastTrace()
+        expect_equal(0, #plan)
+        expect_true(type(trace.iterations) == "number")
+        expect_equal("no_goal", trace.failure_reason)
     end)
 
     -- @covers LGOAPPlanner:type
@@ -1140,13 +1193,24 @@ describe("ai utility ai", function()
     end)
 
     -- @covers LUtilityAI:addConsideration
-    it("addConsideration augments an existing action", function()
+    it("addConsideration changes the winning action when consideration scores differ", function()
         local uai = lurek.ai.newUtilityAI()
-        uai:addAction("heal", function() return 0.5 end)
+        uai:addAction("attack", function() return 0.9 end)
+        uai:addAction("heal", function() return 0.8 end)
         uai:addConsideration(
             "heal",
             "low_health",
-            function() return 0.9 end,
+            function() return 1.0 end,
+            "linear",
+            1.0,
+            0.0,
+            0.0,
+            1.0
+        )
+        uai:addConsideration(
+            "attack",
+            "safe_window",
+            function() return 0.1 end,
             "linear",
             1.0,
             0.0,
@@ -1154,6 +1218,28 @@ describe("ai utility ai", function()
             1.0
         )
         expect_equal("heal", uai:evaluate())
+    end)
+
+    -- @covers LUtilityAI:getLastTrace
+    it("getLastTrace exposes chosen action and consideration details", function()
+        local uai = lurek.ai.newUtilityAI()
+        uai:addAction("gather", function() return 0.5 end)
+        uai:addConsideration(
+            "gather",
+            "need_food",
+            function() return 0.7 end,
+            "linear",
+            1.0,
+            0.0,
+            0.0,
+            1.0
+        )
+        uai:evaluate()
+        local trace = uai:getLastTrace()
+        expect_equal("gather", trace.chosen_action)
+        expect_true(trace.callbacks_used >= 2)
+        expect_equal("gather", trace.actions[1].name)
+        expect_equal("need_food", trace.actions[1].considerations[1].name)
     end)
 
     -- @covers LUtilityAI:type
@@ -1771,6 +1857,20 @@ describe("ai mcts engine", function()
     -- @covers LMCTSEngine:type
     it("type returns LMCTSEngine", function()
         expect_equal("LMCTSEngine", lurek.ai.newMCTSEngine(50, 1.0, 5, 0):type())
+    end)
+
+    -- @covers LMCTSEngine:getLastTrace
+    it("getLastTrace reports invalid rollout scores", function()
+        local mcts = lurek.ai.newMCTSEngine(8, 1.4, 4, 42)
+        mcts:search(
+            1,
+            function(_) return { 7 } end,
+            function(state, act) return state + act end,
+            function(_) return 0 / 0 end
+        )
+        local trace = mcts:getLastTrace()
+        expect_true(trace.invalid_score_count > 0)
+        expect_true(type(trace.iterations_run) == "number")
     end)
 
     -- @covers LMCTSEngine:typeOf

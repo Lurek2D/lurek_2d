@@ -2,19 +2,13 @@
 
 ## Summary
 
-- This module gives users layered parallax control for creating depth in 2D scenes.
-- Layers can move at different scroll factors relative to camera movement.
-- Autoscroll support enables moving skies, fog drift, and ambient motion backgrounds.
-- Clamp options keep layer motion within designed world bounds.
-- Tiling logic maintains seamless coverage across the viewport.
-- Preset layers provide quick-start setups for common depth planes.
-- Motion-stretch options add velocity-driven style cues.
-- Per-layer effect chains support stylized post-processing on background planes.
-- Layer and set telemetry expose tile counts, effect pressure, and autoscroll state for runtime dashboards.
-- Layer sets help organize multiple planes into reusable scene groups.
-- For users, this module turns depth presentation into a configurable runtime system.
-
-This module primarily collaborates with `image`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
+- The `parallax` module is the layered-background surface for projects that want depth and atmospheric motion without full 3D simulation.
+- Layer definitions, presets, tiling behavior, and render helpers let several planes move at different camera-relative rates and create a stronger sense of scene depth.
+- Drawing support and image export matter because parallax content may be used both in live rendering and in tooling or preview workflows.
+- The module is useful for skies, distant scenery, decorative world layers, and motion-rich menu or transition backdrops that should stay cheaper and simpler than full interactive geometry.
+- Camera-relative speed policy matters because background depth reads differently across scenes.
+- It also keeps background motion readable across scene scales and camera styles.
+- Read it as the place where depth-illusion backgrounds become reusable scene content instead of a one-off renderer trick.
 
 ## Functions
 
@@ -52,9 +46,9 @@ do
         tiling = true,
     })
     local sx, sy = layer:getScrollFactor()
-    print("type = " .. layer:type())
-    print("scroll = " .. sx .. "," .. sy)
-    print("z = " .. layer:getZ())
+    example_print_log("type = " .. layer:type())
+    example_print_log("scroll = " .. sx .. "," .. sy)
+    example_print_log("z = " .. layer:getZ())
 end
 ```
 
@@ -88,8 +82,8 @@ do
     local img = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local far = lurek.parallax.newPresetLayer("far", img)
     local mid = lurek.parallax.newPresetLayer("mid", img)
-    print("far depth = " .. far:getDepth())
-    print("mid z = " .. mid:getZ())
+    example_print_log("far depth = " .. far:getDepth())
+    example_print_log("mid z = " .. mid:getZ())
 end
 ```
 
@@ -120,8 +114,13 @@ lurek.parallax.newSet(name)
 ```lua
 do
     local set = lurek.parallax.newSet("background")
-    print("name = " .. set:getName() .. " type = " .. set:type())
-    print("layers = " .. set:layerCount())
+    local layer = lurek.parallax.newLayer({
+        texture = lurek.render.newImage("content/examples/assets/images/sample_texture.png"),
+        z = 0,
+    })
+    set:addLayer(layer)
+    example_print_log("name = " .. set:getName() .. " type = " .. set:type())
+    example_print_log("layers = " .. set:layerCount())
 end
 ```
 
@@ -303,9 +302,9 @@ do
     local layer = lurek.parallax.newLayer({ texture = image })
     layer:addEffectPass("blur", { radius = 1.5 })
     layer:addEffectPass("tint", { r = 1.0, g = 0.8, b = 0.6, a = 1.0 })
-    print("effects = " .. layer:effectCount())
+    example_print_log("effects = " .. layer:effectCount())
     layer:clearEffects()
-    print("after clear = " .. layer:effectCount())
+    example_print_log("after clear = " .. layer:effectCount())
 end
 ```
 
@@ -326,9 +325,9 @@ do
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({ texture = image })
     layer:setClamp(-100, -50, 100, 50)
-    print("clamped")
+    example_print_log("clamped")
     layer:clearClamp()
-    print("clamp cleared")
+    example_print_log("clamp cleared")
 end
 ```
 
@@ -350,9 +349,9 @@ do
     local layer = lurek.parallax.newLayer({ texture = image })
     layer:addEffectPass("blur", { radius = 1.5 })
     layer:addEffectPass("tint", { r = 1.0, g = 0.8, b = 0.6, a = 1.0 })
-    print("effects = " .. layer:effectCount())
+    example_print_log("effects = " .. layer:effectCount())
     layer:clearEffects()
-    print("after clear = " .. layer:effectCount())
+    example_print_log("after clear = " .. layer:effectCount())
 end
 ```
 
@@ -380,9 +379,9 @@ do
     local layer = lurek.parallax.newLayer({ texture = image })
     layer:addEffectPass("blur", { radius = 1.5 })
     layer:addEffectPass("tint", { r = 1.0, g = 0.8, b = 0.6, a = 1.0 })
-    print("effects = " .. layer:effectCount())
+    example_print_log("effects = " .. layer:effectCount())
     layer:clearEffects()
-    print("after clear = " .. layer:effectCount())
+    example_print_log("after clear = " .. layer:effectCount())
 end
 ```
 
@@ -414,7 +413,7 @@ do
         autoscroll_y = -4,
     })
     local vx, vy = layer:getAutoscroll()
-    print("autoscroll = " .. vx .. "," .. vy)
+    example_print_log("autoscroll = " .. vx .. "," .. vy)
 end
 ```
 
@@ -443,7 +442,7 @@ do
         texture = image,
         blend_mode = "screen",
     })
-    print("blend = " .. layer:getBlendMode())
+    example_print_log("blend = " .. layer:getBlendMode())
 end
 ```
 
@@ -472,7 +471,7 @@ do
         texture = image,
         depth = 0.8,
     })
-    print("depth = " .. layer:getDepth())
+    example_print_log("depth = " .. layer:getDepth())
 end
 ```
 
@@ -506,7 +505,7 @@ do
         motion_stretch_max = 2.0,
     })
     local enabled, strength, max_scale = layer:getMotionStretch()
-    print("stretch enabled=" .. tostring(enabled) .. " strength=" .. strength .. " max=" .. max_scale)
+    example_print_log("stretch enabled=" .. tostring(enabled) .. " strength=" .. strength .. " max=" .. max_scale)
 end
 ```
 
@@ -538,7 +537,7 @@ do
         offset_y = -8,
     })
     local ox, oy = layer:getOffset()
-    print("offset = " .. ox .. "," .. oy)
+    example_print_log("offset = " .. ox .. "," .. oy)
 end
 ```
 
@@ -567,7 +566,7 @@ do
         texture = image,
         opacity = 0.35,
     })
-    print("opacity = " .. layer:getOpacity())
+    example_print_log("opacity = " .. layer:getOpacity())
 end
 ```
 
@@ -599,7 +598,7 @@ do
         scroll_factor_y = 0.15,
     })
     local sx, sy = layer:getScrollFactor()
-    print("scroll = " .. sx .. "," .. sy)
+    example_print_log("scroll = " .. sx .. "," .. sy)
 end
 ```
 
@@ -628,8 +627,8 @@ do
     layer:setAutoscroll(16, 0)
     layer:addEffectPass("tint", { r = 1.0, g = 0.8, b = 0.6, a = 1.0 })
     local stats = layer:getStats()
-    print("layer stats tiles=" .. stats.visible_tile_count .. " effects=" .. stats.effect_pass_count)
-    print("layer stats z=" .. stats.z .. " depth=" .. stats.depth)
+    example_print_log("layer stats tiles=" .. stats.visible_tile_count .. " effects=" .. stats.effect_pass_count)
+    example_print_log("layer stats z=" .. stats.z .. " depth=" .. stats.depth)
 end
 ```
 
@@ -658,7 +657,7 @@ do
         texture = image,
         tiling = true,
     })
-    print("tiling = " .. tostring(layer:getTiling()))
+    example_print_log("tiling = " .. tostring(layer:getTiling()))
 end
 ```
 
@@ -694,7 +693,7 @@ do
         tint_a = 0.75,
     })
     local r, g, b, a = layer:getTint()
-    print("tint = " .. r .. "," .. g .. "," .. b .. "," .. a)
+    example_print_log("tint = " .. r .. "," .. g .. "," .. b .. "," .. a)
 end
 ```
 
@@ -723,7 +722,7 @@ do
         texture = image,
         z = -5,
     })
-    print("z = " .. layer:getZ())
+    example_print_log("z = " .. layer:getZ())
 end
 ```
 
@@ -752,7 +751,7 @@ do
         texture = image,
         visible = false,
     })
-    print("visible = " .. tostring(layer:isVisible()))
+    example_print_log("visible = " .. tostring(layer:isVisible()))
 end
 ```
 
@@ -783,7 +782,7 @@ do
     layer:update(0.016)
     layer:render(100, 50)
     layer:renderAuto()
-    print("rendered")
+    example_print_log("rendered")
 end
 ```
 
@@ -807,7 +806,7 @@ do
     layer:update(0.016)
     layer:render(100, 50)
     layer:renderAuto()
-    print("rendered")
+    example_print_log("rendered")
 end
 ```
 
@@ -831,8 +830,8 @@ do
     layer:update(1.0)
     layer:resetAutoscroll()
     local vx, vy = layer:getAutoscroll()
-    print("velocity still = " .. vx .. "," .. vy)
-    print("autoscroll reset")
+    example_print_log("velocity still = " .. vx .. "," .. vy)
+    example_print_log("autoscroll reset")
 end
 ```
 
@@ -861,10 +860,10 @@ do
     local layer = lurek.parallax.newLayer({ texture = image })
     layer:setAutoscroll(20, 0)
     local vx, vy = layer:getAutoscroll()
-    print("autoscroll = " .. vx .. "," .. vy)
+    example_print_log("autoscroll = " .. vx .. "," .. vy)
     layer:update(1.0)
     layer:resetAutoscroll()
-    print("autoscroll reset")
+    example_print_log("autoscroll reset")
 end
 ```
 
@@ -891,9 +890,9 @@ do
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({ texture = image })
     layer:setBlendMode("add")
-    print("blend = " .. layer:getBlendMode())
+    example_print_log("blend = " .. layer:getBlendMode())
     layer:setBlendMode("alpha")
-    print("blend = " .. layer:getBlendMode())
+    example_print_log("blend = " .. layer:getBlendMode())
 end
 ```
 
@@ -923,9 +922,9 @@ do
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({ texture = image })
     layer:setClamp(-100, -50, 100, 50)
-    print("clamped")
+    example_print_log("clamped")
     layer:clearClamp()
-    print("clamp cleared")
+    example_print_log("clamp cleared")
 end
 ```
 
@@ -951,8 +950,10 @@ LParallaxLayer:setDepth(z)
 do
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({ texture = image })
+    example_print_log("depth before = " .. layer:getDepth())
     layer:setDepth(0.5)
-    print("depth = " .. layer:getDepth())
+    example_print_log("depth = " .. layer:getDepth())
+    layer:setZ(layer:getZ() + 1)
 end
 ```
 
@@ -982,7 +983,7 @@ do
     local layer = lurek.parallax.newLayer({ texture = image })
     layer:setMotionStretch(true, 0.5, 2.0)
     local enabled, strength, max_scale = layer:getMotionStretch()
-    print("stretch enabled=" .. tostring(enabled) .. " strength=" .. strength .. " max=" .. max_scale)
+    example_print_log("stretch enabled=" .. tostring(enabled) .. " strength=" .. strength .. " max=" .. max_scale)
 end
 ```
 
@@ -1011,7 +1012,7 @@ do
     local layer = lurek.parallax.newLayer({ texture = image })
     layer:setOffset(10, -5)
     local ox, oy = layer:getOffset()
-    print("offset = " .. ox .. "," .. oy)
+    example_print_log("offset = " .. ox .. "," .. oy)
 end
 ```
 
@@ -1037,8 +1038,10 @@ LParallaxLayer:setOpacity(a)
 do
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({ texture = image })
+    example_print_log("opacity before = " .. layer:getOpacity())
     layer:setOpacity(0.7)
-    print("opacity = " .. layer:getOpacity())
+    example_print_log("opacity = " .. layer:getOpacity())
+    layer:render(0, 0)
 end
 ```
 
@@ -1067,8 +1070,8 @@ do
     local layer = lurek.parallax.newLayer({ texture = image })
     layer:setRepeat(true, false)
     layer:render(32, 16)
-    print("repeat set: horizontal only")
-    print("z = " .. layer:getZ())
+    example_print_log("repeat set: horizontal only")
+    example_print_log("z = " .. layer:getZ())
 end
 ```
 
@@ -1097,8 +1100,8 @@ do
     local layer = lurek.parallax.newLayer({ texture = image })
     layer:setScale(2.0, 2.0)
     layer:render(0, 0)
-    print("scaled 2x")
-    print("type = " .. layer:type())
+    example_print_log("scaled 2x")
+    example_print_log("type = " .. layer:type())
 end
 ```
 
@@ -1127,7 +1130,7 @@ do
     local layer = lurek.parallax.newLayer({ texture = image })
     layer:setScrollFactor(0.5, 0.2)
     local sx, sy = layer:getScrollFactor()
-    print("scroll = " .. sx .. "," .. sy)
+    example_print_log("scroll = " .. sx .. "," .. sy)
 end
 ```
 
@@ -1159,8 +1162,8 @@ do
     })
     layer:setTileSize(64, 64)
     layer:render(0, 0)
-    print("tile size set to 64x64")
-    print("rendered tiled layer")
+    example_print_log("tile size set to 64x64")
+    example_print_log("rendered tiled layer")
 end
 ```
 
@@ -1186,8 +1189,10 @@ LParallaxLayer:setTiling(enabled)
 do
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({ texture = image })
+    example_print_log("tiling before = " .. tostring(layer:getTiling()))
     layer:setTiling(true)
-    print("tiling = " .. tostring(layer:getTiling()))
+    example_print_log("tiling = " .. tostring(layer:getTiling()))
+    layer:render(0, 0)
 end
 ```
 
@@ -1218,7 +1223,7 @@ do
     local layer = lurek.parallax.newLayer({ texture = image })
     layer:setTint(1.0, 0.8, 0.6, 1.0)
     local r, g, b, a = layer:getTint()
-    print("tint = " .. r .. "," .. g .. "," .. b .. "," .. a)
+    example_print_log("tint = " .. r .. "," .. g .. "," .. b .. "," .. a)
 end
 ```
 
@@ -1245,9 +1250,9 @@ do
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({ texture = image })
     layer:setVisible(false)
-    print("visible = " .. tostring(layer:isVisible()))
+    example_print_log("visible = " .. tostring(layer:isVisible()))
     layer:setVisible(true)
-    print("visible = " .. tostring(layer:isVisible()))
+    example_print_log("visible = " .. tostring(layer:isVisible()))
 end
 ```
 
@@ -1273,8 +1278,10 @@ LParallaxLayer:setZ(z)
 do
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({ texture = image })
+    example_print_log("z before = " .. layer:getZ())
     layer:setZ(-5)
-    print("z = " .. layer:getZ())
+    example_print_log("z = " .. layer:getZ())
+    layer:render(0, 0)
 end
 ```
 
@@ -1305,7 +1312,7 @@ do
         scroll_factor_y = 0.2,
         z = -1,
     })
-    print(layer:type())
+    example_print_log(layer:type())
 end
 ```
 
@@ -1335,7 +1342,7 @@ do
     layer:update(0.016)
     layer:render(100, 50)
     layer:renderAuto()
-    print("rendered")
+    example_print_log("rendered")
 end
 ```
 
@@ -1380,8 +1387,8 @@ do
         texture = lurek.render.newImage("content/examples/assets/images/sample_texture.png"),
         z = 10,
     }))
-    print("layers = " .. set:layerCount())
-    print("removed = " .. tostring(set:removeLayerAt(2)) .. " layers = " .. set:layerCount())
+    example_print_log("layers = " .. set:layerCount())
+    example_print_log("removed = " .. tostring(set:removeLayerAt(2)) .. " layers = " .. set:layerCount())
 end
 ```
 
@@ -1420,10 +1427,10 @@ do
         texture = lurek.render.newImage("content/examples/assets/images/sample_texture.png"),
         z = 1,
     }))
-    print("z at 1 = " .. tostring(set:getLayerZAt(1)))
-    print("z at 2 = " .. tostring(set:getLayerZAt(2)))
+    example_print_log("z at 1 = " .. tostring(set:getLayerZAt(1)))
+    example_print_log("z at 2 = " .. tostring(set:getLayerZAt(2)))
     set:sortByZ()
-    print("sorted: z at 1 = " .. tostring(set:getLayerZAt(1)))
+    example_print_log("sorted: z at 1 = " .. tostring(set:getLayerZAt(1)))
 end
 ```
 
@@ -1448,8 +1455,11 @@ LParallaxSet:getName()
 ```lua
 do
     local set = lurek.parallax.newSet("temp")
+    example_print_log("initial name = " .. set:getName())
     set:setName("sky_layers")
-    print("name = " .. set:getName())
+    example_print_log("name = " .. set:getName())
+    set:setVisible(true)
+    example_print_log("visible = " .. tostring(set:isVisible()))
 end
 ```
 
@@ -1478,8 +1488,8 @@ do
     set:addLayer(lurek.parallax.newLayer({ texture = img, z = 1, tiling = true }))
     set:addLayer(lurek.parallax.newLayer({ texture = img, z = 5, depth = 0.7 }))
     local stats = set:getStats()
-    print("set stats name=" .. stats.name .. " layers=" .. stats.layer_count)
-    print("set stats visible tiles=" .. stats.visible_tile_count .. " effects=" .. stats.effect_pass_count)
+    example_print_log("set stats name=" .. stats.name .. " layers=" .. stats.layer_count)
+    example_print_log("set stats visible tiles=" .. stats.visible_tile_count .. " effects=" .. stats.effect_pass_count)
 end
 ```
 
@@ -1504,8 +1514,11 @@ LParallaxSet:isVisible()
 ```lua
 do
     local set = lurek.parallax.newSet("temp")
+    example_print_log("visible before = " .. tostring(set:isVisible()))
     set:setVisible(false)
-    print("visible = " .. tostring(set:isVisible()))
+    example_print_log("visible = " .. tostring(set:isVisible()))
+    set:setVisible(true)
+    example_print_log("visible after restore = " .. tostring(set:isVisible()))
 end
 ```
 
@@ -1542,8 +1555,8 @@ do
         texture = lurek.render.newImage("content/examples/assets/images/sample_texture.png"),
         z = 10,
     }))
-    print("layers = " .. set:layerCount())
-    print("removed = " .. tostring(set:removeLayerAt(2)) .. " layers = " .. set:layerCount())
+    example_print_log("layers = " .. set:layerCount())
+    example_print_log("removed = " .. tostring(set:removeLayerAt(2)) .. " layers = " .. set:layerCount())
 end
 ```
 
@@ -1586,8 +1599,8 @@ do
         texture = lurek.render.newImage("content/examples/assets/images/sample_texture.png"),
         z = 10,
     }))
-    print("layers = " .. set:layerCount())
-    print("removed = " .. tostring(set:removeLayerAt(2)) .. " layers = " .. set:layerCount())
+    example_print_log("layers = " .. set:layerCount())
+    example_print_log("removed = " .. tostring(set:removeLayerAt(2)) .. " layers = " .. set:layerCount())
 end
 ```
 
@@ -1622,7 +1635,7 @@ do
     set:update(0.016)
     set:render(200, 100)
     set:renderAuto()
-    print("set rendered")
+    example_print_log("set rendered")
 end
 ```
 
@@ -1650,7 +1663,7 @@ do
     set:update(0.016)
     set:render(200, 100)
     set:renderAuto()
-    print("set rendered")
+    example_print_log("set rendered")
 end
 ```
 
@@ -1676,11 +1689,11 @@ LParallaxSet:setName(name)
 do
     local set = lurek.parallax.newSet("temp")
     set:setName("sky_layers")
-    print("name = " .. set:getName())
+    example_print_log("name = " .. set:getName())
     set:setVisible(false)
-    print("visible = " .. tostring(set:isVisible()))
+    example_print_log("visible = " .. tostring(set:isVisible()))
     set:setVisible(true)
-    print("visible = " .. tostring(set:isVisible()))
+    example_print_log("visible = " .. tostring(set:isVisible()))
 end
 ```
 
@@ -1706,11 +1719,11 @@ LParallaxSet:setVisible(v)
 do
     local set = lurek.parallax.newSet("temp")
     set:setName("sky_layers")
-    print("name = " .. set:getName())
+    example_print_log("name = " .. set:getName())
     set:setVisible(false)
-    print("visible = " .. tostring(set:isVisible()))
+    example_print_log("visible = " .. tostring(set:isVisible()))
     set:setVisible(true)
-    print("visible = " .. tostring(set:isVisible()))
+    example_print_log("visible = " .. tostring(set:isVisible()))
 end
 ```
 
@@ -1737,10 +1750,10 @@ do
         texture = lurek.render.newImage("content/examples/assets/images/sample_texture.png"),
         z = 1,
     }))
-    print("before sort z1 = " .. tostring(set:getLayerZAt(1)))
-    print("before sort z2 = " .. tostring(set:getLayerZAt(2)))
+    example_print_log("before sort z1 = " .. tostring(set:getLayerZAt(1)))
+    example_print_log("before sort z2 = " .. tostring(set:getLayerZAt(2)))
     set:sortByZ()
-    print("sorted: z at 1 = " .. tostring(set:getLayerZAt(1)))
+    example_print_log("sorted: z at 1 = " .. tostring(set:getLayerZAt(1)))
 end
 ```
 
@@ -1765,7 +1778,11 @@ LParallaxSet:type()
 ```lua
 do
     local set = lurek.parallax.newSet("bg_set")
-    print(set:type())
+    local type_name = set:type()
+    set:setVisible(true)
+    example_print_log("set type = " .. type_name)
+    example_print_log("set name = " .. set:getName())
+    example_print_log("layers = " .. set:layerCount())
 end
 ```
 
@@ -1799,7 +1816,7 @@ do
     set:update(0.016)
     set:render(200, 100)
     set:renderAuto()
-    print("set rendered")
+    example_print_log("set rendered")
 end
 ```
 

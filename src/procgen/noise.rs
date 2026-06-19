@@ -12,6 +12,12 @@
 
 use rayon::prelude::*;
 
+use crate::procgen::limits::{
+    checked_cell_count, validate_finite, validate_non_zero_dimensions, validate_octaves,
+    validate_positive,
+};
+use crate::procgen::{ProcgenError, ProcgenLimits};
+
 /// Distance metric used by Worley/cellular noise to measure feature-point distance.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum DistType {
@@ -64,6 +70,10 @@ pub struct MapGenOptions {
     pub offset_x: f64,
     /// Y offset added to each sample coordinate before scaling.
     pub offset_y: f64,
+    /// When false, `try_generate_map_parallel` falls back to sequential generation.
+    pub parallel_enabled: bool,
+    /// Optional Rayon minimum chunk size used to bound work-stealing granularity.
+    pub parallel_chunk_size: Option<usize>,
 }
 
 /// Provide sane defaults: scale 1.0, 4 octaves FBM Perlin, no offset.
@@ -79,7 +89,41 @@ impl Default for MapGenOptions {
             fractal: FractalType::Fbm,
             offset_x: 0.0,
             offset_y: 0.0,
+            parallel_enabled: true,
+            parallel_chunk_size: None,
         }
+    }
+}
+
+impl MapGenOptions {
+    /// Validate dimensions, finite numeric parameters, and octave budgets for safe map generation.
+    pub fn validate(&self, limits: &ProcgenLimits) -> Result<(), ProcgenError> {
+        validate_positive("scale_x", self.scale_x)?;
+        validate_positive("scale_y", self.scale_y)?;
+        validate_octaves(self.octaves, limits)?;
+        validate_positive("lacunarity", self.lacunarity)?;
+        validate_finite("persistence", self.persistence)?;
+        validate_finite("offset_x", self.offset_x)?;
+        validate_finite("offset_y", self.offset_y)?;
+        if let Some(chunk_size) = self.parallel_chunk_size {
+            if chunk_size == 0 {
+                return Err(ProcgenError::ValueOutOfRange {
+                    field: "parallel_chunk_size",
+                    min: 1.0,
+                    max: usize::MAX as f64,
+                    value: 0.0,
+                });
+            }
+        }
+        if self.persistence < 0.0 {
+            return Err(ProcgenError::ValueOutOfRange {
+                field: "persistence",
+                min: 0.0,
+                max: f64::MAX,
+                value: self.persistence,
+            });
+        }
+        Ok(())
     }
 }
 /// Evaluate 2D Perlin noise at `(x, y)` with the given `seed`; returns a value roughly in -1.0..1.0.
@@ -245,6 +289,15 @@ pub fn perlin4d(x: f32, y: f32, z: f32, w: f32, seed: u32) -> f32 {
 /// Generate a `w × h` noise map in parallel using a default-seed `NoiseGenerator` and `opts`.
 pub fn generate_noise_map_parallel(w: u32, h: u32, opts: &MapGenOptions) -> Vec<f64> {
     NoiseGenerator::new(0).generate_map_parallel(w, h, opts)
+}
+/// Generate a noise map in parallel after validating procgen dimensions and options.
+pub fn try_generate_noise_map_parallel(
+    w: u32,
+    h: u32,
+    opts: &MapGenOptions,
+    limits: &ProcgenLimits,
+) -> Result<Vec<f64>, ProcgenError> {
+    NoiseGenerator::new(0).try_generate_map_parallel(w, h, opts, limits)
 }
 /// Smoothstep quintic fade curve: `6t⁵ − 15t⁴ + 10t³`.
 fn fade(t: f32) -> f32 {
@@ -905,6 +958,53 @@ impl NoiseGenerator {
         let wy = y + strength * self.perlin_2d(x + 9.7, y + 8.1);
         (wx, wy)
     }
+    /// Generate a flat noise map sequentially after validating procgen dimensions and options.
+    pub fn try_generate_map(
+        &self,
+        width: u32,
+        height: u32,
+        opts: &MapGenOptions,
+        limits: &ProcgenLimits,
+    ) -> Result<Vec<f64>, ProcgenError> {
+        validate_non_zero_dimensions(width, height)?;
+        let len = checked_cell_count(width, height, limits)?;
+        opts.validate(limits)?;
+        let mut map = Vec::with_capacity(len);
+        for iy in 0..height {
+            for ix in 0..width {
+                let nx = (ix as f64 + opts.offset_x) * opts.scale_x;
+                let ny = (iy as f64 + opts.offset_y) * opts.scale_y;
+                let val = match opts.fractal {
+                    FractalType::Fbm => self.fbm(
+                        nx,
+                        ny,
+                        opts.octaves,
+                        opts.lacunarity,
+                        opts.persistence,
+                        opts.kind,
+                    ),
+                    FractalType::Ridged => self.ridged(
+                        nx,
+                        ny,
+                        opts.octaves,
+                        opts.lacunarity,
+                        opts.persistence,
+                        opts.kind,
+                    ),
+                    FractalType::Turbulence => self.turbulence(
+                        nx,
+                        ny,
+                        opts.octaves,
+                        opts.lacunarity,
+                        opts.persistence,
+                        opts.kind,
+                    ),
+                };
+                map.push(val);
+            }
+        }
+        Ok(map)
+    }
     /// Generate a flat `width × height` noise map sequentially using `opts`; returns values in approximately -1.0..1.0.
     pub fn generate_map(&self, width: u32, height: u32, opts: &MapGenOptions) -> Vec<f64> {
         let len = (width as usize) * (height as usize);
@@ -944,8 +1044,58 @@ impl NoiseGenerator {
         }
         map
     }
+    /// Generate a flat noise map in parallel after validating procgen dimensions and options.
+    pub fn try_generate_map_parallel(
+        &self,
+        width: u32,
+        height: u32,
+        opts: &MapGenOptions,
+        limits: &ProcgenLimits,
+    ) -> Result<Vec<f64>, ProcgenError> {
+        validate_non_zero_dimensions(width, height)?;
+        let len = checked_cell_count(width, height, limits)?;
+        opts.validate(limits)?;
+        if !opts.parallel_enabled {
+            return self.try_generate_map(width, height, opts, limits);
+        }
+        let scale_x = opts.scale_x;
+        let scale_y = opts.scale_y;
+        let offset_x = opts.offset_x;
+        let offset_y = opts.offset_y;
+        let octaves = opts.octaves;
+        let lacunarity = opts.lacunarity;
+        let persistence = opts.persistence;
+        let kind = opts.kind;
+        let fractal = opts.fractal;
+        let produce = |idx: usize| {
+            let ix = (idx % width as usize) as u32;
+            let iy = (idx / width as usize) as u32;
+            let nx = (ix as f64 + offset_x) * scale_x;
+            let ny = (iy as f64 + offset_y) * scale_y;
+            match fractal {
+                FractalType::Fbm => self.fbm(nx, ny, octaves, lacunarity, persistence, kind),
+                FractalType::Ridged => self.ridged(nx, ny, octaves, lacunarity, persistence, kind),
+                FractalType::Turbulence => {
+                    self.turbulence(nx, ny, octaves, lacunarity, persistence, kind)
+                }
+            }
+        };
+        let map = if let Some(chunk_size) = opts.parallel_chunk_size {
+            (0..len)
+                .into_par_iter()
+                .with_min_len(chunk_size)
+                .map(produce)
+                .collect()
+        } else {
+            (0..len).into_par_iter().map(produce).collect()
+        };
+        Ok(map)
+    }
     /// Generate a flat `width × height` noise map using rayon parallel iteration; faster than `generate_map` for large grids.
     pub fn generate_map_parallel(&self, width: u32, height: u32, opts: &MapGenOptions) -> Vec<f64> {
+        if !opts.parallel_enabled {
+            return self.generate_map(width, height, opts);
+        }
         let len = (width as usize) * (height as usize);
         let scale_x = opts.scale_x;
         let scale_y = opts.scale_y;
@@ -956,24 +1106,28 @@ impl NoiseGenerator {
         let persistence = opts.persistence;
         let kind = opts.kind;
         let fractal = opts.fractal;
-        (0..len)
-            .into_par_iter()
-            .map(|idx| {
-                let ix = (idx % width as usize) as u32;
-                let iy = (idx / width as usize) as u32;
-                let nx = (ix as f64 + offset_x) * scale_x;
-                let ny = (iy as f64 + offset_y) * scale_y;
-                match fractal {
-                    FractalType::Fbm => self.fbm(nx, ny, octaves, lacunarity, persistence, kind),
-                    FractalType::Ridged => {
-                        self.ridged(nx, ny, octaves, lacunarity, persistence, kind)
-                    }
-                    FractalType::Turbulence => {
-                        self.turbulence(nx, ny, octaves, lacunarity, persistence, kind)
-                    }
+        let produce = |idx: usize| {
+            let ix = (idx % width as usize) as u32;
+            let iy = (idx / width as usize) as u32;
+            let nx = (ix as f64 + offset_x) * scale_x;
+            let ny = (iy as f64 + offset_y) * scale_y;
+            match fractal {
+                FractalType::Fbm => self.fbm(nx, ny, octaves, lacunarity, persistence, kind),
+                FractalType::Ridged => self.ridged(nx, ny, octaves, lacunarity, persistence, kind),
+                FractalType::Turbulence => {
+                    self.turbulence(nx, ny, octaves, lacunarity, persistence, kind)
                 }
-            })
-            .collect()
+            }
+        };
+        if let Some(chunk_size) = opts.parallel_chunk_size {
+            (0..len)
+                .into_par_iter()
+                .with_min_len(chunk_size)
+                .map(produce)
+                .collect()
+        } else {
+            (0..len).into_par_iter().map(produce).collect()
+        }
     }
 }
 /// Evaluate tileable 2D Perlin noise at `(x, y)` with periods `(px, py)`; useful for seamless textures.

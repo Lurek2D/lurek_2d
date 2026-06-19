@@ -2,22 +2,15 @@
 
 ## Summary
 
-- This module gives users dependency-aware workflow orchestration for multi-step runtime jobs.
-- Work is modeled as graph-connected steps, enabling explicit ordering and clear prerequisites.
-- Graph validation catches missing dependencies and circular links before execution.
-- Parallel group computation reveals which independent steps can run concurrently.
-- Step policies support delays, retries, conditions, optionality, and metadata tagging.
-- Sync execution is available for blocking workflows with immediate result collection.
-- Async execution supports frame-by-frame progression for non-blocking runtime integration.
-- Progress and event callbacks expose run state for UI and monitoring hooks.
-- Result models capture completed, skipped, failed, cancelled, and timing outcomes.
-- Error modes allow abort-on-failure or continue-on-failure execution strategies.
-- Sub-pipeline embedding supports modular composition of larger workflow graphs.
-- ASCII graph export supports quick debugging and author verification.
-- The module is useful for content pipelines, setup sequences, and orchestration-heavy tools.
-- For users, it replaces fragile ad-hoc sequencing with explicit, reusable workflow contracts.
-
-This module primarily collaborates with `runtime`. Its responsibility should stay inside the Edge/Integration group rather than absorb behavior owned by those neighbors.
+- The `pipeline` module is the engine's workflow-orchestration surface for users who want multi-step processing to behave like explicit directed workflows instead of loosely nested call sequences.
+- Its core value is that staged work becomes data. Steps, dependencies, scheduler policy, inputs, outputs, and result handling can be represented and advanced as pipeline state rather than hidden inside bespoke control flow.
+- DAG structure matters because many real workflows are dependency-aware rather than purely linear: some work can run only after prerequisites complete, while other work may branch, fan out, or proceed in parallel.
+- That makes the module useful for asset processing, validation chains, analytics jobs, build-like tasks, scripted tool workflows, content transforms, and other domains where several operations must be coordinated explicitly.
+- Scheduler logic is important because a pipeline must decide when steps are eligible, blocked, complete, retried, or failed instead of merely storing a list of actions.
+- Result handling matters for the same reason. Multi-step workflows usually need explicit output capture, pass-through state, intermediate artifacts, and error-aware progression rather than simple immediate returns.
+- Tool-facing workflows benefit when those stages stay inspectable instead of becoming a black box.
+- The module therefore gives users a stable vocabulary for reasoning about staged work, dependency flow, and execution state instead of accidental nested control structure.
+- Read `pipeline` as the engine feature for explicit staged workflows with clear execution semantics.
 
 ## Functions
 
@@ -67,8 +60,8 @@ do
 
     local result = pipe:run({})
 
-    print("steps = " .. pipe:getStepCount())
-    print("success = " .. tostring(result.success))
+    example_print_log("steps = " .. pipe:getStepCount())
+    example_print_log("success = " .. tostring(result.success))
 end
 ```
 
@@ -100,8 +93,11 @@ lurek.pipeline.newPipeline(name)
 do
     local pipe = lurek.pipeline.newPipeline("build")
 
-    print("name = " .. pipe:getName())
-    print("step count = " .. pipe:getStepCount())
+    pipe:setErrorMode("continue")
+    pipe:addStep(lurek.pipeline.newStep("compile", function(ctx) ctx.compiled = true end))
+    example_print_log("name = " .. pipe:getName())
+    example_print_log("step count = " .. pipe:getStepCount())
+    example_print_log("mode = " .. pipe:getErrorMode())
 end
 ```
 
@@ -136,8 +132,8 @@ do
         ctx.compiled = true
     end)
 
-    print("step name = " .. step:getName())
-    print("type = " .. step:type())
+    example_print_log("step name = " .. step:getName())
+    example_print_log("type = " .. step:type())
 end
 ```
 
@@ -219,7 +215,7 @@ do
 
     pipe:run(context)
 
-    print("parser = " .. tostring(context.parser))
+    example_print_log("parser = " .. tostring(context.parser))
 end
 ```
 
@@ -272,7 +268,7 @@ do
 
     pipe:run(context)
 
-    print("upgraded = " .. tostring(context.upgraded == true))
+    example_print_log("upgraded = " .. tostring(context.upgraded == true))
 end
 ```
 
@@ -316,8 +312,8 @@ do
 
     local result = pipe:run({})
 
-    print("success = " .. tostring(result.success))
-    print("completed = " .. #result.completed)
+    example_print_log("success = " .. tostring(result.success))
+    example_print_log("completed = " .. #result.completed)
 end
 ```
 
@@ -361,8 +357,8 @@ do
 
     local order, err = main:getExecutionOrder()
 
-    print("steps = " .. main:getStepCount())
-    print(order and ("order = " .. table.concat(order, " -> ")) or ("error = " .. tostring(err)))
+    example_print_log("steps = " .. main:getStepCount())
+    example_print_log(order and ("order = " .. table.concat(order, " -> ")) or ("error = " .. tostring(err)))
 end
 ```
 
@@ -398,8 +394,8 @@ do
 
     local result = pipe:getResult()
 
-    print("cancelled = " .. #result.cancelled)
-    print("hold status = " .. hold:getStatus())
+    example_print_log("cancelled = " .. #result.cancelled)
+    example_print_log("hold status = " .. hold:getStatus())
 end
 ```
 
@@ -425,7 +421,7 @@ do
 
     pipe:clear()
 
-    print("after clear = " .. pipe:getStepCount())
+    example_print_log("after clear = " .. pipe:getStepCount())
 end
 ```
 
@@ -466,8 +462,8 @@ do
 
     local stored = pl:getContext()
 
-    print("loaded = " .. tostring(stored.loaded == true))
-    print("result = " .. tostring(stored.result))
+    example_print_log("loaded = " .. tostring(stored.loaded == true))
+    example_print_log("result = " .. tostring(stored.result))
 end
 ```
 
@@ -493,9 +489,12 @@ LPipeline:getErrorMode()
 do
     local pipe = lurek.pipeline.newPipeline("error-mode")
 
+    example_print_log("default mode = " .. pipe:getErrorMode())
     pipe:setErrorMode("continue")
+    pipe:addStep(lurek.pipeline.newStep("noop", function() end))
 
-    print("mode = " .. pipe:getErrorMode())
+    example_print_log("mode = " .. pipe:getErrorMode())
+    example_print_log("steps = " .. pipe:getStepCount())
 end
 ```
 
@@ -534,7 +533,7 @@ do
 
     local order, err = pipe:getExecutionOrder()
 
-    print(order and ("order = " .. table.concat(order, " -> ")) or ("error = " .. tostring(err)))
+    example_print_log(order and ("order = " .. table.concat(order, " -> ")) or ("error = " .. tostring(err)))
 end
 ```
 
@@ -560,9 +559,12 @@ LPipeline:getName()
 do
     local pipe = lurek.pipeline.newPipeline("build")
 
+    local before = pipe:getName()
     pipe:setName("deploy")
 
-    print("name = " .. pipe:getName())
+    example_print_log("before = " .. before)
+    example_print_log("name = " .. pipe:getName())
+    example_print_log("type = " .. pipe:type())
 end
 ```
 
@@ -602,8 +604,8 @@ do
     local groups, err = pipe:getParallelGroups()
     local firstGroupSize = groups and groups[1] and #groups[1] or 0
 
-    print(err and ("error = " .. err) or ("tiers = " .. #groups))
-    print("first tier size = " .. firstGroupSize)
+    example_print_log(err and ("error = " .. err) or ("tiers = " .. #groups))
+    example_print_log("first tier size = " .. firstGroupSize)
 end
 ```
 
@@ -637,8 +639,8 @@ do
 
     local result = pipe:getResult()
 
-    print("success = " .. tostring(result.success))
-    print("completed = " .. table.concat(result.completed, ", "))
+    example_print_log("success = " .. tostring(result.success))
+    example_print_log("completed = " .. table.concat(result.completed, ", "))
 end
 ```
 
@@ -675,7 +677,7 @@ do
 
     local found = pipe:getStep("beta")
 
-    print("found = " .. (found and found:getName() or "nil"))
+    example_print_log("found = " .. (found and found:getName() or "nil"))
 end
 ```
 
@@ -705,7 +707,7 @@ do
     pipe:addStep(lurek.pipeline.newStep("beta", function() end))
     pipe:addStep(lurek.pipeline.newStep("gamma", function() end))
 
-    print("step count = " .. pipe:getStepCount())
+    example_print_log("step count = " .. pipe:getStepCount())
 end
 ```
 
@@ -742,9 +744,9 @@ do
         seen[steps[i]:getName()] = true
     end
 
-    print("step count = " .. #steps)
-    print("has alpha = " .. tostring(seen.alpha == true))
-    print("has beta = " .. tostring(seen.beta == true))
+    example_print_log("step count = " .. #steps)
+    example_print_log("has alpha = " .. tostring(seen.alpha == true))
+    example_print_log("has beta = " .. tostring(seen.beta == true))
 end
 ```
 
@@ -787,8 +789,8 @@ do
     pipe:addStep(loadB)
     pipe:addStep(compute)
 
-    print("io steps = " .. #pipe:getStepsByTag("io"))
-    print("cpu steps = " .. #pipe:getStepsByTag("cpu"))
+    example_print_log("io steps = " .. #pipe:getStepsByTag("io"))
+    example_print_log("cpu steps = " .. #pipe:getStepsByTag("cpu"))
 end
 ```
 
@@ -823,7 +825,7 @@ do
     pipe:runAsync({})
     pipe:update(1 / 60)
 
-    print("complete = " .. tostring(pipe:isComplete()))
+    example_print_log("complete = " .. tostring(pipe:isComplete()))
 end
 ```
 
@@ -857,7 +859,7 @@ do
 
     pipe:runAsync({})
 
-    print("running = " .. tostring(pipe:isRunning()))
+    example_print_log("running = " .. tostring(pipe:isRunning()))
 end
 ```
 
@@ -892,8 +894,8 @@ do
     end)
     pipe:run({})
 
-    print("event count = " .. eventCount)
-    print("last event = " .. lastEvent)
+    example_print_log("event count = " .. eventCount)
+    example_print_log("last event = " .. lastEvent)
 end
 ```
 
@@ -931,8 +933,8 @@ do
     end)
     pipe:run({})
 
-    print("progress count = " .. #progressLog)
-    print("progress = " .. table.concat(progressLog, ", "))
+    example_print_log("progress count = " .. #progressLog)
+    example_print_log("progress = " .. table.concat(progressLog, ", "))
 end
 ```
 
@@ -964,8 +966,8 @@ do
 
     pipe:removeStep("b")
 
-    print("after remove = " .. pipe:getStepCount())
-    print("has b = " .. tostring(pipe:getStep("b") ~= nil))
+    example_print_log("after remove = " .. pipe:getStepCount())
+    example_print_log("has b = " .. tostring(pipe:getStep("b") ~= nil))
 end
 ```
 
@@ -996,8 +998,8 @@ do
     pipe:reset()
     pipe:run(secondContext)
 
-    print("first = " .. tostring(firstContext.n))
-    print("second = " .. tostring(secondContext.n))
+    example_print_log("first = " .. tostring(firstContext.n))
+    example_print_log("second = " .. tostring(secondContext.n))
 end
 ```
 
@@ -1039,8 +1041,8 @@ do
 
     local result = pl:run(context)
 
-    print("success = " .. tostring(result.success))
-    print("result = " .. tostring(context.result))
+    example_print_log("success = " .. tostring(result.success))
+    example_print_log("result = " .. tostring(context.result))
 end
 ```
 
@@ -1086,8 +1088,8 @@ do
 
     local stored = pipe:getContext()
 
-    print("phase = " .. tostring(stored.phase))
-    print("complete = " .. tostring(pipe:isComplete()))
+    example_print_log("phase = " .. tostring(stored.phase))
+    example_print_log("complete = " .. tostring(pipe:isComplete()))
 end
 ```
 
@@ -1123,9 +1125,9 @@ do
 
     local result = pipe:run({})
 
-    print("mode = " .. pipe:getErrorMode())
-    print("failed = " .. #result.failed)
-    print("completed = " .. #result.completed)
+    example_print_log("mode = " .. pipe:getErrorMode())
+    example_print_log("failed = " .. #result.failed)
+    example_print_log("completed = " .. #result.completed)
 end
 ```
 
@@ -1151,9 +1153,12 @@ LPipeline:setName(name)
 do
     local pipe = lurek.pipeline.newPipeline("build")
 
+    example_print_log("before rename = " .. pipe:getName())
     pipe:setName("deploy")
+    pipe:addStep(lurek.pipeline.newStep("publish", function(ctx) ctx.published = true end))
 
-    print("renamed = " .. pipe:getName())
+    example_print_log("renamed = " .. pipe:getName())
+    example_print_log("steps = " .. pipe:getStepCount())
 end
 ```
 
@@ -1186,7 +1191,7 @@ do
     end)
     pipe:run({})
 
-    print("complete = " .. summary)
+    example_print_log("complete = " .. summary)
 end
 ```
 
@@ -1219,8 +1224,8 @@ do
     end)
     pipe:run({})
 
-    print("completed count = " .. #completedSteps)
-    print("completed = " .. table.concat(completedSteps, ", "))
+    example_print_log("completed count = " .. #completedSteps)
+    example_print_log("completed = " .. table.concat(completedSteps, ", "))
 end
 ```
 
@@ -1256,8 +1261,8 @@ do
     end)
     pipe:run({})
 
-    print("failed count = " .. #failedSteps)
-    print("failed = " .. table.concat(failedSteps, ", "))
+    example_print_log("failed count = " .. #failedSteps)
+    example_print_log("failed = " .. table.concat(failedSteps, ", "))
 end
 ```
 
@@ -1293,7 +1298,7 @@ do
     pipe:addStep(process)
     pipe:addStep(finish)
 
-    print(pipe:toAscii())
+    example_print_log(pipe:toAscii())
 end
 ```
 
@@ -1324,9 +1329,9 @@ do
 
     local tbl = pipe:toTable()
 
-    print("table name = " .. tbl.name)
-    print("error mode = " .. tbl.errorMode)
-    print("step count = " .. #tbl.steps)
+    example_print_log("table name = " .. tbl.name)
+    example_print_log("error mode = " .. tbl.errorMode)
+    example_print_log("step count = " .. #tbl.steps)
 end
 ```
 
@@ -1352,7 +1357,10 @@ LPipeline:type()
 do
     local pipe = lurek.pipeline.newPipeline("typed")
 
-    print("type = " .. pipe:type())
+    pipe:addStep(lurek.pipeline.newStep("inspect", function(ctx) ctx.typed = true end))
+    example_print_log("type = " .. pipe:type())
+    example_print_log("is LPipeline = " .. tostring(pipe:typeOf("LPipeline")))
+    example_print_log("steps = " .. pipe:getStepCount())
 end
 ```
 
@@ -1384,8 +1392,11 @@ LPipeline:typeOf(name)
 do
     local pipe = lurek.pipeline.newPipeline("typed")
 
-    print("is LPipeline = " .. tostring(pipe:typeOf("LPipeline")))
-    print("is Object = " .. tostring(pipe:typeOf("LObject")))
+    local is_pipeline = pipe:typeOf("LPipeline")
+    local is_object = pipe:typeOf("LObject")
+    example_print_log("is LPipeline = " .. tostring(is_pipeline))
+    example_print_log("is Object = " .. tostring(is_object))
+    example_print_log("type = " .. pipe:type())
 end
 ```
 
@@ -1426,8 +1437,8 @@ do
     pipe:runAsync({})
     pipe:update(1 / 60)
 
-    print("running = " .. tostring(pipe:isRunning()))
-    print("status = " .. step:getStatus())
+    example_print_log("running = " .. tostring(pipe:isRunning()))
+    example_print_log("status = " .. step:getStatus())
 end
 ```
 
@@ -1463,8 +1474,8 @@ do
 
     local valid, errors = pipe:validate()
 
-    print("valid = " .. tostring(valid))
-    print("error count = " .. #errors)
+    example_print_log("valid = " .. tostring(valid))
+    example_print_log("error count = " .. #errors)
 end
 ```
 
@@ -1512,8 +1523,8 @@ do
 
     parse:dependsOn("fetch")
 
-    print("parse deps = " .. parse:getDependencyCount())
-    print("first dep = " .. parse:getDependencies()[1])
+    example_print_log("parse deps = " .. parse:getDependencyCount())
+    example_print_log("first dep = " .. parse:getDependencies()[1])
 end
 ```
 
@@ -1551,7 +1562,7 @@ do
     pipe:addStep(step)
     pipe:run({})
 
-    print("attempt = " .. step:getAttempt())
+    example_print_log("attempt = " .. step:getAttempt())
 end
 ```
 
@@ -1586,7 +1597,11 @@ do
     step:setData("version", "1.2.0")
     step:setData("author", "engine")
 
-    print("author = " .. step:getData("author"))
+    local pipe = lurek.pipeline.newPipeline("meta")
+    pipe:addStep(step)
+    example_print_log("version = " .. step:getData("version"))
+    example_print_log("author = " .. step:getData("author"))
+    example_print_log("steps = " .. pipe:getStepCount())
 end
 ```
 
@@ -1616,7 +1631,7 @@ do
 
     step:setDelay(0.5)
 
-    print("delay = " .. step:getDelay())
+    example_print_log("delay = " .. step:getDelay())
 end
 ```
 
@@ -1648,8 +1663,8 @@ do
 
     local deps = report:getDependencies()
 
-    print("dependency count = " .. #deps)
-    print("depends on = " .. deps[1])
+    example_print_log("dependency count = " .. #deps)
+    example_print_log("depends on = " .. deps[1])
 end
 ```
 
@@ -1679,7 +1694,7 @@ do
 
     parse:dependsOn("fetch")
 
-    print("parse deps = " .. parse:getDependencyCount())
+    example_print_log("parse deps = " .. parse:getDependencyCount())
 end
 ```
 
@@ -1711,7 +1726,7 @@ do
     pipe:addStep(step)
     pipe:run({})
 
-    print("duration = " .. tostring(step:getDuration()))
+    example_print_log("duration = " .. tostring(step:getDuration()))
 end
 ```
 
@@ -1745,7 +1760,7 @@ do
     pipe:addStep(step)
     pipe:run({})
 
-    print("step error = " .. tostring(step:getError()))
+    example_print_log("step error = " .. tostring(step:getError()))
 end
 ```
 
@@ -1773,7 +1788,9 @@ do
         ctx.compiled = true
     end)
 
-    print("step name = " .. step:getName())
+    step:setTag("build")
+    example_print_log("step name = " .. step:getName())
+    example_print_log("tag = " .. step:getTag())
 end
 ```
 
@@ -1811,7 +1828,7 @@ do
     pipe:addStep(step)
     pipe:run({})
 
-    print("retry count = " .. step:getRetryCount())
+    example_print_log("retry count = " .. step:getRetryCount())
 end
 ```
 
@@ -1842,9 +1859,9 @@ do
 
     pipe:addStep(step)
 
-    print("before run = " .. step:getStatus())
+    example_print_log("before run = " .. step:getStatus())
     pipe:run({})
-    print("after run = " .. step:getStatus())
+    example_print_log("after run = " .. step:getStatus())
 end
 ```
 
@@ -1872,7 +1889,10 @@ do
 
     step:setTag("io")
 
-    print("tag = " .. step:getTag())
+    local pipe = lurek.pipeline.newPipeline("tags")
+    pipe:addStep(step)
+    example_print_log("tag = " .. step:getTag())
+    example_print_log("io steps = " .. #pipe:getStepsByTag("io"))
 end
 ```
 
@@ -1902,7 +1922,7 @@ do
 
     step:setTimeout(5.0)
 
-    print("timeout = " .. step:getTimeout())
+    example_print_log("timeout = " .. step:getTimeout())
 end
 ```
 
@@ -1932,7 +1952,7 @@ do
 
     step:setAsync(true)
 
-    print("is async = " .. tostring(step:isAsync()))
+    example_print_log("is async = " .. tostring(step:isAsync()))
 end
 ```
 
@@ -1962,7 +1982,7 @@ do
 
     step:setOptional(true)
 
-    print("optional = " .. tostring(step:isOptional()))
+    example_print_log("optional = " .. tostring(step:isOptional()))
 end
 ```
 
@@ -1992,7 +2012,7 @@ do
 
     step:setAsync(true)
 
-    print("is async = " .. tostring(step:isAsync()))
+    example_print_log("is async = " .. tostring(step:isAsync()))
 end
 ```
 
@@ -2032,8 +2052,8 @@ do
 
     local result = pipe:run(context)
 
-    print("completed = " .. #result.completed)
-    print("ran = " .. tostring(context.ran == true))
+    example_print_log("completed = " .. #result.completed)
+    example_print_log("ran = " .. tostring(context.ran == true))
 end
 ```
 
@@ -2073,8 +2093,8 @@ do
 
     local result = pipe:run(context)
 
-    print("skipped = " .. #result.skipped)
-    print("ran = " .. tostring(context.ran == true))
+    example_print_log("skipped = " .. #result.skipped)
+    example_print_log("ran = " .. tostring(context.ran == true))
 end
 ```
 
@@ -2104,8 +2124,8 @@ do
     step:setData("version", "1.2.0")
     step:setData("author", "engine")
 
-    print("version = " .. step:getData("version"))
-    print("author = " .. step:getData("author"))
+    example_print_log("version = " .. step:getData("version"))
+    example_print_log("author = " .. step:getData("author"))
 end
 ```
 
@@ -2135,7 +2155,7 @@ do
 
     step:setDelay(0.5)
 
-    print("delay = " .. step:getDelay())
+    example_print_log("delay = " .. step:getDelay())
 end
 ```
 
@@ -2172,8 +2192,8 @@ do
     pipe:addStep(step)
     pipe:run({})
 
-    print("error = " .. tostring(step:getError()))
-    print("callback = " .. errorMsg)
+    example_print_log("error = " .. tostring(step:getError()))
+    example_print_log("callback = " .. errorMsg)
 end
 ```
 
@@ -2214,9 +2234,9 @@ do
 
     local result = pipe:run({})
 
-    print("optional = " .. tostring(optionalStep:isOptional()))
-    print("failed = " .. #result.failed)
-    print("completed = " .. #result.completed)
+    example_print_log("optional = " .. tostring(optionalStep:isOptional()))
+    example_print_log("failed = " .. #result.failed)
+    example_print_log("completed = " .. #result.completed)
 end
 ```
 
@@ -2254,8 +2274,8 @@ do
     pipe:addStep(step)
     pipe:run({})
 
-    print("retry count = " .. step:getRetryCount())
-    print("attempt = " .. step:getAttempt())
+    example_print_log("retry count = " .. step:getRetryCount())
+    example_print_log("attempt = " .. step:getAttempt())
 end
 ```
 
@@ -2293,8 +2313,8 @@ do
     pipe:addStep(step)
     pipe:run({})
 
-    print("attempt = " .. step:getAttempt())
-    print("retry count = " .. step:getRetryCount())
+    example_print_log("attempt = " .. step:getAttempt())
+    example_print_log("retry count = " .. step:getRetryCount())
 end
 ```
 
@@ -2331,8 +2351,8 @@ do
     pipe:addStep(loadB)
     pipe:addStep(compute)
 
-    print("s1 tag = " .. loadA:getTag())
-    print("io steps = " .. #pipe:getStepsByTag("io"))
+    example_print_log("s1 tag = " .. loadA:getTag())
+    example_print_log("io steps = " .. #pipe:getStepsByTag("io"))
 end
 ```
 
@@ -2362,7 +2382,7 @@ do
 
     step:setTimeout(5.0)
 
-    print("timeout = " .. step:getTimeout())
+    example_print_log("timeout = " .. step:getTimeout())
 end
 ```
 
@@ -2387,8 +2407,14 @@ LPipelineStep:type()
 ```lua
 do
     local step = lurek.pipeline.newStep("typed", function() end)
-
-    print("type = " .. step:type())
+    step:setTag("introspection")
+    step:setData("owner", "debug_tools")
+    local type_name = step:type()
+    local tag = step:getTag()
+    local owner = step:getData("owner")
+    lurek.log.info("pipeline step type=" .. tostring(type_name))
+    lurek.log.info("pipeline step tag=" .. tostring(tag))
+    lurek.log.info("pipeline step owner=" .. tostring(owner))
 end
 ```
 
@@ -2419,9 +2445,13 @@ LPipelineStep:typeOf(name)
 ```lua
 do
     local step = lurek.pipeline.newStep("typed", function() end)
-
-    print("is LPipelineStep = " .. tostring(step:typeOf("LPipelineStep")))
-    print("is Object = " .. tostring(step:typeOf("LObject")))
+    step:setTag("introspection")
+    local is_step = step:typeOf("LPipelineStep")
+    local is_object = step:typeOf("LObject")
+    local is_pipeline = step:typeOf("LPipeline")
+    lurek.log.info("matches LPipelineStep=" .. tostring(is_step))
+    lurek.log.info("matches LObject=" .. tostring(is_object))
+    lurek.log.info("matches LPipeline=" .. tostring(is_pipeline))
 end
 ```
 

@@ -14,6 +14,8 @@
 //! Open this file when runtime ownership or physics behavior changes; pure shape and zone definitions live nearby.
 
 use super::body::{Body, BodyShape, BodyType};
+use super::error::PhysicsError;
+use super::limits::{validate_finite, validate_positive, PhysicsLimits};
 use super::shape::Shape;
 use super::types::BodyId;
 use super::zone::{PhysicsZone, ZoneEvent, ZoneGravityMode, ZoneTracker};
@@ -41,11 +43,10 @@ impl LocalEventCollector {
     }
     /// Drain all buffered events and return them.
     fn drain(&self) -> Vec<CollisionEvent> {
-        self.events
-            .lock()
-            .expect("event mutex not poisoned")
-            .drain(..)
-            .collect()
+        match self.events.lock() {
+            Ok(mut guard) => guard.drain(..).collect(),
+            Err(poisoned) => poisoned.into_inner().drain(..).collect(),
+        }
     }
 }
 /// Satisfies rapier `EventHandler` by storing events in the mutex.
@@ -58,10 +59,10 @@ impl EventHandler for LocalEventCollector {
         event: CollisionEvent,
         _contact_pair: Option<&ContactPair>,
     ) {
-        self.events
-            .lock()
-            .expect("event mutex not poisoned")
-            .push(event);
+        match self.events.lock() {
+            Ok(mut guard) => guard.push(event),
+            Err(poisoned) => poisoned.into_inner().push(event),
+        }
     }
     /// No-op; contact force events are not used.
     fn handle_contact_force_event(
@@ -179,6 +180,35 @@ impl Default for PhysicsQueryFilter {
         }
     }
 }
+/// Runtime diagnostics recorded by the physics world across steps and strict mutators.
+/// # Fields
+/// - `skipped_steps`: invalid or empty `step` calls rejected before rapier.
+/// - `clamped_steps`: `step` calls whose dt was reduced to the configured ceiling.
+/// - `invalid_operations`: strict helper failures observed through legacy wrappers.
+/// - `last_bodies_scanned`: body slots examined during the most recent step.
+/// - `last_colliders_rebuilt`: collider rebuilds triggered during the most recent step.
+/// - `last_zone_checks`: body-zone containment checks performed during the most recent step.
+/// - `last_contacts`: contact events emitted during the most recent step.
+/// - `last_synced_bodies`: body mirrors pushed into rapier during the most recent step.
+#[derive(Debug, Clone, Copy, Default)]
+pub struct PhysicsDiagnostics {
+    /// Invalid or empty `step` calls rejected before rapier.
+    pub skipped_steps: u64,
+    /// `step` calls whose dt was reduced to the configured ceiling.
+    pub clamped_steps: u64,
+    /// Strict helper failures observed through legacy wrappers.
+    pub invalid_operations: u64,
+    /// Body slots examined during the most recent step.
+    pub last_bodies_scanned: usize,
+    /// Collider rebuilds triggered during the most recent step.
+    pub last_colliders_rebuilt: usize,
+    /// Body-zone containment checks performed during the most recent step.
+    pub last_zone_checks: usize,
+    /// Contact events emitted during the most recent step.
+    pub last_contacts: usize,
+    /// Body mirrors pushed into rapier during the most recent step.
+    pub last_synced_bodies: usize,
+}
 /// Lightweight world diagnostics for Lua/editor tooling.
 /// # Fields
 /// - `bodies`: active body count.
@@ -188,6 +218,14 @@ impl Default for PhysicsQueryFilter {
 /// - `joint_slots`: total allocated joint slots.
 /// - `zones`: active zone count.
 /// - `sleeping_bodies`: active bodies currently sleeping.
+/// - `skipped_steps`: invalid or empty `step` calls rejected before rapier.
+/// - `clamped_steps`: `step` calls whose dt was reduced to the configured ceiling.
+/// - `invalid_operations`: strict helper failures observed through legacy wrappers.
+/// - `bodies_scanned`: body slots examined during the most recent step.
+/// - `colliders_rebuilt`: collider rebuilds triggered during the most recent step.
+/// - `zone_checks`: body-zone containment checks performed during the most recent step.
+/// - `contacts`: contact events emitted during the most recent step.
+/// - `synced_bodies`: body mirrors pushed into rapier during the most recent step.
 #[derive(Debug, Clone, Copy, Default)]
 pub struct PhysicsWorldStats {
     /// Active body count.
@@ -204,6 +242,22 @@ pub struct PhysicsWorldStats {
     pub zones: usize,
     /// Active bodies currently sleeping.
     pub sleeping_bodies: usize,
+    /// Invalid or empty `step` calls rejected before rapier.
+    pub skipped_steps: u64,
+    /// `step` calls whose dt was reduced to the configured ceiling.
+    pub clamped_steps: u64,
+    /// Strict helper failures observed through legacy wrappers.
+    pub invalid_operations: u64,
+    /// Body slots examined during the most recent step.
+    pub bodies_scanned: usize,
+    /// Collider rebuilds triggered during the most recent step.
+    pub colliders_rebuilt: usize,
+    /// Body-zone containment checks performed during the most recent step.
+    pub zone_checks: usize,
+    /// Contact events emitted during the most recent step.
+    pub contacts: usize,
+    /// Body mirrors pushed into rapier during the most recent step.
+    pub synced_bodies: usize,
 }
 /// Full rapier2d-backed simulation world.
 /// # Fields
@@ -239,10 +293,20 @@ pub struct PhysicsWorldStats {
 /// - `pixels_per_meter`: pixels-to-meter conversion ratio.
 /// - `joint_break_forces`: optional joint break thresholds.
 /// - `one_way_normals`: one-way platform normals by body id.
+/// - `body_dirty_sync`: explicit mirror-to-rapier sync flags for dynamic bodies.
+/// - `body_base_gravity_scales`: gravity scales restored after temporary zone overrides.
+/// - `body_base_linear_damping`: linear damping restored after temporary zone overrides.
+/// - `body_base_angular_damping`: angular damping restored after temporary zone overrides.
 /// - `zones`: registered physics zones.
 /// - `zone_id_counter`: next stable zone id.
 /// - `zone_tracker`: body/zone membership tracker.
 /// - `zone_events`: buffered zone enter/leave events.
+/// - `limits`: shared safety ceilings for strict helpers and bounded stepping.
+/// - `diagnostics`: cumulative and per-step instrumentation counters.
+/// - `rebuild_scratch`: reusable body-id buffer for collider rebuild scans.
+/// - `sync_scratch`: reusable mirror-state buffer for rapier sync.
+/// - `sorted_zone_indices`: reusable priority-order buffer for zones.
+/// - `default_gravity`: gravity captured at construction for full reset semantics.
 /// # Fields
 /// See inline field docs below for the authoritative per-field details.
 pub struct World {
@@ -308,6 +372,14 @@ pub struct World {
     joint_break_forces: HashMap<usize, f32>,
     /// One-way platform normal per body id; `None` means standard two-way.
     one_way_normals: Vec<Option<(f32, f32)>>,
+    /// Explicit mirror-to-rapier sync flags for dynamic bodies.
+    body_dirty_sync: Vec<bool>,
+    /// Gravity scales restored after temporary zone overrides.
+    body_base_gravity_scales: Vec<f32>,
+    /// Linear damping restored after temporary zone overrides.
+    body_base_linear_damping: Vec<f32>,
+    /// Angular damping restored after temporary zone overrides.
+    body_base_angular_damping: Vec<f32>,
     /// Active trigger zones.
     zones: Vec<PhysicsZone>,
     /// Monotonically increasing id for zones.
@@ -316,6 +388,18 @@ pub struct World {
     zone_tracker: ZoneTracker,
     /// Zone enter/exit events emitted last step.
     zone_events: Vec<ZoneEvent>,
+    /// Shared safety ceilings for strict helpers and bounded stepping.
+    limits: PhysicsLimits,
+    /// Cumulative and per-step instrumentation counters.
+    diagnostics: PhysicsDiagnostics,
+    /// Reusable body-id buffer for collider rebuild scans.
+    rebuild_scratch: Vec<usize>,
+    /// Reusable mirror-state buffer for rapier sync.
+    sync_scratch: Vec<Option<BodySyncState>>,
+    /// Reusable priority-order buffer for zones.
+    sorted_zone_indices: Vec<usize>,
+    /// Gravity captured at construction for full reset semantics.
+    default_gravity: Vector,
 }
 /// Physics world operations: body management, stepping, joints, queries, zones, and debug rendering.
 impl World {
@@ -619,10 +703,20 @@ impl World {
             pixels_per_meter: 1.0,
             joint_break_forces: HashMap::new(),
             one_way_normals: Vec::new(),
+            body_dirty_sync: Vec::new(),
+            body_base_gravity_scales: Vec::new(),
+            body_base_linear_damping: Vec::new(),
+            body_base_angular_damping: Vec::new(),
             zones: Vec::new(),
             zone_id_counter: 0,
             zone_tracker: ZoneTracker::new(),
             zone_events: Vec::new(),
+            limits: PhysicsLimits::default(),
+            diagnostics: PhysicsDiagnostics::default(),
+            rebuild_scratch: Vec::new(),
+            sync_scratch: Vec::new(),
+            sorted_zone_indices: Vec::new(),
+            default_gravity: Vector::new(gx, gy),
         }
     }
     /// Map `BodyType` to the equivalent rapier `RigidBodyType`.
@@ -659,6 +753,75 @@ impl World {
             flags,
             groups,
             ..QueryFilter::default()
+        }
+    }
+
+    fn record_invalid_operation(&mut self) {
+        self.diagnostics.invalid_operations += 1;
+    }
+
+    fn active_body_handle_result(&self, id: usize) -> Result<RigidBodyHandle, PhysicsError> {
+        self.active_body_handle(id)
+            .ok_or(PhysicsError::InvalidBodyReference { body_id: id })
+    }
+
+    fn validate_fixture_material(
+        density: f32,
+        friction: f32,
+        restitution: f32,
+    ) -> Result<(), PhysicsError> {
+        validate_positive("density", f64::from(density))?;
+        validate_finite("friction", f64::from(friction))?;
+        validate_finite("restitution", f64::from(restitution))?;
+        if !(0.0..=1.0).contains(&friction) {
+            return Err(PhysicsError::ValueOutOfRange {
+                field: "friction",
+                min: 0.0,
+                max: 1.0,
+                value: f64::from(friction),
+            });
+        }
+        if !(0.0..=1.0).contains(&restitution) {
+            return Err(PhysicsError::ValueOutOfRange {
+                field: "restitution",
+                min: 0.0,
+                max: 1.0,
+                value: f64::from(restitution),
+            });
+        }
+        Ok(())
+    }
+
+    fn validate_joint_pair(
+        &self,
+        body_a: usize,
+        body_b: usize,
+    ) -> Result<(RigidBodyHandle, RigidBodyHandle), PhysicsError> {
+        let ha = self.active_body_handle_result(body_a)?;
+        let hb = self.active_body_handle_result(body_b)?;
+        Ok((ha, hb))
+    }
+
+    fn ensure_joint_capacity(&self) -> Result<(), PhysicsError> {
+        if self.joint_handles.len() >= self.limits.max_joints {
+            return Err(PhysicsError::CountLimitExceeded {
+                context: "physics joints",
+                count: self.joint_handles.len() + 1,
+                max: self.limits.max_joints,
+            });
+        }
+        Ok(())
+    }
+
+    /// Return the cumulative and latest-step diagnostics recorded by the world.
+    pub fn get_diagnostics(&self) -> PhysicsDiagnostics {
+        self.diagnostics
+    }
+
+    /// Mark a body mirror as needing an explicit sync into rapier on the next step.
+    pub fn mark_body_dirty(&mut self, id: usize) {
+        if let Some(dirty) = self.body_dirty_sync.get_mut(id) {
+            *dirty = true;
         }
     }
     /// Return true when a body id names a live body slot.
@@ -816,8 +979,59 @@ impl World {
         self.collider_to_body.insert(collider_handle, id);
         self.bodies.push(body);
         self.one_way_normals.push(None);
+        self.body_dirty_sync.push(false);
+        self.body_base_gravity_scales.push(1.0);
+        self.body_base_linear_damping.push(0.0);
+        self.body_base_angular_damping.push(0.0);
         BodyId(id)
     }
+    /// Add an extra collider shape to an existing body using strict validation.
+    pub fn try_add_fixture(
+        &mut self,
+        body_id: usize,
+        shape: Shape,
+        density: f32,
+        friction: f32,
+        restitution: f32,
+        sensor: bool,
+    ) -> Result<usize, PhysicsError> {
+        let body_handle = self.active_body_handle_result(body_id)?;
+        let body = self
+            .bodies
+            .get(body_id)
+            .ok_or(PhysicsError::InvalidBodyReference { body_id })?;
+        if self.extra_collider_handles[body_id].len() >= self.limits.max_colliders_per_body {
+            return Err(PhysicsError::CountLimitExceeded {
+                context: "physics fixtures",
+                count: self.extra_collider_handles[body_id].len() + 1,
+                max: self.limits.max_colliders_per_body,
+            });
+        }
+        shape.validate(&self.limits)?;
+        Self::validate_fixture_material(density, friction, restitution)?;
+        let builder = shape
+            .to_rapier_collider()
+            .ok_or(PhysicsError::DegenerateGeometry {
+                context: "physics fixture",
+                detail: "shape could not produce a rapier collider",
+            })?;
+        let collider = builder
+            .density(density)
+            .friction(friction)
+            .restitution(restitution)
+            .sensor(sensor)
+            .collision_groups(Self::collision_groups(body.layer, body.mask))
+            .active_events(ActiveEvents::COLLISION_EVENTS)
+            .build();
+        let handle = self
+            .rcolliders
+            .insert_with_parent(collider, body_handle, &mut self.rbodies);
+        self.collider_to_body.insert(handle, body_id);
+        let extras = &mut self.extra_collider_handles[body_id];
+        extras.push(handle);
+        Ok(extras.len())
+    }
+
     /// Add an extra collider shape to an existing body; returns the fixture index.
     pub fn add_fixture(
         &mut self,
@@ -828,32 +1042,13 @@ impl World {
         restitution: f32,
         sensor: bool,
     ) -> usize {
-        let body_handle = match self.active_body_handle(body_id) {
-            Some(h) => h,
-            None => return 0,
-        };
-        let (layer, mask) = match self.bodies.get(body_id) {
-            Some(body) => (body.layer, body.mask),
-            None => return 0,
-        };
-        let builder = shape
-            .to_rapier_collider()
-            .unwrap_or_else(|| ColliderBuilder::cuboid(0.5, 0.5));
-        let collider = builder
-            .density(density)
-            .friction(friction)
-            .restitution(restitution)
-            .sensor(sensor)
-            .collision_groups(Self::collision_groups(layer, mask))
-            .active_events(ActiveEvents::COLLISION_EVENTS)
-            .build();
-        let handle = self
-            .rcolliders
-            .insert_with_parent(collider, body_handle, &mut self.rbodies);
-        self.collider_to_body.insert(handle, body_id);
-        let extras = &mut self.extra_collider_handles[body_id];
-        extras.push(handle);
-        extras.len()
+        match self.try_add_fixture(body_id, shape, density, friction, restitution, sensor) {
+            Ok(index) => index,
+            Err(_) => {
+                self.record_invalid_operation();
+                0
+            }
+        }
     }
     /// Return the number of colliders attached to `body_id`.
     pub fn fixture_count(&self, body_id: usize) -> usize {
@@ -862,10 +1057,21 @@ impl World {
         }
         1 + self.extra_collider_handles[body_id].len()
     }
-    /// Set friction on a specific fixture of `body_id`.
-    pub fn set_fixture_friction(&mut self, body_id: usize, fixture_idx: usize, friction: f32) {
-        if !self.has_body(body_id) {
-            return;
+    /// Set friction on a specific fixture of `body_id` using strict validation.
+    pub fn try_set_fixture_friction(
+        &mut self,
+        body_id: usize,
+        fixture_idx: usize,
+        friction: f32,
+    ) -> Result<(), PhysicsError> {
+        validate_finite("friction", f64::from(friction))?;
+        if !(0.0..=1.0).contains(&friction) {
+            return Err(PhysicsError::ValueOutOfRange {
+                field: "friction",
+                min: 0.0,
+                max: 1.0,
+                value: f64::from(friction),
+            });
         }
         let handle = if fixture_idx == 0 {
             self.collider_handles.get(body_id).copied()
@@ -874,13 +1080,70 @@ impl World {
                 .get(body_id)
                 .and_then(|v| v.get(fixture_idx - 1))
                 .copied()
-        };
-        if let Some(h) = handle {
-            if let Some(col) = self.rcolliders.get_mut(h) {
-                col.set_friction(friction);
-            }
+        }
+        .ok_or(PhysicsError::InvalidFixtureReference {
+            body_id,
+            fixture_index: fixture_idx,
+        })?;
+        let collider = self
+            .rcolliders
+            .get_mut(handle)
+            .ok_or(PhysicsError::InvalidFixtureReference {
+                body_id,
+                fixture_index: fixture_idx,
+            })?;
+        collider.set_friction(friction);
+        Ok(())
+    }
+
+    /// Set friction on a specific fixture of `body_id`.
+    pub fn set_fixture_friction(&mut self, body_id: usize, fixture_idx: usize, friction: f32) {
+        if self
+            .try_set_fixture_friction(body_id, fixture_idx, friction)
+            .is_err()
+        {
+            self.record_invalid_operation();
         }
     }
+    /// Set restitution (bounciness) on a specific fixture of `body_id`.
+    pub fn try_set_fixture_restitution(
+        &mut self,
+        body_id: usize,
+        fixture_idx: usize,
+        restitution: f32,
+    ) -> Result<(), PhysicsError> {
+        validate_finite("restitution", f64::from(restitution))?;
+        if !(0.0..=1.0).contains(&restitution) {
+            return Err(PhysicsError::ValueOutOfRange {
+                field: "restitution",
+                min: 0.0,
+                max: 1.0,
+                value: f64::from(restitution),
+            });
+        }
+        let handle = if fixture_idx == 0 {
+            self.collider_handles.get(body_id).copied()
+        } else {
+            self.extra_collider_handles
+                .get(body_id)
+                .and_then(|v| v.get(fixture_idx - 1))
+                .copied()
+        }
+        .ok_or(PhysicsError::InvalidFixtureReference {
+            body_id,
+            fixture_index: fixture_idx,
+        })?;
+        let collider = self
+            .rcolliders
+            .get_mut(handle)
+            .ok_or(PhysicsError::InvalidFixtureReference {
+                body_id,
+                fixture_index: fixture_idx,
+            })?;
+        collider.set_restitution(restitution);
+        Ok(())
+    }
+
     /// Set restitution (bounciness) on a specific fixture of `body_id`.
     pub fn set_fixture_restitution(
         &mut self,
@@ -888,28 +1151,20 @@ impl World {
         fixture_idx: usize,
         restitution: f32,
     ) {
-        if !self.has_body(body_id) {
-            return;
-        }
-        let handle = if fixture_idx == 0 {
-            self.collider_handles.get(body_id).copied()
-        } else {
-            self.extra_collider_handles
-                .get(body_id)
-                .and_then(|v| v.get(fixture_idx - 1))
-                .copied()
-        };
-        if let Some(h) = handle {
-            if let Some(col) = self.rcolliders.get_mut(h) {
-                col.set_restitution(restitution);
-            }
+        if self
+            .try_set_fixture_restitution(body_id, fixture_idx, restitution)
+            .is_err()
+        {
+            self.record_invalid_operation();
         }
     }
-    /// Enable or disable the sensor flag on a specific fixture of `body_id`.
-    pub fn set_fixture_sensor(&mut self, body_id: usize, fixture_idx: usize, sensor: bool) {
-        if !self.has_body(body_id) {
-            return;
-        }
+    /// Enable or disable the sensor flag on a specific fixture of `body_id` using strict validation.
+    pub fn try_set_fixture_sensor(
+        &mut self,
+        body_id: usize,
+        fixture_idx: usize,
+        sensor: bool,
+    ) -> Result<(), PhysicsError> {
         let handle = if fixture_idx == 0 {
             self.collider_handles.get(body_id).copied()
         } else {
@@ -917,11 +1172,29 @@ impl World {
                 .get(body_id)
                 .and_then(|v| v.get(fixture_idx - 1))
                 .copied()
-        };
-        if let Some(h) = handle {
-            if let Some(col) = self.rcolliders.get_mut(h) {
-                col.set_sensor(sensor);
-            }
+        }
+        .ok_or(PhysicsError::InvalidFixtureReference {
+            body_id,
+            fixture_index: fixture_idx,
+        })?;
+        let collider = self
+            .rcolliders
+            .get_mut(handle)
+            .ok_or(PhysicsError::InvalidFixtureReference {
+                body_id,
+                fixture_index: fixture_idx,
+            })?;
+        collider.set_sensor(sensor);
+        Ok(())
+    }
+
+    /// Enable or disable the sensor flag on a specific fixture of `body_id`.
+    pub fn set_fixture_sensor(&mut self, body_id: usize, fixture_idx: usize, sensor: bool) {
+        if self
+            .try_set_fixture_sensor(body_id, fixture_idx, sensor)
+            .is_err()
+        {
+            self.record_invalid_operation();
         }
     }
     /// Return a shared reference to body `id`, or `None` if out of range.
@@ -940,6 +1213,26 @@ impl World {
     pub fn body_count(&self) -> usize {
         self.body_active.iter().filter(|&&active| active).count()
     }
+    /// Add a revolute joint between two bodies at the given local anchor using strict validation.
+    pub fn try_add_revolute_joint(
+        &mut self,
+        body_a: usize,
+        body_b: usize,
+        anchor_x: f32,
+        anchor_y: f32,
+    ) -> Result<usize, PhysicsError> {
+        self.ensure_joint_capacity()?;
+        let (ha, hb) = self.validate_joint_pair(body_a, body_b)?;
+        validate_finite("anchor_x", f64::from(anchor_x))?;
+        validate_finite("anchor_y", f64::from(anchor_y))?;
+        let joint = RevoluteJointBuilder::new()
+            .local_anchor1(Vector::new(anchor_x, anchor_y))
+            .local_anchor2(Vector::new(0.0_f32, 0.0_f32))
+            .build();
+        let handle = self.impulse_joints.insert(ha, hb, joint, true);
+        Ok(self.register_joint(handle, "revolute"))
+    }
+
     /// Add a revolute joint between two bodies at the given local anchor; return joint id.
     pub fn add_revolute_joint(
         &mut self,
@@ -948,20 +1241,13 @@ impl World {
         anchor_x: f32,
         anchor_y: f32,
     ) -> usize {
-        let ha = match self.active_body_handle(body_a) {
-            Some(h) => h,
-            None => return 0,
-        };
-        let hb = match self.active_body_handle(body_b) {
-            Some(h) => h,
-            None => return 0,
-        };
-        let joint = RevoluteJointBuilder::new()
-            .local_anchor1(Vector::new(anchor_x, anchor_y))
-            .local_anchor2(Vector::new(0.0_f32, 0.0_f32))
-            .build();
-        let handle = self.impulse_joints.insert(ha, hb, joint, true);
-        self.register_joint(handle, "revolute")
+        match self.try_add_revolute_joint(body_a, body_b, anchor_x, anchor_y) {
+            Ok(id) => id,
+            Err(_) => {
+                self.record_invalid_operation();
+                0
+            }
+        }
     }
     /// Cast a ray from `(x1,y1)` to `(x2,y2)` and return the first hit, or `None`.
     pub fn raycast(&self, x1: f32, y1: f32, x2: f32, y2: f32) -> Option<RaycastHit> {
@@ -1000,46 +1286,70 @@ impl World {
     }
     /// Step the simulation by `dt` seconds; synchronises body state with rapier.
     pub fn step(&mut self, dt: f32) {
-        self.params.dt = dt;
         self.collision_events.clear();
         self.begin_contact_events.clear();
         self.end_contact_events.clear();
-        let n = self.bodies.len();
-        let rebuild_ids: Vec<usize> = (0..n)
-            .filter(|&i| {
-                if !self.has_body(i) {
-                    return false;
-                }
-                let b = &self.bodies[i];
-                b.shape != self.cached_shapes[i]
-                    || (b.restitution - self.cached_restitutions[i]).abs() > 1e-6
-                    || (b.friction - self.cached_frictions[i]).abs() > 1e-6
-                    || (b.layer, b.mask) != self.cached_layers[i]
-            })
-            .collect();
-        for i in rebuild_ids {
-            self.rebuild_collider(i);
+        self.diagnostics.last_bodies_scanned = 0;
+        self.diagnostics.last_colliders_rebuilt = 0;
+        self.diagnostics.last_zone_checks = 0;
+        self.diagnostics.last_contacts = 0;
+        self.diagnostics.last_synced_bodies = 0;
+        if !dt.is_finite() || dt <= 0.0 {
+            self.diagnostics.skipped_steps += 1;
+            return;
         }
-        let sync: Vec<Option<BodySyncState>> = self
-            .bodies
-            .iter()
-            .enumerate()
-            .map(|(idx, b)| {
-                if !self.has_body(idx) {
-                    return None;
-                }
-                Some((
-                    b.position.x,
-                    b.position.y,
-                    b.velocity.x,
-                    b.velocity.y,
-                    b.angle,
-                    b.angular_velocity,
-                    b.body_type,
-                ))
-            })
-            .collect();
-        for (i, item) in sync.iter().enumerate() {
+        let effective_dt = if dt > self.limits.max_step_dt {
+            self.diagnostics.clamped_steps += 1;
+            self.limits.max_step_dt
+        } else {
+            dt
+        };
+        self.params.dt = effective_dt;
+        let n = self.bodies.len();
+        self.diagnostics.last_bodies_scanned = n;
+        self.rebuild_scratch.clear();
+        for i in 0..n {
+            if !self.has_body(i) {
+                continue;
+            }
+            let b = &self.bodies[i];
+            if b.shape != self.cached_shapes[i]
+                || (b.restitution - self.cached_restitutions[i]).abs() > 1e-6
+                || (b.friction - self.cached_frictions[i]).abs() > 1e-6
+                || (b.layer, b.mask) != self.cached_layers[i]
+            {
+                self.rebuild_scratch.push(i);
+            }
+        }
+        for idx in 0..self.rebuild_scratch.len() {
+            let body_id = self.rebuild_scratch[idx];
+            self.rebuild_collider(body_id);
+        }
+        self.diagnostics.last_colliders_rebuilt = self.rebuild_scratch.len();
+        self.sync_scratch.clear();
+        self.sync_scratch.resize(n, None);
+        for (idx, b) in self.bodies.iter().enumerate() {
+            if !self.has_body(idx) {
+                continue;
+            }
+            let should_sync = match b.body_type {
+                BodyType::Dynamic => self.body_dirty_sync.get(idx).copied().unwrap_or(false),
+                _ => true,
+            };
+            if !should_sync {
+                continue;
+            }
+            self.sync_scratch[idx] = Some((
+                b.position.x,
+                b.position.y,
+                b.velocity.x,
+                b.velocity.y,
+                b.angle,
+                b.angular_velocity,
+                b.body_type,
+            ));
+        }
+        for (i, item) in self.sync_scratch.iter().enumerate() {
             let Some((px, py, vx, vy, angle, angvel, bt)) = *item else {
                 continue;
             };
@@ -1062,8 +1372,12 @@ impl World {
                     }
                 }
             }
+            if let Some(dirty) = self.body_dirty_sync.get_mut(i) {
+                *dirty = false;
+            }
+            self.diagnostics.last_synced_bodies += 1;
         }
-        self.apply_zone_forces(dt);
+        self.apply_zone_forces(effective_dt);
         let event_col = LocalEventCollector::new();
         self.pipeline.step(
             self.gravity,
@@ -1181,6 +1495,7 @@ impl World {
                 }
             }
         }
+        self.diagnostics.last_contacts = self.collision_events.len();
     }
     /// Apply a linear impulse `(ix, iy)` to body `id`.
     pub fn apply_impulse(&mut self, id: usize, ix: f32, iy: f32) {
@@ -1214,12 +1529,31 @@ impl World {
         &self.end_contact_events
     }
     /// Register a trigger zone and return its id.
-    pub fn add_zone(&mut self, mut zone: PhysicsZone) -> usize {
+    pub fn try_add_zone(&mut self, mut zone: PhysicsZone) -> Result<usize, PhysicsError> {
+        if self.zones.len() >= self.limits.max_zones {
+            return Err(PhysicsError::CountLimitExceeded {
+                context: "physics zones",
+                count: self.zones.len() + 1,
+                max: self.limits.max_zones,
+            });
+        }
+        zone.validate()?;
         let id = self.zone_id_counter;
         self.zone_id_counter += 1;
         zone.id = id;
         self.zones.push(zone);
-        id
+        Ok(id)
+    }
+
+    /// Register a trigger zone and return its id.
+    pub fn add_zone(&mut self, zone: PhysicsZone) -> usize {
+        match self.try_add_zone(zone) {
+            Ok(id) => id,
+            Err(_) => {
+                self.record_invalid_operation();
+                0
+            }
+        }
     }
     /// Remove the zone with the given id.
     pub fn remove_zone(&mut self, id: usize) {
@@ -1234,14 +1568,29 @@ impl World {
         &self.zone_events
     }
     /// Apply per-zone gravity/damping overrides to all bodies; updates zone enter/exit events.
-    pub fn apply_zone_forces(&mut self, dt: f32) {
+    pub fn apply_zone_forces(&mut self, _dt: f32) {
         self.zone_events.clear();
+        let n = self.bodies.len();
         if self.zones.is_empty() {
+            for body_id in 0..n {
+                if !self.has_body(body_id) || self.bodies[body_id].body_type != BodyType::Dynamic {
+                    continue;
+                }
+                let handle = self.body_handles[body_id];
+                if let Some(rb) = self.rbodies.get_mut(handle) {
+                    rb.set_gravity_scale(self.body_base_gravity_scales[body_id], true);
+                    rb.set_linear_damping(self.body_base_linear_damping[body_id]);
+                    rb.set_angular_damping(self.body_base_angular_damping[body_id]);
+                }
+                let events = self.zone_tracker.update(body_id, HashSet::new());
+                self.zone_events.extend(events);
+            }
             return;
         }
-        let mut sorted_indices: Vec<usize> = (0..self.zones.len()).collect();
-        sorted_indices.sort_by(|&a, &b| self.zones[b].priority.cmp(&self.zones[a].priority));
-        let n = self.bodies.len();
+        self.sorted_zone_indices.clear();
+        self.sorted_zone_indices.extend(0..self.zones.len());
+        self.sorted_zone_indices
+            .sort_by(|&a, &b| self.zones[b].priority.cmp(&self.zones[a].priority));
         for body_id in 0..n {
             if !self.has_body(body_id) {
                 continue;
@@ -1255,8 +1604,11 @@ impl World {
             let layer = body.layer;
             let mut current_zones = std::collections::HashSet::new();
             let mut gravity_applied = false;
-            for &zi in &sorted_indices {
+            let mut linear_override_applied = false;
+            let mut angular_override_applied = false;
+            for &zi in &self.sorted_zone_indices {
                 let zone = &self.zones[zi];
+                self.diagnostics.last_zone_checks += 1;
                 if !zone.enabled {
                     continue;
                 }
@@ -1273,10 +1625,7 @@ impl World {
                     if let Some(rb) = self.rbodies.get_mut(handle) {
                         match zone.gravity_mode {
                             ZoneGravityMode::Zero => {
-                                let gx = -self.gravity.x * dt;
-                                let gy = -self.gravity.y * dt;
                                 rb.set_gravity_scale(0.0, true);
-                                let _ = (gx, gy);
                             }
                             ZoneGravityMode::Directional { gx, gy } => {
                                 rb.set_gravity_scale(0.0, true);
@@ -1318,19 +1667,25 @@ impl World {
                 let handle = self.body_handles[body_id];
                 if let Some(rb) = self.rbodies.get_mut(handle) {
                     if let Some(ld) = zone.linear_damping_override {
+                        linear_override_applied = true;
                         rb.set_linear_damping(ld);
                     }
                     if let Some(ad) = zone.angular_damping_override {
+                        angular_override_applied = true;
                         rb.set_angular_damping(ad);
                     }
                 }
             }
-            if !gravity_applied {
-                let handle = self.body_handles[body_id];
-                if let Some(rb) = self.rbodies.get_mut(handle) {
-                    if (rb.gravity_scale() - 1.0).abs() > 1e-4 {
-                        rb.set_gravity_scale(1.0, true);
-                    }
+            let handle = self.body_handles[body_id];
+            if let Some(rb) = self.rbodies.get_mut(handle) {
+                if !gravity_applied {
+                    rb.set_gravity_scale(self.body_base_gravity_scales[body_id], true);
+                }
+                if !linear_override_applied {
+                    rb.set_linear_damping(self.body_base_linear_damping[body_id]);
+                }
+                if !angular_override_applied {
+                    rb.set_angular_damping(self.body_base_angular_damping[body_id]);
                 }
             }
             let events = self.zone_tracker.update(body_id, current_zones);
@@ -1339,7 +1694,10 @@ impl World {
     }
     /// Run up to `max_steps` fixed substeps using `step_dt`; return steps taken and leftover dt.
     pub fn step_fixed(&mut self, accumulated_dt: f32, step_dt: f32, max_steps: u32) -> (u32, f32) {
-        if step_dt <= 0.0 {
+        if !accumulated_dt.is_finite() || accumulated_dt <= 0.0 {
+            return (0, 0.0);
+        }
+        if !step_dt.is_finite() || step_dt <= 0.0 {
             return (0, accumulated_dt);
         }
         let steps = ((accumulated_dt / step_dt) as u32).min(max_steps);
@@ -1351,6 +1709,10 @@ impl World {
     }
     /// Teleport body `id` to world position `(x, y)`.
     pub fn set_body_position(&mut self, id: usize, x: f32, y: f32) {
+        if !x.is_finite() || !y.is_finite() {
+            self.record_invalid_operation();
+            return;
+        }
         if let Some(body) = self.get_body_mut(id) {
             body.position.x = x;
             body.position.y = y;
@@ -1379,6 +1741,10 @@ impl World {
     }
     /// Set angular velocity of body `id` in radians/second.
     pub fn set_angular_velocity(&mut self, id: usize, omega: f32) {
+        if !omega.is_finite() {
+            self.record_invalid_operation();
+            return;
+        }
         if let Some(body) = self.get_body_mut(id) {
             body.angular_velocity = omega;
         }
@@ -1398,6 +1764,10 @@ impl World {
     }
     /// Set the rotation angle of body `id` in radians.
     pub fn set_body_angle(&mut self, id: usize, angle: f32) {
+        if !angle.is_finite() {
+            self.record_invalid_operation();
+            return;
+        }
         if let Some(body) = self.get_body_mut(id) {
             body.angle = angle;
         }
@@ -1413,6 +1783,10 @@ impl World {
     }
     /// Override mass of body `id`. This function is part of the public API.
     pub fn set_body_mass(&mut self, id: usize, mass: f32) {
+        if !mass.is_finite() || mass <= 0.0 {
+            self.record_invalid_operation();
+            return;
+        }
         if let Some(body) = self.get_body_mut(id) {
             body.mass = mass;
         }
@@ -1425,6 +1799,13 @@ impl World {
     }
     /// Set gravity scale multiplier on body `id`.
     pub fn set_gravity_scale(&mut self, id: usize, scale: f32) {
+        if !scale.is_finite() {
+            self.record_invalid_operation();
+            return;
+        }
+        if let Some(base) = self.body_base_gravity_scales.get_mut(id) {
+            *base = scale;
+        }
         if let Some(handle) = self.active_body_handle(id) {
             if let Some(rb) = self.rbodies.get_mut(handle) {
                 rb.set_gravity_scale(scale, true);
@@ -1441,6 +1822,13 @@ impl World {
     }
     /// Set linear damping coefficient on body `id`.
     pub fn set_linear_damping(&mut self, id: usize, damping: f32) {
+        if !damping.is_finite() || damping < 0.0 {
+            self.record_invalid_operation();
+            return;
+        }
+        if let Some(base) = self.body_base_linear_damping.get_mut(id) {
+            *base = damping;
+        }
         if let Some(handle) = self.active_body_handle(id) {
             if let Some(rb) = self.rbodies.get_mut(handle) {
                 rb.set_linear_damping(damping);
@@ -1449,6 +1837,13 @@ impl World {
     }
     /// Set angular damping coefficient on body `id`.
     pub fn set_angular_damping(&mut self, id: usize, damping: f32) {
+        if !damping.is_finite() || damping < 0.0 {
+            self.record_invalid_operation();
+            return;
+        }
+        if let Some(base) = self.body_base_angular_damping.get_mut(id) {
+            *base = damping;
+        }
         if let Some(handle) = self.active_body_handle(id) {
             if let Some(rb) = self.rbodies.get_mut(handle) {
                 rb.set_angular_damping(damping);
@@ -1617,10 +2012,23 @@ impl World {
         self.narrow_phase = NarrowPhase::new();
         self.joint_break_forces.clear();
         self.one_way_normals.clear();
+        self.body_dirty_sync.clear();
+        self.body_base_gravity_scales.clear();
+        self.body_base_linear_damping.clear();
+        self.body_base_angular_damping.clear();
         self.zones.clear();
         self.zone_id_counter = 0;
         self.zone_tracker.clear();
         self.zone_events.clear();
+        self.rebuild_scratch.clear();
+        self.sync_scratch.clear();
+        self.sorted_zone_indices.clear();
+    }
+
+    /// Fully reset the world to its post-construction state, including solver settings and gravity.
+    pub fn reset_world(&mut self) {
+        let default_gravity = self.default_gravity;
+        *self = World::new(default_gravity.x, default_gravity.y);
     }
     /// Allow or permanently prevent sleeping for body `id`.
     pub fn set_sleeping_allowed(&mut self, id: usize, allowed: bool) {
@@ -1695,6 +2103,33 @@ impl World {
     pub fn joint_count(&self) -> usize {
         self.joint_active.iter().filter(|&&active| active).count()
     }
+    /// Add a distance joint between two bodies using strict validation.
+    #[allow(clippy::too_many_arguments)]
+    pub fn try_add_distance_joint(
+        &mut self,
+        body_a: usize,
+        body_b: usize,
+        ax1: f32,
+        ay1: f32,
+        ax2: f32,
+        ay2: f32,
+        length: f32,
+    ) -> Result<usize, PhysicsError> {
+        self.ensure_joint_capacity()?;
+        let (ha, hb) = self.validate_joint_pair(body_a, body_b)?;
+        validate_finite("anchor_a_x", f64::from(ax1))?;
+        validate_finite("anchor_a_y", f64::from(ay1))?;
+        validate_finite("anchor_b_x", f64::from(ax2))?;
+        validate_finite("anchor_b_y", f64::from(ay2))?;
+        validate_positive("length", f64::from(length))?;
+        let joint = RopeJointBuilder::new(length)
+            .local_anchor1(Vector::new(ax1, ay1))
+            .local_anchor2(Vector::new(ax2, ay2))
+            .build();
+        let handle = self.impulse_joints.insert(ha, hb, joint, true);
+        Ok(self.register_joint(handle, "distance"))
+    }
+
     /// Add a distance (rope) joint between two bodies; return joint id.
     #[allow(clippy::too_many_arguments)]
     pub fn add_distance_joint(
@@ -1707,21 +2142,61 @@ impl World {
         ay2: f32,
         length: f32,
     ) -> usize {
-        let ha = match self.active_body_handle(body_a) {
-            Some(h) => h,
-            None => return 0,
-        };
-        let hb = match self.active_body_handle(body_b) {
-            Some(h) => h,
-            None => return 0,
-        };
-        let joint = RopeJointBuilder::new(length)
-            .local_anchor1(Vector::new(ax1, ay1))
-            .local_anchor2(Vector::new(ax2, ay2))
+        match self.try_add_distance_joint(body_a, body_b, ax1, ay1, ax2, ay2, length) {
+            Ok(id) => id,
+            Err(_) => {
+                self.record_invalid_operation();
+                0
+            }
+        }
+    }
+    /// Set linear velocity of body `id` in world units per second.
+    pub fn set_body_velocity(&mut self, id: usize, vx: f32, vy: f32) {
+        if !vx.is_finite() || !vy.is_finite() {
+            self.record_invalid_operation();
+            return;
+        }
+        if let Some(body) = self.get_body_mut(id) {
+            body.velocity.x = vx;
+            body.velocity.y = vy;
+        }
+        if let Some(handle) = self.active_body_handle(id) {
+            if let Some(rb) = self.rbodies.get_mut(handle) {
+                rb.set_linvel(Vector::new(vx, vy), true);
+            }
+        }
+    }
+    /// Add a prismatic (slide-axis) joint between two bodies using strict validation.
+    pub fn try_add_prismatic_joint(
+        &mut self,
+        body_a: usize,
+        body_b: usize,
+        anchor_x: f32,
+        anchor_y: f32,
+        axis_x: f32,
+        axis_y: f32,
+    ) -> Result<usize, PhysicsError> {
+        self.ensure_joint_capacity()?;
+        let (ha, hb) = self.validate_joint_pair(body_a, body_b)?;
+        validate_finite("anchor_x", f64::from(anchor_x))?;
+        validate_finite("anchor_y", f64::from(anchor_y))?;
+        validate_finite("axis_x", f64::from(axis_x))?;
+        validate_finite("axis_y", f64::from(axis_y))?;
+        if axis_x * axis_x + axis_y * axis_y <= 1e-6 {
+            return Err(PhysicsError::DegenerateGeometry {
+                context: "physics prismatic joint",
+                detail: "axis length must be > epsilon",
+            });
+        }
+        let axis = Vector::new(axis_x, axis_y);
+        let joint = PrismaticJointBuilder::new(axis)
+            .local_anchor1(Vector::new(anchor_x, anchor_y))
+            .local_anchor2(Vector::new(0.0, 0.0))
             .build();
         let handle = self.impulse_joints.insert(ha, hb, joint, true);
-        self.register_joint(handle, "distance")
+        Ok(self.register_joint(handle, "prismatic"))
     }
+
     /// Add a prismatic (slide-axis) joint between two bodies; return joint id.
     pub fn add_prismatic_joint(
         &mut self,
@@ -1732,22 +2207,34 @@ impl World {
         axis_x: f32,
         axis_y: f32,
     ) -> usize {
-        let ha = match self.active_body_handle(body_a) {
-            Some(h) => h,
-            None => return 0,
-        };
-        let hb = match self.active_body_handle(body_b) {
-            Some(h) => h,
-            None => return 0,
-        };
-        let axis = Vector::new(axis_x, axis_y);
-        let joint = PrismaticJointBuilder::new(axis)
+        match self.try_add_prismatic_joint(body_a, body_b, anchor_x, anchor_y, axis_x, axis_y) {
+            Ok(id) => id,
+            Err(_) => {
+                self.record_invalid_operation();
+                0
+            }
+        }
+    }
+    /// Add a weld (fixed) joint between two bodies using strict validation.
+    pub fn try_add_weld_joint(
+        &mut self,
+        body_a: usize,
+        body_b: usize,
+        anchor_x: f32,
+        anchor_y: f32,
+    ) -> Result<usize, PhysicsError> {
+        self.ensure_joint_capacity()?;
+        let (ha, hb) = self.validate_joint_pair(body_a, body_b)?;
+        validate_finite("anchor_x", f64::from(anchor_x))?;
+        validate_finite("anchor_y", f64::from(anchor_y))?;
+        let joint = FixedJointBuilder::new()
             .local_anchor1(Vector::new(anchor_x, anchor_y))
             .local_anchor2(Vector::new(0.0, 0.0))
             .build();
         let handle = self.impulse_joints.insert(ha, hb, joint, true);
-        self.register_joint(handle, "prismatic")
+        Ok(self.register_joint(handle, "weld"))
     }
+
     /// Add a weld (fixed) joint between two bodies; return joint id.
     pub fn add_weld_joint(
         &mut self,
@@ -1756,21 +2243,41 @@ impl World {
         anchor_x: f32,
         anchor_y: f32,
     ) -> usize {
-        let ha = match self.active_body_handle(body_a) {
-            Some(h) => h,
-            None => return 0,
-        };
-        let hb = match self.active_body_handle(body_b) {
-            Some(h) => h,
-            None => return 0,
-        };
-        let joint = FixedJointBuilder::new()
-            .local_anchor1(Vector::new(anchor_x, anchor_y))
-            .local_anchor2(Vector::new(0.0, 0.0))
+        match self.try_add_weld_joint(body_a, body_b, anchor_x, anchor_y) {
+            Ok(id) => id,
+            Err(_) => {
+                self.record_invalid_operation();
+                0
+            }
+        }
+    }
+    /// Add a rope joint with a maximum length using strict validation.
+    #[allow(clippy::too_many_arguments)]
+    pub fn try_add_rope_joint(
+        &mut self,
+        body_a: usize,
+        body_b: usize,
+        ax1: f32,
+        ay1: f32,
+        ax2: f32,
+        ay2: f32,
+        max_length: f32,
+    ) -> Result<usize, PhysicsError> {
+        self.ensure_joint_capacity()?;
+        let (ha, hb) = self.validate_joint_pair(body_a, body_b)?;
+        validate_finite("anchor_a_x", f64::from(ax1))?;
+        validate_finite("anchor_a_y", f64::from(ay1))?;
+        validate_finite("anchor_b_x", f64::from(ax2))?;
+        validate_finite("anchor_b_y", f64::from(ay2))?;
+        validate_positive("max_length", f64::from(max_length))?;
+        let joint = RopeJointBuilder::new(max_length)
+            .local_anchor1(Vector::new(ax1, ay1))
+            .local_anchor2(Vector::new(ax2, ay2))
             .build();
         let handle = self.impulse_joints.insert(ha, hb, joint, true);
-        self.register_joint(handle, "weld")
+        Ok(self.register_joint(handle, "rope"))
     }
+
     /// Add a rope joint with a maximum length; return joint id.
     #[allow(clippy::too_many_arguments)]
     pub fn add_rope_joint(
@@ -1783,20 +2290,13 @@ impl World {
         ay2: f32,
         max_length: f32,
     ) -> usize {
-        let ha = match self.active_body_handle(body_a) {
-            Some(h) => h,
-            None => return 0,
-        };
-        let hb = match self.active_body_handle(body_b) {
-            Some(h) => h,
-            None => return 0,
-        };
-        let joint = RopeJointBuilder::new(max_length)
-            .local_anchor1(Vector::new(ax1, ay1))
-            .local_anchor2(Vector::new(ax2, ay2))
-            .build();
-        let handle = self.impulse_joints.insert(ha, hb, joint, true);
-        self.register_joint(handle, "rope")
+        match self.try_add_rope_joint(body_a, body_b, ax1, ay1, ax2, ay2, max_length) {
+            Ok(id) => id,
+            Err(_) => {
+                self.record_invalid_operation();
+                0
+            }
+        }
     }
     /// Return the two body ids connected by `joint_id`, or `None` if not found.
     pub fn get_joint_bodies(&self, joint_id: usize) -> Option<(usize, usize)> {
@@ -1978,6 +2478,39 @@ impl World {
         }
         None
     }
+    /// Add a wheel-style prismatic joint using strict validation.
+    #[allow(clippy::too_many_arguments)]
+    pub fn try_add_wheel_joint(
+        &mut self,
+        body_a: usize,
+        body_b: usize,
+        anchor_x: f32,
+        anchor_y: f32,
+        axis_x: f32,
+        axis_y: f32,
+    ) -> Result<usize, PhysicsError> {
+        self.ensure_joint_capacity()?;
+        let (ha, hb) = self.validate_joint_pair(body_a, body_b)?;
+        validate_finite("anchor_x", f64::from(anchor_x))?;
+        validate_finite("anchor_y", f64::from(anchor_y))?;
+        validate_finite("axis_x", f64::from(axis_x))?;
+        validate_finite("axis_y", f64::from(axis_y))?;
+        if axis_x * axis_x + axis_y * axis_y <= 1e-6 {
+            return Err(PhysicsError::DegenerateGeometry {
+                context: "physics wheel joint",
+                detail: "axis length must be > epsilon",
+            });
+        }
+        let axis = Vector::new(axis_x, axis_y);
+        let mut joint = PrismaticJointBuilder::new(axis)
+            .local_anchor1(Vector::new(anchor_x, anchor_y))
+            .local_anchor2(Vector::new(0.0, 0.0))
+            .build();
+        joint.data.locked_axes = JointAxesMask::LIN_Y;
+        let handle = self.impulse_joints.insert(ha, hb, joint, true);
+        Ok(self.register_joint(handle, "wheel"))
+    }
+
     /// Add a wheel-style prismatic joint; return joint id.
     #[allow(clippy::too_many_arguments)]
     pub fn add_wheel_joint(
@@ -1989,26 +2522,17 @@ impl World {
         axis_x: f32,
         axis_y: f32,
     ) -> usize {
-        let ha = match self.active_body_handle(body_a) {
-            Some(h) => h,
-            None => return 0,
-        };
-        let hb = match self.active_body_handle(body_b) {
-            Some(h) => h,
-            None => return 0,
-        };
-        let axis = Vector::new(axis_x, axis_y);
-        let mut joint = PrismaticJointBuilder::new(axis)
-            .local_anchor1(Vector::new(anchor_x, anchor_y))
-            .local_anchor2(Vector::new(0.0, 0.0))
-            .build();
-        joint.data.locked_axes = JointAxesMask::LIN_Y;
-        let handle = self.impulse_joints.insert(ha, hb, joint, true);
-        self.register_joint(handle, "wheel")
+        match self.try_add_wheel_joint(body_a, body_b, anchor_x, anchor_y, axis_x, axis_y) {
+            Ok(id) => id,
+            Err(_) => {
+                self.record_invalid_operation();
+                0
+            }
+        }
     }
-    /// Add a friction joint limiting linear and angular impulses; return joint id.
+    /// Add a friction joint limiting linear and angular impulses using strict validation.
     #[allow(clippy::too_many_arguments)]
-    pub fn add_friction_joint(
+    pub fn try_add_friction_joint(
         &mut self,
         body_a: usize,
         body_b: usize,
@@ -2016,15 +2540,13 @@ impl World {
         anchor_y: f32,
         max_force: f32,
         max_torque: f32,
-    ) -> usize {
-        let ha = match self.active_body_handle(body_a) {
-            Some(h) => h,
-            None => return 0,
-        };
-        let hb = match self.active_body_handle(body_b) {
-            Some(h) => h,
-            None => return 0,
-        };
+    ) -> Result<usize, PhysicsError> {
+        self.ensure_joint_capacity()?;
+        let (ha, hb) = self.validate_joint_pair(body_a, body_b)?;
+        validate_finite("anchor_x", f64::from(anchor_x))?;
+        validate_finite("anchor_y", f64::from(anchor_y))?;
+        validate_positive("max_force", f64::from(max_force))?;
+        validate_positive("max_torque", f64::from(max_torque))?;
         let mut joint = FixedJointBuilder::new()
             .local_anchor1(Vector::new(anchor_x, anchor_y))
             .local_anchor2(Vector::new(0.0, 0.0))
@@ -2039,23 +2561,38 @@ impl World {
             .data
             .set_motor(JointAxis::AngX, 0.0, 0.0, 0.0, max_torque);
         let handle = self.impulse_joints.insert(ha, hb, joint, true);
-        self.register_joint(handle, "friction")
+        Ok(self.register_joint(handle, "friction"))
     }
-    /// Add a spring-motor joint for position correction; return joint id.
-    pub fn add_motor_joint(
+
+    /// Add a friction joint limiting linear and angular impulses; return joint id.
+    #[allow(clippy::too_many_arguments)]
+    pub fn add_friction_joint(
+        &mut self,
+        body_a: usize,
+        body_b: usize,
+        anchor_x: f32,
+        anchor_y: f32,
+        max_force: f32,
+        max_torque: f32,
+    ) -> usize {
+        match self.try_add_friction_joint(body_a, body_b, anchor_x, anchor_y, max_force, max_torque) {
+            Ok(id) => id,
+            Err(_) => {
+                self.record_invalid_operation();
+                0
+            }
+        }
+    }
+    /// Add a spring-motor joint for position correction using strict validation.
+    pub fn try_add_motor_joint(
         &mut self,
         body_a: usize,
         body_b: usize,
         correction_factor: f32,
-    ) -> usize {
-        let ha = match self.active_body_handle(body_a) {
-            Some(h) => h,
-            None => return 0,
-        };
-        let hb = match self.active_body_handle(body_b) {
-            Some(h) => h,
-            None => return 0,
-        };
+    ) -> Result<usize, PhysicsError> {
+        self.ensure_joint_capacity()?;
+        let (ha, hb) = self.validate_joint_pair(body_a, body_b)?;
+        validate_positive("correction_factor", f64::from(correction_factor))?;
         let mut joint = FixedJointBuilder::new()
             .local_anchor1(Vector::new(0.0, 0.0))
             .local_anchor2(Vector::new(0.0, 0.0))
@@ -2070,18 +2607,38 @@ impl World {
             .data
             .set_motor(JointAxis::AngX, 0.0, 0.0, correction_factor, 1.0);
         let handle = self.impulse_joints.insert(ha, hb, joint, true);
-        self.register_joint(handle, "motor")
+        Ok(self.register_joint(handle, "motor"))
     }
-    /// Create a kinematic anchor and a spring joint targeting `(target_x, target_y)`; return joint id.
-    pub fn add_mouse_joint(
+
+    /// Add a spring-motor joint for position correction; return joint id.
+    pub fn add_motor_joint(
+        &mut self,
+        body_a: usize,
+        body_b: usize,
+        correction_factor: f32,
+    ) -> usize {
+        match self.try_add_motor_joint(body_a, body_b, correction_factor) {
+            Ok(id) => id,
+            Err(_) => {
+                self.record_invalid_operation();
+                0
+            }
+        }
+    }
+    /// Create a kinematic anchor and a spring joint targeting `(target_x, target_y)` using strict validation.
+    pub fn try_add_mouse_joint(
         &mut self,
         body_id: usize,
         target_x: f32,
         target_y: f32,
         max_force: f32,
-    ) -> usize {
-        let mut anchor = Body::new(target_x, target_y, 0.2, 0.2, BodyType::Kinematic);
-        anchor.shape = BodyShape::Circle { radius: 0.1 };
+    ) -> Result<usize, PhysicsError> {
+        self.ensure_joint_capacity()?;
+        let _ = self.active_body_handle_result(body_id)?;
+        validate_finite("target_x", f64::from(target_x))?;
+        validate_finite("target_y", f64::from(target_y))?;
+        validate_positive("max_force", f64::from(max_force))?;
+        let anchor = Body::try_new(target_x, target_y, 0.2, 0.2, BodyType::Kinematic)?;
         let anchor_id = self.add_body(anchor);
         let ha = self.body_handles[body_id];
         let hb = self.body_handles[anchor_id.0];
@@ -2094,7 +2651,24 @@ impl World {
         let handle = self.impulse_joints.insert(ha, hb, joint, true);
         let jid = self.register_joint(handle, "mouse");
         self.mouse_joint_anchors.insert(jid, anchor_id.0);
-        jid
+        Ok(jid)
+    }
+
+    /// Create a kinematic anchor and a spring joint targeting `(target_x, target_y)`; return joint id.
+    pub fn add_mouse_joint(
+        &mut self,
+        body_id: usize,
+        target_x: f32,
+        target_y: f32,
+        max_force: f32,
+    ) -> usize {
+        match self.try_add_mouse_joint(body_id, target_x, target_y, max_force) {
+            Ok(id) => id,
+            Err(_) => {
+                self.record_invalid_operation();
+                0
+            }
+        }
     }
     /// Reposition the kinematic anchor of mouse joint `joint_id` to `(x, y)`.
     pub fn set_mouse_joint_target(&mut self, joint_id: usize, x: f32, y: f32) {
@@ -2332,6 +2906,14 @@ impl World {
             joint_slots: self.joint_handles.len(),
             zones: self.zones.len(),
             sleeping_bodies,
+            skipped_steps: self.diagnostics.skipped_steps,
+            clamped_steps: self.diagnostics.clamped_steps,
+            invalid_operations: self.diagnostics.invalid_operations,
+            bodies_scanned: self.diagnostics.last_bodies_scanned,
+            colliders_rebuilt: self.diagnostics.last_colliders_rebuilt,
+            zone_checks: self.diagnostics.last_zone_checks,
+            contacts: self.diagnostics.last_contacts,
+            synced_bodies: self.diagnostics.last_synced_bodies,
         }
     }
     /// Batch-create bodies from a list of `(x, y, w, h, BodyType)` tuples; return their ids.

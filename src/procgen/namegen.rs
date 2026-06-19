@@ -66,7 +66,7 @@ impl NameGen {
             if options.is_empty() {
                 return None;
             }
-            let idx = (self.rng.next() as usize) % options.len();
+            let idx = self.rng.next_index(options.len());
             let next = options[idx];
             if next == '\x01' {
                 break;

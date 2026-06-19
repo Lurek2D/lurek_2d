@@ -72,6 +72,27 @@ mod bsp_tests {
             assert!(!d.corridors.is_empty(), "multiple rooms need corridors");
         }
     }
+
+    #[test]
+    fn deterministic_same_seed_snapshot() {
+        let opts = BspOpts {
+            seed: 123,
+            ..Default::default()
+        };
+        let a = bsp_dungeon(&opts);
+        let b = bsp_dungeon(&opts);
+        assert_eq!(
+            a.rooms
+                .iter()
+                .map(|room| (room.x, room.y, room.w, room.h))
+                .collect::<Vec<_>>(),
+            b.rooms
+                .iter()
+                .map(|room| (room.x, room.y, room.w, room.h))
+                .collect::<Vec<_>>()
+        );
+        assert_eq!(a.corridors, b.corridors);
+    }
 }
 
 // Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬ lsystem Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬
@@ -244,6 +265,28 @@ mod rooms_tests {
     fn grid_contains_floor_cells() {
         let d = rooms_dungeon(&RoomsOpts::default());
         assert!(d.grid.contains(&1), "grid should contain floor cells");
+    }
+
+    #[test]
+    fn deterministic_same_seed_snapshot() {
+        let opts = RoomsOpts {
+            seed: 321,
+            ..Default::default()
+        };
+        let a = rooms_dungeon(&opts);
+        let b = rooms_dungeon(&opts);
+        assert_eq!(
+            a.rooms
+                .iter()
+                .map(|room| (room.x, room.y, room.w, room.h))
+                .collect::<Vec<_>>(),
+            b.rooms
+                .iter()
+                .map(|room| (room.x, room.y, room.w, room.h))
+                .collect::<Vec<_>>()
+        );
+        assert_eq!(a.corridors, b.corridors);
+        assert_eq!(a.grid, b.grid);
     }
 }
 
@@ -618,5 +661,352 @@ mod namegen_tests {
         let mut a = NameGen::new(&["test", "name"], 2, 42);
         let mut b = NameGen::new(&["test", "name"], 2, 42);
         assert_eq!(a.generate(1, 10), b.generate(1, 10));
+    }
+}
+
+mod procgen_safety_tests {
+    use super::*;
+
+    #[test]
+    fn cellular_try_generate_rejects_overflow_dimensions() {
+        let err = try_cellular_automata(
+            u32::MAX,
+            2,
+            &CellularOpts::default(),
+            &ProcgenLimits::default(),
+        )
+        .expect_err("overflow dimensions should be rejected");
+        assert!(matches!(
+            err,
+            ProcgenError::CellCountOverflow { .. } | ProcgenError::CellCountLimitExceeded { .. }
+        ));
+    }
+
+    #[test]
+    fn heightmap_try_generate_rejects_nan_scale_and_zero_dims() {
+        let zero_dims = HeightmapOpts {
+            width: 0,
+            ..Default::default()
+        };
+        assert!(matches!(
+            Heightmap::try_generate(&zero_dims, &ProcgenLimits::default()),
+            Err(ProcgenError::InvalidDimensions { .. })
+        ));
+
+        let nan_scale = HeightmapOpts {
+            scale: f64::NAN,
+            ..Default::default()
+        };
+        assert!(matches!(
+            Heightmap::try_generate(&nan_scale, &ProcgenLimits::default()),
+            Err(ProcgenError::InvalidFloat { field: "scale", .. })
+        ));
+    }
+
+    #[test]
+    fn heightmap_try_get_empty_returns_none() {
+        let empty = Heightmap {
+            width: 0,
+            height: 0,
+            cells: Vec::new(),
+        };
+        assert_eq!(empty.try_get(0, 0), None);
+
+        let malformed = Heightmap {
+            width: 2,
+            height: 2,
+            cells: vec![0.5],
+        };
+        assert_eq!(malformed.try_get(1, 1), None);
+    }
+
+    #[test]
+    fn cellular_world_from_bytes_rejects_huge_dimensions() {
+        let mut bytes = Vec::new();
+        bytes.extend_from_slice(&u32::MAX.to_le_bytes());
+        bytes.extend_from_slice(&2u32.to_le_bytes());
+        let err = match CellularWorld::from_bytes_with_limits(&bytes, &ProcgenLimits::default()) {
+            Ok(_) => panic!("huge dimensions should be rejected before allocation"),
+            Err(err) => err,
+        };
+        assert!(matches!(
+            err,
+            ProcgenError::CellCountOverflow { .. } | ProcgenError::CellCountLimitExceeded { .. }
+        ));
+    }
+
+    #[test]
+    fn cellular_world_step_reuses_buffers() {
+        let mut world =
+            CellularWorld::try_new(8, 8, &ProcgenLimits::default()).expect("world should build");
+        world.fill_rect(0, 0, 4, 4, CellType::Sand);
+        let before = world.buffer_capacities();
+        world.step();
+        let after = world.buffer_capacities();
+        assert_eq!(before, after, "step should reuse existing storage buffers");
+    }
+
+    #[test]
+    fn wfc_try_generate_reports_contradiction_reason() {
+        let mut rules = WfcRules::default();
+        rules.adjacencies.insert(1, Vec::new());
+        let opts = WfcOpts {
+            width: 2,
+            height: 1,
+            tiles: vec![WfcTile { id: 1, weight: 1.0 }],
+            rules,
+            seed: 0,
+            max_attempts: 2,
+        };
+        let err = try_wfc_generate(&opts, &ProcgenLimits::default())
+            .expect_err("contradictory WFC rules should report failure");
+        assert!(matches!(
+            err,
+            ProcgenError::WfcContradiction { attempts: 2, .. }
+        ));
+
+        let grid = wfc_generate(&opts);
+        assert_eq!(grid.report.reason, WfcFailureReason::Contradiction);
+        assert_eq!(grid.report.attempts, 2);
+        assert!(grid.cells.iter().all(|cell| cell.is_none()));
+    }
+
+    #[test]
+    fn wfc_rejects_invalid_weights_and_unknown_adjacency() {
+        let bad_weight = WfcOpts {
+            width: 2,
+            height: 2,
+            tiles: vec![WfcTile { id: 1, weight: 0.0 }],
+            rules: WfcRules::default(),
+            seed: 0,
+            max_attempts: 1,
+        };
+        assert!(matches!(
+            try_wfc_generate(&bad_weight, &ProcgenLimits::default()),
+            Err(ProcgenError::InvalidTileWeight { tile_id: 1, .. })
+        ));
+
+        let mut rules = WfcRules::default();
+        rules.adjacencies.insert(1, vec![2]);
+        let bad_adjacency = WfcOpts {
+            width: 2,
+            height: 2,
+            tiles: vec![WfcTile { id: 1, weight: 1.0 }],
+            rules,
+            seed: 0,
+            max_attempts: 1,
+        };
+        assert!(matches!(
+            try_wfc_generate(&bad_adjacency, &ProcgenLimits::default()),
+            Err(ProcgenError::UnknownAdjacencyTileId {
+                owner_id: 1,
+                tile_id: 2
+            })
+        ));
+    }
+
+    #[test]
+    fn noise_try_generate_map_rejects_invalid_scale_and_max_octaves() {
+        let gen = NoiseGenerator::new(0);
+        let bad_scale = MapGenOptions {
+            scale_x: f64::NAN,
+            ..Default::default()
+        };
+        assert!(matches!(
+            gen.try_generate_map(4, 4, &bad_scale, &ProcgenLimits::default()),
+            Err(ProcgenError::InvalidFloat {
+                field: "scale_x",
+                ..
+            })
+        ));
+
+        let limits = ProcgenLimits::default();
+        let too_many_octaves = MapGenOptions {
+            octaves: limits.max_octaves + 1,
+            ..Default::default()
+        };
+        assert!(matches!(
+            gen.try_generate_map(4, 4, &too_many_octaves, &limits),
+            Err(ProcgenError::MaxOctavesExceeded { .. })
+        ));
+    }
+
+    #[test]
+    fn procgen_same_seed_snapshot_tests() {
+        let cellular_a =
+            try_cellular_automata(16, 16, &CellularOpts::default(), &ProcgenLimits::default())
+                .expect("cellular generation should succeed");
+        let cellular_b =
+            try_cellular_automata(16, 16, &CellularOpts::default(), &ProcgenLimits::default())
+                .expect("cellular generation should succeed");
+        assert_eq!(cellular_a, cellular_b);
+
+        let hm_opts = HeightmapOpts {
+            width: 8,
+            height: 8,
+            seed: 77,
+            erosion_passes: 2,
+            erosion_mode: ErosionMode::Buffered,
+            ..Default::default()
+        };
+        let hm_a = Heightmap::try_generate(&hm_opts, &ProcgenLimits::default())
+            .expect("heightmap generation should succeed");
+        let hm_b = Heightmap::try_generate(&hm_opts, &ProcgenLimits::default())
+            .expect("heightmap generation should succeed");
+        assert_eq!(hm_a.cells, hm_b.cells);
+
+        let wfc_opts = WfcOpts {
+            width: 3,
+            height: 3,
+            tiles: vec![
+                WfcTile { id: 1, weight: 1.0 },
+                WfcTile { id: 2, weight: 2.0 },
+            ],
+            rules: WfcRules::default(),
+            seed: 99,
+            max_attempts: 2,
+        };
+        let wfc_a = try_wfc_generate(&wfc_opts, &ProcgenLimits::default())
+            .expect("wfc generation should succeed");
+        let wfc_b = try_wfc_generate(&wfc_opts, &ProcgenLimits::default())
+            .expect("wfc generation should succeed");
+        assert_eq!(wfc_a.cells, wfc_b.cells);
+    }
+
+    #[test]
+    fn cellular_world_save_restore_exact() {
+        let mut world =
+            CellularWorld::try_new_with_seed(8, 8, 1234, &ProcgenLimits::default()).unwrap();
+        world.fill_rect(2, 2, 2, 2, CellType::Sand);
+        world.fill_rect(3, 0, 1, 2, CellType::Water);
+        world.step_n(3);
+        let snapshot = world.to_bytes();
+
+        let mut restored =
+            CellularWorld::from_bytes_with_limits(&snapshot, &ProcgenLimits::default()).unwrap();
+        assert_eq!(restored.to_bytes(), snapshot);
+
+        world.step_n(2);
+        restored.step_n(2);
+        assert_eq!(world.to_bytes(), restored.to_bytes());
+    }
+
+    #[test]
+    fn cellular_world_step_stats_available() {
+        let mut world =
+            CellularWorld::try_new_with_seed(6, 6, 42, &ProcgenLimits::default()).unwrap();
+        world.set_cell(2, 1, CellType::Sand);
+        world.step();
+        let stats = world.last_step_stats();
+        assert!(stats.summary.cell_count > 0);
+        assert_eq!(stats.summary.iterations, 1);
+        assert!(stats.moved_cells > 0);
+        assert!(stats.active_bounds.is_some());
+    }
+
+    #[test]
+    fn erosion_mode_documented_snapshot() {
+        let mut in_place = Heightmap {
+            width: 3,
+            height: 3,
+            cells: vec![0.0, 0.2, 0.0, 0.2, 1.0, 0.2, 0.0, 0.2, 0.0],
+        };
+        let mut buffered = in_place.clone();
+        let in_place_report = in_place.erode_with_mode(1, ErosionMode::InPlace);
+        let buffered_report = buffered.erode_with_mode(1, ErosionMode::Buffered);
+        assert_eq!(in_place_report.mode, ErosionMode::InPlace);
+        assert_eq!(buffered_report.mode, ErosionMode::Buffered);
+        assert_eq!(buffered_report.summary.iterations, 1);
+        assert_ne!(in_place.cells, buffered.cells);
+    }
+
+    #[test]
+    fn noise_parallel_generation_respects_limits() {
+        let gen = NoiseGenerator::new(7);
+        let sequential_opts = MapGenOptions {
+            parallel_enabled: false,
+            parallel_chunk_size: Some(4),
+            ..Default::default()
+        };
+        let parallel_via_safe = gen
+            .try_generate_map_parallel(8, 8, &sequential_opts, &ProcgenLimits::default())
+            .expect("parallel safe path should accept sequential fallback");
+        let sequential = gen
+            .try_generate_map(8, 8, &sequential_opts, &ProcgenLimits::default())
+            .expect("sequential path should succeed");
+        assert_eq!(parallel_via_safe, sequential);
+
+        let bad_opts = MapGenOptions {
+            parallel_chunk_size: Some(0),
+            ..Default::default()
+        };
+        assert!(matches!(
+            gen.try_generate_map_parallel(4, 4, &bad_opts, &ProcgenLimits::default()),
+            Err(ProcgenError::ValueOutOfRange {
+                field: "parallel_chunk_size",
+                ..
+            })
+        ));
+    }
+
+    #[test]
+    fn wfc_llm_parser_rejects_malformed_oversized_input() {
+        let malformed = serde_json::json!({ "tiles": "bad", "adjacencies": {} });
+        assert!(matches!(
+            try_parse_llm_wfc_response(&malformed, 4, 4, 0, 1, &ProcgenLimits::default()),
+            Err(ProcgenError::InvalidSchema { .. })
+        ));
+
+        let oversized = serde_json::json!({
+            "tiles": [{"id": 1, "weight": 1.0}],
+            "adjacencies": { "1": [1] },
+            "padding": "x".repeat(2048)
+        });
+        let tight_limits = ProcgenLimits {
+            max_parser_input_bytes: 128,
+            ..ProcgenLimits::default()
+        };
+        assert!(matches!(
+            try_parse_llm_wfc_response(&oversized, 2, 2, 0, 1, &tight_limits),
+            Err(ProcgenError::OversizedInput { .. })
+        ));
+    }
+
+    #[test]
+    fn additional_safe_procgen_modules_reject_invalid_inputs() {
+        assert!(matches!(
+            NoiseGrid::try_from_perlin(4, 4, -1.0, &ProcgenLimits::default()),
+            Err(ProcgenError::NonPositiveValue { field: "scale", .. })
+        ));
+        assert!(matches!(
+            try_poisson_disk(32.0, 32.0, 0.0, 8, 0, &ProcgenLimits::default()),
+            Err(ProcgenError::NonPositiveValue {
+                field: "min_dist",
+                ..
+            })
+        ));
+        let vopts = VoronoiOpts {
+            warp_scale: f32::NAN,
+            ..Default::default()
+        };
+        assert!(matches!(
+            try_voronoi_diagram(8, 8, &[(1.0, 1.0)], &vopts, &ProcgenLimits::default()),
+            Err(ProcgenError::InvalidFloat {
+                field: "warp_scale",
+                ..
+            })
+        ));
+        let bad_rooms = RoomsOpts {
+            max_room_size: 1,
+            min_room_size: 2,
+            ..Default::default()
+        };
+        assert!(matches!(
+            try_rooms_dungeon(&bad_rooms, &ProcgenLimits::default()),
+            Err(ProcgenError::ValueOutOfRange {
+                field: "max_room_size",
+                ..
+            })
+        ));
     }
 }

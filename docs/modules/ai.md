@@ -2,58 +2,29 @@
 
 ## Summary
 
-- The ai module is the engine's gameplay intelligence surface for actors that must perceive, decide, and react.
-- It unifies reactive and deliberative techniques so teams can choose control style per unit archetype.
-- Behavior trees provide deterministic branching flow for moment-to-moment tactical reactions.
-- Finite state machines provide explicit phase transitions for authored mode-based behaviors.
-- Utility scoring supports weighted action selection when many options are simultaneously valid.
-- GOAP supports goal-driven planning over symbolic world state with executable action chains.
-- HTN supports hierarchical decomposition of authored plans into runtime-ready primitive tasks.
-- MCTS supports sampled search for high-branching choices under bounded compute budgets.
-- The module lets projects mix these methods instead of committing to a single AI doctrine.
-- Agent runtime state is centralized so planning, movement, mood, and memory stay coherent.
-- Command queues turn selected intent into ordered execution that can be interrupted safely.
-- Perception channels capture visual and audio-like stimuli as graded, time-evolving signals.
-- Awareness can fade, refresh, and compete instead of behaving as a binary omniscient flag.
-- Blackboard-like state sharing allows local and shared memory models across AI participants.
-- Steering layers translate high-level intent into continuous movement vectors.
-- Steering includes seek, flee, wander, arrive, separation, and context-sensitive heading choice.
-- ORCA-style local avoidance keeps crowds stable in dense movement scenarios.
-- Tactical influence maps encode area pressure for threat, control, and reward bias.
-- Squad and formation tools coordinate multiple agents as cohesive tactical groups.
-- Needs and motives add internal pressure that influences behavior prioritization.
-- Emotion channels add short-term affect modulation without replacing core planner logic.
-- Trait systems let similar agents diverge in risk profile and reaction style.
-- Director pacing tools shape encounter pressure through escalation and release windows.
-- LOD policy scales AI update cadence by distance and relevance to control frame cost.
-- Nearby entities can update richly while distant entities use cheaper evaluation intervals.
-- The module includes observability tools because complex AI must remain inspectable.
-- Debug rendering can expose decision state, steering intent, and planning diagnostics.
-- Deterministic update order is prioritized for replayability and reproducible tests.
-- Data surfaces are designed to be script-friendly while preserving Rust-side invariants.
-- Integration points exist for learning systems without forcing ML into every project.
-- Reinforcement learning and bandit patterns can adapt action preferences over time.
-- Neural and evolutionary hooks support simulation-heavy experimentation workflows.
-- The module owns cognition and behavior policy, not rendering or asset decoding logic.
-- It collaborates with runtime, render, patterns, dialog, and learning modules through boundaries.
-- It supports enemies, companions, civilians, traffic, and strategy-unit behaviors.
-- It reduces duplicated AI architecture across combat, navigation, and group coordination.
-- It allows incremental complexity growth instead of mid-project AI rewrites.
-- It keeps behavior authoring inspectable rather than opaque.
-- The API is broad but organized around stable AI contracts.
-- Planning systems operate under bounded budgets to protect frame stability.
-- Movement systems are layered so local avoidance does not invalidate strategic intent.
-- Perception and memory are explicit, making sensory assumptions testable.
-- Group behavior is first-class rather than bolted on from single-agent logic.
-- Emotional and motivational layers are optional but integrated coherently.
-- Debug surfaces are practical for tuning and regression verification.
-- The module is suitable for both scripted and adaptive AI stacks.
-- It is designed for systemic gameplay where behavior quality must scale with content.
-- Invariants emphasize deterministic progression under identical input conditions.
-- Contracts emphasize explicit ownership of AI state and transition rules.
-- Overall, ai is the Feature Systems intelligence platform for production gameplay behavior.
-
-This module primarily collaborates with `dialog`, `image`, `learning`, `patterns`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
+- The `ai` module is the engine's gameplay-intelligence surface for users who need actors to perceive, decide, coordinate, and adapt in ways that go far beyond hard-coded if-then behavior.
+- Its defining characteristic is breadth of decision models. The module deliberately supports behavior trees, finite state machines, utility scoring, GOAP, HTN, Monte Carlo Tree Search, and related helpers so a single project can choose the right reasoning style for each actor type or gameplay layer.
+- That breadth matters because game AI is rarely solved by one universal algorithm.
+- Reactive control and deliberative planning are both first-class here. An actor can respond immediately through short-horizon stateful logic while also relying on planning, utility, or hierarchical decomposition for larger goals and longer-term behavior.
+- The module is therefore not only about selecting an action. It also models the internal information that makes action selection meaningful: perceptions, remembered stimuli, blackboard facts, needs, emotions, traits, alertness, and contextual world knowledge.
+- Perception support is especially important because believable decisions depend on what an agent knows, not only on what the world objectively contains. Vision, hearing, custom stimuli, awareness memory, and alertness tracking all shape what options the actor should consider.
+- This makes the AI contract more realistic and more debuggable. Instead of a hidden boolean like “sees player,” the module encourages explicit sensory interpretation that can be inspected, tuned, and reused across several behavior styles.
+- Needs, drives, and emotional-style state broaden the feature beyond combat logic. They make the module useful for simulation actors, companions, social agents, or director systems where behavior depends on internal pressure as much as on external threats.
+- Blackboard-style context storage and shared decision data matter because larger AI systems usually need stable intermediate state. Several subsystems may contribute facts, priorities, or targets, and the module provides a shared surface for that internal coordination.
+- Steering and movement-side intelligence are part of the same story. Context steering, ORCA-like local avoidance, formation logic, command queues, locomotion helpers, and related movement support keep decision-making grounded in how agents actually traverse the world.
+- Squad support extends the module from isolated actors to coordinated groups. Leader-relative placement, formation maintenance, shared group state, and coordinated command handling make it possible to express teams, patrols, or formations rather than only individual units.
+- Command queues are important because AI output is often not the final physical action. A stable queue boundary separates “what the AI wants next” from “what the actor is currently doing,” which helps with interruption, inspection, and synchronization with animation or movement systems.
+- Director-style pacing support shows that the module also thinks beyond single actors. Encounter rhythm, phase pressure, tension, spawn pacing, and other orchestration behavior can be represented here when the “agent” is really the game experience itself.
+- Level-of-detail and update-policy support matter for scale. Large groups of intelligent actors can become expensive quickly, so the module includes ways to throttle, schedule, or simplify updates without abandoning the common behavior vocabulary.
+- Debug rendering and inspection support are essential for real use. Visualizing state machines, behavior trees, perception ranges, chosen targets, or queue contents shortens the path from “the agent behaved strangely” to “here is the exact internal reason.”
+- The module is useful for enemies, companions, neutral populations, strategic directors, simulation agents, crowd coordinators, and any feature where behavior should be data-driven, inspectable, and scalable rather than buried in one-off control code.
+- Neighboring modules still matter, but the boundary is clear. `pathfind` searches space, `physics` defines motion and collision semantics, and `render` visualizes results, while `ai` owns the reasoning structures, internal drives, sensory interpretation, and coordination layers that decide what to do.
+- The breadth of the spec is intentional because modern game AI is an ecosystem. Perception, memory, scoring, planning, execution, local movement, and group coordination all reinforce one another, and users need them to live under a shared conceptual surface.
+- That ecosystem view also improves authoring. Teams can mix authored logic, tactical heuristics, and simulation-like drives within one runtime surface instead of treating each behavior family as an isolated special case.
+- It also helps debugging stay on one common reasoning vocabulary.
+- That common vocabulary matters once several actor types share a world.
+- The module is therefore not only about smarter enemies; it is also about giving complex runtime behavior a legible structure that can be tuned, debugged, and scaled over the lifetime of a project.
+- For wiki readers, the key takeaway is that `ai` is not one algorithm or one enemy helper. It is the engine's full runtime toolkit for building decision-rich actors whose perception, planning, movement, group behavior, and debugging story are treated as one coherent feature family.
 
 ## Functions
 
@@ -76,10 +47,12 @@ lurek.ai.newAIDirector()
 ```lua
 do
   local dir = lurek.ai.newAIDirector()
+  dir:pushEvent(0.1)
+  local current_phase = dir:phase()
   dir:pushEvent(0.6)
   dir:update(1.0)
-  print("lurek.ai.newAIDirector: ok=" .. tostring(dir ~= nil))
-  print("lurek.ai.newAIDirector: phase=" .. dir:phase())
+  example_print_log("lurek.ai.newAIDirector: ok=" .. tostring(dir ~= nil))
+  example_print_log("lurek.ai.newAIDirector: phase=" .. dir:phase())
 end
 ```
 
@@ -104,8 +77,10 @@ lurek.ai.newAILod()
 ```lua
 do
   local lod = lurek.ai.newAILod()
-  print("lurek.ai.newAILod: ok=" .. tostring(lod ~= nil))
-  print("lurek.ai.newAILod: tiers=" .. tostring(lod:tierCount()))
+  local tier_name = lod:tierName(0)
+  local tier_index = lod:tierFor(0, 0, 0, 0)
+  example_print_log("lurek.ai.newAILod: ok=" .. tostring(lod ~= nil))
+  example_print_log("lurek.ai.newAILod: tiers=" .. tostring(lod:tierCount()))
 end
 ```
 
@@ -136,9 +111,11 @@ lurek.ai.newAction(callback)
 ```lua
 do
   local act = lurek.ai.newAction(function() return "success" end)
+  local node_type = act:getNodeType()
+  local child_count = act:getChildCount()
   act:reset()
-  print("lurek.ai.newAction: type=" .. act:getNodeType())
-  print("lurek.ai.newAction: child_count=" .. tostring(act:getChildCount()))
+  example_print_log("lurek.ai.newAction: type=" .. act:getNodeType())
+  example_print_log("lurek.ai.newAction: child_count=" .. tostring(act:getChildCount()))
 end
 ```
 
@@ -174,8 +151,8 @@ do
   local bandit = lurek.ai.newBandit(3, "ucb1", 0.15, 55)
   local arm = bandit:select()
   bandit:update(arm, 0.8)
-  print("lurek.ai.newBandit: ok=" .. tostring(bandit ~= nil))
-  print("lurek.ai.newBandit: arms=" .. tostring(bandit:armCount()))
+  example_print_log("lurek.ai.newBandit: ok=" .. tostring(bandit ~= nil))
+  example_print_log("lurek.ai.newBandit: arms=" .. tostring(bandit:armCount()))
 end
 ```
 
@@ -200,10 +177,12 @@ lurek.ai.newBehaviorTree()
 ```lua
 do
   local bt = lurek.ai.newBehaviorTree()
+  local bt_debug = bt:getDebugState()
+  local bt_status = bt:getLastStatus()
   bt:setRoot(lurek.ai.newAction(function() return "success" end))
   local info = bt:getDebugState()
-  print("lurek.ai.newBehaviorTree: status=" .. tostring(bt:getLastStatus()))
-  print("lurek.ai.newBehaviorTree: node_count=" .. tostring(info.node_count))
+  example_print_log("lurek.ai.newBehaviorTree: status=" .. tostring(bt:getLastStatus()))
+  example_print_log("lurek.ai.newBehaviorTree: node_count=" .. tostring(info.node_count))
 end
 ```
 
@@ -228,8 +207,10 @@ lurek.ai.newBlackboard()
 ```lua
 do
   local bb = lurek.ai.newBlackboard()
+  bb:setString("context", "active")
+  local bb_size = bb:getSize()
   bb:setString("state", "idle")
-  print("lurek.ai.newBlackboard: state=" .. bb:getString("state", "none"))
+  example_print_log("lurek.ai.newBlackboard: state=" .. bb:getString("state", "none"))
 end
 ```
 
@@ -254,9 +235,11 @@ lurek.ai.newCommandQueue()
 ```lua
 do
   local cq = lurek.ai.newCommandQueue()
-  cq:enqueue("move", function() print("moving") end, { targetX = 32, targetY = 64 })
-  print("lurek.ai.newCommandQueue: empty=" .. tostring(cq:isEmpty()))
-  print("lurek.ai.newCommandQueue: count=" .. tostring(cq:getCount()))
+  cq:enqueue("hold", function() end, { targetX = 0, targetY = 0 })
+  local queue_count = cq:getCount()
+  cq:enqueue("move", function() example_print_log("moving") end, { targetX = 32, targetY = 64 })
+  example_print_log("lurek.ai.newCommandQueue: empty=" .. tostring(cq:isEmpty()))
+  example_print_log("lurek.ai.newCommandQueue: count=" .. tostring(cq:getCount()))
 end
 ```
 
@@ -287,9 +270,11 @@ lurek.ai.newCondition(callback)
 ```lua
 do
   local cond = lurek.ai.newCondition(function() return true end)
+  local node_type = cond:getNodeType()
+  local child_count = cond:getChildCount()
   cond:reset()
-  print("lurek.ai.newCondition: type=" .. cond:getNodeType())
-  print("lurek.ai.newCondition: child_count=" .. tostring(cond:getChildCount()))
+  example_print_log("lurek.ai.newCondition: type=" .. cond:getNodeType())
+  example_print_log("lurek.ai.newCondition: child_count=" .. tostring(cond:getChildCount()))
 end
 ```
 
@@ -320,10 +305,12 @@ lurek.ai.newContextSteering(slots)
 ```lua
 do
   local cs = lurek.ai.newContextSteering(8)
+  cs:addSeekTarget(0, 0, 1.0)
+  local slot_count = cs:slotCount()
   cs:addSeekTarget(256, 128, 1.0)
   local dx, dy = cs:evaluate(0, 0, 1, 0)
-  print("lurek.ai.newContextSteering: ok=" .. tostring(cs ~= nil))
-  print("lurek.ai.newContextSteering: dir=" .. tostring(dx) .. "," .. tostring(dy))
+  example_print_log("lurek.ai.newContextSteering: ok=" .. tostring(cs ~= nil))
+  example_print_log("lurek.ai.newContextSteering: dir=" .. tostring(dx) .. "," .. tostring(dy))
 end
 ```
 
@@ -350,8 +337,8 @@ do
   local dlg = lurek.ai.newDialogueAI()
   dlg:addTopic("greeting", 0.5, nil, nil, "greet_score")
   dlg:setUtilityScore("greet_score", 0.8)
-  print("lurek.ai.newDialogueAI: ok=" .. tostring(dlg ~= nil))
-  print("lurek.ai.newDialogueAI: topics=" .. tostring(dlg:getTopicCount()))
+  example_print_log("lurek.ai.newDialogueAI: ok=" .. tostring(dlg ~= nil))
+  example_print_log("lurek.ai.newDialogueAI: topics=" .. tostring(dlg:getTopicCount()))
 end
 ```
 
@@ -378,8 +365,8 @@ do
   local emo = lurek.ai.newEmotionModel()
   emo:add("fear", 0.1, 0.2, 0.3)
   emo:trigger("fear", 0.5)
-  print("lurek.ai.newEmotionModel: ok=" .. tostring(emo ~= nil))
-  print("lurek.ai.newEmotionModel: dominant=" .. tostring(emo:dominant()))
+  example_print_log("lurek.ai.newEmotionModel: ok=" .. tostring(emo ~= nil))
+  example_print_log("lurek.ai.newEmotionModel: dominant=" .. tostring(emo:dominant()))
 end
 ```
 
@@ -404,10 +391,12 @@ lurek.ai.newGOAPPlanner()
 ```lua
 do
   local goap = lurek.ai.newGOAPPlanner()
+  goap:addGoal("idle", 1)
+  local goal_count = goap:getGoalCount()
   goap:addGoal("stay_alive", 5)
   goap:setGoalState("stay_alive", "alive", true)
-  print("lurek.ai.newGOAPPlanner: ok=" .. tostring(goap ~= nil))
-  print("lurek.ai.newGOAPPlanner: goals=" .. tostring(goap:getGoalCount()))
+  example_print_log("lurek.ai.newGOAPPlanner: ok=" .. tostring(goap ~= nil))
+  example_print_log("lurek.ai.newGOAPPlanner: goals=" .. tostring(goap:getGoalCount()))
 end
 ```
 
@@ -440,8 +429,10 @@ lurek.ai.newGeneticAlgorithm(pop_size, gene_count, seed)
 ```lua
 do
   local ga = lurek.ai.newGeneticAlgorithm(8, 5, 7)
-  print("lurek.ai.newGeneticAlgorithm: ok=" .. tostring(ga ~= nil))
-  print("lurek.ai.newGeneticAlgorithm: pop=" .. tostring(ga:popSize()))
+  local generation = ga:generation()
+  local pop = ga:popSize()
+  example_print_log("lurek.ai.newGeneticAlgorithm: ok=" .. tostring(ga ~= nil))
+  example_print_log("lurek.ai.newGeneticAlgorithm: pop=" .. tostring(ga:popSize()))
 end
 ```
 
@@ -474,7 +465,9 @@ lurek.ai.newGuard(predicate, child)
 do
   local child_action = lurek.ai.newAction(function() return "success" end)
   local guard = lurek.ai.newGuard(function() return true end, child_action)
-  print("lurek.ai.newGuard: node=" .. guard:getNodeType())
+  local node_type = guard:getNodeType()
+  local child_count = guard:getChildCount()
+  example_print_log("lurek.ai.newGuard: node=" .. guard:getNodeType())
 end
 ```
 
@@ -499,8 +492,10 @@ lurek.ai.newHTNDomain()
 ```lua
 do
   local htn = lurek.ai.newHTNDomain()
-  print("lurek.ai.newHTNDomain: ok=" .. tostring(htn ~= nil))
-  print("lurek.ai.newHTNDomain: tasks=" .. tostring(htn:taskCount()))
+  local domain_type = htn:type()
+  local task_count = htn:taskCount()
+  example_print_log("lurek.ai.newHTNDomain: ok=" .. tostring(htn ~= nil))
+  example_print_log("lurek.ai.newHTNDomain: tasks=" .. tostring(htn:taskCount()))
 end
 ```
 
@@ -533,10 +528,12 @@ lurek.ai.newInfluenceMap(w, h, cs)
 ```lua
 do
   local imap = lurek.ai.newInfluenceMap(32, 32, 16)
+  imap:addLayer("debug")
+  local map_width = imap:getWidth()
   imap:addLayer("danger")
   imap:setInfluence("danger", 4, 5, 0.9)
-  print("lurek.ai.newInfluenceMap: ok=" .. tostring(imap ~= nil))
-  print("lurek.ai.newInfluenceMap: width=" .. tostring(imap:getWidth()))
+  example_print_log("lurek.ai.newInfluenceMap: ok=" .. tostring(imap ~= nil))
+  example_print_log("lurek.ai.newInfluenceMap: width=" .. tostring(imap:getWidth()))
 end
 ```
 
@@ -561,9 +558,11 @@ lurek.ai.newInverter()
 ```lua
 do
   local inv = lurek.ai.newInverter()
+  local node_type = inv:getNodeType()
+  local child_count = inv:getChildCount()
   inv:setChild(lurek.ai.newCondition(function() return false end))
-  print("lurek.ai.newInverter: type=" .. inv:getNodeType())
-  print("lurek.ai.newInverter: child_count=" .. tostring(inv:getChildCount()))
+  example_print_log("lurek.ai.newInverter: type=" .. inv:getNodeType())
+  example_print_log("lurek.ai.newInverter: child_count=" .. tostring(inv:getChildCount()))
 end
 ```
 
@@ -597,13 +596,15 @@ lurek.ai.newMCTSEngine(iters, uct_c, depth, seed)
 ```lua
 do
   local mcts = lurek.ai.newMCTSEngine(100, 1.41, 20, 42)
-  local get_actions = function(state)
-    return { 1, 2, 3 }
-  end
+  local get_actions = function(state) return { 1, 2, 3 } end
   local apply = function(state, action) return state + action end
   local evaluate = function(state) return state % 5 end
+  local search_budget = 100
+  local exploration = 1.41
+  local rollout_depth = 20
+  local root_state = 0
   local best_action = mcts:search(0, get_actions, apply, evaluate)
-  print("lurek.ai.newMCTSEngine: action=" .. tostring(best_action))
+  example_print_log("lurek.ai.newMCTSEngine: action=" .. tostring(best_action))
 end
 ```
 
@@ -630,8 +631,8 @@ do
   local needs = lurek.ai.newNeedSystem()
   needs:addNeed("hunger", 0.1, 0.7, 2.0)
   needs:update(2.0)
-  print("lurek.ai.newNeedSystem: ok=" .. tostring(needs ~= nil))
-  print("lurek.ai.newNeedSystem: urgent=" .. tostring(needs:mostUrgent()))
+  example_print_log("lurek.ai.newNeedSystem: ok=" .. tostring(needs ~= nil))
+  example_print_log("lurek.ai.newNeedSystem: urgent=" .. tostring(needs:mostUrgent()))
 end
 ```
 
@@ -658,8 +659,8 @@ do
   local nn = lurek.ai.newNeuralNet()
   nn:addLayer(2, 3, "relu")
   nn:addLayer(3, 1, "linear")
-  print("lurek.ai.newNeuralNet: ok=" .. tostring(nn ~= nil))
-  print("lurek.ai.newNeuralNet: layers=" .. tostring(nn:layerCount()))
+  example_print_log("lurek.ai.newNeuralNet: ok=" .. tostring(nn ~= nil))
+  example_print_log("lurek.ai.newNeuralNet: layers=" .. tostring(nn:layerCount()))
 end
 ```
 
@@ -696,8 +697,8 @@ do
     { inputs = 6, outputs = 2, activation = "softmax" },
   }
   local ne = lurek.ai.newNeuroevolution(layers, 8, 1)
-  print("lurek.ai.newNeuroevolution: ok=" .. tostring(ne ~= nil))
-  print("lurek.ai.newNeuroevolution: pop=" .. tostring(ne:popSize()))
+  example_print_log("lurek.ai.newNeuroevolution: ok=" .. tostring(ne ~= nil))
+  example_print_log("lurek.ai.newNeuroevolution: pop=" .. tostring(ne:popSize()))
 end
 ```
 
@@ -729,8 +730,9 @@ lurek.ai.newORCASolver(time_horizon)
 do
   local orca = lurek.ai.newORCASolver(1.5)
   orca:addAgent(0, 0, 0.5, 3.0)
-  print("lurek.ai.newORCASolver: ok=" .. tostring(orca ~= nil))
-  print("lurek.ai.newORCASolver: agents=" .. tostring(orca:agentCount()))
+  local preview_count = orca:agentCount()
+  example_print_log("lurek.ai.newORCASolver: ok=" .. tostring(orca ~= nil))
+  example_print_log("lurek.ai.newORCASolver: agents=" .. tostring(orca:agentCount()))
 end
 ```
 
@@ -762,10 +764,12 @@ lurek.ai.newParallel(sp, fp)
 ```lua
 do
   local par = lurek.ai.newParallel("requireAll", "requireOne")
+  local node_type = par:getNodeType()
+  local child_count = par:getChildCount()
   par:addChild(lurek.ai.newAction(function() return "running" end))
   par:addChild(lurek.ai.newAction(function() return "success" end))
-  print("lurek.ai.newParallel: type=" .. par:getNodeType())
-  print("lurek.ai.newParallel: children=" .. tostring(par:getChildCount()))
+  example_print_log("lurek.ai.newParallel: type=" .. par:getNodeType())
+  example_print_log("lurek.ai.newParallel: children=" .. tostring(par:getChildCount()))
 end
 ```
 
@@ -797,9 +801,11 @@ lurek.ai.newQLearner(sc, ac)
 ```lua
 do
   local ql = lurek.ai.newQLearner(10, 4)
+  ql:setQValue(0, 0, 0.1)
+  local best = ql:bestAction(0)
   ql:setQValue(1, 2, 0.75)
-  print("lurek.ai.newQLearner: ok=" .. tostring(ql ~= nil))
-  print("lurek.ai.newQLearner: best_action=" .. tostring(ql:bestAction(1)))
+  example_print_log("lurek.ai.newQLearner: ok=" .. tostring(ql ~= nil))
+  example_print_log("lurek.ai.newQLearner: best_action=" .. tostring(ql:bestAction(1)))
 end
 ```
 
@@ -830,9 +836,11 @@ lurek.ai.newRepeater(count)
 ```lua
 do
   local rep = lurek.ai.newRepeater(5)
+  local node_type = rep:getNodeType()
+  local child_count = rep:getChildCount()
   rep:setChild(lurek.ai.newAction(function() return "success" end))
-  print("lurek.ai.newRepeater: count=" .. tostring(rep:getCount()))
-  print("lurek.ai.newRepeater: type=" .. rep:getNodeType())
+  example_print_log("lurek.ai.newRepeater: count=" .. tostring(rep:getCount()))
+  example_print_log("lurek.ai.newRepeater: type=" .. rep:getNodeType())
 end
 ```
 
@@ -857,10 +865,12 @@ lurek.ai.newSelector()
 ```lua
 do
   local sel = lurek.ai.newSelector()
+  local node_type = sel:getNodeType()
+  local child_count = sel:getChildCount()
   sel:addChild(lurek.ai.newAction(function() return "failure" end))
   sel:addChild(lurek.ai.newAction(function() return "success" end))
-  print("lurek.ai.newSelector: type=" .. sel:getNodeType())
-  print("lurek.ai.newSelector: children=" .. tostring(sel:getChildCount()))
+  example_print_log("lurek.ai.newSelector: type=" .. sel:getNodeType())
+  example_print_log("lurek.ai.newSelector: children=" .. tostring(sel:getChildCount()))
 end
 ```
 
@@ -885,10 +895,12 @@ lurek.ai.newSequence()
 ```lua
 do
   local seq = lurek.ai.newSequence()
+  local node_type = seq:getNodeType()
+  local child_count = seq:getChildCount()
   seq:addChild(lurek.ai.newCondition(function() return true end))
   seq:addChild(lurek.ai.newAction(function() return "success" end))
-  print("lurek.ai.newSequence: type=" .. seq:getNodeType())
-  print("lurek.ai.newSequence: children=" .. tostring(seq:getChildCount()))
+  example_print_log("lurek.ai.newSequence: type=" .. seq:getNodeType())
+  example_print_log("lurek.ai.newSequence: children=" .. tostring(seq:getChildCount()))
 end
 ```
 
@@ -921,8 +933,8 @@ do
   local squad = lurek.ai.newSquad("bravo")
   squad:addMember("leader")
   squad:setLeader("leader")
-  print("lurek.ai.newSquad: name=" .. squad:getName())
-  print("lurek.ai.newSquad: members=" .. tostring(squad:getMemberCount()))
+  example_print_log("lurek.ai.newSquad: name=" .. squad:getName())
+  example_print_log("lurek.ai.newSquad: members=" .. tostring(squad:getMemberCount()))
 end
 ```
 
@@ -948,9 +960,11 @@ lurek.ai.newStateMachine()
 do
   local fsm = lurek.ai.newStateMachine()
   fsm:addState("idle", {})
+  local fsm_type = fsm:type()
+  fsm:addState("idle", {})
   fsm:setInitialState("idle")
-  print("lurek.ai.newStateMachine: ok=" .. tostring(fsm ~= nil))
-  print("lurek.ai.newStateMachine: current=" .. tostring(fsm:getCurrentState()))
+  example_print_log("lurek.ai.newStateMachine: ok=" .. tostring(fsm ~= nil))
+  example_print_log("lurek.ai.newStateMachine: current=" .. tostring(fsm:getCurrentState()))
 end
 ```
 
@@ -975,9 +989,11 @@ lurek.ai.newSteeringManager()
 ```lua
 do
   local steer = lurek.ai.newSteeringManager()
+  steer:addSeek(64, 64, 1.0)
+  local behavior_count = steer:getBehaviorCount()
   steer:addSeek(320, 180, 1.0)
-  print("lurek.ai.newSteeringManager: ok=" .. tostring(steer ~= nil))
-  print("lurek.ai.newSteeringManager: behaviors=" .. tostring(steer:getBehaviorCount()))
+  example_print_log("lurek.ai.newSteeringManager: ok=" .. tostring(steer ~= nil))
+  example_print_log("lurek.ai.newSteeringManager: behaviors=" .. tostring(steer:getBehaviorCount()))
 end
 ```
 
@@ -1002,9 +1018,11 @@ lurek.ai.newStimulusWorld()
 ```lua
 do
   local sw = lurek.ai.newStimulusWorld()
+  local stimulus_id = sw:addVisual(0, 0, 0.5, 8.0, "ping")
+  local stimulus_count = sw:count()
   sw:addVisual(100, 150, 1.0, 48.0, "enemy")
-  print("lurek.ai.newStimulusWorld: stimuli=" .. tostring(sw:count()))
-  print("lurek.ai.newStimulusWorld: type=" .. sw:type())
+  example_print_log("lurek.ai.newStimulusWorld: stimuli=" .. tostring(sw:count()))
+  example_print_log("lurek.ai.newStimulusWorld: type=" .. sw:type())
 end
 ```
 
@@ -1037,8 +1055,8 @@ do
   local strat = lurek.ai.newStrategyAI(3.0)
   strat:addGoal("expand")
   strat:addTag("economy")
-  print("lurek.ai.newStrategyAI: ok=" .. tostring(strat ~= nil))
-  print("lurek.ai.newStrategyAI: next_eval=" .. tostring(strat:timeUntilNext()))
+  example_print_log("lurek.ai.newStrategyAI: ok=" .. tostring(strat ~= nil))
+  example_print_log("lurek.ai.newStrategyAI: next_eval=" .. tostring(strat:timeUntilNext()))
 end
 ```
 
@@ -1063,9 +1081,11 @@ lurek.ai.newSucceeder()
 ```lua
 do
   local suc = lurek.ai.newSucceeder()
+  local node_type = suc:getNodeType()
+  local child_count = suc:getChildCount()
   suc:setChild(lurek.ai.newAction(function() return "failure" end))
-  print("lurek.ai.newSucceeder: type=" .. suc:getNodeType())
-  print("lurek.ai.newSucceeder: child_count=" .. tostring(suc:getChildCount()))
+  example_print_log("lurek.ai.newSucceeder: type=" .. suc:getNodeType())
+  example_print_log("lurek.ai.newSucceeder: child_count=" .. tostring(suc:getChildCount()))
 end
 ```
 
@@ -1090,9 +1110,10 @@ lurek.ai.newTraitProfile()
 ```lua
 do
   local traits = lurek.ai.newTraitProfile()
+  traits:set("discipline", 0.4)
   traits:set("courage", 0.7)
-  print("lurek.ai.newTraitProfile: ok=" .. tostring(traits ~= nil))
-  print("lurek.ai.newTraitProfile: courage=" .. tostring(traits:get("courage")))
+  example_print_log("lurek.ai.newTraitProfile: ok=" .. tostring(traits ~= nil))
+  example_print_log("lurek.ai.newTraitProfile: courage=" .. tostring(traits:get("courage")))
 end
 ```
 
@@ -1119,8 +1140,8 @@ do
   local util = lurek.ai.newUtilityAI()
   util:addAction("wait", function() return 0.2 end)
   util:addAction("attack", function() return 0.9 end)
-  print("lurek.ai.newUtilityAI: ok=" .. tostring(util ~= nil))
-  print("lurek.ai.newUtilityAI: pick=" .. tostring(util:evaluate()))
+  example_print_log("lurek.ai.newUtilityAI: ok=" .. tostring(util ~= nil))
+  example_print_log("lurek.ai.newUtilityAI: pick=" .. tostring(util:evaluate()))
 end
 ```
 
@@ -1145,10 +1166,11 @@ lurek.ai.newWorld()
 ```lua
 do
   local world = lurek.ai.newWorld()
+  local world_type = world:type()
   local scout = world:addAgent("scout_preview")
   local count = world:getAgentCount()
-  print("lurek.ai.newWorld: agents=" .. tostring(count))
-  print("lurek.ai.newWorld: first_agent=" .. scout:getName())
+  example_print_log("lurek.ai.newWorld: agents=" .. tostring(count))
+  example_print_log("lurek.ai.newWorld: first_agent=" .. scout:getName())
 end
 ```
 
@@ -1221,12 +1243,14 @@ LAIBlackboard:clear()
 ```lua
 do
   local bb = lurek.ai.newBlackboard()
+  bb:setString("context", "active")
+  local bb_size = bb:getSize()
   bb:setNumber("a", 1)
   bb:setString("b", "x")
   bb:setBool("c", true)
   bb:clear()
   local size = bb:getSize()
-  print("LAIBlackboard:clear: size=" .. tostring(size))
+  example_print_log("LAIBlackboard:clear: size=" .. tostring(size))
 end
 ```
 
@@ -1258,10 +1282,12 @@ LAIBlackboard:getBool(key, default)
 ```lua
 do
   local bb = lurek.ai.newBlackboard()
+  bb:setString("context", "active")
+  local bb_size = bb:getSize()
   bb:setBool("alert", true)
   local alert = bb:getBool("alert", false)
   local calm = bb:getBool("calm", true)
-  print("LAIBlackboard:getBool: alert=" .. tostring(alert) .. " calm=" .. tostring(calm))
+  example_print_log("LAIBlackboard:getBool: alert=" .. tostring(alert) .. " calm=" .. tostring(calm))
 end
 ```
 
@@ -1286,10 +1312,12 @@ LAIBlackboard:getKeys()
 ```lua
 do
   local bb = lurek.ai.newBlackboard()
+  bb:setString("context", "active")
+  local bb_size = bb:getSize()
   bb:setNumber("hp", 100)
   bb:setString("state", "idle")
   local keys = bb:getKeys()
-  print("LAIBlackboard:getKeys: count=" .. tostring(#keys))
+  example_print_log("LAIBlackboard:getKeys: count=" .. tostring(#keys))
 end
 ```
 
@@ -1321,10 +1349,12 @@ LAIBlackboard:getNumber(key, default)
 ```lua
 do
   local bb = lurek.ai.newBlackboard()
+  bb:setString("context", "active")
+  local bb_size = bb:getSize()
   bb:setNumber("score", 95.5)
   local score = bb:getNumber("score", 0)
   local missing = bb:getNumber("nonexistent", -1)
-  print("LAIBlackboard:getNumber: score=" .. tostring(score) .. " missing=" .. tostring(missing))
+  example_print_log("LAIBlackboard:getNumber: score=" .. tostring(score) .. " missing=" .. tostring(missing))
 end
 ```
 
@@ -1349,10 +1379,12 @@ LAIBlackboard:getSize()
 ```lua
 do
   local bb = lurek.ai.newBlackboard()
+  bb:setString("context", "active")
+  local bb_size = bb:getSize()
   bb:setNumber("hp", 10)
   bb:setString("name", "test")
   local size = bb:getSize()
-  print("LAIBlackboard:getSize: " .. tostring(size))
+  example_print_log("LAIBlackboard:getSize: " .. tostring(size))
 end
 ```
 
@@ -1384,10 +1416,12 @@ LAIBlackboard:getString(key, default)
 ```lua
 do
   local bb = lurek.ai.newBlackboard()
+  bb:setString("context", "active")
+  local bb_size = bb:getSize()
   bb:setString("weapon", "sword")
   local weapon = bb:getString("weapon", "fists")
   local shield = bb:getString("shield", "none")
-  print("LAIBlackboard:getString: weapon=" .. weapon .. " shield=" .. shield)
+  example_print_log("LAIBlackboard:getString: weapon=" .. weapon .. " shield=" .. shield)
 end
 ```
 
@@ -1418,10 +1452,12 @@ LAIBlackboard:has(key)
 ```lua
 do
   local bb = lurek.ai.newBlackboard()
+  bb:setString("context", "active")
+  local bb_size = bb:getSize()
   bb:setNumber("hp", 80)
   local has_hp = bb:has("hp")
   local has_mp = bb:has("mp")
-  print("LAIBlackboard:has: hp=" .. tostring(has_hp) .. " mp=" .. tostring(has_mp))
+  example_print_log("LAIBlackboard:has: hp=" .. tostring(has_hp) .. " mp=" .. tostring(has_mp))
 end
 ```
 
@@ -1446,10 +1482,12 @@ LAIBlackboard:remove(key)
 ```lua
 do
   local bb = lurek.ai.newBlackboard()
+  bb:setString("context", "active")
+  local bb_size = bb:getSize()
   bb:setNumber("temp", 99)
   bb:remove("temp")
   local still_has = bb:has("temp")
-  print("LAIBlackboard:remove: has_temp=" .. tostring(still_has))
+  example_print_log("LAIBlackboard:remove: has_temp=" .. tostring(still_has))
 end
 ```
 
@@ -1475,10 +1513,12 @@ LAIBlackboard:setBool(key, value)
 ```lua
 do
   local bb = lurek.ai.newBlackboard()
+  bb:setString("context", "active")
+  local bb_size = bb:getSize()
   bb:setBool("can_attack", true)
   bb:setBool("is_hiding", false)
   local attack = bb:getBool("can_attack", false)
-  print("LAIBlackboard:setBool: can_attack=" .. tostring(attack))
+  example_print_log("LAIBlackboard:setBool: can_attack=" .. tostring(attack))
 end
 ```
 
@@ -1504,10 +1544,12 @@ LAIBlackboard:setNumber(key, value)
 ```lua
 do
   local bb = lurek.ai.newBlackboard()
+  bb:setString("context", "active")
+  local bb_size = bb:getSize()
   bb:setNumber("distance", 42.5)
   bb:setNumber("ammo", 30)
   local dist = bb:getNumber("distance", 0)
-  print("LAIBlackboard:setNumber: distance=" .. tostring(dist))
+  example_print_log("LAIBlackboard:setNumber: distance=" .. tostring(dist))
 end
 ```
 
@@ -1533,10 +1575,12 @@ LAIBlackboard:setString(key, value)
 ```lua
 do
   local bb = lurek.ai.newBlackboard()
+  bb:setString("context", "active")
+  local bb_size = bb:getSize()
   bb:setString("target_name", "dragon")
   bb:setString("current_zone", "forest")
   local target = bb:getString("target_name", "none")
-  print("LAIBlackboard:setString: target=" .. target)
+  example_print_log("LAIBlackboard:setString: target=" .. target)
 end
 ```
 
@@ -1561,9 +1605,11 @@ LAIBlackboard:type()
 ```lua
 do
   local bb = lurek.ai.newBlackboard()
+  bb:setString("context", "active")
+  local bb_size = bb:getSize()
   local t = bb:type()
-  print("LAIBlackboard:type: " .. t)
-  print("LAIBlackboard:type: matches=" .. tostring(bb:typeOf("LAIBlackboard")))
+  example_print_log("LAIBlackboard:type: " .. t)
+  example_print_log("LAIBlackboard:type: matches=" .. tostring(bb:typeOf("LAIBlackboard")))
 end
 ```
 
@@ -1594,9 +1640,11 @@ LAIBlackboard:typeOf(name)
 ```lua
 do
   local bb = lurek.ai.newBlackboard()
+  bb:setString("context", "active")
+  local bb_size = bb:getSize()
   local is_bb = bb:typeOf("LAIBlackboard")
   local is_agent = bb:typeOf("LBot")
-  print("LAIBlackboard:typeOf: LAIBlackboard=" .. tostring(is_bb) .. " LBot=" .. tostring(is_agent))
+  example_print_log("LAIBlackboard:typeOf: LAIBlackboard=" .. tostring(is_bb) .. " LBot=" .. tostring(is_agent))
 end
 ```
 
@@ -1629,9 +1677,11 @@ LAIDirector:ambientIntensity()
 ```lua
 do
     local dir = lurek.ai.newAIDirector()
+  dir:pushEvent(0.1)
+  local current_phase = dir:phase()
     dir:setTension(0.7)
     dir:update(0.1)
-    print("ambient intensity = " .. dir:ambientIntensity())
+    example_print_log("ambient intensity = " .. dir:ambientIntensity())
 end
 ```
 
@@ -1656,9 +1706,11 @@ LAIDirector:lootFactor()
 ```lua
 do
     local dir = lurek.ai.newAIDirector()
+  dir:pushEvent(0.1)
+  local current_phase = dir:phase()
     dir:setTension(0.2)
     dir:update(0.1)
-    print("loot factor = " .. dir:lootFactor())
+    example_print_log("loot factor = " .. dir:lootFactor())
 end
 ```
 
@@ -1683,8 +1735,10 @@ LAIDirector:phase()
 ```lua
 do
     local dir = lurek.ai.newAIDirector()
+  dir:pushEvent(0.1)
+  local current_phase = dir:phase()
     local p = dir:phase()
-    print("initial phase = " .. p)
+    example_print_log("initial phase = " .. p)
 end
 ```
 
@@ -1709,9 +1763,11 @@ LAIDirector:pushEvent(intensity)
 ```lua
 do
     local dir = lurek.ai.newAIDirector()
+  dir:pushEvent(0.1)
+  local current_phase = dir:phase()
     dir:pushEvent(0.5)
     dir:pushEvent(0.8)
-    print("events pushed, tension = " .. dir:tension())
+    example_print_log("events pushed, tension = " .. dir:tension())
 end
 ```
 
@@ -1730,9 +1786,11 @@ LAIDirector:reset()
 ```lua
 do
     local dir = lurek.ai.newAIDirector()
+  dir:pushEvent(0.1)
+  local current_phase = dir:phase()
     dir:setTension(0.9)
     dir:reset()
-    print("after reset, tension = " .. dir:tension())
+    example_print_log("after reset, tension = " .. dir:tension())
 end
 ```
 
@@ -1757,8 +1815,10 @@ LAIDirector:setTension(value)
 ```lua
 do
     local dir = lurek.ai.newAIDirector()
+  dir:pushEvent(0.1)
+  local current_phase = dir:phase()
     dir:setTension(0.5)
-    print("tension set to " .. dir:tension())
+    example_print_log("tension set to " .. dir:tension())
 end
 ```
 
@@ -1783,9 +1843,11 @@ LAIDirector:spawnRateFactor()
 ```lua
 do
     local dir = lurek.ai.newAIDirector()
+  dir:pushEvent(0.1)
+  local current_phase = dir:phase()
     dir:setTension(0.9)
     dir:update(0.1)
-    print("spawn rate factor = " .. dir:spawnRateFactor())
+    example_print_log("spawn rate factor = " .. dir:spawnRateFactor())
 end
 ```
 
@@ -1810,8 +1872,10 @@ LAIDirector:tension()
 ```lua
 do
     local dir = lurek.ai.newAIDirector()
+  dir:pushEvent(0.1)
+  local current_phase = dir:phase()
     dir:setTension(0.6)
-    print("tension = " .. dir:tension())
+    example_print_log("tension = " .. dir:tension())
 end
 ```
 
@@ -1836,8 +1900,10 @@ LAIDirector:type()
 ```lua
 do
     local dir = lurek.ai.newAIDirector()
-    print("type = " .. dir:type())
-  print("matches = " .. tostring(dir:typeOf("LAIDirector")))
+  dir:pushEvent(0.1)
+  local current_phase = dir:phase()
+    example_print_log("type = " .. dir:type())
+  example_print_log("matches = " .. tostring(dir:typeOf("LAIDirector")))
 end
 ```
 
@@ -1868,7 +1934,10 @@ LAIDirector:typeOf(name)
 ```lua
 do
     local dir = lurek.ai.newAIDirector()
-    print("is LAIDirector = " .. tostring(dir:typeOf("LAIDirector")))
+  dir:pushEvent(0.1)
+  local current_phase = dir:phase()
+    local type_name = dir:type()
+    example_print_log("is LAIDirector = " .. tostring(dir:typeOf("LAIDirector")))
 end
 ```
 
@@ -1893,9 +1962,11 @@ LAIDirector:update(dt)
 ```lua
 do
     local dir = lurek.ai.newAIDirector()
+  dir:pushEvent(0.1)
+  local current_phase = dir:phase()
     dir:pushEvent(1.0)
     dir:update(2.0)
-    print("phase after update = " .. dir:phase())
+    example_print_log("phase after update = " .. dir:phase())
 end
 ```
 
@@ -1935,8 +2006,10 @@ LAILod:shouldUpdate(tier, frame)
 ```lua
 do
     local lod = lurek.ai.newAILod()
+  local tier_name = lod:tierName(0)
+  local tier_index = lod:tierFor(0, 0, 0, 0)
     local run = lod:shouldUpdate(0, 1)
-    print("tier 0 should update on frame 1 = " .. tostring(run))
+    example_print_log("tier 0 should update on frame 1 = " .. tostring(run))
 end
 ```
 
@@ -1961,7 +2034,11 @@ LAILod:tierCount()
 ```lua
 do
     local lod = lurek.ai.newAILod()
-    print("tier count = " .. lod:tierCount())
+  local tier_name = lod:tierName(0)
+  local tier_index = lod:tierFor(0, 0, 0, 0)
+    local type_name = lod:type()
+    local is_lod = lod:typeOf("LAILod")
+    example_print_log("tier count = " .. lod:tierCount())
 end
 ```
 
@@ -1995,8 +2072,10 @@ LAILod:tierFor(ax, ay, rx, ry)
 ```lua
 do
     local lod = lurek.ai.newAILod()
+  local tier_name = lod:tierName(0)
+  local tier_index = lod:tierFor(0, 0, 0, 0)
     local tier = lod:tierFor(100, 200, 0, 0)
-    print("tier = " .. tier)
+    example_print_log("tier = " .. tier)
 end
 ```
 
@@ -2027,8 +2106,10 @@ LAILod:tierName(tier)
 ```lua
 do
     local lod = lurek.ai.newAILod()
+  local tier_name = lod:tierName(0)
+  local tier_index = lod:tierFor(0, 0, 0, 0)
     local name = lod:tierName(0)
-    print("tier 0 name = " .. name)
+    example_print_log("tier 0 name = " .. name)
 end
 ```
 
@@ -2053,8 +2134,10 @@ LAILod:type()
 ```lua
 do
     local lod = lurek.ai.newAILod()
-    print("type = " .. lod:type())
-  print("matches = " .. tostring(lod:typeOf("LAILod")))
+  local tier_name = lod:tierName(0)
+  local tier_index = lod:tierFor(0, 0, 0, 0)
+    example_print_log("type = " .. lod:type())
+  example_print_log("matches = " .. tostring(lod:typeOf("LAILod")))
 end
 ```
 
@@ -2085,7 +2168,11 @@ LAILod:typeOf(name)
 ```lua
 do
     local lod = lurek.ai.newAILod()
-    print("is LAILod = " .. tostring(lod:typeOf("LAILod")))
+  local tier_name = lod:tierName(0)
+  local tier_index = lod:tierFor(0, 0, 0, 0)
+    local count = lod:tierCount()
+    local type_name = lod:type()
+    example_print_log("is LAILod = " .. tostring(lod:typeOf("LAILod")))
 end
 ```
 
@@ -2124,8 +2211,10 @@ LAIWorld:addAgent(name)
 ```lua
 do
   local world = lurek.ai.newWorld()
+  local world_type = world:type()
   local archer = world:addAgent("archer_01")
-  print("LAIWorld:addAgent: name=" .. archer:getName())
+  local count = world:getAgentCount()
+  example_print_log("LAIWorld:addAgent: name=" .. archer:getName())
 end
 ```
 
@@ -2156,9 +2245,10 @@ LAIWorld:getAgent(name)
 ```lua
 do
   local world = lurek.ai.newWorld()
+  local world_type = world:type()
   world:addAgent("scout_01")
   local found = world:getAgent("scout_01")
-  print("LAIWorld:getAgent: found=" .. tostring(found ~= nil))
+  example_print_log("LAIWorld:getAgent: found=" .. tostring(found ~= nil))
 end
 ```
 
@@ -2183,11 +2273,12 @@ LAIWorld:getAgentCount()
 ```lua
 do
   local world = lurek.ai.newWorld()
+  local world_type = world:type()
   world:addAgent("unit_a")
   world:addAgent("unit_b")
   world:addAgent("unit_c")
   local count = world:getAgentCount()
-  print("LAIWorld:getAgentCount: " .. tostring(count))
+  example_print_log("LAIWorld:getAgentCount: " .. tostring(count))
 end
 ```
 
@@ -2212,10 +2303,11 @@ LAIWorld:getGlobalBlackboard()
 ```lua
 do
   local world = lurek.ai.newWorld()
+  local world_type = world:type()
   local gb = world:getGlobalBlackboard()
   gb:setString("weather", "rain")
-  print("LAIWorld:getGlobalBlackboard: ok=" .. tostring(gb ~= nil))
-  print("LAIWorld:getGlobalBlackboard: weather=" .. gb:getString("weather", "none"))
+  example_print_log("LAIWorld:getGlobalBlackboard: ok=" .. tostring(gb ~= nil))
+  example_print_log("LAIWorld:getGlobalBlackboard: weather=" .. gb:getString("weather", "none"))
 end
 ```
 
@@ -2240,9 +2332,10 @@ LAIWorld:removeAgent(agent)
 ```lua
 do
   local world = lurek.ai.newWorld()
+  local world_type = world:type()
   local temp = world:addAgent("temp_npc")
   world:removeAgent(temp)
-  print("LAIWorld:removeAgent: removed")
+  example_print_log("LAIWorld:removeAgent: removed")
 end
 ```
 
@@ -2267,10 +2360,11 @@ LAIWorld:type()
 ```lua
 do
   local world = lurek.ai.newWorld()
+  local world_type = world:type()
   local t = world:type()
   local ok = world:typeOf("LAIWorld")
-  print("LAIWorld:type: " .. t)
-  print("LAIWorld:type: matches=" .. tostring(ok))
+  example_print_log("LAIWorld:type: " .. t)
+  example_print_log("LAIWorld:type: matches=" .. tostring(ok))
 end
 ```
 
@@ -2301,9 +2395,10 @@ LAIWorld:typeOf(name)
 ```lua
 do
   local world = lurek.ai.newWorld()
+  local world_type = world:type()
   local is_world = world:typeOf("LAIWorld")
   local is_wrong = world:typeOf("LImage")
-  print("LAIWorld:typeOf: LAIWorld=" .. tostring(is_world) .. " LImage=" .. tostring(is_wrong))
+  example_print_log("LAIWorld:typeOf: LAIWorld=" .. tostring(is_world) .. " LImage=" .. tostring(is_wrong))
 end
 ```
 
@@ -2328,12 +2423,15 @@ LAIWorld:update(dt)
 ```lua
 do
   local world = lurek.ai.newWorld()
+  local world_type = world:type()
   local npc = world:addAgent("worker")
+  local agent_name = npc:getName()
+  npc:setPriority(0.5)
   npc:setDecisionModel("custom")
   local ticked = false
   npc:setCustomModel(function(agent, blackboard, dt) ticked = true end)
   world:update(1 / 60)
-  print("LAIWorld:update: ticked=" .. tostring(ticked))
+  example_print_log("LAIWorld:update: ticked=" .. tostring(ticked))
 end
 ```
 
@@ -2366,9 +2464,11 @@ LBTNode:addChild(child)
 ```lua
 do
   local seq = lurek.ai.newSequence()
+  local node_type = seq:getNodeType()
+  local child_count = seq:getChildCount()
   seq:addChild(lurek.ai.newAction(function() return "success" end))
   local count = seq:getChildCount()
-  print("LBTNode:addChild: children=" .. tostring(count))
+  example_print_log("LBTNode:addChild: children=" .. tostring(count))
 end
 ```
 
@@ -2393,9 +2493,11 @@ LBTNode:getChildCount()
 ```lua
 do
   local sel = lurek.ai.newSelector()
+  local node_type = sel:getNodeType()
+  local child_count = sel:getChildCount()
   sel:addChild(lurek.ai.newAction(function() return "success" end))
   local count = sel:getChildCount()
-  print("LBTNode:getChildCount: " .. tostring(count))
+  example_print_log("LBTNode:getChildCount: " .. tostring(count))
 end
 ```
 
@@ -2420,8 +2522,10 @@ LBTNode:getCount()
 ```lua
 do
   local rep = lurek.ai.newRepeater(7)
+  local node_type = rep:getNodeType()
+  local child_count = rep:getChildCount()
   local count = rep:getCount()
-  print("LBTNode:getCount: " .. tostring(count))
+  example_print_log("LBTNode:getCount: " .. tostring(count))
 end
 ```
 
@@ -2446,7 +2550,10 @@ LBTNode:getNodeType()
 ```lua
 do
   local act = lurek.ai.newAction(function() return "success" end)
-  print("LBTNode:getNodeType: " .. act:getNodeType())
+  local node_type = act:getNodeType()
+  local child_count = act:getChildCount()
+  act:reset()
+  example_print_log("LBTNode:getNodeType: " .. act:getNodeType())
 end
 ```
 
@@ -2465,9 +2572,11 @@ LBTNode:reset()
 ```lua
 do
   local seq = lurek.ai.newSequence()
+  local node_type = seq:getNodeType()
+  local child_count = seq:getChildCount()
   seq:addChild(lurek.ai.newAction(function() return "running" end))
   seq:reset()
-  print("LBTNode:reset: done")
+  example_print_log("LBTNode:reset: done")
 end
 ```
 
@@ -2492,9 +2601,11 @@ LBTNode:setChild(child)
 ```lua
 do
   local inv = lurek.ai.newInverter()
+  local node_type = inv:getNodeType()
+  local child_count = inv:getChildCount()
   inv:setChild(lurek.ai.newAction(function() return "failure" end))
-  print("LBTNode:setChild: configured")
-  print("LBTNode:setChild: type=" .. inv:getNodeType())
+  example_print_log("LBTNode:setChild: configured")
+  example_print_log("LBTNode:setChild: type=" .. inv:getNodeType())
 end
 ```
 
@@ -2519,9 +2630,11 @@ LBTNode:setCount(n)
 ```lua
 do
   local rep = lurek.ai.newRepeater(3)
+  local node_type = rep:getNodeType()
+  local child_count = rep:getChildCount()
   rep:setCount(10)
   local count = rep:getCount()
-  print("LBTNode:setCount: " .. tostring(count))
+  example_print_log("LBTNode:setCount: " .. tostring(count))
 end
 ```
 
@@ -2546,9 +2659,11 @@ LBTNode:setFailurePolicy(policy)
 ```lua
 do
   local par = lurek.ai.newParallel("requireOne", "requireAll")
+  local node_type = par:getNodeType()
+  local child_count = par:getChildCount()
   par:setFailurePolicy("requireOne")
-  print("LBTNode:setFailurePolicy: done")
-  print("LBTNode:setFailurePolicy: type=" .. par:getNodeType())
+  example_print_log("LBTNode:setFailurePolicy: done")
+  example_print_log("LBTNode:setFailurePolicy: type=" .. par:getNodeType())
 end
 ```
 
@@ -2573,9 +2688,11 @@ LBTNode:setSuccessPolicy(policy)
 ```lua
 do
   local par = lurek.ai.newParallel("requireAll", "requireOne")
+  local node_type = par:getNodeType()
+  local child_count = par:getChildCount()
   par:setSuccessPolicy("requireOne")
-  print("LBTNode:setSuccessPolicy: done")
-  print("LBTNode:setSuccessPolicy: type=" .. par:getNodeType())
+  example_print_log("LBTNode:setSuccessPolicy: done")
+  example_print_log("LBTNode:setSuccessPolicy: type=" .. par:getNodeType())
 end
 ```
 
@@ -2600,9 +2717,11 @@ LBTNode:type()
 ```lua
 do
   local node = lurek.ai.newAction(function() return "success" end)
+  local node_type = node:getNodeType()
+  local child_count = node:getChildCount()
   local t = node:type()
-  print("LBTNode:type: " .. t)
-  print("LBTNode:type: matches=" .. tostring(node:typeOf("LBTNode")))
+  example_print_log("LBTNode:type: " .. t)
+  example_print_log("LBTNode:type: matches=" .. tostring(node:typeOf("LBTNode")))
 end
 ```
 
@@ -2633,9 +2752,11 @@ LBTNode:typeOf(name)
 ```lua
 do
   local node = lurek.ai.newSelector()
+  local node_type = node:getNodeType()
+  local child_count = node:getChildCount()
   local is_node = node:typeOf("LBTNode")
   local is_other = node:typeOf("LImage")
-  print("LBTNode:typeOf: LBTNode=" .. tostring(is_node) .. " LImage=" .. tostring(is_other))
+  example_print_log("LBTNode:typeOf: LBTNode=" .. tostring(is_node) .. " LImage=" .. tostring(is_other))
 end
 ```
 
@@ -2989,10 +3110,12 @@ LBehaviorTree:getDebugState()
 ```lua
 do
   local bt = lurek.ai.newBehaviorTree()
+  local bt_debug = bt:getDebugState()
+  local bt_status = bt:getLastStatus()
   bt:setRoot(lurek.ai.newAction(function() return "success" end))
   local info = bt:getDebugState()
-  print("LBehaviorTree:getDebugState: node_count=" .. tostring(info.node_count))
-  print("LBehaviorTree:getDebugState: last_status=" .. tostring(info.last_status))
+  example_print_log("LBehaviorTree:getDebugState: node_count=" .. tostring(info.node_count))
+  example_print_log("LBehaviorTree:getDebugState: last_status=" .. tostring(info.last_status))
 end
 ```
 
@@ -3017,9 +3140,11 @@ LBehaviorTree:getLastStatus()
 ```lua
 do
   local bt = lurek.ai.newBehaviorTree()
+  local bt_debug = bt:getDebugState()
+  local bt_status = bt:getLastStatus()
   bt:setRoot(lurek.ai.newAction(function() return "success" end))
   local status = bt:getLastStatus()
-  print("LBehaviorTree:getLastStatus: " .. status)
+  example_print_log("LBehaviorTree:getLastStatus: " .. status)
 end
 ```
 
@@ -3119,9 +3244,11 @@ LBehaviorTree:type()
 ```lua
 do
   local bt = lurek.ai.newBehaviorTree()
+  local bt_debug = bt:getDebugState()
+  local bt_status = bt:getLastStatus()
   local t = bt:type()
-  print("LBehaviorTree:type: " .. t)
-  print("LBehaviorTree:type: matches=" .. tostring(bt:typeOf("LBehaviorTree")))
+  example_print_log("LBehaviorTree:type: " .. t)
+  example_print_log("LBehaviorTree:type: matches=" .. tostring(bt:typeOf("LBehaviorTree")))
 end
 ```
 
@@ -3152,9 +3279,11 @@ LBehaviorTree:typeOf(name)
 ```lua
 do
   local bt = lurek.ai.newBehaviorTree()
+  local bt_debug = bt:getDebugState()
+  local bt_status = bt:getLastStatus()
   local is_bt = bt:typeOf("LBehaviorTree")
   local is_other = bt:typeOf("LBot")
-  print("LBehaviorTree:typeOf: LBehaviorTree=" .. tostring(is_bt) .. " LBot=" .. tostring(is_other))
+  example_print_log("LBehaviorTree:typeOf: LBehaviorTree=" .. tostring(is_bt) .. " LBot=" .. tostring(is_other))
 end
 ```
 
@@ -3187,10 +3316,13 @@ LBot:addTag(tag)
 ```lua
 do
   local world = lurek.ai.newWorld()
+  local world_type = world:type()
   local npc = world:addAgent("guard")
+  local agent_name = npc:getName()
+  npc:setPriority(0.5)
   npc:addTag("hostile")
   local has_hostile = npc:hasTag("hostile")
-  print("LBot:addTag: hostile=" .. tostring(has_hostile))
+  example_print_log("LBot:addTag: hostile=" .. tostring(has_hostile))
 end
 ```
 
@@ -3215,11 +3347,14 @@ LBot:getBlackboard()
 ```lua
 do
   local world = lurek.ai.newWorld()
+  local world_type = world:type()
   local npc = world:addAgent("ranger")
+  local agent_name = npc:getName()
+  npc:setPriority(0.5)
   local bb = npc:getBlackboard()
   bb:setNumber("hp", 100)
   local hp = bb:getNumber("hp", 0)
-  print("LBot:getBlackboard: hp=" .. tostring(hp))
+  example_print_log("LBot:getBlackboard: hp=" .. tostring(hp))
 end
 ```
 
@@ -3244,10 +3379,13 @@ LBot:getDecisionModel()
 ```lua
 do
   local world = lurek.ai.newWorld()
+  local world_type = world:type()
   local npc = world:addAgent("farmer")
+  local agent_name = npc:getName()
+  npc:setPriority(0.5)
   npc:setDecisionModel("custom")
   local model = npc:getDecisionModel()
-  print("LBot:getDecisionModel: " .. model)
+  example_print_log("LBot:getDecisionModel: " .. model)
 end
 ```
 
@@ -3272,11 +3410,14 @@ LBot:getMaxForce()
 ```lua
 do
   local world = lurek.ai.newWorld()
+  local world_type = world:type()
   local npc = world:addAgent("scout")
+  local agent_name = npc:getName()
+  npc:setPriority(0.5)
   npc:setMaxForce(200)
   local force = npc:getMaxForce()
-  print("LBot:getMaxForce: " .. tostring(force))
-  print("LBot:getMaxForce: name=" .. npc:getName())
+  example_print_log("LBot:getMaxForce: " .. tostring(force))
+  example_print_log("LBot:getMaxForce: name=" .. npc:getName())
 end
 ```
 
@@ -3301,11 +3442,14 @@ LBot:getMaxSpeed()
 ```lua
 do
   local world = lurek.ai.newWorld()
+  local world_type = world:type()
   local npc = world:addAgent("courier")
+  local agent_name = npc:getName()
+  npc:setPriority(0.5)
   npc:setMaxSpeed(150)
   local speed = npc:getMaxSpeed()
-  print("LBot:getMaxSpeed: " .. tostring(speed))
-  print("LBot:getMaxSpeed: name=" .. npc:getName())
+  example_print_log("LBot:getMaxSpeed: " .. tostring(speed))
+  example_print_log("LBot:getMaxSpeed: name=" .. npc:getName())
 end
 ```
 
@@ -3330,9 +3474,12 @@ LBot:getName()
 ```lua
 do
   local world = lurek.ai.newWorld()
+  local world_type = world:type()
   local npc = world:addAgent("knight_03")
+  local agent_name = npc:getName()
+  npc:setPriority(0.5)
   local name = npc:getName()
-  print("LBot:getName: " .. name)
+  example_print_log("LBot:getName: " .. name)
 end
 ```
 
@@ -3358,10 +3505,13 @@ LBot:getPosition()
 ```lua
 do
   local world = lurek.ai.newWorld()
+  local world_type = world:type()
   local npc = world:addAgent("static_guard")
+  local agent_name = npc:getName()
+  npc:setPriority(0.5)
   npc:setPosition(400, 300)
   local x, y = npc:getPosition()
-  print("LBot:getPosition: " .. tostring(x) .. ", " .. tostring(y))
+  example_print_log("LBot:getPosition: " .. tostring(x) .. ", " .. tostring(y))
 end
 ```
 
@@ -3386,10 +3536,13 @@ LBot:getPriority()
 ```lua
 do
   local world = lurek.ai.newWorld()
+  local world_type = world:type()
   local npc = world:addAgent("grunt")
+  local agent_name = npc:getName()
+  npc:setPriority(0.5)
   npc:setPriority(5)
   local prio = npc:getPriority()
-  print("LBot:getPriority: " .. tostring(prio))
+  example_print_log("LBot:getPriority: " .. tostring(prio))
 end
 ```
 
@@ -3415,10 +3568,13 @@ LBot:getVelocity()
 ```lua
 do
   local world = lurek.ai.newWorld()
+  local world_type = world:type()
   local npc = world:addAgent("idle_npc")
+  local agent_name = npc:getName()
+  npc:setPriority(0.5)
   npc:setVelocity(0, 0)
   local vx, vy = npc:getVelocity()
-  print("LBot:getVelocity: vx=" .. tostring(vx) .. " vy=" .. tostring(vy))
+  example_print_log("LBot:getVelocity: vx=" .. tostring(vx) .. " vy=" .. tostring(vy))
 end
 ```
 
@@ -3449,11 +3605,14 @@ LBot:hasTag(tag)
 ```lua
 do
   local world = lurek.ai.newWorld()
+  local world_type = world:type()
   local npc = world:addAgent("merchant")
+  local agent_name = npc:getName()
+  npc:setPriority(0.5)
   npc:addTag("friendly")
   local friendly = npc:hasTag("friendly")
   local hostile = npc:hasTag("hostile")
-  print("LBot:hasTag: friendly=" .. tostring(friendly) .. " hostile=" .. tostring(hostile))
+  example_print_log("LBot:hasTag: friendly=" .. tostring(friendly) .. " hostile=" .. tostring(hostile))
 end
 ```
 
@@ -3478,11 +3637,14 @@ LBot:removeTag(tag)
 ```lua
 do
   local world = lurek.ai.newWorld()
+  local world_type = world:type()
   local npc = world:addAgent("spy")
+  local agent_name = npc:getName()
+  npc:setPriority(0.5)
   npc:addTag("visible")
   npc:removeTag("visible")
   local still_has = npc:hasTag("visible")
-  print("LBot:removeTag: visible=" .. tostring(still_has))
+  example_print_log("LBot:removeTag: visible=" .. tostring(still_has))
 end
 ```
 
@@ -3507,12 +3669,15 @@ LBot:setCustomModel(callback)
 ```lua
 do
   local world = lurek.ai.newWorld()
+  local world_type = world:type()
   local npc = world:addAgent("thinker")
+  local agent_name = npc:getName()
+  npc:setPriority(0.5)
   npc:setDecisionModel("custom")
   local called_with_dt = 0
   npc:setCustomModel(function(agent, bb, dt) called_with_dt = dt end)
   world:update(0.016)
-  print("LBot:setCustomModel: dt=" .. tostring(called_with_dt))
+  example_print_log("LBot:setCustomModel: dt=" .. tostring(called_with_dt))
 end
 ```
 
@@ -3537,10 +3702,13 @@ LBot:setDecisionModel(model)
 ```lua
 do
   local world = lurek.ai.newWorld()
+  local world_type = world:type()
   local npc = world:addAgent("worker")
+  local agent_name = npc:getName()
+  npc:setPriority(0.5)
   npc:setDecisionModel("custom")
   local model = npc:getDecisionModel()
-  print("LBot:setDecisionModel: " .. model)
+  example_print_log("LBot:setDecisionModel: " .. model)
 end
 ```
 
@@ -3565,10 +3733,13 @@ LBot:setMaxForce(v)
 ```lua
 do
   local world = lurek.ai.newWorld()
+  local world_type = world:type()
   local npc = world:addAgent("tank")
+  local agent_name = npc:getName()
+  npc:setPriority(0.5)
   npc:setMaxForce(80)
-  print("LBot:setMaxForce: done")
-  print("LBot:setMaxForce: force=" .. tostring(npc:getMaxForce()))
+  example_print_log("LBot:setMaxForce: done")
+  example_print_log("LBot:setMaxForce: force=" .. tostring(npc:getMaxForce()))
 end
 ```
 
@@ -3593,10 +3764,13 @@ LBot:setMaxSpeed(v)
 ```lua
 do
   local world = lurek.ai.newWorld()
+  local world_type = world:type()
   local npc = world:addAgent("sprinter")
+  local agent_name = npc:getName()
+  npc:setPriority(0.5)
   npc:setMaxSpeed(200)
-  print("LBot:setMaxSpeed: done")
-  print("LBot:setMaxSpeed: speed=" .. tostring(npc:getMaxSpeed()))
+  example_print_log("LBot:setMaxSpeed: done")
+  example_print_log("LBot:setMaxSpeed: speed=" .. tostring(npc:getMaxSpeed()))
 end
 ```
 
@@ -3622,11 +3796,14 @@ LBot:setPosition(x, y)
 ```lua
 do
   local world = lurek.ai.newWorld()
+  local world_type = world:type()
   local npc = world:addAgent("mover")
+  local agent_name = npc:getName()
+  npc:setPriority(0.5)
   npc:setPosition(256, 128)
   local x, y = npc:getPosition()
-  print("LBot:setPosition: done")
-  print("LBot:setPosition: pos=" .. tostring(x) .. ", " .. tostring(y))
+  example_print_log("LBot:setPosition: done")
+  example_print_log("LBot:setPosition: pos=" .. tostring(x) .. ", " .. tostring(y))
 end
 ```
 
@@ -3651,9 +3828,12 @@ LBot:setPriority(p)
 ```lua
 do
   local world = lurek.ai.newWorld()
+  local world_type = world:type()
   local npc = world:addAgent("captain")
+  local agent_name = npc:getName()
+  npc:setPriority(0.5)
   npc:setPriority(10)
-  print("LBot:setPriority: " .. tostring(npc:getPriority()))
+  example_print_log("LBot:setPriority: " .. tostring(npc:getPriority()))
 end
 ```
 
@@ -3679,11 +3859,14 @@ LBot:setVelocity(x, y)
 ```lua
 do
   local world = lurek.ai.newWorld()
+  local world_type = world:type()
   local npc = world:addAgent("runner")
+  local agent_name = npc:getName()
+  npc:setPriority(0.5)
   npc:setVelocity(60, -30)
   local vx, vy = npc:getVelocity()
-  print("LBot:setVelocity: done")
-  print("LBot:setVelocity: vel=" .. tostring(vx) .. ", " .. tostring(vy))
+  example_print_log("LBot:setVelocity: done")
+  example_print_log("LBot:setVelocity: vel=" .. tostring(vx) .. ", " .. tostring(vy))
 end
 ```
 
@@ -3708,10 +3891,13 @@ LBot:type()
 ```lua
 do
   local world = lurek.ai.newWorld()
+  local world_type = world:type()
   local npc = world:addAgent("villager")
+  local agent_name = npc:getName()
+  npc:setPriority(0.5)
   local t = npc:type()
-  print("LBot:type: " .. t)
-  print("LBot:type: matches=" .. tostring(npc:typeOf("LBot")))
+  example_print_log("LBot:type: " .. t)
+  example_print_log("LBot:type: matches=" .. tostring(npc:typeOf("LBot")))
 end
 ```
 
@@ -3742,10 +3928,13 @@ LBot:typeOf(name)
 ```lua
 do
   local world = lurek.ai.newWorld()
+  local world_type = world:type()
   local npc = world:addAgent("knight")
+  local agent_name = npc:getName()
+  npc:setPriority(0.5)
   local is_agent = npc:typeOf("LBot")
   local is_image = npc:typeOf("LImage")
-  print("LBot:typeOf: LBot=" .. tostring(is_agent) .. " LImage=" .. tostring(is_image))
+  example_print_log("LBot:typeOf: LBot=" .. tostring(is_agent) .. " LImage=" .. tostring(is_image))
 end
 ```
 
@@ -3778,10 +3967,12 @@ LCommandQueue:cancelCurrent()
 ```lua
 do
     local cq = lurek.ai.newCommandQueue()
+  cq:enqueue("hold", function() end, { targetX = 0, targetY = 0 })
+  local queue_count = cq:getCount()
     cq:enqueue("walk", function() end)
     cq:enqueue("talk", function() end)
     cq:cancelCurrent()
-    print("after cancel, type = " .. tostring(cq:getCurrentType()))
+    example_print_log("after cancel, type = " .. tostring(cq:getCurrentType()))
 end
 ```
 
@@ -3800,10 +3991,12 @@ LCommandQueue:clear()
 ```lua
 do
     local cq = lurek.ai.newCommandQueue()
+  cq:enqueue("hold", function() end, { targetX = 0, targetY = 0 })
+  local queue_count = cq:getCount()
     cq:enqueue("a", function() end)
     cq:enqueue("b", function() end)
     cq:clear()
-    print("after clear, empty = " .. tostring(cq:isEmpty()))
+    example_print_log("after clear, empty = " .. tostring(cq:isEmpty()))
 end
 ```
 
@@ -3830,9 +4023,11 @@ LCommandQueue:enqueue(kind, callback, opts)
 ```lua
 do
     local cq = lurek.ai.newCommandQueue()
-    cq:enqueue("move", function() print("  moving") end, { targetX = 10, targetY = 20 })
-    cq:enqueue("attack", function() print("  attacking") end)
-    print("queue size = " .. cq:getCount())
+  cq:enqueue("hold", function() end, { targetX = 0, targetY = 0 })
+  local queue_count = cq:getCount()
+    cq:enqueue("move", function() example_print_log("  moving") end, { targetX = 10, targetY = 20 })
+    cq:enqueue("attack", function() example_print_log("  attacking") end)
+    example_print_log("queue size = " .. cq:getCount())
 end
 ```
 
@@ -3857,10 +4052,12 @@ LCommandQueue:getCount()
 ```lua
 do
     local cq = lurek.ai.newCommandQueue()
+  cq:enqueue("hold", function() end, { targetX = 0, targetY = 0 })
+  local queue_count = cq:getCount()
     cq:enqueue("x", function() end)
     cq:enqueue("y", function() end)
     cq:enqueue("z", function() end)
-    print("count = " .. cq:getCount())
+    example_print_log("count = " .. cq:getCount())
 end
 ```
 
@@ -3886,9 +4083,11 @@ LCommandQueue:getCurrentTarget()
 ```lua
 do
     local cq = lurek.ai.newCommandQueue()
+  cq:enqueue("hold", function() end, { targetX = 0, targetY = 0 })
+  local queue_count = cq:getCount()
     cq:enqueue("go", function() end, { targetX = 5, targetY = 10 })
     local tgt = cq:getCurrentTarget()
-    print("target = " .. tostring(tgt))
+    example_print_log("target = " .. tostring(tgt))
 end
 ```
 
@@ -3913,8 +4112,10 @@ LCommandQueue:getCurrentType()
 ```lua
 do
     local cq = lurek.ai.newCommandQueue()
+  cq:enqueue("hold", function() end, { targetX = 0, targetY = 0 })
+  local queue_count = cq:getCount()
     cq:enqueue("harvest", function() end)
-    print("current type = " .. tostring(cq:getCurrentType()))
+    example_print_log("current type = " .. tostring(cq:getCurrentType()))
 end
 ```
 
@@ -3939,9 +4140,11 @@ LCommandQueue:isEmpty()
 ```lua
 do
     local cq = lurek.ai.newCommandQueue()
-    print("empty initially = " .. tostring(cq:isEmpty()))
+  cq:enqueue("hold", function() end, { targetX = 0, targetY = 0 })
+  local queue_count = cq:getCount()
+    example_print_log("empty initially = " .. tostring(cq:isEmpty()))
     cq:enqueue("step", function() end)
-    print("empty after enqueue = " .. tostring(cq:isEmpty()))
+    example_print_log("empty after enqueue = " .. tostring(cq:isEmpty()))
 end
 ```
 
@@ -3968,9 +4171,11 @@ LCommandQueue:pushFront(kind, callback, opts)
 ```lua
 do
     local cq = lurek.ai.newCommandQueue()
+  cq:enqueue("hold", function() end, { targetX = 0, targetY = 0 })
+  local queue_count = cq:getCount()
     cq:enqueue("patrol", function() end)
-    cq:pushFront("dodge", function() print("  dodging") end)
-    print("next type = " .. cq:getCurrentType())
+    cq:pushFront("dodge", function() example_print_log("  dodging") end)
+    example_print_log("next type = " .. cq:getCurrentType())
 end
 ```
 
@@ -3997,10 +4202,12 @@ LCommandQueue:replace(kind, callback, opts)
 ```lua
 do
     local cq = lurek.ai.newCommandQueue()
+  cq:enqueue("hold", function() end, { targetX = 0, targetY = 0 })
+  local queue_count = cq:getCount()
     cq:enqueue("idle", function() end)
     cq:enqueue("gather", function() end)
-    cq:replace("retreat", function() print("  retreating") end)
-    print("after replace count = " .. cq:getCount())
+    cq:replace("retreat", function() example_print_log("  retreating") end)
+    example_print_log("after replace count = " .. cq:getCount())
 end
 ```
 
@@ -4025,8 +4232,10 @@ LCommandQueue:type()
 ```lua
 do
     local cq = lurek.ai.newCommandQueue()
-    print("type = " .. cq:type())
-  print("matches = " .. tostring(cq:typeOf("LCommandQueue")))
+  cq:enqueue("hold", function() end, { targetX = 0, targetY = 0 })
+  local queue_count = cq:getCount()
+    example_print_log("type = " .. cq:type())
+  example_print_log("matches = " .. tostring(cq:typeOf("LCommandQueue")))
 end
 ```
 
@@ -4057,7 +4266,10 @@ LCommandQueue:typeOf(name)
 ```lua
 do
     local cq = lurek.ai.newCommandQueue()
-    print("is LCommandQueue = " .. tostring(cq:typeOf("LCommandQueue")))
+  cq:enqueue("hold", function() end, { targetX = 0, targetY = 0 })
+  local queue_count = cq:getCount()
+    local type_name = cq:type()
+    example_print_log("is LCommandQueue = " .. tostring(cq:typeOf("LCommandQueue")))
 end
 ```
 
@@ -4095,8 +4307,10 @@ LContextSteering:addAvoidBounds(min_x, min_y, max_x, max_y, margin, weight)
 ```lua
 do
     local cs = lurek.ai.newContextSteering(8)
+  cs:addSeekTarget(0, 0, 1.0)
+  local slot_count = cs:slotCount()
     cs:addAvoidBounds(0, 0, 800, 600, 30.0, 1.0)
-    print("avoid bounds set for 800x600 area")
+    example_print_log("avoid bounds set for 800x600 area")
 end
 ```
 
@@ -4124,8 +4338,10 @@ LContextSteering:addAvoidPoint(x, y, radius, weight)
 ```lua
 do
     local cs = lurek.ai.newContextSteering(8)
+  cs:addSeekTarget(0, 0, 1.0)
+  local slot_count = cs:slotCount()
     cs:addAvoidPoint(50, 50, 20.0, 1.5)
-    print("avoid point at (50, 50) radius 20")
+    example_print_log("avoid point at (50, 50) radius 20")
 end
 ```
 
@@ -4152,8 +4368,10 @@ LContextSteering:addSeekTarget(tx, ty, weight)
 ```lua
 do
     local cs = lurek.ai.newContextSteering(8)
+  cs:addSeekTarget(0, 0, 1.0)
+  local slot_count = cs:slotCount()
     cs:addSeekTarget(200, 150, 1.0)
-    print("seek target added at (200, 150)")
+    example_print_log("seek target added at (200, 150)")
 end
 ```
 
@@ -4179,8 +4397,10 @@ LContextSteering:addWander(jitter, weight)
 ```lua
 do
     local cs = lurek.ai.newContextSteering(8)
+  cs:addSeekTarget(0, 0, 1.0)
+  local slot_count = cs:slotCount()
     cs:addWander(0.3, 0.5)
-    print("wander behavior added")
+    example_print_log("wander behavior added")
 end
 ```
 
@@ -4205,10 +4425,12 @@ LContextSteering:chosenMagnitude()
 ```lua
 do
     local cs = lurek.ai.newContextSteering(8)
+  cs:addSeekTarget(0, 0, 1.0)
+  local slot_count = cs:slotCount()
     cs:addSeekTarget(200, 200, 1.0)
     cs:evaluate(0, 0, 0, 0)
     local mag = cs:chosenMagnitude()
-    print("magnitude = " .. mag)
+    example_print_log("magnitude = " .. mag)
 end
 ```
 
@@ -4227,10 +4449,12 @@ LContextSteering:clearBehaviors()
 ```lua
 do
     local cs = lurek.ai.newContextSteering(8)
+  cs:addSeekTarget(0, 0, 1.0)
+  local slot_count = cs:slotCount()
     cs:addSeekTarget(100, 100, 1.0)
     cs:addAvoidPoint(50, 50, 10.0, 1.0)
     cs:clearBehaviors()
-    print("behaviors cleared")
+    example_print_log("behaviors cleared")
 end
 ```
 
@@ -4265,10 +4489,12 @@ LContextSteering:evaluate(ax, ay, vx, vy)
 ```lua
 do
     local cs = lurek.ai.newContextSteering(8)
+  cs:addSeekTarget(0, 0, 1.0)
+  local slot_count = cs:slotCount()
     cs:addSeekTarget(300, 200, 1.0)
     cs:addAvoidPoint(150, 150, 30.0, 2.0)
     local dx, dy = cs:evaluate(100, 100, 1.0, 0.0)
-    print("direction = " .. dx .. ", " .. dy)
+    example_print_log("direction = " .. dx .. ", " .. dy)
 end
 ```
 
@@ -4293,7 +4519,10 @@ LContextSteering:slotCount()
 ```lua
 do
     local cs = lurek.ai.newContextSteering(16)
-    print("slots = " .. cs:slotCount())
+  cs:addSeekTarget(0, 0, 1.0)
+  local slot_count = cs:slotCount()
+    local type_name = cs:type()
+    example_print_log("slots = " .. cs:slotCount())
 end
 ```
 
@@ -4318,8 +4547,10 @@ LContextSteering:type()
 ```lua
 do
     local cs = lurek.ai.newContextSteering(8)
-    print("type = " .. cs:type())
-  print("matches = " .. tostring(cs:typeOf("LContextSteering")))
+  cs:addSeekTarget(0, 0, 1.0)
+  local slot_count = cs:slotCount()
+    example_print_log("type = " .. cs:type())
+  example_print_log("matches = " .. tostring(cs:typeOf("LContextSteering")))
 end
 ```
 
@@ -4350,7 +4581,10 @@ LContextSteering:typeOf(name)
 ```lua
 do
     local cs = lurek.ai.newContextSteering(8)
-    print("is LContextSteering = " .. tostring(cs:typeOf("LContextSteering")))
+  cs:addSeekTarget(0, 0, 1.0)
+  local slot_count = cs:slotCount()
+    local type_name = cs:type()
+    example_print_log("is LContextSteering = " .. tostring(cs:typeOf("LContextSteering")))
 end
 ```
 
@@ -4594,7 +4828,9 @@ do
     local em = lurek.ai.newEmotionModel()
     em:add("joy", 0.3, 0.1, 0.2)
     em:add("anger", 0.0, 0.05, 0.3)
-    print("emotions registered")
+    local joy = em:get("joy")
+    local anger = em:get("anger")
+    example_print_log("emotions registered")
 end
 ```
 
@@ -4623,7 +4859,7 @@ do
     em:add("anger", 0.0, 0.1, 0.1)
     em:trigger("joy", 0.3)
     em:trigger("anger", 0.8)
-    print("dominant = " .. tostring(em:dominant()))
+    example_print_log("dominant = " .. tostring(em:dominant()))
 end
 ```
 
@@ -4657,7 +4893,7 @@ do
     em:add("sadness", 0.2, 0.05, 0.1)
     em:trigger("sadness", 0.5)
     local val = em:get("sadness")
-    print("sadness = " .. val)
+    example_print_log("sadness = " .. val)
 end
 ```
 
@@ -4690,9 +4926,9 @@ do
   local em = lurek.ai.newEmotionModel()
   em:add("surprise", 0.0, 0.1, 0.5)
     em:trigger("surprise", 0.2)
-    print("surprise active = " .. tostring(em:isActive("surprise")))
+    example_print_log("surprise active = " .. tostring(em:isActive("surprise")))
     em:trigger("surprise", 0.5)
-    print("surprise active = " .. tostring(em:isActive("surprise")))
+    example_print_log("surprise active = " .. tostring(em:isActive("surprise")))
 end
 ```
 
@@ -4714,7 +4950,7 @@ do
     em:add("rage", 0.0, 0.1, 0.2)
     em:trigger("rage", 1.0)
     em:reset()
-    print("rage after reset = " .. em:get("rage"))
+    example_print_log("rage after reset = " .. em:get("rage"))
 end
 ```
 
@@ -4742,7 +4978,9 @@ do
     local em = lurek.ai.newEmotionModel()
     em:add("fear", 0.0, 0.1, 0.2)
     em:trigger("fear", 0.7)
-    print("fear = " .. em:get("fear"))
+    local dominant = em:dominant()
+    local active = em:isActive("fear")
+    example_print_log("fear = " .. em:get("fear"))
 end
 ```
 
@@ -4767,8 +5005,10 @@ LEmotionModel:type()
 ```lua
 do
     local em = lurek.ai.newEmotionModel()
-    print("type = " .. em:type())
-  print("matches = " .. tostring(em:typeOf("LEmotionModel")))
+    em:add("joy", 0.1, 0.1, 0.1)
+    local dominant = em:dominant()
+    example_print_log("type = " .. em:type())
+  example_print_log("matches = " .. tostring(em:typeOf("LEmotionModel")))
 end
 ```
 
@@ -4799,7 +5039,10 @@ LEmotionModel:typeOf(name)
 ```lua
 do
     local em = lurek.ai.newEmotionModel()
-    print("is LEmotionModel = " .. tostring(em:typeOf("LEmotionModel")))
+    em:add("joy", 0.1, 0.1, 0.1)
+    local type_name = em:type()
+    local dominant = em:dominant()
+    example_print_log("is LEmotionModel = " .. tostring(em:typeOf("LEmotionModel")))
 end
 ```
 
@@ -4827,7 +5070,7 @@ do
     em:add("excitement", 0.0, 0.2, 0.1)
     em:trigger("excitement", 1.0)
     em:update(3.0)
-    print("excitement after 3s = " .. em:get("excitement"))
+    example_print_log("excitement after 3s = " .. em:get("excitement"))
 end
 ```
 
@@ -4862,9 +5105,11 @@ LGOAPPlanner:addAction(name, cost, callback)
 ```lua
 do
     local goap = lurek.ai.newGOAPPlanner()
-    goap:addAction("chop_wood", 2, function() print("  chopping wood") end)
-    goap:addAction("build_house", 5, function() print("  building house") end)
-    print("goap actions = " .. goap:getActionCount())
+  goap:addGoal("idle", 1)
+  local goal_count = goap:getGoalCount()
+    goap:addAction("chop_wood", 2, function() example_print_log("  chopping wood") end)
+    goap:addAction("build_house", 5, function() example_print_log("  building house") end)
+    example_print_log("goap actions = " .. goap:getActionCount())
 end
 ```
 
@@ -4890,9 +5135,11 @@ LGOAPPlanner:addGoal(name, priority)
 ```lua
 do
     local goap = lurek.ai.newGOAPPlanner()
+  goap:addGoal("idle", 1)
+  local goal_count = goap:getGoalCount()
     goap:addGoal("survive", 10)
     goap:addGoal("explore", 3)
-    print("goals = " .. goap:getGoalCount())
+    example_print_log("goals = " .. goap:getGoalCount())
 end
 ```
 
@@ -4917,9 +5164,11 @@ LGOAPPlanner:getActionCount()
 ```lua
 do
     local goap = lurek.ai.newGOAPPlanner()
+  goap:addGoal("idle", 1)
+  local goal_count = goap:getGoalCount()
     goap:addAction("a1", 1, function() end)
     goap:addAction("a2", 2, function() end)
-    print("action count = " .. goap:getActionCount())
+    example_print_log("action count = " .. goap:getActionCount())
 end
 ```
 
@@ -4944,10 +5193,12 @@ LGOAPPlanner:getGoalCount()
 ```lua
 do
     local goap = lurek.ai.newGOAPPlanner()
+  goap:addGoal("idle", 1)
+  local goal_count = goap:getGoalCount()
     goap:addGoal("g1", 1)
     goap:addGoal("g2", 5)
     goap:addGoal("g3", 3)
-    print("goal count = " .. goap:getGoalCount())
+    example_print_log("goal count = " .. goap:getGoalCount())
 end
 ```
 
@@ -4972,8 +5223,10 @@ LGOAPPlanner:getMaxIterations()
 ```lua
 do
     local goap = lurek.ai.newGOAPPlanner()
+  goap:addGoal("idle", 1)
+  local goal_count = goap:getGoalCount()
     local max = goap:getMaxIterations()
-    print("default max iterations = " .. max)
+    example_print_log("default max iterations = " .. max)
 end
 ```
 
@@ -5005,6 +5258,8 @@ LGOAPPlanner:plan(world_state_tbl, max_depth)
 ```lua
 do
   local goap = lurek.ai.newGOAPPlanner()
+  goap:addGoal("idle", 1)
+  local goal_count = goap:getGoalCount()
   goap:addAction("get_wood", 1, function() end)
   goap:setEffect("get_wood", "has_wood", true)
   goap:addAction("build", 2, function() end)
@@ -5013,7 +5268,7 @@ do
   goap:addGoal("build_house", 10)
   goap:setGoalState("build_house", "house_done", true)
   local plan = goap:plan({ has_wood = false, house_done = false }, 10)
-  print("plan steps = " .. #plan)
+  example_print_log("plan steps = " .. #plan)
 end
 ```
 
@@ -5040,9 +5295,11 @@ LGOAPPlanner:setEffect(action_name, key, value)
 ```lua
 do
     local goap = lurek.ai.newGOAPPlanner()
+  goap:addGoal("idle", 1)
+  local goal_count = goap:getGoalCount()
     goap:addAction("mine_ore", 3, function() end)
     goap:setEffect("mine_ore", "has_ore", true)
-    print("effect set for mine_ore")
+    example_print_log("effect set for mine_ore")
 end
 ```
 
@@ -5069,9 +5326,11 @@ LGOAPPlanner:setGoalState(goal_name, key, value)
 ```lua
 do
     local goap = lurek.ai.newGOAPPlanner()
+  goap:addGoal("idle", 1)
+  local goal_count = goap:getGoalCount()
     goap:addGoal("build_shelter", 5)
     goap:setGoalState("build_shelter", "shelter_built", true)
-    print("goal state set for build_shelter")
+    example_print_log("goal state set for build_shelter")
 end
 ```
 
@@ -5096,8 +5355,10 @@ LGOAPPlanner:setMaxIterations(n)
 ```lua
 do
     local goap = lurek.ai.newGOAPPlanner()
+  goap:addGoal("idle", 1)
+  local goal_count = goap:getGoalCount()
     goap:setMaxIterations(500)
-    print("max iterations = " .. goap:getMaxIterations())
+    example_print_log("max iterations = " .. goap:getMaxIterations())
 end
 ```
 
@@ -5124,9 +5385,11 @@ LGOAPPlanner:setPrecondition(action_name, key, value)
 ```lua
 do
     local goap = lurek.ai.newGOAPPlanner()
+  goap:addGoal("idle", 1)
+  local goal_count = goap:getGoalCount()
     goap:addAction("cook", 1, function() end)
     goap:setPrecondition("cook", "has_food", true)
-    print("precondition set for cook")
+    example_print_log("precondition set for cook")
 end
 ```
 
@@ -5151,8 +5414,10 @@ LGOAPPlanner:type()
 ```lua
 do
     local goap = lurek.ai.newGOAPPlanner()
-    print("type = " .. goap:type())
-  print("matches = " .. tostring(goap:typeOf("LGOAPPlanner")))
+  goap:addGoal("idle", 1)
+  local goal_count = goap:getGoalCount()
+    example_print_log("type = " .. goap:type())
+  example_print_log("matches = " .. tostring(goap:typeOf("LGOAPPlanner")))
 end
 ```
 
@@ -5183,7 +5448,10 @@ LGOAPPlanner:typeOf(name)
 ```lua
 do
     local goap = lurek.ai.newGOAPPlanner()
-    print("is LGOAPPlanner = " .. tostring(goap:typeOf("LGOAPPlanner")))
+  goap:addGoal("idle", 1)
+  local goal_count = goap:getGoalCount()
+    local type_name = goap:type()
+    example_print_log("is LGOAPPlanner = " .. tostring(goap:typeOf("LGOAPPlanner")))
 end
 ```
 
@@ -5360,10 +5628,12 @@ LHTNDomain:addCompound(comp_name, methods_table)
 ```lua
 do
     local htn = lurek.ai.newHTNDomain()
+  local domain_type = htn:type()
+  local task_count = htn:taskCount()
     htn:addPrimitive("mine", {}, { "has_ore" }, {})
     htn:addPrimitive("smelt", { "has_ore" }, { "has_metal" }, { "has_ore" })
   htn:addCompound("get_metal", { { name = "mine_and_smelt", preconditions = {}, sub_tasks = { "mine", "smelt" } } })
-  print("compound added, tasks = " .. htn:taskCount())
+  example_print_log("compound added, tasks = " .. htn:taskCount())
 end
 ```
 
@@ -5391,9 +5661,11 @@ LHTNDomain:addPrimitive(name, preconds, effects, clears)
 ```lua
 do
     local htn = lurek.ai.newHTNDomain()
+  local domain_type = htn:type()
+  local task_count = htn:taskCount()
     htn:addPrimitive("chop", { "has_axe" }, { "has_wood" }, {})
     htn:addPrimitive("build", { "has_wood" }, { "shelter_done" }, { "has_wood" })
-    print("primitives = " .. htn:taskCount())
+    example_print_log("primitives = " .. htn:taskCount())
 end
 ```
 
@@ -5425,13 +5697,15 @@ LHTNDomain:plan(root_task, state_table)
 ```lua
 do
     local htn = lurek.ai.newHTNDomain()
+  local domain_type = htn:type()
+  local task_count = htn:taskCount()
     htn:addPrimitive("gather", {}, { "has_food" }, {})
     htn:addPrimitive("cook", { "has_food" }, { "meal_ready" }, { "has_food" })
   htn:addCompound("prepare_meal", { { name = "full_cook", preconditions = {}, sub_tasks = { "gather", "cook" } } })
   local plan = htn:plan("prepare_meal", { has_food = 0, meal_ready = 0 })
   if plan then
-    print("plan size = " .. #plan)
-    print("plan = " .. table.concat(plan, " -> "))
+    example_print_log("plan size = " .. #plan)
+    example_print_log("plan = " .. table.concat(plan, " -> "))
   end
 end
 ```
@@ -5457,9 +5731,11 @@ LHTNDomain:taskCount()
 ```lua
 do
     local htn = lurek.ai.newHTNDomain()
+  local domain_type = htn:type()
+  local task_count = htn:taskCount()
     htn:addPrimitive("a", {}, {}, {})
     htn:addPrimitive("b", {}, {}, {})
-    print("task count = " .. htn:taskCount())
+    example_print_log("task count = " .. htn:taskCount())
 end
 ```
 
@@ -5484,8 +5760,10 @@ LHTNDomain:type()
 ```lua
 do
     local htn = lurek.ai.newHTNDomain()
-    print("type = " .. htn:type())
-  print("matches = " .. tostring(htn:typeOf("LHTNDomain")))
+  local domain_type = htn:type()
+  local task_count = htn:taskCount()
+    example_print_log("type = " .. htn:type())
+  example_print_log("matches = " .. tostring(htn:typeOf("LHTNDomain")))
 end
 ```
 
@@ -5516,7 +5794,10 @@ LHTNDomain:typeOf(name)
 ```lua
 do
     local htn = lurek.ai.newHTNDomain()
-    print("is LHTNDomain = " .. tostring(htn:typeOf("LHTNDomain")))
+  local domain_type = htn:type()
+  local task_count = htn:taskCount()
+    local type_name = htn:type()
+    example_print_log("is LHTNDomain = " .. tostring(htn:typeOf("LHTNDomain")))
 end
 ```
 
@@ -5549,9 +5830,11 @@ LInfluenceMap:addLayer(name)
 ```lua
 do
     local im = lurek.ai.newInfluenceMap(16, 16, 1.0)
+  im:addLayer("debug")
+  local map_width = im:getWidth()
     im:addLayer("threat")
     im:addLayer("resources")
-    print("layers added: threat, resources")
+    example_print_log("layers added: threat, resources")
 end
 ```
 
@@ -5580,6 +5863,8 @@ LInfluenceMap:blend(layer_a, weight_a, layer_b, weight_b, dest)
 ```lua
 do
   local im = lurek.ai.newInfluenceMap(8, 8, 1.0)
+  im:addLayer("debug")
+  local map_width = im:getWidth()
   im:addLayer("threat")
   im:addLayer("reward")
   im:addLayer("combined")
@@ -5587,7 +5872,7 @@ do
   im:setInfluence("reward", 4, 4, 0.8)
   im:blend("threat", 0.5, "reward", 0.5, "combined")
   local val = im:getInfluence("combined", 4, 4)
-    print("blended (4,4) = " .. val)
+    example_print_log("blended (4,4) = " .. val)
 end
 ```
 
@@ -5606,12 +5891,14 @@ LInfluenceMap:clearAll()
 ```lua
 do
   local im = lurek.ai.newInfluenceMap(8, 8, 1.0)
+  im:addLayer("debug")
+  local map_width = im:getWidth()
   im:addLayer("a")
   im:addLayer("b")
   im:setInfluence("a", 1, 1, 1.0)
     im:setInfluence("b", 2, 2, 0.5)
     im:clearAll()
-    print("all cleared, a(1,1) = " .. im:getInfluence("a", 1, 1))
+    example_print_log("all cleared, a(1,1) = " .. im:getInfluence("a", 1, 1))
 end
 ```
 
@@ -5636,11 +5923,13 @@ LInfluenceMap:clearLayer(layer)
 ```lua
 do
   local im = lurek.ai.newInfluenceMap(8, 8, 1.0)
+  im:addLayer("debug")
+  local map_width = im:getWidth()
   im:addLayer("marks")
     im:setInfluence("marks", 2, 2, 1.0)
     im:clearLayer("marks")
     local val = im:getInfluence("marks", 2, 2)
-    print("after clear = " .. val)
+    example_print_log("after clear = " .. val)
 end
 ```
 
@@ -5666,11 +5955,13 @@ LInfluenceMap:decay(layer, factor)
 ```lua
 do
   local im = lurek.ai.newInfluenceMap(8, 8, 1.0)
+  im:addLayer("debug")
+  local map_width = im:getWidth()
   im:addLayer("heat")
     im:setInfluence("heat", 4, 4, 1.0)
     im:decay("heat", 0.5)
     local val = im:getInfluence("heat", 4, 4)
-    print("heat after decay = " .. val)
+    example_print_log("heat after decay = " .. val)
 end
 ```
 
@@ -5695,7 +5986,10 @@ LInfluenceMap:getCellSize()
 ```lua
 do
     local im = lurek.ai.newInfluenceMap(8, 8, 2.5)
-    print("cell size = " .. im:getCellSize())
+  im:addLayer("debug")
+  local map_width = im:getWidth()
+    local map_height = im:getHeight()
+    example_print_log("cell size = " .. im:getCellSize())
 end
 ```
 
@@ -5720,7 +6014,10 @@ LInfluenceMap:getHeight()
 ```lua
 do
     local im = lurek.ai.newInfluenceMap(16, 12, 2.0)
-    print("height = " .. im:getHeight())
+  im:addLayer("debug")
+  local map_width = im:getWidth()
+    local cell_size = im:getCellSize()
+    example_print_log("height = " .. im:getHeight())
 end
 ```
 
@@ -5753,10 +6050,12 @@ LInfluenceMap:getInfluence(layer, x, y)
 ```lua
 do
     local im = lurek.ai.newInfluenceMap(10, 10, 1.0)
+  im:addLayer("debug")
+  local map_width = im:getWidth()
     im:addLayer("food")
     im:setInfluence("food", 4, 4, 0.75)
     local val = im:getInfluence("food", 4, 4)
-    print("food at (4,4) = " .. val)
+    example_print_log("food at (4,4) = " .. val)
 end
 ```
 
@@ -5788,11 +6087,13 @@ LInfluenceMap:getMaxPosition(layer)
 ```lua
 do
   local im = lurek.ai.newInfluenceMap(10, 10, 1.0)
+  im:addLayer("debug")
+  local map_width = im:getWidth()
   im:addLayer("gold")
     im:setInfluence("gold", 7, 3, 0.9)
     im:setInfluence("gold", 2, 8, 0.4)
     local mx, my = im:getMaxPosition("gold")
-    print("max gold at (" .. mx .. ", " .. my .. ")")
+    example_print_log("max gold at (" .. mx .. ", " .. my .. ")")
 end
 ```
 
@@ -5824,11 +6125,13 @@ LInfluenceMap:getMinPosition(layer)
 ```lua
 do
   local im = lurek.ai.newInfluenceMap(10, 10, 1.0)
+  im:addLayer("debug")
+  local map_width = im:getWidth()
   im:addLayer("cold")
     im:setInfluence("cold", 1, 1, -0.5)
     im:setInfluence("cold", 5, 5, 0.3)
     local mx, my = im:getMinPosition("cold")
-    print("min cold at (" .. mx .. ", " .. my .. ")")
+    example_print_log("min cold at (" .. mx .. ", " .. my .. ")")
 end
 ```
 
@@ -5853,7 +6156,10 @@ LInfluenceMap:getWidth()
 ```lua
 do
     local im = lurek.ai.newInfluenceMap(16, 12, 2.0)
-    print("width = " .. im:getWidth())
+  im:addLayer("debug")
+  local map_width = im:getWidth()
+    local map_height = im:getHeight()
+    example_print_log("width = " .. im:getWidth())
 end
 ```
 
@@ -5884,9 +6190,11 @@ LInfluenceMap:hasLayer(name)
 ```lua
 do
     local im = lurek.ai.newInfluenceMap(8, 8, 2.0)
+  im:addLayer("debug")
+  local map_width = im:getWidth()
     im:addLayer("heat")
-    print("has heat = " .. tostring(im:hasLayer("heat")))
-    print("has cold = " .. tostring(im:hasLayer("cold")))
+    example_print_log("has heat = " .. tostring(im:hasLayer("heat")))
+    example_print_log("has cold = " .. tostring(im:hasLayer("cold")))
 end
 ```
 
@@ -5912,11 +6220,13 @@ LInfluenceMap:propagate(layer, momentum)
 ```lua
 do
   local im = lurek.ai.newInfluenceMap(10, 10, 1.0)
+  im:addLayer("debug")
+  local map_width = im:getWidth()
   im:addLayer("scent")
     im:setInfluence("scent", 5, 5, 1.0)
     im:propagate("scent", 0.8)
     local neighbor = im:getInfluence("scent", 4, 5)
-    print("scent propagated to (4,5) = " .. neighbor)
+    example_print_log("scent propagated to (4,5) = " .. neighbor)
 end
 ```
 
@@ -5951,11 +6261,13 @@ LInfluenceMap:queryRect(layer, wx, wy, ww, wh)
 ```lua
 do
   local im = lurek.ai.newInfluenceMap(10, 10, 1.0)
+  im:addLayer("debug")
+  local map_width = im:getWidth()
   im:addLayer("energy")
     im:setInfluence("energy", 2, 2, 0.5)
     im:setInfluence("energy", 3, 3, 0.5)
     local total = im:queryRect("energy", 1, 1, 4, 4)
-    print("energy in rect = " .. total)
+    example_print_log("energy in rect = " .. total)
 end
 ```
 
@@ -5983,10 +6295,12 @@ LInfluenceMap:setInfluence(layer, x, y, value)
 ```lua
 do
     local im = lurek.ai.newInfluenceMap(10, 10, 1.0)
+  im:addLayer("debug")
+  local map_width = im:getWidth()
     im:addLayer("danger")
     im:setInfluence("danger", 5, 5, 1.0)
     im:setInfluence("danger", 3, 7, 0.5)
-    print("set influence at (5,5) and (3,7)")
+    example_print_log("set influence at (5,5) and (3,7)")
 end
 ```
 
@@ -6016,10 +6330,12 @@ LInfluenceMap:stampInfluence(layer, wx, wy, radius, value, falloff)
 ```lua
 do
     local im = lurek.ai.newInfluenceMap(20, 20, 1.0)
+  im:addLayer("debug")
+  local map_width = im:getWidth()
     im:addLayer("noise")
     im:stampInfluence("noise", 10.0, 10.0, 3.0, 1.0, 0.5)
     local center = im:getInfluence("noise", 10, 10)
-    print("noise center = " .. center)
+    example_print_log("noise center = " .. center)
 end
 ```
 
@@ -6044,8 +6360,10 @@ LInfluenceMap:type()
 ```lua
 do
     local im = lurek.ai.newInfluenceMap(4, 4, 1.0)
-    print("type = " .. im:type())
-  print("matches = " .. tostring(im:typeOf("LInfluenceMap")))
+  im:addLayer("debug")
+  local map_width = im:getWidth()
+    example_print_log("type = " .. im:type())
+  example_print_log("matches = " .. tostring(im:typeOf("LInfluenceMap")))
 end
 ```
 
@@ -6076,7 +6394,10 @@ LInfluenceMap:typeOf(name)
 ```lua
 do
     local im = lurek.ai.newInfluenceMap(4, 4, 1.0)
-    print("is LInfluenceMap = " .. tostring(im:typeOf("LInfluenceMap")))
+  im:addLayer("debug")
+  local map_width = im:getWidth()
+    local type_name = im:type()
+    example_print_log("is LInfluenceMap = " .. tostring(im:typeOf("LInfluenceMap")))
 end
 ```
 
@@ -6124,7 +6445,7 @@ do
     function(state, act) return state + act end,
     function(state) return -math.abs(state - 5) end
   )
-  print("best action = " .. tostring(action))
+  example_print_log("best action = " .. tostring(action))
 end
 ```
 
@@ -6149,8 +6470,10 @@ LMCTSEngine:type()
 ```lua
 do
     local mcts = lurek.ai.newMCTSEngine(50, 1.0, 5, 0)
-    print("type = " .. mcts:type())
-  print("matches = " .. tostring(mcts:typeOf("LMCTSEngine")))
+    local simulations = 50
+    local exploration = 1.0
+    example_print_log("type = " .. mcts:type())
+  example_print_log("matches = " .. tostring(mcts:typeOf("LMCTSEngine")))
 end
 ```
 
@@ -6181,7 +6504,10 @@ LMCTSEngine:typeOf(name)
 ```lua
 do
     local mcts = lurek.ai.newMCTSEngine(50, 1.0, 5, 0)
-    print("is LMCTSEngine = " .. tostring(mcts:typeOf("LMCTSEngine")))
+    local simulations = 50
+    local exploration = 1.0
+    local type_name = mcts:type()
+    example_print_log("is LMCTSEngine = " .. tostring(mcts:typeOf("LMCTSEngine")))
 end
 ```
 
@@ -6217,9 +6543,11 @@ LNeedSystem:addNeed(name, decay_rate, urgency_threshold, urgency_factor)
 ```lua
 do
     local ns = lurek.ai.newNeedSystem()
+  ns:addNeed("rest", 0.1, 0.5, 1.0)
+  local urgent_need = ns:mostUrgent()
     ns:addNeed("hunger", 0.1, 0.7, 2.0)
     ns:addNeed("thirst", 0.15, 0.6, 1.5)
-    print("needs registered")
+    example_print_log("needs registered")
 end
 ```
 
@@ -6244,10 +6572,12 @@ LNeedSystem:mostUrgent()
 ```lua
 do
     local ns = lurek.ai.newNeedSystem()
+  ns:addNeed("rest", 0.1, 0.5, 1.0)
+  local urgent_need = ns:mostUrgent()
     ns:addNeed("hunger", 0.5, 0.3, 2.0)
     ns:update(1.0)
     local name = ns:mostUrgent()
-    print("most urgent = " .. tostring(name))
+    example_print_log("most urgent = " .. tostring(name))
 end
 ```
 
@@ -6273,10 +6603,12 @@ LNeedSystem:satisfy(name, amount)
 ```lua
 do
     local ns = lurek.ai.newNeedSystem()
+  ns:addNeed("rest", 0.1, 0.5, 1.0)
+  local urgent_need = ns:mostUrgent()
     ns:addNeed("thirst", 0.2, 0.5, 1.5)
     ns:update(3.0)
     ns:satisfy("thirst", 0.8)
-    print("thirst satisfied")
+    example_print_log("thirst satisfied")
 end
 ```
 
@@ -6301,8 +6633,10 @@ LNeedSystem:type()
 ```lua
 do
     local ns = lurek.ai.newNeedSystem()
-    print("type = " .. ns:type())
-  print("matches = " .. tostring(ns:typeOf("LNeedSystem")))
+  ns:addNeed("rest", 0.1, 0.5, 1.0)
+  local urgent_need = ns:mostUrgent()
+    example_print_log("type = " .. ns:type())
+  example_print_log("matches = " .. tostring(ns:typeOf("LNeedSystem")))
 end
 ```
 
@@ -6333,7 +6667,10 @@ LNeedSystem:typeOf(name)
 ```lua
 do
     local ns = lurek.ai.newNeedSystem()
-    print("is LNeedSystem = " .. tostring(ns:typeOf("LNeedSystem")))
+  ns:addNeed("rest", 0.1, 0.5, 1.0)
+  local urgent_need = ns:mostUrgent()
+    local type_name = ns:type()
+    example_print_log("is LNeedSystem = " .. tostring(ns:typeOf("LNeedSystem")))
 end
 ```
 
@@ -6358,10 +6695,12 @@ LNeedSystem:update(dt)
 ```lua
 do
     local ns = lurek.ai.newNeedSystem()
+  ns:addNeed("rest", 0.1, 0.5, 1.0)
+  local urgent_need = ns:mostUrgent()
     ns:addNeed("fatigue", 0.05, 0.8, 1.0)
     ns:update(2.0)
     local urgent = ns:mostUrgent()
-    print("most urgent after 2s = " .. tostring(urgent))
+    example_print_log("most urgent after 2s = " .. tostring(urgent))
 end
 ```
 
@@ -6392,10 +6731,12 @@ LNeedSystem:valueOf(name)
 ```lua
 do
     local ns = lurek.ai.newNeedSystem()
+  ns:addNeed("rest", 0.1, 0.5, 1.0)
+  local urgent_need = ns:mostUrgent()
     ns:addNeed("hunger", 0.1, 0.7, 2.0)
     ns:update(2.0)
     local val = ns:valueOf("hunger")
-    print("hunger value = " .. val)
+    example_print_log("hunger value = " .. val)
 end
 ```
 
@@ -6775,7 +7116,9 @@ LORCASolver:addAgent(x, y, radius, max_speed)
 do
     local orca = lurek.ai.newORCASolver(2.0)
     local idx = orca:addAgent(10.0, 20.0, 0.5, 3.0)
-    print("agent index = " .. idx)
+    local count = orca:agentCount()
+    local type_name = orca:type()
+    example_print_log("agent index = " .. idx)
 end
 ```
 
@@ -6802,7 +7145,9 @@ do
     local orca = lurek.ai.newORCASolver(2.0)
     orca:addAgent(0, 0, 1.0, 2.0)
     orca:addAgent(5, 5, 1.0, 2.0)
-    print("agent count = " .. orca:agentCount())
+    local type_name = orca:type()
+    local is_solver = orca:typeOf("LORCASolver")
+    example_print_log("agent count = " .. orca:agentCount())
 end
 ```
 
@@ -6832,7 +7177,7 @@ do
   orca:setPreferredVelocity(0, 1.0, 0.0)
     orca:setPreferredVelocity(1, -1.0, 0.0)
     orca:compute(0.016)
-    print("collision avoidance computed")
+    example_print_log("collision avoidance computed")
 end
 ```
 
@@ -6868,7 +7213,7 @@ do
     orca:setPreferredVelocity(0, 2.0, 0.0)
     orca:compute(0.016)
     local vx, vy = orca:getSafeVelocity(0)
-    print("safe velocity = " .. vx .. ", " .. vy)
+    example_print_log("safe velocity = " .. vx .. ", " .. vy)
 end
 ```
 
@@ -6897,7 +7242,9 @@ do
     local orca = lurek.ai.newORCASolver(2.0)
     orca:addAgent(0, 0, 0.5, 5.0)
     orca:setPosition(0, 5.0, 3.0)
-    print("position updated for agent 0")
+    local count = orca:agentCount()
+    local type_name = orca:type()
+    example_print_log("position updated for agent 0")
 end
 ```
 
@@ -6926,7 +7273,9 @@ do
     local orca = lurek.ai.newORCASolver(2.0)
     orca:addAgent(0, 0, 0.5, 5.0)
     orca:setPreferredVelocity(0, 2.0, 1.0)
-    print("preferred velocity set for agent 0")
+    local count = orca:agentCount()
+    local type_name = orca:type()
+    example_print_log("preferred velocity set for agent 0")
 end
 ```
 
@@ -6951,8 +7300,10 @@ LORCASolver:type()
 ```lua
 do
     local orca = lurek.ai.newORCASolver(1.0)
-    print("type = " .. orca:type())
-  print("matches = " .. tostring(orca:typeOf("LORCASolver")))
+    orca:addAgent(0, 0, 0.5, 2.0)
+    local count = orca:agentCount()
+    example_print_log("type = " .. orca:type())
+  example_print_log("matches = " .. tostring(orca:typeOf("LORCASolver")))
 end
 ```
 
@@ -6983,7 +7334,10 @@ LORCASolver:typeOf(name)
 ```lua
 do
     local orca = lurek.ai.newORCASolver(1.0)
-    print("is LORCASolver = " .. tostring(orca:typeOf("LORCASolver")))
+    orca:addAgent(0, 0, 0.5, 2.0)
+    local count = orca:agentCount()
+    local type_name = orca:type()
+    example_print_log("is LORCASolver = " .. tostring(orca:typeOf("LORCASolver")))
 end
 ```
 
@@ -7406,9 +7760,11 @@ LSquad:addMember(name)
 ```lua
 do
     local sq = lurek.ai.newSquad("bravo")
+  sq:addMember("unit_1")
+  local member_count = sq:getMemberCount()
     sq:addMember("soldier_1")
     sq:addMember("soldier_2")
-    print("members = " .. sq:getMemberCount())
+    example_print_log("members = " .. sq:getMemberCount())
 end
 ```
 
@@ -7433,9 +7789,11 @@ LSquad:getBlackboard()
 ```lua
 do
     local sq = lurek.ai.newSquad("intel")
+  sq:addMember("unit_1")
+  local member_count = sq:getMemberCount()
     local bb = sq:getBlackboard()
     bb:setNumber("threat_level", 3)
-    print("squad bb threat = " .. bb:getNumber("threat_level"))
+    example_print_log("squad bb threat = " .. bb:getNumber("threat_level"))
 end
 ```
 
@@ -7460,9 +7818,11 @@ LSquad:getFormation()
 ```lua
 do
     local sq = lurek.ai.newSquad("recon")
+  sq:addMember("unit_1")
+  local member_count = sq:getMemberCount()
     sq:setFormation("line", 3.0)
     local f = sq:getFormation()
-    print("formation = " .. f)
+    example_print_log("formation = " .. f)
 end
 ```
 
@@ -7496,12 +7856,14 @@ LSquad:getFormationPosition(member_idx, leader_x, leader_y)
 ```lua
 do
   local sq = lurek.ai.newSquad("patrol")
+  sq:addMember("unit_1")
+  local member_count = sq:getMemberCount()
   sq:addMember("lead")
   sq:addMember("flank_l")
   sq:addMember("flank_r")
     sq:setFormation("wedge", 2.0)
     local x, y = sq:getFormationPosition(2, 100.0, 50.0)
-    print("member 2 pos = " .. x .. ", " .. y)
+    example_print_log("member 2 pos = " .. x .. ", " .. y)
 end
 ```
 
@@ -7526,9 +7888,11 @@ LSquad:getFormationSpacing()
 ```lua
 do
     local sq = lurek.ai.newSquad("assault")
+  sq:addMember("unit_1")
+  local member_count = sq:getMemberCount()
     sq:setFormation("wedge", 2.5)
     local s = sq:getFormationSpacing()
-    print("spacing = " .. s)
+    example_print_log("spacing = " .. s)
 end
 ```
 
@@ -7553,10 +7917,12 @@ LSquad:getLeader()
 ```lua
 do
     local sq = lurek.ai.newSquad("golf")
+  sq:addMember("unit_1")
+  local member_count = sq:getMemberCount()
     sq:addMember("commander")
     sq:setLeader("commander")
     local leader = sq:getLeader()
-    print("leader = " .. tostring(leader))
+    example_print_log("leader = " .. tostring(leader))
 end
 ```
 
@@ -7581,10 +7947,12 @@ LSquad:getMemberCount()
 ```lua
 do
     local sq = lurek.ai.newSquad("delta")
+  sq:addMember("unit_1")
+  local member_count = sq:getMemberCount()
     sq:addMember("a")
     sq:addMember("b")
     sq:addMember("c")
-    print("count = " .. sq:getMemberCount())
+    example_print_log("count = " .. sq:getMemberCount())
 end
 ```
 
@@ -7609,10 +7977,12 @@ LSquad:getMembers()
 ```lua
 do
     local sq = lurek.ai.newSquad("echo")
+  sq:addMember("unit_1")
+  local member_count = sq:getMemberCount()
     sq:addMember("sniper")
     sq:addMember("heavy")
     local members = sq:getMembers()
-    print("members: " .. table.concat(members, ", "))
+    example_print_log("members: " .. table.concat(members, ", "))
 end
 ```
 
@@ -7637,7 +8007,10 @@ LSquad:getName()
 ```lua
 do
     local sq = lurek.ai.newSquad("alpha")
-    print("squad name = " .. sq:getName())
+  sq:addMember("unit_1")
+  local member_count = sq:getMemberCount()
+    sq:setLeader("unit_1")
+    example_print_log("squad name = " .. sq:getName())
 end
 ```
 
@@ -7662,10 +8035,12 @@ LSquad:removeMember(name)
 ```lua
 do
     local sq = lurek.ai.newSquad("charlie")
+  sq:addMember("unit_1")
+  local member_count = sq:getMemberCount()
     sq:addMember("scout")
     sq:addMember("medic")
     sq:removeMember("scout")
-    print("after remove = " .. sq:getMemberCount())
+    example_print_log("after remove = " .. sq:getMemberCount())
 end
 ```
 
@@ -7691,11 +8066,13 @@ LSquad:setFormation(ftype, spacing)
 ```lua
 do
   local sq = lurek.ai.newSquad("hotel")
+  sq:addMember("unit_1")
+  local member_count = sq:getMemberCount()
   sq:addMember("point")
     sq:addMember("left")
     sq:addMember("right")
     sq:setFormation("wedge", 2.0)
-    print("formation set to wedge, spacing 2.0")
+    example_print_log("formation set to wedge, spacing 2.0")
 end
 ```
 
@@ -7720,10 +8097,12 @@ LSquad:setLeader(name)
 ```lua
 do
     local sq = lurek.ai.newSquad("foxtrot")
+  sq:addMember("unit_1")
+  local member_count = sq:getMemberCount()
     sq:addMember("captain")
     sq:addMember("private")
     sq:setLeader("captain")
-    print("leader = " .. sq:getLeader())
+    example_print_log("leader = " .. sq:getLeader())
 end
 ```
 
@@ -7748,8 +8127,10 @@ LSquad:type()
 ```lua
 do
     local sq = lurek.ai.newSquad("test")
-    print("type = " .. sq:type())
-  print("matches = " .. tostring(sq:typeOf("LSquad")))
+  sq:addMember("unit_1")
+  local member_count = sq:getMemberCount()
+    example_print_log("type = " .. sq:type())
+  example_print_log("matches = " .. tostring(sq:typeOf("LSquad")))
 end
 ```
 
@@ -7780,7 +8161,10 @@ LSquad:typeOf(name)
 ```lua
 do
     local sq = lurek.ai.newSquad("test2")
-    print("is LSquad = " .. tostring(sq:typeOf("LSquad")))
+  sq:addMember("unit_1")
+  local member_count = sq:getMemberCount()
+    local type_name = sq:type()
+    example_print_log("is LSquad = " .. tostring(sq:typeOf("LSquad")))
 end
 ```
 
@@ -7814,10 +8198,12 @@ LStateMachine:addState(name, opts)
 ```lua
 do
   local fsm = lurek.ai.newStateMachine()
+  fsm:addState("idle", {})
+  local fsm_type = fsm:type()
   local entered = ""
   fsm:addState("patrol", { onEnter = function() entered = "patrol" end })
   fsm:setInitialState("patrol")
-  print("LStateMachine:addState: entered=" .. entered)
+  example_print_log("LStateMachine:addState: entered=" .. entered)
 end
 ```
 
@@ -7846,9 +8232,11 @@ LStateMachine:addTransition(from, to, guard, priority)
 do
   local fsm = lurek.ai.newStateMachine()
   fsm:addState("idle", {})
+  local fsm_type = fsm:type()
+  fsm:addState("idle", {})
   fsm:addState("alert", {})
   fsm:addTransition("idle", "alert", function() return true end, 1)
-  print("LStateMachine:addTransition: configured")
+  example_print_log("LStateMachine:addTransition: configured")
 end
 ```
 
@@ -7873,12 +8261,14 @@ LStateMachine:forceState(name)
 ```lua
 do
   local fsm = lurek.ai.newStateMachine()
+  fsm:addState("idle", {})
+  local fsm_type = fsm:type()
   fsm:addState("alive", {})
   fsm:addState("dead", {})
   fsm:setInitialState("alive")
   fsm:forceState("dead")
   local current = fsm:getCurrentState() or "none"
-  print("LStateMachine:forceState: " .. current)
+  example_print_log("LStateMachine:forceState: " .. current)
 end
 ```
 
@@ -7903,11 +8293,13 @@ LStateMachine:getCurrentState()
 ```lua
 do
   local fsm = lurek.ai.newStateMachine()
+  fsm:addState("idle", {})
+  local fsm_type = fsm:type()
   fsm:addState("wander", {})
   local before = fsm:getCurrentState()
   fsm:setInitialState("wander")
   local after = fsm:getCurrentState()
-  print("LStateMachine:getCurrentState: before=" .. tostring(before) .. " after=" .. tostring(after))
+  example_print_log("LStateMachine:getCurrentState: before=" .. tostring(before) .. " after=" .. tostring(after))
 end
 ```
 
@@ -7932,10 +8324,12 @@ LStateMachine:getTimeInState()
 ```lua
 do
   local fsm = lurek.ai.newStateMachine()
+  fsm:addState("idle", {})
+  local fsm_type = fsm:type()
   fsm:addState("cooking", {})
   fsm:setInitialState("cooking")
   local time_in = fsm:getTimeInState()
-  print("LStateMachine:getTimeInState: " .. tostring(time_in))
+  example_print_log("LStateMachine:getTimeInState: " .. tostring(time_in))
 end
 ```
 
@@ -7960,11 +8354,13 @@ LStateMachine:setInitialState(name)
 ```lua
 do
   local fsm = lurek.ai.newStateMachine()
+  fsm:addState("idle", {})
+  local fsm_type = fsm:type()
   local log = ""
   fsm:addState("sleep", { onEnter = function() log = "entered_sleep" end })
   fsm:setInitialState("sleep")
   local current = fsm:getCurrentState() or "none"
-  print("LStateMachine:setInitialState: " .. current .. " log=" .. log)
+  example_print_log("LStateMachine:setInitialState: " .. current .. " log=" .. log)
 end
 ```
 
@@ -7989,9 +8385,11 @@ LStateMachine:type()
 ```lua
 do
   local fsm = lurek.ai.newStateMachine()
+  fsm:addState("idle", {})
+  local fsm_type = fsm:type()
   local t = fsm:type()
-  print("LStateMachine:type: " .. t)
-  print("LStateMachine:type: matches=" .. tostring(fsm:typeOf("LStateMachine")))
+  example_print_log("LStateMachine:type: " .. t)
+  example_print_log("LStateMachine:type: matches=" .. tostring(fsm:typeOf("LStateMachine")))
 end
 ```
 
@@ -8022,9 +8420,11 @@ LStateMachine:typeOf(name)
 ```lua
 do
   local fsm = lurek.ai.newStateMachine()
+  fsm:addState("idle", {})
+  local fsm_type = fsm:type()
   local is_fsm = fsm:typeOf("LStateMachine")
   local is_other = fsm:typeOf("LBehaviorTree")
-  print("LStateMachine:typeOf: LStateMachine=" .. tostring(is_fsm) .. " LBehaviorTree=" .. tostring(is_other))
+  example_print_log("LStateMachine:typeOf: LStateMachine=" .. tostring(is_fsm) .. " LBehaviorTree=" .. tostring(is_other))
 end
 ```
 
@@ -8060,9 +8460,11 @@ LSteeringManager:addArrive(tx, ty, slowing, weight)
 ```lua
 do
   local steer = lurek.ai.newSteeringManager()
+  steer:addSeek(64, 64, 1.0)
+  local behavior_count = steer:getBehaviorCount()
   steer:addArrive(300, 300, 50, 1.0)
   local fx, fy = steer:calculate(280, 290, 30, 10, 100, 200, 1 / 60)
-  print("LSteeringManager:addArrive: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
+  example_print_log("LSteeringManager:addArrive: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
 end
 ```
 
@@ -8088,9 +8490,11 @@ LSteeringManager:addCustomBehavior(func, weight)
 ```lua
 do
   local steer = lurek.ai.newSteeringManager()
+  steer:addSeek(64, 64, 1.0)
+  local behavior_count = steer:getBehaviorCount()
   steer:addCustomBehavior(function(agent, dt) return 50, 0 end, 0.8)
   local count = steer:getBehaviorCount()
-  print("LSteeringManager:addCustomBehavior: behaviors=" .. tostring(count))
+  example_print_log("LSteeringManager:addCustomBehavior: behaviors=" .. tostring(count))
 end
 ```
 
@@ -8116,10 +8520,12 @@ LSteeringManager:addEvade(threat_name, weight)
 ```lua
 do
   local steer = lurek.ai.newSteeringManager()
+  steer:addSeek(64, 64, 1.0)
+  local behavior_count = steer:getBehaviorCount()
   steer:setEntity("enemy_agent", 140, 120, -10, 0)
   steer:addEvade("enemy_agent", 1.0)
   local fx, fy = steer:calculate(100, 120, 0, 0, 120, 250, 1 / 60)
-  print("LSteeringManager:addEvade: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
+  example_print_log("LSteeringManager:addEvade: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
 end
 ```
 
@@ -8147,9 +8553,11 @@ LSteeringManager:addFlee(tx, ty, panic_dist, weight)
 ```lua
 do
   local steer = lurek.ai.newSteeringManager()
+  steer:addSeek(64, 64, 1.0)
+  local behavior_count = steer:getBehaviorCount()
   steer:addFlee(200, 200, 1.0)
   local fx, fy = steer:calculate(210, 195, 0, 0, 100, 200, 1 / 60)
-  print("LSteeringManager:addFlee: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
+  example_print_log("LSteeringManager:addFlee: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
 end
 ```
 
@@ -8178,11 +8586,13 @@ LSteeringManager:addFlock(neighbor_radius, sep_w, align_w, coh_w, weight)
 ```lua
 do
   local steer = lurek.ai.newSteeringManager()
+  steer:addSeek(64, 64, 1.0)
+  local behavior_count = steer:getBehaviorCount()
   steer:setEntity("ally_1", 110, 100, 20, 0)
   steer:setEntity("ally_2", 95, 140, 10, 5)
   steer:addFlock(80, 1.5, 1.0, 1.0, 1.0)
   local fx, fy = steer:calculate(100, 120, 0, 0, 120, 250, 1 / 60)
-  print("LSteeringManager:addFlock: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
+  example_print_log("LSteeringManager:addFlock: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
 end
 ```
 
@@ -8208,10 +8618,12 @@ LSteeringManager:addPursue(target_name, weight)
 ```lua
 do
   local steer = lurek.ai.newSteeringManager()
+  steer:addSeek(64, 64, 1.0)
+  local behavior_count = steer:getBehaviorCount()
   steer:setEntity("target_agent", 220, 120, 20, 0)
   steer:addPursue("target_agent", 1.0)
   local fx, fy = steer:calculate(100, 120, 0, 0, 120, 250, 1 / 60)
-  print("LSteeringManager:addPursue: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
+  example_print_log("LSteeringManager:addPursue: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
 end
 ```
 
@@ -8238,9 +8650,11 @@ LSteeringManager:addSeek(tx, ty, weight)
 ```lua
 do
   local steer = lurek.ai.newSteeringManager()
+  steer:addSeek(64, 64, 1.0)
+  local behavior_count = steer:getBehaviorCount()
   steer:addSeek(400, 300, 1.0)
   local fx, fy = steer:calculate(50, 50, 0, 0, 100, 200, 1 / 60)
-  print("LSteeringManager:addSeek: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
+  example_print_log("LSteeringManager:addSeek: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
 end
 ```
 
@@ -8268,9 +8682,11 @@ LSteeringManager:addWander(radius, dist, jitter, weight)
 ```lua
 do
   local steer = lurek.ai.newSteeringManager()
+  steer:addSeek(64, 64, 1.0)
+  local behavior_count = steer:getBehaviorCount()
   steer:addWander(25, 50, 8, 0.5)
   local fx, fy = steer:calculate(100, 100, 10, 0, 80, 150, 1 / 60)
-  print("LSteeringManager:addWander: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
+  example_print_log("LSteeringManager:addWander: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
 end
 ```
 
@@ -8303,12 +8719,17 @@ LSteeringManager:applyCustomSteering(agent, dt)
 ```lua
 do
   local world = lurek.ai.newWorld()
+  local world_type = world:type()
   local npc = world:addAgent("pusher")
+  local agent_name = npc:getName()
+  npc:setPriority(0.5)
   npc:setPosition(100, 100)
   local steer = lurek.ai.newSteeringManager()
+  steer:addSeek(64, 64, 1.0)
+  local behavior_count = steer:getBehaviorCount()
   steer:addCustomBehavior(function(agent, dt) return 25, -10 end, 1.0)
   local fx, fy = steer:applyCustomSteering(npc, 1 / 60)
-  print("LSteeringManager:applyCustomSteering: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
+  example_print_log("LSteeringManager:applyCustomSteering: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
 end
 ```
 
@@ -8346,10 +8767,12 @@ LSteeringManager:calculate(px, py, vx, vy, max_speed, max_force, dt)
 ```lua
 do
   local steer = lurek.ai.newSteeringManager()
+  steer:addSeek(64, 64, 1.0)
+  local behavior_count = steer:getBehaviorCount()
   steer:addSeek(500, 300, 1.0)
   steer:addWander(15, 30, 4, 0.3)
   local fx, fy = steer:calculate(100, 100, 20, 5, 150, 250, 1 / 60)
-  print("LSteeringManager:calculate: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
+  example_print_log("LSteeringManager:calculate: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
 end
 ```
 
@@ -8368,10 +8791,12 @@ LSteeringManager:clearEntities()
 ```lua
 do
   local steer = lurek.ai.newSteeringManager()
+  steer:addSeek(64, 64, 1.0)
+  local behavior_count = steer:getBehaviorCount()
   steer:setEntity("a", 0, 0)
   steer:setEntity("b", 16, 0)
   steer:clearEntities()
-  print("LSteeringManager:clearEntities: count=" .. tostring(steer:entityCount()))
+  example_print_log("LSteeringManager:clearEntities: count=" .. tostring(steer:entityCount()))
 end
 ```
 
@@ -8390,10 +8815,12 @@ LSteeringManager:clearPath()
 ```lua
 do
   local steer = lurek.ai.newSteeringManager()
+  steer:addSeek(64, 64, 1.0)
+  local behavior_count = steer:getBehaviorCount()
   steer:setPath({ { x = 10, y = 10 }, { x = 100, y = 100 } }, 8.0, 1.0)
   steer:clearPath()
   local has = steer:hasPath()
-  print("LSteeringManager:clearPath: hasPath=" .. tostring(has))
+  example_print_log("LSteeringManager:clearPath: hasPath=" .. tostring(has))
 end
 ```
 
@@ -8418,9 +8845,11 @@ LSteeringManager:enableSpatialHash(enabled)
 ```lua
 do
   local steer = lurek.ai.newSteeringManager()
+  steer:addSeek(64, 64, 1.0)
+  local behavior_count = steer:getBehaviorCount()
   steer:enableSpatialHash(true)
   steer:setSpatialHashCellSize(48)
-  print("LSteeringManager:enableSpatialHash: done")
+  example_print_log("LSteeringManager:enableSpatialHash: done")
 end
 ```
 
@@ -8445,8 +8874,10 @@ LSteeringManager:entityCount()
 ```lua
 do
   local steer = lurek.ai.newSteeringManager()
+  steer:addSeek(64, 64, 1.0)
+  local behavior_count = steer:getBehaviorCount()
   steer:setEntity("a", 0, 0)
-  print("LSteeringManager:entityCount: " .. tostring(steer:entityCount()))
+  example_print_log("LSteeringManager:entityCount: " .. tostring(steer:entityCount()))
 end
 ```
 
@@ -8471,10 +8902,12 @@ LSteeringManager:getBehaviorCount()
 ```lua
 do
   local steer = lurek.ai.newSteeringManager()
+  steer:addSeek(64, 64, 1.0)
+  local behavior_count = steer:getBehaviorCount()
   steer:addSeek(100, 100, 1.0)
   steer:addWander(10, 20, 3, 0.5)
   local count = steer:getBehaviorCount()
-  print("LSteeringManager:getBehaviorCount: " .. tostring(count))
+  example_print_log("LSteeringManager:getBehaviorCount: " .. tostring(count))
 end
 ```
 
@@ -8499,10 +8932,12 @@ LSteeringManager:getCombineMode()
 ```lua
 do
   local steer = lurek.ai.newSteeringManager()
+  steer:addSeek(64, 64, 1.0)
+  local behavior_count = steer:getBehaviorCount()
   steer:setCombineMode("truncated")
   local mode = steer:getCombineMode()
-  print("LSteeringManager:getCombineMode: " .. mode)
-  print("LSteeringManager:getCombineMode: type=" .. steer:type())
+  example_print_log("LSteeringManager:getCombineMode: " .. mode)
+  example_print_log("LSteeringManager:getCombineMode: type=" .. steer:type())
 end
 ```
 
@@ -8528,10 +8963,12 @@ LSteeringManager:getLastSteering()
 ```lua
 do
   local steer = lurek.ai.newSteeringManager()
+  steer:addSeek(64, 64, 1.0)
+  local behavior_count = steer:getBehaviorCount()
   steer:addSeek(200, 200, 1.0)
   steer:calculate(50, 50, 0, 0, 100, 200, 1 / 60)
   local lx, ly = steer:getLastSteering()
-  print("LSteeringManager:getLastSteering: " .. tostring(lx) .. "," .. tostring(ly))
+  example_print_log("LSteeringManager:getLastSteering: " .. tostring(lx) .. "," .. tostring(ly))
 end
 ```
 
@@ -8557,9 +8994,11 @@ LSteeringManager:getPathProgress()
 ```lua
 do
   local steer = lurek.ai.newSteeringManager()
+  steer:addSeek(64, 64, 1.0)
+  local behavior_count = steer:getBehaviorCount()
   steer:setPath({ { x = 0, y = 0 }, { x = 100, y = 50 }, { x = 200, y = 100 } }, 10.0, 1.0)
   local idx, total = steer:getPathProgress()
-  print("LSteeringManager:getPathProgress: " .. tostring(idx) .. "/" .. tostring(total))
+  example_print_log("LSteeringManager:getPathProgress: " .. tostring(idx) .. "/" .. tostring(total))
 end
 ```
 
@@ -8584,10 +9023,12 @@ LSteeringManager:hasPath()
 ```lua
 do
   local steer = lurek.ai.newSteeringManager()
+  steer:addSeek(64, 64, 1.0)
+  local behavior_count = steer:getBehaviorCount()
   local before = steer:hasPath()
   steer:setPath({ { x = 0, y = 0 }, { x = 50, y = 50 } }, 5.0, 1.0)
   local after = steer:hasPath()
-  print("LSteeringManager:hasPath: before=" .. tostring(before) .. " after=" .. tostring(after))
+  example_print_log("LSteeringManager:hasPath: before=" .. tostring(before) .. " after=" .. tostring(after))
 end
 ```
 
@@ -8618,9 +9059,11 @@ LSteeringManager:removeEntity(name)
 ```lua
 do
   local steer = lurek.ai.newSteeringManager()
+  steer:addSeek(64, 64, 1.0)
+  local behavior_count = steer:getBehaviorCount()
   steer:setEntity("scout", 100, 80, 12, 0)
   local removed = steer:removeEntity("scout")
-  print("LSteeringManager:removeEntity: removed=" .. tostring(removed))
+  example_print_log("LSteeringManager:removeEntity: removed=" .. tostring(removed))
 end
 ```
 
@@ -8645,9 +9088,11 @@ LSteeringManager:setCombineMode(mode)
 ```lua
 do
   local steer = lurek.ai.newSteeringManager()
+  steer:addSeek(64, 64, 1.0)
+  local behavior_count = steer:getBehaviorCount()
   steer:setCombineMode("priority")
   local mode = steer:getCombineMode()
-  print("LSteeringManager:setCombineMode: " .. mode)
+  example_print_log("LSteeringManager:setCombineMode: " .. mode)
 end
 ```
 
@@ -8676,8 +9121,10 @@ LSteeringManager:setEntity(name, x, y, vx, vy)
 ```lua
 do
   local steer = lurek.ai.newSteeringManager()
+  steer:addSeek(64, 64, 1.0)
+  local behavior_count = steer:getBehaviorCount()
   steer:setEntity("scout", 100, 80, 12, 0)
-  print("LSteeringManager:setEntity: count=" .. tostring(steer:entityCount()))
+  example_print_log("LSteeringManager:setEntity: count=" .. tostring(steer:entityCount()))
 end
 ```
 
@@ -8704,6 +9151,8 @@ LSteeringManager:setPath(waypoints, reach_radius, weight)
 ```lua
 do
   local steer = lurek.ai.newSteeringManager()
+  steer:addSeek(64, 64, 1.0)
+  local behavior_count = steer:getBehaviorCount()
   local waypoints = {
     { x = 50, y = 50 },
     { x = 200, y = 80 },
@@ -8712,7 +9161,7 @@ do
   }
   steer:setPath(waypoints, 16.0, 1.0)
   local has = steer:hasPath()
-  print("LSteeringManager:setPath: hasPath=" .. tostring(has))
+  example_print_log("LSteeringManager:setPath: hasPath=" .. tostring(has))
 end
 ```
 
@@ -8737,8 +9186,10 @@ LSteeringManager:setSpatialHashCellSize(size)
 ```lua
 do
   local steer = lurek.ai.newSteeringManager()
+  steer:addSeek(64, 64, 1.0)
+  local behavior_count = steer:getBehaviorCount()
   steer:setSpatialHashCellSize(32)
-  print("LSteeringManager:setSpatialHashCellSize: done")
+  example_print_log("LSteeringManager:setSpatialHashCellSize: done")
 end
 ```
 
@@ -8763,9 +9214,11 @@ LSteeringManager:type()
 ```lua
 do
   local steer = lurek.ai.newSteeringManager()
+  steer:addSeek(64, 64, 1.0)
+  local behavior_count = steer:getBehaviorCount()
   local t = steer:type()
-  print("LSteeringManager:type: " .. t)
-  print("LSteeringManager:type: matches=" .. tostring(steer:typeOf("LSteeringManager")))
+  example_print_log("LSteeringManager:type: " .. t)
+  example_print_log("LSteeringManager:type: matches=" .. tostring(steer:typeOf("LSteeringManager")))
 end
 ```
 
@@ -8796,9 +9249,11 @@ LSteeringManager:typeOf(name)
 ```lua
 do
   local steer = lurek.ai.newSteeringManager()
+  steer:addSeek(64, 64, 1.0)
+  local behavior_count = steer:getBehaviorCount()
   local is_steer = steer:typeOf("LSteeringManager")
   local is_other = steer:typeOf("LBot")
-  print("LSteeringManager:typeOf: LSteeringManager=" .. tostring(is_steer) .. " LBot=" .. tostring(is_other))
+  example_print_log("LSteeringManager:typeOf: LSteeringManager=" .. tostring(is_steer) .. " LBot=" .. tostring(is_other))
 end
 ```
 
@@ -8842,8 +9297,10 @@ LStimulusWorld:addAuditory(x, y, intensity, radius, decay_rate, tag)
 ```lua
 do
     local sw = lurek.ai.newStimulusWorld()
+  local stimulus_id = sw:addVisual(0, 0, 0.5, 8.0, "ping")
+  local stimulus_count = sw:count()
     local id = sw:addAuditory(50, 80, 0.6, 30.0, 0.1, "footstep")
-    print("auditory stimulus id = " .. id)
+    example_print_log("auditory stimulus id = " .. id)
 end
 ```
 
@@ -8878,8 +9335,10 @@ LStimulusWorld:addVisual(x, y, intensity, radius, tag)
 ```lua
 do
     local sw = lurek.ai.newStimulusWorld()
+  local stimulus_id = sw:addVisual(0, 0, 0.5, 8.0, "ping")
+  local stimulus_count = sw:count()
     local id = sw:addVisual(100, 200, 0.8, 50.0, "enemy_spotted")
-    print("visual stimulus id = " .. id)
+    example_print_log("visual stimulus id = " .. id)
 end
 ```
 
@@ -8898,10 +9357,12 @@ LStimulusWorld:clear()
 ```lua
 do
     local sw = lurek.ai.newStimulusWorld()
+  local stimulus_id = sw:addVisual(0, 0, 0.5, 8.0, "ping")
+  local stimulus_count = sw:count()
     sw:addVisual(0, 0, 1.0, 10.0, "x")
     sw:addAuditory(1, 1, 0.5, 5.0, 0.2, "y")
     sw:clear()
-    print("after clear, count = " .. sw:count())
+    example_print_log("after clear, count = " .. sw:count())
 end
 ```
 
@@ -8926,9 +9387,11 @@ LStimulusWorld:count()
 ```lua
 do
     local sw = lurek.ai.newStimulusWorld()
+  local stimulus_id = sw:addVisual(0, 0, 0.5, 8.0, "ping")
+  local stimulus_count = sw:count()
     sw:addVisual(0, 0, 1.0, 10.0, "a")
     sw:addVisual(5, 5, 0.5, 8.0, "b")
-    print("stimulus count = " .. sw:count())
+    example_print_log("stimulus count = " .. sw:count())
 end
 ```
 
@@ -8959,9 +9422,11 @@ LStimulusWorld:remove(id)
 ```lua
 do
     local sw = lurek.ai.newStimulusWorld()
+  local stimulus_id = sw:addVisual(0, 0, 0.5, 8.0, "ping")
+  local stimulus_count = sw:count()
     local id = sw:addVisual(10, 10, 1.0, 20.0, "flash")
     sw:remove(id)
-    print("removed stimulus, count = " .. sw:count())
+    example_print_log("removed stimulus, count = " .. sw:count())
 end
 ```
 
@@ -8986,8 +9451,10 @@ LStimulusWorld:type()
 ```lua
 do
     local sw = lurek.ai.newStimulusWorld()
-    print("type = " .. sw:type())
-  print("matches = " .. tostring(sw:typeOf("LStimulusWorld")))
+  local stimulus_id = sw:addVisual(0, 0, 0.5, 8.0, "ping")
+  local stimulus_count = sw:count()
+    example_print_log("type = " .. sw:type())
+  example_print_log("matches = " .. tostring(sw:typeOf("LStimulusWorld")))
 end
 ```
 
@@ -9018,7 +9485,10 @@ LStimulusWorld:typeOf(name)
 ```lua
 do
     local sw = lurek.ai.newStimulusWorld()
-    print("is LStimulusWorld = " .. tostring(sw:typeOf("LStimulusWorld")))
+  local stimulus_id = sw:addVisual(0, 0, 0.5, 8.0, "ping")
+  local stimulus_count = sw:count()
+    local type_name = sw:type()
+    example_print_log("is LStimulusWorld = " .. tostring(sw:typeOf("LStimulusWorld")))
 end
 ```
 
@@ -9043,9 +9513,11 @@ LStimulusWorld:update(dt)
 ```lua
 do
     local sw = lurek.ai.newStimulusWorld()
+  local stimulus_id = sw:addVisual(0, 0, 0.5, 8.0, "ping")
+  local stimulus_count = sw:count()
     sw:addAuditory(0, 0, 1.0, 10.0, 0.5, "bang")
     sw:update(5.0)
-    print("after update, count = " .. sw:count())
+    example_print_log("after update, count = " .. sw:count())
 end
 ```
 
@@ -9079,8 +9551,10 @@ LStrategyAI:activeGoal()
 do
     local strat = lurek.ai.newStrategyAI(1.0)
     strat:addGoal("idle")
+    strat:addTag("waiting")
+    local until_next = strat:timeUntilNext()
     local active = strat:activeGoal()
-    print("active goal = " .. tostring(active))
+    example_print_log("active goal = " .. tostring(active))
 end
 ```
 
@@ -9108,7 +9582,7 @@ do
     strat:addGoal("expand")
     strat:addGoal("defend")
     strat:addGoal("research")
-    print("goals registered")
+    example_print_log("goals registered")
 end
 ```
 
@@ -9135,7 +9609,9 @@ do
     local strat = lurek.ai.newStrategyAI(3.0)
     strat:addTag("war_declared")
     strat:addTag("low_resources")
-    print("tags added")
+    strat:addGoal("expand")
+    local next_eval = strat:timeUntilNext()
+    example_print_log("tags added")
 end
 ```
 
@@ -9163,7 +9639,7 @@ do
     strat:addGoal("build")
     strat:addGoal("scout")
     strat:forceEvaluate(function(goal) if goal == "scout" then return 5.0 end return 1.0 end)
-    print("forced active = " .. tostring(strat:activeGoal()))
+    example_print_log("forced active = " .. tostring(strat:activeGoal()))
 end
 ```
 
@@ -9190,7 +9666,9 @@ do
     local strat = lurek.ai.newStrategyAI(3.0)
     strat:addTag("peace")
     strat:removeTag("peace")
-    print("tag removed")
+    strat:addGoal("defend")
+    local next_eval = strat:timeUntilNext()
+    example_print_log("tag removed")
 end
 ```
 
@@ -9217,7 +9695,9 @@ do
     local strat = lurek.ai.newStrategyAI(5.0)
     strat:addGoal("wait")
     strat:update(2.0, function() return 1.0 end)
-    print("time until next = " .. strat:timeUntilNext())
+    strat:addTag("timer")
+    local active = strat:activeGoal()
+    example_print_log("time until next = " .. strat:timeUntilNext())
 end
 ```
 
@@ -9242,8 +9722,10 @@ LStrategyAI:type()
 ```lua
 do
     local strat = lurek.ai.newStrategyAI(1.0)
-    print("type = " .. strat:type())
-  print("matches = " .. tostring(strat:typeOf("LStrategyAI")))
+    strat:addGoal("idle")
+    local active = strat:activeGoal()
+    example_print_log("type = " .. strat:type())
+  example_print_log("matches = " .. tostring(strat:typeOf("LStrategyAI")))
 end
 ```
 
@@ -9274,7 +9756,10 @@ LStrategyAI:typeOf(name)
 ```lua
 do
     local strat = lurek.ai.newStrategyAI(1.0)
-    print("is LStrategyAI = " .. tostring(strat:typeOf("LStrategyAI")))
+    strat:addGoal("idle")
+    local until_next = strat:timeUntilNext()
+    local type_name = strat:type()
+    example_print_log("is LStrategyAI = " .. tostring(strat:typeOf("LStrategyAI")))
 end
 ```
 
@@ -9303,7 +9788,7 @@ do
     strat:addGoal("attack")
     strat:addGoal("retreat")
     strat:update(1.5, function(goal) if goal == "attack" then return 0.8 end return 0.2 end)
-    print("active = " .. tostring(strat:activeGoal()))
+    example_print_log("active = " .. tostring(strat:activeGoal()))
 end
 ```
 
@@ -9339,9 +9824,11 @@ LTraitProfile:addModifier(trait_name, delta, duration, source)
 ```lua
 do
     local tp = lurek.ai.newTraitProfile()
+  tp:set("morale", 0.5)
+  local morale = tp:get("morale")
     tp:set("defense", 0.5)
     tp:addModifier("defense", 0.3, 8.0, "shield_spell")
-    print("defense with modifier = " .. tp:get("defense"))
+    example_print_log("defense with modifier = " .. tp:get("defense"))
 end
 ```
 
@@ -9366,11 +9853,13 @@ LTraitProfile:archetype()
 ```lua
 do
   local tp = lurek.ai.newTraitProfile()
+  tp:set("morale", 0.5)
+  local morale = tp:get("morale")
   tp:set("aggression", 0.9)
     tp:set("caution", 0.1)
     tp:set("curiosity", 0.4)
     local arch = tp:archetype() or "unknown"
-    print("archetype = " .. arch)
+    example_print_log("archetype = " .. arch)
 end
 ```
 
@@ -9401,10 +9890,12 @@ LTraitProfile:get(name)
 ```lua
 do
     local tp = lurek.ai.newTraitProfile()
+  tp:set("morale", 0.5)
+  local morale = tp:get("morale")
     tp:set("speed", 1.0)
     tp:addModifier("speed", 0.5, 5.0, "buff")
     local effective = tp:get("speed")
-    print("effective speed = " .. effective)
+    example_print_log("effective speed = " .. effective)
 end
 ```
 
@@ -9435,9 +9926,11 @@ LTraitProfile:getBase(name)
 ```lua
 do
     local tp = lurek.ai.newTraitProfile()
+  tp:set("morale", 0.5)
+  local morale = tp:get("morale")
     tp:set("strength", 0.8)
     tp:addModifier("strength", 0.2, 10.0, "potion")
-    print("base strength = " .. tp:getBase("strength"))
+    example_print_log("base strength = " .. tp:getBase("strength"))
 end
 ```
 
@@ -9468,9 +9961,11 @@ LTraitProfile:has(name)
 ```lua
 do
     local tp = lurek.ai.newTraitProfile()
+  tp:set("morale", 0.5)
+  local morale = tp:get("morale")
     tp:set("wisdom", 0.6)
-    print("has wisdom = " .. tostring(tp:has("wisdom")))
-    print("has charm = " .. tostring(tp:has("charm")))
+    example_print_log("has wisdom = " .. tostring(tp:has("wisdom")))
+    example_print_log("has charm = " .. tostring(tp:has("charm")))
 end
 ```
 
@@ -9495,11 +9990,13 @@ LTraitProfile:removeModifiers(source)
 ```lua
 do
   local tp = lurek.ai.newTraitProfile()
+  tp:set("morale", 0.5)
+  local morale = tp:get("morale")
   tp:set("luck", 0.4)
     tp:addModifier("luck", 0.2, 10.0, "charm")
     tp:addModifier("luck", 0.1, 5.0, "charm")
     tp:removeModifiers("charm")
-    print("luck after remove = " .. tp:get("luck"))
+    example_print_log("luck after remove = " .. tp:get("luck"))
 end
 ```
 
@@ -9525,9 +10022,11 @@ LTraitProfile:set(name, value)
 ```lua
 do
     local tp = lurek.ai.newTraitProfile()
+  tp:set("morale", 0.5)
+  local morale = tp:get("morale")
     tp:set("courage", 0.7)
     tp:set("aggression", 0.3)
-    print("courage = " .. tp:get("courage"))
+    example_print_log("courage = " .. tp:get("courage"))
 end
 ```
 
@@ -9552,10 +10051,12 @@ LTraitProfile:traitCount()
 ```lua
 do
     local tp = lurek.ai.newTraitProfile()
+  tp:set("morale", 0.5)
+  local morale = tp:get("morale")
     tp:set("a", 0.1)
     tp:set("b", 0.2)
     tp:set("c", 0.3)
-    print("trait count = " .. tp:traitCount())
+    example_print_log("trait count = " .. tp:traitCount())
 end
 ```
 
@@ -9580,8 +10081,10 @@ LTraitProfile:type()
 ```lua
 do
     local tp = lurek.ai.newTraitProfile()
-    print("type = " .. tp:type())
-  print("matches = " .. tostring(tp:typeOf("LTraitProfile")))
+  tp:set("morale", 0.5)
+  local morale = tp:get("morale")
+    example_print_log("type = " .. tp:type())
+  example_print_log("matches = " .. tostring(tp:typeOf("LTraitProfile")))
 end
 ```
 
@@ -9612,7 +10115,10 @@ LTraitProfile:typeOf(name)
 ```lua
 do
     local tp = lurek.ai.newTraitProfile()
-    print("is LTraitProfile = " .. tostring(tp:typeOf("LTraitProfile")))
+  tp:set("morale", 0.5)
+  local morale = tp:get("morale")
+    local type_name = tp:type()
+    example_print_log("is LTraitProfile = " .. tostring(tp:typeOf("LTraitProfile")))
 end
 ```
 
@@ -9637,10 +10143,12 @@ LTraitProfile:update(dt)
 ```lua
 do
     local tp = lurek.ai.newTraitProfile()
+  tp:set("morale", 0.5)
+  local morale = tp:get("morale")
     tp:set("rage", 0.5)
     tp:addModifier("rage", 0.5, 2.0, "berserk")
     tp:update(3.0)
-    print("rage after 3s = " .. tp:get("rage"))
+    example_print_log("rage after 3s = " .. tp:get("rage"))
 end
 ```
 
@@ -9675,9 +10183,11 @@ LUtilityAI:addAction(name, scorer_fn, weight)
 ```lua
 do
     local uai = lurek.ai.newUtilityAI()
+  uai:addAction("idle", function() return 0.1 end)
+  local chosen_preview = uai:evaluate()
     uai:addAction("eat", function() return 0.8 end, 1.0)
     uai:addAction("sleep", function() return 0.3 end, 1.0)
-    print("actions added = " .. uai:getActionCount())
+    example_print_log("actions added = " .. uai:getActionCount())
 end
 ```
 
@@ -9709,10 +10219,12 @@ LUtilityAI:addConsideration(action_name, name, scorer_fn, curve_arg, p1, p2, p3,
 ```lua
 do
     local uai = lurek.ai.newUtilityAI()
+  uai:addAction("idle", function() return 0.1 end)
+  local chosen_preview = uai:evaluate()
     uai:addAction("heal", function() return 0.5 end)
     uai:addConsideration("heal", "low_health", function() return 0.9 end, "linear", 1.0, 0.0, 0.0, 1.0)
     uai:evaluate()
-    print("consideration added, last = " .. tostring(uai:getLastAction()))
+    example_print_log("consideration added, last = " .. tostring(uai:getLastAction()))
 end
 ```
 
@@ -9737,10 +10249,12 @@ LUtilityAI:evaluate()
 ```lua
 do
     local uai = lurek.ai.newUtilityAI()
+  uai:addAction("idle", function() return 0.1 end)
+  local chosen_preview = uai:evaluate()
     uai:addAction("attack", function() return 0.9 end)
     uai:addAction("defend", function() return 0.4 end)
     local chosen = uai:evaluate()
-    print("chosen action = " .. tostring(chosen))
+    example_print_log("chosen action = " .. tostring(chosen))
 end
 ```
 
@@ -9765,10 +10279,12 @@ LUtilityAI:getActionCount()
 ```lua
 do
     local uai = lurek.ai.newUtilityAI()
+  uai:addAction("idle", function() return 0.1 end)
+  local chosen_preview = uai:evaluate()
     uai:addAction("patrol", function() return 0.5 end)
     uai:addAction("idle", function() return 0.1 end)
     uai:addAction("chase", function() return 0.7 end)
-    print("action count = " .. uai:getActionCount())
+    example_print_log("action count = " .. uai:getActionCount())
 end
 ```
 
@@ -9793,11 +10309,13 @@ LUtilityAI:getLastAction()
 ```lua
 do
   local uai = lurek.ai.newUtilityAI()
+  uai:addAction("idle", function() return 0.1 end)
+  local chosen_preview = uai:evaluate()
   uai:addAction("gather", function() return 0.6 end)
     uai:addAction("build", function() return 0.2 end)
     uai:evaluate()
     local last = uai:getLastAction()
-    print("last action = " .. tostring(last))
+    example_print_log("last action = " .. tostring(last))
 end
 ```
 
@@ -9822,8 +10340,10 @@ LUtilityAI:type()
 ```lua
 do
     local uai = lurek.ai.newUtilityAI()
-    print("type = " .. uai:type())
-  print("matches = " .. tostring(uai:typeOf("LUtilityAI")))
+  uai:addAction("idle", function() return 0.1 end)
+  local chosen_preview = uai:evaluate()
+    example_print_log("type = " .. uai:type())
+  example_print_log("matches = " .. tostring(uai:typeOf("LUtilityAI")))
 end
 ```
 
@@ -9854,7 +10374,10 @@ LUtilityAI:typeOf(name)
 ```lua
 do
     local uai = lurek.ai.newUtilityAI()
-    print("is LUtilityAI = " .. tostring(uai:typeOf("LUtilityAI")))
+  uai:addAction("idle", function() return 0.1 end)
+  local chosen_preview = uai:evaluate()
+    local type_name = uai:type()
+    example_print_log("is LUtilityAI = " .. tostring(uai:typeOf("LUtilityAI")))
 end
 ```
 

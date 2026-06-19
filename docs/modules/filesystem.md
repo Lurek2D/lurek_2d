@@ -2,23 +2,14 @@
 
 ## Summary
 
-- This module gives users a sandboxed file service that keeps script I/O inside controlled game paths.
-- Path normalization and traversal checks help keep behavior consistent and safe across desktop platforms.
-- Virtual mount support lets teams overlay directories under logical prefixes, while ZIP mounts remain standalone handle-based archive views.
-- This is useful for mods, DLC-style content packs, and environment-specific asset overrides.
-- ZIP archive handles read files on demand without promising full GameFS overlay integration.
-- Sync file handles support common stream patterns such as read, write, append, seek, and line iteration.
-- Async read/write operations move heavy transfer work off the main thread.
-- Poll-based watcher features enable hot-reload loops for assets and config updates.
-- JSON helpers and temporary file utilities reduce boilerplate in tooling scripts.
-- Metadata and recursive listing APIs support content indexing and diagnostics.
-- Mount introspection helps users reason about effective storage topology at runtime.
-- The module unifies persistence, asset lookup, and automation-friendly file access in one namespace.
-- For users, this means fewer custom path hacks and fewer platform-specific surprises.
-- It supports both gameplay persistence and build/test tooling workflows.
-- Overall, it is the core storage abstraction for safe and flexible runtime file operations.
-
-This module primarily collaborates with `dataframe`, `runtime`. Its responsibility should stay inside the Core Runtime group rather than absorb behavior owned by those neighbors.
+- The `filesystem` module is the sandboxed storage surface for users who need file access without giving every script raw platform path power.
+- Path normalization, traversal checks, mounts, archive access, synchronous handles, and asynchronous IO combine into one controlled runtime view of storage.
+- That matters because asset lookup, save data, mod content, hot reload, and tooling workflows all need file access, but they should not each invent their own safety and path rules.
+- Watchers, metadata queries, recursive listing, and convenience helpers make the module useful for diagnostics and content tooling as well as for normal gameplay persistence.
+- Mount and archive support are especially important because real projects often mix loose files, packaged assets, save locations, and mod roots under one conceptual storage view.
+- The sandboxed design is the key policy boundary: `filesystem` exists so scripts can do meaningful file work while the engine still controls what paths are valid, portable, and safe to expose.
+- Async reads and watch-style helpers also make the module practical for hot-reload and content-iteration workflows where storage changes need to become observable runtime events.
+- Read `filesystem` as the place where storage becomes safe, portable, and composable for the rest of the engine.
 
 ## Functions
 
@@ -41,9 +32,12 @@ lurek.filesystem.append(path, data)
 
 ```lua
 do
-    local path = "save/test_write.txt"
-    lurek.filesystem.append(path, "\nline 2")
-    print("appended to " .. path)
+    local path = FS_ROOT .. "session.log"
+    lurek.filesystem.createDirectory(FS_ROOT)
+    lurek.filesystem.write(path, "spawn=village")
+    lurek.filesystem.append(path, "\nquest=accepted")
+    local contents = lurek.filesystem.read(path)
+    fs_log("session log grew to " .. tostring(#contents) .. " bytes after quest append")
 end
 ```
 
@@ -68,9 +62,12 @@ lurek.filesystem.copy(src, dst)
 
 ```lua
 do
-    lurek.filesystem.write("save/test_write.txt", "copy source")
-    local ok = lurek.filesystem.copy("save/test_write.txt", "save/test_copy.txt")
-    print("copy ok = " .. tostring(ok))
+    local src = PROFILE_DIR .. "slot_copy_source.json"
+    local dst = PROFILE_DIR .. "slot_copy_backup.json"
+    lurek.filesystem.createDirectory(PROFILE_DIR)
+    lurek.filesystem.write(src, '{"name":"Iris","zone":"ruins"}')
+    lurek.filesystem.copy(src, dst)
+    fs_log("copied profile backup exists=" .. tostring(lurek.filesystem.exists(dst)) .. " at " .. dst)
 end
 ```
 
@@ -94,8 +91,11 @@ lurek.filesystem.createDirectory(path)
 
 ```lua
 do
-    local ok = lurek.filesystem.createDirectory("save/new_dir")
-    print("mkdir ok = " .. tostring(ok))
+    local path = PROFILE_DIR .. "campaign_two/checkpoint_a/"
+    lurek.filesystem.createDirectory(path)
+    local parent_ready = lurek.filesystem.isDirectory(PROFILE_DIR)
+    local child_ready = lurek.filesystem.isDirectory(path)
+    fs_log("created nested campaign folders parent=" .. tostring(parent_ready) .. " child=" .. tostring(child_ready))
 end
 ```
 
@@ -125,8 +125,12 @@ lurek.filesystem.createTempFile(prefix)
 
 ```lua
 do
-    local tmp = lurek.filesystem.createTempFile("test_")
-    print("temp file = " .. tmp)
+    local temp_path = lurek.filesystem.createTempFile("draft_")
+    local draft_payload = "seed=42\nbiome=forest\nweather=rain"
+    lurek.filesystem.write(temp_path, draft_payload)
+    local exists = lurek.filesystem.exists(temp_path)
+    local preview = lurek.filesystem.read(temp_path)
+    fs_log("temporary export draft exists=" .. tostring(exists) .. " bytes=" .. tostring(#preview))
 end
 ```
 
@@ -156,10 +160,11 @@ lurek.filesystem.exists(path)
 
 ```lua
 do
-    local path = "save/options_exists.json"
-    lurek.filesystem.write(path, "{\"ok\":true}")
-    local found = lurek.filesystem.exists(path)
-    print(path .. " exists = " .. tostring(found))
+    local profile_path = PROFILE_DIR .. "exists_slot.json"
+    lurek.filesystem.createDirectory(PROFILE_DIR)
+    lurek.filesystem.write(profile_path, '{"name":"Ada","level":7}')
+    local exists = lurek.filesystem.exists(profile_path)
+    fs_log("profile save exists after write=" .. tostring(exists) .. " at " .. profile_path)
 end
 ```
 
@@ -189,8 +194,12 @@ lurek.filesystem.getDirectoryItems(path)
 
 ```lua
 do
-    local items = lurek.filesystem.getDirectoryItems("save")
-    print("save/ has " .. #items .. " items")
+    local dir = PROFILE_DIR .. "slot_browser/"
+    lurek.filesystem.createDirectory(dir)
+    lurek.filesystem.write(dir .. "slot_a.json", '{"slot":"A"}')
+    lurek.filesystem.write(dir .. "slot_b.json", '{"slot":"B"}')
+    local items = lurek.filesystem.getDirectoryItems(dir)
+    fs_log("save browser sees " .. tostring(#items) .. " immediate entries in " .. dir)
 end
 ```
 
@@ -214,8 +223,11 @@ lurek.filesystem.getIdentity()
 
 ```lua
 do
-    local id = lurek.filesystem.getIdentity()
-    print("identity = " .. id)
+    local identity = lurek.filesystem.getIdentity()
+    local save_root = lurek.filesystem.getSaveDirectory()
+    local slot_path = save_root .. "/example_filesystem/profiles/slot_01.json"
+    local summary = "active identity=" .. identity .. " slot=" .. slot_path
+    fs_log(summary)
 end
 ```
 
@@ -245,12 +257,12 @@ lurek.filesystem.getInfo(path)
 
 ```lua
 do
-    local path = "save/info.txt"
-    lurek.filesystem.write(path, "info sample")
+    local path = PROFILE_DIR .. "info_slot.json"
+    lurek.filesystem.createDirectory(PROFILE_DIR)
+    lurek.filesystem.write(path, '{"chapter":"forest","hp":18}')
     local info = lurek.filesystem.getInfo(path)
-    if info then
-        print("type=" .. info.type .. " size=" .. info.size)
-    end
+    local summary = info and ("type=" .. tostring(info.type) .. " size=" .. tostring(info.size)) or "missing"
+    fs_log("profile info for save browser: " .. summary)
 end
 ```
 
@@ -274,8 +286,11 @@ lurek.filesystem.getSaveDirectory()
 
 ```lua
 do
-    local save = lurek.filesystem.getSaveDirectory()
-    print("save dir = " .. save)
+    local save_root = lurek.filesystem.getSaveDirectory()
+    local profile_slot = save_root .. "/example_filesystem/profiles/slot_01.json"
+    local looks_absolute = save_root:find(":") ~= nil or save_root:sub(1, 1) == "/"
+    local style = looks_absolute and "absolute" or "relative"
+    fs_log("save root for profile data is " .. style .. ": " .. profile_slot)
 end
 ```
 
@@ -299,8 +314,11 @@ lurek.filesystem.getSource()
 
 ```lua
 do
-    local src = lurek.filesystem.getSource()
-    print("source = " .. src)
+    local source_root = lurek.filesystem.getSource()
+    local examples_path = source_root .. "/content/examples"
+    local looks_absolute = source_root:find(":") ~= nil or source_root:sub(1, 1) == "/"
+    local style = looks_absolute and "absolute" or "relative"
+    fs_log("source root for content discovery is " .. style .. ": " .. examples_path)
 end
 ```
 
@@ -324,8 +342,11 @@ lurek.filesystem.getUserDirectory()
 
 ```lua
 do
-    local home = lurek.filesystem.getUserDirectory()
-    print("home = " .. home)
+    local user_root = lurek.filesystem.getUserDirectory()
+    local backup_path = user_root .. "/LurekBackups"
+    local profile_name = lurek.filesystem.getIdentity()
+    local summary = "user backup root for " .. profile_name .. " -> " .. backup_path
+    fs_log(summary)
 end
 ```
 
@@ -350,7 +371,10 @@ lurek.filesystem.getWorkingDirectory()
 ```lua
 do
     local cwd = lurek.filesystem.getWorkingDirectory()
-    print("cwd = " .. cwd)
+    local content_path = cwd .. "/content"
+    local tests_path = cwd .. "/tests"
+    local summary = "content=" .. content_path .. " tests=" .. tests_path
+    fs_log("working directory anchors repo-relative tooling: " .. summary)
 end
 ```
 
@@ -380,10 +404,12 @@ lurek.filesystem.glob(pattern)
 
 ```lua
 do
-    lurek.filesystem.write("save/glob_a.txt", "A")
-    lurek.filesystem.write("save/glob_b.txt", "B")
-    local matches = lurek.filesystem.glob("save/*.txt")
-    print("glob matches: " .. #matches)
+    local dir = CACHE_DIR .. "glob/"
+    lurek.filesystem.createDirectory(dir)
+    lurek.filesystem.write(dir .. "forest.cache", "ok")
+    lurek.filesystem.write(dir .. "desert.cache", "ok")
+    local matches = lurek.filesystem.glob(dir .. "*.cache")
+    fs_log("cache glob matched " .. tostring(#matches) .. " prebuilt biome files")
 end
 ```
 
@@ -413,8 +439,12 @@ lurek.filesystem.isDirectory(path)
 
 ```lua
 do
-    local path = "save"
-    print("is dir = " .. tostring(lurek.filesystem.isDirectory(path)))
+    local slot_dir = PROFILE_DIR .. "campaign_one/"
+    lurek.filesystem.createDirectory(slot_dir)
+    local is_directory = lurek.filesystem.isDirectory(slot_dir)
+    local has_parent = lurek.filesystem.isDirectory(PROFILE_DIR)
+    local summary = "campaign dir=" .. tostring(is_directory) .. " parent=" .. tostring(has_parent)
+    fs_log(summary)
 end
 ```
 
@@ -444,9 +474,11 @@ lurek.filesystem.isFile(path)
 
 ```lua
 do
-    local path = "save/is_file.txt"
-    lurek.filesystem.write(path, "hello")
-    print("is file = " .. tostring(lurek.filesystem.isFile(path)))
+    local profile_path = PROFILE_DIR .. "slot_file_check.json"
+    lurek.filesystem.createDirectory(PROFILE_DIR)
+    lurek.filesystem.write(profile_path, '{"name":"Mira","coins":12}')
+    local is_file = lurek.filesystem.isFile(profile_path)
+    fs_log("profile slot is a file=" .. tostring(is_file) .. " for " .. profile_path)
 end
 ```
 
@@ -476,11 +508,14 @@ lurek.filesystem.lines(path)
 
 ```lua
 do
-    local path = "save/test_write.txt"
-    lurek.filesystem.write(path, "line1\nline2\nline3")
+    local path = FS_ROOT .. "dialogue.txt"
+    lurek.filesystem.createDirectory(FS_ROOT)
+    lurek.filesystem.write(path, "hero=ready\nmentor=wait\nquest=go")
     local count = 0
-    for _ in lurek.filesystem.lines(path) do count = count + 1 end
-    print("lines: " .. count)
+    for _ in lurek.filesystem.lines(path) do
+        count = count + 1
+    end
+    fs_log("streamed " .. tostring(count) .. " dialogue lines from " .. path)
 end
 ```
 
@@ -510,8 +545,12 @@ lurek.filesystem.listRecursive(path)
 
 ```lua
 do
-    local files = lurek.filesystem.listRecursive("save")
-    print("recursive: " .. #files .. " files")
+    local dir = CACHE_DIR .. "imports/"
+    lurek.filesystem.createDirectory(dir .. "audio/")
+    lurek.filesystem.write(dir .. "manifest.txt", "import=ambient")
+    lurek.filesystem.write(dir .. "audio/theme.txt", "placeholder")
+    local items = lurek.filesystem.listRecursive(dir)
+    fs_log("recursive import scan found " .. tostring(#items) .. " paths under " .. dir)
 end
 ```
 
@@ -541,10 +580,13 @@ lurek.filesystem.load(path)
 
 ```lua
 do
-    local path = "save/hello.lua"
-    lurek.filesystem.write(path, "return 'hello from save'\n")
+    local path = FS_ROOT .. "spawn_rules.lua"
+    lurek.filesystem.createDirectory(FS_ROOT)
+    lurek.filesystem.write(path, "return function() return { biome = 'forest', enemies = 5 } end")
     local chunk = lurek.filesystem.load(path)
-    print("loaded chunk type = " .. type(chunk))
+    local build_rules = chunk()
+    local rules = build_rules()
+    fs_log("loaded scripted spawn rules biome=" .. tostring(rules.biome) .. " enemies=" .. tostring(rules.enemies))
 end
 ```
 
@@ -568,8 +610,11 @@ lurek.filesystem.mkdir(path)
 
 ```lua
 do
-    local ok = lurek.filesystem.mkdir("save/another_dir")
-    print("mkdir ok = " .. tostring(ok))
+    local path = CACHE_DIR .. "shader/prewarm/"
+    lurek.filesystem.mkdir(path)
+    local ready = lurek.filesystem.isDirectory(path)
+    local absolute = lurek.filesystem.toAbsolutePath(path)
+    fs_log("mkdir prepared shader cache=" .. tostring(ready) .. " at " .. absolute)
 end
 ```
 
@@ -600,8 +645,11 @@ lurek.filesystem.mount(src, mp)
 
 ```lua
 do
-    local ok = lurek.filesystem.mount("content/examples/assets", "game_assets")
-    print("mount ok = " .. tostring(ok))
+    local mountpoint = "example_assets"
+    lurek.filesystem.unmount(mountpoint)
+    local mounted = lurek.filesystem.mount("content/examples/assets", mountpoint)
+    local items = lurek.filesystem.getDirectoryItems(mountpoint)
+    fs_log("mounted shared assets=" .. tostring(mounted) .. " visible entries=" .. tostring(#items))
 end
 ```
 
@@ -632,8 +680,11 @@ lurek.filesystem.mountZip(archive_path, prefix)
 
 ```lua
 do
-    local zip = lurek.filesystem.mountZip("content/examples/assets/data/sample_data.zip", "data")
-    print("zip prefix = " .. zip:prefix())
+    local zip = lurek.filesystem.mountZip(ZIP_FIXTURE, "zip_preview")
+    local prefix = zip:prefix()
+    local files = zip:listFiles()
+    local contains_hello = zip:contains("zip_preview/hello.txt")
+    fs_log("zip mount prefix=" .. prefix .. " files=" .. tostring(#files) .. " containsHello=" .. tostring(contains_hello))
 end
 ```
 
@@ -658,9 +709,12 @@ lurek.filesystem.move(src, dst)
 
 ```lua
 do
-    lurek.filesystem.write("save/test_copy.txt", "move source")
-    local ok = lurek.filesystem.move("save/test_copy.txt", "save/test_moved.txt")
-    print("move ok = " .. tostring(ok))
+    local src = PROFILE_DIR .. "slot_move_tmp.json"
+    local dst = PROFILE_DIR .. "slot_move_final.json"
+    lurek.filesystem.createDirectory(PROFILE_DIR)
+    lurek.filesystem.write(src, '{"name":"Tao","zone":"tower"}')
+    lurek.filesystem.move(src, dst)
+    fs_log("renamed autosave into final slot=" .. tostring(lurek.filesystem.exists(dst)))
 end
 ```
 
@@ -690,9 +744,12 @@ lurek.filesystem.newFileData(path)
 
 ```lua
 do
-    lurek.filesystem.write("save/test_handle.txt", "hello from handle")
-    local fd = lurek.filesystem.newFileData("save/test_handle.txt")
-    print("filedata size = " .. fd:getSize())
+    local path = FS_ROOT .. "filedata_blob.txt"
+    lurek.filesystem.createDirectory(FS_ROOT)
+    lurek.filesystem.write(path, "spawn=river\nambient=wind")
+    local data = lurek.filesystem.newFileData(path)
+    local size = data:getSize()
+    fs_log("captured immutable file data bytes=" .. tostring(size) .. " from " .. path)
 end
 ```
 
@@ -723,10 +780,12 @@ lurek.filesystem.openFile(path, mode)
 
 ```lua
 do
-    local fh = lurek.filesystem.openFile("save/test_handle.txt", "w")
-    fh:write("hello from handle")
-    fh:close()
-    print("file handle write done")
+    local path = FS_ROOT .. "handle_open.log"
+    lurek.filesystem.createDirectory(FS_ROOT)
+    local handle = lurek.filesystem.openFile(path, "w")
+    handle:write("encounter=start\n")
+    handle:close()
+    fs_log("opened encounter log with handle and wrote first line to " .. path)
 end
 ```
 
@@ -756,10 +815,18 @@ lurek.filesystem.pollAsync(handle_id)
 
 ```lua
 do
-    lurek.filesystem.write("save/test_handle.txt", "hello from handle")
-    local ticket = lurek.filesystem.readAsync("save/test_handle.txt")
-    local result = lurek.filesystem.pollAsync(ticket)
-    print("poll result = " .. tostring(result))
+    local path = FS_ROOT .. "async_poll.json"
+    lurek.filesystem.createDirectory(FS_ROOT)
+    lurek.filesystem.write(path, '{"region":"cave","npcs":6}')
+    local ticket = lurek.filesystem.readAsync(path)
+    local status, payload = "pending", nil
+    for _ = 1, 20 do
+        status, payload = lurek.filesystem.pollAsync(ticket)
+        if status == "done" then
+            break
+        end
+    end
+    fs_log("async read completed with status=" .. tostring(status) .. " bytes=" .. tostring(payload and #payload or 0))
 end
 ```
 
@@ -789,9 +856,18 @@ lurek.filesystem.pollAsyncWrite(handle_id)
 
 ```lua
 do
-    local ticket = lurek.filesystem.writeAsync("save/async_out.txt", "data")
-    local result = lurek.filesystem.pollAsyncWrite(ticket)
-    print("write poll = " .. tostring(result))
+    local path = FS_ROOT .. "async_write_poll.json"
+    lurek.filesystem.createDirectory(FS_ROOT)
+    local ticket = lurek.filesystem.writeAsync(path, '{"region":"harbor","npcs":11}')
+    local status, info = "pending", nil
+    for _ = 1, 20 do
+        status, info = lurek.filesystem.pollAsyncWrite(ticket)
+        if status == "done" then
+            break
+        end
+    end
+    local persisted = lurek.filesystem.exists(path)
+    fs_log("async write finished status=" .. tostring(status) .. " persisted=" .. tostring(persisted))
 end
 ```
 
@@ -815,10 +891,14 @@ lurek.filesystem.pollWatchers()
 
 ```lua
 do
-    lurek.filesystem.watchPath("save")
+    lurek.filesystem.createDirectory(WATCH_DIR)
+    lurek.filesystem.write(WATCH_FILE, '{"volume":74}')
+    lurek.filesystem.watchPath(WATCH_FILE)
+    lurek.filesystem.pollWatchers()
+    lurek.filesystem.append(WATCH_FILE, '\n{"dirty":true}')
     local changed = lurek.filesystem.pollWatchers()
-    print("changed paths: " .. #changed)
-    lurek.filesystem.unwatchPath("save")
+    lurek.filesystem.unwatchPath(WATCH_FILE)
+    fs_log("hot-reload poll observed " .. tostring(#changed) .. " changed path(s)")
 end
 ```
 
@@ -848,11 +928,12 @@ lurek.filesystem.read(path)
 
 ```lua
 do
-    local path = "save/read_sample.txt"
-    lurek.filesystem.write(path, "read me")
-    local contents = lurek.filesystem.read(path)
-    print("read " .. #contents .. " bytes")
-    print("contents = " .. contents)
+    local path = PROFILE_DIR .. "read_slot.json"
+    lurek.filesystem.createDirectory(PROFILE_DIR)
+    lurek.filesystem.write(path, '{"name":"Nova","quest":"intro"}')
+    local json = lurek.filesystem.read(path)
+    local has_intro = json:find("intro", 1, true) ~= nil
+    fs_log("loaded checkpoint json bytes=" .. tostring(#json) .. " intro=" .. tostring(has_intro))
 end
 ```
 
@@ -882,9 +963,12 @@ lurek.filesystem.readAsync(path)
 
 ```lua
 do
-    lurek.filesystem.write("save/test_handle.txt", "hello from handle")
-    local ticket = lurek.filesystem.readAsync("save/test_handle.txt")
-    print("async read ticket = " .. ticket)
+    local path = FS_ROOT .. "async_read.json"
+    lurek.filesystem.createDirectory(FS_ROOT)
+    lurek.filesystem.write(path, '{"region":"forest","npcs":14}')
+    local ticket = lurek.filesystem.readAsync(path)
+    local exists = lurek.filesystem.exists(path)
+    fs_log("queued async region read ticket=" .. tostring(ticket) .. " exists=" .. tostring(exists))
 end
 ```
 
@@ -914,9 +998,12 @@ lurek.filesystem.readBytes(path)
 
 ```lua
 do
-    lurek.filesystem.write("save/test_handle.txt", "hello from handle")
-    local bytes = lurek.filesystem.readBytes("save/test_handle.txt")
-    print("binary read " .. #bytes .. " bytes")
+    local path = FS_ROOT .. "palette.bin"
+    local bytes = string.char(0, 64, 128, 255)
+    lurek.filesystem.createDirectory(FS_ROOT)
+    lurek.filesystem.writeBytes(path, bytes)
+    local payload = lurek.filesystem.readBytes(path)
+    fs_log("read palette blob bytes=" .. tostring(#payload) .. " from " .. path)
 end
 ```
 
@@ -946,11 +1033,12 @@ lurek.filesystem.readJson(path)
 
 ```lua
 do
-    local path = "save/options.json"
-    lurek.filesystem.writeJson(path, '{"name":"test","value":42}')
-    local data = lurek.filesystem.readJson(path)
-    print("readJson type = " .. type(data))
-    print("json bytes = " .. #data)
+    local path = PROFILE_DIR .. "read_json_slot.json"
+    lurek.filesystem.createDirectory(PROFILE_DIR)
+    lurek.filesystem.writeJson(path, '{"name":"Kira","score":42}')
+    local json = lurek.filesystem.readJson(path)
+    local has_score = json:find("score", 1, true) ~= nil
+    fs_log("read raw json bytes=" .. tostring(#json) .. " scoreField=" .. tostring(has_score))
 end
 ```
 
@@ -981,10 +1069,12 @@ lurek.filesystem.readOrWriteJson(path, default_json)
 
 ```lua
 do
-    local path = "save/settings.json"
-    local data = lurek.filesystem.readOrWriteJson(path, '{"volume":80,"fullscreen":false}')
-    print("settings json = " .. data)
-    print("settings exists = " .. tostring(lurek.filesystem.exists(path)))
+    local path = PROFILE_DIR .. "defaults_slot.json"
+    local default_json = '{"volume":80,"fullscreen":false,"language":"pl"}'
+    lurek.filesystem.createDirectory(PROFILE_DIR)
+    local result = lurek.filesystem.readOrWriteJson(path, default_json)
+    local saved = lurek.filesystem.exists(path)
+    fs_log("readOrWriteJson seeded defaults=" .. tostring(saved) .. " bytes=" .. tostring(#result))
 end
 ```
 
@@ -1008,9 +1098,12 @@ lurek.filesystem.remove(path)
 
 ```lua
 do
-    lurek.filesystem.write("save/test_moved.txt", "remove source")
-    local ok = lurek.filesystem.remove("save/test_moved.txt")
-    print("remove ok = " .. tostring(ok))
+    local path = CACHE_DIR .. "obsolete_manifest.txt"
+    lurek.filesystem.createDirectory(CACHE_DIR)
+    lurek.filesystem.write(path, "cache=v1")
+    lurek.filesystem.remove(path)
+    local exists = lurek.filesystem.exists(path)
+    fs_log("removed obsolete cache manifest=" .. tostring(not exists) .. " from " .. path)
 end
 ```
 
@@ -1034,9 +1127,12 @@ lurek.filesystem.removeDir(path)
 
 ```lua
 do
-    lurek.filesystem.mkdir("save/another_dir")
-    local ok = lurek.filesystem.removeDir("save/another_dir")
-    print("removeDir ok = " .. tostring(ok))
+    local path = CACHE_DIR .. "old_build/"
+    lurek.filesystem.createDirectory(path)
+    lurek.filesystem.write(path .. "atlas.txt", "old atlas")
+    lurek.filesystem.removeDir(path)
+    local exists = lurek.filesystem.isDirectory(path)
+    fs_log("removed old build cache directory=" .. tostring(not exists) .. " at " .. path)
 end
 ```
 
@@ -1060,8 +1156,12 @@ lurek.filesystem.setIdentity(name)
 
 ```lua
 do
-    lurek.filesystem.setIdentity("my_game")
-    print("identity set to 'my_game'")
+    local original = lurek.filesystem.getIdentity()
+    local preview_identity = "codex_example_identity"
+    lurek.filesystem.setIdentity(preview_identity)
+    local changed = lurek.filesystem.getIdentity()
+    lurek.filesystem.setIdentity(original)
+    fs_log("identity swap for save migration preview: " .. original .. " -> " .. changed .. " -> " .. original)
 end
 ```
 
@@ -1091,12 +1191,12 @@ lurek.filesystem.stat(path)
 
 ```lua
 do
-    local path = "save/stat.txt"
-    lurek.filesystem.write(path, "stat sample")
-    local st = lurek.filesystem.stat(path)
-    if st then
-        print("stat size=" .. st.size .. " isFile=" .. tostring(st.isFile))
-    end
+    local path = PROFILE_DIR .. "stat_slot.json"
+    lurek.filesystem.createDirectory(PROFILE_DIR)
+    lurek.filesystem.write(path, '{"chapter":"cave","hp":24}')
+    local stat = lurek.filesystem.stat(path)
+    local summary = stat and ("size=" .. tostring(stat.size) .. " isFile=" .. tostring(stat.isFile)) or "missing"
+    fs_log("stat for checkpoint file: " .. summary)
 end
 ```
 
@@ -1126,8 +1226,11 @@ lurek.filesystem.toAbsolutePath(path)
 
 ```lua
 do
-    local abs = lurek.filesystem.toAbsolutePath("content/examples/assets/data/sample_config.toml")
-    print("absolute = " .. abs)
+    local relative_path = PROFILE_DIR .. "slot_01.json"
+    local absolute_path = lurek.filesystem.toAbsolutePath(relative_path)
+    local save_root = lurek.filesystem.getSaveDirectory()
+    local is_under_save = absolute_path:find(save_root, 1, true) ~= nil
+    fs_log("absolute profile path resolves under save root=" .. tostring(is_under_save) .. ": " .. absolute_path)
 end
 ```
 
@@ -1157,8 +1260,12 @@ lurek.filesystem.unmount(mp)
 
 ```lua
 do
-    local ok = lurek.filesystem.unmount("game_assets")
-    print("unmount ok = " .. tostring(ok))
+    local mountpoint = "example_assets_cleanup"
+    lurek.filesystem.mount("content/examples/assets", mountpoint)
+    local before = lurek.filesystem.getDirectoryItems(mountpoint)
+    local removed = lurek.filesystem.unmount(mountpoint)
+    local after = lurek.filesystem.unmount(mountpoint)
+    fs_log("unmounted asset overlay removed=" .. tostring(removed) .. " firstView=" .. tostring(#before) .. " secondTry=" .. tostring(after))
 end
 ```
 
@@ -1182,8 +1289,12 @@ lurek.filesystem.unwatchPath(path)
 
 ```lua
 do
-    lurek.filesystem.unwatchPath("save")
-    print("unwatched save/")
+    lurek.filesystem.createDirectory(WATCH_DIR)
+    lurek.filesystem.write(WATCH_FILE, '{"volume":72}')
+    lurek.filesystem.watchPath(WATCH_FILE)
+    lurek.filesystem.unwatchPath(WATCH_FILE)
+    local changed = lurek.filesystem.pollWatchers()
+    fs_log("stopped watching settings file, pending notifications=" .. tostring(#changed))
 end
 ```
 
@@ -1207,8 +1318,11 @@ lurek.filesystem.watchPath(path)
 
 ```lua
 do
-    lurek.filesystem.watchPath("save")
-    print("watching save/")
+    lurek.filesystem.createDirectory(WATCH_DIR)
+    lurek.filesystem.write(WATCH_FILE, '{"volume":70}')
+    lurek.filesystem.watchPath(WATCH_FILE)
+    lurek.filesystem.pollWatchers()
+    fs_log("registered live watch for settings file " .. WATCH_FILE)
 end
 ```
 
@@ -1233,9 +1347,11 @@ lurek.filesystem.write(path, data)
 
 ```lua
 do
-    local path = "save/test_write.txt"
-    lurek.filesystem.write(path, "hello world")
-    print("wrote to " .. path)
+    local path = PROFILE_DIR .. "write_slot.json"
+    local payload = '{"name":"Rune","xp":130,"zone":"village"}'
+    lurek.filesystem.createDirectory(PROFILE_DIR)
+    lurek.filesystem.write(path, payload)
+    fs_log("wrote profile snapshot bytes=" .. tostring(#payload) .. " to " .. path)
 end
 ```
 
@@ -1266,8 +1382,12 @@ lurek.filesystem.writeAsync(path, data)
 
 ```lua
 do
-    local ticket = lurek.filesystem.writeAsync("save/async_out.txt", "async data")
-    print("async write ticket = " .. ticket)
+    local path = FS_ROOT .. "async_write.json"
+    lurek.filesystem.createDirectory(FS_ROOT)
+    local payload = '{"region":"tower","npcs":3}'
+    local ticket = lurek.filesystem.writeAsync(path, payload)
+    local absolute = lurek.filesystem.toAbsolutePath(path)
+    fs_log("queued async write ticket=" .. tostring(ticket) .. " for " .. absolute)
 end
 ```
 
@@ -1292,8 +1412,12 @@ lurek.filesystem.writeBytes(path, data)
 
 ```lua
 do
-    lurek.filesystem.writeBytes("save/binary.bin", "\x00\x01\x02\x03")
-    print("wrote 4 binary bytes")
+    local path = FS_ROOT .. "navmesh.bin"
+    local bytes = string.char(4, 8, 15, 16, 23, 42)
+    lurek.filesystem.createDirectory(FS_ROOT)
+    lurek.filesystem.writeBytes(path, bytes)
+    local payload = lurek.filesystem.readBytes(path)
+    fs_log("wrote binary navmesh bytes=" .. tostring(#payload) .. " to " .. path)
 end
 ```
 
@@ -1318,9 +1442,12 @@ lurek.filesystem.writeJson(path, json)
 
 ```lua
 do
-    local path = "save/test_json.json"
-    lurek.filesystem.writeJson(path, '{"name":"test","value":42}')
-    print("wrote JSON to " .. path)
+    local path = PROFILE_DIR .. "write_json_slot.json"
+    local payload = '{"name":"Nox","difficulty":"hard"}'
+    lurek.filesystem.createDirectory(PROFILE_DIR)
+    lurek.filesystem.writeJson(path, payload)
+    local bytes = #lurek.filesystem.read(path)
+    fs_log("persisted structured options bytes=" .. tostring(bytes) .. " to " .. path)
 end
 ```
 
@@ -1370,9 +1497,12 @@ LFileData:getFilename()
 
 ```lua
 do
-    lurek.filesystem.write("save/test_handle.txt", "hello from handle")
-    local fd = lurek.filesystem.newFileData("save/test_handle.txt")
-    print("filename = " .. fd:getFilename())
+    local path = FS_ROOT .. "filedata_name.txt"
+    lurek.filesystem.createDirectory(FS_ROOT)
+    lurek.filesystem.write(path, "seed=9301")
+    local data = lurek.filesystem.newFileData(path)
+    local filename = data:getFilename()
+    fs_log("file data remembers source filename=" .. filename)
 end
 ```
 
@@ -1396,9 +1526,12 @@ LFileData:getSize()
 
 ```lua
 do
-    lurek.filesystem.write("save/test_handle.txt", "hello from handle")
-    local fd = lurek.filesystem.newFileData("save/test_handle.txt")
-    print("size = " .. fd:getSize())
+    local path = FS_ROOT .. "filedata_size.txt"
+    lurek.filesystem.createDirectory(FS_ROOT)
+    lurek.filesystem.write(path, "enemy=archer")
+    local data = lurek.filesystem.newFileData(path)
+    local size = data:getSize()
+    fs_log("file data size for enemy template=" .. tostring(size))
 end
 ```
 
@@ -1422,10 +1555,12 @@ LFileData:getString()
 
 ```lua
 do
-    lurek.filesystem.write("save/test_handle.txt", "hello from handle")
-    local fd = lurek.filesystem.newFileData("save/test_handle.txt")
-    local str = fd:getString()
-    print("content = " .. str)
+    local path = FS_ROOT .. "filedata_string.txt"
+    lurek.filesystem.createDirectory(FS_ROOT)
+    lurek.filesystem.write(path, "weather=storm")
+    local data = lurek.filesystem.newFileData(path)
+    local payload = data:getString()
+    fs_log("file data payload for weather preset: " .. payload)
 end
 ```
 
@@ -1449,9 +1584,12 @@ LFileData:type()
 
 ```lua
 do
-    lurek.filesystem.write("save/test_handle.txt", "hello from handle")
-    local fd = lurek.filesystem.newFileData("save/test_handle.txt")
-    print("type = " .. fd:type())
+    local path = FS_ROOT .. "filedata_type.txt"
+    lurek.filesystem.createDirectory(FS_ROOT)
+    lurek.filesystem.write(path, "hint=secret")
+    local data = lurek.filesystem.newFileData(path)
+    local type_name = data:type()
+    fs_log("file data userdata type=" .. type_name)
 end
 ```
 
@@ -1481,9 +1619,12 @@ LFileData:typeOf(name)
 
 ```lua
 do
-    lurek.filesystem.write("save/test_handle.txt", "hello from handle")
-    local fd = lurek.filesystem.newFileData("save/test_handle.txt")
-    print("is FileData = " .. tostring(fd:typeOf("LFileData")))
+    local path = FS_ROOT .. "filedata_typeof.txt"
+    lurek.filesystem.createDirectory(FS_ROOT)
+    lurek.filesystem.write(path, "hint=secret")
+    local data = lurek.filesystem.newFileData(path)
+    local matches = data:typeOf("LFileData")
+    fs_log("typeOf confirms LFileData=" .. tostring(matches))
 end
 ```
 
@@ -1509,10 +1650,13 @@ LFileHandle:close()
 
 ```lua
 do
-    local fh = lurek.filesystem.openFile("save/close_test.txt", "w")
-    fh:write("done")
-    fh:close()
-    print("closed")
+    local path = FS_ROOT .. "handle_close.log"
+    lurek.filesystem.createDirectory(FS_ROOT)
+    local handle = lurek.filesystem.openFile(path, "w")
+    handle:write("checkpoint=sealed")
+    handle:close()
+    local saved = lurek.filesystem.read(path)
+    fs_log("closed checkpoint handle with bytes=" .. tostring(#saved))
 end
 ```
 
@@ -1530,11 +1674,13 @@ LFileHandle:flush()
 
 ```lua
 do
-    local fh = lurek.filesystem.openFile("save/flush_test.txt", "w")
-    fh:write("buffered data")
-    fh:flush()
-    fh:close()
-    print("flushed")
+    local path = FS_ROOT .. "handle_flush.log"
+    lurek.filesystem.createDirectory(FS_ROOT)
+    local handle = lurek.filesystem.openFile(path, "w")
+    handle:write("boss_phase=2")
+    handle:flush()
+    handle:close()
+    fs_log("flushed boss phase update before closing handle")
 end
 ```
 
@@ -1558,10 +1704,13 @@ LFileHandle:getMode()
 
 ```lua
 do
-    lurek.filesystem.write("save/test_handle.txt", "hello from handle")
-    local fh = lurek.filesystem.openFile("save/test_handle.txt", "r")
-    print("mode = " .. fh:getMode())
-    fh:close()
+    local path = FS_ROOT .. "handle_mode.log"
+    lurek.filesystem.createDirectory(FS_ROOT)
+    lurek.filesystem.write(path, "quests=3")
+    local handle = lurek.filesystem.openFile(path, "r")
+    local mode = handle:getMode()
+    handle:close()
+    fs_log("opened quest summary handle in mode=" .. mode)
 end
 ```
 
@@ -1585,10 +1734,13 @@ LFileHandle:getSize()
 
 ```lua
 do
-    lurek.filesystem.write("save/test_handle.txt", "hello from handle")
-    local fh = lurek.filesystem.openFile("save/test_handle.txt", "r")
-    print("file size = " .. fh:getSize() .. " bytes")
-    fh:close()
+    local path = FS_ROOT .. "handle_size.log"
+    lurek.filesystem.createDirectory(FS_ROOT)
+    lurek.filesystem.write(path, "camera=10,20,1.2")
+    local handle = lurek.filesystem.openFile(path, "r")
+    local bytes = handle:getSize()
+    handle:close()
+    fs_log("camera bookmark file size=" .. tostring(bytes) .. " bytes")
 end
 ```
 
@@ -1612,11 +1764,14 @@ LFileHandle:isEOF()
 
 ```lua
 do
-    lurek.filesystem.write("save/test_handle.txt", "hello from handle")
-    local fh = lurek.filesystem.openFile("save/test_handle.txt", "r")
-    fh:read()
-    print("eof = " .. tostring(fh:isEOF()))
-    fh:close()
+    local path = FS_ROOT .. "handle_eof.log"
+    lurek.filesystem.createDirectory(FS_ROOT)
+    lurek.filesystem.write(path, "alpha\nbeta")
+    local handle = lurek.filesystem.openFile(path, "r")
+    handle:read()
+    local eof = handle:isEOF()
+    handle:close()
+    fs_log("reader reached end of log=" .. tostring(eof))
 end
 ```
 
@@ -1646,11 +1801,13 @@ LFileHandle:read(count)
 
 ```lua
 do
-    lurek.filesystem.write("save/test_handle.txt", "hello from handle")
-    local fh = lurek.filesystem.openFile("save/test_handle.txt", "r")
-    local data = fh:read()
-    print("read: " .. data)
-    fh:close()
+    local path = FS_ROOT .. "handle_read.log"
+    lurek.filesystem.createDirectory(FS_ROOT)
+    lurek.filesystem.write(path, "encounter=boss\nstate=phase2")
+    local handle = lurek.filesystem.openFile(path, "r")
+    local preview = handle:read(15)
+    handle:close()
+    fs_log("read preview from encounter log: " .. preview)
 end
 ```
 
@@ -1674,11 +1831,13 @@ LFileHandle:readLine()
 
 ```lua
 do
-    lurek.filesystem.write("save/lines.txt", "alpha\nbeta\ngamma")
-    local fh = lurek.filesystem.openFile("save/lines.txt", "r")
-    local line = fh:readLine()
-    print("first line: " .. line)
-    fh:close()
+    local path = FS_ROOT .. "handle_lines.log"
+    lurek.filesystem.createDirectory(FS_ROOT)
+    lurek.filesystem.write(path, "room=foyer\nroom=hall\nroom=vault")
+    local handle = lurek.filesystem.openFile(path, "r")
+    local first_line = handle:readLine()
+    handle:close()
+    fs_log("parsed first room line from route log: " .. first_line)
 end
 ```
 
@@ -1702,12 +1861,14 @@ LFileHandle:seek(pos)
 
 ```lua
 do
-    lurek.filesystem.write("save/test_handle.txt", "hello from handle")
-    local fh = lurek.filesystem.openFile("save/test_handle.txt", "r")
-    fh:seek(5)
-    local data = fh:read(4)
-    print("from pos 5: " .. data)
-    fh:close()
+    local path = FS_ROOT .. "handle_seek.log"
+    lurek.filesystem.createDirectory(FS_ROOT)
+    lurek.filesystem.write(path, "HP=035|MP=012|ZONE=RUINS")
+    local handle = lurek.filesystem.openFile(path, "r")
+    handle:seek(7)
+    local preview = handle:read(6)
+    handle:close()
+    fs_log("seek jumped to MP field and read " .. preview)
 end
 ```
 
@@ -1731,12 +1892,14 @@ LFileHandle:tell()
 
 ```lua
 do
-    lurek.filesystem.write("save/test_handle.txt", "hello from handle")
-    local fh = lurek.filesystem.openFile("save/test_handle.txt", "r")
-    fh:read(3)
-    local pos = fh:tell()
-    print("position = " .. pos)
-    fh:close()
+    local path = FS_ROOT .. "handle_tell.log"
+    lurek.filesystem.createDirectory(FS_ROOT)
+    lurek.filesystem.write(path, "frame0001\nframe0002\n")
+    local handle = lurek.filesystem.openFile(path, "r")
+    handle:read(9)
+    local cursor = handle:tell()
+    handle:close()
+    fs_log("replay parser cursor after one frame tag=" .. tostring(cursor))
 end
 ```
 
@@ -1760,10 +1923,13 @@ LFileHandle:type()
 
 ```lua
 do
-    lurek.filesystem.write("save/test_handle.txt", "hello from handle")
-    local fh = lurek.filesystem.openFile("save/test_handle.txt", "r")
-    print("type = " .. fh:type())
-    fh:close()
+    local path = FS_ROOT .. "handle_type.log"
+    lurek.filesystem.createDirectory(FS_ROOT)
+    lurek.filesystem.write(path, "data=x")
+    local handle = lurek.filesystem.openFile(path, "r")
+    local type_name = handle:type()
+    handle:close()
+    fs_log("file handle userdata type=" .. type_name)
 end
 ```
 
@@ -1793,10 +1959,13 @@ LFileHandle:typeOf(name)
 
 ```lua
 do
-    lurek.filesystem.write("save/test_handle.txt", "hello from handle")
-    local fh = lurek.filesystem.openFile("save/test_handle.txt", "r")
-    print("is FileHandle = " .. tostring(fh:typeOf("LFileHandle")))
-    fh:close()
+    local path = FS_ROOT .. "handle_typeof.log"
+    lurek.filesystem.createDirectory(FS_ROOT)
+    lurek.filesystem.write(path, "data=x")
+    local handle = lurek.filesystem.openFile(path, "r")
+    local matches = handle:typeOf("LFileHandle")
+    handle:close()
+    fs_log("typeOf confirms LFileHandle=" .. tostring(matches))
 end
 ```
 
@@ -1820,11 +1989,13 @@ LFileHandle:write(data)
 
 ```lua
 do
-    local fh = lurek.filesystem.openFile("save/append_test.txt", "w")
-    fh:write("part1")
-    fh:write(" part2")
-    fh:close()
-    print("wrote via handle")
+    local path = FS_ROOT .. "handle_write.log"
+    lurek.filesystem.createDirectory(FS_ROOT)
+    local handle = lurek.filesystem.openFile(path, "w")
+    handle:write("tick=1\n")
+    handle:write("tick=2\n")
+    handle:close()
+    fs_log("wrote two simulation ticks via a persistent handle")
 end
 ```
 
@@ -1862,8 +2033,11 @@ LZipMount:contains(virtual_path)
 
 ```lua
 do
-    local zip = lurek.filesystem.mountZip("content/examples/assets/data/sample_data.zip", "data")
-    print("has hello = " .. tostring(zip:contains("data/sample_hello.txt")))
+    local zip = lurek.filesystem.mountZip(ZIP_FIXTURE, "zip_contains")
+    local has_hello = zip:contains("zip_contains/hello.txt")
+    local has_missing = zip:contains("zip_contains/missing.txt")
+    local prefix = zip:prefix()
+    fs_log("zip lookup under " .. prefix .. " hello=" .. tostring(has_hello) .. " missing=" .. tostring(has_missing))
 end
 ```
 
@@ -1887,9 +2061,11 @@ LZipMount:listFiles()
 
 ```lua
 do
-    local zip = lurek.filesystem.mountZip("content/examples/assets/data/sample_data.zip", "data")
+    local zip = lurek.filesystem.mountZip(ZIP_FIXTURE, "zip_list")
     local files = zip:listFiles()
-    print("zip files: " .. #files)
+    local first = files[1] or "none"
+    local count = #files
+    fs_log("zip file catalog count=" .. tostring(count) .. " first=" .. tostring(first))
 end
 ```
 
@@ -1913,8 +2089,11 @@ LZipMount:prefix()
 
 ```lua
 do
-    local zip = lurek.filesystem.mountZip("content/examples/assets/data/sample_data.zip", "data")
-    print("prefix = " .. zip:prefix())
+    local zip = lurek.filesystem.mountZip(ZIP_FIXTURE, "zip_prefix")
+    local prefix = zip:prefix()
+    local hello_path = prefix .. "/hello.txt"
+    local exists = zip:contains(hello_path)
+    fs_log("zip prefix builds virtual asset path " .. hello_path .. " exists=" .. tostring(exists))
 end
 ```
 
@@ -1944,9 +2123,12 @@ LZipMount:readFile(virtual_path)
 
 ```lua
 do
-    local zip = lurek.filesystem.mountZip("content/examples/assets/data/sample_data.zip", "data")
-    local ok, txt = pcall(function() return zip:readFile("data/sample_hello.txt") end)
-    print("zip read bytes: " .. (ok and txt and tostring(#txt) or "unavailable"))
+    local zip = lurek.filesystem.mountZip(ZIP_FIXTURE, "zip_read")
+    local payload = zip:readFile("zip_read/hello.txt")
+    local size = #payload
+    local prefix = zip:prefix()
+    local summary = "zip payload bytes=" .. tostring(size) .. " from " .. prefix
+    fs_log(summary)
 end
 ```
 
@@ -1970,8 +2152,11 @@ LZipMount:type()
 
 ```lua
 do
-    local zip = lurek.filesystem.mountZip("content/examples/assets/data/sample_data.zip", "data")
-    print("type = " .. zip:type())
+    local zip = lurek.filesystem.mountZip(ZIP_FIXTURE, "zip_type")
+    local type_name = zip:type()
+    local prefix = zip:prefix()
+    local file_count = #zip:listFiles()
+    fs_log("zip mount type=" .. type_name .. " prefix=" .. prefix .. " files=" .. tostring(file_count))
 end
 ```
 
@@ -2001,8 +2186,11 @@ LZipMount:typeOf(name)
 
 ```lua
 do
-    local zip = lurek.filesystem.mountZip("content/examples/assets/data/sample_data.zip", "data")
-    print("is ZipMount = " .. tostring(zip:typeOf("LZipMount")))
+    local zip = lurek.filesystem.mountZip(ZIP_FIXTURE, "zip_typeof")
+    local matches = zip:typeOf("LZipMount")
+    local prefix = zip:prefix()
+    local has_hello = zip:contains(prefix .. "/hello.txt")
+    fs_log("typeOf confirms LZipMount=" .. tostring(matches) .. " hello=" .. tostring(has_hello))
 end
 ```
 

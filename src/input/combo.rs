@@ -4,6 +4,8 @@
 //! Reset and progress helpers keep repeated combo attempts deterministic after mismatches, timeouts, or completion.
 //! Open this file when combo semantics change; live key polling and action binding data live in sibling files.
 
+use super::action_def::canonicalize_key_name;
+
 /// One required key press in a combo sequence with its maximum inter-step gap.
 #[derive(Clone, Debug, PartialEq)]
 pub struct ComboStep {
@@ -45,6 +47,13 @@ pub struct ComboDetector {
 impl ComboDetector {
     /// Create detector with the given step list and total-sequence timeout.
     pub fn new(steps: Vec<ComboStep>, max_total_gap_ms: u64) -> Self {
+        let steps = steps
+            .into_iter()
+            .map(|step| ComboStep {
+                key: canonicalize_key_name(&step.key),
+                max_gap_ms: step.max_gap_ms,
+            })
+            .collect();
         Self {
             steps,
             current_step: 0,
@@ -60,9 +69,10 @@ impl ComboDetector {
         if !self.enabled || self.steps.is_empty() {
             return ComboProgress::Idle;
         }
-        self.last_step_time_ms += elapsed_ms;
+        let normalized_key = canonicalize_key_name(key);
+        self.last_step_time_ms = self.last_step_time_ms.saturating_add(elapsed_ms);
         if self.current_step > 0 {
-            self.total_elapsed_ms += elapsed_ms;
+            self.total_elapsed_ms = self.total_elapsed_ms.saturating_add(elapsed_ms);
         }
         if self.current_step > 0 && self.total_elapsed_ms > self.max_total_gap_ms {
             self.reset();
@@ -75,12 +85,9 @@ impl ComboDetector {
                 return ComboProgress::Broken;
             }
         }
-        if self.steps[self.current_step].key == key {
+        if self.steps[self.current_step].key == normalized_key {
             self.current_step += 1;
             self.last_step_time_ms = 0;
-            if self.current_step == 0 {
-                self.total_elapsed_ms = 0;
-            }
             if self.current_step >= self.steps.len() {
                 self.reset();
                 return ComboProgress::Completed;
@@ -103,8 +110,8 @@ impl ComboDetector {
         if !self.enabled || self.current_step == 0 {
             return ComboProgress::Idle;
         }
-        self.last_step_time_ms += elapsed_ms;
-        self.total_elapsed_ms += elapsed_ms;
+        self.last_step_time_ms = self.last_step_time_ms.saturating_add(elapsed_ms);
+        self.total_elapsed_ms = self.total_elapsed_ms.saturating_add(elapsed_ms);
         let per_step_expired = {
             let gap_limit = self.steps[self.current_step].max_gap_ms;
             self.last_step_time_ms > gap_limit

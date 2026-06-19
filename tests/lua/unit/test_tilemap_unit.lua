@@ -84,6 +84,38 @@ local MINIMAL_TMX = [[<?xml version="1.0" encoding="UTF-8"?>
  </layer>
 </map>]]
 
+local SHORT_LAYER_TMX = [[<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.10.0" orientation="orthogonal"
+     renderorder="right-down" width="2" height="2"
+     tilewidth="32" tileheight="32" infinite="0" nextlayerid="2" nextobjectid="1">
+ <tileset firstgid="1" name="ts" tilewidth="32" tileheight="32" tilecount="1" columns="1">
+ </tileset>
+ <layer id="1" name="Ground" width="2" height="2">
+  <data encoding="csv">1,1,1</data>
+ </layer>
+</map>]]
+
+local LONG_LAYER_TMX = [[<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.10.0" orientation="orthogonal"
+     renderorder="right-down" width="2" height="2"
+     tilewidth="32" tileheight="32" infinite="0" nextlayerid="2" nextobjectid="1">
+ <tileset firstgid="1" name="ts" tilewidth="32" tileheight="32" tilecount="1" columns="1">
+ </tileset>
+ <layer id="1" name="Ground" width="2" height="2">
+  <data encoding="csv">1,1,1,1,1</data>
+ </layer>
+</map>]]
+
+local EXTERNAL_TSX_TMX = [[<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.10.0" orientation="orthogonal"
+     renderorder="right-down" width="2" height="2"
+     tilewidth="32" tileheight="32" infinite="0" nextlayerid="2" nextobjectid="1">
+ <tileset firstgid="1" source="terrain.tsx"/>
+ <layer id="1" name="Ground" width="2" height="2">
+  <data encoding="csv">1,1,1,1</data>
+ </layer>
+</map>]]
+
 -- @describe lurek.tilemap module
 describe("lurek.tilemap module", function()
     -- @covers lurek.tilemap.newTileSet
@@ -96,6 +128,15 @@ describe("lurek.tilemap module", function()
         expect_equal("LTileMap", new_tilemap():type())
     end)
 
+    -- @covers lurek.tilemap.newTileMap
+    it("newTileMap rejects zero tile dimensions", function()
+        local ok, err = pcall(function()
+            return lurek.tilemap.newTileMap(0, 32, 8)
+        end)
+        expect_false(ok)
+        expect_true(string.find(tostring(err), "tilemap tile size", 1, true) ~= nil)
+    end)
+
     -- @covers lurek.tilemap.newAutoTileSheet
     it("newAutoTileSheet constructs an autotile sheet", function()
         expect_equal("LAutoTileSheet", new_autotile_sheet():type())
@@ -104,6 +145,15 @@ describe("lurek.tilemap module", function()
     -- @covers lurek.tilemap.newChunkMap
     it("newChunkMap constructs a chunk map", function()
         expect_equal("LChunkMap", new_chunkmap():type())
+    end)
+
+    -- @covers lurek.tilemap.newChunkMap
+    it("newChunkMap rejects zero chunk size", function()
+        local ok, err = pcall(function()
+            return lurek.tilemap.newChunkMap(0)
+        end)
+        expect_false(ok)
+        expect_true(string.find(tostring(err), "tilemap chunk size", 1, true) ~= nil)
     end)
 
     -- @covers lurek.tilemap.newIsoMap
@@ -137,6 +187,27 @@ describe("lurek.tilemap module", function()
         local result, err = lurek.tilemap.loadTMX(MINIMAL_TMX)
         expect_not_nil(result)
         expect_nil(err)
+    end)
+
+    -- @covers lurek.tilemap.loadTMX
+    it("loadTMX strict mode rejects short and long layer payloads", function()
+        local result, err = lurek.tilemap.loadTMX(SHORT_LAYER_TMX, { strictLayerSize = true })
+        expect_nil(result)
+        expect_equal("tmx_invalid_content", err.code)
+        expect_contains(err.message, "length mismatch")
+
+        result, err = lurek.tilemap.loadTMX(LONG_LAYER_TMX, { strictLayerSize = true })
+        expect_nil(result)
+        expect_equal("tmx_invalid_content", err.code)
+        expect_contains(err.message, "length mismatch")
+    end)
+
+    -- @covers lurek.tilemap.loadTMX
+    it("loadTMX rejects external TSX without an explicit policy", function()
+        local result, err = lurek.tilemap.loadTMX(EXTERNAL_TSX_TMX)
+        expect_nil(result)
+        expect_equal("tmx_invalid_content", err.code)
+        expect_contains(err.message, "external TSX")
     end)
 
     -- @covers lurek.tilemap.fromLDtk
@@ -418,6 +489,18 @@ describe("LTileMap methods", function()
         expect_equal(1, tm:getLayerCount())
     end)
 
+    -- @covers LTileMap:tryAddLayer
+    it("tryAddLayer returns an error instead of throwing when limits reject a layer", function()
+        local tm = lurek.tilemap.newTileMap(32, 32, 8, { maxLayers = 1 })
+        local idx, err = tm:tryAddLayer("ground", 2, 2)
+        expect_equal(1, idx)
+        expect_nil(err)
+
+        idx, err = tm:tryAddLayer("props", 2, 2)
+        expect_nil(idx)
+        expect_contains(err, "exceeding limit")
+    end)
+
     -- @covers LTileMap:getLayerCount
     it("getLayerCount returns the number of tile layers", function()
         local tm = new_tilemap()
@@ -524,6 +607,25 @@ describe("LTileMap methods", function()
         expect_equal(7, tm:getTile(1, 3, 4))
     end)
 
+    -- @covers LTileMap:trySetTile
+    -- @covers LTileMap:tryGetTile
+    -- @covers LTileMap:getDiagnostics
+    it("try tile accessors report validation failures and increment diagnostics", function()
+        local tm = new_ready_tilemap()
+        local ok, err = tm:trySetTile(1, 11, 1, 7)
+        expect_false(ok)
+        expect_contains(err, "out of bounds")
+
+        local gid
+        gid, err = tm:tryGetTile(2, 1, 1)
+        expect_nil(gid)
+        expect_contains(err, "out of range")
+
+        local diagnostics = tm:getDiagnostics()
+        expect_true(diagnostics.invalidCoord >= 1)
+        expect_true(diagnostics.invalidLayer >= 1)
+    end)
+
     -- @covers LTileMap:clearTile
     it("clearTile removes a gid from a cell", function()
         local tm = new_tilemap()
@@ -584,6 +686,13 @@ describe("LTileMap methods", function()
         local tx, ty = tm:worldToTile(x, y)
         expect_equal(2, tx)
         expect_equal(3, ty)
+    end)
+
+    -- @covers LTileMap:tryWorldToTile
+    it("tryWorldToTile returns nil for negative coordinates", function()
+        local tx, ty = new_tilemap():tryWorldToTile(-1, 0)
+        expect_nil(tx)
+        expect_nil(ty)
     end)
 
     -- @covers LTileMap:setOrientation
@@ -682,6 +791,20 @@ describe("LTileMap methods", function()
         local positions = tm:findTilesByGid(1, 7)
         expect_equal(100, #positions)
         expect_equal(0, positions[1].x)
+    end)
+
+    -- @covers LTileMap:findTilesByGid
+    -- @covers LTileMap:getDiagnostics
+    it("findTilesByGid lazily rebuilds the reverse index after fill", function()
+        local tm = new_ready_tilemap()
+        tm:fill(1, 7)
+
+        local before = tm:getDiagnostics()
+        local positions = tm:findTilesByGid(1, 7)
+        local after = tm:getDiagnostics()
+
+        expect_equal(100, #positions)
+        expect_true(after.lazyIndexRebuilds >= before.lazyIndexRebuilds + 1)
     end)
 
     -- @covers LTileMap:rectOverlapsSolid

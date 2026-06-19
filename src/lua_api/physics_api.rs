@@ -26,6 +26,10 @@ fn parse_body_type(s: &str) -> LuaResult<BodyType> {
     }
 }
 
+fn physics_runtime_error(method: &str, message: impl std::fmt::Display) -> LuaError {
+    LuaError::RuntimeError(format!("lurek.physics.{}: {}", method, message))
+}
+
 /// Converts Lua shape constructor arguments into an engine physics shape definition.
 fn shape_from_lua(lua: &Lua, shape_type: &str, args: LuaMultiValue) -> LuaResult<Shape> {
     let mut float_args: Vec<f32> = Vec::new();
@@ -117,7 +121,7 @@ fn contact_to_table<'lua>(
 
 /// Serializes world diagnostics into a Lua table.
 fn stats_to_table<'lua>(lua: &'lua Lua, stats: PhysicsWorldStats) -> LuaResult<LuaTable<'lua>> {
-    // @return table: { bodies, bodySlots, colliders, joints, jointSlots, zones, sleepingBodies }
+    // @return table: { bodies, bodySlots, colliders, joints, jointSlots, zones, sleepingBodies, skippedSteps, clampedSteps, invalidOperations, bodiesScanned, collidersRebuilt, zoneChecks, contacts, syncedBodies }
     let tbl = lua.create_table()?;
     tbl.set("bodies", stats.bodies)?;
     tbl.set("bodySlots", stats.body_slots)?;
@@ -126,6 +130,14 @@ fn stats_to_table<'lua>(lua: &'lua Lua, stats: PhysicsWorldStats) -> LuaResult<L
     tbl.set("jointSlots", stats.joint_slots)?;
     tbl.set("zones", stats.zones)?;
     tbl.set("sleepingBodies", stats.sleeping_bodies)?;
+    tbl.set("skippedSteps", stats.skipped_steps)?;
+    tbl.set("clampedSteps", stats.clamped_steps)?;
+    tbl.set("invalidOperations", stats.invalid_operations)?;
+    tbl.set("bodiesScanned", stats.bodies_scanned)?;
+    tbl.set("collidersRebuilt", stats.colliders_rebuilt)?;
+    tbl.set("zoneChecks", stats.zone_checks)?;
+    tbl.set("contacts", stats.contacts)?;
+    tbl.set("syncedBodies", stats.synced_bodies)?;
     Ok(tbl)
 }
 
@@ -203,7 +215,8 @@ fn new_body_from_lua_args(lua: &Lua, args: LuaMultiValue) -> LuaResult<LuaBody> 
 
     let world = world_ud.borrow::<LuaWorld>()?;
     let body_type = parse_body_type(&bt)?;
-    let body = Body::new(x, y, w, h, body_type);
+    let body = Body::try_new(x, y, w, h, body_type)
+        .map_err(|err| physics_runtime_error("newBody", err))?;
     let id = world.world.borrow_mut().add_body(body);
     Ok(LuaBody {
         world: Rc::clone(&world.world),
@@ -213,41 +226,23 @@ fn new_body_from_lua_args(lua: &Lua, args: LuaMultiValue) -> LuaResult<LuaBody> 
 
 fn set_body_velocity_from_userdata(body_ud: LuaAnyUserData, vx: f32, vy: f32) -> LuaResult<()> {
     let body = body_ud.borrow::<LuaBody>()?;
-    let mut world = body.world.borrow_mut();
-    if let Some(inner) = world.get_body_mut(body.id.0) {
-        inner.velocity.x = vx;
-        inner.velocity.y = vy;
-    }
+    body.world.borrow_mut().set_body_velocity(body.id.0, vx, vy);
     Ok(())
 }
 
 fn polygon_shape_from_coords(coords: mlua::Variadic<f32>) -> LuaResult<LuaPhysicsShape> {
-    if coords.len() < 6 || !coords.len().is_multiple_of(2) {
-        return Err(LuaError::RuntimeError(
-            "newPolygonShape: requires at least 3 vertex pairs (6 numbers)".to_string(),
-        ));
-    }
-    let vertices: Vec<crate::math::Vec2> = coords
-        .chunks(2)
-        .map(|pair| crate::math::Vec2::new(pair[0], pair[1]))
-        .collect();
-    Ok(LuaPhysicsShape::new(Shape::Polygon { vertices }))
+    let shape = Shape::from_parts("polygon", coords.as_slice(), false)
+        .map_err(|err| physics_runtime_error("newPolygonShape", err))?;
+    Ok(LuaPhysicsShape::new(shape))
 }
 
 fn chain_shape_from_coords(
     closed: bool,
     coords: mlua::Variadic<f32>,
 ) -> LuaResult<LuaPhysicsShape> {
-    if coords.len() < 4 || !coords.len().is_multiple_of(2) {
-        return Err(LuaError::RuntimeError(
-            "newChainShape: requires at least 2 vertex pairs (4 numbers)".to_string(),
-        ));
-    }
-    let vertices: Vec<crate::math::Vec2> = coords
-        .chunks(2)
-        .map(|pair| crate::math::Vec2::new(pair[0], pair[1]))
-        .collect();
-    Ok(LuaPhysicsShape::new(Shape::Chain { vertices, closed }))
+    let shape = Shape::from_parts("chain", coords.as_slice(), closed)
+        .map_err(|err| physics_runtime_error("newChainShape", err))?;
+    Ok(LuaPhysicsShape::new(shape))
 }
 
 fn push_physics_debug_draw(
@@ -339,9 +334,17 @@ impl LuaUserData for LuaWorld {
             Ok(())
         });
         // -- clear --
-        /// Removes all bodies and joints from the world, resetting it to an empty state.
+        /// Removes bodies, joints, terrain colliders, and zones while preserving world-level settings.
+        /// Gravity, solver iterations, meter scale, and other world configuration remain unchanged.
         methods.add_method("clear", |_, this, ()| {
             this.world.borrow_mut().clear();
+            Ok(())
+        });
+        // -- resetWorld --
+        /// Fully resets the world to its post-construction state.
+        /// This clears runtime state and restores constructor-owned settings such as gravity and solver configuration.
+        methods.add_method("resetWorld", |_, this, ()| {
+            this.world.borrow_mut().reset_world();
             Ok(())
         });
         // -- getGravity --
@@ -465,7 +468,8 @@ impl LuaUserData for LuaWorld {
                 }
             };
             let body_type = parse_body_type(&bt)?;
-            let body = Body::new(x, y, w, h, body_type);
+            let body = Body::try_new(x, y, w, h, body_type)
+                .map_err(|err| physics_runtime_error("newBody", err))?;
             let id = this.world.borrow_mut().add_body(body);
             Ok(LuaBody {
                 world: Rc::clone(&this.world),
@@ -483,7 +487,8 @@ impl LuaUserData for LuaWorld {
             "newCircleBody",
             |_, this, (x, y, radius, bt): (f32, f32, f32, String)| {
                 let body_type = parse_body_type(&bt)?;
-                let body = Body::new_circle(x, y, radius, body_type);
+                let body = Body::try_new_circle(x, y, radius, body_type)
+                    .map_err(|err| physics_runtime_error("newCircleBody", err))?;
                 let id = this.world.borrow_mut().add_body(body);
                 Ok(LuaBody {
                     world: Rc::clone(&this.world),
@@ -511,7 +516,8 @@ impl LuaUserData for LuaWorld {
                     verts.push(Vec2::new(vx, vy));
                     i += 2;
                 }
-                let body = Body::new_polygon(x, y, verts, body_type);
+                let body = Body::try_new_polygon(x, y, verts, body_type)
+                    .map_err(|err| physics_runtime_error("newPolygonBody", err))?;
                 let id = this.world.borrow_mut().add_body(body);
                 Ok(LuaBody {
                     world: Rc::clone(&this.world),
@@ -534,7 +540,14 @@ impl LuaUserData for LuaWorld {
             "newEdgeBody",
             |_, this, (x, y, x1, y1, x2, y2, bt): (f32, f32, f32, f32, f32, f32, String)| {
                 let body_type = parse_body_type(&bt)?;
-                let body = Body::new_edge(x, y, Vec2::new(x1, y1), Vec2::new(x2, y2), body_type);
+                let body = Body::try_new_edge(
+                    x,
+                    y,
+                    Vec2::new(x1, y1),
+                    Vec2::new(x2, y2),
+                    body_type,
+                )
+                .map_err(|err| physics_runtime_error("newEdgeBody", err))?;
                 let id = this.world.borrow_mut().add_body(body);
                 Ok(LuaBody {
                     world: Rc::clone(&this.world),
@@ -563,7 +576,8 @@ impl LuaUserData for LuaWorld {
                     verts.push(Vec2::new(vx, vy));
                     i += 2;
                 }
-                let body = Body::new_chain(x, y, verts, closed, body_type);
+                let body = Body::try_new_chain(x, y, verts, closed, body_type)
+                    .map_err(|err| physics_runtime_error("newChainBody", err))?;
                 let id = this.world.borrow_mut().add_body(body);
                 Ok(LuaBody {
                     world: Rc::clone(&this.world),
@@ -595,14 +609,11 @@ impl LuaUserData for LuaWorld {
                 LuaMultiValue,
             )| {
                 let shape = shape_from_lua(lua, &shape_type, args)?;
-                let idx = this.world.borrow_mut().add_fixture(
-                    body_id,
-                    shape,
-                    density,
-                    friction,
-                    restitution,
-                    sensor,
-                );
+                let idx = this
+                    .world
+                    .borrow_mut()
+                    .try_add_fixture(body_id, shape, density, friction, restitution, sensor)
+                    .map_err(|err| physics_runtime_error("addFixture", err))?;
                 Ok(idx)
             },
         );
@@ -623,7 +634,8 @@ impl LuaUserData for LuaWorld {
             |_, this, (body_id, fix_idx, friction): (usize, usize, f32)| {
                 this.world
                     .borrow_mut()
-                    .set_fixture_friction(body_id, fix_idx, friction);
+                    .try_set_fixture_friction(body_id, fix_idx, friction)
+                    .map_err(|err| physics_runtime_error("setFixtureFriction", err))?;
                 Ok(())
             },
         );
@@ -637,7 +649,8 @@ impl LuaUserData for LuaWorld {
             |_, this, (body_id, fix_idx, restitution): (usize, usize, f32)| {
                 this.world
                     .borrow_mut()
-                    .set_fixture_restitution(body_id, fix_idx, restitution);
+                    .try_set_fixture_restitution(body_id, fix_idx, restitution)
+                    .map_err(|err| physics_runtime_error("setFixtureRestitution", err))?;
                 Ok(())
             },
         );
@@ -651,7 +664,8 @@ impl LuaUserData for LuaWorld {
             |_, this, (body_id, fix_idx, sensor): (usize, usize, bool)| {
                 this.world
                     .borrow_mut()
-                    .set_fixture_sensor(body_id, fix_idx, sensor);
+                    .try_set_fixture_sensor(body_id, fix_idx, sensor)
+                    .map_err(|err| physics_runtime_error("setFixtureSensor", err))?;
                 Ok(())
             },
         );
@@ -665,7 +679,10 @@ impl LuaUserData for LuaWorld {
         methods.add_method(
             "addRevoluteJoint",
             |_, this, (a, b, ax, ay): (usize, usize, f32, f32)| {
-                Ok(this.world.borrow_mut().add_revolute_joint(a, b, ax, ay))
+                this.world
+                    .borrow_mut()
+                    .try_add_revolute_joint(a, b, ax, ay)
+                    .map_err(|err| physics_runtime_error("addRevoluteJoint", err))
             },
         );
         // -- addDistanceJoint --
@@ -682,10 +699,10 @@ impl LuaUserData for LuaWorld {
         methods.add_method(
             "addDistanceJoint",
             |_, this, (a, b, ax1, ay1, ax2, ay2, len): (usize, usize, f32, f32, f32, f32, f32)| {
-                Ok(this
-                    .world
+                this.world
                     .borrow_mut()
-                    .add_distance_joint(a, b, ax1, ay1, ax2, ay2, len))
+                    .try_add_distance_joint(a, b, ax1, ay1, ax2, ay2, len)
+                    .map_err(|err| physics_runtime_error("addDistanceJoint", err))
             },
         );
         // -- addPrismaticJoint --
@@ -700,10 +717,10 @@ impl LuaUserData for LuaWorld {
         methods.add_method(
             "addPrismaticJoint",
             |_, this, (a, b, ax, ay, axis_x, axis_y): (usize, usize, f32, f32, f32, f32)| {
-                Ok(this
-                    .world
+                this.world
                     .borrow_mut()
-                    .add_prismatic_joint(a, b, ax, ay, axis_x, axis_y))
+                    .try_add_prismatic_joint(a, b, ax, ay, axis_x, axis_y)
+                    .map_err(|err| physics_runtime_error("addPrismaticJoint", err))
             },
         );
         // -- addWeldJoint --
@@ -716,7 +733,10 @@ impl LuaUserData for LuaWorld {
         methods.add_method(
             "addWeldJoint",
             |_, this, (a, b, ax, ay): (usize, usize, f32, f32)| {
-                Ok(this.world.borrow_mut().add_weld_joint(a, b, ax, ay))
+                this.world
+                    .borrow_mut()
+                    .try_add_weld_joint(a, b, ax, ay)
+                    .map_err(|err| physics_runtime_error("addWeldJoint", err))
             },
         );
         // -- addRopeJoint --
@@ -733,10 +753,10 @@ impl LuaUserData for LuaWorld {
         methods.add_method(
             "addRopeJoint",
             |_, this, (a, b, ax1, ay1, ax2, ay2, max): (usize, usize, f32, f32, f32, f32, f32)| {
-                Ok(this
-                    .world
+                this.world
                     .borrow_mut()
-                    .add_rope_joint(a, b, ax1, ay1, ax2, ay2, max))
+                    .try_add_rope_joint(a, b, ax1, ay1, ax2, ay2, max)
+                    .map_err(|err| physics_runtime_error("addRopeJoint", err))
             },
         );
         // -- addWheelJoint --
@@ -751,10 +771,10 @@ impl LuaUserData for LuaWorld {
         methods.add_method(
             "addWheelJoint",
             |_, this, (a, b, ax, ay, axis_x, axis_y): (usize, usize, f32, f32, f32, f32)| {
-                Ok(this
-                    .world
+                this.world
                     .borrow_mut()
-                    .add_wheel_joint(a, b, ax, ay, axis_x, axis_y))
+                    .try_add_wheel_joint(a, b, ax, ay, axis_x, axis_y)
+                    .map_err(|err| physics_runtime_error("addWheelJoint", err))
             },
         );
         // -- addFrictionJoint --
@@ -769,10 +789,10 @@ impl LuaUserData for LuaWorld {
         methods.add_method(
             "addFrictionJoint",
             |_, this, (a, b, ax, ay, max_f, max_t): (usize, usize, f32, f32, f32, f32)| {
-                Ok(this
-                    .world
+                this.world
                     .borrow_mut()
-                    .add_friction_joint(a, b, ax, ay, max_f, max_t))
+                    .try_add_friction_joint(a, b, ax, ay, max_f, max_t)
+                    .map_err(|err| physics_runtime_error("addFrictionJoint", err))
             },
         );
         // -- addMotorJoint --
@@ -784,7 +804,10 @@ impl LuaUserData for LuaWorld {
         methods.add_method(
             "addMotorJoint",
             |_, this, (a, b, factor): (usize, usize, f32)| {
-                Ok(this.world.borrow_mut().add_motor_joint(a, b, factor))
+                this.world
+                    .borrow_mut()
+                    .try_add_motor_joint(a, b, factor)
+                    .map_err(|err| physics_runtime_error("addMotorJoint", err))
             },
         );
         // -- addMouseJoint --
@@ -797,10 +820,10 @@ impl LuaUserData for LuaWorld {
         methods.add_method(
             "addMouseJoint",
             |_, this, (body_id, tx, ty, max_f): (usize, f32, f32, f32)| {
-                Ok(this
-                    .world
+                this.world
                     .borrow_mut()
-                    .add_mouse_joint(body_id, tx, ty, max_f))
+                    .try_add_mouse_joint(body_id, tx, ty, max_f)
+                    .map_err(|err| physics_runtime_error("addMouseJoint", err))
             },
         );
         // -- addPulleyJoint --
@@ -813,7 +836,10 @@ impl LuaUserData for LuaWorld {
         methods.add_method(
             "addPulleyJoint",
             |_, this, (a, b, ax, ay): (usize, usize, f32, f32)| {
-                Ok(this.world.borrow_mut().add_pulley_joint(a, b, ax, ay))
+                this.world
+                    .borrow_mut()
+                    .try_add_weld_joint(a, b, ax, ay)
+                    .map_err(|err| physics_runtime_error("addPulleyJoint", err))
             },
         );
         // -- addGearJoint --
@@ -826,7 +852,10 @@ impl LuaUserData for LuaWorld {
         methods.add_method(
             "addGearJoint",
             |_, this, (a, b, ax, ay): (usize, usize, f32, f32)| {
-                Ok(this.world.borrow_mut().add_gear_joint(a, b, ax, ay))
+                this.world
+                    .borrow_mut()
+                    .try_add_weld_joint(a, b, ax, ay)
+                    .map_err(|err| physics_runtime_error("addGearJoint", err))
             },
         );
         // -- jointCount --
@@ -873,7 +902,14 @@ impl LuaUserData for LuaWorld {
         methods.add_method(
             "setJointMotorSpeed",
             |_, this, (jid, speed): (usize, f32)| {
-                this.world.borrow_mut().set_joint_motor_speed(jid, speed);
+                let mut world = this.world.borrow_mut();
+                if !world.has_joint(jid) {
+                    return Err(physics_runtime_error(
+                        "setJointMotorSpeed",
+                        format!("invalid joint id {}", jid),
+                    ));
+                }
+                world.set_joint_motor_speed(jid, speed);
                 Ok(())
             },
         );
@@ -891,9 +927,14 @@ impl LuaUserData for LuaWorld {
         methods.add_method(
             "setJointLimitsEnabled",
             |_, this, (jid, enabled): (usize, bool)| {
-                this.world
-                    .borrow_mut()
-                    .set_joint_limits_enabled(jid, enabled);
+                let mut world = this.world.borrow_mut();
+                if !world.has_joint(jid) {
+                    return Err(physics_runtime_error(
+                        "setJointLimitsEnabled",
+                        format!("invalid joint id {}", jid),
+                    ));
+                }
+                world.set_joint_limits_enabled(jid, enabled);
                 Ok(())
             },
         );
@@ -905,7 +946,14 @@ impl LuaUserData for LuaWorld {
         methods.add_method(
             "setJointLimits",
             |_, this, (jid, lower, upper): (usize, f32, f32)| {
-                this.world.borrow_mut().set_joint_limits(jid, lower, upper);
+                let mut world = this.world.borrow_mut();
+                if !world.has_joint(jid) {
+                    return Err(physics_runtime_error(
+                        "setJointLimits",
+                        format!("invalid joint id {}", jid),
+                    ));
+                }
+                world.set_joint_limits(jid, lower, upper);
                 Ok(())
             },
         );
@@ -925,7 +973,14 @@ impl LuaUserData for LuaWorld {
         methods.add_method(
             "setMouseJointTarget",
             |_, this, (jid, x, y): (usize, f32, f32)| {
-                this.world.borrow_mut().set_mouse_joint_target(jid, x, y);
+                let mut world = this.world.borrow_mut();
+                if !world.has_joint(jid) {
+                    return Err(physics_runtime_error(
+                        "setMouseJointTarget",
+                        format!("invalid joint id {}", jid),
+                    ));
+                }
+                world.set_mouse_joint_target(jid, x, y);
                 Ok(())
             },
         );
@@ -1356,8 +1411,13 @@ impl LuaUserData for LuaWorld {
         /// @param | h | number | Zone height.
         /// @return | LZone | The zone handle.
         methods.add_method_mut("addZone", |_, this, (x, y, w, h): (f32, f32, f32, f32)| {
-            let zone = PhysicsZone::new_rect(0, x, y, w, h);
-            let id = this.world.borrow_mut().add_zone(zone);
+            let zone = PhysicsZone::try_new_rect(0, x, y, w, h)
+                .map_err(|err| physics_runtime_error("addZone", err))?;
+            let id = this
+                .world
+                .borrow_mut()
+                .try_add_zone(zone)
+                .map_err(|err| physics_runtime_error("addZone", err))?;
             Ok(LuaZone {
                 zone_id: id,
                 world: this.world.clone(),
@@ -1451,7 +1511,8 @@ impl LuaUserData for LuaZone {
         methods.add_method("setCircle", |_, this, (cx, cy, radius): (f32, f32, f32)| {
             let mut w = this.world.borrow_mut();
             if let Some(z) = w.zone_mut(this.zone_id) {
-                z.set_circle(cx, cy, radius);
+                z.try_set_circle(cx, cy, radius)
+                    .map_err(|err| physics_runtime_error("setCircle", err))?;
             }
             Ok(())
         });
@@ -1462,7 +1523,8 @@ impl LuaUserData for LuaZone {
         methods.add_method("setGravityDirectional", |_, this, (gx, gy): (f32, f32)| {
             let mut w = this.world.borrow_mut();
             if let Some(z) = w.zone_mut(this.zone_id) {
-                z.set_gravity_directional(gx, gy);
+                z.try_set_gravity_directional(gx, gy)
+                    .map_err(|err| physics_runtime_error("setGravityDirectional", err))?;
             }
             Ok(())
         });
@@ -1476,7 +1538,8 @@ impl LuaUserData for LuaZone {
             |_, this, (cx, cy, strength): (f32, f32, f32)| {
                 let mut w = this.world.borrow_mut();
                 if let Some(z) = w.zone_mut(this.zone_id) {
-                    z.set_gravity_point(cx, cy, strength);
+                    z.try_set_gravity_point(cx, cy, strength)
+                        .map_err(|err| physics_runtime_error("setGravityPoint", err))?;
                 }
                 Ok(())
             },
@@ -1491,7 +1554,8 @@ impl LuaUserData for LuaZone {
             |_, this, (cx, cy, strength): (f32, f32, f32)| {
                 let mut w = this.world.borrow_mut();
                 if let Some(z) = w.zone_mut(this.zone_id) {
-                    z.set_gravity_repulsor(cx, cy, strength);
+                    z.try_set_gravity_repulsor(cx, cy, strength)
+                        .map_err(|err| physics_runtime_error("setGravityRepulsor", err))?;
                 }
                 Ok(())
             },
@@ -1511,7 +1575,8 @@ impl LuaUserData for LuaZone {
         methods.add_method("setLinearDampingOverride", |_, this, value: Option<f32>| {
             let mut w = this.world.borrow_mut();
             if let Some(z) = w.zone_mut(this.zone_id) {
-                z.linear_damping_override = value;
+                z.try_set_linear_damping_override(value)
+                    .map_err(|err| physics_runtime_error("setLinearDampingOverride", err))?;
             }
             Ok(())
         });
@@ -1523,7 +1588,8 @@ impl LuaUserData for LuaZone {
             |_, this, value: Option<f32>| {
                 let mut w = this.world.borrow_mut();
                 if let Some(z) = w.zone_mut(this.zone_id) {
-                    z.angular_damping_override = value;
+                    z.try_set_angular_damping_override(value)
+                        .map_err(|err| physics_runtime_error("setAngularDampingOverride", err))?;
                 }
                 Ok(())
             },
@@ -1581,7 +1647,10 @@ impl LuaUserData for LuaTerrain {
         methods.add_method_mut(
             "fillCircle",
             |_, this, (wx, wy, radius, solid): (f32, f32, f32, bool)| {
-                this.terrain.borrow_mut().fill_circle(wx, wy, radius, solid);
+                this.terrain
+                    .borrow_mut()
+                    .try_fill_circle(wx, wy, radius, solid)
+                    .map_err(|err| physics_runtime_error("fillCircle", err))?;
                 Ok(())
             },
         );
@@ -1595,7 +1664,10 @@ impl LuaUserData for LuaTerrain {
         methods.add_method_mut(
             "fillRect",
             |_, this, (wx, wy, w, h, solid): (f32, f32, f32, f32, bool)| {
-                this.terrain.borrow_mut().fill_rect(wx, wy, w, h, solid);
+                this.terrain
+                    .borrow_mut()
+                    .try_fill_rect(wx, wy, w, h, solid)
+                    .map_err(|err| physics_runtime_error("fillRect", err))?;
                 Ok(())
             },
         );
@@ -1686,7 +1758,8 @@ impl LuaUserData for LuaTerrain {
                 let buf = this
                     .terrain
                     .borrow()
-                    .to_image_data([sr, sg, sb, 255], [er, eg, eb, 255]);
+                    .to_image_data_checked([sr, sg, sb, 255], [er, eg, eb, 255])
+                    .map_err(|err| physics_runtime_error("toImageData", err))?;
                 lua.create_string(&buf)
             },
         );
@@ -1701,7 +1774,7 @@ impl LuaUserData for LuaTerrain {
         /// @param | data | string | Binary terrain data.
         /// @return | boolean | True if loading succeeded.
         methods.add_method_mut("loadFromBytes", |_, this, data: LuaString| {
-            Ok(this.terrain.borrow_mut().load_from_bytes(data.as_bytes()))
+            Ok(this.terrain.borrow_mut().load_from_bytes(data.as_bytes().as_ref()))
         });
         // -- type --
         /// Returns the type name of this object ("LTerrain").
@@ -1794,11 +1867,7 @@ impl LuaUserData for LuaBody {
         /// @param | vx | number | Velocity X component.
         /// @param | vy | number | Velocity Y component.
         methods.add_method("setVelocity", |_, this, (vx, vy): (f32, f32)| {
-            let mut w = this.world.borrow_mut();
-            if let Some(b) = w.get_body_mut(this.id.0) {
-                b.velocity.x = vx;
-                b.velocity.y = vy;
-            }
+            this.world.borrow_mut().set_body_velocity(this.id.0, vx, vy);
             Ok(())
         });
         // -- getAngle --
@@ -2201,6 +2270,9 @@ impl LuaUserData for LuaPhysicsShape {
         /// Sets the density used when this shape is attached to a body (affects mass calculation).
         /// @param | density | number | Mass density.
         methods.add_method("setDensity", |_, this, density: f32| {
+            if !density.is_finite() || density <= 0.0 {
+                return Err(physics_runtime_error("setDensity", "density must be finite and > 0"));
+            }
             this.inner.borrow_mut().density = density;
             Ok(())
         });
@@ -2208,6 +2280,12 @@ impl LuaUserData for LuaPhysicsShape {
         /// Sets the friction coefficient for this shape.
         /// @param | friction | number | Friction (0 = ice, 1 = rubber).
         methods.add_method("setFriction", |_, this, friction: f32| {
+            if !friction.is_finite() || !(0.0..=1.0).contains(&friction) {
+                return Err(physics_runtime_error(
+                    "setFriction",
+                    "friction must be finite and in [0, 1]",
+                ));
+            }
             this.inner.borrow_mut().friction = friction;
             Ok(())
         });
@@ -2215,6 +2293,12 @@ impl LuaUserData for LuaPhysicsShape {
         /// Sets the restitution (bounciness) for this shape.
         /// @param | restitution | number | Restitution (0\u20131).
         methods.add_method("setRestitution", |_, this, restitution: f32| {
+            if !restitution.is_finite() || !(0.0..=1.0).contains(&restitution) {
+                return Err(physics_runtime_error(
+                    "setRestitution",
+                    "restitution must be finite and in [0, 1]",
+                ));
+            }
             this.inner.borrow_mut().restitution = restitution;
             Ok(())
         });
@@ -2270,6 +2354,9 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     tbl.set(
         "newWorld",
         lua.create_function(|_, (gx, gy): (f32, f32)| {
+            if !gx.is_finite() || !gy.is_finite() {
+                return Err(physics_runtime_error("newWorld", "gravity must be finite"));
+            }
             Ok(LuaWorld {
                 world: Rc::new(RefCell::new(World::new(gx, gy))),
                 begin_contact_key: Rc::new(RefCell::new(None)),
@@ -2285,6 +2372,9 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     tbl.set(
         "step",
         lua.create_function(|_, (world_ud, dt): (LuaAnyUserData, f32)| {
+            if !dt.is_finite() || dt <= 0.0 {
+                return Err(physics_runtime_error("step", "dt must be finite and > 0"));
+            }
             let world = world_ud.borrow::<LuaWorld>()?;
             world.world.borrow_mut().step(dt);
             Ok(())
@@ -2386,10 +2476,9 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     tbl.set(
         "newRectangleShape",
         lua.create_function(|_, (w, h): (f32, f32)| {
-            Ok(LuaPhysicsShape::new(Shape::Rect {
-                width: w,
-                height: h,
-            }))
+            let shape = Shape::from_parts("rectangle", &[w, h], false)
+                .map_err(|err| physics_runtime_error("newRectangleShape", err))?;
+            Ok(LuaPhysicsShape::new(shape))
         })?,
     )?;
     // -- newCircleShape --
@@ -2398,7 +2487,11 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// @return | LPhysicsShape | The shape object.
     tbl.set(
         "newCircleShape",
-        lua.create_function(|_, r: f32| Ok(LuaPhysicsShape::new(Shape::Circle { radius: r })))?,
+        lua.create_function(|_, r: f32| {
+            let shape = Shape::from_parts("circle", &[r], false)
+                .map_err(|err| physics_runtime_error("newCircleShape", err))?;
+            Ok(LuaPhysicsShape::new(shape))
+        })?,
     )?;
     // -- newEdgeShape --
     /// Creates an edge (line segment) collision shape between two local points.
@@ -2410,10 +2503,9 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     tbl.set(
         "newEdgeShape",
         lua.create_function(|_, (x1, y1, x2, y2): (f32, f32, f32, f32)| {
-            Ok(LuaPhysicsShape::new(Shape::Edge {
-                v1: crate::math::Vec2::new(x1, y1),
-                v2: crate::math::Vec2::new(x2, y2),
-            }))
+            let shape = Shape::from_parts("edge", &[x1, y1, x2, y2], false)
+                .map_err(|err| physics_runtime_error("newEdgeShape", err))?;
+            Ok(LuaPhysicsShape::new(shape))
         })?,
     )?;
     // -- newPolygonShape --
@@ -2445,14 +2537,17 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
             let body = body_ud.borrow::<LuaBody>()?;
             let shape_lua = shape_ud.borrow::<LuaPhysicsShape>()?;
             let d = shape_lua.inner.borrow();
-            body.world.borrow_mut().add_fixture(
-                body.id.0,
-                d.shape.clone(),
-                d.density,
-                d.friction,
-                d.restitution,
-                d.sensor,
-            );
+            body.world
+                .borrow_mut()
+                .try_add_fixture(
+                    body.id.0,
+                    d.shape.clone(),
+                    d.density,
+                    d.friction,
+                    d.restitution,
+                    d.sensor,
+                )
+                .map_err(|err| physics_runtime_error("attachShape", err))?;
             Ok(())
         })?,
     )?;
@@ -2508,7 +2603,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         lua.create_function({
             move |_, (width, height, cell_size, world_ud): (u32, u32, f32, mlua::AnyUserData)| {
                 let world_handle: std::cell::Ref<LuaWorld> = world_ud.borrow::<LuaWorld>()?;
-                let terrain = TerrainMap::new(width, height, cell_size);
+                let terrain = TerrainMap::try_new(width, height, cell_size)
+                    .map_err(|err| physics_runtime_error("newTerrain", err))?;
                 Ok(LuaTerrain {
                     terrain: Rc::new(RefCell::new(terrain)),
                     world: world_handle.world.clone(),

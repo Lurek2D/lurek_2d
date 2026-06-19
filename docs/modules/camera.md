@@ -2,28 +2,18 @@
 
 ## Summary
 
-- Controls how players see the world by mapping game-space motion into stable, readable screen framing.
-- Enables smooth target following with dead zones, easing, and look-ahead to reduce jitter and improve readability.
-- Provides practical follow presets so teams can get a good camera feel quickly before deep tuning.
-- Supports world bounds to prevent exposing invalid map regions during traversal and high-speed movement.
-- Exposes direct positioning and rotation controls for scripted cinematics and authored transitions.
-- Includes zoom controls with constraints and damping so scale changes stay intentional and comfortable.
-- Adds screen shake for impact feedback while preserving controllable intensity and duration.
-- Adds sway and breathing effects for subtle motion language in exploration and menu-heavy scenes.
-- Supports zoom pulses and timed transitions for moment-to-moment emphasis during gameplay beats.
-- Provides world-to-screen and screen-to-world conversion for UI overlays, targeting, and interaction tools.
-- Handles resize-aware viewport behavior so camera output remains predictable across resolutions.
-- Supports scale modes like letterbox and pixel-perfect for different visual presentation goals.
-- Enables path-driven camera movement for intros, cutscenes, and guided tutorial sequences.
-- Allows multiple named cameras in one rig for split-screen, minimap, and inset workflows.
-- Lets systems switch active views cleanly without rebuilding render pipelines.
-- Gives gameplay, UI, and render code one shared camera contract instead of parallel ad-hoc logic.
-- Helps users build camera behavior that feels responsive, cinematic, and technically stable.
-- Acts as the core module for viewport control across single-camera and multi-camera game experiences.
-- Reduces implementation friction by packaging common camera patterns behind script-friendly APIs.
-- Improves player comfort by keeping motion framing, zoom, and rotation behavior consistent and bounded.
-
-This module primarily collaborates with `math`, `render`, `tilemap`. Its responsibility should stay inside the Platform Services group rather than absorb behavior owned by those neighbors.
+- The `camera` module is the engine's shared view-control surface for users who need world motion to become readable player-facing framing.
+- Follow logic, dead zones, damping, bounds, zoom, rotation, path motion, and viewport policy all live here so projects can define how scene focus becomes visible framing.
+- This matters because camera behavior shapes feel and readability just as much as raw world state does.
+- Follow and constraint logic are central because a useful camera is rarely just a position; it must decide how tightly to track a target, how much to lag, and what world bounds or dead zones should still preserve readability.
+- Screen shake, sway, breathing, zoom pulses, and scripted paths extend the module from neutral viewing into gameplay feedback and cinematic presentation.
+- Screen-to-world and world-to-screen conversion are equally important because overlays, minimaps, targeting, and editor tools depend on the same view contract.
+- Split views, subviews, and viewport-aware framing broaden the feature beyond one player camera into inspection tools and multi-panel presentation workflows.
+- Scripted path motion also makes the feature useful for guided pans, flyovers, tutorials, and tool previews where the point is not only to follow a target, but to author how attention moves through space.
+- That same contract helps previews and gameplay stay visually aligned.
+- This shared framing policy is what keeps several view-dependent systems aligned instead of each inventing its own screen-space math.
+- `render` shows the result and world systems choose what to focus, but `camera` owns how that focus is followed, constrained, and transformed into visible space.
+- Read `camera` as the authority for framing policy and coordinate conversion between world and screen.
 
 ## Functions
 
@@ -53,8 +43,11 @@ lurek.camera.new(vw, vh)
 ```lua
 do
     local cam = lurek.camera.new(800, 600)
-    print("camera created = " .. tostring(cam ~= nil))
-    print("camera type = " .. cam:type())
+    cam:setPosition(320, 180)
+    cam:setZoom(1.25)
+    local x, y = cam:getPosition()
+    lurek.log.info("arena camera created=" .. tostring(cam ~= nil))
+    lurek.log.info("arena camera type=" .. cam:type() .. " pos=" .. x .. "," .. y .. " zoom=" .. cam:getZoom())
 end
 ```
 
@@ -86,8 +79,11 @@ lurek.camera.newCamera(vw, vh)
 ```lua
 do
     local cam = lurek.camera.newCamera(1280, 720)
-    print("camera created = " .. tostring(cam ~= nil))
-    print("viewport width = " .. select(3, cam:getViewport()))
+    cam:setViewport(0, 0, 1280, 720)
+    cam:setPosition(640, 360)
+    local _, _, w, h = cam:getViewport()
+    lurek.log.info("cutscene camera created=" .. tostring(cam ~= nil))
+    lurek.log.info("cutscene viewport=" .. w .. "x" .. h .. " center=" .. table.concat({ cam:getPosition() }, ","))
 end
 ```
 
@@ -112,8 +108,11 @@ lurek.camera.newRig()
 ```lua
 do
     local rig = lurek.camera.newRig()
-    print("rig created = " .. tostring(rig ~= nil))
-    print("rig type = " .. rig:type())
+    rig:setPosition("main", 320, 180)
+    rig:setZoom("main", 1.5)
+    local names = rig:names()
+    lurek.log.info("rig created=" .. tostring(rig ~= nil))
+    lurek.log.info("rig type=" .. rig:type() .. " cameras=" .. tostring(#names))
 end
 ```
 
@@ -155,8 +154,8 @@ do
         x = 64,
         y = 64
     })
-    print("walker created = " .. tostring(walker ~= nil))
-    print("walker type = " .. walker:type())
+    example_print_log("walker created = " .. tostring(walker ~= nil))
+    example_print_log("walker type = " .. walker:type())
 end
 ```
 
@@ -205,8 +204,8 @@ do
     cam:setPosition(400, 300)
     cam:apply()
     local x, y = cam:getPosition()
-    print("camera applied")
-    print("position = " .. x .. ", " .. y)
+    example_print_log("camera applied")
+    example_print_log("position = " .. x .. ", " .. y)
 end
 ```
 
@@ -225,8 +224,11 @@ LCamera:attach()
 ```lua
 do
     local cam = lurek.camera.new(800, 600)
+    cam:setPosition(480, 270)
+    cam:setZoom(1.5)
     cam:attach()
-    print("camera attached")
+    lurek.log.info("attach camera pos=" .. table.concat({ cam:getPosition() }, ","))
+    lurek.log.info("attach camera zoom=" .. cam:getZoom())
 end
 ```
 
@@ -247,8 +249,8 @@ do
     local cam = lurek.camera.new(800, 600)
     cam:setParallaxFactor("fg", 1.2)
     cam:clearParallaxFactors()
-    print("parallax cleared")
-    print("fg parallax = " .. tostring(cam:getParallaxFactor("fg")))
+    example_print_log("parallax cleared")
+    example_print_log("fg parallax = " .. tostring(cam:getParallaxFactor("fg")))
 end
 ```
 
@@ -270,8 +272,8 @@ do
     cam:setTarget(100, 100)
     cam:clearTarget()
     local ok = cam:getTarget()
-    print("target cleared")
-    print("has target = " .. tostring(ok))
+    example_print_log("target cleared")
+    example_print_log("has target = " .. tostring(ok))
 end
 ```
 
@@ -290,9 +292,11 @@ LCamera:detach()
 ```lua
 do
     local cam = lurek.camera.new(800, 600)
+    cam:setPosition(480, 270)
     cam:attach()
     cam:detach()
-    print("camera detached")
+    lurek.log.info("detach camera pos=" .. table.concat({ cam:getPosition() }, ","))
+    lurek.log.info("detach issued")
 end
 ```
 
@@ -320,8 +324,8 @@ do
     local cam = lurek.camera.new(800, 600)
     local points = { { 0, 0 }, { 400, 200 }, { 800, 0 } }
     cam:followPath(points, 3.0)
-    print("following path over 3s")
-    print("path progress = " .. tostring(cam:pathProgress()))
+    example_print_log("following path over 3s")
+    example_print_log("path progress = " .. tostring(cam:pathProgress()))
 end
 ```
 
@@ -352,7 +356,10 @@ do
     local cam = lurek.camera.new(800, 600)
     cam:setBounds(0, 0, 2000, 1500)
     local ok, bx, by, bw, bh = cam:getBounds()
-    print("bounds = " .. tostring(ok) .. "," .. tostring(bx) .. "," .. tostring(by) .. "," .. tostring(bw) .. "," .. tostring(bh))
+    cam:setPosition(1900, 1400)
+    lurek.log.info("world bounds active=" .. tostring(ok))
+    lurek.log.info("world bounds rect=" .. tostring(bx) .. "," .. tostring(by) .. "," .. tostring(bw) .. "," .. tostring(bh))
+    lurek.log.info("world cam pos=" .. table.concat({ cam:getPosition() }, ","))
 end
 ```
 
@@ -381,7 +388,10 @@ do
     local cam = lurek.camera.new(800, 600)
     cam:setDeadZone(40, 20)
     local ok, w, h = cam:getDeadZone()
-    print("dead zone = " .. tostring(ok) .. "," .. tostring(w) .. "x" .. tostring(h))
+    cam:setTarget(500, 300)
+    cam:update(0.016)
+    lurek.log.info("runner dead zone=" .. tostring(ok) .. "," .. tostring(w) .. "x" .. tostring(h))
+    lurek.log.info("runner cam pos=" .. table.concat({ cam:getPosition() }, ","))
 end
 ```
 
@@ -408,7 +418,11 @@ LCamera:getEffectOffset()
 do
     local cam = lurek.camera.new(800, 600)
     local ox, oy = cam:getEffectOffset()
-    print("effect offset = " .. ox .. ", " .. oy)
+    cam:startSway(1.0, 0.5, 1.0, 0.5)
+    cam:update(0.1)
+    local swayX, swayY = cam:getEffectOffset()
+    lurek.log.info("effect offset base=" .. ox .. "," .. oy)
+    lurek.log.info("effect offset sway=" .. swayX .. "," .. swayY)
 end
 ```
 
@@ -435,8 +449,8 @@ do
     local cam = lurek.camera.new(800, 600)
     cam:setZoom(2.0)
     local ez = cam:getEffectiveZoom()
-    print("effective zoom = " .. ez)
-    print("base zoom = " .. tostring(cam:getZoom()))
+    example_print_log("effective zoom = " .. ez)
+    example_print_log("base zoom = " .. tostring(cam:getZoom()))
 end
 ```
 
@@ -463,7 +477,10 @@ do
     local cam = lurek.camera.new(800, 600)
     cam:setFollowEasing("linear")
     local e = cam:getFollowEasing()
-    print("easing = " .. e)
+    cam:setTarget(300, 200)
+    cam:update(0.05)
+    lurek.log.info("platform easing=" .. e)
+    lurek.log.info("platform pos=" .. table.concat({ cam:getPosition() }, ","))
 end
 ```
 
@@ -490,7 +507,10 @@ do
     local cam = lurek.camera.new(800, 600)
     cam:setFollowSmooth(3.0)
     local s = cam:getFollowSmooth()
-    print("follow smooth = " .. s)
+    cam:setTarget(128, 96)
+    cam:update(0.05)
+    lurek.log.info("dialog follow smooth=" .. s)
+    lurek.log.info("dialog follow pos=" .. table.concat({ cam:getPosition() }, ","))
 end
 ```
 
@@ -517,7 +537,10 @@ do
     local cam = lurek.camera.new(800, 600)
     cam:setLookAhead(2.0)
     local la = cam:getLookAhead()
-    print("look ahead = " .. la)
+    cam:setTarget(520, 260)
+    cam:update(0.016)
+    lurek.log.info("scout look ahead=" .. la)
+    lurek.log.info("scout cam=" .. table.concat({ cam:getPosition() }, ","))
 end
 ```
 
@@ -550,7 +573,9 @@ do
     local cam = lurek.camera.new(800, 600)
     cam:setParallaxFactor("clouds", 0.3)
     local f = cam:getParallaxFactor("clouds")
-    print("clouds parallax = " .. f)
+    cam:setParallaxFactor("mountains", 0.6)
+    lurek.log.info("clouds parallax=" .. f)
+    lurek.log.info("mountains parallax=" .. cam:getParallaxFactor("mountains"))
 end
 ```
 
@@ -577,8 +602,11 @@ LCamera:getPosition()
 do
     local cam = lurek.camera.new(800, 600)
     cam:setPosition(100, 50)
+    cam:move(24, -8)
     local x, y = cam:getPosition()
-    print("x=" .. x .. " y=" .. y)
+    cam:setZoom(1.1)
+    lurek.log.info("spectator cam x=" .. x .. " y=" .. y)
+    lurek.log.info("spectator zoom=" .. cam:getZoom())
 end
 ```
 
@@ -605,7 +633,11 @@ LCamera:getRenderOffset()
 do
     local cam = lurek.camera.new(800, 600)
     local rx, ry = cam:getRenderOffset()
-    print("render offset = " .. rx .. ", " .. ry)
+    cam:shake(3.0, 0.2)
+    cam:update(0.05)
+    local shakeRx, shakeRy = cam:getRenderOffset()
+    lurek.log.info("render offset base=" .. rx .. "," .. ry)
+    lurek.log.info("render offset shaken=" .. shakeRx .. "," .. shakeRy)
 end
 ```
 
@@ -632,7 +664,9 @@ do
     local cam = lurek.camera.new(800, 600)
     cam:setRotation(1.5)
     local r = cam:getRotation()
-    print("rotation = " .. r)
+    cam:setZoom(1.2)
+    lurek.log.info("boss intro rotation=" .. r)
+    lurek.log.info("boss intro zoom=" .. cam:getZoom())
 end
 ```
 
@@ -662,8 +696,8 @@ do
     local cam = lurek.camera.new(800, 600)
     cam:setRotationConstraints(-1.0, 1.0)
     local has_min, mn, has_max, mx = cam:getRotationConstraints()
-    print("rotation min enabled = " .. tostring(has_min) .. " value = " .. mn)
-    print("rotation max enabled = " .. tostring(has_max) .. " value = " .. mx)
+    example_print_log("rotation min enabled = " .. tostring(has_min) .. " value = " .. mn)
+    example_print_log("rotation max enabled = " .. tostring(has_max) .. " value = " .. mx)
 end
 ```
 
@@ -690,7 +724,10 @@ do
     local cam = lurek.camera.new(800, 600)
     cam:setRotationDamping(0.7)
     local d = cam:getRotationDamping()
-    print("rot damping = " .. d)
+    cam:setRotation(-math.pi / 8)
+    cam:update(0.1)
+    lurek.log.info("aim cam damping=" .. d)
+    lurek.log.info("aim cam rotation=" .. cam:getRotation())
 end
 ```
 
@@ -719,7 +756,7 @@ do
     cam:shake(5.0, 0.5)
     cam:update(0.01)
     local sx, sy = cam:getShakeOffset()
-    print("shake = " .. sx .. ", " .. sy)
+    example_print_log("shake = " .. sx .. ", " .. sy)
 end
 ```
 
@@ -748,7 +785,10 @@ do
     local cam = lurek.camera.new(800, 600)
     cam:setTarget(250, 125)
     local ok, tx, ty = cam:getTarget()
-    print("target = " .. tostring(ok) .. ", " .. tostring(tx) .. ", " .. tostring(ty))
+    cam:setLookAhead(1.5)
+    cam:update(0.016)
+    lurek.log.info("escort target=" .. tostring(ok) .. "," .. tostring(tx) .. "," .. tostring(ty))
+    lurek.log.info("escort lookahead=" .. cam:getLookAhead())
 end
 ```
 
@@ -778,7 +818,9 @@ do
     local cam = lurek.camera.new(800, 600)
     cam:setViewport(10, 10, 780, 580)
     local x, y, w, h = cam:getViewport()
-    print("viewport = " .. x .. "," .. y .. "," .. w .. "," .. h)
+    cam:setPosition(390, 290)
+    lurek.log.info("hud-safe viewport=" .. x .. "," .. y .. "," .. w .. "," .. h)
+    lurek.log.info("hud-safe center=" .. table.concat({ cam:getPosition() }, ","))
 end
 ```
 
@@ -808,7 +850,10 @@ do
     local cam = lurek.camera.new(800, 600)
     cam:setPosition(400, 300)
     local x, y, w, h = cam:getVisibleArea()
-    print("visible = " .. x .. "," .. y .. " " .. w .. "x" .. h)
+    cam:setZoom(1.25)
+    local zx, zy, zw, zh = cam:getVisibleArea()
+    lurek.log.info("visible area base=" .. x .. "," .. y .. " " .. w .. "x" .. h)
+    lurek.log.info("visible area zoomed=" .. zx .. "," .. zy .. " " .. zw .. "x" .. zh)
 end
 ```
 
@@ -835,7 +880,10 @@ do
     local cam = lurek.camera.new(800, 600)
     cam:setZoom(0.5)
     local z = cam:getZoom()
-    print("zoom = " .. z)
+    cam:setViewport(0, 0, 400, 300)
+    local _, _, w, h = cam:getViewport()
+    lurek.log.info("minimap zoom=" .. z)
+    lurek.log.info("minimap viewport=" .. w .. "x" .. h)
 end
 ```
 
@@ -865,7 +913,9 @@ do
     local cam = lurek.camera.new(800, 600)
     cam:setZoomConstraints(0.25, 3.0)
     local _, mn, _, mx = cam:getZoomConstraints()
-    print("zoom range = " .. mn .. " to " .. mx)
+    cam:setZoom(5.0)
+    lurek.log.info("zoom range=" .. mn .. " to " .. mx)
+    lurek.log.info("zoom after clamp request=" .. cam:getZoom())
 end
 ```
 
@@ -892,7 +942,10 @@ do
     local cam = lurek.camera.new(800, 600)
     cam:setZoomDamping(0.8)
     local d = cam:getZoomDamping()
-    print("damping = " .. d)
+    cam:zoomTo(1.5, 0.5, "linear")
+    cam:updateZoom(0.25)
+    lurek.log.info("photo mode damping=" .. d)
+    lurek.log.info("photo mode zoom=" .. cam:getZoom())
 end
 ```
 
@@ -918,7 +971,10 @@ LCamera:hasBounds()
 do
     local cam = lurek.camera.new(800, 600)
     cam:setBounds(0, 0, 1000, 1000)
-    print("has bounds = " .. tostring(cam:hasBounds()))
+    cam:setPosition(900, 900)
+    local x, y = cam:getPosition()
+    lurek.log.info("arena bounds=" .. tostring(cam:hasBounds()))
+    lurek.log.info("arena pos=" .. x .. "," .. y)
 end
 ```
 
@@ -944,7 +1000,9 @@ LCamera:isBreathing()
 do
     local cam = lurek.camera.new(800, 600)
     cam:startBreathing(0.02, 0.5)
-    print("breathing = " .. tostring(cam:isBreathing()))
+    cam:update(0.1)
+    lurek.log.info("breathing active=" .. tostring(cam:isBreathing()))
+    lurek.log.info("breathing zoom=" .. cam:getEffectiveZoom())
 end
 ```
 
@@ -970,7 +1028,10 @@ LCamera:isSway()
 do
     local cam = lurek.camera.new(800, 600)
     cam:startSway(1.0, 1.0, 1.0, 0.5)
-    print("is sway = " .. tostring(cam:isSway()))
+    cam:update(0.1)
+    local ox, oy = cam:getEffectOffset()
+    lurek.log.info("torch sway=" .. tostring(cam:isSway()))
+    lurek.log.info("torch offset=" .. ox .. "," .. oy)
 end
 ```
 
@@ -998,7 +1059,10 @@ do
     local cam = lurek.camera.new(800, 600)
     cam:lookAt(500, 250)
     local x, y = cam:getPosition()
-    print("looking at " .. x .. ", " .. y)
+    cam:setZoom(1.4)
+    local areaX, areaY, areaW, areaH = cam:getVisibleArea()
+    lurek.log.info("lookAt center=" .. x .. "," .. y)
+    lurek.log.info("lookAt visible=" .. areaX .. "," .. areaY .. " " .. areaW .. "x" .. areaH)
 end
 ```
 
@@ -1027,7 +1091,7 @@ do
     cam:setPosition(100, 100)
     cam:move(50, -25)
     local x, y = cam:getPosition()
-    print("moved to " .. x .. ", " .. y)
+    example_print_log("moved to " .. x .. ", " .. y)
 end
 ```
 
@@ -1055,8 +1119,8 @@ do
     local cam = lurek.camera.new(800, 600)
     cam:onWindowResize(1920, 1080)
     local _, _, w, h = cam:getViewport()
-    print("resized to 1920x1080")
-    print("viewport size = " .. w .. "x" .. h)
+    example_print_log("resized to 1920x1080")
+    example_print_log("viewport size = " .. w .. "x" .. h)
 end
 ```
 
@@ -1087,8 +1151,8 @@ do
     local cam = lurek.camera.new(800, 600)
     cam:onWindowResizeScaled(800, 600, 1920, 1080, "letterbox")
     local x, y, w, h = cam:getViewport()
-    print("scaled resize applied")
-    print("viewport = " .. x .. "," .. y .. "," .. w .. "," .. h)
+    example_print_log("scaled resize applied")
+    example_print_log("viewport = " .. x .. "," .. y .. "," .. w .. "," .. h)
 end
 ```
 
@@ -1117,8 +1181,8 @@ do
     cam:followPath(points, 1.0)
     cam:updatePath(0.5)
     local p = cam:pathProgress()
-    print("progress = " .. p)
-    print("progress halfway = " .. tostring(p > 0 and p < 1))
+    example_print_log("progress = " .. p)
+    example_print_log("progress halfway = " .. tostring(p > 0 and p < 1))
 end
 ```
 
@@ -1138,7 +1202,10 @@ LCamera:presetAggressiveFollow()
 do
     local cam = lurek.camera.new(800, 600)
     cam:presetAggressiveFollow()
-    print("aggressive follow preset applied")
+    cam:setTarget(720, 260)
+    cam:update(0.016)
+    lurek.log.info("aggressive preset smooth=" .. cam:getFollowSmooth())
+    lurek.log.info("aggressive preset lookahead=" .. cam:getLookAhead())
 end
 ```
 
@@ -1158,7 +1225,10 @@ LCamera:presetBalancedFollow()
 do
     local cam = lurek.camera.new(800, 600)
     cam:presetBalancedFollow()
-    print("balanced follow preset applied")
+    cam:setTarget(420, 220)
+    cam:update(0.016)
+    lurek.log.info("balanced preset smooth=" .. cam:getFollowSmooth())
+    lurek.log.info("balanced preset lookahead=" .. cam:getLookAhead())
 end
 ```
 
@@ -1178,7 +1248,10 @@ LCamera:presetCinematicFollow()
 do
     local cam = lurek.camera.new(800, 600)
     cam:presetCinematicFollow()
-    print("cinematic follow preset applied")
+    cam:setTarget(640, 240)
+    cam:update(0.016)
+    lurek.log.info("cinematic preset smooth=" .. cam:getFollowSmooth())
+    lurek.log.info("cinematic preset lookahead=" .. cam:getLookAhead())
 end
 ```
 
@@ -1198,7 +1271,10 @@ LCamera:presetTightFollow()
 do
     local cam = lurek.camera.new(800, 600)
     cam:presetTightFollow()
-    print("tight follow preset applied")
+    cam:setTarget(180, 120)
+    cam:update(0.016)
+    lurek.log.info("tight preset smooth=" .. cam:getFollowSmooth())
+    lurek.log.info("tight preset pos=" .. table.concat({ cam:getPosition() }, ","))
 end
 ```
 
@@ -1218,8 +1294,12 @@ LCamera:removeBounds()
 do
     local cam = lurek.camera.new(800, 600)
     cam:setBounds(0, 0, 1000, 1000)
+    lurek.log.info("bounds before remove=" .. tostring(cam:hasBounds()))
     cam:removeBounds()
-    print("bounds removed = " .. tostring(not cam:hasBounds()))
+    cam:setPosition(1400, 1400)
+    local x, y = cam:getPosition()
+    lurek.log.info("bounds removed=" .. tostring(not cam:hasBounds()))
+    lurek.log.info("free cam pos=" .. x .. "," .. y)
 end
 ```
 
@@ -1241,8 +1321,8 @@ do
     cam:setPosition(500, 500)
     cam:setZoom(3.0)
     cam:reset()
-    print("camera reset command queued")
-    print("zoom still readable = " .. tostring(cam:getZoom()))
+    example_print_log("camera reset command queued")
+    example_print_log("zoom still readable = " .. tostring(cam:getZoom()))
 end
 ```
 
@@ -1271,8 +1351,10 @@ LCamera:setBounds(x, y, w, h)
 do
     local cam = lurek.camera.new(800, 600)
     cam:setBounds(0, 0, 3200, 2400)
-    print("has bounds = " .. tostring(cam:hasBounds()))
-    print("bounds set to 3200x2400")
+    cam:setPosition(3100, 2300)
+    local ok, bx, by, bw, bh = cam:getBounds()
+    lurek.log.info("overworld bounds=" .. tostring(cam:hasBounds()))
+    lurek.log.info("overworld rect=" .. tostring(ok) .. "," .. tostring(bx) .. "," .. tostring(by) .. "," .. tostring(bw) .. "," .. tostring(bh))
 end
 ```
 
@@ -1300,8 +1382,8 @@ do
     local cam = lurek.camera.new(800, 600)
     cam:setDeadZone(50, 30)
     local ok, w, h = cam:getDeadZone()
-    print("dead zone active = " .. tostring(ok))
-    print("dead zone = " .. tostring(w) .. "x" .. tostring(h))
+    example_print_log("dead zone active = " .. tostring(ok))
+    example_print_log("dead zone = " .. tostring(w) .. "x" .. tostring(h))
 end
 ```
 
@@ -1327,7 +1409,10 @@ LCamera:setFollowEasing(easing)
 do
     local cam = lurek.camera.new(800, 600)
     cam:setFollowEasing("quadOut")
-    print("easing = " .. cam:getFollowEasing())
+    cam:setTarget(220, 140)
+    cam:update(0.05)
+    lurek.log.info("follow easing=" .. cam:getFollowEasing())
+    lurek.log.info("follow pos=" .. table.concat({ cam:getPosition() }, ","))
 end
 ```
 
@@ -1353,7 +1438,10 @@ LCamera:setFollowSmooth(speed)
 do
     local cam = lurek.camera.new(800, 600)
     cam:setFollowSmooth(5.0)
-    print("smooth = " .. cam:getFollowSmooth())
+    cam:setTarget(600, 300)
+    cam:update(0.033)
+    lurek.log.info("follow smooth=" .. cam:getFollowSmooth())
+    lurek.log.info("follow pos=" .. table.concat({ cam:getPosition() }, ","))
 end
 ```
 
@@ -1379,7 +1467,10 @@ LCamera:setLookAhead(mul)
 do
     local cam = lurek.camera.new(800, 600)
     cam:setLookAhead(1.5)
-    print("look ahead = " .. cam:getLookAhead())
+    cam:setTarget(420, 240)
+    cam:update(0.016)
+    lurek.log.info("look ahead=" .. cam:getLookAhead())
+    lurek.log.info("look ahead cam=" .. table.concat({ cam:getPosition() }, ","))
 end
 ```
 
@@ -1406,7 +1497,11 @@ LCamera:setParallaxFactor(layer, factor)
 do
     local cam = lurek.camera.new(800, 600)
     cam:setParallaxFactor("background", 0.5)
-    print("parallax bg = " .. cam:getParallaxFactor("background"))
+    cam:setParallaxFactor("foreground", 1.2)
+    local bg = cam:getParallaxFactor("background")
+    local fg = cam:getParallaxFactor("foreground")
+    lurek.log.info("parallax bg=" .. bg)
+    lurek.log.info("parallax fg=" .. fg)
 end
 ```
 
@@ -1433,8 +1528,11 @@ LCamera:setPosition(x, y)
 do
     local cam = lurek.camera.new(800, 600)
     cam:setPosition(200, 150)
+    cam:setTarget(260, 180)
     local x, y = cam:getPosition()
-    print("pos = " .. x .. ", " .. y)
+    local hasTarget, tx, ty = cam:getTarget()
+    lurek.log.info("player spawn camera pos=" .. x .. "," .. y)
+    lurek.log.info("follow target=" .. tostring(hasTarget) .. " " .. tostring(tx) .. "," .. tostring(ty))
 end
 ```
 
@@ -1460,7 +1558,10 @@ LCamera:setRotation(r)
 do
     local cam = lurek.camera.new(800, 600)
     cam:setRotation(math.pi / 4)
-    print("rotation = " .. cam:getRotation())
+    cam:setPosition(600, 240)
+    local x, y = cam:getPosition()
+    lurek.log.info("falling bridge rotation=" .. cam:getRotation())
+    lurek.log.info("falling bridge focus=" .. x .. "," .. y)
 end
 ```
 
@@ -1488,8 +1589,8 @@ do
     local cam = lurek.camera.new(800, 600)
     cam:setRotationConstraints(-0.5, 0.5)
     local has_min, min_r, has_max, max_r = cam:getRotationConstraints()
-    print("has min/max = " .. tostring(has_min) .. "/" .. tostring(has_max))
-    print("rotation constrained to [" .. min_r .. ", " .. max_r .. "]")
+    example_print_log("has min/max = " .. tostring(has_min) .. "/" .. tostring(has_max))
+    example_print_log("rotation constrained to [" .. min_r .. ", " .. max_r .. "]")
 end
 ```
 
@@ -1515,7 +1616,10 @@ LCamera:setRotationDamping(damping)
 do
     local cam = lurek.camera.new(800, 600)
     cam:setRotationDamping(0.85)
-    print("rotation damping = " .. cam:getRotationDamping())
+    cam:setRotation(math.pi / 6)
+    cam:update(0.1)
+    lurek.log.info("rotation damping=" .. cam:getRotationDamping())
+    lurek.log.info("rotation state=" .. cam:getRotation())
 end
 ```
 
@@ -1542,8 +1646,11 @@ LCamera:setTarget(x, y)
 do
     local cam = lurek.camera.new(800, 600)
     cam:setTarget(500, 300)
+    cam:setFollowSmooth(6.0)
     local ok, tx, ty = cam:getTarget()
-    print("target = " .. tostring(ok) .. ", " .. tostring(tx) .. ", " .. tostring(ty))
+    cam:update(0.016)
+    lurek.log.info("chase target=" .. tostring(ok) .. "," .. tostring(tx) .. "," .. tostring(ty))
+    lurek.log.info("chase camera pos=" .. table.concat({ cam:getPosition() }, ","))
 end
 ```
 
@@ -1573,8 +1680,8 @@ do
     local cam = lurek.camera.new(800, 600)
     cam:setViewport(0, 0, 400, 300)
     local x, y, w, h = cam:getViewport()
-    print("viewport x,y = " .. x .. ", " .. y)
-    print("viewport size = " .. w .. "x" .. h)
+    example_print_log("viewport x,y = " .. x .. ", " .. y)
+    example_print_log("viewport size = " .. w .. "x" .. h)
 end
 ```
 
@@ -1600,7 +1707,11 @@ LCamera:setZoom(zoom)
 do
     local cam = lurek.camera.new(800, 600)
     cam:setZoom(2.0)
-    print("zoom = " .. cam:getZoom())
+    cam:setPosition(480, 320)
+    local x, y = cam:getPosition()
+    local zoom = cam:getZoom()
+    lurek.log.info("sniper zoom=" .. zoom)
+    lurek.log.info("sniper anchor=" .. x .. "," .. y)
 end
 ```
 
@@ -1628,8 +1739,8 @@ do
     local cam = lurek.camera.new(800, 600)
     cam:setZoomConstraints(0.5, 4.0)
     local has_min, min_z, has_max, max_z = cam:getZoomConstraints()
-    print("has min/max = " .. tostring(has_min) .. "/" .. tostring(has_max))
-    print("zoom constrained to [" .. min_z .. ", " .. max_z .. "]")
+    example_print_log("has min/max = " .. tostring(has_min) .. "/" .. tostring(has_max))
+    example_print_log("zoom constrained to [" .. min_z .. ", " .. max_z .. "]")
 end
 ```
 
@@ -1655,7 +1766,10 @@ LCamera:setZoomDamping(damping)
 do
     local cam = lurek.camera.new(800, 600)
     cam:setZoomDamping(0.9)
-    print("zoom damping = " .. cam:getZoomDamping())
+    cam:zoomTo(2.0, 0.5, "linear")
+    cam:updateZoom(0.25)
+    lurek.log.info("zoom damping=" .. cam:getZoomDamping())
+    lurek.log.info("zoom in progress=" .. cam:getZoom())
 end
 ```
 
@@ -1682,7 +1796,11 @@ LCamera:shake(intensity, duration)
 do
     local cam = lurek.camera.new(800, 600)
     cam:shake(10.0, 0.5)
-    print("shaking for 0.5s at intensity 10")
+    cam:update(0.1)
+    local sx, sy = cam:getShakeOffset()
+    lurek.log.info("impact shake active")
+    lurek.log.info("impact offset=" .. sx .. "," .. sy)
+    lurek.log.info("impact render offset=" .. table.concat({ cam:getRenderOffset() }, ","))
 end
 ```
 
@@ -1709,8 +1827,10 @@ LCamera:startBreathing(amplitude, rate)
 do
     local cam = lurek.camera.new(800, 600)
     cam:startBreathing(0.02, 0.5)
-    print("breathing started")
-    print("is breathing = " .. tostring(cam:isBreathing()))
+    cam:update(0.1)
+    local ez = cam:getEffectiveZoom()
+    lurek.log.info("breathing started=" .. tostring(cam:isBreathing()))
+    lurek.log.info("breathing effective zoom=" .. ez)
 end
 ```
 
@@ -1739,8 +1859,10 @@ LCamera:startSway(amplitude_x, amplitude_y, frequency, decay)
 do
     local cam = lurek.camera.new(800, 600)
     cam:startSway(3.0, 2.0, 1.5, 0.5)
-    print("sway started")
-    print("is sway = " .. tostring(cam:isSway()))
+    cam:update(0.1)
+    local ox, oy = cam:getEffectOffset()
+    lurek.log.info("boat sway active=" .. tostring(cam:isSway()))
+    lurek.log.info("boat sway offset=" .. ox .. "," .. oy)
 end
 ```
 
@@ -1760,8 +1882,11 @@ LCamera:stopBreathing()
 do
     local cam = lurek.camera.new(800, 600)
     cam:startBreathing(0.01, 0.3)
+    cam:update(0.1)
     cam:stopBreathing()
-    print("breathing stopped")
+    local ez = cam:getEffectiveZoom()
+    lurek.log.info("breathing stopped=" .. tostring(not cam:isBreathing()))
+    lurek.log.info("breathing effective zoom=" .. ez)
 end
 ```
 
@@ -1783,8 +1908,8 @@ do
     local points = { { 0, 0 }, { 100, 100 } }
     cam:followPath(points, 2.0)
     cam:stopPath()
-    print("path stopped")
-    print("path progress = " .. tostring(cam:pathProgress()))
+    example_print_log("path stopped")
+    example_print_log("path progress = " .. tostring(cam:pathProgress()))
 end
 ```
 
@@ -1804,8 +1929,11 @@ LCamera:stopSway()
 do
     local cam = lurek.camera.new(800, 600)
     cam:startSway(2.0, 1.0, 1.0, 0.3)
+    cam:update(0.1)
     cam:stopSway()
-    print("sway stopped")
+    local ox, oy = cam:getEffectOffset()
+    lurek.log.info("sway stopped=" .. tostring(not cam:isSway()))
+    lurek.log.info("post-sway offset=" .. ox .. "," .. oy)
 end
 ```
 
@@ -1825,8 +1953,12 @@ LCamera:stopZoom()
 do
     local cam = lurek.camera.new(800, 600)
     cam:zoomTo(3.0, 2.0, "linear")
+    cam:updateZoom(0.5)
     cam:stopZoom()
-    print("zoom stopped")
+    local zoom = cam:getZoom()
+    local continued = cam:updateZoom(0.5)
+    lurek.log.info("zoom stopped at=" .. zoom)
+    lurek.log.info("zoom tween continued=" .. tostring(continued))
 end
 ```
 
@@ -1861,7 +1993,9 @@ do
     local cam = lurek.camera.new(800, 600)
     cam:setPosition(100, 100)
     local sx, sy = cam:toScreen(500, 400)
-    print("screen = " .. sx .. ", " .. sy)
+    local wx, wy = cam:toWorld(sx, sy)
+    lurek.log.info("marker screen=" .. sx .. "," .. sy)
+    lurek.log.info("marker roundtrip world=" .. wx .. "," .. wy)
 end
 ```
 
@@ -1896,7 +2030,9 @@ do
     local cam = lurek.camera.new(800, 600)
     cam:setPosition(100, 100)
     local wx, wy = cam:toWorld(400, 300)
-    print("world = " .. wx .. ", " .. wy)
+    local sx, sy = cam:toScreen(wx, wy)
+    lurek.log.info("cursor world=" .. wx .. "," .. wy)
+    lurek.log.info("cursor roundtrip screen=" .. sx .. "," .. sy)
 end
 ```
 
@@ -1921,7 +2057,10 @@ LCamera:type()
 ```lua
 do
     local cam = lurek.camera.new(800, 600)
-    print("type = " .. cam:type())
+    cam:setPosition(200, 120)
+    cam:setZoom(1.1)
+    lurek.log.info("camera type=" .. cam:type())
+    lurek.log.info("camera pos=" .. table.concat({ cam:getPosition() }, ",") .. " zoom=" .. cam:getZoom())
 end
 ```
 
@@ -1952,7 +2091,10 @@ LCamera:typeOf(name)
 ```lua
 do
     local cam = lurek.camera.new(800, 600)
-    print("is LCamera = " .. tostring(cam:typeOf("LCamera")))
+    cam:setPosition(200, 120)
+    cam:setZoom(1.1)
+    lurek.log.info("is LCamera=" .. tostring(cam:typeOf("LCamera")))
+    lurek.log.info("is Object=" .. tostring(cam:typeOf("Object")))
 end
 ```
 
@@ -1981,8 +2123,8 @@ do
     cam:setFollowSmooth(4.0)
     cam:update(0.016)
     local x, y = cam:getPosition()
-    print("camera updated")
-    print("position = " .. x .. ", " .. y)
+    example_print_log("camera updated")
+    example_print_log("position = " .. x .. ", " .. y)
 end
 ```
 
@@ -2017,8 +2159,8 @@ do
     cam:followPath(points, 2.0)
     cam:updatePath(0.5)
     local x, y = cam:getPosition()
-    print("path progress = " .. cam:pathProgress())
-    print("position = " .. x .. ", " .. y)
+    example_print_log("path progress = " .. cam:pathProgress())
+    example_print_log("position = " .. x .. ", " .. y)
 end
 ```
 
@@ -2050,8 +2192,11 @@ LCamera:updateZoom(dt)
 do
     local cam = lurek.camera.new(800, 600)
     cam:zoomTo(2.0, 1.0, "linear")
-    cam:updateZoom(0.5)
-    print("zoom after 0.5s = " .. cam:getZoom())
+    local runningMid = cam:updateZoom(0.5)
+    local midZoom = cam:getZoom()
+    local runningEnd = cam:updateZoom(0.5)
+    lurek.log.info("mid zoom=" .. midZoom .. " running=" .. tostring(runningMid))
+    lurek.log.info("end zoom=" .. cam:getZoom() .. " running=" .. tostring(runningEnd))
 end
 ```
 
@@ -2078,8 +2223,12 @@ LCamera:zoomPulse(amplitude, duration)
 do
     local cam = lurek.camera.new(800, 600)
     cam:zoomPulse(0.2, 0.3)
-    print("zoom pulse: amplitude=0.2, dur=0.3s")
-    print("effective zoom = " .. tostring(cam:getEffectiveZoom()))
+    local before = cam:getEffectiveZoom()
+    cam:update(0.1)
+    local during = cam:getEffectiveZoom()
+    cam:update(0.3)
+    lurek.log.info("pulse zoom before=" .. tostring(before) .. " during=" .. tostring(during))
+    lurek.log.info("pulse zoom after=" .. tostring(cam:getEffectiveZoom()))
 end
 ```
 
@@ -2107,7 +2256,10 @@ LCamera:zoomTo(target_zoom, duration, easing)
 do
     local cam = lurek.camera.new(800, 600)
     cam:zoomTo(2.0, 1.0, "quadOut")
-    print("zooming to 2x over 1s")
+    cam:updateZoom(0.5)
+    lurek.log.info("boss reveal zoom=" .. cam:getZoom())
+    cam:updateZoom(0.5)
+    lurek.log.info("boss reveal final zoom=" .. cam:getZoom())
 end
 ```
 
@@ -2148,7 +2300,9 @@ do
     local rig = lurek.camera.newRig()
     rig:setPosition("main", 400, 300)
     local ok = rig:apply("main")
-    print("applied main = " .. tostring(ok))
+    local has, x, y, w, h = rig:getViewport("main")
+    lurek.log.info("applied main=" .. tostring(ok))
+    lurek.log.info("main viewport present=" .. tostring(has) .. " " .. tostring(x) .. "," .. tostring(y) .. "," .. tostring(w) .. "," .. tostring(h))
 end
 ```
 
@@ -2186,7 +2340,7 @@ do
     rig:setPosition("left", 0, 0)
     rig:splitScreen(800, 600)
     local has, x, y, w, h = rig:getViewport("left")
-    print("has=" .. tostring(has) .. " vp=" .. x .. "," .. y .. "," .. w .. "," .. h)
+    example_print_log("has=" .. tostring(has) .. " vp=" .. x .. "," .. y .. "," .. w .. "," .. h)
 end
 ```
 
@@ -2218,7 +2372,9 @@ LCameraRig:has(name)
 do
     local rig = lurek.camera.newRig()
     rig:setPosition("x", 0, 0)
-    print("has x = " .. tostring(rig:has("x")))
+    rig:setPosition("y", 64, 64)
+    lurek.log.info("has x=" .. tostring(rig:has("x")))
+    lurek.log.info("has boss cam=" .. tostring(rig:has("boss")))
 end
 ```
 
@@ -2247,7 +2403,9 @@ do
     local rig = lurek.camera.newRig()
     rig:setPosition("main", 400, 300)
     rig:minimap(1280, 720, 0.25)
-    print("minimap layout applied")
+    local has, x, y, w, h = rig:getViewport("minimap")
+    lurek.log.info("minimap layout applied=" .. tostring(has))
+    lurek.log.info("minimap viewport=" .. x .. "," .. y .. "," .. w .. "," .. h)
 end
 ```
 
@@ -2274,8 +2432,8 @@ do
     local rig = lurek.camera.newRig()
     rig:setPosition("p1", 0, 0)
     local list = rig:names()
-    print("cameras = " .. #list)
-    print("first name = " .. tostring(list[1]))
+    example_print_log("cameras = " .. #list)
+    example_print_log("first name = " .. tostring(list[1]))
 end
 ```
 
@@ -2305,7 +2463,9 @@ do
     local rig = lurek.camera.newRig()
     rig:setPosition("main", 200, 200)
     rig:pictureInPicture(1280, 720, 320, 180)
-    print("PiP layout applied")
+    local has, x, y, w, h = rig:getViewport("pip")
+    lurek.log.info("pip layout applied=" .. tostring(has))
+    lurek.log.info("pip viewport=" .. x .. "," .. y .. "," .. w .. "," .. h)
 end
 ```
 
@@ -2338,7 +2498,9 @@ do
     local rig = lurek.camera.newRig()
     rig:setPosition("temp", 0, 0)
     local ok = rig:remove("temp")
-    print("removed = " .. tostring(ok))
+    local names = rig:names()
+    lurek.log.info("removed temp=" .. tostring(ok))
+    lurek.log.info("remaining rig cameras=" .. tostring(#names))
 end
 ```
 
@@ -2366,8 +2528,10 @@ LCameraRig:setPosition(name, x, y)
 do
     local rig = lurek.camera.newRig()
     rig:setPosition("left", 100, 200)
-    print("camera positioned: left")
-    print("rig has left = " .. tostring(rig:has("left")))
+    rig:setZoom("left", 1.2)
+    local names = rig:names()
+    lurek.log.info("camera positioned left=" .. tostring(rig:has("left")))
+    lurek.log.info("rig names=" .. table.concat(names, ","))
 end
 ```
 
@@ -2396,8 +2560,8 @@ do
     local rig = lurek.camera.newRig()
     rig:setPosition("cam1", 0, 0)
     rig:setTarget("cam1", 400, 300)
-    print("target set on cam1")
-    print("rig has cam1 = " .. tostring(rig:has("cam1")))
+    example_print_log("target set on cam1")
+    example_print_log("rig has cam1 = " .. tostring(rig:has("cam1")))
 end
 ```
 
@@ -2426,8 +2590,8 @@ do
     rig:setPosition("a", 0, 0)
     rig:setZoom("a", 1.5)
     local list = rig:names()
-    print("zoom set on camera a")
-    print("camera count = " .. tostring(#list))
+    example_print_log("zoom set on camera a")
+    example_print_log("camera count = " .. tostring(#list))
 end
 ```
 
@@ -2456,7 +2620,7 @@ do
     rig:setPosition("player1", 100, 100)
     rig:setPosition("player2", 500, 300)
     rig:splitScreen(1280, 720)
-    print("split screen layout applied")
+    example_print_log("split screen layout applied")
 end
 ```
 
@@ -2481,7 +2645,11 @@ LCameraRig:type()
 ```lua
 do
     local rig = lurek.camera.newRig()
-    print("type = " .. rig:type())
+    rig:setPosition("debug", 0, 0)
+    rig:setZoom("debug", 1.25)
+    lurek.log.info("rig type=" .. rig:type())
+    lurek.log.info("rig names=" .. table.concat(rig:names(), ","))
+    lurek.log.info("rig has debug=" .. tostring(rig:has("debug")))
 end
 ```
 
@@ -2512,7 +2680,11 @@ LCameraRig:typeOf(name)
 ```lua
 do
     local rig = lurek.camera.newRig()
-    print("is LCameraRig = " .. tostring(rig:typeOf("LCameraRig")))
+    rig:setPosition("debug", 0, 0)
+    rig:setTarget("debug", 64, 96)
+    lurek.log.info("is LCameraRig=" .. tostring(rig:typeOf("LCameraRig")))
+    lurek.log.info("is Object=" .. tostring(rig:typeOf("Object")))
+    lurek.log.info("rig has debug=" .. tostring(rig:has("debug")))
 end
 ```
 
@@ -2540,8 +2712,8 @@ do
     rig:setPosition("a", 0, 0)
     rig:setTarget("a", 200, 200)
     rig:updateAll(0.016)
-    print("all cameras updated")
-    print("camera count = " .. tostring(#rig:names()))
+    example_print_log("all cameras updated")
+    example_print_log("camera count = " .. tostring(#rig:names()))
 end
 ```
 
@@ -2576,7 +2748,10 @@ do
     local map = lurek.tilemap.newTileMap(16, 16)
     local walker = lurek.camera.newWalker(map)
     local cam = walker:getCamera()
-    print("camera type = " .. cam:type())
+    walker:setPosition(64, 96)
+    local x, y = walker:getPosition()
+    lurek.log.info("walker camera type=" .. cam:type())
+    lurek.log.info("walker pos=" .. x .. "," .. y)
 end
 ```
 
@@ -2605,7 +2780,7 @@ do
     local walker = lurek.camera.newWalker(map)
     walker:setPosition(96, 128)
     local x, y = walker:getPosition()
-    print("walker pos = " .. x .. ", " .. y)
+    example_print_log("walker pos = " .. x .. ", " .. y)
 end
 ```
 
@@ -2634,7 +2809,7 @@ do
     local walker = lurek.camera.newWalker(map, { tile_w = 32, tile_h = 32 })
     walker:setTilePosition(3, 2)
     local tx, ty = walker:getTilePosition()
-    print("walker tile = " .. tx .. ", " .. ty)
+    example_print_log("walker tile = " .. tx .. ", " .. ty)
 end
 ```
 
@@ -2662,7 +2837,7 @@ do
     local walker = lurek.camera.newWalker(map, { speed = 50, x = 100, y = 100 })
     walker:moveDown(1.0)
     local _, y = walker:getPosition()
-    print("moved down, new y = " .. y)
+    example_print_log("moved down, new y = " .. y)
 end
 ```
 
@@ -2690,7 +2865,7 @@ do
     local walker = lurek.camera.newWalker(map, { speed = 50, x = 100, y = 100 })
     walker:moveLeft(1.0)
     local x, _ = walker:getPosition()
-    print("moved left, new x = " .. x)
+    example_print_log("moved left, new x = " .. x)
 end
 ```
 
@@ -2718,7 +2893,7 @@ do
     local walker = lurek.camera.newWalker(map, { speed = 50, x = 100, y = 100 })
     walker:moveRight(1.0)
     local x, _ = walker:getPosition()
-    print("moved right, new x = " .. x)
+    example_print_log("moved right, new x = " .. x)
 end
 ```
 
@@ -2746,7 +2921,7 @@ do
     local walker = lurek.camera.newWalker(map, { speed = 50, x = 100, y = 100 })
     walker:moveUp(1.0)
     local _, y = walker:getPosition()
-    print("moved up, new y = " .. y)
+    example_print_log("moved up, new y = " .. y)
 end
 ```
 
@@ -2775,7 +2950,7 @@ do
     local walker = lurek.camera.newWalker(map)
     walker:setPosition(128, 96)
     local x, y = walker:getPosition()
-    print("walker pos = " .. x .. ", " .. y)
+    example_print_log("walker pos = " .. x .. ", " .. y)
 end
 ```
 
@@ -2804,7 +2979,7 @@ do
     local walker = lurek.camera.newWalker(map, { tile_w = 32, tile_h = 32 })
     walker:setTilePosition(5, 4)
     local tx, ty = walker:getTilePosition()
-    print("walker tile = " .. tx .. ", " .. ty)
+    example_print_log("walker tile = " .. tx .. ", " .. ty)
 end
 ```
 
@@ -2830,7 +3005,10 @@ LCameraWalker:type()
 do
     local map = lurek.tilemap.newTileMap(16, 16)
     local walker = lurek.camera.newWalker(map)
-    print("walker type = " .. walker:type())
+    walker:setPosition(32, 48)
+    local tx, ty = walker:getTilePosition()
+    lurek.log.info("walker type=" .. walker:type())
+    lurek.log.info("walker tile=" .. tx .. "," .. ty)
 end
 ```
 
@@ -2862,7 +3040,9 @@ LCameraWalker:typeOf(name)
 do
     local map = lurek.tilemap.newTileMap(16, 16)
     local walker = lurek.camera.newWalker(map)
-    print("is LCameraWalker = " .. tostring(walker:typeOf("LCameraWalker")))
+    walker:setPosition(32, 48)
+    lurek.log.info("is walker type=" .. tostring(walker:typeOf("LCameraWalker")))
+    lurek.log.info("is object type=" .. tostring(walker:typeOf("Object")))
 end
 ```
 
@@ -2891,7 +3071,7 @@ do
     walker:setPosition(50, 50)
     walker:update(0.016)  -- Update at ~60 FPS
     local x, y = walker:getPosition()
-    print("walker updated, pos = " .. x .. ", " .. y)
+    example_print_log("walker updated, pos = " .. x .. ", " .. y)
 end
 ```
 
@@ -3165,6 +3345,16 @@ LTileMap:getChunkSize()
 | Type | Description |
 |------|-------------|
 | number | Chunk size in tiles per side. |
+
+---
+
+#### `LTileMap:getDiagnostics`
+
+Returns tilemap diagnostics counters for invalid calls, unknown gids, and lazy index rebuilds.
+
+```lua
+LTileMap:getDiagnostics()
+```
 
 ---
 
@@ -3811,6 +4001,128 @@ LTileMap:toNavGrid(layer, gids)
 | Type | Description |
 |------|-------------|
 | boolean[] | Flat walkable grid (true = walkable), row-major order. |
+
+---
+
+#### `LTileMap:tryAddLayer`
+
+Creates a new tile layer and returns `nil, error` instead of throwing on invalid dimensions or layer limits.
+
+```lua
+LTileMap:tryAddLayer(name, w, h)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Layer name. |
+| `w` | number | Width in tiles. |
+| `h` | number | Height in tiles. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number? | Index of the new layer (1-based). |
+| string? | Error message when validation fails. |
+
+---
+
+#### `LTileMap:tryGetTile`
+
+Returns the tile GID at a specific grid position, or `nil, error` when the layer or coord is invalid.
+
+```lua
+LTileMap:tryGetTile(layer, x, y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `layer` | number | Layer index (1-based). |
+| `x` | number | Column (1-based). |
+| `y` | number | Row (1-based). |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number? | Global tile ID at that position. |
+| string? | Error message on failure. |
+
+---
+
+#### `LTileMap:trySetTile`
+
+Sets a tile and returns `false, error` instead of throwing on invalid layer or coordinate input.
+
+```lua
+LTileMap:trySetTile(layer, x, y, gid)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `layer` | number | Layer index (1-based). |
+| `x` | number | Column (1-based). |
+| `y` | number | Row (1-based). |
+| `gid` | number | Global tile ID to place. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True on success. |
+| string? | Error message on failure. |
+
+---
+
+#### `LTileMap:trySetTileTint`
+
+Sets a per-cell tint override and returns `false, error` instead of throwing on invalid input.
+
+```lua
+LTileMap:trySetTileTint(layer, x, y, r, g, b, a)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `layer` | any |  |
+| `x` | any |  |
+| `y` | any |  |
+| `r` | any |  |
+| `g` | any |  |
+| `b` | any |  |
+| `a` | any |  |
+
+---
+
+#### `LTileMap:tryWorldToTile`
+
+Converts world-space pixel coordinates to tile-grid coordinates, returning nils for negative or non-finite input.
+
+```lua
+LTileMap:tryWorldToTile(wx, wy)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `wx` | number | World X position in pixels. |
+| `wy` | number | World Y position in pixels. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number? | Tile column (1-based). |
+| number? | Tile row (1-based). |
 
 ---
 

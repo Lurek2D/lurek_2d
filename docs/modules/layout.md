@@ -2,15 +2,10 @@
 
 ## Summary
 
-- The layout module gives users automatic 2D node placement for graph-like and tree-like visuals.
-- It supports layered DAG layout, recursive tree layout, and force layout for organic relation maps.
-- Shared result formats make it easy to swap strategies without changing integration code.
-- Grid snapping and centering helpers polish raw coordinates for editor and HUD presentation without discarding existing coordinates.
-- The module is useful for tech trees, dialog graphs, dependency maps, and debug topology views.
-- Invalid DAG or tree inputs degrade deterministically instead of dropping nodes or recursing forever.
-- It replaces manual positioning with repeatable, scriptable layout computation.
-
-This module is mostly self-contained inside the `Edge/Integration` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
+- The `layout` module is the automatic placement layer for users who need graph-like structures to become readable 2D diagrams without hand-positioning every node.
+- It supports different layout strategies for different shapes, so dependency graphs, trees, and more organic maps can use an algorithm that matches the structure.
+- This is useful when a graph changes and still needs readable coordinates without manual upkeep.
+- Read it as the module that turns abstract structure into stable coordinates.
 
 ## Functions
 
@@ -47,9 +42,9 @@ do
         },
     }
     local centered = lurek.layout.centerInArea(result, 400, 300)
-    print("centered nodes = " .. #centered.nodes)
-    print("node 1 x = " .. centered.nodes[1].x)
-    print("layout height = " .. centered.height)
+    example_print_log("centered nodes = " .. #centered.nodes)
+    example_print_log("node 1 x = " .. centered.nodes[1].x)
+    example_print_log("layout height = " .. centered.height)
 end
 ```
 
@@ -95,9 +90,9 @@ do
         vSpacing = 100,
         margin = 24,
     })
-    print("dag nodes = " .. #result.nodes)
-    print("dag size = " .. result.width .. "x" .. result.height)
-    print("node 2 y = " .. result.nodes[2].y)
+    example_print_log("dag nodes = " .. #result.nodes)
+    example_print_log("dag size = " .. result.width .. "x" .. result.height)
+    example_print_log("node 2 y = " .. result.nodes[2].y)
 end
 ```
 
@@ -146,9 +141,9 @@ do
         areaWidth = 400,
         areaHeight = 300,
     })
-    print("force nodes = " .. #result.nodes)
-    print("force size = " .. result.width .. "x" .. result.height)
-    print("node 1 pos = " .. result.nodes[1].x .. "," .. result.nodes[1].y)
+    example_print_log("force nodes = " .. #result.nodes)
+    example_print_log("force size = " .. result.width .. "x" .. result.height)
+    example_print_log("node 1 pos = " .. result.nodes[1].x .. "," .. result.nodes[1].y)
 end
 ```
 
@@ -186,9 +181,9 @@ do
         },
     }
     local snapped = lurek.layout.snapToGrid(result, 16)
-    print("snapped nodes = " .. #snapped.nodes)
-    print("node 1 = " .. snapped.nodes[1].x .. "," .. snapped.nodes[1].y)
-    print("node 2 = " .. snapped.nodes[2].x .. "," .. snapped.nodes[2].y)
+    example_print_log("snapped nodes = " .. #snapped.nodes)
+    example_print_log("node 1 = " .. snapped.nodes[1].x .. "," .. snapped.nodes[1].y)
+    example_print_log("node 2 = " .. snapped.nodes[2].x .. "," .. snapped.nodes[2].y)
 end
 ```
 
@@ -234,9 +229,9 @@ do
         vSpacing = 90,
         margin = 20,
     })
-    print("tree nodes = " .. #result.nodes)
-    print("tree size = " .. result.width .. "x" .. result.height)
-    print("root x = " .. result.nodes[1].x)
+    example_print_log("tree nodes = " .. #result.nodes)
+    example_print_log("tree size = " .. result.width .. "x" .. result.height)
+    example_print_log("root x = " .. result.nodes[1].x)
 end
 ```
 

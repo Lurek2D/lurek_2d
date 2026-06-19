@@ -2878,3 +2878,60 @@ do
     example_print_log("is LAILod = " .. tostring(lod:typeOf("LAILod")))
 end
 
+--@api: LAIWorld:getLastCallbackErrors
+do
+  local world = lurek.ai.newWorld()
+  local agent = world:addAgent("callback_probe")
+  agent:setCustomModel(function() error("probe failure") end)
+  world:update(1 / 60)
+  local errors = world:getLastCallbackErrors()
+  example_print_log("LAIWorld:getLastCallbackErrors: count=" .. tostring(#errors))
+end
+
+--@api: LSteeringManager:getLastDiagnostic
+do
+  local steer = lurek.ai.newSteeringManager()
+  local world = lurek.ai.newWorld()
+  local agent = world:addAgent("steer_probe")
+  steer:addCustomBehavior(function() error("custom steering failure") end, 1.0)
+  steer:applyCustomSteering(agent, 1 / 60)
+  example_print_log("LSteeringManager:getLastDiagnostic: " .. tostring(steer:getLastDiagnostic()))
+end
+
+--@api: LUtilityAI:getLastTrace
+do
+  local uai = lurek.ai.newUtilityAI()
+  uai:addAction("heal", function() return 0.8 end)
+  uai:addConsideration("heal", "low_health", function() return 1.0 end, "linear", 1.0, 0.0, 0.0, 1.0)
+  uai:evaluate()
+  local trace = uai:getLastTrace()
+  example_print_log("LUtilityAI:getLastTrace: chosen=" .. tostring(trace.chosen_action))
+end
+
+--@api: LGOAPPlanner:getLastFailureReason
+do
+  local goap = lurek.ai.newGOAPPlanner()
+  local plan = goap:plan({}, 4)
+  example_print_log("LGOAPPlanner:getLastFailureReason: " .. tostring(goap:getLastFailureReason()))
+end
+
+--@api: LGOAPPlanner:getLastTrace
+do
+  local goap = lurek.ai.newGOAPPlanner()
+  goap:plan({}, 4)
+  local trace = goap:getLastTrace()
+  example_print_log("LGOAPPlanner:getLastTrace: failure=" .. tostring(trace.failure_reason))
+end
+
+--@api: LMCTSEngine:getLastTrace
+do
+  local mcts = lurek.ai.newMCTSEngine(8, 1.4, 4, 42)
+  mcts:search(
+    1,
+    function(_) return { 7 } end,
+    function(state, act) return state + act end,
+    function(_) return 0 / 0 end
+  )
+  local trace = mcts:getLastTrace()
+  example_print_log("LMCTSEngine:getLastTrace: invalid_scores=" .. tostring(trace.invalid_score_count))
+end

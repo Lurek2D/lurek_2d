@@ -17,6 +17,7 @@ Owns Codex-only guidance for `lurek_2D`.
 - Prefer links to nearest contracts over copied rules.
 - Register new skills in `config.toml`.
 - Review roles must not edit code unless the user asks for fixes.
+- Keep optional local runtimes repo-scoped; use `tools/dev/headroom_runtime.py` instead of hard-wiring Headroom into active `config.toml`.
 
 ## Workflow
 - Run `tools/python.cmd tools/validate/cag_validate.py` after CAG config changes.

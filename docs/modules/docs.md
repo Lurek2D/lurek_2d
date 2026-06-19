@@ -2,28 +2,16 @@
 
 ## Summary
 
-- This module gives users a documentation pipeline that can discover, validate, score, and export API knowledge.
-- It builds a catalog of API entries that serves as a single source for docs and editor tooling outputs.
-- Live reflection checks help detect drift between documented symbols and what the runtime actually exposes.
-- Validation reports highlight missing, phantom, and incomplete entries so cleanup work is explicit.
-- Quality scoring provides per-module and global signals for documentation health tracking.
-- Exporters generate completion, hover, signature, and markdown artifacts for IDE and reference workflows.
-- Catalog editing APIs allow targeted improvements without rebuilding the entire pipeline.
-- Module-focused scanning supports incremental documentation work on large codebases.
-- Schema support adds structured validation for doc-linked configuration and table contracts.
-- This module helps teams keep docs useful as APIs evolve across frequent engine changes.
-- It reduces stale references by tying documentation checks to runtime reflection.
-- For extension authors, it provides machine-readable outputs ready for integration.
-- For maintainers, it centralizes quality evidence instead of scattered manual checks.
-- Users can automate doc freshness and coverage checks directly in scripting workflows.
-- The practical value is higher confidence that docs match runtime behavior.
-- It also shortens the path from API change to updated editor assistance.
-- In short, this module treats documentation as a maintained system, not static prose.
-- That improves onboarding, discoverability, and long-term maintainability.
-- Teams gain repeatable documentation governance with actionable diagnostics.
-- The result is clearer API communication with less manual coordination overhead.
-
-This module is mostly self-contained inside the Edge/Integration group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
+- The `docs` module treats documentation as an active engine-managed system rather than as a pile of disconnected markdown files.
+- It builds and maintains a structured catalog of API knowledge, compares that catalog against what the engine actually exposes, and turns the result into actionable reports about missing, stale, or incomplete documentation.
+- This matters because documentation quality drifts quickly in evolving codebases. Without a module like this, docs become passive artifacts that are only corrected sporadically instead of being continuously checked against source reality.
+- The module acts as a bridge between implementation and publication by discovering what exists, validating whether it is described, and preparing that knowledge for several downstream consumers.
+- Export paths are a major part of the feature. The same curated knowledge can be shaped into wiki-style outputs, editor hover text, completion data, machine-readable references, and other formats aimed at different readers and tools.
+- Quality scoring, schema-oriented checks, and module-focused audits make the system practical for ongoing maintenance instead of occasional cleanup passes.
+- This makes the module useful not only for publishing, but also for governance. Teams can spot undocumented APIs, stale wording, or inconsistent coverage before those gaps spread across several outputs.
+- It also gives tooling one stable documentation catalog to consume.
+- Other modules own behavior and signatures, but `docs` owns how that behavior is discovered, checked, cataloged, and published.
+- Read `docs` as the coordination layer between engine reality and documentation output.
 
 ## Functions
 
@@ -54,7 +42,9 @@ lurek.docs.checkStaleness(catalog_ud, source_dir)
 do
     local cat = docs_example_cat
     local result = lurek.docs.checkStaleness(cat, "src/math/")
-    print("stale = " .. #result.stale .. " current = " .. #result.current)
+    docs_log("stale = " .. #result.stale .. " current = " .. #result.current)
+    docs_log("missing = " .. #result.missing)
+    docs_log("first current path = " .. tostring(result.current[1]))
 end
 ```
 
@@ -87,7 +77,9 @@ lurek.docs.coverage(catalog_ud)
 do
     local cat = docs_example_cat
     local documented, live = lurek.docs.coverage(cat)
-    print("documented=" .. documented .. " live=" .. live)
+    docs_log("documented=" .. documented .. " live=" .. live)
+    docs_log("coverage gap=" .. tostring(live - documented))
+    docs_log("catalog entries=" .. cat:entryCount())
 end
 ```
 
@@ -121,7 +113,9 @@ lurek.docs.coverageModule(module_name, catalog_ud)
 do
     local cat = docs_example_cat
     local documented, live = lurek.docs.coverageModule("math", cat)
-    print("math documented=" .. documented .. " live=" .. live)
+    docs_log("math documented=" .. documented .. " live=" .. live)
+    docs_log("math coverage gap=" .. tostring(live - documented))
+    docs_log("math entry count=" .. cat:entryCount("math"))
 end
 ```
 
@@ -147,8 +141,11 @@ lurek.docs.describe(qualified_name, description)
 ```lua
 do
     lurek.docs.describe("lurek.math.lerp", "Linearly interpolates between a and b.")
-    print("description set")
-    print("catalog type = " .. type(lurek.docs.getCatalog()))
+    local cat = lurek.docs.getCatalog()
+    local entry = cat:getEntry("lurek.math.lerp")
+    docs_log("description set")
+    docs_log("catalog entries = " .. tostring(cat:entryCount()))
+    docs_log("description length = " .. tostring(entry and #entry:getDescription() or 0))
 end
 ```
 
@@ -174,8 +171,11 @@ lurek.docs.exportAll(catalog_ud, output_dir)
 ```lua
 do
     local cat = docs_example_cat
-    lurek.docs.exportAll(cat, "build/docs/")
-    print("all docs exported")
+    local dir = "save/"
+    lurek.docs.exportAll(cat, dir)
+    docs_log("all docs exported")
+    docs_log("export root = " .. dir)
+    docs_log("catalog entries exported = " .. cat:entryCount())
 end
 ```
 
@@ -201,8 +201,11 @@ lurek.docs.exportCheatsheet(catalog_ud, path)
 ```lua
 do
     local cat = docs_example_cat
-    lurek.docs.exportCheatsheet(cat, "build/cheatsheet.txt")
-    print("cheatsheet exported")
+    local path = "save/docs_cheatsheet.txt"
+    lurek.docs.exportCheatsheet(cat, path)
+    docs_log("cheatsheet exported")
+    docs_log("cheatsheet target = " .. path)
+    docs_log("catalog entries exported = " .. cat:entryCount())
 end
 ```
 
@@ -228,8 +231,11 @@ lurek.docs.exportCompletions(catalog_ud, path)
 ```lua
 do
     local cat = docs_example_cat
-    lurek.docs.exportCompletions(cat, "build/completions.json")
-    print("completions exported")
+    local path = "save/docs_completions.json"
+    lurek.docs.exportCompletions(cat, path)
+    docs_log("completions exported")
+    docs_log("completions target = " .. path)
+    docs_log("catalog entries exported = " .. cat:entryCount())
 end
 ```
 
@@ -255,8 +261,11 @@ lurek.docs.exportHover(catalog_ud, path)
 ```lua
 do
     local cat = docs_example_cat
-    lurek.docs.exportHover(cat, "build/hover.json")
-    print("hover exported")
+    local path = "save/docs_hover.json"
+    lurek.docs.exportHover(cat, path)
+    docs_log("hover exported")
+    docs_log("hover target = " .. path)
+    docs_log("catalog entries exported = " .. cat:entryCount())
 end
 ```
 
@@ -282,8 +291,11 @@ lurek.docs.exportMarkdown(catalog_ud, path)
 ```lua
 do
     local cat = docs_example_cat
-    lurek.docs.exportMarkdown(cat, "build/api.md")
-    print("markdown exported")
+    local path = "save/docs_api.md"
+    lurek.docs.exportMarkdown(cat, path)
+    docs_log("markdown exported")
+    docs_log("markdown target = " .. path)
+    docs_log("catalog entries exported = " .. cat:entryCount())
 end
 ```
 
@@ -309,8 +321,11 @@ lurek.docs.exportSignatures(catalog_ud, path)
 ```lua
 do
     local cat = docs_example_cat
-    lurek.docs.exportSignatures(cat, "build/signatures.json")
-    print("signatures exported")
+    local path = "save/docs_signatures.json"
+    lurek.docs.exportSignatures(cat, path)
+    docs_log("signatures exported")
+    docs_log("signatures target = " .. path)
+    docs_log("catalog entries exported = " .. cat:entryCount())
 end
 ```
 
@@ -335,8 +350,10 @@ lurek.docs.getCatalog()
 ```lua
 do
     local cat = lurek.docs.getCatalog()
-    print("catalog entries = " .. cat:entryCount())
-    print("lua type = " .. type(cat))
+    local modules = cat:getModules()
+    docs_log("catalog entries = " .. cat:entryCount())
+    docs_log("catalog userdata type = " .. cat:type())
+    docs_log("module count = " .. #modules)
 end
 ```
 
@@ -366,10 +383,13 @@ lurek.docs.loadAll(directory)
 
 ```lua
 do
-    lurek.filesystem.write("save/_fs_tests/docs_load_all_a.toml", '[[entries]]\nname = "one"\nqualifiedName = "lurek.test.one"\nmodule = "test"\nkind = "function"\ndescription = "First entry"')
-    lurek.filesystem.write("save/_fs_tests/docs_load_all_b.toml", '[[entries]]\nname = "two"\nqualifiedName = "lurek.test.two"\nmodule = "test"\nkind = "function"\ndescription = "Second entry"')
-    local cat = lurek.docs.loadAll("save/_fs_tests/")
-    print("all entries = " .. cat:entryCount())
+    local dir = "save/_fs_tests/docs_load_all/"
+    lurek.filesystem.write(dir .. "a.toml", '[[entries]]\nname = "one"\nqualifiedName = "lurek.test.one"\nmodule = "test"\nkind = "function"\ndescription = "First entry"')
+    lurek.filesystem.write(dir .. "b.toml", '[[entries]]\nname = "two"\nqualifiedName = "lurek.test.two"\nmodule = "test"\nkind = "function"\ndescription = "Second entry"')
+    local cat = lurek.docs.loadAll(dir)
+    docs_log("all entries = " .. cat:entryCount())
+    docs_log("loadAll type = " .. cat:type())
+    docs_log("has lurek.test.one = " .. tostring(cat:getEntry("lurek.test.one") ~= nil))
 end
 ```
 
@@ -402,7 +422,10 @@ do
     local path = "save/_fs_tests/docs_load_toml_example.toml"
     lurek.filesystem.write(path, '[[entries]]\nname = "play"\nqualifiedName = "lurek.audio.play"\nmodule = "audio"\nkind = "function"\ndescription = "Plays a sound"')
     local cat = lurek.docs.loadToml(path)
-    print("loaded entries = " .. cat:entryCount())
+    local entry = cat:getEntry("lurek.audio.play")
+    docs_log("loaded entries = " .. cat:entryCount())
+    docs_log("loaded type = " .. cat:type())
+    docs_log("loaded qualified name = " .. tostring(entry and entry:getQualifiedName()))
 end
 ```
 
@@ -434,7 +457,9 @@ lurek.docs.quality(catalog_ud)
 do
     local cat = docs_example_cat
     local qr = docs_example_quality
-    print("quality score = " .. qr:getOverallScore())
+    docs_log("quality score = " .. qr:getOverallScore())
+    docs_log("quality grade = " .. tostring(qr:getGrade()))
+    docs_log("report type = " .. qr:type())
 end
 ```
 
@@ -467,7 +492,9 @@ lurek.docs.qualityModule(module_name, catalog_ud)
 do
     local cat = docs_example_cat
     local qr = lurek.docs.qualityModule("math", cat)
-    print("math quality = " .. qr:getOverallScore())
+    docs_log("math quality = " .. qr:getOverallScore())
+    docs_log("math grade = " .. tostring(qr:getGrade()))
+    docs_log("report type = " .. qr:type())
 end
 ```
 
@@ -498,8 +525,10 @@ lurek.docs.reflectLive(ns)
 ```lua
 do
     local data = lurek.docs.reflectLive("math")
-    print("reflect math type = " .. type(data))
-    print("lua type = " .. type(data))
+    docs_log("reflect math type = " .. type(data))
+    docs_log("reflected rows = " .. #data)
+    docs_log("first reflected name = " .. tostring(data[1] and data[1].name))
+    docs_log("second reflected type = " .. tostring(data[2] and data[2].type))
 end
 ```
 
@@ -532,7 +561,9 @@ lurek.docs.reflectTable(tbl, name)
 do
     local t = {foo = 1, bar = "hello"}
     local rows = lurek.docs.reflectTable(t, "mymod")
-    print("reflected rows = " .. #rows)
+    docs_log("reflected rows = " .. #rows)
+    docs_log("first reflected name = " .. tostring(rows[1] and rows[1].name))
+    docs_log("first reflected type = " .. tostring(rows[1] and rows[1].type))
 end
 ```
 
@@ -553,7 +584,8 @@ do
     lurek.docs.describe("lurek.test.temp", "Temporary entry")
     lurek.docs.resetCatalog()
     local cat = lurek.docs.getCatalog()
-    print("after reset entries = " .. cat:entryCount())
+    docs_log("after reset entries = " .. cat:entryCount())
+    docs_log("after reset type = " .. cat:type())
 end
 ```
 
@@ -584,8 +616,10 @@ lurek.docs.scan(opts)
 ```lua
 do
     local cat = lurek.docs.scan()
-    print("scanned entries = " .. cat:entryCount())
-    print("lua type = " .. type(cat))
+    local modules = cat:getModules()
+    docs_log("scanned entries = " .. cat:entryCount())
+    docs_log("catalog entries = " .. tostring(cat:entryCount()))
+    docs_log("first module = " .. tostring(modules[1]))
 end
 ```
 
@@ -616,8 +650,10 @@ lurek.docs.scanModule(module_name)
 ```lua
 do
     local cat = lurek.docs.scanModule("math")
-    print("math entries = " .. cat:entryCount())
-    print("lua type = " .. type(cat))
+    local entries = cat:getEntries("math")
+    docs_log("math entries = " .. cat:entryCount())
+    docs_log("math catalog type = " .. cat:type())
+    docs_log("first math entry = " .. tostring(entries[1] and entries[1]:getQualifiedName()))
 end
 ```
 
@@ -649,8 +685,10 @@ lurek.docs.schema(rules, name)
 ```lua
 do
     local s = lurek.docs.schema({ name = { type = "string", required = true }, age = { type = "number" } }, "PlayerSchema")
-    print("schema name = " .. s:getName())
-    print("lua type = " .. type(s))
+    local fields = s:getFields()
+    docs_log("schema name = " .. s:getName())
+    docs_log("schema type = " .. s:type())
+    docs_log("field count = " .. #fields)
 end
 ```
 
@@ -684,12 +722,14 @@ do
 name = "PlayerSchema"
 strict = true
 
-[rules.name]
+    [rules.name]
 type = "string"
 required = true
 ]]
     local s = lurek.docs.schemaFromToml(toml)
-    print("schema from toml, name = " .. s:getName())
+    docs_log("schema from toml, name = " .. s:getName())
+    docs_log("schema field count = " .. #s:getFields())
+    docs_log("schema type = " .. s:type())
 end
 ```
 
@@ -720,7 +760,9 @@ do
         { name = "t", type = "number", description = "Interpolation factor", optional = false },
     })
     local entry = lurek.docs.getCatalog():getEntry("lurek.test.blend")
-    print("params set = " .. #entry:getParameters())
+    local params = entry:getParameters()
+    docs_log("params set = " .. #params)
+    docs_log("first param name = " .. tostring(params[1] and params[1].name))
 end
 ```
 
@@ -751,7 +793,9 @@ do
         {type = "number", description = "Interpolated value"},
     })
     local entry = lurek.docs.getCatalog():getEntry("lurek.test.blend")
-    print("returns set = " .. #entry:getReturns())
+    local returns = entry:getReturns()
+    docs_log("returns set = " .. #returns)
+    docs_log("first return type = " .. tostring(returns[1] and returns[1].type))
 end
 ```
 
@@ -783,7 +827,9 @@ lurek.docs.validate(catalog_ud)
 do
     local cat = docs_example_cat
     local report = docs_example_validate
-    print("valid = " .. tostring(report:isValid()))
+    docs_log("valid = " .. tostring(report:isValid()))
+    docs_log("missing count = " .. tostring(report:missingCount()))
+    docs_log("report type = " .. report:type())
 end
 ```
 
@@ -816,7 +862,9 @@ lurek.docs.validateModule(module_name, catalog_ud)
 do
     local cat = docs_example_cat
     local report = lurek.docs.validateModule("math", cat)
-    print("math missing = " .. report:missingCount())
+    docs_log("math missing = " .. report:missingCount())
+    docs_log("math phantom = " .. report:phantomCount())
+    docs_log("report type = " .. report:type())
 end
 ```
 
@@ -877,7 +925,8 @@ do
     local cat = docs_example_cat
     local total = cat:entryCount()
     local math_count = cat:entryCount("math")
-    print("total=" .. total .. " math=" .. math_count)
+    docs_log("total=" .. total .. " math=" .. math_count)
+    docs_log("module count = " .. #cat:getModules())
 end
 ```
 
@@ -909,7 +958,9 @@ LApiCatalog:filter(predicate)
 do
     local cat = docs_example_cat
     local fns = cat:filter(function(entry) return entry:getKind() == "function" end)
-    print("functions = " .. fns:entryCount())
+    docs_log("functions = " .. fns:entryCount())
+    docs_log("filtered type = " .. fns:type())
+    docs_log("first filtered entry = " .. tostring(fns:getEntries()[1] and fns:getEntries()[1]:getQualifiedName()))
 end
 ```
 
@@ -942,7 +993,8 @@ do
     local cat = docs_example_cat
     local all = cat:getEntries()
     local math_entries = cat:getEntries("math")
-    print("all=" .. #all .. " math=" .. #math_entries)
+    docs_log("all=" .. #all .. " math=" .. #math_entries)
+    docs_log("first global entry = " .. tostring(all[1] and all[1]:getQualifiedName()))
 end
 ```
 
@@ -973,8 +1025,10 @@ LApiCatalog:getEntry(qualified_name)
 ```lua
 do
     local cat = docs_example_cat
-    print("found entry = " .. tostring(cat:getEntry("lurek.math.lerp") ~= nil))
-    print("owner type = " .. tostring(cat:type()))
+    local entry = cat:getEntry("lurek.math.lerp")
+    docs_log("found entry = " .. tostring(entry ~= nil))
+    docs_log("catalog modules = " .. tostring(#cat:getModules()))
+    docs_log("entry kind = " .. tostring(entry and entry:getKind()))
 end
 ```
 
@@ -1000,7 +1054,9 @@ LApiCatalog:getModules()
 do
     local cat = docs_example_cat
     local modules = cat:getModules()
-    print("modules = " .. #modules)
+    docs_log("modules = " .. #modules)
+    docs_log("first module = " .. tostring(modules[1]))
+    docs_log("catalog entries = " .. tostring(cat:entryCount()))
 end
 ```
 
@@ -1032,7 +1088,9 @@ LApiCatalog:getTypeMethods(qualified_name)
 do
     local cat = docs_example_cat
     local methods = cat:getTypeMethods("LVec2")
-    print("LVec2 methods = " .. #methods)
+    docs_log("LVec2 methods = " .. #methods)
+    docs_log("first method = " .. tostring(methods[1] and methods[1]:getQualifiedName()))
+    docs_log("catalog entries = " .. tostring(cat:entryCount()))
 end
 ```
 
@@ -1064,7 +1122,9 @@ LApiCatalog:getTypes(module_name)
 do
     local cat = docs_example_cat
     local types = cat:getTypes("math")
-    print("math types = " .. #types)
+    docs_log("math types = " .. #types)
+    docs_log("first type = " .. tostring(types[1]))
+    docs_log("catalog entries = " .. tostring(cat:entryCount()))
 end
 ```
 
@@ -1097,7 +1157,8 @@ do
     local a = lurek.docs.scanModule("math")
     local b = lurek.docs.scanModule("timer")
     local merged = a:merge(b)
-    print("merged = " .. merged:entryCount())
+    docs_log("merged = " .. merged:entryCount())
+    docs_log("merged module count = " .. #merged:getModules())
 end
 ```
 
@@ -1129,7 +1190,9 @@ LApiCatalog:search(query)
 do
     local cat = docs_example_cat
     local results = cat:search("lerp")
-    print("search results = " .. #results)
+    docs_log("search results = " .. #results)
+    docs_log("first search hit = " .. tostring(results[1] and results[1]:getQualifiedName()))
+    docs_log("catalog entries = " .. tostring(cat:entryCount()))
 end
 ```
 
@@ -1155,7 +1218,9 @@ LApiCatalog:toJSON()
 do
     local cat = lurek.docs.scanModule("timer")
     local json = cat:toJSON()
-    print("json length = " .. #json)
+    docs_log("json length = " .. #json)
+    docs_log("json has timer = " .. tostring(string.find(json, "timer", 1, true) ~= nil))
+    docs_log("catalog entries = " .. tostring(cat:entryCount()))
 end
 ```
 
@@ -1181,7 +1246,9 @@ LApiCatalog:toTable()
 do
     local cat = lurek.docs.scanModule("math")
     local rows = cat:toTable()
-    print("rows = " .. #rows)
+    docs_log("rows = " .. #rows)
+    docs_log("first row name = " .. tostring(rows[1] and rows[1].name))
+    docs_log("first row module = " .. tostring(rows[1] and rows[1].module))
 end
 ```
 
@@ -1206,8 +1273,10 @@ LApiCatalog:type()
 ```lua
 do
     local cat = docs_example_cat
-    print("type = " .. cat:type())
-    print("typeOf LObject = " .. tostring(cat:typeOf("LObject")))
+    docs_log("type = " .. cat:type())
+    docs_log("catalog modules = " .. tostring(#cat:getModules()))
+    docs_log("typeOf LApiCatalog = " .. tostring(cat:typeOf("LApiCatalog")))
+    docs_log("module count = " .. tostring(#cat:getModules()))
 end
 ```
 
@@ -1238,8 +1307,10 @@ LApiCatalog:typeOf(name)
 ```lua
 do
     local cat = docs_example_cat
-    print("is LApiCatalog = " .. tostring(cat:typeOf("LApiCatalog")))
-    print("type = " .. tostring(cat:type()))
+    docs_log("is LApiCatalog = " .. tostring(cat:typeOf("LApiCatalog")))
+    docs_log("type = " .. tostring(cat:type()))
+    docs_log("catalog entries = " .. tostring(cat:entryCount()))
+    docs_log("entry count = " .. tostring(cat:entryCount()))
 end
 ```
 
@@ -1272,8 +1343,10 @@ LDocEntry:getDeprecated()
 ```lua
 do
     local deprecated = docs_example_entry:getDeprecated()
-    print("deprecated = " .. type(deprecated))
-    print("deprecated value = " .. tostring(deprecated))
+    docs_log("deprecated = " .. type(deprecated))
+    docs_log("deprecated value = " .. tostring(deprecated))
+    docs_log("entry qualified = " .. tostring(docs_example_entry:getQualifiedName()))
+    docs_log("entry module = " .. tostring(docs_example_entry:getModule()))
 end
 ```
 
@@ -1298,8 +1371,10 @@ LDocEntry:getDescription()
 ```lua
 do
     local entry = docs_example_entry
-    print("desc len = " .. #entry:getDescription())
-    print("owner type = " .. tostring(entry:type()))
+    docs_log("desc len = " .. #entry:getDescription())
+    docs_log("qualified chars = " .. #entry:getQualifiedName())
+    docs_log("has description = " .. tostring(entry:hasDescription()))
+    docs_log("name = " .. tostring(entry:getName()))
 end
 ```
 
@@ -1324,8 +1399,10 @@ LDocEntry:getExample()
 ```lua
 do
     local example = docs_example_entry:getExample()
-    print("example = " .. type(example))
-    print("example length = " .. tostring(example and #example or 0))
+    docs_log("example = " .. type(example))
+    docs_log("example length = " .. tostring(example and #example or 0))
+    docs_log("has example = " .. tostring(docs_example_entry:hasExample()))
+    docs_log("entry kind = " .. tostring(docs_example_entry:getKind()))
 end
 ```
 
@@ -1350,8 +1427,10 @@ LDocEntry:getKind()
 ```lua
 do
     local entry = docs_example_entry
-    print("kind = " .. entry:getKind())
-    print("owner type = " .. tostring(entry:type()))
+    docs_log("kind = " .. entry:getKind())
+    docs_log("qualified chars = " .. #entry:getQualifiedName())
+    docs_log("name = " .. tostring(entry:getName()))
+    docs_log("qualified = " .. tostring(entry:getQualifiedName()))
 end
 ```
 
@@ -1376,8 +1455,10 @@ LDocEntry:getModule()
 ```lua
 do
     local entry = docs_example_entry
-    print("module = " .. entry:getModule())
-    print("owner type = " .. tostring(entry:type()))
+    docs_log("module = " .. entry:getModule())
+    docs_log("qualified chars = " .. #entry:getQualifiedName())
+    docs_log("kind = " .. tostring(entry:getKind()))
+    docs_log("name = " .. tostring(entry:getName()))
 end
 ```
 
@@ -1402,8 +1483,10 @@ LDocEntry:getName()
 ```lua
 do
     local entry = docs_example_entry
-    print("name = " .. entry:getName())
-    print("owner type = " .. tostring(entry:type()))
+    docs_log("name = " .. entry:getName())
+    docs_log("qualified chars = " .. #entry:getQualifiedName())
+    docs_log("qualified = " .. tostring(entry:getQualifiedName()))
+    docs_log("module = " .. tostring(entry:getModule()))
 end
 ```
 
@@ -1428,8 +1511,10 @@ LDocEntry:getParameters()
 ```lua
 do
     local params = docs_example_entry:getParameters()
-    print("params = " .. #params)
-    print("params lua type = " .. type(params))
+    docs_log("params = " .. #params)
+    docs_log("params count = " .. tostring(#params))
+    docs_log("first param name = " .. tostring(params[1] and params[1].name))
+    docs_log("entry name = " .. tostring(docs_example_entry:getName()))
 end
 ```
 
@@ -1454,8 +1539,10 @@ LDocEntry:getQualifiedName()
 ```lua
 do
     local entry = docs_example_entry
-    print("qualified = " .. entry:getQualifiedName())
-    print("owner type = " .. tostring(entry:type()))
+    docs_log("qualified = " .. entry:getQualifiedName())
+    docs_log("qualified chars = " .. #entry:getQualifiedName())
+    docs_log("module = " .. tostring(entry:getModule()))
+    docs_log("kind = " .. tostring(entry:getKind()))
 end
 ```
 
@@ -1480,8 +1567,10 @@ LDocEntry:getReturns()
 ```lua
 do
     local returns = docs_example_entry:getReturns()
-    print("returns = " .. #returns)
-    print("returns lua type = " .. type(returns))
+    docs_log("returns = " .. #returns)
+    docs_log("returns count = " .. tostring(#returns))
+    docs_log("first return type = " .. tostring(returns[1] and returns[1].type))
+    docs_log("entry name = " .. tostring(docs_example_entry:getName()))
 end
 ```
 
@@ -1506,8 +1595,10 @@ LDocEntry:getScore()
 ```lua
 do
     local entry = docs_example_entry
-    print("score = " .. entry:getScore())
-    print("owner type = " .. tostring(entry:type()))
+    docs_log("score = " .. entry:getScore())
+    docs_log("qualified chars = " .. #entry:getQualifiedName())
+    docs_log("module = " .. tostring(entry:getModule()))
+    docs_log("kind = " .. tostring(entry:getKind()))
 end
 ```
 
@@ -1532,8 +1623,10 @@ LDocEntry:getSince()
 ```lua
 do
     local since = docs_example_entry:getSince()
-    print("since = " .. type(since))
-    print("since value = " .. tostring(since))
+    docs_log("since = " .. type(since))
+    docs_log("since value = " .. tostring(since))
+    docs_log("entry name = " .. tostring(docs_example_entry:getName()))
+    docs_log("entry module = " .. tostring(docs_example_entry:getModule()))
 end
 ```
 
@@ -1558,8 +1651,10 @@ LDocEntry:hasDescription()
 ```lua
 do
     local entry = docs_example_entry
-    print("hasDesc = " .. tostring(entry:hasDescription()))
-    print("owner type = " .. tostring(entry:type()))
+    docs_log("hasDesc = " .. tostring(entry:hasDescription()))
+    docs_log("qualified chars = " .. #entry:getQualifiedName())
+    docs_log("description length = " .. tostring(#entry:getDescription()))
+    docs_log("entry kind = " .. tostring(entry:getKind()))
 end
 ```
 
@@ -1584,8 +1679,10 @@ LDocEntry:hasExample()
 ```lua
 do
     local entry = docs_example_entry
-    print("hasExample = " .. tostring(entry:hasExample()))
-    print("owner type = " .. tostring(entry:type()))
+    docs_log("hasExample = " .. tostring(entry:hasExample()))
+    docs_log("qualified chars = " .. #entry:getQualifiedName())
+    docs_log("example text type = " .. type(entry:getExample()))
+    docs_log("entry qualified = " .. tostring(entry:getQualifiedName()))
 end
 ```
 
@@ -1610,8 +1707,10 @@ LDocEntry:hasParameters()
 ```lua
 do
     local entry = docs_example_entry
-    print("hasParams = " .. tostring(entry:hasParameters()))
-    print("owner type = " .. tostring(entry:type()))
+    docs_log("hasParams = " .. tostring(entry:hasParameters()))
+    docs_log("qualified chars = " .. #entry:getQualifiedName())
+    docs_log("param count = " .. tostring(#entry:getParameters()))
+    docs_log("entry name = " .. tostring(entry:getName()))
 end
 ```
 
@@ -1636,8 +1735,10 @@ LDocEntry:hasReturnType()
 ```lua
 do
     local entry = docs_example_entry
-    print("hasReturn = " .. tostring(entry:hasReturnType()))
-    print("owner type = " .. tostring(entry:type()))
+    docs_log("hasReturn = " .. tostring(entry:hasReturnType()))
+    docs_log("qualified chars = " .. #entry:getQualifiedName())
+    docs_log("return count = " .. tostring(#entry:getReturns()))
+    docs_log("entry name = " .. tostring(entry:getName()))
 end
 ```
 
@@ -1662,8 +1763,10 @@ LDocEntry:type()
 ```lua
 do
     local entry = docs_example_entry
-    print("type = " .. entry:type())
-    print("typeOf LObject = " .. tostring(entry:typeOf("LObject")))
+    docs_log("type = " .. entry:type())
+    docs_log("qualified chars = " .. #entry:getQualifiedName())
+    docs_log("typeOf LDocEntry = " .. tostring(entry:typeOf("LDocEntry")))
+    docs_log("entry module = " .. tostring(entry:getModule()))
 end
 ```
 
@@ -1694,8 +1797,10 @@ LDocEntry:typeOf(name)
 ```lua
 do
     local entry = docs_example_entry
-    print("is LDocEntry = " .. tostring(entry:typeOf("LDocEntry")))
-    print("type = " .. tostring(entry:type()))
+    docs_log("is LDocEntry = " .. tostring(entry:typeOf("LDocEntry")))
+    docs_log("type = " .. tostring(entry:type()))
+    docs_log("entry module = " .. tostring(entry:getModule()))
+    docs_log("entry kind = " .. tostring(entry:getKind()))
 end
 ```
 
@@ -1736,7 +1841,8 @@ do
     local cat = docs_example_cat
     local qr = docs_example_quality
     local best = qr:getBest(5)
-    print("best 5 = " .. #best)
+    docs_log("best 5 = " .. #best)
+    docs_log("first best = " .. tostring(best[1] and best[1]:getQualifiedName()))
 end
 ```
 
@@ -1769,7 +1875,8 @@ do
     local cat = docs_example_cat
     local qr = docs_example_quality
     local a_entries = qr:getByGrade("A")
-    print("grade A entries = " .. #a_entries)
+    docs_log("grade A entries = " .. #a_entries)
+    docs_log("first A entry = " .. tostring(a_entries[1] and a_entries[1]:getQualifiedName()))
 end
 ```
 
@@ -1795,7 +1902,9 @@ LQualityReport:getGrade()
 do
     local cat = docs_example_cat
     local qr = docs_example_quality
-    print("grade = " .. qr:getGrade())
+    docs_log("grade = " .. qr:getGrade())
+    docs_log("overall score = " .. tostring(qr:getOverallScore()))
+    docs_log("type = " .. qr:type())
 end
 ```
 
@@ -1822,7 +1931,8 @@ do
     local cat = docs_example_cat
     local qr = docs_example_quality
     local scores = qr:getModuleScores()
-    print("module scores type = " .. type(scores))
+    docs_log("module scores type = " .. type(scores))
+    docs_log("math score = " .. tostring(scores.math))
 end
 ```
 
@@ -1848,7 +1958,9 @@ LQualityReport:getOverallScore()
 do
     local cat = docs_example_cat
     local qr = docs_example_quality
-    print("score = " .. qr:getOverallScore())
+    docs_log("score = " .. qr:getOverallScore())
+    docs_log("grade = " .. tostring(qr:getGrade()))
+    docs_log("type = " .. qr:type())
 end
 ```
 
@@ -1874,7 +1986,10 @@ LQualityReport:getSummary()
 do
     local cat = docs_example_cat
     local qr = docs_example_quality
-    print("summary = " .. qr:getSummary())
+    local summary = qr:getSummary()
+    docs_log("summary = " .. summary)
+    docs_log("summary length = " .. #summary)
+    docs_log("type = " .. qr:type())
 end
 ```
 
@@ -1907,7 +2022,8 @@ do
     local cat = docs_example_cat
     local qr = docs_example_quality
     local worst = qr:getWorst(5)
-    print("worst 5 = " .. #worst)
+    docs_log("worst 5 = " .. #worst)
+    docs_log("first worst = " .. tostring(worst[1] and worst[1]:getQualifiedName()))
 end
 ```
 
@@ -1934,7 +2050,8 @@ do
     local cat = docs_example_cat
     local qr = docs_example_quality
     local json = qr:toJSON()
-    print("json length = " .. #json)
+    docs_log("json length = " .. #json)
+    docs_log("json has grade = " .. tostring(string.find(json, "grade", 1, true) ~= nil))
 end
 ```
 
@@ -1961,7 +2078,8 @@ do
     local cat = docs_example_cat
     local qr = docs_example_quality
     local t = qr:toTable()
-    print("overall = " .. t.overallScore .. " grade = " .. t.grade)
+    docs_log("overall = " .. t.overallScore .. " grade = " .. t.grade)
+    docs_log("module score count = " .. tostring(type(t.moduleScores)))
 end
 ```
 
@@ -1987,7 +2105,9 @@ LQualityReport:type()
 do
     local cat = docs_example_cat
     local qr = docs_example_quality
-    print("type = " .. qr:type())
+    docs_log("type = " .. qr:type())
+    docs_log("summary length = " .. #qr:getSummary())
+    docs_log("typeOf LQualityReport = " .. tostring(qr:typeOf("LQualityReport")))
 end
 ```
 
@@ -2019,7 +2139,9 @@ LQualityReport:typeOf(name)
 do
     local cat = docs_example_cat
     local qr = docs_example_quality
-    print("is report = " .. tostring(qr:typeOf("LQualityReport")))
+    docs_log("is report = " .. tostring(qr:typeOf("LQualityReport")))
+    docs_log("type = " .. tostring(qr:type()))
+    docs_log("grade = " .. tostring(qr:getGrade()))
 end
 ```
 
@@ -2053,7 +2175,9 @@ LSchema:assert(data)
 do
     local s = lurek.docs.schema({v = {type = "number"}})
     local ok = pcall(function() s["assert"](s, {v = 10}) end)
-    print("assert passed = " .. tostring(ok))
+    docs_log("assert passed = " .. tostring(ok))
+    docs_log("schema field count = " .. #s:getFields())
+    docs_log("schema type = " .. s:type())
 end
 ```
 
@@ -2084,8 +2208,10 @@ LSchema:check(data)
 ```lua
 do
     local s = lurek.docs.schema({x = {type = "number"}})
-    print("check = " .. tostring(s:check({x = 42})))
-    print("owner type = " .. tostring(s:type()))
+    docs_log("check = " .. tostring(s:check({x = 42})))
+    docs_log("schema name = " .. tostring(s:getName()))
+    docs_log("is schema = " .. tostring(s:typeOf("LSchema")))
+    docs_log("field count = " .. #s:getFields())
 end
 ```
 
@@ -2111,7 +2237,9 @@ LSchema:getFields()
 do
     local s = lurek.docs.schema({a = {type = "number"}, b = {type = "string"}})
     local fields = s:getFields()
-    print("fields = " .. #fields)
+    docs_log("fields = " .. #fields)
+    docs_log("first field = " .. tostring(fields[1]))
+    docs_log("schema type = " .. s:type())
 end
 ```
 
@@ -2136,8 +2264,10 @@ LSchema:getName()
 ```lua
 do
     local s = lurek.docs.schema({}, "TestSchema")
-    print("name = " .. s:getName())
-    print("owner type = " .. tostring(s:type()))
+    docs_log("name = " .. s:getName())
+    docs_log("schema name = " .. tostring(s:getName()))
+    docs_log("field count = " .. #s:getFields())
+    docs_log("is schema = " .. tostring(s:typeOf("LSchema")))
 end
 ```
 
@@ -2162,8 +2292,10 @@ LSchema:type()
 ```lua
 do
     local s = lurek.docs.schema({})
-    print("type = " .. s:type())
-    print("typeOf LObject = " .. tostring(s:typeOf("LObject")))
+    docs_log("type = " .. s:type())
+    docs_log("schema fields = " .. tostring(#s:getFields()))
+    docs_log("typeOf LSchema = " .. tostring(s:typeOf("LSchema")))
+    docs_log("field count = " .. #s:getFields())
 end
 ```
 
@@ -2194,8 +2326,10 @@ LSchema:typeOf(name)
 ```lua
 do
     local s = lurek.docs.schema({})
-    print("is LSchema = " .. tostring(s:typeOf("LSchema")))
-    print("type = " .. tostring(s:type()))
+    docs_log("is LSchema = " .. tostring(s:typeOf("LSchema")))
+    docs_log("type = " .. tostring(s:type()))
+    docs_log("first field = " .. tostring(s:getFields()[1]))
+    docs_log("field count = " .. #s:getFields())
 end
 ```
 
@@ -2228,7 +2362,9 @@ LSchema:validate(data)
 do
     local s = lurek.docs.schema({name = {type = "string", required = true}})
     local ok, errors = s:validate({name = "test"})
-    print("valid = " .. tostring(ok) .. " errors = " .. #errors)
+    docs_log("valid = " .. tostring(ok) .. " errors = " .. #errors)
+    docs_log("schema type = " .. s:type())
+    docs_log("field count = " .. #s:getFields())
 end
 ```
 
@@ -2263,7 +2399,8 @@ do
     local cat = docs_example_cat
     local report = docs_example_validate
     local incomplete = report:getIncomplete()
-    print("incomplete = " .. #incomplete)
+    docs_log("incomplete = " .. #incomplete)
+    docs_log("first incomplete = " .. tostring(incomplete[1] and incomplete[1].qualifiedName))
 end
 ```
 
@@ -2290,7 +2427,8 @@ do
     local cat = docs_example_cat
     local report = docs_example_validate
     local missing = report:getMissing()
-    print("missing = " .. #missing)
+    docs_log("missing = " .. #missing)
+    docs_log("first missing = " .. tostring(missing[1] and missing[1].qualifiedName))
 end
 ```
 
@@ -2317,7 +2455,8 @@ do
     local cat = docs_example_cat
     local report = docs_example_validate
     local phantom = report:getPhantom()
-    print("phantom = " .. #phantom)
+    docs_log("phantom = " .. #phantom)
+    docs_log("first phantom = " .. tostring(phantom[1] and phantom[1].qualifiedName))
 end
 ```
 
@@ -2343,7 +2482,10 @@ LValidationReport:getSummary()
 do
     local cat = docs_example_cat
     local report = docs_example_validate
-    print("summary = " .. report:getSummary())
+    local summary = report:getSummary()
+    docs_log("summary = " .. summary)
+    docs_log("summary length = " .. #summary)
+    docs_log("report type = " .. report:type())
 end
 ```
 
@@ -2369,7 +2511,9 @@ LValidationReport:incompleteCount()
 do
     local cat = docs_example_cat
     local report = docs_example_validate
-    print("incomplete count = " .. report:incompleteCount())
+    docs_log("incomplete count = " .. report:incompleteCount())
+    docs_log("phantom count = " .. report:phantomCount())
+    docs_log("report type = " .. report:type())
 end
 ```
 
@@ -2395,7 +2539,9 @@ LValidationReport:isValid()
 do
     local cat = docs_example_cat
     local report = docs_example_validate
-    print("valid = " .. tostring(report:isValid()))
+    docs_log("valid = " .. tostring(report:isValid()))
+    docs_log("missing count = " .. tostring(report:missingCount()))
+    docs_log("report type = " .. report:type())
 end
 ```
 
@@ -2421,7 +2567,9 @@ LValidationReport:missingCount()
 do
     local cat = docs_example_cat
     local report = docs_example_validate
-    print("missing count = " .. report:missingCount())
+    docs_log("missing count = " .. report:missingCount())
+    docs_log("is valid = " .. tostring(report:isValid()))
+    docs_log("report type = " .. report:type())
 end
 ```
 
@@ -2447,7 +2595,9 @@ LValidationReport:phantomCount()
 do
     local cat = docs_example_cat
     local report = docs_example_validate
-    print("phantom count = " .. report:phantomCount())
+    docs_log("phantom count = " .. report:phantomCount())
+    docs_log("missing count = " .. report:missingCount())
+    docs_log("report type = " .. report:type())
 end
 ```
 
@@ -2474,7 +2624,8 @@ do
     local cat = docs_example_cat
     local report = docs_example_validate
     local json = report:toJSON()
-    print("json length = " .. #json)
+    docs_log("json length = " .. #json)
+    docs_log("json has missing key = " .. tostring(string.find(json, "missing", 1, true) ~= nil))
 end
 ```
 
@@ -2501,7 +2652,8 @@ do
     local cat = docs_example_cat
     local report = docs_example_validate
     local t = report:toTable()
-    print("table keys: missing=" .. #t.missing .. " phantom=" .. #t.phantom)
+    docs_log("table keys: missing=" .. #t.missing .. " phantom=" .. #t.phantom)
+    docs_log("incomplete=" .. #t.incomplete)
 end
 ```
 
@@ -2527,7 +2679,9 @@ LValidationReport:type()
 do
     local cat = docs_example_cat
     local report = docs_example_validate
-    print("type = " .. report:type())
+    docs_log("type = " .. report:type())
+    docs_log("missing count = " .. tostring(report:missingCount()))
+    docs_log("typeOf LValidationReport = " .. tostring(report:typeOf("LValidationReport")))
 end
 ```
 
@@ -2559,7 +2713,9 @@ LValidationReport:typeOf(name)
 do
     local cat = docs_example_cat
     local report = docs_example_validate
-    print("is report = " .. tostring(report:typeOf("LValidationReport")))
+    docs_log("is report = " .. tostring(report:typeOf("LValidationReport")))
+    docs_log("type = " .. tostring(report:type()))
+    docs_log("valid = " .. tostring(report:isValid()))
 end
 ```
 

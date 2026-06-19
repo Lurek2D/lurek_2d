@@ -5,6 +5,7 @@
 - Supports orthogonal, isometric, and hex grids with sparse culling, LOD, and standard map imports.
 - Features autotiling, procedural generation, swept rect collisions, and pathfind navgrids.
 - Provides hex rings, polygon trigger zones, and event callbacks for entity transitions.
+- Safe constructors, bounded importers, and checked collision queries reject oversized or invalid inputs before allocation-heavy work.
 - Treats `rectOverlapsSolid`/`sweepRect` as tile-grid collision queries; physics bodies still require their own `lurek.physics` colliders and sync flow.
 
 ## General Info
@@ -12,7 +13,7 @@
 - Module group: `Feature Systems`
 - Source path: `src/tilemap/`
 - Binding: `src/lua_api/tilemap_api.rs`
-- Namespace: `lurek.physics`
+- Namespace: `lurek.tilemap`
 - Lua API surface: `29` functions, `23` types, `162` methods
 - Rust test path(s): tests/rust/unit/tilemap_tests.rs
 - Lua test path(s): tests/lua/unit/test_tilemap_core_unit.lua, tests/lua/stress/test_tilemap_stress.lua, tests/lua/integration/test_tilemap_physics.lua, tests/lua/integration/test_tilemap_pathfind.lua, tests/lua/integration/test_tilemap_camera.lua, tests/lua/integration/test_save_tilemap.lua, tests/lua/integration/test_procgen_tilemap.lua, tests/lua/golden/test_tilemap_golden.lua, tests/lua/evidence/test_evidence_tilemap.lua
@@ -211,7 +212,7 @@
 
 ### Functions
 
-- `lurek.tilemap.fromLDtk(jsonStr, levelName?) -> LTileMap`: Loads a tilemap from an LDtk JSON string, optionally targeting a specific level.
+- `lurek.tilemap.fromLDtk(jsonStr, levelName?, opts?) -> LTileMap`: Loads a tilemap from an LDtk JSON string, optionally targeting a specific level with bounded import limits.
 - `lurek.tilemap.fromScreenHex(sx, sy, size) -> integer`: Converts screen-space pixel coordinates to axial hex coordinates.
 - `lurek.tilemap.fromScreenIso(sx, sy, tw, th) -> number`: Converts screen-space coordinates back to tile coordinates for isometric projection.
 - `lurek.tilemap.hexArea(q, r, radius) -> table`: Returns all hex cells within a filled area of a given radius.
@@ -226,16 +227,16 @@
 - `lurek.tilemap.isoDirectionFromAngle(angle) -> integer`: Converts an angle in degrees to the nearest isometric direction index.
 - `lurek.tilemap.isoDirectionName(direction) -> string`: Returns a human-readable name for an isometric direction index.
 - `lurek.tilemap.isoRotate(direction, steps) -> integer`: Rotates an isometric direction index by a number of 90-degree steps.
-- `lurek.tilemap.loadTMX(xml) -> table`: Parses a TMX (Tiled XML) string and returns a table describing the map structure.
+- `lurek.tilemap.loadTMX(xml, opts?) -> table`: Parses a TMX (Tiled XML) string and returns a table describing the map structure with optional strict/path-safe import policy.
 - `lurek.tilemap.newAutoTileSheet(tileW, tileH, layout) -> LAutoTileSheet`: Creates an auto-tile sheet with a given tile size and layout.
-- `lurek.tilemap.newChunkMap(chunkSize?) -> LChunkMap`: Creates a new infinite chunk-based tile map.
+- `lurek.tilemap.newChunkMap(chunkSize?, opts?) -> LChunkMap`: Creates a new infinite chunk-based tile map with optional allocation/query limits.
 - `lurek.tilemap.newIsoMap(width, height, tileW, tileH, levelHeight, partCount?) -> LIsoMap`: Creates a new isometric map with the given dimensions and tile geometry.
 - `lurek.tilemap.newLargeMapRenderer(tileW, tileH) -> LLargeMapRenderer`: Creates a chunk-based large-map renderer for efficient rendering of very large maps.
 - `lurek.tilemap.newMapBlock(width, height, layers?, segmentSize?) -> LMapBlock`: Creates a new procedural map block with the given dimensions.
 - `lurek.tilemap.newMapGen(group, presetOrWidth, segmentSizeOrHeight, segmentSize?) -> LMapGen`: Creates a procedural map generator from a group and either a size preset or explicit dimensions.
 - `lurek.tilemap.newMapGroup(name) -> LMapGroup`: Creates a new map group to hold blocks and generation scripts.
 - `lurek.tilemap.newMapScript() -> LMapScript`: Creates a new empty map-generation script.
-- `lurek.tilemap.newTileMap(tileWidth, tileHeight, chunkSize?) -> LTileMap`: Creates a new empty tilemap with the given tile dimensions.
+- `lurek.tilemap.newTileMap(tileWidth, tileHeight, chunkSize?, opts?) -> LTileMap`: Creates a new empty tilemap with the given tile dimensions and optional safety limits.
 - `lurek.tilemap.newTileSet(firstGid, tileCount, columns, tileWidth, tileHeight, spacing?, margin?) -> LTileSet`: Creates a new tileset from atlas parameters.
 - `lurek.tilemap.syncMinimap(map, layer, minimap, opts?) -> nil`: Synchronizes a tilemap layer's solid tiles into a minimap's terrain grid.
 - `lurek.tilemap.toScreenHex(q, r, size) -> number`: Converts axial hex coordinates to screen-space pixel position.
@@ -718,4 +719,9 @@
 
 ## Notes
 
-- No additional module-specific notes.
+- `lurek.tilemap.newTileMap(...)` and `lurek.tilemap.newChunkMap(...)` accept an optional limits table with ceilings such as `maxLayers`, `maxTiles`, `maxImagePixels`, `maxImportBytes`, `maxDecodedBytes`, `maxChunkCells`, `maxChunks`, and `maxCollisionTileChecks`.
+- `lurek.tilemap.loadTMX(xml, opts)` supports strict/bounded import policy through `strictLayerSize`, `allowExternalTilesets`, `safePaths`, `assetRoot`, and the same byte/size limits used by safe constructors.
+- `LTileMap:worldToTile(...)` preserves legacy clamping semantics, while `LTileMap:tryWorldToTile(...)` returns `nil` for negative or non-finite world coordinates and should be preferred for picking/collision front-ends.
+- `LTileMap:rectOverlapsSolid(...)` and `LTileMap:sweepRect(...)` validate finite coordinates, positive rectangle size, and tile-check budgets before scanning the map.
+- Reverse tile-position indexing is lazy after large writes such as `fill(...)`; callers that need dense reverse lookups should use `tileTypeIndex(...)` or `findTilesByGid(...)` and can inspect `getDiagnostics().lazyIndexRebuilds`.
+- Diagnostics counters are part of the public debugging contract: invalid layer access, invalid coordinates, invalid collision queries, unknown gids, and lazy reverse-index rebuilds are observable through `LTileMap:getDiagnostics()`.

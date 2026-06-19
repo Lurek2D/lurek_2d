@@ -2,16 +2,10 @@
 
 ## Summary
 
-- This module gives users structured runtime logging with severity control and flexible output routing.
-- It supports tagged messages and key-value fields for machine-friendly and human-friendly diagnostics.
-- Global level gates reduce noise and overhead by filtering early.
-- Sink management supports console, memory, file, rotating-file, and callback outputs.
-- Multiple output formats enable both readable logs and ingestion-ready streams.
-- Memory sink access supports in-game debug panels and test assertions.
-- File rotation controls support long sessions without unbounded log growth.
-- For users, this module centralizes diagnostics flow instead of scattering print logic across scripts.
-
-This module primarily collaborates with `binary`, `runtime`. Its responsibility should stay inside the Foundations group rather than absorb behavior owned by those neighbors.
+- The `log` module is the common script-facing path for runtime diagnostics, so users can emit messages through one consistent logging surface instead of mixing ad hoc print styles.
+- It keeps message formatting, structured fields, severity, and sink routing together, which lets debugging output scale from quick traces to retained logs.
+- That common path makes filtering and correlation across subsystems easier.
+- Read it as the standard language for script diagnostics when several systems need to be debugged through the same output flow.
 
 ## Functions
 
@@ -39,9 +33,12 @@ lurek.log.addSink(config)
 
 ```lua
 do
+    lurek.log.clearSinks()
+    local before = #lurek.log.listSinks()
     local id = lurek.log.addSink({type = "memory", level = "debug", capacity = 10})
-    print("memory sink id = " .. id)
-    print("sink count = " .. #lurek.log.listSinks())
+    local after = #lurek.log.listSinks()
+    lurek.log.info("memory sink id = " .. id)
+    lurek.log.info("sink count " .. before .. " -> " .. after)
 end
 ```
 
@@ -61,9 +58,11 @@ lurek.log.clearSinks()
 do
     lurek.log.addSink({type = "memory", level = "info", capacity = 8})
     lurek.log.addSink({type = "memory", level = "warn", capacity = 8})
+    local before = #lurek.log.listSinks()
     lurek.log.clearSinks()
     local sinks = lurek.log.listSinks()
-    print("sinks after clear = " .. #sinks)
+    lurek.log.info("sinks before clear = " .. before)
+    lurek.log.info("sinks after clear = " .. #sinks)
 end
 ```
 
@@ -88,8 +87,13 @@ lurek.log.debug(message, tag)
 
 ```lua
 do
-    lurek.log.debug("tick completed")
-    print("debug logged")
+    lurek.log.clearSinks()
+    lurek.log.setLevel("debug")
+    local id = lurek.log.addSink({type = "memory", level = "debug", capacity = 8})
+    lurek.log.debug("tick completed", "Gameplay")
+    local entry = lurek.log.readMemory(id, true)[1]
+    lurek.log.removeSink(id)
+    lurek.log.info("captured debug entry: " .. entry.level .. " " .. entry.tag)
 end
 ```
 
@@ -114,8 +118,13 @@ lurek.log.debug_fields(message, fields_tbl)
 
 ```lua
 do
-    lurek.log.debug_fields("frame stats", {fps = 60, dt = 0.016})
-    print("debug_fields logged")
+    lurek.log.clearSinks()
+    lurek.log.setLevel("debug")
+    local id = lurek.log.addSink({type = "memory", level = "debug", capacity = 8})
+    lurek.log.debug_fields("frame stats", {fps = "60", dt = "0.016"})
+    local entry = lurek.log.readMemory(id, true)[1]
+    lurek.log.removeSink(id)
+    lurek.log.info("debug fields fps=" .. tostring(entry.fields.fps) .. " dt=" .. tostring(entry.fields.dt))
 end
 ```
 
@@ -140,9 +149,13 @@ lurek.log.error(message, tag)
 
 ```lua
 do
+    lurek.log.clearSinks()
+    local id = lurek.log.addSink({type = "memory", level = "error", capacity = 8})
     lurek.log.error("failed to save")
     lurek.log.error("shader compile failed", "gpu")
-    print("error logged")
+    local entry = lurek.log.readMemory(id, true)[2]
+    lurek.log.removeSink(id)
+    lurek.log.info("error sink captured message = " .. entry.message)
 end
 ```
 
@@ -167,8 +180,12 @@ lurek.log.error_fields(message, fields_tbl)
 
 ```lua
 do
+    lurek.log.clearSinks()
+    local id = lurek.log.addSink({type = "memory", level = "error", capacity = 8})
     lurek.log.error_fields("save failed", {path = "slot1.sav", reason = "disk full"})
-    print("error_fields logged")
+    local entry = lurek.log.readMemory(id, true)[1]
+    lurek.log.removeSink(id)
+    lurek.log.info("save error path=" .. tostring(entry.fields.path) .. " reason=" .. tostring(entry.fields.reason))
 end
 ```
 
@@ -192,11 +209,15 @@ lurek.log.flushFile(id)
 
 ```lua
 do
-    local id = lurek.log.addSink({type = "file", level = "info", path = "logs/flush_test.log"})
+    lurek.log.clearSinks()
+    lurek.filesystem.mkdir("save")
+    local path = "save/_log_flush_example.log"
+    local id = lurek.log.addSink({type = "file", level = "info", path = path})
     lurek.log.info("flush me")
     lurek.log.flushFile(id)
-    print("file sink id = " .. id)
-    print("file flushed")
+    lurek.log.removeSink(id)
+    lurek.log.info("file sink id = " .. id)
+    lurek.log.info("flush requested for " .. path)
 end
 ```
 
@@ -222,8 +243,11 @@ lurek.log.getLevel()
 do
     local prev = lurek.log.getLevel()
     lurek.log.setLevel("warn")
-    print("level was " .. prev .. " now " .. lurek.log.getLevel())
+    local current = lurek.log.getLevel()
     lurek.log.setLevel(prev)
+    local restored = lurek.log.getLevel()
+    lurek.log.info("level switched " .. prev .. " -> " .. current)
+    lurek.log.info("level restored = " .. restored)
 end
 ```
 
@@ -248,9 +272,13 @@ lurek.log.info(message, tag)
 
 ```lua
 do
+    lurek.log.clearSinks()
+    local id = lurek.log.addSink({type = "memory", level = "info", capacity = 8})
     lurek.log.info("game started")
     lurek.log.info("asset loaded", "assets")
-    print("info logged")
+    local entries = lurek.log.readMemory(id, true)
+    lurek.log.removeSink(id)
+    lurek.log.info("info entries captured = " .. #entries)
 end
 ```
 
@@ -275,8 +303,12 @@ lurek.log.info_fields(message, fields_tbl)
 
 ```lua
 do
-    lurek.log.info_fields("player join", {name = "Alice", id = 42})
-    print("info_fields logged")
+    lurek.log.clearSinks()
+    local id = lurek.log.addSink({type = "memory", level = "info", capacity = 8})
+    lurek.log.info_fields("player join", {name = "Alice", id = "42"})
+    local entry = lurek.log.readMemory(id, true)[1]
+    lurek.log.removeSink(id)
+    lurek.log.info("joined player " .. tostring(entry.fields.name) .. " id=" .. tostring(entry.fields.id))
 end
 ```
 
@@ -304,8 +336,8 @@ do
     lurek.log.addSink({type = "memory", level = "info", capacity = 8})
     lurek.log.addSink({type = "memory", level = "warn", capacity = 8})
     local sinks = lurek.log.listSinks()
-    print("sink count = " .. #sinks)
-    print("first sink type = " .. sinks[1].type)
+    lurek.log.info("sink count = " .. #sinks)
+    lurek.log.info("first sink type = " .. sinks[1].type)
 end
 ```
 
@@ -331,9 +363,13 @@ lurek.log.print(level, message, tag)
 
 ```lua
 do
+    lurek.log.clearSinks()
+    local id = lurek.log.addSink({type = "memory", level = "debug", capacity = 8})
     lurek.log.print("info", "general purpose log")
     lurek.log.print("warn", "something suspicious", "system")
-    print("print logged")
+    local entry = lurek.log.readMemory(id, true)[2]
+    lurek.log.removeSink(id)
+    lurek.log.info("runtime-selected level = " .. entry.level .. " tag=" .. tostring(entry.tag))
 end
 ```
 
@@ -364,11 +400,14 @@ lurek.log.readMemory(id, drain)
 
 ```lua
 do
+    lurek.log.clearSinks()
     local id = lurek.log.addSink({type = "memory", level = "debug", capacity = 50})
     lurek.log.info("test message")
     local entries = lurek.log.readMemory(id, false)
-    print("memory entries = " .. #entries)
-    print("first entry message = " .. entries[1].message)
+    local entry = entries[1]
+    lurek.log.removeSink(id)
+    lurek.log.info("memory entries = " .. #entries)
+    lurek.log.info("first entry message = " .. entry.message)
 end
 ```
 
@@ -398,10 +437,13 @@ lurek.log.removeSink(id)
 
 ```lua
 do
+    lurek.log.clearSinks()
     local id = lurek.log.addSink({type = "memory", level = "debug", capacity = 10})
+    local before = #lurek.log.listSinks()
     local ok = lurek.log.removeSink(id)
-    print("removed = " .. tostring(ok))
-    print("sink count = " .. #lurek.log.listSinks())
+    local after = #lurek.log.listSinks()
+    lurek.log.info("removed = " .. tostring(ok))
+    lurek.log.info("sink count " .. before .. " -> " .. after)
 end
 ```
 
@@ -427,8 +469,10 @@ lurek.log.setLevel(level)
 do
     local previous = lurek.log.getLevel()
     lurek.log.setLevel("debug")
-    print("level set to " .. lurek.log.getLevel())
+    local current = lurek.log.getLevel()
     lurek.log.setLevel(previous)
+    lurek.log.info("level set to " .. current)
+    lurek.log.info("restored level = " .. lurek.log.getLevel())
 end
 ```
 
@@ -454,8 +498,12 @@ lurek.log.struct(level_str, message, fields_tbl)
 
 ```lua
 do
-    lurek.log.struct("info", "combat hit", {attacker = "goblin", target = "player", damage = 15})
-    print("struct logged")
+    lurek.log.clearSinks()
+    local id = lurek.log.addSink({type = "memory", level = "debug", capacity = 8})
+    lurek.log.struct("info", "combat hit", {attacker = "enemy", target = "player", damage = "15"})
+    local entry = lurek.log.readMemory(id, true)[1]
+    lurek.log.removeSink(id)
+    lurek.log.info("struct fields attacker=" .. tostring(entry.fields.attacker) .. " damage=" .. tostring(entry.fields.damage))
 end
 ```
 
@@ -480,9 +528,13 @@ lurek.log.warn(message, tag)
 
 ```lua
 do
+    lurek.log.clearSinks()
+    local id = lurek.log.addSink({type = "memory", level = "warn", capacity = 8})
     lurek.log.warn("low memory")
     lurek.log.warn("texture missing", "render")
-    print("warn logged")
+    local entry = lurek.log.readMemory(id, true)[2]
+    lurek.log.removeSink(id)
+    lurek.log.info("warn tag captured = " .. tostring(entry.tag))
 end
 ```
 
@@ -507,8 +559,12 @@ lurek.log.warn_fields(message, fields_tbl)
 
 ```lua
 do
-    lurek.log.warn_fields("memory usage", {used_mb = 512, limit_mb = 1024})
-    print("warn_fields logged")
+    lurek.log.clearSinks()
+    local id = lurek.log.addSink({type = "memory", level = "warn", capacity = 8})
+    lurek.log.warn_fields("memory usage", {used_mb = "512", limit_mb = "1024"})
+    local entry = lurek.log.readMemory(id, true)[1]
+    lurek.log.removeSink(id)
+    lurek.log.info("warn fields usage=" .. tostring(entry.fields.used_mb) .. "/" .. tostring(entry.fields.limit_mb) .. " MB")
 end
 ```
 

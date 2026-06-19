@@ -3,6 +3,8 @@
 //! Open this file when body-handle representation changes; world storage and body descriptors live in sibling owners.
 //! This is the right owner for changing Rust or Lua identity semantics without touching simulation behavior directly.
 
+use super::error::PhysicsError;
+
 /// Unique identifier for a physics body.
 /// # Fields
 /// - `0`: raw stable slot id.
@@ -47,6 +49,9 @@ impl mlua::IntoLua<'_> for BodyId {
 impl mlua::FromLua<'_> for BodyId {
     fn from_lua(val: mlua::Value, lua: &mlua::Lua) -> mlua::Result<Self> {
         let n = i64::from_lua(val, lua)?;
-        Ok(BodyId(n as usize))
+        let raw = usize::try_from(n).map_err(|_| {
+            mlua::Error::RuntimeError(PhysicsError::InvalidBodyIdValue { value: n }.to_string())
+        })?;
+        Ok(BodyId(raw))
     }
 }

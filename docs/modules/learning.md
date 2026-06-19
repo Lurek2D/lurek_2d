@@ -2,36 +2,21 @@
 
 ## Summary
 
-- This module gives users a script-accessible ML toolkit for inference, lightweight training loops, and policy experimentation.
-- It supports tensor-based numeric workflows with deterministic CPU-side execution.
-- Neural building blocks include dense, convolutional, recurrent, attention, and transformer-style components.
-- Mixed architectures can be assembled through a unified engine rather than hardcoded model pipelines.
-- Parameter import/export support enables model mutation, checkpointing, and external optimization workflows.
-- Genetic algorithm support provides population-based optimization for parameter search.
-- Neuroevolution helpers connect genomes to model structures for evolving behavior policies.
-- Bandit strategies support online decision tuning under uncertainty.
-- Tabular Q-learning support enables classic reinforcement-learning experiments in discrete spaces.
-- Environment wrappers standardize observations, rewards, and termination controls.
-- Frame-stack and time-limit wrappers help shape training contexts for temporal tasks.
-- ONNX loading enables reuse of externally trained models for runtime inference.
-- This bridges in-engine experimentation with broader ML tool ecosystems.
-- The module supports prototyping AI behavior without requiring separate external runtimes.
-- For users, this means shorter loops from idea to tested gameplay policy.
-- It is useful for adaptive NPC logic, balancing agents, and simulation decision support.
-- Deterministic tensor and model operations make behavior easier to test and debug.
-- Script-level APIs keep model control close to gameplay systems that consume predictions.
-- The practical value is flexible AI capability without committing to one single algorithm family.
-- Users can combine supervised-style inference, RL, and evolutionary methods in one environment.
-- This enables comparative experimentation before locking production strategy.
-- It also lowers integration friction by sharing one data model across learning components.
-- Overall, the module turns ML from an external dependency into an integrated engine feature set.
-- Teams gain both rapid prototyping tools and deployable runtime inference paths.
-- It helps bridge research ideas and shippable behavior systems with fewer rewrites.
-- In short, users get a broad, scriptable learning sandbox aligned with game-runtime constraints.
-- That makes AI development more iterative, observable, and maintainable.
-- The module also supports long-term evolution as project AI needs grow in complexity.
-
-This module is mostly self-contained inside the `Feature Systems` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
+- The `learning` module is the engine's machine-learning and adaptive-policy surface for users who want experimentation, inference, and lightweight training loops to live inside the same runtime as gameplay and tooling code.
+- Its defining feature is breadth across learning styles. Tensor math, feedforward models, convolutional structures, recurrent logic, attention, transformer-style components, Q-learning, bandits, genetic algorithms, and neuroevolution all coexist because game-related learning problems vary widely.
+- That breadth matters because one project may want inference from a pretrained model, another may want online adaptation, and another may want population-based search or discrete action learning rather than gradient-heavy end-to-end training.
+- The module therefore acts less like a single ML framework and more like an engine-owned research and experimentation toolkit with several entry points.
+- Environment wrappers are an important part of the feature because learning is not only about models. It is also about observations, rewards, resets, episodes, action loops, and the staged interaction between a policy and a simulated task.
+- This makes the module useful for reinforcement-style experimentation where the engine itself is part of the training or evaluation environment rather than merely a host for precomputed predictions.
+- ONNX loading and parameter import or export matter because useful ML workflows rarely remain entirely inside one engine. Teams often train or inspect models externally and then bring those artifacts into runtime experimentation or inference.
+- Bandits, Q-learning, and evolutionary support are particularly relevant for game-like adaptation where discrete choices, heuristic search, or population exploration may be more useful than large-scale supervised training.
+- Deterministic tensor and model operations are also valuable because experimentation inside a game engine still needs inspectability. Teams often need results to be partially reproducible so they can debug or compare behavior meaningfully.
+- The module is therefore useful for adaptive NPC behavior, tuning agents, recommendation-like systems, simulation control, encounter balancing, and tool-side analysis of what a model would choose under engine constraints.
+- It is also useful for benchmarking several policy ideas against the same engine-side tasks.
+- That shared experimentation surface keeps inference, adaptation, and evaluation workflows closer to the game systems they are meant to influence.
+- It keeps those experiments closer to game-side consequences and iteration loops.
+- From a boundary perspective, domain modules define the world, rewards, and consequences, while `learning` owns the tensors, models, adaptation strategies, and training-oriented utilities that make machine learning usable inside that world.
+- Read `learning` as the place where research-oriented AI and practical engine workflows meet.
 
 ## Functions
 
@@ -66,8 +51,8 @@ do
         action_space = { n = 4 },
     })
     local obs = env:reset()
-    print("lurek.learning.defineEnv type", env:type())
-    print("lurek.learning.defineEnv obs[1]", obs[1])
+    example_print_log("lurek.learning.defineEnv type", env:type())
+    example_print_log("lurek.learning.defineEnv obs[1]", obs[1])
 end
 ```
 
@@ -101,8 +86,8 @@ do
     fs:push({1.0, 2.0})
     fs:push({3.0, 4.0})
     local flat = fs:get()
-    print("lurek.learning.frameStack capacity", fs:capacity())
-    print("lurek.learning.frameStack flat len", #flat)
+    example_print_log("lurek.learning.frameStack capacity", fs:capacity())
+    example_print_log("lurek.learning.frameStack flat len", #flat)
 end
 ```
 
@@ -135,7 +120,9 @@ do
     local ok, err = pcall(function()
         return lurek.learning.loadOnnx("nonexistent.onnx")
     end)
-    print("lurek.learning.loadOnnx missing file errors", tostring(not ok))
+    local missing = "content/examples/assets/missing_model.onnx"
+    local attempted = tostring(missing ~= nil)
+    example_print_log("lurek.learning.loadOnnx missing file errors", tostring(not ok))
 end
 ```
 
@@ -169,11 +156,13 @@ lurek.learning.newBandit(arm_count, strategy, epsilon, seed)
 ```lua
 do
     local bandit = lurek.learning.newBandit(4, "ucb1", 0.1, 99)
+    local warmup_arm = bandit:select()
+    bandit:update(warmup_arm, 0.1)
     local chosen_arm = bandit:select()
     bandit:update(chosen_arm, 0.75)
 
-    print("lurek.learning.newBandit chosenArm", chosen_arm)
-    print("lurek.learning.newBandit totalPulls", bandit:totalPulls())
+    example_print_log("lurek.learning.newBandit chosenArm", chosen_arm)
+    example_print_log("lurek.learning.newBandit totalPulls", bandit:totalPulls())
 end
 ```
 
@@ -211,8 +200,10 @@ lurek.learning.newConv2D(in_channels, out_channels, kernel_h, kernel_w, stride_h
 ```lua
 do
     local conv = lurek.learning.newConv2D(1, 1, 1, 1, 1, 1, 0, 0)
-    print("lurek.learning.newConv2D type", conv:type())
-    print("typeOf LObject = " .. tostring(conv:typeOf("LObject")))
+    local conv_weights = conv:getWeights()
+    local conv_params = conv:paramCount()
+    example_print_log("lurek.learning.newConv2D type", conv:type())
+    example_print_log("weight count = " .. #conv_weights)
 end
 ```
 
@@ -237,8 +228,10 @@ lurek.learning.newEngine()
 ```lua
 do
     local engine = lurek.learning.newEngine()
-    print("lurek.learning.newEngine blocks", engine:blockCount())
-    print("lua type = " .. type(engine))
+    engine:addDense(2, 2, "linear")
+    local engine_blocks = engine:blockCount()
+    example_print_log("lurek.learning.newEngine blocks", engine:blockCount())
+    example_print_log("engine params = " .. engine:paramCount())
 end
 ```
 
@@ -271,14 +264,16 @@ lurek.learning.newGeneticAlgorithm(pop_size, gene_count, seed)
 ```lua
 do
     local ga = lurek.learning.newGeneticAlgorithm(6, 4, 42)
+    ga:setFitness(0, 0.1)
+    local ga_generation = ga:generation()
 
     for index = 0, ga:popSize() - 1 do
         ga:setFitness(index, index * 0.25)
     end
 
     ga:evolve()
-    print("lurek.learning.newGeneticAlgorithm generation", ga:generation())
-    print("lurek.learning.newGeneticAlgorithm popSize", ga:popSize())
+    example_print_log("lurek.learning.newGeneticAlgorithm generation", ga:generation())
+    example_print_log("lurek.learning.newGeneticAlgorithm popSize", ga:popSize())
 end
 ```
 
@@ -310,8 +305,10 @@ lurek.learning.newGru(input_size, hidden_size)
 ```lua
 do
     local gru = lurek.learning.newGru(2, 3)
-    print("lurek.learning.newGru type", gru:type())
-    print("typeOf LObject = " .. tostring(gru:typeOf("LObject")))
+    local gru_weights = gru:getWeights()
+    local gru_params = gru:paramCount()
+    example_print_log("lurek.learning.newGru type", gru:type())
+    example_print_log("weight count = " .. #gru_weights)
 end
 ```
 
@@ -343,8 +340,10 @@ lurek.learning.newLstm(input_size, hidden_size)
 ```lua
 do
     local lstm = lurek.learning.newLstm(2, 3)
-    print("lurek.learning.newLstm type", lstm:type())
-    print("typeOf LObject = " .. tostring(lstm:typeOf("LObject")))
+    local lstm_weights = lstm:getWeights()
+    local lstm_params = lstm:paramCount()
+    example_print_log("lurek.learning.newLstm type", lstm:type())
+    example_print_log("weight count = " .. #lstm_weights)
 end
 ```
 
@@ -378,8 +377,10 @@ lurek.learning.newMaxPool2D(kernel_h, kernel_w, stride_h, stride_w)
 ```lua
 do
     local pool = lurek.learning.newMaxPool2D(2, 2, 2, 2)
-    print("lurek.learning.newMaxPool2D type", pool:type())
-    print("typeOf LObject = " .. tostring(pool:typeOf("LObject")))
+    local pool_type = pool:type()
+    local pool_is = pool:typeOf("LMaxPool2D")
+    example_print_log("lurek.learning.newMaxPool2D type", pool:type())
+    example_print_log("pool configured = " .. tostring(pool_is))
 end
 ```
 
@@ -411,8 +412,10 @@ lurek.learning.newMultiHeadAttention(d_model, num_heads)
 ```lua
 do
     local mha = lurek.learning.newMultiHeadAttention(4, 2)
-    print("lurek.learning.newMultiHeadAttention type", mha:type())
-    print("typeOf LObject = " .. tostring(mha:typeOf("LObject")))
+    local mha_weights = mha:getWeights()
+    local mha_params = mha:paramCount()
+    example_print_log("lurek.learning.newMultiHeadAttention type", mha:type())
+    example_print_log("attention configured = " .. tostring(mha_is))
 end
 ```
 
@@ -437,12 +440,14 @@ lurek.learning.newNeuralNet()
 ```lua
 do
     local net = lurek.learning.newNeuralNet()
-    net:addLayer(3, 4, "relu")
+    net:addLayer(3, 4, "linear")
+    local net_layers = net:layerCount()
+    net:addLayer(4, 4, "relu")
     net:addLayer(4, 2, "softmax")
 
     local output = net:forward({ 0.2, 0.6, -0.1 })
-    print("lurek.learning.newNeuralNet layers", net:layerCount())
-    print("lurek.learning.newNeuralNet firstOutput", output[1])
+    example_print_log("lurek.learning.newNeuralNet layers", net:layerCount())
+    example_print_log("lurek.learning.newNeuralNet firstOutput", output[1])
 end
 ```
 
@@ -485,8 +490,8 @@ do
     end
 
     evo:evolve()
-    print("lurek.learning.newNeuroevolution generation", evo:generation())
-    print("lurek.learning.newNeuroevolution bestFitness", evo:bestFitness())
+    example_print_log("lurek.learning.newNeuroevolution generation", evo:generation())
+    example_print_log("lurek.learning.newNeuroevolution bestFitness", evo:bestFitness())
 end
 ```
 
@@ -518,8 +523,10 @@ lurek.learning.newPositionalEncoding(d_model, max_len)
 ```lua
 do
     local pe = lurek.learning.newPositionalEncoding(4, 8)
-    print("lurek.learning.newPositionalEncoding type", pe:type())
-    print("typeOf LObject = " .. tostring(pe:typeOf("LObject")))
+    local pe_type = pe:type()
+    local pe_is = pe:typeOf("LPositionalEncoding")
+    example_print_log("lurek.learning.newPositionalEncoding type", pe:type())
+    example_print_log("encoding configured = " .. tostring(pe_is))
 end
 ```
 
@@ -551,12 +558,14 @@ lurek.learning.newQLearner(sc, ac)
 ```lua
 do
     local learner = lurek.learning.newQLearner(4, 3)
+    learner:setQValue(0, 0, 0.25)
+    local learner_states = learner:getStateCount()
     learner:setLearningRate(0.2)
     learner:setDiscountFactor(0.9)
     learner:learn(1, 2, 1.0, 3)
 
-    print("lurek.learning.newQLearner states", learner:getStateCount())
-    print("lurek.learning.newQLearner q12", learner:getQValue(1, 2))
+    example_print_log("lurek.learning.newQLearner states", learner:getStateCount())
+    example_print_log("lurek.learning.newQLearner q12", learner:getQValue(1, 2))
 end
 ```
 
@@ -588,8 +597,10 @@ lurek.learning.newTensor(shape, data)
 ```lua
 do
     local t = lurek.learning.newTensor({2, 3}, {1.0, 2.0, 3.0, 4.0, 5.0, 6.0})
-    print("lurek.learning.newTensor type", t:type())
-    print("lurek.learning.newTensor len", t:len())
+    local tensor_shape = t:shape()
+    local tensor_len = t:len()
+    example_print_log("lurek.learning.newTensor type", t:type())
+    example_print_log("lurek.learning.newTensor len", t:len())
 end
 ```
 
@@ -622,8 +633,10 @@ lurek.learning.newTransformerDecoder(d_model, num_heads, d_ff)
 ```lua
 do
     local dec = lurek.learning.newTransformerDecoder(4, 2, 8)
-    print("lurek.learning.newTransformerDecoder type", dec:type())
-    print("typeOf LObject = " .. tostring(dec:typeOf("LObject")))
+    local dec_weights = dec:getWeights()
+    local dec_params = dec:paramCount()
+    example_print_log("lurek.learning.newTransformerDecoder type", dec:type())
+    example_print_log("decoder configured = " .. tostring(dec_is))
 end
 ```
 
@@ -656,8 +669,10 @@ lurek.learning.newTransformerEncoder(d_model, num_heads, d_ff)
 ```lua
 do
     local enc = lurek.learning.newTransformerEncoder(4, 2, 8)
-    print("lurek.learning.newTransformerEncoder type", enc:type())
-    print("typeOf LObject = " .. tostring(enc:typeOf("LObject")))
+    local enc_weights = enc:getWeights()
+    local enc_params = enc:paramCount()
+    example_print_log("lurek.learning.newTransformerEncoder type", enc:type())
+    example_print_log("encoder configured = " .. tostring(enc_is))
 end
 ```
 
@@ -697,8 +712,8 @@ do
     })
     local wrapped = lurek.learning.normalizeEnv(base, {1.0, 2.0}, {1.0, 2.0})
     local obs = wrapped:reset()
-    print("lurek.learning.normalizeEnv obs[1]", obs[1])
-    print("lurek.learning.normalizeEnv obs[2]", obs[2])
+    example_print_log("lurek.learning.normalizeEnv obs[1]", obs[1])
+    example_print_log("lurek.learning.normalizeEnv obs[2]", obs[2])
 end
 ```
 
@@ -737,7 +752,7 @@ do
     })
     local limited = lurek.learning.timeLimit(base, 5)
     limited:reset()
-    print("lurek.learning.timeLimit type", limited:type())
+    example_print_log("lurek.learning.timeLimit type", limited:type())
 end
 ```
 
@@ -769,7 +784,9 @@ lurek.learning.wrap(model)
 do
     local qlearner = lurek.learning.newQLearner(4, 2)
     local model = lurek.learning.wrap(qlearner)
-    print("wrapped model type = " .. model:type())
+    local model_type = model:type()
+    local is_model = model:typeOf("LModel")
+    example_print_log("wrapped model type = " .. model:type())
 end
 ```
 
@@ -836,9 +853,11 @@ LBandit:armCount()
 ```lua
 do
     local bandit = lurek.learning.newBandit(4, "ucb1", 0.1, 1)
+    local warmup_arm = bandit:select()
+    bandit:update(warmup_arm, 0.1)
     local arm_count = bandit:armCount()
 
-    print("LBandit:armCount", arm_count)
+    example_print_log("LBandit:armCount", arm_count)
 end
 ```
 
@@ -863,11 +882,13 @@ LBandit:bestArm()
 ```lua
 do
     local bandit = lurek.learning.newBandit(3, "ucb1", 0.1, 2)
+    local warmup_arm = bandit:select()
+    bandit:update(warmup_arm, 0.1)
     bandit:update(0, 0.25)
     bandit:update(1, 0.9)
     bandit:update(2, 0.4)
 
-    print("LBandit:bestArm", bandit:bestArm())
+    example_print_log("LBandit:bestArm", bandit:bestArm())
 end
 ```
 
@@ -893,7 +914,9 @@ LBandit:predict()
 do
     local b = lurek.learning.newBandit(3, "ucb1", 0.1, 12345)
     local action = b:predict()
-    print("bandit predict = " .. action)
+    local arms = b:armCount()
+    local pulls = b:totalPulls()
+    example_print_log("bandit predict = " .. action)
 end
 ```
 
@@ -912,12 +935,14 @@ LBandit:reset()
 ```lua
 do
     local bandit = lurek.learning.newBandit(3, "thompson", 0.1, 3)
+    local warmup_arm = bandit:select()
+    bandit:update(warmup_arm, 0.1)
     local selected_arm = bandit:select()
     bandit:update(selected_arm, 0.5)
     bandit:reset()
 
-    print("LBandit:reset pulls", bandit:totalPulls())
-    print("LBandit:reset bestArm", bandit:bestArm())
+    example_print_log("LBandit:reset pulls", bandit:totalPulls())
+    example_print_log("LBandit:reset bestArm", bandit:bestArm())
 end
 ```
 
@@ -942,11 +967,13 @@ LBandit:select()
 ```lua
 do
     local bandit = lurek.learning.newBandit(5, "thompson", 0.1, 4)
+    local warmup_arm = bandit:select()
+    bandit:update(warmup_arm, 0.1)
     local first_arm = bandit:select()
     local second_arm = bandit:select()
 
-    print("LBandit:select first", first_arm)
-    print("LBandit:select second", second_arm)
+    example_print_log("LBandit:select first", first_arm)
+    example_print_log("LBandit:select second", second_arm)
 end
 ```
 
@@ -971,11 +998,13 @@ LBandit:totalPulls()
 ```lua
 do
     local bandit = lurek.learning.newBandit(3, "ucb1", 0.1, 5)
+    local warmup_arm = bandit:select()
+    bandit:update(warmup_arm, 0.1)
     bandit:select()
     bandit:select()
     local total_pulls = bandit:totalPulls()
 
-    print("LBandit:totalPulls", total_pulls)
+    example_print_log("LBandit:totalPulls", total_pulls)
 end
 ```
 
@@ -1000,9 +1029,11 @@ LBandit:type()
 ```lua
 do
     local bandit = lurek.learning.newBandit(3, "ucb1", 0.1, 6)
+    local warmup_arm = bandit:select()
+    bandit:update(warmup_arm, 0.1)
     local type_name = bandit:type()
 
-    print("LBandit:type", type_name)
+    example_print_log("LBandit:type", type_name)
 end
 ```
 
@@ -1033,11 +1064,13 @@ LBandit:typeOf(name)
 ```lua
 do
     local bandit = lurek.learning.newBandit(3, "ucb1", 0.1, 7)
+    local warmup_arm = bandit:select()
+    bandit:update(warmup_arm, 0.1)
     local is_bandit = bandit:typeOf("LBandit")
     local is_object = bandit:typeOf("LObject")
 
-    print("LBandit:typeOf LBandit", tostring(is_bandit))
-    print("LBandit:typeOf LObject", tostring(is_object))
+    example_print_log("LBandit:typeOf LBandit", tostring(is_bandit))
+    example_print_log("LBandit totalPulls", bandit:totalPulls())
 end
 ```
 
@@ -1063,11 +1096,13 @@ LBandit:update(idx, reward)
 ```lua
 do
     local bandit = lurek.learning.newBandit(4, "ucb1", 0.1, 8)
+    local warmup_arm = bandit:select()
+    bandit:update(warmup_arm, 0.1)
     local arm_index = bandit:select()
     bandit:update(arm_index, 0.8)
 
-    print("LBandit:update arm", arm_index)
-    print("LBandit:update bestArm", bandit:bestArm())
+    example_print_log("LBandit:update arm", arm_index)
+    example_print_log("LBandit:update bestArm", bandit:bestArm())
 end
 ```
 
@@ -1106,9 +1141,11 @@ LConv2D:forward(input)
 ```lua
 do
     local conv = lurek.learning.newConv2D(1, 1, 1, 1, 1, 1, 0, 0)
+    local conv_weights = conv:getWeights()
+    local conv_params = conv:paramCount()
     local input = lurek.learning.newTensor({1, 2, 2}, {1, 2, 3, 4})
     local out = conv:forward(input)
-    print("LConv2D:forward outW", out:shape()[3])
+    example_print_log("LConv2D:forward outW", out:shape()[3])
 end
 ```
 
@@ -1133,8 +1170,10 @@ LConv2D:getWeights()
 ```lua
 do
     local conv = lurek.learning.newConv2D(1, 1, 1, 1, 1, 1, 0, 0)
+    local conv_weights = conv:getWeights()
+    local conv_params = conv:paramCount()
     local got = conv:getWeights()
-    print("LConv2D:getWeights", #got)
+    example_print_log("LConv2D:getWeights", #got)
 end
 ```
 
@@ -1159,8 +1198,10 @@ LConv2D:paramCount()
 ```lua
 do
     local conv = lurek.learning.newConv2D(1, 1, 1, 1, 1, 1, 0, 0)
-    print("LConv2D:paramCount", conv:paramCount())
-    print("owner type = " .. tostring(conv:type()))
+    local conv_weights = conv:getWeights()
+    local conv_params = conv:paramCount()
+    example_print_log("LConv2D:paramCount", conv:paramCount())
+    example_print_log("weight count = " .. #conv_weights)
 end
 ```
 
@@ -1191,13 +1232,15 @@ LConv2D:setWeights(weights)
 ```lua
 do
     local conv = lurek.learning.newConv2D(1, 1, 1, 1, 1, 1, 0, 0)
+    local conv_weights = conv:getWeights()
+    local conv_params = conv:paramCount()
     local count = conv:paramCount()
     local weights = {}
     for i = 1, count do
         weights[i] = 0.0
     end
     conv:setWeights(weights)
-    print("LConv2D:setWeights count", count)
+    example_print_log("LConv2D:setWeights count", count)
 end
 ```
 
@@ -1222,8 +1265,10 @@ LConv2D:type()
 ```lua
 do
     local conv = lurek.learning.newConv2D(1, 1, 1, 1, 1, 1, 0, 0)
-    print("LConv2D:type", conv:type())
-    print("typeOf LObject = " .. tostring(conv:typeOf("LObject")))
+    local conv_weights = conv:getWeights()
+    local conv_params = conv:paramCount()
+    example_print_log("LConv2D:type", conv:type())
+    example_print_log("weight count = " .. #conv_weights)
 end
 ```
 
@@ -1254,8 +1299,10 @@ LConv2D:typeOf(name)
 ```lua
 do
     local conv = lurek.learning.newConv2D(1, 1, 1, 1, 1, 1, 0, 0)
-    print("LConv2D:typeOf", tostring(conv:typeOf("LObject")))
-    print("type = " .. tostring(conv:type()))
+    local conv_weights = conv:getWeights()
+    local conv_params = conv:paramCount()
+    example_print_log("LConv2D:typeOf", tostring(conv:typeOf("LObject")))
+    example_print_log("type = " .. tostring(conv:type()))
 end
 ```
 
@@ -1294,7 +1341,7 @@ do
         action_space = { n = 6 },
     })
     local space = env:actionSpace()
-    print("LEnv:actionSpace n", space.n)
+    example_print_log("LEnv:actionSpace n", space.n)
 end
 ```
 
@@ -1325,7 +1372,7 @@ do
         action_space = { n = 2 },
     })
     local space = env:obsSpace()
-    print("LEnv:obsSpace shape[1]", space.shape[1])
+    example_print_log("LEnv:obsSpace shape[1]", space.shape[1])
 end
 ```
 
@@ -1356,8 +1403,8 @@ do
         action_space = { n = 2 },
     })
     local obs = env:reset()
-    print("LEnv:reset obs len", #obs)
-    print("LEnv:reset obs[1]", obs[1])
+    example_print_log("LEnv:reset obs len", #obs)
+    example_print_log("LEnv:reset obs[1]", obs[1])
 end
 ```
 
@@ -1397,9 +1444,9 @@ do
         action_space = { n = 3 },
     })
     local obs, reward, done, info = env:step(1)
-    print("LEnv:step obs[1]", obs[1])
-    print("LEnv:step reward", reward)
-    print("LEnv:step done", tostring(done))
+    example_print_log("LEnv:step obs[1]", obs[1])
+    example_print_log("LEnv:step reward", reward)
+    example_print_log("LEnv:step done", tostring(done))
 end
 ```
 
@@ -1429,7 +1476,7 @@ do
         obs_space    = { shape = {1}, low = {0.0}, high = {1.0} },
         action_space = { n = 2 },
     })
-    print("LEnv:type", env:type())
+    example_print_log("LEnv:type", env:type())
 end
 ```
 
@@ -1465,8 +1512,8 @@ do
         obs_space    = { shape = {1}, low = {0.0}, high = {1.0} },
         action_space = { n = 2 },
     })
-    print("LEnv:typeOf LEnv", tostring(env:typeOf("LEnv")))
-    print("LEnv:typeOf LObject", tostring(env:typeOf("LObject")))
+    example_print_log("LEnv:typeOf LEnv", tostring(env:typeOf("LEnv")))
+    example_print_log("LEnv reset size", #env:reset())
 end
 ```
 
@@ -1499,8 +1546,10 @@ LFrameStack:capacity()
 ```lua
 do
     local fs = lurek.learning.frameStack(5)
-    print("LFrameStack:capacity", fs:capacity())
-    print("owner type = " .. tostring(fs:type()))
+    fs:push({0.1})
+    local flat = fs:get()
+    example_print_log("LFrameStack:capacity", fs:capacity())
+    example_print_log("stack width = " .. #flat)
 end
 ```
 
@@ -1528,8 +1577,8 @@ do
     fs:push({1.0, 2.0})
     fs:push({3.0, 4.0})
     local flat = fs:get()
-    print("LFrameStack:get len", #flat)
-    print("LFrameStack:get first", flat[1])
+    example_print_log("LFrameStack:get len", #flat)
+    example_print_log("LFrameStack:get first", flat[1])
 end
 ```
 
@@ -1556,7 +1605,8 @@ do
     local fs = lurek.learning.frameStack(4)
     fs:push({0.1, 0.2})
     fs:push({0.3, 0.4})
-    print("LFrameStack:push capacity", fs:capacity())
+    local flat = fs:get()
+    example_print_log("LFrameStack:push capacity", fs:capacity())
 end
 ```
 
@@ -1578,7 +1628,7 @@ do
     fs:push({1.0})
     fs:push({2.0})
     fs:reset()
-    print("LFrameStack:reset capacity", fs:capacity())
+    example_print_log("LFrameStack:reset capacity", fs:capacity())
 end
 ```
 
@@ -1603,8 +1653,10 @@ LFrameStack:type()
 ```lua
 do
     local fs = lurek.learning.frameStack(3)
-    print("LFrameStack:type", fs:type())
-    print("typeOf LObject = " .. tostring(fs:typeOf("LObject")))
+    fs:push({0.1})
+    local flat = fs:get()
+    example_print_log("LFrameStack:type", fs:type())
+    example_print_log("stack width = " .. #flat)
 end
 ```
 
@@ -1635,8 +1687,10 @@ LFrameStack:typeOf(name)
 ```lua
 do
     local fs = lurek.learning.frameStack(3)
-    print("LFrameStack:typeOf LFrameStack", tostring(fs:typeOf("LFrameStack")))
-    print("LFrameStack:typeOf LObject", tostring(fs:typeOf("LObject")))
+    fs:push({0.1})
+    local flat = fs:get()
+    example_print_log("LFrameStack:typeOf LFrameStack", tostring(fs:typeOf("LFrameStack")))
+    example_print_log("LFrameStack flattened len", #flat)
 end
 ```
 
@@ -1675,8 +1729,10 @@ LGRU:forward(input)
 ```lua
 do
     local gru = lurek.learning.newGru(2, 3)
+    local gru_weights = gru:getWeights()
+    local gru_params = gru:paramCount()
     local out = gru:forward({ 0.1, -0.2 })
-    print("LGRU:forward outLen", #out)
+    example_print_log("LGRU:forward outLen", #out)
 end
 ```
 
@@ -1701,8 +1757,10 @@ LGRU:getWeights()
 ```lua
 do
     local gru = lurek.learning.newGru(2, 2)
+    local gru_weights = gru:getWeights()
+    local gru_params = gru:paramCount()
     local got = gru:getWeights()
-    print("LGRU:getWeights", #got)
+    example_print_log("LGRU:getWeights", #got)
 end
 ```
 
@@ -1727,8 +1785,10 @@ LGRU:paramCount()
 ```lua
 do
     local gru = lurek.learning.newGru(2, 2)
-    print("LGRU:paramCount", gru:paramCount())
-    print("owner type = " .. tostring(gru:type()))
+    local gru_weights = gru:getWeights()
+    local gru_params = gru:paramCount()
+    example_print_log("LGRU:paramCount", gru:paramCount())
+    example_print_log("weight count = " .. #gru_weights)
 end
 ```
 
@@ -1753,8 +1813,10 @@ LGRU:reset()
 ```lua
 do
     local gru = lurek.learning.newGru(2, 2)
+    local gru_weights = gru:getWeights()
+    local gru_params = gru:paramCount()
     gru:reset()
-    print("LGRU:reset ok")
+    example_print_log("LGRU:reset ok")
 end
 ```
 
@@ -1785,13 +1847,15 @@ LGRU:setWeights(weights)
 ```lua
 do
     local gru = lurek.learning.newGru(2, 2)
+    local gru_weights = gru:getWeights()
+    local gru_params = gru:paramCount()
     local count = gru:paramCount()
     local weights = {}
     for i = 1, count do
         weights[i] = 0.0
     end
     gru:setWeights(weights)
-    print("LGRU:setWeights count", count)
+    example_print_log("LGRU:setWeights count", count)
 end
 ```
 
@@ -1816,8 +1880,10 @@ LGRU:type()
 ```lua
 do
     local gru = lurek.learning.newGru(2, 2)
-    print("LGRU:type", gru:type())
-    print("typeOf LObject = " .. tostring(gru:typeOf("LObject")))
+    local gru_weights = gru:getWeights()
+    local gru_params = gru:paramCount()
+    example_print_log("LGRU:type", gru:type())
+    example_print_log("weight count = " .. #gru_weights)
 end
 ```
 
@@ -1848,8 +1914,10 @@ LGRU:typeOf(name)
 ```lua
 do
     local gru = lurek.learning.newGru(2, 2)
-    print("LGRU:typeOf", tostring(gru:typeOf("LObject")))
-    print("type = " .. tostring(gru:type()))
+    local gru_weights = gru:getWeights()
+    local gru_params = gru:paramCount()
+    example_print_log("LGRU:typeOf", tostring(gru:typeOf("LObject")))
+    example_print_log("type = " .. tostring(gru:type()))
 end
 ```
 
@@ -1882,14 +1950,16 @@ LGeneticAlgorithm:bestGenes()
 ```lua
 do
     local ga = lurek.learning.newGeneticAlgorithm(5, 3, 10)
+    ga:setFitness(0, 0.1)
+    local ga_generation = ga:generation()
 
     for index = 0, ga:popSize() - 1 do
         ga:setFitness(index, index)
     end
 
     local genes = ga:bestGenes()
-    print("LGeneticAlgorithm:bestGenes count", #genes)
-    print("LGeneticAlgorithm:bestGenes first", genes[1])
+    example_print_log("LGeneticAlgorithm:bestGenes count", #genes)
+    example_print_log("LGeneticAlgorithm:bestGenes first", genes[1])
 end
 ```
 
@@ -1908,13 +1978,15 @@ LGeneticAlgorithm:evolve()
 ```lua
 do
     local ga = lurek.learning.newGeneticAlgorithm(5, 4, 11)
+    ga:setFitness(0, 0.1)
+    local ga_generation = ga:generation()
 
     for index = 0, ga:popSize() - 1 do
         ga:setFitness(index, index * 0.5)
     end
 
     ga:evolve()
-    print("LGeneticAlgorithm:evolve generation", ga:generation())
+    example_print_log("LGeneticAlgorithm:evolve generation", ga:generation())
 end
 ```
 
@@ -1939,10 +2011,12 @@ LGeneticAlgorithm:generation()
 ```lua
 do
     local ga = lurek.learning.newGeneticAlgorithm(4, 3, 12)
+    ga:setFitness(0, 0.1)
+    local ga_generation = ga:generation()
     ga:evolve()
     ga:evolve()
 
-    print("LGeneticAlgorithm:generation", ga:generation())
+    example_print_log("LGeneticAlgorithm:generation", ga:generation())
 end
 ```
 
@@ -1973,10 +2047,12 @@ LGeneticAlgorithm:getGenes(idx)
 ```lua
 do
     local ga = lurek.learning.newGeneticAlgorithm(4, 5, 13)
+    ga:setFitness(0, 0.1)
+    local ga_generation = ga:generation()
     local genes = ga:getGenes(0)
 
-    print("LGeneticAlgorithm:getGenes count", #genes)
-    print("LGeneticAlgorithm:getGenes first", genes[1])
+    example_print_log("LGeneticAlgorithm:getGenes count", #genes)
+    example_print_log("LGeneticAlgorithm:getGenes first", genes[1])
 end
 ```
 
@@ -2001,9 +2077,11 @@ LGeneticAlgorithm:popSize()
 ```lua
 do
     local ga = lurek.learning.newGeneticAlgorithm(15, 8, 14)
+    ga:setFitness(0, 0.1)
+    local ga_generation = ga:generation()
     local pop_size = ga:popSize()
 
-    print("LGeneticAlgorithm:popSize", pop_size)
+    example_print_log("LGeneticAlgorithm:popSize", pop_size)
 end
 ```
 
@@ -2029,12 +2107,14 @@ LGeneticAlgorithm:setFitness(idx, fitness)
 ```lua
 do
     local ga = lurek.learning.newGeneticAlgorithm(6, 3, 15)
+    ga:setFitness(0, 0.1)
+    local ga_generation = ga:generation()
     ga:setFitness(0, 1.25)
     ga:setFitness(1, 0.5)
     ga:evolve()
 
-    print("LGeneticAlgorithm:setFitness generation", ga:generation())
-    print("LGeneticAlgorithm:setFitness bestGenes", #ga:bestGenes())
+    example_print_log("LGeneticAlgorithm:setFitness generation", ga:generation())
+    example_print_log("LGeneticAlgorithm:setFitness bestGenes", #ga:bestGenes())
 end
 ```
 
@@ -2059,9 +2139,11 @@ LGeneticAlgorithm:type()
 ```lua
 do
     local ga = lurek.learning.newGeneticAlgorithm(4, 2, 16)
+    ga:setFitness(0, 0.1)
+    local ga_generation = ga:generation()
     local type_name = ga:type()
 
-    print("LGeneticAlgorithm:type", type_name)
+    example_print_log("LGeneticAlgorithm:type", type_name)
 end
 ```
 
@@ -2092,11 +2174,13 @@ LGeneticAlgorithm:typeOf(name)
 ```lua
 do
     local ga = lurek.learning.newGeneticAlgorithm(4, 2, 17)
+    ga:setFitness(0, 0.1)
+    local ga_generation = ga:generation()
     local is_ga = ga:typeOf("LGeneticAlgorithm")
     local is_object = ga:typeOf("LObject")
 
-    print("LGeneticAlgorithm:typeOf LGeneticAlgorithm", tostring(is_ga))
-    print("LGeneticAlgorithm:typeOf LObject", tostring(is_object))
+    example_print_log("LGeneticAlgorithm:typeOf LGeneticAlgorithm", tostring(is_ga))
+    example_print_log("LGeneticAlgorithm popSize", ga:popSize())
 end
 ```
 
@@ -2135,8 +2219,10 @@ LLSTM:forward(input)
 ```lua
 do
     local lstm = lurek.learning.newLstm(2, 3)
+    local lstm_weights = lstm:getWeights()
+    local lstm_params = lstm:paramCount()
     local out = lstm:forward({ 0.1, -0.2 })
-    print("LLSTM:forward outLen", #out)
+    example_print_log("LLSTM:forward outLen", #out)
 end
 ```
 
@@ -2161,8 +2247,10 @@ LLSTM:getWeights()
 ```lua
 do
     local lstm = lurek.learning.newLstm(2, 2)
+    local lstm_weights = lstm:getWeights()
+    local lstm_params = lstm:paramCount()
     local got = lstm:getWeights()
-    print("LLSTM:getWeights", #got)
+    example_print_log("LLSTM:getWeights", #got)
 end
 ```
 
@@ -2187,8 +2275,10 @@ LLSTM:paramCount()
 ```lua
 do
     local lstm = lurek.learning.newLstm(2, 2)
-    print("LLSTM:paramCount", lstm:paramCount())
-    print("owner type = " .. tostring(lstm:type()))
+    local lstm_weights = lstm:getWeights()
+    local lstm_params = lstm:paramCount()
+    example_print_log("LLSTM:paramCount", lstm:paramCount())
+    example_print_log("weight count = " .. #lstm_weights)
 end
 ```
 
@@ -2213,8 +2303,10 @@ LLSTM:reset()
 ```lua
 do
     local lstm = lurek.learning.newLstm(2, 2)
+    local lstm_weights = lstm:getWeights()
+    local lstm_params = lstm:paramCount()
     lstm:reset()
-    print("LLSTM:reset ok")
+    example_print_log("LLSTM:reset ok")
 end
 ```
 
@@ -2245,13 +2337,15 @@ LLSTM:setWeights(weights)
 ```lua
 do
     local lstm = lurek.learning.newLstm(2, 2)
+    local lstm_weights = lstm:getWeights()
+    local lstm_params = lstm:paramCount()
     local count = lstm:paramCount()
     local weights = {}
     for i = 1, count do
         weights[i] = 0.0
     end
     lstm:setWeights(weights)
-    print("LLSTM:setWeights count", count)
+    example_print_log("LLSTM:setWeights count", count)
 end
 ```
 
@@ -2276,8 +2370,10 @@ LLSTM:type()
 ```lua
 do
     local lstm = lurek.learning.newLstm(2, 2)
-    print("LLSTM:type", lstm:type())
-    print("typeOf LObject = " .. tostring(lstm:typeOf("LObject")))
+    local lstm_weights = lstm:getWeights()
+    local lstm_params = lstm:paramCount()
+    example_print_log("LLSTM:type", lstm:type())
+    example_print_log("weight count = " .. #lstm_weights)
 end
 ```
 
@@ -2308,8 +2404,10 @@ LLSTM:typeOf(name)
 ```lua
 do
     local lstm = lurek.learning.newLstm(2, 2)
-    print("LLSTM:typeOf", tostring(lstm:typeOf("LObject")))
-    print("type = " .. tostring(lstm:type()))
+    local lstm_weights = lstm:getWeights()
+    local lstm_params = lstm:paramCount()
+    example_print_log("LLSTM:typeOf", tostring(lstm:typeOf("LObject")))
+    example_print_log("type = " .. tostring(lstm:type()))
 end
 ```
 
@@ -2348,6 +2446,8 @@ LMaxPool2D:forward(input)
 ```lua
 do
     local pool = lurek.learning.newMaxPool2D(2, 2, 2, 2)
+    local pool_type = pool:type()
+    local pool_is = pool:typeOf("LMaxPool2D")
     local input = lurek.learning.newTensor({1, 4, 4}, {
         1, 5, 2, 3,
         7, 4, 0, 6,
@@ -2355,7 +2455,7 @@ do
         3, 2, 4, 1,
     })
     local out = pool:forward(input)
-    print("LMaxPool2D:forward outH", out:shape()[2])
+    example_print_log("LMaxPool2D:forward outH", out:shape()[2])
 end
 ```
 
@@ -2380,8 +2480,10 @@ LMaxPool2D:type()
 ```lua
 do
     local pool = lurek.learning.newMaxPool2D(2, 2, 2, 2)
-    print("LMaxPool2D:type", pool:type())
-    print("typeOf LObject = " .. tostring(pool:typeOf("LObject")))
+    local pool_type = pool:type()
+    local pool_is = pool:typeOf("LMaxPool2D")
+    example_print_log("LMaxPool2D:type", pool:type())
+    example_print_log("pool configured = " .. tostring(pool_is))
 end
 ```
 
@@ -2412,8 +2514,10 @@ LMaxPool2D:typeOf(name)
 ```lua
 do
     local pool = lurek.learning.newMaxPool2D(2, 2, 2, 2)
-    print("LMaxPool2D:typeOf", tostring(pool:typeOf("LObject")))
-    print("type = " .. tostring(pool:type()))
+    local pool_type = pool:type()
+    local pool_is = pool:typeOf("LMaxPool2D")
+    example_print_log("LMaxPool2D:typeOf", tostring(pool:typeOf("LObject")))
+    example_print_log("type = " .. tostring(pool:type()))
 end
 ```
 
@@ -2454,8 +2558,10 @@ LModel:predict(input)
 do
     local qlearner = lurek.learning.newQLearner(4, 2)
     local model = lurek.learning.wrap(qlearner)
+    local model_type = model:type()
+    local is_model = model:typeOf("LModel")
     local action = model:predict(0)
-    print("model predict = " .. action)
+    example_print_log("model predict = " .. action)
 end
 ```
 
@@ -2481,7 +2587,9 @@ LModel:type()
 do
     local qlearner = lurek.learning.newQLearner(4, 2)
     local model = lurek.learning.wrap(qlearner)
-    print("model type = " .. model:type())
+    local model_type = model:type()
+    local is_model = model:typeOf("LModel")
+    example_print_log("model type = " .. model:type())
 end
 ```
 
@@ -2513,7 +2621,9 @@ LModel:typeOf(name)
 do
     local qlearner = lurek.learning.newQLearner(4, 2)
     local model = lurek.learning.wrap(qlearner)
-    print("model typeOf LModel = " .. tostring(model:typeOf("LModel")))
+    local model_type = model:type()
+    local is_model = model:typeOf("LModel")
+    example_print_log("model typeOf LModel = " .. tostring(model:typeOf("LModel")))
 end
 ```
 
@@ -2552,9 +2662,11 @@ LMultiHeadAttention:forward(input)
 ```lua
 do
     local mha = lurek.learning.newMultiHeadAttention(4, 2)
+    local mha_weights = mha:getWeights()
+    local mha_params = mha:paramCount()
     local x = lurek.learning.newTensor({2, 4}, {1, 0, 0, 1, 0, 1, 1, 0})
     local out = mha:forward(x)
-    print("LMultiHeadAttention:forward outShape", out:shape()[2])
+    example_print_log("LMultiHeadAttention:forward outShape", out:shape()[2])
 end
 ```
 
@@ -2579,8 +2691,10 @@ LMultiHeadAttention:getWeights()
 ```lua
 do
     local mha = lurek.learning.newMultiHeadAttention(4, 2)
+    local mha_weights = mha:getWeights()
+    local mha_params = mha:paramCount()
     local got = mha:getWeights()
-    print("LMultiHeadAttention:getWeights", #got)
+    example_print_log("LMultiHeadAttention:getWeights", #got)
 end
 ```
 
@@ -2605,8 +2719,10 @@ LMultiHeadAttention:paramCount()
 ```lua
 do
     local mha = lurek.learning.newMultiHeadAttention(4, 2)
-    print("LMultiHeadAttention:paramCount", mha:paramCount())
-    print("owner type = " .. tostring(mha:type()))
+    local mha_weights = mha:getWeights()
+    local mha_params = mha:paramCount()
+    example_print_log("LMultiHeadAttention:paramCount", mha:paramCount())
+    example_print_log("weight count = " .. #mha:getWeights())
 end
 ```
 
@@ -2637,13 +2753,15 @@ LMultiHeadAttention:setWeights(weights)
 ```lua
 do
     local mha = lurek.learning.newMultiHeadAttention(4, 2)
+    local mha_weights = mha:getWeights()
+    local mha_params = mha:paramCount()
     local count = mha:paramCount()
     local weights = {}
     for i = 1, count do
         weights[i] = 0.0
     end
     mha:setWeights(weights)
-    print("LMultiHeadAttention:setWeights count", count)
+    example_print_log("LMultiHeadAttention:setWeights count", count)
 end
 ```
 
@@ -2668,8 +2786,10 @@ LMultiHeadAttention:type()
 ```lua
 do
     local mha = lurek.learning.newMultiHeadAttention(4, 2)
-    print("LMultiHeadAttention:type", mha:type())
-    print("typeOf LObject = " .. tostring(mha:typeOf("LObject")))
+    local mha_weights = mha:getWeights()
+    local mha_params = mha:paramCount()
+    example_print_log("LMultiHeadAttention:type", mha:type())
+    example_print_log("attention configured = " .. tostring(mha_is))
 end
 ```
 
@@ -2700,8 +2820,10 @@ LMultiHeadAttention:typeOf(name)
 ```lua
 do
     local mha = lurek.learning.newMultiHeadAttention(4, 2)
-    print("LMultiHeadAttention:typeOf", tostring(mha:typeOf("LObject")))
-    print("type = " .. tostring(mha:type()))
+    local mha_weights = mha:getWeights()
+    local mha_params = mha:paramCount()
+    example_print_log("LMultiHeadAttention:typeOf", tostring(mha:typeOf("LObject")))
+    example_print_log("type = " .. tostring(mha:type()))
 end
 ```
 
@@ -2734,8 +2856,10 @@ LNeuralEngine:addConv2D(args)
 ```lua
 do
     local engine = lurek.learning.newEngine()
+    engine:addDense(2, 2, "linear")
+    local engine_blocks = engine:blockCount()
     engine:addConv2D(1, 2, 3, 3, 1, 1, 1, 1)
-    print("LNeuralEngine:addConv2D blocks", engine:blockCount())
+    example_print_log("LNeuralEngine:addConv2D blocks", engine:blockCount())
 end
 ```
 
@@ -2762,8 +2886,10 @@ LNeuralEngine:addDense(inputs, outputs, activation)
 ```lua
 do
     local engine = lurek.learning.newEngine()
+    engine:addDense(2, 2, "linear")
+    local engine_blocks = engine:blockCount()
     engine:addDense(3, 4, "relu")
-    print("LNeuralEngine:addDense params", engine:paramCount())
+    example_print_log("LNeuralEngine:addDense params", engine:paramCount())
 end
 ```
 
@@ -2791,8 +2917,10 @@ LNeuralEngine:addMaxPool2D(kernel_h, kernel_w, stride_h, stride_w)
 ```lua
 do
     local engine = lurek.learning.newEngine()
+    engine:addDense(2, 2, "linear")
+    local engine_blocks = engine:blockCount()
     engine:addMaxPool2D(2, 2)
-    print("LNeuralEngine:addMaxPool2D params", engine:paramCount())
+    example_print_log("LNeuralEngine:addMaxPool2D params", engine:paramCount())
 end
 ```
 
@@ -2819,8 +2947,10 @@ LNeuralEngine:addTransformerEncoder(d_model, heads, ff_hidden)
 ```lua
 do
     local engine = lurek.learning.newEngine()
+    engine:addDense(2, 2, "linear")
+    local engine_blocks = engine:blockCount()
     engine:addTransformerEncoder(4, 2, 8)
-    print("LNeuralEngine:addTransformerEncoder blocks", engine:blockCount())
+    example_print_log("LNeuralEngine:addTransformerEncoder blocks", engine:blockCount())
 end
 ```
 
@@ -2846,7 +2976,9 @@ LNeuralEngine:blockCount()
 do
     local engine = lurek.learning.newEngine()
     engine:addDense(2, 2, "linear")
-    print("LNeuralEngine:blockCount", engine:blockCount())
+    engine:addMaxPool2D(2, 2)
+    local weights = engine:getWeights()
+    example_print_log("LNeuralEngine:blockCount", engine:blockCount())
 end
 ```
 
@@ -2873,7 +3005,8 @@ do
     local engine = lurek.learning.newEngine()
     engine:addDense(2, 2, "linear")
     engine:setWeights({ 0.1, 0.2, 0.3, 0.4, 0.0, 0.0 })
-    print("LNeuralEngine:getWeights count", #engine:getWeights())
+    local params = engine:paramCount()
+    example_print_log("LNeuralEngine:getWeights count", #engine:getWeights())
 end
 ```
 
@@ -2899,7 +3032,9 @@ LNeuralEngine:paramCount()
 do
     local engine = lurek.learning.newEngine()
     engine:addDense(2, 2, "linear")
-    print("LNeuralEngine:paramCount", engine:paramCount())
+    engine:addConv2D(1, 1, 1, 1, 1, 1, 0, 0)
+    local weights = engine:getWeights()
+    example_print_log("LNeuralEngine:paramCount", engine:paramCount())
 end
 ```
 
@@ -2935,7 +3070,7 @@ do
     for i = 1, engine:paramCount() do
         weights[i] = 0.05 * i
     end
-    print("LNeuralEngine:setWeights", engine:setWeights(weights))
+    example_print_log("LNeuralEngine:setWeights", engine:setWeights(weights))
 end
 ```
 
@@ -2960,8 +3095,10 @@ LNeuralEngine:type()
 ```lua
 do
     local engine = lurek.learning.newEngine()
-    print("LNeuralEngine:type", engine:type())
-    print("typeOf LObject = " .. tostring(engine:typeOf("LObject")))
+    engine:addDense(2, 2, "linear")
+    local engine_blocks = engine:blockCount()
+    example_print_log("LNeuralEngine:type", engine:type())
+    example_print_log("engine blocks after setup = " .. engine:blockCount())
 end
 ```
 
@@ -2992,8 +3129,10 @@ LNeuralEngine:typeOf(name)
 ```lua
 do
     local engine = lurek.learning.newEngine()
-    print("LNeuralEngine:typeOf", engine:typeOf("LNeuralEngine"))
-    print("type = " .. tostring(engine:type()))
+    engine:addDense(2, 2, "linear")
+    local engine_blocks = engine:blockCount()
+    example_print_log("LNeuralEngine:typeOf", engine:typeOf("LNeuralEngine"))
+    example_print_log("type = " .. tostring(engine:type()))
 end
 ```
 
@@ -3028,11 +3167,13 @@ LNeuralNet:addLayer(inputs, outputs, activation)
 ```lua
 do
     local net = lurek.learning.newNeuralNet()
+    net:addLayer(2, 4, "linear")
+    local net_layers = net:layerCount()
     net:addLayer(4, 6, "relu")
     net:addLayer(6, 2, "sigmoid")
 
-    print("LNeuralNet:addLayer layerCount", net:layerCount())
-    print("LNeuralNet:addLayer paramCount", net:paramCount())
+    example_print_log("LNeuralNet:addLayer layerCount", net:layerCount())
+    example_print_log("LNeuralNet:addLayer paramCount", net:paramCount())
 end
 ```
 
@@ -3063,11 +3204,13 @@ LNeuralNet:forward(input)
 ```lua
 do
     local net = lurek.learning.newNeuralNet()
-    net:addLayer(3, 4, "relu")
+    net:addLayer(3, 4, "linear")
+    local net_layers = net:layerCount()
+    net:addLayer(4, 4, "relu")
     net:addLayer(4, 1, "sigmoid")
     local output = net:forward({ 0.1, 0.5, 0.9 })
 
-    print("LNeuralNet:forward out", output[1])
+    example_print_log("LNeuralNet:forward out", output[1])
 end
 ```
 
@@ -3092,11 +3235,13 @@ LNeuralNet:getWeights()
 ```lua
 do
     local net = lurek.learning.newNeuralNet()
+    net:addLayer(2, 2, "linear")
+    local net_layers = net:layerCount()
     net:addLayer(2, 3, "relu")
     local weights = net:getWeights()
 
-    print("LNeuralNet:getWeights count", #weights)
-    print("LNeuralNet:getWeights first", weights[1])
+    example_print_log("LNeuralNet:getWeights count", #weights)
+    example_print_log("LNeuralNet:getWeights first", weights[1])
 end
 ```
 
@@ -3121,11 +3266,13 @@ LNeuralNet:layerCount()
 ```lua
 do
     local net = lurek.learning.newNeuralNet()
+    net:addLayer(2, 4, "linear")
+    local net_layers = net:layerCount()
     net:addLayer(4, 8, "relu")
     net:addLayer(8, 4, "relu")
     net:addLayer(4, 1, "sigmoid")
 
-    print("LNeuralNet:layerCount", net:layerCount())
+    example_print_log("LNeuralNet:layerCount", net:layerCount())
 end
 ```
 
@@ -3150,10 +3297,12 @@ LNeuralNet:paramCount()
 ```lua
 do
     local net = lurek.learning.newNeuralNet()
-    net:addLayer(2, 4, "relu")
+    net:addLayer(2, 4, "linear")
+    local net_layers = net:layerCount()
+    net:addLayer(4, 4, "relu")
     net:addLayer(4, 1, "sigmoid")
 
-    print("LNeuralNet:paramCount", net:paramCount())
+    example_print_log("LNeuralNet:paramCount", net:paramCount())
 end
 ```
 
@@ -3184,8 +3333,10 @@ LNeuralNet:predict(input)
 ```lua
 do
     local nn = lurek.learning.newNeuralNet()
+    nn:addLayer(2, 2, "linear")
+    local layers = nn:layerCount()
     local action = nn:predict({0.5, 0.3})
-    print("nn predict = " .. tostring(action))
+    example_print_log("nn predict = " .. tostring(action))
 end
 ```
 
@@ -3220,8 +3371,8 @@ do
     local weights = net:getWeights()
     local applied = net:setWeights(weights)
 
-    print("LNeuralNet:setWeights applied", tostring(applied))
-    print("LNeuralNet:setWeights paramCount", net:paramCount())
+    example_print_log("LNeuralNet:setWeights applied", tostring(applied))
+    example_print_log("LNeuralNet:setWeights paramCount", net:paramCount())
 end
 ```
 
@@ -3246,9 +3397,11 @@ LNeuralNet:type()
 ```lua
 do
     local net = lurek.learning.newNeuralNet()
+    net:addLayer(2, 2, "linear")
+    local net_layers = net:layerCount()
     local type_name = net:type()
 
-    print("LNeuralNet:type", type_name)
+    example_print_log("LNeuralNet:type", type_name)
 end
 ```
 
@@ -3279,11 +3432,13 @@ LNeuralNet:typeOf(name)
 ```lua
 do
     local net = lurek.learning.newNeuralNet()
+    net:addLayer(2, 2, "linear")
+    local net_layers = net:layerCount()
     local is_net = net:typeOf("LNeuralNet")
     local is_object = net:typeOf("LObject")
 
-    print("LNeuralNet:typeOf LNeuralNet", tostring(is_net))
-    print("LNeuralNet:typeOf LObject", tostring(is_object))
+    example_print_log("LNeuralNet:typeOf LNeuralNet", tostring(is_net))
+    example_print_log("LNeuralNet paramCount", net:paramCount())
 end
 ```
 
@@ -3325,7 +3480,7 @@ do
         evo:setFitness(index, 1.0 + index * 0.2)
     end
 
-    print("LNeuroevolution:bestFitness", evo:bestFitness())
+    example_print_log("LNeuroevolution:bestFitness", evo:bestFitness())
 end
 ```
 
@@ -3360,8 +3515,8 @@ do
     end
 
     local best_net = evo:bestNetwork()
-    print("LNeuroevolution:bestNetwork type", best_net:type())
-    print("LNeuroevolution:bestNetwork layers", best_net:layerCount())
+    example_print_log("LNeuroevolution:bestNetwork type", best_net:type())
+    example_print_log("LNeuroevolution:bestNetwork layers", best_net:layerCount())
 end
 ```
 
@@ -3399,8 +3554,8 @@ do
     local net = evo:chromosomeToNet(0)
     local output = net:forward({ 0.3, 0.7 })
 
-    print("LNeuroevolution:chromosomeToNet type", net:type())
-    print("LNeuroevolution:chromosomeToNet out", output[1])
+    example_print_log("LNeuroevolution:chromosomeToNet type", net:type())
+    example_print_log("LNeuroevolution:chromosomeToNet out", output[1])
 end
 ```
 
@@ -3429,7 +3584,7 @@ do
     end
 
     evo:evolve()
-    print("LNeuroevolution:evolve generation", evo:generation())
+    example_print_log("LNeuroevolution:evolve generation", evo:generation())
 end
 ```
 
@@ -3460,7 +3615,7 @@ do
     local evo = lurek.learning.newNeuroevolution(layer_spec, 4, 22)
     evo:evolve()
 
-    print("LNeuroevolution:generation", evo:generation())
+    example_print_log("LNeuroevolution:generation", evo:generation())
 end
 ```
 
@@ -3491,7 +3646,7 @@ do
     local evo = lurek.learning.newNeuroevolution(layer_spec, 12, 23)
     local pop_size = evo:popSize()
 
-    print("LNeuroevolution:popSize", pop_size)
+    example_print_log("LNeuroevolution:popSize", pop_size)
 end
 ```
 
@@ -3525,8 +3680,8 @@ do
     evo:setFitness(1, 1.1)
     evo:evolve()
 
-    print("LNeuroevolution:setFitness generation", evo:generation())
-    print("LNeuroevolution:setFitness bestFitness", evo:bestFitness())
+    example_print_log("LNeuroevolution:setFitness generation", evo:generation())
+    example_print_log("LNeuroevolution:setFitness bestFitness", evo:bestFitness())
 end
 ```
 
@@ -3557,7 +3712,7 @@ do
     local evo = lurek.learning.newNeuroevolution(layer_spec, 4, 25)
     local type_name = evo:type()
 
-    print("LNeuroevolution:type", type_name)
+    example_print_log("LNeuroevolution:type", type_name)
 end
 ```
 
@@ -3595,8 +3750,8 @@ do
     local is_evo = evo:typeOf("LNeuroevolution")
     local is_object = evo:typeOf("LObject")
 
-    print("LNeuroevolution:typeOf LNeuroevolution", tostring(is_evo))
-    print("LNeuroevolution:typeOf LObject", tostring(is_object))
+    example_print_log("LNeuroevolution:typeOf LNeuroevolution", tostring(is_evo))
+    example_print_log("LNeuroevolution popSize", evo:popSize())
 end
 ```
 
@@ -3629,8 +3784,10 @@ LOnnxModel:inputCount()
 ```lua
 do
     local model = lurek.learning.loadOnnx("content/examples/assets/minimal_identity.onnx")
-    print("LOnnxModel:inputCount", model:inputCount())
-    print("model type = " .. model:type())
+    local input_count = model:inputCount()
+    local output_count = model:outputCount()
+    example_print_log("LOnnxModel:inputCount", model:inputCount())
+    example_print_log("model type = " .. model:type())
 end
 ```
 
@@ -3655,8 +3812,10 @@ LOnnxModel:outputCount()
 ```lua
 do
     local model = lurek.learning.loadOnnx("content/examples/assets/minimal_identity.onnx")
-    print("LOnnxModel:outputCount", model:outputCount())
-    print("model type = " .. model:type())
+    local input_count = model:inputCount()
+    local output_count = model:outputCount()
+    example_print_log("LOnnxModel:outputCount", model:outputCount())
+    example_print_log("model type = " .. model:type())
 end
 ```
 
@@ -3687,10 +3846,12 @@ LOnnxModel:run(inputs)
 ```lua
 do
     local model = lurek.learning.loadOnnx("content/examples/assets/minimal_identity.onnx")
+    local input_count = model:inputCount()
+    local output_count = model:outputCount()
     local input = lurek.learning.newTensor({1}, {42.0})
     local outputs = model:run({ input })
-    print("LOnnxModel:run outputs", #outputs)
-    print("LOnnxModel:run first value", outputs[1]:data()[1])
+    example_print_log("LOnnxModel:run outputs", #outputs)
+    example_print_log("LOnnxModel:run first value", outputs[1]:data()[1])
 end
 ```
 
@@ -3715,8 +3876,10 @@ LOnnxModel:type()
 ```lua
 do
     local model = lurek.learning.loadOnnx("content/examples/assets/minimal_identity.onnx")
-    print("LOnnxModel:type", model:type())
-    print("typeOf LOnnxModel = " .. tostring(model:typeOf("LOnnxModel")))
+    local input_count = model:inputCount()
+    local output_count = model:outputCount()
+    example_print_log("LOnnxModel:type", model:type())
+    example_print_log("typeOf LOnnxModel = " .. tostring(model:typeOf("LOnnxModel")))
 end
 ```
 
@@ -3747,8 +3910,10 @@ LOnnxModel:typeOf(name)
 ```lua
 do
     local model = lurek.learning.loadOnnx("content/examples/assets/minimal_identity.onnx")
-    print("LOnnxModel:typeOf LOnnxModel", tostring(model:typeOf("LOnnxModel")))
-    print("LOnnxModel:type", model:type())
+    local input_count = model:inputCount()
+    local output_count = model:outputCount()
+    example_print_log("LOnnxModel:typeOf LOnnxModel", tostring(model:typeOf("LOnnxModel")))
+    example_print_log("LOnnxModel:type", model:type())
 end
 ```
 
@@ -3787,9 +3952,11 @@ LPositionalEncoding:apply(input)
 ```lua
 do
     local pe = lurek.learning.newPositionalEncoding(4, 8)
+    local pe_type = pe:type()
+    local pe_is = pe:typeOf("LPositionalEncoding")
     local x = lurek.learning.newTensor({2, 4}, {0, 0, 0, 0, 0, 0, 0, 0})
     local out = pe:apply(x)
-    print("LPositionalEncoding:apply d1", out:data()[1])
+    example_print_log("LPositionalEncoding:apply d1", out:data()[1])
 end
 ```
 
@@ -3814,8 +3981,10 @@ LPositionalEncoding:type()
 ```lua
 do
     local pe = lurek.learning.newPositionalEncoding(4, 8)
-    print("LPositionalEncoding:type", pe:type())
-    print("typeOf LObject = " .. tostring(pe:typeOf("LObject")))
+    local pe_type = pe:type()
+    local pe_is = pe:typeOf("LPositionalEncoding")
+    example_print_log("LPositionalEncoding:type", pe:type())
+    example_print_log("encoding configured = " .. tostring(pe_is))
 end
 ```
 
@@ -3846,8 +4015,10 @@ LPositionalEncoding:typeOf(name)
 ```lua
 do
     local pe = lurek.learning.newPositionalEncoding(4, 8)
-    print("LPositionalEncoding:typeOf", tostring(pe:typeOf("LObject")))
-    print("type = " .. tostring(pe:type()))
+    local pe_type = pe:type()
+    local pe_is = pe:typeOf("LPositionalEncoding")
+    example_print_log("LPositionalEncoding:typeOf", tostring(pe:typeOf("LObject")))
+    example_print_log("type = " .. tostring(pe:type()))
 end
 ```
 
@@ -3886,11 +4057,13 @@ LQLearner:bestAction(state)
 ```lua
 do
     local learner = lurek.learning.newQLearner(5, 3)
+    learner:setQValue(0, 0, 0.25)
+    local learner_states = learner:getStateCount()
     learner:setQValue(1, 1, 0.5)
     learner:setQValue(1, 2, 1.2)
     learner:setQValue(1, 3, 0.8)
 
-    print("LQLearner:bestAction", learner:bestAction(1))
+    example_print_log("LQLearner:bestAction", learner:bestAction(1))
 end
 ```
 
@@ -3921,11 +4094,13 @@ LQLearner:chooseAction(state)
 ```lua
 do
     local learner = lurek.learning.newQLearner(5, 3)
+    learner:setQValue(0, 0, 0.25)
+    local learner_states = learner:getStateCount()
     learner:setExplorationRate(0.0)
     learner:setQValue(1, 2, 2.0)
     local chosen_action = learner:chooseAction(1)
 
-    print("LQLearner:chooseAction", chosen_action)
+    example_print_log("LQLearner:chooseAction", chosen_action)
 end
 ```
 
@@ -3955,7 +4130,7 @@ do
 
     local restored = lurek.learning.newQLearner(5, 3)
     restored:deserialize(saved)
-    print("LQLearner:deserialize q23", restored:getQValue(2, 3))
+    example_print_log("LQLearner:deserialize q23", restored:getQValue(2, 3))
 end
 ```
 
@@ -3974,11 +4149,13 @@ LQLearner:endEpisode()
 ```lua
 do
     local learner = lurek.learning.newQLearner(8, 4)
+    learner:setQValue(0, 0, 0.25)
+    local learner_states = learner:getStateCount()
     learner:setExplorationRate(0.8)
     learner:setExplorationDecay(0.5)
     learner:endEpisode()
 
-    print("LQLearner:endEpisode explorationRate", learner:getExplorationRate())
+    example_print_log("LQLearner:endEpisode explorationRate", learner:getExplorationRate())
 end
 ```
 
@@ -4003,9 +4180,11 @@ LQLearner:getActionCount()
 ```lua
 do
     local learner = lurek.learning.newQLearner(10, 4)
+    learner:setQValue(0, 0, 0.25)
+    local learner_states = learner:getStateCount()
     local action_count = learner:getActionCount()
 
-    print("LQLearner:getActionCount", action_count)
+    example_print_log("LQLearner:getActionCount", action_count)
 end
 ```
 
@@ -4030,9 +4209,11 @@ LQLearner:getDiscountFactor()
 ```lua
 do
     local learner = lurek.learning.newQLearner(10, 4)
+    learner:setQValue(0, 0, 0.25)
+    local learner_states = learner:getStateCount()
     learner:setDiscountFactor(0.95)
 
-    print("LQLearner:getDiscountFactor", learner:getDiscountFactor())
+    example_print_log("LQLearner:getDiscountFactor", learner:getDiscountFactor())
 end
 ```
 
@@ -4057,9 +4238,11 @@ LQLearner:getEpisodeCount()
 ```lua
 do
     local learner = lurek.learning.newQLearner(10, 4)
+    learner:setQValue(0, 0, 0.25)
+    local learner_states = learner:getStateCount()
     learner:endEpisode()
     learner:endEpisode()
-    print("LQLearner:getEpisodeCount", learner:getEpisodeCount())
+    example_print_log("LQLearner:getEpisodeCount", learner:getEpisodeCount())
 end
 ```
 
@@ -4084,9 +4267,11 @@ LQLearner:getExplorationDecay()
 ```lua
 do
     local learner = lurek.learning.newQLearner(10, 4)
+    learner:setQValue(0, 0, 0.25)
+    local learner_states = learner:getStateCount()
     learner:setExplorationDecay(0.97)
 
-    print("LQLearner:getExplorationDecay", learner:getExplorationDecay())
+    example_print_log("LQLearner:getExplorationDecay", learner:getExplorationDecay())
 end
 ```
 
@@ -4111,9 +4296,11 @@ LQLearner:getExplorationRate()
 ```lua
 do
     local learner = lurek.learning.newQLearner(10, 4)
+    learner:setQValue(0, 0, 0.25)
+    local learner_states = learner:getStateCount()
     learner:setExplorationRate(0.35)
 
-    print("LQLearner:getExplorationRate", learner:getExplorationRate())
+    example_print_log("LQLearner:getExplorationRate", learner:getExplorationRate())
 end
 ```
 
@@ -4138,9 +4325,11 @@ LQLearner:getLearningRate()
 ```lua
 do
     local learner = lurek.learning.newQLearner(10, 4)
+    learner:setQValue(0, 0, 0.25)
+    local learner_states = learner:getStateCount()
     learner:setLearningRate(0.05)
 
-    print("LQLearner:getLearningRate", learner:getLearningRate())
+    example_print_log("LQLearner:getLearningRate", learner:getLearningRate())
 end
 ```
 
@@ -4172,10 +4361,12 @@ LQLearner:getQValue(state, action)
 ```lua
 do
     local learner = lurek.learning.newQLearner(10, 4)
+    learner:setQValue(0, 0, 0.25)
+    local learner_states = learner:getStateCount()
     learner:setQValue(2, 3, 7.5)
     local value = learner:getQValue(2, 3)
 
-    print("LQLearner:getQValue", value)
+    example_print_log("LQLearner:getQValue", value)
 end
 ```
 
@@ -4200,9 +4391,11 @@ LQLearner:getStateCount()
 ```lua
 do
     local learner = lurek.learning.newQLearner(10, 4)
+    learner:setQValue(0, 0, 0.25)
+    local learner_states = learner:getStateCount()
     local state_count = learner:getStateCount()
 
-    print("LQLearner:getStateCount", state_count)
+    example_print_log("LQLearner:getStateCount", state_count)
 end
 ```
 
@@ -4230,11 +4423,13 @@ LQLearner:learn(state, action, reward, next_state)
 ```lua
 do
     local learner = lurek.learning.newQLearner(6, 3)
+    learner:setQValue(0, 0, 0.25)
+    local learner_states = learner:getStateCount()
     learner:setLearningRate(0.5)
     learner:setDiscountFactor(0.0)
     learner:learn(1, 2, 1.0, 3)
 
-    print("LQLearner:learn q12", learner:getQValue(1, 2))
+    example_print_log("LQLearner:learn q12", learner:getQValue(1, 2))
 end
 ```
 
@@ -4265,8 +4460,10 @@ LQLearner:predict(state)
 ```lua
 do
     local q = lurek.learning.newQLearner(4, 2)
+    q:setQValue(0, 0, 0.5)
+    local states = q:getStateCount()
     local action = q:predict(0)
-    print("qlearner predict = " .. action)
+    example_print_log("qlearner predict = " .. action)
 end
 ```
 
@@ -4291,10 +4488,12 @@ LQLearner:serialize()
 ```lua
 do
     local learner = lurek.learning.newQLearner(5, 3)
+    learner:setQValue(0, 0, 0.25)
+    local learner_states = learner:getStateCount()
     learner:setQValue(1, 1, 1.5)
     local json = learner:serialize()
 
-    print("LQLearner:serialize length", #json)
+    example_print_log("LQLearner:serialize length", #json)
 end
 ```
 
@@ -4319,9 +4518,11 @@ LQLearner:setDiscountFactor(v)
 ```lua
 do
     local learner = lurek.learning.newQLearner(10, 4)
+    learner:setQValue(0, 0, 0.25)
+    local learner_states = learner:getStateCount()
     learner:setDiscountFactor(0.95)
 
-    print("LQLearner:setDiscountFactor", learner:getDiscountFactor())
+    example_print_log("LQLearner:setDiscountFactor", learner:getDiscountFactor())
 end
 ```
 
@@ -4346,9 +4547,11 @@ LQLearner:setExplorationDecay(v)
 ```lua
 do
     local learner = lurek.learning.newQLearner(10, 4)
+    learner:setQValue(0, 0, 0.25)
+    local learner_states = learner:getStateCount()
     learner:setExplorationDecay(0.99)
 
-    print("LQLearner:setExplorationDecay", learner:getExplorationDecay())
+    example_print_log("LQLearner:setExplorationDecay", learner:getExplorationDecay())
 end
 ```
 
@@ -4373,9 +4576,11 @@ LQLearner:setExplorationRate(v)
 ```lua
 do
     local learner = lurek.learning.newQLearner(10, 4)
+    learner:setQValue(0, 0, 0.25)
+    local learner_states = learner:getStateCount()
     learner:setExplorationRate(0.5)
 
-    print("LQLearner:setExplorationRate", learner:getExplorationRate())
+    example_print_log("LQLearner:setExplorationRate", learner:getExplorationRate())
 end
 ```
 
@@ -4400,9 +4605,11 @@ LQLearner:setLearningRate(v)
 ```lua
 do
     local learner = lurek.learning.newQLearner(10, 4)
+    learner:setQValue(0, 0, 0.25)
+    local learner_states = learner:getStateCount()
     learner:setLearningRate(0.05)
 
-    print("LQLearner:setLearningRate", learner:getLearningRate())
+    example_print_log("LQLearner:setLearningRate", learner:getLearningRate())
 end
 ```
 
@@ -4429,9 +4636,11 @@ LQLearner:setQValue(state, action, value)
 ```lua
 do
     local learner = lurek.learning.newQLearner(8, 4)
+    learner:setQValue(0, 0, 0.25)
+    local learner_states = learner:getStateCount()
     learner:setQValue(3, 2, 4.2)
 
-    print("LQLearner:setQValue", learner:getQValue(3, 2))
+    example_print_log("LQLearner:setQValue", learner:getQValue(3, 2))
 end
 ```
 
@@ -4456,9 +4665,11 @@ LQLearner:type()
 ```lua
 do
     local learner = lurek.learning.newQLearner(10, 4)
+    learner:setQValue(0, 0, 0.25)
+    local learner_states = learner:getStateCount()
     local type_name = learner:type()
 
-    print("LQLearner:type", type_name)
+    example_print_log("LQLearner:type", type_name)
 end
 ```
 
@@ -4489,11 +4700,13 @@ LQLearner:typeOf(name)
 ```lua
 do
     local learner = lurek.learning.newQLearner(10, 4)
+    learner:setQValue(0, 0, 0.25)
+    local learner_states = learner:getStateCount()
     local is_learner = learner:typeOf("LQLearner")
     local is_object = learner:typeOf("LObject")
 
-    print("LQLearner:typeOf LQLearner", tostring(is_learner))
-    print("LQLearner:typeOf LObject", tostring(is_object))
+    example_print_log("LQLearner:typeOf LQLearner", tostring(is_learner))
+    example_print_log("LQLearner states", learner:getStateCount())
 end
 ```
 
@@ -4526,9 +4739,11 @@ LTensor:data()
 ```lua
 do
     local t = lurek.learning.newTensor({3}, {10.0, 20.0, 30.0})
+    local tensor_shape = t:shape()
+    local tensor_len = t:len()
     local d = t:data()
-    print("LTensor:data len", #d)
-    print("LTensor:data first", d[1])
+    example_print_log("LTensor:data len", #d)
+    example_print_log("LTensor:data first", d[1])
 end
 ```
 
@@ -4559,8 +4774,10 @@ LTensor:get(indices)
 ```lua
 do
     local t = lurek.learning.newTensor({3}, {7.0, 8.0, 9.0})
-    print("LTensor:get index1", t:get(1))
-    print("LTensor:get index3", t:get(3))
+    local tensor_shape = t:shape()
+    local tensor_len = t:len()
+    example_print_log("LTensor:get index1", t:get(1))
+    example_print_log("LTensor:get index3", t:get(3))
 end
 ```
 
@@ -4585,8 +4802,10 @@ LTensor:len()
 ```lua
 do
     local t = lurek.learning.newTensor({4}, {1.0, 2.0, 3.0, 4.0})
-    print("LTensor:len", t:len())
-    print("owner type = " .. tostring(t:type()))
+    local tensor_shape = t:shape()
+    local tensor_len = t:len()
+    example_print_log("LTensor:len", t:len())
+    example_print_log("tensor rank = " .. #tensor_shape)
 end
 ```
 
@@ -4611,9 +4830,11 @@ LTensor:shape()
 ```lua
 do
     local t = lurek.learning.newTensor({2, 3}, {1, 2, 3, 4, 5, 6})
+    local tensor_shape = t:shape()
+    local tensor_len = t:len()
     local s = t:shape()
-    print("LTensor:shape rank", #s)
-    print("LTensor:shape dim0", s[1])
+    example_print_log("LTensor:shape rank", #s)
+    example_print_log("LTensor:shape dim0", s[1])
 end
 ```
 
@@ -4638,8 +4859,10 @@ LTensor:type()
 ```lua
 do
     local t = lurek.learning.newTensor({1}, {0.0})
-    print("LTensor:type", t:type())
-    print("typeOf LObject = " .. tostring(t:typeOf("LObject")))
+    local tensor_shape = t:shape()
+    local tensor_len = t:len()
+    example_print_log("LTensor:type", t:type())
+    example_print_log("tensor len = " .. tensor_len)
 end
 ```
 
@@ -4670,8 +4893,10 @@ LTensor:typeOf(name)
 ```lua
 do
     local t = lurek.learning.newTensor({1}, {0.0})
-    print("LTensor:typeOf LTensor", tostring(t:typeOf("LTensor")))
-    print("LTensor:typeOf LObject", tostring(t:typeOf("LObject")))
+    local tensor_shape = t:shape()
+    local tensor_len = t:len()
+    example_print_log("LTensor:typeOf LTensor", tostring(t:typeOf("LTensor")))
+    example_print_log("LTensor data size", #t:data())
 end
 ```
 
@@ -4711,10 +4936,12 @@ LTransformerDecoder:forward(input, encoder_out)
 ```lua
 do
     local dec = lurek.learning.newTransformerDecoder(4, 2, 8)
+    local dec_weights = dec:getWeights()
+    local dec_params = dec:paramCount()
     local x = lurek.learning.newTensor({2, 4}, {1, 2, 3, 4, 4, 3, 2, 1})
     local e = lurek.learning.newTensor({2, 4}, {0, 1, 0, 1, 1, 0, 1, 0})
     local out = dec:forward(x, e)
-    print("LTransformerDecoder:forward outRows", out:shape()[1])
+    example_print_log("LTransformerDecoder:forward outRows", out:shape()[1])
 end
 ```
 
@@ -4739,8 +4966,10 @@ LTransformerDecoder:getWeights()
 ```lua
 do
     local dec = lurek.learning.newTransformerDecoder(4, 2, 8)
+    local dec_weights = dec:getWeights()
+    local dec_params = dec:paramCount()
     local got = dec:getWeights()
-    print("LTransformerDecoder:getWeights", #got)
+    example_print_log("LTransformerDecoder:getWeights", #got)
 end
 ```
 
@@ -4765,8 +4994,10 @@ LTransformerDecoder:paramCount()
 ```lua
 do
     local dec = lurek.learning.newTransformerDecoder(4, 2, 8)
-    print("LTransformerDecoder:paramCount", dec:paramCount())
-    print("owner type = " .. tostring(dec:type()))
+    local dec_weights = dec:getWeights()
+    local dec_params = dec:paramCount()
+    example_print_log("LTransformerDecoder:paramCount", dec:paramCount())
+    example_print_log("weight count = " .. #dec:getWeights())
 end
 ```
 
@@ -4797,13 +5028,15 @@ LTransformerDecoder:setWeights(weights)
 ```lua
 do
     local dec = lurek.learning.newTransformerDecoder(4, 2, 8)
+    local dec_weights = dec:getWeights()
+    local dec_params = dec:paramCount()
     local count = dec:paramCount()
     local weights = {}
     for i = 1, count do
         weights[i] = 0.0
     end
     dec:setWeights(weights)
-    print("LTransformerDecoder:setWeights count", count)
+    example_print_log("LTransformerDecoder:setWeights count", count)
 end
 ```
 
@@ -4828,8 +5061,10 @@ LTransformerDecoder:type()
 ```lua
 do
     local dec = lurek.learning.newTransformerDecoder(4, 2, 8)
-    print("LTransformerDecoder:type", dec:type())
-    print("typeOf LObject = " .. tostring(dec:typeOf("LObject")))
+    local dec_weights = dec:getWeights()
+    local dec_params = dec:paramCount()
+    example_print_log("LTransformerDecoder:type", dec:type())
+    example_print_log("decoder configured = " .. tostring(dec_is))
 end
 ```
 
@@ -4860,8 +5095,10 @@ LTransformerDecoder:typeOf(name)
 ```lua
 do
     local dec = lurek.learning.newTransformerDecoder(4, 2, 8)
-    print("LTransformerDecoder:typeOf", tostring(dec:typeOf("LObject")))
-    print("type = " .. tostring(dec:type()))
+    local dec_weights = dec:getWeights()
+    local dec_params = dec:paramCount()
+    example_print_log("LTransformerDecoder:typeOf", tostring(dec:typeOf("LObject")))
+    example_print_log("type = " .. tostring(dec:type()))
 end
 ```
 
@@ -4900,9 +5137,11 @@ LTransformerEncoder:forward(input)
 ```lua
 do
     local enc = lurek.learning.newTransformerEncoder(4, 2, 8)
+    local enc_weights = enc:getWeights()
+    local enc_params = enc:paramCount()
     local x = lurek.learning.newTensor({2, 4}, {1, 2, 3, 4, 4, 3, 2, 1})
     local out = enc:forward(x)
-    print("LTransformerEncoder:forward outRows", out:shape()[1])
+    example_print_log("LTransformerEncoder:forward outRows", out:shape()[1])
 end
 ```
 
@@ -4927,8 +5166,10 @@ LTransformerEncoder:getWeights()
 ```lua
 do
     local enc = lurek.learning.newTransformerEncoder(4, 2, 8)
+    local enc_weights = enc:getWeights()
+    local enc_params = enc:paramCount()
     local got = enc:getWeights()
-    print("LTransformerEncoder:getWeights", #got)
+    example_print_log("LTransformerEncoder:getWeights", #got)
 end
 ```
 
@@ -4953,8 +5194,10 @@ LTransformerEncoder:paramCount()
 ```lua
 do
     local enc = lurek.learning.newTransformerEncoder(4, 2, 8)
-    print("LTransformerEncoder:paramCount", enc:paramCount())
-    print("owner type = " .. tostring(enc:type()))
+    local enc_weights = enc:getWeights()
+    local enc_params = enc:paramCount()
+    example_print_log("LTransformerEncoder:paramCount", enc:paramCount())
+    example_print_log("weight count = " .. #enc:getWeights())
 end
 ```
 
@@ -4985,13 +5228,15 @@ LTransformerEncoder:setWeights(weights)
 ```lua
 do
     local enc = lurek.learning.newTransformerEncoder(4, 2, 8)
+    local enc_weights = enc:getWeights()
+    local enc_params = enc:paramCount()
     local count = enc:paramCount()
     local weights = {}
     for i = 1, count do
         weights[i] = 0.0
     end
     enc:setWeights(weights)
-    print("LTransformerEncoder:setWeights count", count)
+    example_print_log("LTransformerEncoder:setWeights count", count)
 end
 ```
 
@@ -5016,8 +5261,10 @@ LTransformerEncoder:type()
 ```lua
 do
     local enc = lurek.learning.newTransformerEncoder(4, 2, 8)
-    print("LTransformerEncoder:type", enc:type())
-    print("typeOf LObject = " .. tostring(enc:typeOf("LObject")))
+    local enc_weights = enc:getWeights()
+    local enc_params = enc:paramCount()
+    example_print_log("LTransformerEncoder:type", enc:type())
+    example_print_log("encoder configured = " .. tostring(enc_is))
 end
 ```
 
@@ -5048,8 +5295,10 @@ LTransformerEncoder:typeOf(name)
 ```lua
 do
     local enc = lurek.learning.newTransformerEncoder(4, 2, 8)
-    print("LTransformerEncoder:typeOf", tostring(enc:typeOf("LObject")))
-    print("type = " .. tostring(enc:type()))
+    local enc_weights = enc:getWeights()
+    local enc_params = enc:paramCount()
+    example_print_log("LTransformerEncoder:typeOf", tostring(enc:typeOf("LObject")))
+    example_print_log("type = " .. tostring(enc:type()))
 end
 ```
 
