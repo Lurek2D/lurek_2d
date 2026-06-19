@@ -400,6 +400,10 @@ name = "network_tests"
 path = "tests/rust/unit/network_tests.rs"
 
 [[test]]
+name = "overlay_tests"
+path = "tests/rust/unit/overlay_tests.rs"
+
+[[test]]
 name = "parallax_tests"
 path = "tests/rust/unit/parallax_tests.rs"
 

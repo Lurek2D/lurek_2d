@@ -101,3 +101,6 @@ mod effect_type_tests {
 
 #[path = "effect_render_tests.rs"]
 mod effect_render_tests;
+
+#[path = "effect_contract_tests.rs"]
+mod effect_contract_tests;

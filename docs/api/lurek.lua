@@ -11558,11 +11558,11 @@ function LPostFxEffect:isBuiltIn() end
 function LPostFxEffect:isEnabled() end
 
 --- Sets the brightness shader parameter on this effect.
----@param v number Brightness value passed to the effect shader.
+---@param v number Brightness value passed to the effect shader; must stay in the documented range.
 function LPostFxEffect:setBrightness(v) end
 
 --- Sets the contrast shader parameter on this effect.
----@param v number Contrast value passed to the effect shader.
+---@param v number Contrast value passed to the effect shader; must stay in the documented range.
 function LPostFxEffect:setContrast(v) end
 
 --- Enables or disables this effect. This method is available to Lua scripts.
@@ -11570,36 +11570,36 @@ function LPostFxEffect:setContrast(v) end
 function LPostFxEffect:setEnabled(enabled) end
 
 --- Sets the intensity shader parameter on this effect.
----@param v number Intensity value passed to the effect shader.
+---@param v number Intensity value passed to the effect shader; must stay in the documented range.
 function LPostFxEffect:setIntensity(v) end
 
 --- Sets the offset shader parameter on this effect.
----@param v number Offset value passed to the effect shader.
+---@param v number Offset value passed to the effect shader; must stay in the documented range.
 function LPostFxEffect:setOffset(v) end
 
 --- Sets a numeric shader parameter by name.
 ---@param name string Parameter name expected by the effect shader.
----@param value number Numeric parameter value.
+---@param value number Numeric parameter value; must match the effect schema.
 function LPostFxEffect:setParameter(name, value) end
 
 --- Sets the radius shader parameter on this effect.
----@param v number Radius value passed to the effect shader.
+---@param v number Radius value passed to the effect shader; must stay in the documented range.
 function LPostFxEffect:setRadius(v) end
 
 --- Sets the saturation shader parameter on this effect.
----@param v number Saturation value passed to the effect shader.
+---@param v number Saturation value passed to the effect shader; must stay in the documented range.
 function LPostFxEffect:setSaturation(v) end
 
 --- Sets the scanline strength shader parameter on this effect.
----@param v number Scanline strength value passed to the effect shader.
+---@param v number Scanline strength value passed to the effect shader; must stay in the documented range.
 function LPostFxEffect:setScanlineStrength(v) end
 
 --- Sets the strength shader parameter on this effect.
----@param v number Strength value passed to the effect shader.
+---@param v number Strength value passed to the effect shader; must stay in the documented range.
 function LPostFxEffect:setStrength(v) end
 
 --- Sets the threshold shader parameter on this effect.
----@param v number Threshold value passed to the effect shader.
+---@param v number Threshold value passed to the effect shader; must stay in the documented range.
 function LPostFxEffect:setThreshold(v) end
 
 --- Returns the Lua-visible type name for this post-processing effect handle.
@@ -19493,6 +19493,10 @@ function LOverlay:fade(r, g, b, a, dur) end
 ---@param dur? number Duration in seconds, defaulting to 0.2.
 function LOverlay:flash(r, g, b, a, dur) end
 
+--- Returns the current overlay accessibility policy.
+---@return table Policy table with reduced motion, flash, shake, lightning, and grain controls.
+function LOverlay:getAccessibilityPolicy() end
+
 --- Returns overlay ambient RGBA color.
 ---@return number Red channel.
 ---@return number Green channel.
@@ -19559,6 +19563,10 @@ function LOverlay:getLightningAlpha() end
 ---@return number Alpha channel.
 function LOverlay:getLightningColor() end
 
+--- Returns the current render responsibility plan for active overlay layers.
+---@return table Table with `rendered` and `externally_handled` string arrays.
+function LOverlay:getRenderPlan() end
+
 --- Returns the current screen shake offset.
 ---@return number Current x offset.
 ---@return number Current y offset.
@@ -19587,6 +19595,10 @@ function LOverlay:getWeather() end
 --- Returns weather intensity for the current weather type.
 ---@return number Weather intensity value.
 function LOverlay:getWeatherIntensity() end
+
+--- Returns the current deterministic overlay weather RNG state.
+---@return number Current weather RNG state.
+function LOverlay:getWeatherRngState() end
 
 --- Returns the overlay width. This method is available to Lua scripts.
 ---@return number Overlay width in pixels.
@@ -19657,6 +19669,10 @@ function LOverlay:render() end
 ---@param w number New width in pixels.
 ---@param h number New height in pixels.
 function LOverlay:resize(w, h) end
+
+--- Replaces or partially updates the overlay accessibility policy.
+---@param policy? table Optional policy table; nil resets defaults.
+function LOverlay:setAccessibilityPolicy(policy) end
 
 --- Sets the overlay ambient color from RGBA channels.
 ---@param r number Red channel.
@@ -19767,6 +19783,14 @@ function LOverlay:setWeatherEnabled(v) end
 --- Sets weather intensity for the current weather type.
 ---@param v number Weather intensity value.
 function LOverlay:setWeatherIntensity(v) end
+
+--- Replaces the current deterministic overlay weather RNG state.
+---@param state number New weather RNG state; zero maps to the engine default seed.
+function LOverlay:setWeatherRngState(state) end
+
+--- Sets the deterministic overlay weather seed used for future particle sampling.
+---@param seed number Non-zero preferred seed value; zero maps to the engine default seed.
+function LOverlay:setWeatherSeed(seed) end
 
 --- Sets the overlay weather wind direction.
 ---@param v number Wind direction value.

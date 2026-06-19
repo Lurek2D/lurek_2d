@@ -3,6 +3,7 @@
 //! The `to_passes` helper converts active effect state into `ShaderPassDescriptor` values for downstream execution.
 //! Open this file when image-level effect composition changes; effect instances, presets, and stacks live in siblings.
 
+use super::contract::{PostFxDiagnostics, PostFxLimits};
 use super::effect::PostFxEffect;
 use crate::log_msg;
 use crate::render::ShaderPassDescriptor;
@@ -78,18 +79,29 @@ impl ImageEffect {
     pub fn effect_count(&self) -> usize {
         self.effects.len()
     }
+    /// Converts the pipeline into renderer shader pass descriptors together with validation diagnostics.
+    pub fn to_pass_plan(
+        &self,
+        limits: &PostFxLimits,
+    ) -> (Vec<ShaderPassDescriptor>, PostFxDiagnostics) {
+        let mut diagnostics = PostFxDiagnostics::default();
+        let mut passes = Vec::with_capacity(self.effects.len());
+        for effect_rc in &self.effects {
+            let effect = effect_rc.borrow();
+            let effect_diagnostics = effect.validate_params_with_limits(limits);
+            if !effect_diagnostics.is_empty() {
+                diagnostics.extend(effect_diagnostics);
+            }
+            passes.push(ShaderPassDescriptor {
+                effect_name: effect.get_type_name().to_owned(),
+                params: effect.params.clone(),
+                enabled: effect.enabled,
+            });
+        }
+        (passes, diagnostics)
+    }
     /// Converts the pipeline into renderer shader pass descriptors.
     pub fn to_passes(&self) -> Vec<ShaderPassDescriptor> {
-        self.effects
-            .iter()
-            .map(|e| {
-                let e = e.borrow();
-                ShaderPassDescriptor {
-                    effect_name: e.get_type_name().to_owned(),
-                    params: e.params.clone(),
-                    enabled: e.enabled,
-                }
-            })
-            .collect()
+        self.to_pass_plan(&PostFxLimits::default()).0
     }
 }

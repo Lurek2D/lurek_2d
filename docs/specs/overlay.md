@@ -25,8 +25,17 @@
 - The same subsystem can therefore own persistent environmental treatment and short-lived screen transitions without burying either concern inside unrelated render code.
 - Layer-wide control is important because these treatments often need coordinated fade-in, fade-out, stacking, and override rules when several moods or transitions compete for the screen at once.
 - The module is useful whenever a project needs stronger screen-space presentation than a local sprite effect but does not need a full scene rewrite.
-- `render` still draws the final image, but `overlay` owns the grouping, configuration, and temporal behavior of these large-scale scene treatments.
+- `render` still draws the final image, but `overlay` owns the grouping, configuration, temporal behavior, accessibility policy, and diagnostics for these large-scale scene treatments.
 - Read `overlay` as the orchestration layer for scene-wide atmospheric and transitional effects.
+
+## Runtime Contracts
+
+- Reduced-motion and photosensitivity behavior is owned by `OverlayAccessibilityPolicy`. Flash alpha and duration, shake intensity, lightning triggers, and film grain must respect that policy even when state was mutated directly before `update`, `render`, or debug-image helpers.
+- Full-screen rectangle commands emitted directly by `build_render_commands` are limited to flash, fade, lightning, and vignette. Ambient, weather, clouds, fog, heat haze, film grain, water, and custom shaders remain active overlay layers, but they are reported through the render plan as externally handled instead of being silently ignored.
+- Weather simulation is deterministic for a given RNG seed and update sequence. `setWeatherSeed`, `getWeatherRngState`, and `setWeatherRngState` expose that contract, while per-type `WeatherProfile` data provides validated spawn, size, alpha, velocity, and culling bounds.
+- Weather work remains budgeted: particle count is capped, per-update spawns are capped, and dropped/backlogged spawns are surfaced in overlay telemetry so large `dt` spikes do not silently degrade behavior.
+- Custom overlay shader names must satisfy `OverlayShaderPolicy`: bounded length, identifier-safe ASCII characters, and membership in the built-in overlay shader allowlist.
+- Debug image helpers are protected by `OverlayImageLimits`. Checked `try_draw_*` variants must reject oversized width, height, pixel, or RGBA byte requests instead of overflowing or allocating unbounded buffers.
 
 This module primarily collaborates with `color`, `image`, `render`, `runtime`. Its responsibility should stay inside the `Edge/Integration` group rather than absorb behavior owned by those neighbors.
 

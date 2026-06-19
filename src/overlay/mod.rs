@@ -24,8 +24,13 @@ pub use ambient::AmbientState;
 pub use atmosphere::{
     CloudState, FilmGrainState, FogState, HeatHazeState, LightningState, VignetteState,
 };
-pub use controller::Overlay;
+pub use controller::{
+    Overlay, OverlayAccessibilityPolicy, OverlayDiagnostics, OverlayError, OverlayImageLimits,
+    OverlayLimits, OverlayRenderLayer, OverlayRenderPlan, OverlayShaderPolicy, OverlayStats,
+};
 pub use screen_effects::{FadeState, FlashState, ShakeState};
 pub use transition::{ScreenTransition, TransitionKind};
 pub use water::WaterOverlayState;
-pub use weather::{WeatherParticle, WeatherState, WeatherType};
+pub use weather::{
+    WeatherParticle, WeatherProfile, WeatherState, WeatherType, WEATHER_RNG_VERSION,
+};

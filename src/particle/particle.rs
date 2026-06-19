@@ -5,6 +5,8 @@
 /// Per-particle state owned by the `ParticleSystem` pool.
 #[derive(Clone, Debug)]
 pub struct Particle {
+    /// Stable emitter-local particle id used by deferred callback plumbing.
+    pub id: u64,
     /// Current X position relative to the emitter origin.
     pub x: f32,
     /// Current Y position relative to the emitter origin.

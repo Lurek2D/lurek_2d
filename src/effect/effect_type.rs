@@ -5,6 +5,7 @@
 //! The enum separates built-in effects from custom shaders while preserving one shared naming and parsing surface.
 //! Open this file when supported effect kinds change; per-instance state and preset recipes live in sibling files.
 
+use super::contract::PostFxParamSchema;
 use std::collections::HashMap;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 /// Enumerates the built-in post-processing effect implementations.
@@ -60,6 +61,77 @@ pub enum PostFxEffectType {
 }
 /// Name resolution, parameter defaults, and debug utilities for effect types.
 impl PostFxEffectType {
+    const BLOOM_SCHEMA: &'static [PostFxParamSchema] = &[
+        PostFxParamSchema::float("threshold", 0.7, 0.0, 1.0),
+        PostFxParamSchema::float("intensity", 1.0, 0.0, 8.0),
+    ];
+    const BLUR_SCHEMA: &'static [PostFxParamSchema] = &[
+        PostFxParamSchema::float("radius", 2.0, 0.0, 64.0),
+        PostFxParamSchema::float("strength", 1.0, 0.0, 8.0),
+    ];
+    const CRT_SCHEMA: &'static [PostFxParamSchema] =
+        &[PostFxParamSchema::float("scanline_strength", 0.3, 0.0, 1.0)];
+    const GODRAYS_SCHEMA: &'static [PostFxParamSchema] =
+        &[PostFxParamSchema::float("intensity", 1.0, 0.0, 8.0)];
+    const VIGNETTE_SCHEMA: &'static [PostFxParamSchema] =
+        &[PostFxParamSchema::float("strength", 0.5, 0.0, 1.0)];
+    const COLOUR_GRADE_SCHEMA: &'static [PostFxParamSchema] = &[
+        PostFxParamSchema::float("brightness", 1.0, 0.0, 4.0),
+        PostFxParamSchema::float("contrast", 1.0, 0.0, 4.0),
+        PostFxParamSchema::float("saturation", 1.0, 0.0, 4.0),
+    ];
+    const CHROMATIC_SCHEMA: &'static [PostFxParamSchema] =
+        &[PostFxParamSchema::float("offset", 2.0, 0.0, 32.0)];
+    const PIXELATE_SCHEMA: &'static [PostFxParamSchema] =
+        &[PostFxParamSchema::integer("block_size", 4.0, 1.0, 512.0)];
+    const SEPIA_SCHEMA: &'static [PostFxParamSchema] =
+        &[PostFxParamSchema::float("strength", 1.0, 0.0, 1.0)];
+    const GRAYSCALE_SCHEMA: &'static [PostFxParamSchema] =
+        &[PostFxParamSchema::float("strength", 1.0, 0.0, 1.0)];
+    const INVERT_SCHEMA: &'static [PostFxParamSchema] =
+        &[PostFxParamSchema::float("strength", 1.0, 0.0, 1.0)];
+    const SCANLINES_SCHEMA: &'static [PostFxParamSchema] = &[
+        PostFxParamSchema::float("strength", 0.5, 0.0, 1.0),
+        PostFxParamSchema::integer("spacing", 4.0, 1.0, 128.0),
+    ];
+    const EDGE_DETECT_SCHEMA: &'static [PostFxParamSchema] =
+        &[PostFxParamSchema::float("strength", 1.0, 0.0, 8.0)];
+    const HUE_SHIFT_SCHEMA: &'static [PostFxParamSchema] =
+        &[PostFxParamSchema::float("angle", 0.0, -360.0, 360.0)];
+    const NOISE_SCHEMA: &'static [PostFxParamSchema] =
+        &[PostFxParamSchema::float("strength", 0.1, 0.0, 1.0)];
+    const DEPTH_OF_FIELD_SCHEMA: &'static [PostFxParamSchema] = &[
+        PostFxParamSchema::float("focus_x", 0.5, 0.0, 1.0),
+        PostFxParamSchema::float("focus_y", 0.5, 0.0, 1.0),
+        PostFxParamSchema::float("strength", 0.8, 0.0, 4.0),
+        PostFxParamSchema::float("radius", 8.0, 0.0, 64.0),
+    ];
+    const MOTION_BLUR_SCHEMA: &'static [PostFxParamSchema] = &[
+        PostFxParamSchema::float("strength", 0.4, 0.0, 1.0),
+        PostFxParamSchema::integer("samples", 8.0, 1.0, 64.0),
+    ];
+    const PALETTE_SWAP_SCHEMA: &'static [PostFxParamSchema] =
+        &[PostFxParamSchema::float("mix", 1.0, 0.0, 1.0)];
+    const COLOR_LUT_SCHEMA: &'static [PostFxParamSchema] =
+        &[PostFxParamSchema::float("strength", 1.0, 0.0, 1.0)];
+    const WATER_DISTORT_SCHEMA: &'static [PostFxParamSchema] = &[
+        PostFxParamSchema::float("amplitude", 0.005, 0.0, 1.0),
+        PostFxParamSchema::float("frequency", 15.0, 0.0, 256.0),
+        PostFxParamSchema::float("speed", 2.0, 0.0, 32.0),
+    ];
+    const SHARPEN_SCHEMA: &'static [PostFxParamSchema] =
+        &[PostFxParamSchema::float("strength", 0.5, 0.0, 4.0)];
+    const DITHER_SCHEMA: &'static [PostFxParamSchema] = &[
+        PostFxParamSchema::integer("palette_size", 8.0, 2.0, 256.0),
+        PostFxParamSchema::integer("matrix_size", 4.0, 2.0, 8.0),
+    ];
+    const OUTLINE_SCHEMA: &'static [PostFxParamSchema] = &[
+        PostFxParamSchema::float("color_r", 0.0, 0.0, 1.0),
+        PostFxParamSchema::float("color_g", 0.0, 0.0, 1.0),
+        PostFxParamSchema::float("color_b", 0.0, 0.0, 1.0),
+        PostFxParamSchema::float("thickness", 1.0, 1.0, 32.0),
+    ];
+
     /// Bidirectional mapping from effect variant to its canonical lowercase string.
     const NAME_MAP: &'static [(Self, &'static str)] = &[
         (Self::Bloom, "bloom"),
@@ -164,96 +236,48 @@ impl PostFxEffectType {
             Self::Outline => "OUTLINE",
         }
     }
+    /// Returns the documented parameter schema for this effect type.
+    pub fn param_schema(&self) -> &'static [PostFxParamSchema] {
+        match self {
+            Self::Bloom => Self::BLOOM_SCHEMA,
+            Self::Blur => Self::BLUR_SCHEMA,
+            Self::Crt => Self::CRT_SCHEMA,
+            Self::Godrays => Self::GODRAYS_SCHEMA,
+            Self::Vignette => Self::VIGNETTE_SCHEMA,
+            Self::ColourGrade => Self::COLOUR_GRADE_SCHEMA,
+            Self::Chromatic => Self::CHROMATIC_SCHEMA,
+            Self::Pixelate => Self::PIXELATE_SCHEMA,
+            Self::Sepia => Self::SEPIA_SCHEMA,
+            Self::Grayscale => Self::GRAYSCALE_SCHEMA,
+            Self::Invert => Self::INVERT_SCHEMA,
+            Self::Scanlines => Self::SCANLINES_SCHEMA,
+            Self::EdgeDetect => Self::EDGE_DETECT_SCHEMA,
+            Self::HueShift => Self::HUE_SHIFT_SCHEMA,
+            Self::Noise => Self::NOISE_SCHEMA,
+            Self::Custom => &[],
+            Self::DepthOfField => Self::DEPTH_OF_FIELD_SCHEMA,
+            Self::MotionBlur => Self::MOTION_BLUR_SCHEMA,
+            Self::PaletteSwap => Self::PALETTE_SWAP_SCHEMA,
+            Self::ColorLut => Self::COLOR_LUT_SCHEMA,
+            Self::WaterDistort => Self::WATER_DISTORT_SCHEMA,
+            Self::Sharpen => Self::SHARPEN_SCHEMA,
+            Self::Dither => Self::DITHER_SCHEMA,
+            Self::Outline => Self::OUTLINE_SCHEMA,
+        }
+    }
+
+    /// Looks up one named parameter in this effect type's schema.
+    pub fn find_param_schema(&self, name: &str) -> Option<&'static PostFxParamSchema> {
+        self.param_schema()
+            .iter()
+            .find(|schema| schema.name == name)
+    }
+
     /// Returns the default scalar parameter map for this effect type.
     pub fn default_params(&self) -> HashMap<String, f32> {
-        let mut m = HashMap::new();
-        match self {
-            Self::Bloom => {
-                m.insert("threshold".into(), 0.7);
-                m.insert("intensity".into(), 1.0);
-            }
-            Self::Blur => {
-                m.insert("radius".into(), 2.0);
-                m.insert("strength".into(), 1.0);
-            }
-            Self::Crt => {
-                m.insert("scanline_strength".into(), 0.3);
-            }
-            Self::Godrays => {
-                m.insert("intensity".into(), 1.0);
-            }
-            Self::Vignette => {
-                m.insert("strength".into(), 0.5);
-            }
-            Self::ColourGrade => {
-                m.insert("brightness".into(), 1.0);
-                m.insert("contrast".into(), 1.0);
-                m.insert("saturation".into(), 1.0);
-            }
-            Self::Chromatic => {
-                m.insert("offset".into(), 2.0);
-            }
-            Self::Pixelate => {
-                m.insert("block_size".into(), 4.0);
-            }
-            Self::Sepia => {
-                m.insert("strength".into(), 1.0);
-            }
-            Self::Grayscale => {
-                m.insert("strength".into(), 1.0);
-            }
-            Self::Invert => {
-                m.insert("strength".into(), 1.0);
-            }
-            Self::Scanlines => {
-                m.insert("strength".into(), 0.5);
-                m.insert("spacing".into(), 4.0);
-            }
-            Self::EdgeDetect => {
-                m.insert("strength".into(), 1.0);
-            }
-            Self::HueShift => {
-                m.insert("angle".into(), 0.0);
-            }
-            Self::Noise => {
-                m.insert("strength".into(), 0.1);
-            }
-            Self::Custom => {}
-            Self::DepthOfField => {
-                m.insert("focus_x".into(), 0.5);
-                m.insert("focus_y".into(), 0.5);
-                m.insert("strength".into(), 0.8);
-                m.insert("radius".into(), 8.0);
-            }
-            Self::MotionBlur => {
-                m.insert("strength".into(), 0.4);
-                m.insert("samples".into(), 8.0);
-            }
-            Self::PaletteSwap => {
-                m.insert("mix".into(), 1.0);
-            }
-            Self::ColorLut => {
-                m.insert("strength".into(), 1.0);
-            }
-            Self::WaterDistort => {
-                m.insert("amplitude".into(), 0.005);
-                m.insert("frequency".into(), 15.0);
-                m.insert("speed".into(), 2.0);
-            }
-            Self::Sharpen => {
-                m.insert("strength".into(), 0.5);
-            }
-            Self::Dither => {
-                m.insert("palette_size".into(), 8.0);
-                m.insert("matrix_size".into(), 4.0);
-            }
-            Self::Outline => {
-                m.insert("color_r".into(), 0.0);
-                m.insert("color_g".into(), 0.0);
-                m.insert("color_b".into(), 0.0);
-                m.insert("thickness".into(), 1.0);
-            }
-        }
-        m
+        self.param_schema()
+            .iter()
+            .map(|schema| (schema.name.to_string(), schema.default))
+            .collect()
     }
 }

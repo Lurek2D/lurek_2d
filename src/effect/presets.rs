@@ -49,9 +49,9 @@ fn build_retro_tv() -> Vec<PostFxEffect> {
     bloom.set_param("threshold", 0.6);
     bloom.set_param("intensity", 0.4);
     let mut crt = PostFxEffect::new(PostFxEffectType::Crt);
-    crt.set_param("curvature", 0.3);
+    crt.set_param("scanline_strength", 0.3);
     let mut scan = PostFxEffect::new(PostFxEffectType::Scanlines);
-    scan.set_param("intensity", 0.35);
+    scan.set_param("strength", 0.35);
     let mut chrom = PostFxEffect::new(PostFxEffectType::Chromatic);
     chrom.set_param("offset", 0.003);
     vec![bloom, crt, scan, chrom]
@@ -59,8 +59,7 @@ fn build_retro_tv() -> Vec<PostFxEffect> {
 /// Builds the horror preset effect chain.
 fn build_horror() -> Vec<PostFxEffect> {
     let mut vignette = PostFxEffect::new(PostFxEffectType::Vignette);
-    vignette.set_param("radius", 0.55);
-    vignette.set_param("softness", 0.4);
+    vignette.set_param("strength", 0.55);
     let mut noise = PostFxEffect::new(PostFxEffectType::Noise);
     noise.set_param("strength", 0.12);
     let mut gray = PostFxEffect::new(PostFxEffectType::Grayscale);
@@ -77,15 +76,15 @@ fn build_dream() -> Vec<PostFxEffect> {
     let mut blur = PostFxEffect::new(PostFxEffectType::Blur);
     blur.set_param("radius", 2.0);
     let mut hue = PostFxEffect::new(PostFxEffectType::HueShift);
-    hue.set_param("hue", 20.0);
+    hue.set_param("angle", 20.0);
     vec![bloom, blur, hue]
 }
 /// Builds the neon preset effect chain.
 fn build_neon() -> Vec<PostFxEffect> {
     let mut edge = PostFxEffect::new(PostFxEffectType::EdgeDetect);
-    edge.set_param("threshold", 0.1);
+    edge.set_param("strength", 0.1);
     let mut hue = PostFxEffect::new(PostFxEffectType::HueShift);
-    hue.set_param("hue", 160.0);
+    hue.set_param("angle", 160.0);
     let mut bloom = PostFxEffect::new(PostFxEffectType::Bloom);
     bloom.set_param("threshold", 0.4);
     bloom.set_param("intensity", 0.7);
@@ -98,8 +97,7 @@ fn build_sepia_age() -> Vec<PostFxEffect> {
     let mut noise = PostFxEffect::new(PostFxEffectType::Noise);
     noise.set_param("strength", 0.08);
     let mut vignette = PostFxEffect::new(PostFxEffectType::Vignette);
-    vignette.set_param("radius", 0.65);
-    vignette.set_param("softness", 0.35);
+    vignette.set_param("strength", 0.65);
     vec![sepia, noise, vignette]
 }
 /// Maps a user-supplied preset name to the stored static preset identifier.

@@ -3,7 +3,10 @@
 // TODO(lua-first): public Rust API coverage in this file should live in tests/lua/unit/; keep only private/internal seams here.
 
 use lurek2d::particle::visualization::draw_to_image;
-use lurek2d::particle::{AreaDistribution, ParticleConfig, ParticleSystem};
+use lurek2d::particle::{
+    AreaDistribution, EmissionShape, ParticleConfig, ParticleError, ParticleLimits,
+    ParticleRngVersion, ParticleSystem,
+};
 
 mod visualization_tests {
     use super::*;
@@ -200,5 +203,225 @@ mod distribution_and_fuzz_tests {
                 ps.update(1.0 / 120.0);
             }
         }
+    }
+}
+
+mod safety_and_determinism_tests {
+    use super::*;
+
+    fn short_lived_config() -> ParticleConfig {
+        ParticleConfig {
+            emission_rate: 0.0,
+            max_particles: 4,
+            lifetime_min: 0.001,
+            lifetime_max: 0.001,
+            speed_min: 0.0,
+            speed_max: 0.0,
+            ..ParticleConfig::default()
+        }
+    }
+
+    #[test]
+    fn particle_try_new_rejects_huge_max_particles() {
+        let limits = ParticleLimits {
+            max_particles_per_system: 32,
+            ..ParticleLimits::default()
+        };
+        let err = ParticleSystem::try_new(
+            ParticleConfig {
+                max_particles: 1_000,
+                ..ParticleConfig::default()
+            },
+            &limits,
+        )
+        .expect_err("strict constructor should reject huge max_particles");
+        assert!(matches!(err, ParticleError::InvalidConfig { .. }));
+    }
+
+    #[test]
+    fn death_emitter_depth_limit_prevents_runaway() {
+        let leaf = ParticleConfig {
+            death_burst_count: 1,
+            ..short_lived_config()
+        };
+        let child = ParticleConfig {
+            death_burst_count: 1,
+            death_emitter: Some(Box::new(leaf)),
+            ..short_lived_config()
+        };
+        let root = ParticleConfig {
+            death_burst_count: 1,
+            death_emitter: Some(Box::new(child)),
+            ..short_lived_config()
+        };
+
+        let mut ps = ParticleSystem::new(root);
+        ps.limits = ParticleLimits {
+            max_sub_emitter_depth: 1,
+            max_sub_systems: 16,
+            max_sub_systems_per_update: 16,
+            max_total_particles: 16,
+            ..ParticleLimits::default()
+        };
+
+        ps.emit(1);
+        for _ in 0..6 {
+            ps.update(0.01);
+        }
+
+        let stats = ps.stats();
+        let child_drops = ps
+            .sub_systems
+            .iter()
+            .chain(ps.recycled_sub_systems.iter())
+            .map(|sub| sub.stats().dropped_sub_emitters)
+            .sum::<u64>();
+        assert!(
+            stats.dropped_sub_emitters + child_drops > 0,
+            "depth limit should drop recursive child spawns"
+        );
+        assert!(
+            stats.total_live_particles <= ps.limits.max_total_particles,
+            "live particle count should stay within the configured total budget"
+        );
+    }
+
+    #[test]
+    fn pending_custom_offsets_stable_with_random_insert() {
+        let mut ps = ParticleSystem::new(ParticleConfig {
+            emission_rate: 0.0,
+            max_particles: 8,
+            seed: Some(7),
+            insert_mode: lurek2d::particle::InsertMode::Random,
+            emission_shape: EmissionShape::Custom { callback_id: 11 },
+            ..ParticleConfig::default()
+        });
+
+        ps.emit(3);
+        let original_ids: Vec<u64> = ps.particles.iter().map(|particle| particle.id).collect();
+        ps.emit(3);
+
+        let pending = ps.drain_custom_offsets();
+        assert_eq!(pending.len(), 6, "all spawned particles should be pending");
+
+        for (idx, particle_id) in pending.iter().enumerate() {
+            assert!(
+                ps.apply_custom_offset(*particle_id, idx as f32 + 10.0, -(idx as f32)),
+                "stable particle id should still resolve after random inserts"
+            );
+        }
+
+        for (idx, particle_id) in pending.iter().enumerate() {
+            let particle = ps
+                .particles
+                .iter()
+                .find(|particle| particle.id == *particle_id)
+                .expect("particle id should still exist");
+            assert_eq!(particle.x, idx as f32 + 10.0);
+            assert_eq!(particle.y, -(idx as f32));
+        }
+        assert!(
+            original_ids.iter().all(|particle_id| ps
+                .particles
+                .iter()
+                .any(|particle| particle.id == *particle_id)),
+            "random inserts should not lose existing particles"
+        );
+    }
+
+    #[test]
+    fn from_toml_rejects_nested_death_emitter_over_limit() {
+        let toml = r#"
+max_particles = 4
+death_burst_count = 1
+
+[death_emitter]
+max_particles = 4
+death_burst_count = 1
+
+[death_emitter.death_emitter]
+max_particles = 4
+"#;
+
+        let limits = ParticleLimits {
+            max_sub_emitter_depth: 1,
+            ..ParticleLimits::default()
+        };
+        let err = ParticleConfig::from_toml_str_with_limits(toml, &limits)
+            .expect_err("strict TOML parser should reject configs deeper than the limit");
+        assert!(matches!(err, ParticleError::InvalidConfig { .. }));
+    }
+
+    #[test]
+    fn config_validate_reports_sanitized_values() {
+        let warnings = ParticleConfig {
+            speed_min: -1.0,
+            speed_max: f32::NAN,
+            colors: vec![[f32::NAN, 0.0, 0.0, 1.0]],
+            quads: vec![[0.0, 0.0, -8.0, 4.0]],
+            ..ParticleConfig::default()
+        }
+        .validate();
+
+        assert!(warnings.iter().any(|warning| warning.field == "speed"));
+        assert!(warnings.iter().any(|warning| warning.field == "colors"));
+        assert!(warnings.iter().any(|warning| warning.field == "quads"));
+    }
+
+    #[test]
+    fn same_seed_same_particle_snapshot() {
+        let config = ParticleConfig {
+            emission_rate: 0.0,
+            max_particles: 8,
+            lifetime_min: 1.0,
+            lifetime_max: 1.0,
+            speed_min: 12.0,
+            speed_max: 12.0,
+            direction: 0.25,
+            spread: 0.5,
+            seed: Some(42),
+            ..ParticleConfig::default()
+        };
+        let mut a = ParticleSystem::new(config.clone());
+        let mut b = ParticleSystem::new(config);
+
+        assert_eq!(ParticleRngVersion::V1, a.rng_version());
+        assert_eq!(a.get_rng_state(), b.get_rng_state());
+
+        a.emit(6);
+        b.emit(6);
+        a.update(0.25);
+        b.update(0.25);
+
+        let snapshot_a: Vec<(f32, f32, f32, f32)> = a
+            .particles
+            .iter()
+            .map(|particle| (particle.x, particle.y, particle.vx, particle.vy))
+            .collect();
+        let snapshot_b: Vec<(f32, f32, f32, f32)> = b
+            .particles
+            .iter()
+            .map(|particle| (particle.x, particle.y, particle.vx, particle.vy))
+            .collect();
+
+        assert_eq!(
+            snapshot_a, snapshot_b,
+            "same seed should produce identical snapshots"
+        );
+    }
+
+    #[test]
+    fn add_attractor_rejects_nan_and_limit() {
+        let limits = ParticleLimits {
+            max_attractors: 1,
+            ..ParticleLimits::default()
+        };
+        let mut ps = ParticleSystem::try_new(ParticleConfig::default(), &limits)
+            .expect("strict constructor should succeed for the default config");
+
+        assert!(ps.try_add_attractor(f32::NAN, 0.0, 1.0, 1.0).is_err());
+        ps.try_add_attractor(0.0, 0.0, 5.0, 8.0)
+            .expect("first attractor should succeed");
+        assert!(ps.try_add_attractor(1.0, 1.0, 2.0, 4.0).is_err());
     }
 }

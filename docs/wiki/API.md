@@ -17,13 +17,13 @@ The API index is generated from machine-readable Lua API data and links back to 
 ## Source Artifacts
 
 - Lua API data: [logs/data/lua_api_data.json](../blob/main/logs/data/lua_api_data.json)
-- Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (9122 lines)
-- LuaCATS stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (32721 lines)
+- Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (9139 lines)
+- LuaCATS stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (32810 lines)
 
 ## Coverage
 
 - 70 modules
-- 6063 functions and methods
+- 6080 functions and methods
 - 100.0% documented
 
 ## API Module Index
@@ -91,7 +91,7 @@ The API index is generated from machine-readable Lua API data and links back to 
 | [lurek.sprite](Module-sprite) | 8 | 5 | Sprite and sprite-batch rendering above the render command queue. |
 | [lurek.svg](Module-svg) | 1 | 1 | Registers the lurek.svg Lua API for vector SVG graphics, userdata wrappers, and script-side SVG control. |
 | [lurek.runtime](Module-system) | 28 | 0 | Registers the lurek.system Lua API for host utilities, process helpers, and runtime environment queries. |
-| [lurek.terminal](Module-terminal) | 29 | 2 | Character-cell text-mode terminal for roguelikes, debug consoles, ASCII rendering. |
+| [lurek.terminal](Module-terminal) | 31 | 2 | Character-cell text-mode terminal for roguelikes, debug consoles, ASCII rendering. |
 | [lurek.thread](Module-thread) | 7 | 4 | Background threading with per-thread isolated Lua VMs (B-04: VMs cannot be shared). |
 | [lurek.physics](Module-tilemap) | 29 | 10 | Single- to multi-layer tile maps with animated tiles, TMX/LDtk import, autotile, iso sort. |
 | [lurek.timer](Module-timer) | 21 | 1 | Frame-timing (Clock) and deferred / repeating callback scheduling (Scheduler). |

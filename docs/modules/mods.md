@@ -9,9 +9,11 @@
 - The same system is useful for shipped player-facing mod ecosystems and for internal extension-style content workflows during development.
 - Controlled reload behavior and dependency ordering are especially important because modded projects need predictable iteration, recoverable startup, and explicit load precedence rather than a best-effort folder scan.
 - Default sandbox policy is deny-by-default for APIs, hooks, and read roots unless a mod is promoted into an explicit allow-all or allow-list mode.
+- Sandbox policy can now travel with manifest metadata or Lua-created `LMod` handles, and `LMod:runHook(...)` is the live execution boundary that activates API, hook, filesystem, network, and memory enforcement.
 - Manifest and content parsing are strict TOML decoders with byte, field, and count limits instead of line-based best-effort parsing.
 - Discovery and reload flows now build structured scan and load-plan reports so missing dependencies, cycles, checksum failures, and path-policy violations are explicit.
 - Hot reload is atomic at the registry level: the previous valid snapshot stays active when the new manifest set fails validation.
+- `sandbox.max_memory` is enforced at hook execution time when the underlying Lua runtime supports memory limits; file writes and top-level network entry points are blocked through the normal Lua API surface while the sandbox is active.
 - It keeps mod power visible, explicit, and reviewable.
 - Read `mods` as the runtime policy layer for modded content: filesystem and runtime systems provide capabilities, but `mods` decides how external content is described, admitted, isolated, and managed.
 
@@ -778,6 +780,22 @@ end
 
 ---
 
+#### `LMod:getSandbox`
+
+Returns the configured sandbox policy.
+
+```lua
+LMod:getSandbox()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Sandbox configuration table, or nil when unset. |
+
+---
+
 #### `LMod:getVersion`
 
 Returns the mod version. This method is available to Lua scripts.
@@ -922,6 +940,28 @@ do
     mods_log("config exists = " .. tostring(mod:getConfig() ~= nil))
 end
 ```
+
+---
+
+#### `LMod:runHook`
+
+Executes one registered hook under the mod's configured sandbox policy.
+
+```lua
+LMod:runHook(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Hook name. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| any | Hook return values. |
 
 ---
 
@@ -1098,6 +1138,22 @@ do
     mods_log("hook value = " .. tostring(mod:getHook("onLoad") ~= nil))
 end
 ```
+
+---
+
+#### `LMod:setSandbox`
+
+Sets the sandbox policy used by `runHook`.
+
+```lua
+LMod:setSandbox(sandbox)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `sandbox` | table | Sandbox configuration table. |
 
 ---
 

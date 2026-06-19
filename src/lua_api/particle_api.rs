@@ -94,7 +94,7 @@ impl LuaUserData for LuaParticleSystem {
                 }
             }
             {
-                let indices: Vec<usize> = {
+                let indices: Vec<u64> = {
                     let mut st = this.state.borrow_mut();
                     st.particle_systems
                         .get_mut(this.key)
@@ -104,16 +104,11 @@ impl LuaUserData for LuaParticleSystem {
                 if let Some(cb_id) = this.custom_shape_id {
                     if !indices.is_empty() {
                         let reg = this.custom_callbacks.borrow();
-                        for idx in indices {
+                        for particle_id in indices {
                             if let Ok((ox, oy)) = reg.invoke::<_, (f32, f32)>(cb_id, lua, ()) {
                                 let mut st = this.state.borrow_mut();
                                 if let Some(ps) = st.particle_systems.get_mut(this.key) {
-                                    if let Some(p) = ps.particles.get_mut(idx) {
-                                        p.x = ox;
-                                        p.y = oy;
-                                        p.origin_x = ox;
-                                        p.origin_y = oy;
-                                    }
+                                    let _ = ps.apply_custom_offset(particle_id, ox, oy);
                                 }
                             }
                         }
@@ -256,6 +251,23 @@ impl LuaUserData for LuaParticleSystem {
             table.set("pending_custom_offsets", stats.pending_custom_offsets)?;
             table.set("pending_deaths", stats.pending_deaths)?;
             table.set("has_bounds", stats.has_bounds)?;
+            table.set("recycled_sub_system_count", stats.recycled_sub_system_count)?;
+            table.set("config_warning_count", stats.config_warning_count)?;
+            table.set("deterministic_seed", stats.deterministic_seed)?;
+            table.set("invalid_operations", stats.invalid_operations)?;
+            table.set("slow_insert_count", stats.slow_insert_count)?;
+            table.set("insert_shifted_particles", stats.insert_shifted_particles)?;
+            table.set("spawned_sub_emitters", stats.spawned_sub_emitters)?;
+            table.set("dropped_sub_emitters", stats.dropped_sub_emitters)?;
+            table.set("rendered_instances", stats.rendered_instances)?;
+            table.set("culled_particles", stats.culled_particles)?;
+            table.set("dropped_render_instances", stats.dropped_render_instances)?;
+            table.set(
+                "rng_version",
+                match stats.rng_version {
+                    crate::particle::emitter::ParticleRngVersion::V1 => "v1",
+                },
+            )?;
             table.set(
                 "state",
                 match stats.state {
@@ -1611,9 +1623,11 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         lua.create_function(move |lua, path: String| {
             let toml_str = std::fs::read_to_string(&path)
                 .map_err(|e| LuaError::runtime(format!("fromTOML: cannot read '{path}': {e}")))?;
-            let cfg = ParticleConfig::from_toml_str(&toml_str).map_err(|e| {
-                LuaError::runtime(format!("fromTOML: parse error in '{path}': {e}"))
-            })?;
+            let cfg = ParticleConfig::from_toml_str_with_limits(
+                &toml_str,
+                &crate::particle::ParticleLimits::default(),
+            )
+            .map_err(|e| LuaError::runtime(format!("fromTOML: parse error in '{path}': {e}")))?;
             let ps = ParticleSystem::new(cfg);
             let key = s_toml.borrow_mut().particle_systems.insert(ps);
             lua.create_userdata(LuaParticleSystem {

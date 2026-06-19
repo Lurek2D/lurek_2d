@@ -15,6 +15,15 @@ local function expect_rgba(r, g, b, a, er, eg, eb, ea)
     expect_near(ea, a, 0.0001)
 end
 
+local function table_contains(tbl, value)
+    for _, entry in ipairs(tbl) do
+        if entry == value then
+            return true
+        end
+    end
+    return false
+end
+
 -- @describe lurek.overlay module
 describe("lurek.overlay module", function()
     -- @covers lurek.overlay.new
@@ -102,6 +111,42 @@ describe("overlay methods", function()
         expect_equal(8.0, stats.weather_intensity)
         expect_true(stats.weather_particle_count > 0)
         expect_true(stats.weather_particle_limit >= stats.weather_particle_count)
+    end)
+
+    -- @covers LOverlay:setAccessibilityPolicy
+    -- @covers LOverlay:getAccessibilityPolicy
+    it("setAccessibilityPolicy enables reduced motion and clamps flash/lightning behavior", function()
+        local overlay = new_overlay(320, 240)
+        overlay:setAccessibilityPolicy({
+            reduced_motion = true,
+            max_flash_alpha = 0.2,
+            max_flash_duration = 0.1,
+            max_shake_intensity = 1.25,
+            disable_lightning = true,
+            disable_film_grain = true,
+        })
+        local policy = overlay:getAccessibilityPolicy()
+        expect_true(policy.reduced_motion)
+        expect_near(0.2, policy.max_flash_alpha, 0.0001)
+        overlay:triggerFlash(1.0, 1.0, 1.0, 0.9, 0.5)
+        expect_true(overlay:getFlashAlpha() <= 0.2 + 0.0001)
+        overlay:triggerLightning()
+        expect_near(0.0, overlay:getLightningAlpha(), 0.0001)
+    end)
+
+    -- @covers LOverlay:getRenderPlan
+    it("getRenderPlan reports active external overlay layers", function()
+        local overlay = new_overlay(320, 240)
+        overlay:setFogEnabled(true)
+        overlay:setWater(0.2, 1.0, 0.5)
+        overlay:setCloudShadows(true)
+        overlay:setFilmGrainEnabled(true)
+        local plan = overlay:getRenderPlan()
+        expect_type("table", plan)
+        expect_true(table_contains(plan.externally_handled, "fog"))
+        expect_true(table_contains(plan.externally_handled, "water"))
+        expect_true(table_contains(plan.externally_handled, "clouds"))
+        expect_true(table_contains(plan.externally_handled, "film_grain"))
     end)
 
     -- @covers LOverlay:getWidth
@@ -454,6 +499,18 @@ describe("overlay methods", function()
         expect_near(0.45, overlay:getWeatherIntensity(), 0.0001)
     end)
 
+    -- @covers LOverlay:setWeatherSeed
+    -- @covers LOverlay:getWeatherRngState
+    -- @covers LOverlay:setWeatherRngState
+    it("weather RNG state roundtrips through the Lua API", function()
+        local overlay = new_overlay(320, 240)
+        overlay:setWeatherSeed(123456789)
+        local seeded = overlay:getWeatherRngState()
+        expect_equal(123456789, seeded)
+        overlay:setWeatherRngState(987654321)
+        expect_equal(987654321, overlay:getWeatherRngState())
+    end)
+
     -- @covers LOverlay:setWindDirection
     it("setWindDirection updates the wind direction", function()
         local overlay = new_overlay(320, 240)
@@ -496,6 +553,15 @@ describe("overlay methods", function()
         overlay:setLightningColor(0.3, 0.4, 0.5, 0.6)
         local r, g, b, a = overlay:getLightningColor()
         expect_rgba(r, g, b, a, 0.3, 0.4, 0.5, 0.6)
+    end)
+
+    -- @covers LOverlay:setCustomShader
+    it("setCustomShader rejects invalid shader names", function()
+        local overlay = new_overlay(320, 240)
+        expect_error(function()
+            overlay:setCustomShader("../scanlines")
+        end)
+        overlay:setCustomShader("vignette")
     end)
 
     -- @covers LOverlay:flash

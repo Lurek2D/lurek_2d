@@ -13,6 +13,10 @@ local function new_stack(w, h)
     return lurek.effect.newStack(w or 320, h or 240)
 end
 
+local function minimal_shader_code()
+    return "@fragment fn fs() -> @location(0) vec4<f32> { return vec4<f32>(1.0); }"
+end
+
 local function new_overlay(w, h)
     return lurek.effect.newOverlay(w, h)
 end
@@ -64,12 +68,27 @@ describe("lurek.effect module", function()
 
     -- @covers lurek.effect.newPass
     it("newPass constructs a custom pass effect", function()
-        expect_equal("LPostFxEffect", lurek.effect.newPass(1):type())
+        local shader = lurek.render.newShader(minimal_shader_code())
+        expect_equal("LPostFxEffect", lurek.effect.newPass(shader:getId()):type())
     end)
 
     -- @covers lurek.effect.newCustomEffect
     it("newCustomEffect exists", function()
         expect_type("function", lurek.effect.newCustomEffect)
+    end)
+
+    -- @covers lurek.effect.newCustomEffect
+    it("newCustomEffect rejects an unknown shader id", function()
+        expect_error(function()
+            lurek.effect.newCustomEffect(999999)
+        end)
+    end)
+
+    -- @covers lurek.effect.newStack
+    it("newStack rejects zero dimensions", function()
+        expect_error(function()
+            lurek.effect.newStack(0, 240)
+        end)
     end)
 
     -- @covers lurek.effect.newPresetStack
@@ -142,6 +161,14 @@ describe("LPostFxEffect methods", function()
         local effect = new_effect("blur")
         effect:setParameter("radius", 5)
         expect_near(5.0, effect:getParameter("radius"), 1e-6)
+    end)
+
+    -- @covers LPostFxEffect:setParameter
+    it("setParameter rejects unknown built-in parameters", function()
+        local effect = new_effect("blur")
+        expect_error(function()
+            effect:setParameter("bogus", 1)
+        end)
     end)
 
     -- @covers LPostFxEffect:getParameterNames
@@ -545,7 +572,7 @@ describe("effect explicit owner coverage", function()
 
     -- @covers LPostFxEffect:setStrength
     it("stores the strength parameter", function()
-        local effect = new_effect_local("crt")
+        local effect = new_effect_local("vignette")
         effect:setStrength(0.7)
         expect_near(0.7, effect:getParameter("strength"), 1e-6)
     end)
@@ -559,28 +586,28 @@ describe("effect explicit owner coverage", function()
 
     -- @covers LPostFxEffect:setOffset
     it("stores the offset parameter", function()
-        local effect = new_effect_local("blur")
+        local effect = new_effect_local("chromatic")
         effect:setOffset(0.2)
         expect_near(0.2, effect:getParameter("offset"), 1e-6)
     end)
 
     -- @covers LPostFxEffect:setBrightness
     it("stores the brightness parameter", function()
-        local effect = new_effect_local("blur")
+        local effect = new_effect_local("colourgrade")
         effect:setBrightness(1.1)
         expect_near(1.1, effect:getParameter("brightness"), 1e-6)
     end)
 
     -- @covers LPostFxEffect:setContrast
     it("stores the contrast parameter", function()
-        local effect = new_effect_local("blur")
+        local effect = new_effect_local("colourgrade")
         effect:setContrast(0.9)
         expect_near(0.9, effect:getParameter("contrast"), 1e-6)
     end)
 
     -- @covers LPostFxEffect:setSaturation
     it("stores the saturation parameter", function()
-        local effect = new_effect_local("blur")
+        local effect = new_effect_local("colourgrade")
         effect:setSaturation(0.8)
         expect_near(0.8, effect:getParameter("saturation"), 1e-6)
     end)

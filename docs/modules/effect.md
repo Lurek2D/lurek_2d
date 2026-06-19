@@ -1086,7 +1086,7 @@ LPostFxEffect:setBrightness(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | number | Brightness value passed to the effect shader. |
+| `v` | number | Brightness value passed to the effect shader; must stay in the documented range. |
 
 **Example**
 
@@ -1114,7 +1114,7 @@ LPostFxEffect:setContrast(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | number | Contrast value passed to the effect shader. |
+| `v` | number | Contrast value passed to the effect shader; must stay in the documented range. |
 
 **Example**
 
@@ -1170,7 +1170,7 @@ LPostFxEffect:setIntensity(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | number | Intensity value passed to the effect shader. |
+| `v` | number | Intensity value passed to the effect shader; must stay in the documented range. |
 
 **Example**
 
@@ -1198,7 +1198,7 @@ LPostFxEffect:setOffset(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | number | Offset value passed to the effect shader. |
+| `v` | number | Offset value passed to the effect shader; must stay in the documented range. |
 
 **Example**
 
@@ -1227,7 +1227,7 @@ LPostFxEffect:setParameter(name, value)
 | Name | Type | Description |
 |------|------|-------------|
 | `name` | string | Parameter name expected by the effect shader. |
-| `value` | number | Numeric parameter value. |
+| `value` | number | Numeric parameter value; must match the effect schema. |
 
 **Example**
 
@@ -1255,7 +1255,7 @@ LPostFxEffect:setRadius(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | number | Radius value passed to the effect shader. |
+| `v` | number | Radius value passed to the effect shader; must stay in the documented range. |
 
 **Example**
 
@@ -1283,7 +1283,7 @@ LPostFxEffect:setSaturation(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | number | Saturation value passed to the effect shader. |
+| `v` | number | Saturation value passed to the effect shader; must stay in the documented range. |
 
 **Example**
 
@@ -1311,7 +1311,7 @@ LPostFxEffect:setScanlineStrength(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | number | Scanline strength value passed to the effect shader. |
+| `v` | number | Scanline strength value passed to the effect shader; must stay in the documented range. |
 
 **Example**
 
@@ -1339,7 +1339,7 @@ LPostFxEffect:setStrength(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | number | Strength value passed to the effect shader. |
+| `v` | number | Strength value passed to the effect shader; must stay in the documented range. |
 
 **Example**
 
@@ -1367,7 +1367,7 @@ LPostFxEffect:setThreshold(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | number | Threshold value passed to the effect shader. |
+| `v` | number | Threshold value passed to the effect shader; must stay in the documented range. |
 
 **Example**
 

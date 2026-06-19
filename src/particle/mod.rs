@@ -9,12 +9,16 @@
 pub mod config;
 /// Emission strategy: burst, continuous, and lifetime-gated emission logic.
 pub mod emission;
-/// `ParticleSystem` — the main emitter update loop and particle pool manager.
+/// `ParticleSystem` - the main emitter update loop and particle pool manager.
 pub mod emitter;
+/// Typed particle validation and runtime safety errors.
+pub mod error;
+/// Shared particle limits for strict constructors and bounded runtime helpers.
+pub mod limits;
 /// Math helpers: linear interpolation, colour/size/alpha keyframe evaluation.
 pub mod math;
 #[allow(clippy::module_inception)]
-/// `Particle` — per-particle state: position, velocity, life, colour, and size.
+/// `Particle` - per-particle state: position, velocity, life, colour, and size.
 pub mod particle;
 /// Physics-driven collision response for particles against rapier colliders.
 pub mod physics_collision;
@@ -28,10 +32,14 @@ pub mod shapes;
 pub mod trail;
 /// Debug/editor visualisation overlays for emitter bounds and particle vectors.
 pub mod visualization;
+
 pub use config::{
-    AreaDistribution, EmissionShape, EmitterState, InsertMode, ParticleConfig, RelativeMode,
+    AreaDistribution, EmissionShape, EmitterState, InsertMode, ParticleConfig,
+    ParticleConfigReport, ParticleConfigWarning, RelativeMode,
 };
-pub use emitter::ParticleSystem;
+pub use emitter::{ParticleRngVersion, ParticleSystem};
+pub use error::ParticleError;
+pub use limits::ParticleLimits;
 pub use math::{interpolate_alphas, interpolate_colors, interpolate_sizes, lerp};
 pub use particle::Particle;
 pub use shapes::ParticleShape;

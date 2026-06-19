@@ -102782,6 +102782,17 @@
           "objectType": "LOverlay"
         },
         {
+          "name": "getRenderPlan",
+          "fullPath": "LOverlay:getRenderPlan",
+          "signature": "()",
+          "description": "Returns the current render responsibility plan for active overlay layers.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LOverlay"
+        },
+        {
           "name": "clear",
           "fullPath": "LOverlay:clear",
           "signature": "()",
@@ -102868,6 +102879,35 @@
           "parameters": [],
           "returns": "number",
           "returnType": "number",
+          "isMethod": true,
+          "objectType": "LOverlay"
+        },
+        {
+          "name": "setAccessibilityPolicy",
+          "fullPath": "LOverlay:setAccessibilityPolicy",
+          "signature": "([policy_tbl])",
+          "description": "Replaces or partially updates the overlay accessibility policy.",
+          "parameters": [
+            {
+              "name": "policy",
+              "type": "table",
+              "description": "Optional policy table; nil resets defaults.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LOverlay"
+        },
+        {
+          "name": "getAccessibilityPolicy",
+          "fullPath": "LOverlay:getAccessibilityPolicy",
+          "signature": "()",
+          "description": "Returns the current overlay accessibility policy.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LOverlay"
         },
@@ -103524,6 +103564,53 @@
           "parameters": [],
           "returns": "number",
           "returnType": "number",
+          "isMethod": true,
+          "objectType": "LOverlay"
+        },
+        {
+          "name": "setWeatherSeed",
+          "fullPath": "LOverlay:setWeatherSeed",
+          "signature": "(seed)",
+          "description": "Sets the deterministic overlay weather seed used for future particle sampling.",
+          "parameters": [
+            {
+              "name": "seed",
+              "type": "integer",
+              "description": "Non-zero preferred seed value; zero maps to the engine default seed.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LOverlay"
+        },
+        {
+          "name": "getWeatherRngState",
+          "fullPath": "LOverlay:getWeatherRngState",
+          "signature": "()",
+          "description": "Returns the current deterministic overlay weather RNG state.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LOverlay"
+        },
+        {
+          "name": "setWeatherRngState",
+          "fullPath": "LOverlay:setWeatherRngState",
+          "signature": "(state)",
+          "description": "Replaces the current deterministic overlay weather RNG state.",
+          "parameters": [
+            {
+              "name": "state",
+              "type": "integer",
+              "description": "New weather RNG state; zero maps to the engine default seed.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
           "isMethod": true,
           "objectType": "LOverlay"
         },
@@ -110267,7 +110354,7 @@
             {
               "name": "value",
               "type": "number",
-              "description": "Numeric parameter value.",
+              "description": "Numeric parameter value; must match the effect schema.",
               "optional": false
             }
           ],
@@ -110389,7 +110476,7 @@
             {
               "name": "v",
               "type": "number",
-              "description": "Threshold value passed to the effect shader.",
+              "description": "Threshold value passed to the effect shader; must stay in the documented range.",
               "optional": false
             }
           ],
@@ -110407,7 +110494,7 @@
             {
               "name": "v",
               "type": "number",
-              "description": "Intensity value passed to the effect shader.",
+              "description": "Intensity value passed to the effect shader; must stay in the documented range.",
               "optional": false
             }
           ],
@@ -110425,7 +110512,7 @@
             {
               "name": "v",
               "type": "number",
-              "description": "Radius value passed to the effect shader.",
+              "description": "Radius value passed to the effect shader; must stay in the documented range.",
               "optional": false
             }
           ],
@@ -110443,7 +110530,7 @@
             {
               "name": "v",
               "type": "number",
-              "description": "Strength value passed to the effect shader.",
+              "description": "Strength value passed to the effect shader; must stay in the documented range.",
               "optional": false
             }
           ],
@@ -110461,7 +110548,7 @@
             {
               "name": "v",
               "type": "number",
-              "description": "Scanline strength value passed to the effect shader.",
+              "description": "Scanline strength value passed to the effect shader; must stay in the documented range.",
               "optional": false
             }
           ],
@@ -110479,7 +110566,7 @@
             {
               "name": "v",
               "type": "number",
-              "description": "Offset value passed to the effect shader.",
+              "description": "Offset value passed to the effect shader; must stay in the documented range.",
               "optional": false
             }
           ],
@@ -110497,7 +110584,7 @@
             {
               "name": "v",
               "type": "number",
-              "description": "Brightness value passed to the effect shader.",
+              "description": "Brightness value passed to the effect shader; must stay in the documented range.",
               "optional": false
             }
           ],
@@ -110515,7 +110602,7 @@
             {
               "name": "v",
               "type": "number",
-              "description": "Contrast value passed to the effect shader.",
+              "description": "Contrast value passed to the effect shader; must stay in the documented range.",
               "optional": false
             }
           ],
@@ -110533,7 +110620,7 @@
             {
               "name": "v",
               "type": "number",
-              "description": "Saturation value passed to the effect shader.",
+              "description": "Saturation value passed to the effect shader; must stay in the documented range.",
               "optional": false
             }
           ],

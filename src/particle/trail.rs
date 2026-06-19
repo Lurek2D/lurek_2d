@@ -6,6 +6,8 @@
 
 use crate::color::Color;
 use crate::render::renderer::{DrawMode, RenderCommand};
+
+const MAX_TRAIL_POINTS: usize = 4_096;
 /// Single point on a trail ribbon with world-space position and accumulated age.
 #[derive(Debug, Clone)]
 pub struct TrailPoint {
@@ -55,6 +57,9 @@ impl Trail {
             if (dx * dx + dy * dy) < self.min_distance * self.min_distance {
                 return;
             }
+        }
+        if self.points.len() >= MAX_TRAIL_POINTS {
+            self.points.pop();
         }
         self.points.insert(0, TrailPoint { x, y, age: 0.0 });
     }

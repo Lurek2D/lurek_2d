@@ -3305,8 +3305,7 @@ impl ApplicationHandler for LurekApp {
                             }
                             let mut dispatch_report = self.begin_input_report("keypressed", None);
                             let mut ui_consumed = false;
-                            if shared_flag(&self.state, |st| st.auto_ui_input)
-                                && self.lua.is_some()
+                            if shared_flag(&self.state, |st| st.auto_ui_input) && self.lua.is_some()
                             {
                                 let ui_result = {
                                     let lua = self.lua.as_ref().expect("lua should exist");

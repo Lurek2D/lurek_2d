@@ -208,7 +208,7 @@ LSaveManager:enableAutoSave(interval, slot)
 | Name | Type | Description |
 |------|------|-------------|
 | `interval` | number | Time in seconds between auto-save checks (e.g. 30.0 for every 30 seconds). |
-| `slot` | string | The slot name to auto-save into (e.g. "autosave"). |
+| `slot` | string | The validated slot name to auto-save into (e.g. "autosave"). |
 
 **Example**
 

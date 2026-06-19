@@ -10,10 +10,8 @@
 - The same subsystem can therefore own persistent environmental treatment and short-lived screen transitions without burying either concern inside unrelated render code.
 - Layer-wide control is important because these treatments often need coordinated fade-in, fade-out, stacking, and override rules when several moods or transitions compete for the screen at once.
 - The module is useful whenever a project needs stronger screen-space presentation than a local sprite effect but does not need a full scene rewrite.
-- `render` still draws the final image, but `overlay` owns the grouping, configuration, and temporal behavior of these large-scale scene treatments.
+- `render` still draws the final image, but `overlay` owns the grouping, configuration, temporal behavior, accessibility policy, and diagnostics for these large-scale scene treatments.
 - Read `overlay` as the orchestration layer for scene-wide atmospheric and transitional effects.
-
-This module primarily collaborates with `color`, `image`, `render`, `runtime`. Its responsibility should stay inside the `Edge/Integration` group rather than absorb behavior owned by those neighbors.
 
 ## Functions
 
@@ -238,6 +236,22 @@ do
     example_print_log("LOverlay:flash alpha=" .. f2(ov:getFlashAlpha()))
 end
 ```
+
+---
+
+#### `LOverlay:getAccessibilityPolicy`
+
+Returns the current overlay accessibility policy.
+
+```lua
+LOverlay:getAccessibilityPolicy()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Policy table with reduced motion, flash, shake, lightning, and grain controls. |
 
 ---
 
@@ -672,6 +686,22 @@ end
 
 ---
 
+#### `LOverlay:getRenderPlan`
+
+Returns the current render responsibility plan for active overlay layers.
+
+```lua
+LOverlay:getRenderPlan()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Table with `rendered` and `externally_handled` string arrays. |
+
+---
+
 #### `LOverlay:getShakeOffset`
 
 Returns the current screen shake offset.
@@ -886,6 +916,22 @@ do
     example_print_log("LOverlay:getWeatherIntensity=" .. f2(ov:getWeatherIntensity()))
 end
 ```
+
+---
+
+#### `LOverlay:getWeatherRngState`
+
+Returns the current deterministic overlay weather RNG state.
+
+```lua
+LOverlay:getWeatherRngState()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Current weather RNG state. |
 
 ---
 
@@ -1419,6 +1465,22 @@ do
     overlay_log("active=" .. tostring(ov:isActive()))
 end
 ```
+
+---
+
+#### `LOverlay:setAccessibilityPolicy`
+
+Replaces or partially updates the overlay accessibility policy.
+
+```lua
+LOverlay:setAccessibilityPolicy(policy)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `policy?` | table | Optional policy table; nil resets defaults. |
 
 ---
 
@@ -2161,6 +2223,38 @@ do
     example_print_log("LOverlay:setWeatherIntensity=" .. f2(ov:getWeatherIntensity()))
 end
 ```
+
+---
+
+#### `LOverlay:setWeatherRngState`
+
+Replaces the current deterministic overlay weather RNG state.
+
+```lua
+LOverlay:setWeatherRngState(state)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `state` | number | New weather RNG state; zero maps to the engine default seed. |
+
+---
+
+#### `LOverlay:setWeatherSeed`
+
+Sets the deterministic overlay weather seed used for future particle sampling.
+
+```lua
+LOverlay:setWeatherSeed(seed)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `seed` | number | Non-zero preferred seed value; zero maps to the engine default seed. |
 
 ---
 

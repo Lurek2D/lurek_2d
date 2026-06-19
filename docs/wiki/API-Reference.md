@@ -4809,17 +4809,20 @@ LMod:getHookNames() -> string[] -- Returns registered hook names. This method is
 LMod:getId() -> string -- Returns the mod id. This method is available to Lua scripts.
 LMod:getName() -> string -- Returns the mod display name. This method is available to Lua scripts.
 LMod:getPriority() -> integer -- Returns the mod priority. This method is available to Lua scripts.
+LMod:getSandbox() -> table -- Returns the configured sandbox policy.
 LMod:getVersion() -> string -- Returns the mod version. This method is available to Lua scripts.
 LMod:hasHook(name: string) -> boolean -- Returns whether a hook name is registered.
 LMod:isEnabled() -> boolean -- Returns whether the mod is enabled.
 LMod:isLoaded() -> boolean -- Returns whether the mod is loaded. This method is available to Lua scripts.
 LMod:releaseRefs() -- Releases stored Lua registry references for hooks and config.
+LMod:runHook(name: string) -> any -- Executes one registered hook under the mod's configured sandbox policy.
 LMod:setApiVersion(api_version: string) -- Sets the required API version string.
 LMod:setCapabilities(caps: table) -- Sets capability names from an array table.
 LMod:setConfig(value: any) -- Stores a Lua config value for this mod.
 LMod:setConfigSchema(schema: table) -- Sets config schema entries from a Lua table.
 LMod:setEnabled(enabled: boolean) -- Sets whether the mod is enabled. This method is available to Lua scripts.
 LMod:setHook(name: string, func: function) -- Stores a Lua hook function by name. This method is available to Lua scripts.
+LMod:setSandbox(sandbox: table) -- Sets the sandbox policy used by `runHook`.
 LMod:type() -> string -- Returns the Lua-visible type name for this mod handle.
 LMod:typeOf(name: string) -> boolean -- Returns whether this mod handle matches a supported type name.
 ```
@@ -4977,6 +4980,7 @@ LOverlay:clear() -- Clears active overlay effects and resets transient state.
 LOverlay:drawToImage(w: integer, h: integer) -> Image -- Renders overlay state into an image object of the requested size.
 LOverlay:fade(r: number, g: number, b: number, [a]: number, [dur]: number) -- Starts a fade overlay with optional alpha and duration.
 LOverlay:flash(r: number, g: number, b: number, [a]: number, [dur]: number) -- Starts a short flash overlay with optional alpha and duration.
+LOverlay:getAccessibilityPolicy() -> table -- Returns the current overlay accessibility policy.
 LOverlay:getAmbientColor() -> number -- Returns overlay ambient RGBA color.
 LOverlay:getCloudCount() -> integer -- Returns the overlay cloud shadow count.
 LOverlay:getCloudOpacity() -> number -- Returns cloud shadow opacity. This method is available to Lua scripts.
@@ -4991,6 +4995,7 @@ LOverlay:getHeatHazeIntensity() -> number -- Returns overlay heat haze intensity
 LOverlay:getHeight() -> integer -- Returns the overlay height. This method is available to Lua scripts.
 LOverlay:getLightningAlpha() -> number -- Returns the current lightning alpha.
 LOverlay:getLightningColor() -> number -- Returns overlay lightning RGBA color.
+LOverlay:getRenderPlan() -> table -- Returns the current render responsibility plan for active overlay layers.
 LOverlay:getShakeOffset() -> number -- Returns the current screen shake offset.
 LOverlay:getStats() -> table -- Returns a telemetry snapshot for dashboard and debug workflows.
 LOverlay:getTimeOfDay() -> number -- Returns the overlay time-of-day value.
@@ -4998,6 +5003,7 @@ LOverlay:getVignetteStrength() -> number -- Returns overlay vignette strength.
 LOverlay:getWater() -> table -- Returns a table describing the current water effect settings.
 LOverlay:getWeather() -> string -- Returns the overlay weather type name.
 LOverlay:getWeatherIntensity() -> number -- Returns weather intensity for the current weather type.
+LOverlay:getWeatherRngState() -> integer -- Returns the current deterministic overlay weather RNG state.
 LOverlay:getWidth() -> integer -- Returns the overlay width. This method is available to Lua scripts.
 LOverlay:getWindDirection() -> number -- Returns the overlay weather wind direction.
 LOverlay:getWindSpeed() -> number -- Returns the overlay weather wind speed.
@@ -5016,6 +5022,7 @@ LOverlay:pullAmbientFromLight() -- Copies ambient color from the shared light wo
 LOverlay:pushAmbientToLight() -- Copies this overlay ambient color into the shared light world.
 LOverlay:render() -- Queues renderer commands for the overlay's current visual state.
 LOverlay:resize(w: integer, h: integer) -- Resizes the overlay target dimensions.
+LOverlay:setAccessibilityPolicy([policy]: table) -- Replaces or partially updates the overlay accessibility policy.
 LOverlay:setAmbientColor(r: number, g: number, b: number, [a]: number) -- Sets the overlay ambient color from RGBA channels.
 LOverlay:setAmbientEnabled(v: boolean) -- Enables or disables overlay ambient color rendering.
 LOverlay:setCloudCount(v: integer) -- Sets the overlay cloud shadow count.
@@ -5040,6 +5047,8 @@ LOverlay:setWaterTint(r: number, g: number, b: number, strength: number) -- Sets
 LOverlay:setWeather(name: string) -- Sets the overlay weather type by name.
 LOverlay:setWeatherEnabled(v: boolean) -- Enables or disables overlay weather rendering.
 LOverlay:setWeatherIntensity(v: number) -- Sets weather intensity for the current weather type.
+LOverlay:setWeatherRngState(state: integer) -- Replaces the current deterministic overlay weather RNG state.
+LOverlay:setWeatherSeed(seed: integer) -- Sets the deterministic overlay weather seed used for future particle sampling.
 LOverlay:setWindDirection(v: number) -- Sets the overlay weather wind direction.
 LOverlay:setWindSpeed(v: number) -- Sets the overlay weather wind speed.
 LOverlay:shake(intensity: number, [dur]: number) -- Starts a screen shake with optional duration.
@@ -7180,6 +7189,8 @@ lurek.terminal.resetCompletion() -- Resets the completion cycling state so the n
 lurek.terminal.scrollbackLen(terminal: LTerminal) -> integer -- Returns the number of lines currently stored in the terminal scrollback buffer.
 lurek.terminal.setScrollbackCap(terminal: LTerminal, cap: integer) -- Sets the maximum number of lines retained in the terminal scrollback buffer. Older lines are discarded when...
 lurek.terminal.stripAnsi(text: string) -> string -- Removes all ANSI escape sequences from a string, returning plain text.
+lurek.terminal.tryPushCmdHistory(terminal: LTerminal, cmd: string) -> boolean, string? -- Strictly appends a command string to the terminal command history.
+lurek.terminal.tryPushScrollback(terminal: LTerminal, line: string) -> boolean, string? -- Strictly appends a line of text to the terminal scrollback buffer.
 ```
 
 ### LTerminal
@@ -7188,11 +7199,14 @@ lurek.terminal.stripAnsi(text: string) -> string -- Removes all ANSI escape sequ
 LTerminal:addWidget(widget: LWidget) -- Attaches a widget to this terminal so it is rendered and receives input events.
 LTerminal:autoResize() -- Requests the window to resize so it exactly fits the terminal grid at the current cell size.
 LTerminal:clear() -- Clears all cells in the terminal grid, resetting characters and colors to defaults.
+LTerminal:clearDiagnostics() -- Clears all terminal diagnostics counters.
 LTerminal:clearWidgets() -- Removes all attached widgets from this terminal at once.
 LTerminal:get(col: integer, row: integer) -> integer, number, number, number, number, number, number, number, number -- Reads the character and colors at a specific cell in the terminal grid.
 LTerminal:getCellSize() -> number, number -- Returns the active terminal cell width and height in pixels, using custom override or font metrics.
+LTerminal:getDiagnostics() -> table -- Returns the current terminal diagnostics counters.
 LTerminal:getDimensions() -> integer, integer -- Returns the number of columns and rows in the terminal grid.
 LTerminal:getFocused() -> LWidget -- Returns the widget that currently has keyboard focus, or nil if no widget is focused.
+LTerminal:getRenderStats() -> table -- Returns the most recent render composition stats gathered by terminal render helpers.
 LTerminal:getWidgetCount() -> integer -- Returns the number of widgets currently attached to this terminal.
 LTerminal:keypressed(key: string) -> boolean -- Forwards a key press event to the terminal for widget input processing.
 LTerminal:mousepressed(px: number, py: number, [button]: integer) -- Forwards a mouse press event to the terminal, converting pixel coordinates to cell coordinates.
@@ -7205,8 +7219,10 @@ LTerminal:setCellSize(w: number, h: number) -- Overrides the cell width and heig
 LTerminal:setFocus([widget]: LWidget) -- Sets which widget currently has keyboard focus, or clears focus when nil is passed.
 LTerminal:setFont(height: integer) -- Selects the nearest built-in bitmap font by pixel height and refits the window to the terminal grid.
 LTerminal:textinput(text: string) -> boolean -- Forwards a text input event to the terminal for character entry into focused widgets.
+LTerminal:trySet(col: integer, row: integer, ch: string|number, [fr]: number, [fg]: number, [fb]: number, [fa]: number, [br]: number, [bg]: number, [bb]: number, [ba]: number) -> boolean, string? -- Strictly writes a character with colors to a specific cell and returns an explicit error string on invalid...
 LTerminal:type() -> string -- Returns the type name string "LTerminal".
 LTerminal:typeOf(name: string) -> boolean -- Checks whether this object matches a given type name. Accepts "LTerminal" or "Object".
+LTerminal:validateWidgets() -> boolean, string[]? -- Validates panel child ownership, stale references, cycles, and the current focus target.
 ```
 
 ### LWidget
@@ -7247,6 +7263,7 @@ LWidget:setTag(tag: string) -- Assigns an arbitrary string tag to the widget for
 LWidget:setText(text: string) -- Sets the display text of a label, button, or text box widget. Fires the onChange callback if the text actua...
 LWidget:setTitle(title: string) -- Sets the title text displayed in the border of a border or panel widget.
 LWidget:setVisible(visible: boolean) -- Controls whether the widget is drawn and receives input events.
+LWidget:trySetText(text: string) -> boolean, string? -- Strictly sets widget text and returns an explicit error string instead of silently truncating.
 LWidget:type() -> string -- Returns the type name string "LWidget".
 LWidget:typeOf(name: string) -> boolean -- Checks whether this object matches a given type name. Accepts "LWidget" or "Object".
 ```

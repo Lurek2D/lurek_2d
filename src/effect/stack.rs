@@ -6,8 +6,12 @@
 //! Several debug image helpers also live here because they visualize stack entries, labels, params, and effect catalogs.
 //! Open this file when stack orchestration changes; effect instances, presets, and render commands live in siblings.
 
+use super::contract::{
+    PostFxDebugImageLimits, PostFxDiagnostics, PostFxDuplicatePolicy, PostFxError, PostFxLimits,
+};
 use crate::log_msg;
 use crate::runtime::log_messages::{FX01, FX02};
+use std::collections::HashSet;
 #[derive(Debug, Clone)]
 /// Stores an ordered list of effect indices together with enable flags and target size.
 pub struct PostFxStack {
@@ -21,24 +25,55 @@ pub struct PostFxStack {
     pub height: u32,
     /// Indicates whether the renderer is currently capturing into this stack.
     pub capturing: bool,
+    /// Defines how duplicate effect indices are treated during validation.
+    pub duplicate_policy: PostFxDuplicatePolicy,
 }
 impl PostFxStack {
     /// Creates an empty post-effect stack for the given render size.
     pub fn new(width: u32, height: u32) -> Self {
         log_msg!(debug, FX01);
+        let limits = PostFxLimits::default();
+        let (width, height) = limits.sanitize_dimensions(width, height);
         Self {
             effects: Vec::new(),
             enabled: Vec::new(),
             width,
             height,
             capturing: false,
+            duplicate_policy: limits.duplicate_policy,
         }
+    }
+    /// Creates an empty validated post-effect stack for the given render size.
+    pub fn try_new(width: u32, height: u32, limits: &PostFxLimits) -> Result<Self, PostFxError> {
+        limits.validate_dimensions(width, height)?;
+        Ok(Self {
+            effects: Vec::new(),
+            enabled: Vec::new(),
+            width,
+            height,
+            capturing: false,
+            duplicate_policy: limits.duplicate_policy,
+        })
+    }
+    /// Sets the duplicate policy used by stack validation.
+    pub fn set_duplicate_policy(&mut self, policy: PostFxDuplicatePolicy) {
+        self.duplicate_policy = policy;
+    }
+    /// Returns the duplicate policy used by stack validation.
+    pub fn duplicate_policy(&self) -> PostFxDuplicatePolicy {
+        self.duplicate_policy
     }
     /// Appends an enabled effect index to the end of the stack.
     pub fn add(&mut self, effect_idx: usize) {
         log_msg!(debug, FX02);
         self.effects.push(effect_idx);
         self.enabled.push(true);
+    }
+    /// Appends an enabled effect index after validating that it exists.
+    pub fn try_add(&mut self, effect_idx: usize, effect_count: usize) -> Result<(), PostFxError> {
+        validate_effect_idx(effect_idx, effect_count)?;
+        self.add(effect_idx);
+        Ok(())
     }
     /// Removes the first stack entry that references the given effect index.
     pub fn remove(&mut self, effect_idx: usize) -> bool {
@@ -55,6 +90,17 @@ impl PostFxStack {
         let idx = (position.saturating_sub(1)).min(self.effects.len());
         self.effects.insert(idx, effect_idx);
         self.enabled.insert(idx, true);
+    }
+    /// Inserts an enabled effect index after validating that it exists.
+    pub fn try_insert(
+        &mut self,
+        position: usize,
+        effect_idx: usize,
+        effect_count: usize,
+    ) -> Result<(), PostFxError> {
+        validate_effect_idx(effect_idx, effect_count)?;
+        self.insert(position, effect_idx);
+        Ok(())
     }
     /// Sets the enable flag for the first stack entry that references the effect index.
     pub fn set_enabled(&mut self, effect_idx: usize, is_enabled: bool) {
@@ -82,19 +128,36 @@ impl PostFxStack {
             None
         }
     }
-    /// Returns the effect indices whose stack entries are currently enabled.
-    pub fn enabled_effects(&self) -> Vec<usize> {
+    /// Iterates the enabled effect indices without allocating a temporary vector.
+    pub fn enabled_effects_iter(&self) -> impl Iterator<Item = usize> + '_ {
         self.effects
             .iter()
             .zip(self.enabled.iter())
-            .filter(|(_, &en)| en)
-            .map(|(&idx, _)| idx)
-            .collect()
+            .filter(|(_, enabled)| **enabled)
+            .map(|(idx, _)| *idx)
+    }
+    /// Returns the effect indices whose stack entries are currently enabled.
+    pub fn enabled_effects(&self) -> Vec<usize> {
+        self.enabled_effects_iter().collect()
     }
     /// Updates the target render dimensions stored on the stack.
     pub fn resize(&mut self, width: u32, height: u32) {
+        let limits = PostFxLimits::default();
+        let (width, height) = limits.sanitize_dimensions(width, height);
         self.width = width;
         self.height = height;
+    }
+    /// Updates the target render dimensions after validating them against explicit limits.
+    pub fn try_resize(
+        &mut self,
+        width: u32,
+        height: u32,
+        limits: &PostFxLimits,
+    ) -> Result<(), PostFxError> {
+        limits.validate_dimensions(width, height)?;
+        self.width = width;
+        self.height = height;
+        Ok(())
     }
     /// Returns the target render width.
     pub fn get_width(&self) -> u32 {
@@ -116,6 +179,46 @@ impl PostFxStack {
     pub fn is_empty(&self) -> bool {
         self.effects.is_empty()
     }
+    /// Validates stack dimensions, index liveness, and duplicate policy against a registry size.
+    pub fn validate_against(
+        &self,
+        effect_count: usize,
+        limits: &PostFxLimits,
+    ) -> PostFxDiagnostics {
+        let mut diagnostics = PostFxDiagnostics::default();
+        if let Err(error) = limits.validate_dimensions(self.width, self.height) {
+            diagnostics.push_error("invalid_dimensions", error);
+        }
+        if self.effects.len() != self.enabled.len() {
+            diagnostics.push_error(
+                "enabled_length_mismatch",
+                PostFxError::EnabledLengthMismatch {
+                    effect_count: self.effects.len(),
+                    enabled_count: self.enabled.len(),
+                },
+            );
+        }
+        let mut seen = HashSet::new();
+        for &effect_idx in &self.effects {
+            if let Err(error) = validate_effect_idx(effect_idx, effect_count) {
+                diagnostics.push_error("stale_effect_index", error);
+                continue;
+            }
+            if !seen.insert(effect_idx) {
+                let error = PostFxError::DuplicateEffectIndex { index: effect_idx };
+                match self.duplicate_policy {
+                    PostFxDuplicatePolicy::Allow => {}
+                    PostFxDuplicatePolicy::Warn => {
+                        diagnostics.push_warning("duplicate_effect_index", error);
+                    }
+                    PostFxDuplicatePolicy::Disallow => {
+                        diagnostics.push_error("duplicate_effect_index", error);
+                    }
+                }
+            }
+        }
+        diagnostics
+    }
     /// Removes every stack entry and enable flag.
     pub fn clear(&mut self) {
         self.effects.clear();
@@ -123,7 +226,7 @@ impl PostFxStack {
     }
     /// Removes duplicate effect indices while preserving first occurrence order.
     pub fn dedup_indices(&mut self) -> usize {
-        let mut seen = std::collections::HashSet::new();
+        let mut seen = HashSet::new();
         let before = self.effects.len();
         let mut new_effects = Vec::with_capacity(before);
         let mut new_enabled = Vec::with_capacity(before);
@@ -137,6 +240,69 @@ impl PostFxStack {
         self.effects = new_effects;
         self.enabled = new_enabled;
         removed
+    }
+    /// Renders a debug overview after validating the output size against explicit limits.
+    pub fn try_draw_info_to_image(
+        &self,
+        width: u32,
+        height: u32,
+        limits: &PostFxDebugImageLimits,
+    ) -> Result<crate::image::ImageData, PostFxError> {
+        limits.validate(width, height)?;
+        Ok(self.draw_info_to_image(width, height))
+    }
+    /// Renders a labeled debug panel after validating the output size against explicit limits.
+    pub fn try_draw_stack_management_to_image(
+        &self,
+        width: u32,
+        height: u32,
+        labels: &[&str],
+        limits: &PostFxDebugImageLimits,
+    ) -> Result<crate::image::ImageData, PostFxError> {
+        limits.validate(width, height)?;
+        Ok(self.draw_stack_management_to_image(width, height, labels))
+    }
+    /// Renders a tiled debug catalog after validating the output size against explicit limits.
+    pub fn try_draw_effect_catalog_to_image(
+        entries: &[(&str, (u8, u8, u8))],
+        width: u32,
+        height: u32,
+        limits: &PostFxDebugImageLimits,
+    ) -> Result<crate::image::ImageData, PostFxError> {
+        limits.validate(width, height)?;
+        Ok(Self::draw_effect_catalog_to_image(entries, width, height))
+    }
+    /// Renders an effect parameter panel after validating the output size against explicit limits.
+    pub fn try_draw_effect_parameters_to_image(
+        entries: &[(&str, &[(&str, f32)])],
+        width: u32,
+        height: u32,
+        limits: &PostFxDebugImageLimits,
+    ) -> Result<crate::image::ImageData, PostFxError> {
+        limits.validate(width, height)?;
+        Ok(Self::draw_effect_parameters_to_image(
+            entries, width, height,
+        ))
+    }
+    /// Renders effect-type bars after validating the output size against explicit limits.
+    pub fn try_draw_effect_type_bars_to_image(
+        entries: &[(&str, (u8, u8, u8), usize)],
+        width: u32,
+        height: u32,
+        limits: &PostFxDebugImageLimits,
+    ) -> Result<crate::image::ImageData, PostFxError> {
+        limits.validate(width, height)?;
+        Ok(Self::draw_effect_type_bars_to_image(entries, width, height))
+    }
+    /// Renders an effect-type catalog after validating the output size against explicit limits.
+    pub fn try_draw_effect_types_to_image(
+        types: &[super::PostFxEffectType],
+        width: u32,
+        height: u32,
+        limits: &PostFxDebugImageLimits,
+    ) -> Result<crate::image::ImageData, PostFxError> {
+        limits.validate(width, height)?;
+        Ok(Self::draw_effect_types_to_image(types, width, height))
     }
     /// Renders a debug overview of stack entries and their enabled state.
     pub fn draw_info_to_image(&self, width: u32, height: u32) -> crate::image::ImageData {
@@ -372,5 +538,16 @@ impl PostFxStack {
             })
             .collect();
         Self::draw_effect_type_bars_to_image(&entries, width, height)
+    }
+}
+
+fn validate_effect_idx(effect_idx: usize, effect_count: usize) -> Result<(), PostFxError> {
+    if effect_idx < effect_count {
+        Ok(())
+    } else {
+        Err(PostFxError::StaleEffectIndex {
+            index: effect_idx,
+            effect_count,
+        })
     }
 }

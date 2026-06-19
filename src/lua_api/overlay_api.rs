@@ -1,7 +1,9 @@
 //! Registers the `lurek.overlay` Lua API for overlay controllers, transitions, telemetry, and validated options.
 
 use super::SharedState;
-use crate::overlay::{Overlay, ScreenTransition, TransitionKind, WeatherType};
+use crate::overlay::{
+    Overlay, OverlayAccessibilityPolicy, ScreenTransition, TransitionKind, WeatherType,
+};
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -145,6 +147,34 @@ impl LuaUserData for LuaOverlay {
             table.set("ambient_enabled", stats.ambient_enabled)?;
             table.set("fog_enabled", stats.fog_enabled)?;
             table.set("vignette_enabled", stats.vignette_enabled)?;
+            table.set("weather_spawns_this_frame", stats.weather_spawns_this_frame)?;
+            table.set("weather_dropped_spawns", stats.weather_dropped_spawns)?;
+            table.set("weather_culled_particles", stats.weather_culled_particles)?;
+            table.set("weather_dt_spike_clamps", stats.weather_dt_spike_clamps)?;
+            table.set("reduced_motion", stats.reduced_motion)?;
+            table.set("accessibility_adjustments", stats.accessibility_adjustments)?;
+            table.set("sanitized_fields", stats.sanitized_fields)?;
+            table.set("invalid_shader_rejections", stats.invalid_shader_rejections)?;
+            table.set("debug_image_rejections", stats.debug_image_rejections)?;
+            table.set("external_render_layers", stats.external_render_layers)?;
+            Ok(table)
+        });
+        // -- getRenderPlan --
+        /// Returns the current render responsibility plan for active overlay layers.
+        /// @return | table | Table with `rendered` and `externally_handled` string arrays.
+        methods.add_method("getRenderPlan", |lua, this, ()| {
+            let plan = this.inner.render_plan();
+            let table = lua.create_table()?;
+            let rendered = lua.create_table()?;
+            for (index, layer) in plan.rendered.iter().enumerate() {
+                rendered.set(index + 1, layer.as_str())?;
+            }
+            let external = lua.create_table()?;
+            for (index, layer) in plan.externally_handled.iter().enumerate() {
+                external.set(index + 1, layer.as_str())?;
+            }
+            table.set("rendered", rendered)?;
+            table.set("externally_handled", external)?;
             Ok(table)
         });
         // -- clear --
@@ -189,6 +219,72 @@ impl LuaUserData for LuaOverlay {
         /// @return | number | Lightning alpha value.
         methods.add_method("getLightningAlpha", |_, this, ()| {
             Ok(this.inner.get_lightning_alpha())
+        });
+        // -- setAccessibilityPolicy --
+        /// Replaces or partially updates the overlay accessibility policy.
+        /// @param | policy | table? | Optional policy table; nil resets defaults.
+        methods.add_method_mut(
+            "setAccessibilityPolicy",
+            |_, this, policy_tbl: Option<LuaTable>| {
+                let mut policy = if policy_tbl.is_some() {
+                    this.inner.accessibility_policy()
+                } else {
+                    OverlayAccessibilityPolicy::default()
+                };
+                if let Some(tbl) = policy_tbl {
+                    if let Some(value) = tbl.get::<_, Option<bool>>("reduced_motion")? {
+                        policy.reduced_motion = value;
+                    }
+                    if let Some(value) = tbl.get::<_, Option<f32>>("max_flash_alpha")? {
+                        policy.max_flash_alpha =
+                            unit_f32("LOverlay:setAccessibilityPolicy", "max_flash_alpha", value)?;
+                    }
+                    if let Some(value) = tbl.get::<_, Option<f32>>("max_flash_duration")? {
+                        policy.max_flash_duration = non_negative_f32(
+                            "LOverlay:setAccessibilityPolicy",
+                            "max_flash_duration",
+                            value,
+                        )?;
+                    }
+                    if let Some(value) = tbl.get::<_, Option<f32>>("max_flash_per_second")? {
+                        policy.max_flash_per_second = non_negative_f32(
+                            "LOverlay:setAccessibilityPolicy",
+                            "max_flash_per_second",
+                            value,
+                        )?;
+                    }
+                    if let Some(value) = tbl.get::<_, Option<f32>>("max_shake_intensity")? {
+                        policy.max_shake_intensity = non_negative_f32(
+                            "LOverlay:setAccessibilityPolicy",
+                            "max_shake_intensity",
+                            value,
+                        )?;
+                    }
+                    if let Some(value) = tbl.get::<_, Option<bool>>("disable_lightning")? {
+                        policy.disable_lightning = value;
+                    }
+                    if let Some(value) = tbl.get::<_, Option<bool>>("disable_film_grain")? {
+                        policy.disable_film_grain = value;
+                    }
+                }
+                this.inner.set_accessibility_policy(policy);
+                Ok(())
+            },
+        );
+        // -- getAccessibilityPolicy --
+        /// Returns the current overlay accessibility policy.
+        /// @return | table | Policy table with reduced motion, flash, shake, lightning, and grain controls.
+        methods.add_method("getAccessibilityPolicy", |lua, this, ()| {
+            let policy = this.inner.accessibility_policy();
+            let table = lua.create_table()?;
+            table.set("reduced_motion", policy.reduced_motion)?;
+            table.set("max_flash_alpha", policy.max_flash_alpha)?;
+            table.set("max_flash_duration", policy.max_flash_duration)?;
+            table.set("max_flash_per_second", policy.max_flash_per_second)?;
+            table.set("max_shake_intensity", policy.max_shake_intensity)?;
+            table.set("disable_lightning", policy.disable_lightning)?;
+            table.set("disable_film_grain", policy.disable_film_grain)?;
+            Ok(table)
         });
         // -- setAmbientEnabled --
         /// Enables or disables overlay ambient color rendering.
@@ -504,6 +600,26 @@ impl LuaUserData for LuaOverlay {
         methods.add_method("getWeatherIntensity", |_, this, ()| {
             Ok(this.inner.weather.intensity)
         });
+        // -- setWeatherSeed --
+        /// Sets the deterministic overlay weather seed used for future particle sampling.
+        /// @param | seed | integer | Non-zero preferred seed value; zero maps to the engine default seed.
+        methods.add_method_mut("setWeatherSeed", |_, this, seed: u64| {
+            this.inner.weather.set_seed(seed);
+            Ok(())
+        });
+        // -- getWeatherRngState --
+        /// Returns the current deterministic overlay weather RNG state.
+        /// @return | integer | Current weather RNG state.
+        methods.add_method("getWeatherRngState", |_, this, ()| {
+            Ok(this.inner.weather.rng_state())
+        });
+        // -- setWeatherRngState --
+        /// Replaces the current deterministic overlay weather RNG state.
+        /// @param | state | integer | New weather RNG state; zero maps to the engine default seed.
+        methods.add_method_mut("setWeatherRngState", |_, this, state: u64| {
+            this.inner.weather.set_rng_state(state);
+            Ok(())
+        });
         // -- setWindDirection --
         /// Sets the overlay weather wind direction.
         /// @param | v | number | Wind direction value.
@@ -633,7 +749,10 @@ impl LuaUserData for LuaOverlay {
         methods.add_method("drawToImage", |_, this, (w, h): (u32, u32)| {
             let w = positive_u32("LOverlay:drawToImage", "w", w)?;
             let h = positive_u32("LOverlay:drawToImage", "h", h)?;
-            let img = this.inner.draw_state_to_image(w, h);
+            let img = this
+                .inner
+                .try_draw_state_to_image(w, h)
+                .map_err(|err| LuaError::RuntimeError(err.to_string()))?;
             Ok(img)
         });
         // -- setWater --
@@ -674,8 +793,9 @@ impl LuaUserData for LuaOverlay {
         /// Sets or clears the custom overlay shader name.
         /// @param | name | string? | Optional shader name; nil clears the custom shader.
         methods.add_method_mut("setCustomShader", |_, this, name: Option<String>| {
-            this.inner.custom_shader = name;
-            Ok(())
+            this.inner
+                .set_custom_shader(name)
+                .map_err(|err| LuaError::RuntimeError(err.to_string()))
         });
         // -- getWater --
         /// Returns a table describing the current water effect settings.

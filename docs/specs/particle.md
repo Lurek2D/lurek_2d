@@ -319,4 +319,13 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 
 ## Notes
 
-- No additional module-specific notes.
+- Safety contract:
+  Particle configs normalize permissively through legacy constructors, but strict callers use explicit `ParticleLimits` and reject oversized pools, nested death-emitter depth overflows, excessive keyframes/quads, and oversized TOML payloads.
+- Determinism contract:
+  Explicit `seed` values opt the emitter into deterministic replay under `ParticleRngVersion::V1`; omitted seeds are treated as nondeterministic and are reported through config/runtime diagnostics.
+- Runtime budgets:
+  Emitters cap direct pool size, total live particles, per-update sub-emitter spawns, recycled child-system retention, attractor count, and render instances per frame; dropped child spawns and render over-budget events are surfaced through `getStats`.
+- Custom emission callback contract:
+  Deferred Lua custom-shape callbacks target stable particle ids instead of raw pool indices, so `bottom` and `random` insert modes cannot retarget pending offsets after later inserts. Failed callbacks leave the particle's existing spawn offset unchanged.
+- Render and collision policy:
+  Invalid sprite-sheet quads are removed during config normalization, render extraction skips non-finite or invisible instances, and bounds/attractor strict setters reject non-finite coordinates instead of propagating NaNs into the update loop.

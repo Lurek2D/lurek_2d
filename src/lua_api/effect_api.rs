@@ -3,10 +3,11 @@
 use super::SharedState;
 use crate::effect::{
     presets::{build_preset, preset_names},
-    ImageEffect, PostFxEffect, PostFxEffectType, PostFxStack,
+    ImageEffect, PostFxDiagnostics, PostFxEffect, PostFxEffectType, PostFxLimits, PostFxStack,
 };
 use crate::render::renderer::{PostFxPass, RenderCommand};
 use mlua::prelude::*;
+use slotmap::Key;
 use std::cell::RefCell;
 use std::rc::Rc;
 use std::sync::atomic::{AtomicU64, Ordering};
@@ -14,6 +15,26 @@ static NEXT_STACK_ID: AtomicU64 = AtomicU64::new(1);
 
 fn effect_type_name(effect: &PostFxEffect) -> &str {
     effect.get_type_name()
+}
+
+fn postfx_runtime_error(api: &str, message: impl Into<String>) -> LuaError {
+    LuaError::RuntimeError(format!("lurek.effect.{api}: {}", message.into()))
+}
+
+fn postfx_diagnostics_error(api: &str, diagnostics: &PostFxDiagnostics) -> LuaError {
+    let message = diagnostics
+        .iter()
+        .map(|entry| entry.error.to_string())
+        .collect::<Vec<_>>()
+        .join("; ");
+    postfx_runtime_error(api, message)
+}
+
+fn shader_exists(state: &SharedState, shader_id: usize) -> bool {
+    state
+        .shaders
+        .iter()
+        .any(|(key, _)| key.data().as_ffi() as usize == shader_id)
 }
 /// Lua-side handle for a single post-processing effect instance.
 pub struct LuaPostFxEffect {
@@ -61,9 +82,14 @@ impl LuaUserData for LuaPostFxEffect {
         // -- setParameter --
         /// Sets a numeric shader parameter by name.
         /// @param | name | string | Parameter name expected by the effect shader.
-        /// @param | value | number | Numeric parameter value.
+        /// @param | value | number | Numeric parameter value; must match the effect schema.
         methods.add_method_mut("setParameter", |_, this, (name, value): (String, f32)| {
-            this.inner.borrow_mut().set_parameter(name, value);
+            this.inner
+                .borrow_mut()
+                .try_set_parameter(name, value)
+                .map_err(|error| {
+                    postfx_runtime_error("LPostFxEffect.setParameter", error.to_string())
+                })?;
             Ok(())
         });
         // -- getParameter --
@@ -118,67 +144,110 @@ impl LuaUserData for LuaPostFxEffect {
         });
         // -- setThreshold --
         /// Sets the threshold shader parameter on this effect.
-        /// @param | v | number | Threshold value passed to the effect shader.
+        /// @param | v | number | Threshold value passed to the effect shader; must stay in the documented range.
         methods.add_method_mut("setThreshold", |_, this, v: f32| {
-            this.inner.borrow_mut().set_parameter("threshold", v);
+            this.inner
+                .borrow_mut()
+                .try_set_parameter("threshold", v)
+                .map_err(|error| {
+                    postfx_runtime_error("LPostFxEffect.setThreshold", error.to_string())
+                })?;
             Ok(())
         });
         // -- setIntensity --
         /// Sets the intensity shader parameter on this effect.
-        /// @param | v | number | Intensity value passed to the effect shader.
+        /// @param | v | number | Intensity value passed to the effect shader; must stay in the documented range.
         methods.add_method_mut("setIntensity", |_, this, v: f32| {
-            this.inner.borrow_mut().set_parameter("intensity", v);
+            this.inner
+                .borrow_mut()
+                .try_set_parameter("intensity", v)
+                .map_err(|error| {
+                    postfx_runtime_error("LPostFxEffect.setIntensity", error.to_string())
+                })?;
             Ok(())
         });
         // -- setRadius --
         /// Sets the radius shader parameter on this effect.
-        /// @param | v | number | Radius value passed to the effect shader.
+        /// @param | v | number | Radius value passed to the effect shader; must stay in the documented range.
         methods.add_method_mut("setRadius", |_, this, v: f32| {
-            this.inner.borrow_mut().set_parameter("radius", v);
+            this.inner
+                .borrow_mut()
+                .try_set_parameter("radius", v)
+                .map_err(|error| {
+                    postfx_runtime_error("LPostFxEffect.setRadius", error.to_string())
+                })?;
             Ok(())
         });
         // -- setStrength --
         /// Sets the strength shader parameter on this effect.
-        /// @param | v | number | Strength value passed to the effect shader.
+        /// @param | v | number | Strength value passed to the effect shader; must stay in the documented range.
         methods.add_method_mut("setStrength", |_, this, v: f32| {
-            this.inner.borrow_mut().set_parameter("strength", v);
+            this.inner
+                .borrow_mut()
+                .try_set_parameter("strength", v)
+                .map_err(|error| {
+                    postfx_runtime_error("LPostFxEffect.setStrength", error.to_string())
+                })?;
             Ok(())
         });
         // -- setScanlineStrength --
         /// Sets the scanline strength shader parameter on this effect.
-        /// @param | v | number | Scanline strength value passed to the effect shader.
+        /// @param | v | number | Scanline strength value passed to the effect shader; must stay in the documented range.
         methods.add_method_mut("setScanlineStrength", |_, this, v: f32| {
             this.inner
                 .borrow_mut()
-                .set_parameter("scanline_strength", v);
+                .try_set_parameter("scanline_strength", v)
+                .map_err(|error| {
+                    postfx_runtime_error("LPostFxEffect.setScanlineStrength", error.to_string())
+                })?;
             Ok(())
         });
         // -- setOffset --
         /// Sets the offset shader parameter on this effect.
-        /// @param | v | number | Offset value passed to the effect shader.
+        /// @param | v | number | Offset value passed to the effect shader; must stay in the documented range.
         methods.add_method_mut("setOffset", |_, this, v: f32| {
-            this.inner.borrow_mut().set_parameter("offset", v);
+            this.inner
+                .borrow_mut()
+                .try_set_parameter("offset", v)
+                .map_err(|error| {
+                    postfx_runtime_error("LPostFxEffect.setOffset", error.to_string())
+                })?;
             Ok(())
         });
         // -- setBrightness --
         /// Sets the brightness shader parameter on this effect.
-        /// @param | v | number | Brightness value passed to the effect shader.
+        /// @param | v | number | Brightness value passed to the effect shader; must stay in the documented range.
         methods.add_method_mut("setBrightness", |_, this, v: f32| {
-            this.inner.borrow_mut().set_parameter("brightness", v);
+            this.inner
+                .borrow_mut()
+                .try_set_parameter("brightness", v)
+                .map_err(|error| {
+                    postfx_runtime_error("LPostFxEffect.setBrightness", error.to_string())
+                })?;
             Ok(())
         });
         // -- setContrast --
         /// Sets the contrast shader parameter on this effect.
-        /// @param | v | number | Contrast value passed to the effect shader.
+        /// @param | v | number | Contrast value passed to the effect shader; must stay in the documented range.
         methods.add_method_mut("setContrast", |_, this, v: f32| {
-            this.inner.borrow_mut().set_parameter("contrast", v);
+            this.inner
+                .borrow_mut()
+                .try_set_parameter("contrast", v)
+                .map_err(|error| {
+                    postfx_runtime_error("LPostFxEffect.setContrast", error.to_string())
+                })?;
             Ok(())
         });
         // -- setSaturation --
         /// Sets the saturation shader parameter on this effect.
-        /// @param | v | number | Saturation value passed to the effect shader.
+        /// @param | v | number | Saturation value passed to the effect shader; must stay in the documented range.
         methods.add_method_mut("setSaturation", |_, this, v: f32| {
-            this.inner.borrow_mut().set_parameter("saturation", v);
+            this.inner
+                .borrow_mut()
+                .try_set_parameter("saturation", v)
+                .map_err(|error| {
+                    postfx_runtime_error("LPostFxEffect.setSaturation", error.to_string())
+                })?;
             Ok(())
         });
         // -- enableAutoUniforms --
@@ -221,24 +290,33 @@ impl LuaPostFxStack {
         self.inner.enabled = enabled;
     }
 
-    fn effect_passes(&self) -> Vec<PostFxPass> {
-        self.effects
-            .iter()
-            .enumerate()
-            .filter(|(index, effect_rc)| {
-                self.inner.enabled.get(*index).copied().unwrap_or(true)
-                    && effect_rc.borrow().enabled
-            })
-            .map(|(_, effect_rc)| {
-                let effect = effect_rc.borrow();
-                PostFxPass {
-                    effect_name: effect_type_name(&effect).to_string(),
-                    params: effect.params.clone(),
-                    shader_id: effect.shader_id,
-                    auto_uniforms: effect.auto_uniforms,
-                }
-            })
-            .collect()
+    fn effect_passes(&self) -> LuaResult<Vec<PostFxPass>> {
+        let limits = PostFxLimits::default();
+        let mut passes = Vec::new();
+        let state = self.state.borrow();
+        for (index, effect_rc) in self.effects.iter().enumerate() {
+            if !self.inner.enabled.get(index).copied().unwrap_or(true) {
+                continue;
+            }
+            let effect = effect_rc.borrow();
+            if !effect.enabled {
+                continue;
+            }
+            let diagnostics = effect.validate_params_with_limits(&limits);
+            if diagnostics.has_errors() {
+                return Err(postfx_diagnostics_error("LPostFxStack.apply", &diagnostics));
+            }
+            effect
+                .validate_custom_shader(|shader_id| shader_exists(&state, shader_id))
+                .map_err(|error| postfx_runtime_error("LPostFxStack.apply", error.to_string()))?;
+            passes.push(PostFxPass {
+                effect_name: effect_type_name(&effect).to_string(),
+                params: effect.params.clone(),
+                shader_id: effect.shader_id,
+                auto_uniforms: effect.auto_uniforms,
+            });
+        }
+        Ok(passes)
     }
 }
 /// Provides Lua methods for editing post-processing stack order, capture, and renderer submission.
@@ -366,7 +444,9 @@ impl LuaUserData for LuaPostFxStack {
         /// @param | w | integer | New width in pixels.
         /// @param | h | integer | New height in pixels.
         methods.add_method_mut("resize", |_, this, (w, h): (u32, u32)| {
-            this.inner.resize(w, h);
+            this.inner
+                .try_resize(w, h, &PostFxLimits::default())
+                .map_err(|error| postfx_runtime_error("LPostFxStack.resize", error.to_string()))?;
             Ok(())
         });
         // -- len --
@@ -438,7 +518,10 @@ impl LuaUserData for LuaPostFxStack {
         // -- apply --
         /// Queues this stack's enabled post-effect passes for renderer application.
         methods.add_method("apply", |_, this, ()| {
-            let passes = this.effect_passes();
+            let passes = this.effect_passes()?;
+            if passes.is_empty() {
+                return Ok(());
+            }
             this.state
                 .borrow_mut()
                 .render_commands
@@ -616,12 +699,16 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// Creates a custom post-processing effect that references an existing shader id.
     /// @param | shader_id | integer | Renderer shader identifier used for the custom effect.
     /// @return | LPostFxEffect | New custom post-processing effect handle.
+    let s = state.clone();
     tbl.set(
         "newCustomEffect",
-        lua.create_function(|lua, shader_id: usize| {
-            lua.create_userdata(LuaPostFxEffect::from_owned(PostFxEffect::new_custom(
-                shader_id,
-            )))
+        lua.create_function(move |lua, shader_id: usize| {
+            let effect = {
+                let state = s.borrow();
+                PostFxEffect::new_custom_checked(shader_id, |id| shader_exists(&state, id))
+                    .map_err(|error| postfx_runtime_error("newCustomEffect", error.to_string()))?
+            };
+            lua.create_userdata(LuaPostFxEffect::from_owned(effect))
         })?,
     )?;
     let s = state.clone();
@@ -639,8 +726,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             };
             let w = w.unwrap_or(default_w);
             let h = h.unwrap_or(default_h);
+            let inner = PostFxStack::try_new(w, h, &PostFxLimits::default())
+                .map_err(|error| postfx_runtime_error("newStack", error.to_string()))?;
             lua.create_userdata(LuaPostFxStack {
-                inner: PostFxStack::new(w, h),
+                inner,
                 effects: Vec::new(),
                 stack_id: NEXT_STACK_ID.fetch_add(1, Ordering::Relaxed),
                 state: Rc::clone(&s),
@@ -665,8 +754,12 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 };
                 let w = w.unwrap_or(default_w);
                 let h = h.unwrap_or(default_h);
-                let preset = build_preset(&name, w, h)
-                    .ok_or_else(|| LuaError::RuntimeError(format!("unknown preset '{}'", name)))?;
+                PostFxLimits::default()
+                    .validate_dimensions(w, h)
+                    .map_err(|error| postfx_runtime_error("newPresetStack", error.to_string()))?;
+                let preset = build_preset(&name, w, h).ok_or_else(|| {
+                    postfx_runtime_error("newPresetStack", format!("unknown preset '{name}'"))
+                })?;
                 let effects: Vec<Rc<RefCell<PostFxEffect>>> = preset
                     .effects
                     .into_iter()
@@ -689,12 +782,16 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// Creates a custom post-processing pass from an existing shader id.
     /// @param | shader_id | integer | Renderer shader identifier used for the pass.
     /// @return | LPostFxEffect | New custom post-processing effect handle.
+    let s = state.clone();
     tbl.set(
         "newPass",
-        lua.create_function(|lua, shader_id: usize| {
-            lua.create_userdata(LuaPostFxEffect::from_owned(PostFxEffect::new_custom(
-                shader_id,
-            )))
+        lua.create_function(move |lua, shader_id: usize| {
+            let effect = {
+                let state = s.borrow();
+                PostFxEffect::new_custom_checked(shader_id, |id| shader_exists(&state, id))
+                    .map_err(|error| postfx_runtime_error("newPass", error.to_string()))?
+            };
+            lua.create_userdata(LuaPostFxEffect::from_owned(effect))
         })?,
     )?;
     // -- getEffectTypes --
@@ -730,7 +827,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                     let mut eff = PostFxEffect::new(et);
                     if let Some(LuaValue::Table(params)) = args.iter().nth(1) {
                         for (k, v) in params.clone().pairs::<String, f32>().flatten() {
-                            eff.set_parameter(&k, v);
+                            eff.try_set_parameter(k, v).map_err(|error| {
+                                postfx_runtime_error("newImageEffect", error.to_string())
+                            })?;
                         }
                     }
                     ie.add_effect(eff);
@@ -749,9 +848,23 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                         for (k, v) in entry.pairs::<String, LuaValue>().flatten() {
                             if k != "type" {
                                 if let LuaValue::Number(n) = v {
-                                    eff.set_parameter(&k, n as f32);
+                                    eff.try_set_parameter(k.clone(), n as f32).map_err(
+                                        |error| {
+                                            postfx_runtime_error(
+                                                "newImageEffect",
+                                                error.to_string(),
+                                            )
+                                        },
+                                    )?;
                                 } else if let LuaValue::Integer(i) = v {
-                                    eff.set_parameter(&k, i as f32);
+                                    eff.try_set_parameter(k.clone(), i as f32).map_err(
+                                        |error| {
+                                            postfx_runtime_error(
+                                                "newImageEffect",
+                                                error.to_string(),
+                                            )
+                                        },
+                                    )?;
                                 }
                             }
                         }

@@ -5,6 +5,8 @@
 //! `render.rs`, `draw.rs`, and `presets.rs` cover renderer commands, debug previews, and ready-made visual recipes.
 //! It also forwards legacy overlay exports, so change this file when public effect symbols or compatibility edges move.
 
+/// Shared post-fx validation contract and diagnostics.
+pub mod contract;
 /// Debug image rendering for post-effect stacks.
 pub mod draw;
 #[allow(clippy::module_inception)]
@@ -21,10 +23,16 @@ pub mod render;
 /// Ordered post-effect stack management utilities.
 pub mod stack;
 
+pub use contract::{
+    PostFxDebugImageLimits, PostFxDiagnostic, PostFxDiagnosticSeverity, PostFxDiagnostics,
+    PostFxDuplicatePolicy, PostFxError, PostFxLimits, PostFxParamKind, PostFxParamSchema,
+    POSTFX_AUTO_UNIFORMS,
+};
 pub use effect::PostFxEffect;
 pub use effect_type::PostFxEffectType;
 pub use image_effect::ImageEffect;
 pub use presets::{build_preset, preset_names, EffectPreset};
+pub use render::{PostFxCommandPlan, PostFxPassPlan};
 pub use stack::PostFxStack;
 
 // Backward-compat re-exports from the overlay module.
