@@ -43,7 +43,10 @@ pub enum PhysicsError {
     /// A referenced body id does not point to an active body.
     InvalidBodyReference { body_id: usize },
     /// A referenced fixture index does not exist on the body.
-    InvalidFixtureReference { body_id: usize, fixture_index: usize },
+    InvalidFixtureReference {
+        body_id: usize,
+        fixture_index: usize,
+    },
     /// A referenced joint id does not point to an active joint.
     InvalidJointReference { joint_id: usize },
     /// A referenced zone id does not point to an active zone.
@@ -79,7 +82,11 @@ impl fmt::Display for PhysicsError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::InvalidBodyIdValue { value } => {
-                write!(f, "physics body id must be a non-negative integer, got {}", value)
+                write!(
+                    f,
+                    "physics body id must be a non-negative integer, got {}",
+                    value
+                )
             }
             Self::InvalidFloat { field, value } => {
                 write!(f, "physics field '{}' must be finite, got {}", field, value)

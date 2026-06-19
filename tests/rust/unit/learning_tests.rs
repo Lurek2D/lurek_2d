@@ -2,13 +2,15 @@
 //!
 //! Public `lurek.learning.*` behaviour remains covered by Lua tests.
 
-use lurek2d::learning::tensor::{gemm, LurekTensor};
-use lurek2d::learning::{Activation, EvolutionaryLayer, NeuralLayer};
-use lurek2d::learning::{Conv2D, GruLayer, LstmLayer, MaxPool2D};
+use lurek2d::learning::onnx::OnnxLoadOptions;
+use lurek2d::learning::tensor::{gemm, try_gemm, LurekTensor};
 use lurek2d::learning::{
-    LayerNorm, LurekNeuralEngine, MultiHeadAttention, NeuralBlock, PositionalEncoding,
-    TransformerDecoderBlock, TransformerEncoderBlock,
+    Activation, EvolutionaryLayer, GeneticAlgorithm, LayerNorm, LurekNeuralEngine,
+    MultiHeadAttention, NeuralBlock, NeuralLayer, NeuralNet, Neuroevolution, OnnxModel,
+    PositionalEncoding, QLearner, TransformerDecoderBlock, TransformerEncoderBlock,
 };
+use lurek2d::learning::{Conv2D, GruLayer, LstmLayer, MaxPool2D};
+use std::path::PathBuf;
 
 fn assert_slice_near(actual: &[f32], expected: &[f32]) {
     assert_eq!(actual.len(), expected.len());
@@ -52,6 +54,48 @@ mod tensor_tests {
         // A*B = [19,22,43,50], bias => [20,21,44,49]
         assert_slice_near(&out, &[20.0, 21.0, 44.0, 49.0]);
     }
+
+    #[test]
+    fn tensor_try_new_rejects_shape_data_mismatch() {
+        let err = LurekTensor::try_new(vec![2, 2], vec![1.0, 2.0, 3.0]).unwrap_err();
+        assert_eq!(err.to_string(), "tensor shape expects 4 element(s), got 3");
+    }
+
+    #[test]
+    fn tensor_try_new_rejects_zero_dim() {
+        let err = LurekTensor::try_new(vec![2, 0], vec![]).unwrap_err();
+        assert!(err.to_string().contains("axis 1"));
+    }
+
+    #[test]
+    fn tensor_try_new_accepts_scalar_empty_shape() {
+        let tensor = LurekTensor::try_new(vec![], vec![7.0]).expect("scalar tensor should work");
+        assert_eq!(tensor.shape, Vec::<usize>::new());
+        assert_slice_near(&tensor.data, &[7.0]);
+    }
+
+    #[test]
+    fn tensor_zeros_rejects_overflow() {
+        let err = LurekTensor::try_zeros(vec![usize::MAX, 2]).unwrap_err();
+        let message = err.to_string();
+        assert!(
+            message.contains("overflowed") || message.contains("exceeds configured limit"),
+            "unexpected tensor allocation error: {}",
+            message
+        );
+    }
+
+    #[test]
+    fn gemm_rejects_short_inputs() {
+        let err = try_gemm(2, 2, 2, &[1.0, 2.0], &[3.0, 4.0, 5.0, 6.0], None).unwrap_err();
+        assert!(err.to_string().contains("gemm left matrix length mismatch"));
+    }
+
+    #[test]
+    fn gemm_rejects_zero_dims() {
+        let err = try_gemm(0, 2, 2, &[], &[], None).unwrap_err();
+        assert!(err.to_string().contains("rows"));
+    }
 }
 
 mod evolutionary_trait_tests {
@@ -74,6 +118,209 @@ mod evolutionary_trait_tests {
     fn neural_layer_rejects_wrong_weight_count() {
         let mut layer = NeuralLayer::new(2, 2, Activation::Linear);
         assert!(!layer.set_weights(&[1.0, 2.0, 3.0]));
+    }
+
+    #[test]
+    fn neural_forward_rejects_wrong_input_len() {
+        let layer = NeuralLayer::new(2, 2, Activation::Linear);
+        let err = layer.try_forward(&[1.0]).unwrap_err();
+        assert!(err
+            .to_string()
+            .contains("dense layer input length mismatch"));
+    }
+
+    #[test]
+    fn neural_net_rejects_invalid_topology() {
+        let mut net = NeuralNet::new();
+        net.add_layer(2, 3, Activation::Linear);
+        let err = net
+            .try_add_layer(4, 1, Activation::Linear)
+            .expect_err("mismatched topology should fail");
+        assert!(err.to_string().contains("expects 4 input"));
+    }
+
+    #[test]
+    fn softmax_empty_no_nan() {
+        let mut values = Vec::<f32>::new();
+        Activation::Softmax
+            .try_apply(&mut values)
+            .expect("empty softmax should be a no-op");
+        assert!(values.is_empty());
+    }
+
+    #[test]
+    fn softmax_rejects_nan_input() {
+        let mut values = vec![1.0, f32::NAN];
+        let err = Activation::Softmax
+            .try_apply(&mut values)
+            .expect_err("NaN input should be rejected");
+        assert!(err.to_string().contains("activation input"));
+    }
+}
+
+mod qlearner_tests {
+    use super::*;
+
+    #[test]
+    fn qlearner_zero_actions_rejected() {
+        let err = match QLearner::try_new(4, 0) {
+            Ok(_) => panic!("zero-action qlearner should fail"),
+            Err(err) => err,
+        };
+        assert!(err.to_string().contains("action_count"));
+    }
+
+    #[test]
+    fn qlearner_zero_states_rejected() {
+        let err = match QLearner::try_new(0, 4) {
+            Ok(_) => panic!("zero-state qlearner should fail"),
+            Err(err) => err,
+        };
+        assert!(err.to_string().contains("state_count"));
+    }
+
+    #[test]
+    fn qlearner_deserialize_rejects_invalid_json_token() {
+        let mut learner = QLearner::new_with_seed(2, 2, 11);
+        let err = learner.try_deserialize("[[1,\"bad\"],[2,3]]").unwrap_err();
+        assert!(!err.to_string().is_empty());
+    }
+
+    #[test]
+    fn qlearner_deserialize_rejects_non_finite_values() {
+        let mut learner = QLearner::new_with_seed(1, 1, 11);
+        let err = learner
+            .try_deserialize("{\"version\":1,\"state_count\":1,\"action_count\":1,\"qtable\":[[null]],\"alpha\":0.1,\"gamma\":0.9,\"epsilon\":0.1,\"epsilon_decay\":0.99,\"episode_count\":0,\"rng_state\":1}")
+            .unwrap_err();
+        assert!(!err.to_string().is_empty());
+    }
+
+    #[test]
+    fn learning_rng_reproducibility() {
+        let mut a = QLearner::new_with_seed(2, 3, 99);
+        let mut b = QLearner::new_with_seed(2, 3, 99);
+        a.epsilon = 1.0;
+        b.epsilon = 1.0;
+
+        let mut seq_a = Vec::new();
+        let mut seq_b = Vec::new();
+        for _ in 0..8 {
+            seq_a.push(a.try_choose_action(0).unwrap());
+            seq_b.push(b.try_choose_action(0).unwrap());
+        }
+        assert_eq!(seq_a, seq_b);
+
+        let snapshot = a.rng_snapshot();
+        let next_a = a.try_choose_action(0).unwrap();
+        a.restore_rng_snapshot(snapshot).unwrap();
+        let replayed = a.try_choose_action(0).unwrap();
+        assert_eq!(next_a, replayed);
+    }
+}
+
+mod genetic_tests {
+    use super::*;
+
+    #[test]
+    fn genetic_empty_population_rejected() {
+        let err = match GeneticAlgorithm::try_new(0, 4, 7) {
+            Ok(_) => panic!("zero-sized population should fail"),
+            Err(err) => err,
+        };
+        assert!(err.to_string().contains("population size"));
+    }
+
+    #[test]
+    fn genetic_evolve_clamps_tournament_and_elitism() {
+        let mut ga = GeneticAlgorithm::new(4, 3, 17);
+        ga.tournament_size = 0;
+        ga.elitism = 99;
+        ga.try_evolve()
+            .expect("out-of-range tournament and elitism should be normalized");
+        assert_eq!(ga.generation, 1);
+        assert_eq!(ga.pop_size(), 4);
+    }
+
+    #[test]
+    fn genetic_zero_gene_count_rejected() {
+        let err = match GeneticAlgorithm::try_new(4, 0, 7) {
+            Ok(_) => panic!("zero gene count should fail"),
+            Err(err) => err,
+        };
+        assert!(err.to_string().contains("gene_count"));
+    }
+
+    #[test]
+    fn genetic_cleared_population_returns_error_not_panic() {
+        let mut ga = GeneticAlgorithm::new(1, 1, 7);
+        ga.population.clear();
+        let err = ga
+            .try_evolve()
+            .expect_err("cleared population should fail cleanly");
+        assert!(err.to_string().contains("population size"));
+    }
+
+    #[test]
+    fn neuroevolution_uses_safe_ga_constructor() {
+        let err = match Neuroevolution::try_new(vec![(2, 3, "relu")], 0, 1) {
+            Ok(_) => panic!("zero-sized neuroevolution population should fail"),
+            Err(err) => err,
+        };
+        assert!(err.to_string().contains("population size"));
+    }
+}
+
+mod onnx_tests {
+    use super::*;
+
+    fn fixture_path() -> String {
+        "tests/lua/fixtures/minimal_identity.onnx".to_string()
+    }
+
+    #[test]
+    fn onnx_load_rejects_path_outside_sandbox() {
+        let options = OnnxLoadOptions {
+            sandbox_root: Some(PathBuf::from("src")),
+            ..OnnxLoadOptions::default()
+        };
+        let err = match OnnxModel::load_with_options(&fixture_path(), &options) {
+            Ok(_) => panic!("fixture path should be outside the src sandbox"),
+            Err(err) => err,
+        };
+        assert!(err.to_string().contains("outside sandbox"));
+    }
+
+    #[test]
+    fn onnx_load_rejects_file_too_large() {
+        let options = OnnxLoadOptions {
+            max_file_bytes: 0,
+            ..OnnxLoadOptions::default()
+        };
+        let err = match OnnxModel::load_with_options(&fixture_path(), &options) {
+            Ok(_) => panic!("fixture model should exceed zero-byte limit"),
+            Err(err) => err,
+        };
+        assert!(err.to_string().contains("exceeding limit"));
+    }
+
+    #[test]
+    fn onnx_run_rejects_input_count_mismatch() {
+        let model = OnnxModel::load(&fixture_path()).expect("fixture model should load");
+        let err = model.try_run(Vec::new()).unwrap_err();
+        assert!(err.to_string().contains("expects 1 input tensor"));
+    }
+
+    #[test]
+    fn onnx_run_rejects_output_limit() {
+        let options = OnnxLoadOptions {
+            max_output_elements: 0,
+            ..OnnxLoadOptions::default()
+        };
+        let model =
+            OnnxModel::load_with_options(&fixture_path(), &options).expect("fixture model loads");
+        let input = LurekTensor::try_new(vec![1], vec![42.0]).unwrap();
+        let err = model.try_run(vec![input]).unwrap_err();
+        assert!(err.to_string().contains("ONNX output tensor"));
     }
 }
 

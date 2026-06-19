@@ -18,6 +18,12 @@ use std::cmp::{max, min};
 const FONT_PT_TO_PX: f32 = 96.0 / 72.0;
 const CELL_PADDING: i32 = 1;
 const GLYPH_COLUMNS: u32 = 16;
+/// Maximum accepted point size for runtime-rasterized font bytes.
+pub const MAX_DYNAMIC_FONT_POINT_SIZE: f32 = 256.0;
+/// Maximum width or height for a runtime-rasterized font atlas.
+pub const MAX_DYNAMIC_FONT_ATLAS_DIMENSION: u32 = 4096;
+/// Maximum byte size for a runtime-rasterized RGBA font atlas.
+pub const MAX_DYNAMIC_FONT_ATLAS_BYTES: usize = 64 * 1024 * 1024;
 
 /// First Unicode codepoint included in the bundled bitmap atlas range.
 pub const FIRST_CODEPOINT: u32 = 0x20;
@@ -153,6 +159,48 @@ fn atlas_char_for_codepoint(cp: u32) -> Option<char> {
     char::from_u32(cp)
 }
 
+/// Validate and normalize a dynamic font point size before parsing or rasterizing font bytes.
+pub fn validate_dynamic_font_point_size(point_size: f32) -> EngineResult<f32> {
+    if !point_size.is_finite() {
+        return Err(EngineError::RenderError(
+            "Font point size must be finite".to_string(),
+        ));
+    }
+    let point_size = point_size.max(1.0);
+    if point_size > MAX_DYNAMIC_FONT_POINT_SIZE {
+        return Err(EngineError::RenderError(format!(
+            "Font point size {point_size} exceeds maximum {MAX_DYNAMIC_FONT_POINT_SIZE}"
+        )));
+    }
+    Ok(point_size)
+}
+
+/// Validate dynamic font atlas dimensions and return the required RGBA byte length.
+pub fn validate_dynamic_font_atlas_dimensions(width: u32, height: u32) -> EngineResult<usize> {
+    if width == 0 || height == 0 {
+        return Err(EngineError::RenderError(
+            "Font atlas dimensions must be non-zero".to_string(),
+        ));
+    }
+    if width > MAX_DYNAMIC_FONT_ATLAS_DIMENSION || height > MAX_DYNAMIC_FONT_ATLAS_DIMENSION {
+        return Err(EngineError::RenderError(format!(
+            "Font atlas dimensions {width}x{height} exceed maximum {MAX_DYNAMIC_FONT_ATLAS_DIMENSION}"
+        )));
+    }
+    let byte_len = u64::from(width)
+        .checked_mul(u64::from(height))
+        .and_then(|pixels| pixels.checked_mul(4))
+        .ok_or_else(|| {
+            EngineError::RenderError(format!("Font atlas dimensions {width}x{height} overflow"))
+        })?;
+    if byte_len > MAX_DYNAMIC_FONT_ATLAS_BYTES as u64 {
+        return Err(EngineError::RenderError(format!(
+            "Font atlas requires {byte_len} bytes, maximum is {MAX_DYNAMIC_FONT_ATLAS_BYTES}"
+        )));
+    }
+    Ok(byte_len as usize)
+}
+
 impl Font {
     /// Returns the built-in slot and bold flag for a stable built-in font name.
     pub fn builtin_slot_by_name(name: &str) -> Option<(usize, bool)> {
@@ -208,9 +256,10 @@ impl Font {
 
     /// Rasterises TTF/OTF bytes into the same atlas format used by bundled fonts.
     pub fn from_font_bytes(data: &[u8], point_size: f32) -> EngineResult<Font> {
+        let point_size = validate_dynamic_font_point_size(point_size)?;
         let font = RuntimeFont::from_bytes(data, FontSettings::default())
             .map_err(|e| EngineError::RenderError(format!("Failed to parse font bytes: {e}")))?;
-        let pixel_size = (point_size.max(1.0) * FONT_PT_TO_PX).round().max(1.0);
+        let pixel_size = (point_size * FONT_PT_TO_PX).round().max(1.0);
         let display_chars: Vec<char> = (FIRST_CODEPOINT..=LAST_CODEPOINT)
             .filter_map(atlas_char_for_codepoint)
             .collect();
@@ -236,9 +285,14 @@ impl Font {
 
         let cell_w = (max_right - min_left + CELL_PADDING * 2).max(1) as u32;
         let cell_h = (max_above_baseline + max_below_baseline + CELL_PADDING * 2).max(1) as u32;
-        let atlas_width = cell_w * GLYPH_COLUMNS;
-        let atlas_height = cell_h * atlas_rows();
-        let mut atlas_bitmap = vec![0u8; (atlas_width * atlas_height * 4) as usize];
+        let atlas_width = cell_w.checked_mul(GLYPH_COLUMNS).ok_or_else(|| {
+            EngineError::RenderError("Font atlas width overflows u32".to_string())
+        })?;
+        let atlas_height = cell_h.checked_mul(atlas_rows()).ok_or_else(|| {
+            EngineError::RenderError("Font atlas height overflows u32".to_string())
+        })?;
+        let atlas_len = validate_dynamic_font_atlas_dimensions(atlas_width, atlas_height)?;
+        let mut atlas_bitmap = vec![0u8; atlas_len];
         let mut glyphs = Vec::with_capacity(GLYPH_COUNT);
 
         for (idx, (metrics, bitmap)) in rasterized.into_iter().enumerate() {
@@ -455,28 +509,28 @@ impl Font {
                 lines.push(String::new());
                 continue;
             }
-            let words: Vec<&str> = line.split_whitespace().collect();
-            if words.is_empty() {
+            let mut words = line.split_whitespace();
+            let Some(first_word) = words.next() else {
                 lines.push(String::new());
                 continue;
-            }
-            let mut current_line = String::new();
+            };
+            let space_width = self.text_width(" ");
+            let mut current_line = first_word.to_string();
+            let mut current_width = self.text_width(first_word);
             for word in words {
-                let test = if current_line.is_empty() {
-                    word.to_string()
-                } else {
-                    format!("{} {}", current_line, word)
-                };
-                if self.text_width(&test) > limit && !current_line.is_empty() {
+                let word_width = self.text_width(word);
+                let candidate_width = current_width + space_width + word_width;
+                if candidate_width > limit {
                     lines.push(current_line);
                     current_line = word.to_string();
+                    current_width = word_width;
                 } else {
-                    current_line = test;
+                    current_line.push(' ');
+                    current_line.push_str(word);
+                    current_width = candidate_width;
                 }
             }
-            if !current_line.is_empty() {
-                lines.push(current_line);
-            }
+            lines.push(current_line);
         }
         if lines.is_empty() {
             lines.push(String::new());

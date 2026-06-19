@@ -15,6 +15,8 @@
 - `dataframe` and other systems may own the source data, but `charts` owns the mapping from structured values to chart-specific visual form.
 - Read `charts` as the place where engine-side measurements become inspectable visual explanations.
 
+This module primarily collaborates with `color`, `dataframe`, `image`. Its responsibility should stay inside the `Feature Systems` group rather than absorb behavior owned by those neighbors.
+
 ## Functions
 
 ### `lurek.charts.defaultPalette`

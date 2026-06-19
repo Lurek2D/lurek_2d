@@ -15,6 +15,8 @@
 - `render` shows the result and world systems choose what to focus, but `camera` owns how that focus is followed, constrained, and transformed into visible space.
 - Read `camera` as the authority for framing policy and coordinate conversion between world and screen.
 
+This module primarily collaborates with `math`, `render`, `tilemap`. Its responsibility should stay inside the Platform Services group rather than absorb behavior owned by those neighbors.
+
 ## Functions
 
 ### `lurek.camera.new`

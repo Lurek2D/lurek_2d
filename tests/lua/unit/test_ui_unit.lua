@@ -655,6 +655,14 @@ describe("common ui controls", function()
         end)
     end)
 
+    -- @covers LTextInput:setSubmitOnEnter
+    -- @covers LTextInput:getSubmitOnEnter
+    it("text input submit_on_enter round-trips through the public API", function()
+        local input = lurek.ui.newTextInput()
+        input:setSubmitOnEnter(false)
+        expect_equal(false, input:getSubmitOnEnter())
+    end)
+
     -- @covers LTextInput:isFocused
     it("text input isFocused returns a boolean", function()
         expect_type("boolean", lurek.ui.newTextInput():isFocused())
@@ -855,6 +863,27 @@ describe("compound widgets and helpers", function()
         combo:addItem("Two")
         combo:setSelectedIndex(2)
         expect_equal("Two", combo:getSelectedItem())
+    end)
+
+    -- @covers LComboBox:setMaxVisibleItems
+    -- @covers LComboBox:getMaxVisibleItems
+    it("combo box max visible items round-trips through the public API", function()
+        local combo = lurek.ui.newComboBox()
+        combo:setMaxVisibleItems(3)
+        expect_equal(3, combo:getMaxVisibleItems())
+    end)
+
+    -- @covers lurek.ui.textinput
+    it("combo box supports keyboard typeahead through textinput", function()
+        lurek.ui.clear()
+        local combo = lurek.ui.newComboBox()
+        combo:addItem("Apple")
+        combo:addItem("Banana")
+        combo:addItem("Blueberry")
+        lurek.ui.setFocus(combo)
+        expect_true(lurek.ui.textinput("b"))
+        expect_true(lurek.ui.textinput("l"))
+        expect_equal(3, combo:getSelectedIndex())
     end)
 
     -- @covers lurek.ui.newList
@@ -1721,6 +1750,35 @@ describe("supplementary ui module coverage", function()
         expect_equal("a", input:getText())
     end)
 
+    -- @covers lurek.ui.keypressed
+    it("keypressed supports text selection shortcuts for focused inputs", function()
+        lurek.ui.clear()
+        local input = lurek.ui.newTextInput()
+        lurek.ui.setFocus(input)
+        expect_true(lurek.ui.textinput("abcd"))
+        expect_true(lurek.ui.keypressed("shift+left"))
+        expect_true(lurek.ui.keypressed("shift+left"))
+        expect_true(lurek.ui.keypressed("backspace"))
+        expect_equal("ab", input:getText())
+        expect_true(lurek.ui.keypressed("ctrl+a"))
+        expect_true(lurek.ui.textinput("Z"))
+        expect_equal("Z", input:getText())
+    end)
+
+    -- @covers lurek.ui.keypressed
+    it("keypressed supports ctrl word navigation for focused inputs", function()
+        lurek.ui.clear()
+        local input = lurek.ui.newTextInput()
+        lurek.ui.setFocus(input)
+        expect_true(lurek.ui.textinput("alpha beta gamma"))
+        expect_true(lurek.ui.keypressed("ctrl+left"))
+        expect_equal(11, input:getCursorPosition())
+        expect_true(lurek.ui.keypressed("ctrl+left"))
+        expect_equal(6, input:getCursorPosition())
+        expect_true(lurek.ui.keypressed("ctrl+right"))
+        expect_equal(11, input:getCursorPosition())
+    end)
+
     -- @covers lurek.ui.textinput
     it("textinput inserts text into the focused text input", function()
         lurek.ui.clear()
@@ -1728,6 +1786,13 @@ describe("supplementary ui module coverage", function()
         lurek.ui.setFocus(input)
         expect_true(lurek.ui.textinput("hello"))
         expect_equal("hello", input:getText())
+    end)
+
+    -- @covers LTextInput:getCursorPosition
+    it("getCursorPosition reports character indices for UTF-8 text", function()
+        local input = lurek.ui.newTextInput()
+        input:setText("ąż")
+        expect_equal(2, input:getCursorPosition())
     end)
 
     -- @covers lurek.ui.wheelmoved
@@ -1915,11 +1980,132 @@ describe("supplemental widget coverage", function()
         end)
     end)
 
+    -- @covers LUiWidget:getRole
+    it("getRole returns the stored semantic role", function()
+        local widget = basic_widget()
+        widget:setRole("button")
+        expect_equal("button", widget:getRole())
+    end)
+
     -- @covers LUiWidget:setAriaName
     it("setAriaName is callable", function()
         expect_no_error(function()
             basic_widget():setAriaName("primary action")
         end)
+    end)
+
+    -- @covers LUiWidget:getAriaName
+    it("getAriaName returns the stored accessible name", function()
+        local widget = basic_widget()
+        widget:setAriaName("primary action")
+        expect_equal("primary action", widget:getAriaName())
+    end)
+
+    -- @covers LUiWidget:setLabelFor
+    -- @covers LUiWidget:getLabelFor
+    it("setLabelFor stores widget linkage for accessibility", function()
+        local label = lurek.ui.newLabel("Name")
+        local input = lurek.ui.newTextInput()
+        label:setLabelFor(input._idx)
+        expect_equal(input._idx, label:getLabelFor())
+    end)
+
+    -- @covers lurek.ui.getAccessibilityTree
+    -- @covers lurek.ui.validateUx
+    it("accessibility tree exposes fallback names and validateUx reports warnings", function()
+        local label = lurek.ui.newLabel("Name")
+        local input = lurek.ui.newTextInput()
+        label:setLabelFor(input._idx)
+
+        local panel = basic_widget()
+        panel:setFocusable(true)
+        panel:setId("dup_accessibility")
+
+        local button = basic_widget()
+        button:setId("dup_accessibility")
+        button:setRole("button")
+        button:setAriaName("Save")
+
+        local nodes = lurek.ui.getAccessibilityTree()
+        local input_node = nil
+        for i = 1, #nodes do
+            if nodes[i].widget_idx == input._idx then
+                input_node = nodes[i]
+                break
+            end
+        end
+
+        expect_not_nil(input_node)
+        expect_equal("Name", input_node.name)
+        expect_equal("textbox", input_node.role)
+
+        local diagnostics = lurek.ui.validateUx()
+        local saw_duplicate = false
+        local saw_missing_name = false
+        for i = 1, #diagnostics do
+            local message = diagnostics[i].message or ""
+            if message:find("duplicates widget", 1, true) then
+                saw_duplicate = true
+            end
+            if diagnostics[i].widget_idx == panel._idx and message:find("no accessible name", 1, true) then
+                saw_missing_name = true
+            end
+        end
+
+        expect_true(saw_duplicate)
+        expect_true(saw_missing_name)
+    end)
+
+    -- @covers lurek.ui.validateUx
+    it("validateUx reports dialog, popup, and touch-target warnings", function()
+        lurek.ui.clear()
+        lurek.ui.setViewport(100, 100)
+        local dialog = lurek.ui.newDialog("Confirm")
+        dialog:open()
+        dialog:setModal(true)
+        dialog:setCloseable(false)
+        dialog:setPosition(-20, 10)
+        dialog:setSize(120, 90)
+        dialog:setZOrder(10)
+
+        local window = lurek.ui.newWindow("Inspector")
+        window:setVisible(true)
+        window:setPosition(-15, 20)
+        window:setSize(160, 120)
+        window:setZOrder(10)
+
+        local button = lurek.ui.newButton("Tiny")
+        button:setSize(30, 20)
+
+        local diagnostics = lurek.ui.validateUx()
+        local saw_default = false
+        local saw_cancel = false
+        local saw_offscreen = false
+        local saw_zorder = false
+        local saw_touch = false
+        for i = 1, #diagnostics do
+            local message = diagnostics[i].message or ""
+            if diagnostics[i].widget_idx == dialog._idx and message:find("no default action", 1, true) then
+                saw_default = true
+            end
+            if diagnostics[i].widget_idx == dialog._idx and message:find("no cancel action", 1, true) then
+                saw_cancel = true
+            end
+            if message:find("outside the active viewport", 1, true) then
+                saw_offscreen = true
+            end
+            if message:find("shares z-order", 1, true) then
+                saw_zorder = true
+            end
+            if diagnostics[i].widget_idx == button._idx and message:find("touch target", 1, true) then
+                saw_touch = true
+            end
+        end
+        expect_true(saw_default)
+        expect_true(saw_cancel)
+        expect_true(saw_offscreen)
+        expect_true(saw_zorder)
+        expect_true(saw_touch)
     end)
 
     -- @covers LUiWidget:setBindKey

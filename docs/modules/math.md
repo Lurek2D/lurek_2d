@@ -20,6 +20,8 @@
 - The module therefore acts as a substrate for both high-level and low-level work, and it gives tools and tests a deterministic numerical layer they can trust.
 - Read `math` as the place where the engine standardizes numeric and geometric reasoning across the rest of the project for code, tools, and tests alike.
 
+This module primarily collaborates with `globe`, `image`. Its responsibility should stay inside the Foundations group rather than absorb behavior owned by those neighbors.
+
 ## Functions
 
 ### `lurek.math.Vec2`

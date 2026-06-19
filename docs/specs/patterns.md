@@ -41,6 +41,8 @@
 - The module therefore acts like a shared vocabulary for structure. It gives different features a common way to talk about transitions, events, coordination, reversible actions, pooling, and shared facts, which improves consistency across the rest of the engine.
 - Read `patterns` as the place where recurring structural ideas become concrete runtime components and shared coordination vocabulary.
 
+This module primarily collaborates with `runtime`. Its responsibility should stay inside the Foundations group rather than absorb behavior owned by those neighbors.
+
 ## Imports
 
 - `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Foundations` into `Core Runtime`.

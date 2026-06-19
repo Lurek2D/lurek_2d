@@ -150,12 +150,11 @@ impl TreeView {
     /// Add a node under `parent_index` (or as root if `None`); return the new node index.
     pub fn add_node(&mut self, text: impl Into<String>, parent_index: Option<usize>) -> usize {
         let idx = self.nodes.len();
+        let parent_index = parent_index.filter(|&pi| pi < self.nodes.len());
         let node = TreeNode::new(text, parent_index);
         self.nodes.push(node);
         if let Some(pi) = parent_index {
-            if pi < self.nodes.len() - 1 {
-                self.nodes[pi].children.push(idx);
-            }
+            self.nodes[pi].children.push(idx);
         } else {
             self.root_nodes.push(idx);
         }
@@ -298,7 +297,12 @@ impl TreeView {
     pub fn get_node_depth(&self, index: usize) -> Option<usize> {
         let mut depth = 0usize;
         let mut current = index;
+        let mut visited = vec![false; self.nodes.len()];
         loop {
+            if current >= self.nodes.len() || visited[current] {
+                return None;
+            }
+            visited[current] = true;
             let node = self.nodes.get(current)?;
             match node.parent {
                 None => return Some(depth),

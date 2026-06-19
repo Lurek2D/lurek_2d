@@ -10,7 +10,7 @@
 - Source path: `src/mapblock/`
 - Binding: `src/lua_api/mapblock_api.rs`
 - Namespace: `lurek.mapblock`
-- Lua API surface: `10` functions, `9` types, `63` methods
+- Lua API surface: `10` functions, `10` types, `67` methods
 - Rust test path(s): tests/rust/unit/mapblock_tests.rs
 - Lua test path(s): tests/lua/unit/test_mapblock_unit.lua, tests/lua/evidence/test_mapblock_evidence.lua, content/games/puzzle/mapblock_labyrinth/test.lua
 
@@ -30,28 +30,11 @@
 - Neighboring modules consume the output, but `mapblock` owns the modular grammar that decides how authored fragments connect into a legal larger space.
 - Read `mapblock` as the subsystem that turns reusable map pieces into generated layouts with explicit connection rules.
 
-## Validation And Limits
-
-- `MapBlock::try_new` and `BlockLayer::try_new` reject zero dimensions, zero-slot configs, oversized cell counts, and layer counts above configured ceilings before allocation.
-- `MapBlock::validate` enforces finite non-negative weights, non-empty normalized footprints, sockets on footprint cells only, and edge segment indices inside the footprint span for that side.
-- Legacy imports use strict layer-length validation; malformed raw tile payloads are rejected instead of partially ignored.
-
-## Solver And Determinism
-
-- `LMapBlockGenerator:setSolverBudget` configures bounded `solve_shape` recursion through `max_nodes`, `max_depth`, `max_ms`, and `max_candidates_per_cell`.
-- `SolveShape` reports `budget_exceeded`, `no_candidates`, or `contradiction` as the last failure reason when a solve pass cannot finish.
-- Mapblock generation uses the shared `procgen.lcg.v1` RNG contract; reports include `seed` and `rng_version`, so repeated runs with the same inputs remain reproducible.
-- Placement searches reuse cached transformed footprints and socket maps across repeated searches in the same generation pass; reports expose cache hit/miss counters.
-
-## Output And Diagnostics
-
-- `generateWithReport` and `getLastReport` expose step counters, placement counts, solver stats, cache stats, and diagnostic counters for missing groups, invalid weights, no-progress stalls, and rejected placements.
-- `FillRect` now distinguishes invalid operations from out-of-bounds behavior: bad slot/layer/level or zero-area ops are rejected, fully outside rectangles are rejected, and partially outside rectangles are reported as clipped.
-- Multi-level placement rejects blocks whose `level + level_span` would exceed the configured storey count; overflow is reported instead of silently dropped.
+This module primarily collaborates with `procgen`. Its responsibility should stay inside the `Edge/Integration` group rather than absorb behavior owned by those neighbors.
 
 ## Imports
 
-- No top-level `crate::<module>` imports were detected in this module's Rust source files.
+- `procgen`: Imports or references `src/procgen/`. Cross-group dependency from ``Edge/Integration`` into `Foundations`.
 
 ## Files
 
@@ -86,12 +69,12 @@
 
 - This file owns the operational mapblock engine that runs scripts, tracks RNG, and mutates placement state over time.
 - `MapBlockGenerator` stores config, grid, rules, orientation, groups, levels, paint ops, and output tile sizing knobs.
-- Its private `Lcg` stays here because deterministic weighted picks and chance checks are execution-layer concerns.
+- It reuses the shared `procgen::Lcg` so deterministic picks follow one engine-wide RNG contract.
 - `generate` orchestrates the whole build, resetting state, running each script step, and then materializing output.
 - Random, fixed, edge, auto, rectangle-paint, and shape-solver step handlers all live here as runtime control flow.
 - Weighted block choice and candidate ordering stay here because authored content selection is step execution logic.
 - Backtracking shape solving stays local because it recursively consumes placement candidates against the live grid state.
-- `place_candidate` bridges successful search results into both `PlacementGrid` and `MultiLevelMap` ownership layers.
+- `MapBlockReport` and `place_candidate` bridge execution outcomes into diagnostics, `PlacementGrid`, and `MultiLevelMap`.
 - Open it when generation behavior changes; blocks, scripts, legality checks, and result export live in sibling owners.
 
 ### group.rs
@@ -257,7 +240,9 @@
 
 - `LMapBlockGenerator:addGroup(group) -> nil`: Add a named block group definition to this map generator.
 - `LMapBlockGenerator:generate(script) -> MapBlockResult`: Generate map using a script for this object.
+- `LMapBlockGenerator:generateWithReport(script) -> MapBlockResult`: Generate map using a script and return runtime diagnostics for this object.
 - `LMapBlockGenerator:getLastPlacedCount() -> integer`: Get last placement count for this object.
+- `LMapBlockGenerator:getLastReport() -> MapBlockReport`: Get the diagnostic report captured during the previous generation run.
 - `LMapBlockGenerator:setGrid(grid) -> nil`: Set the placement grid from a prepared PlacementGrid object.
 - `LMapBlockGenerator:setMaxLevels(levels) -> nil`: Set the number of vertical levels or storeys to generate.
 - `LMapBlockGenerator:setOrientation(orientation) -> nil`: Set rendering orientation for this object.
@@ -265,7 +250,20 @@
 - `LMapBlockGenerator:setRules(rules) -> nil`: Set neighbor matching rules for this object.
 - `LMapBlockGenerator:setSeed(seed) -> nil`: Set RNG seed for deterministic generation.
 - `LMapBlockGenerator:setShape(positions) -> nil`: Set the generator map shape using a list of tile positions.
+- `LMapBlockGenerator:setSolverBudget(opts) -> nil`: Set bounded recursion budgets for `solve_shape`.
 - `LMapBlockGenerator:setTileSize(w, h) -> nil`: Set tile pixel dimensions for this object.
+
+#### LMapBlockReport Type
+
+- Lua-facing generation diagnostics exposed by the lurek engine.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LMapBlockReport:toTable() -> table`: Serialize generation diagnostics into a plain Lua table.
 
 #### LMapBlockResult Type
 
@@ -364,7 +362,7 @@
 
 ## References
 
-- No top-level `crate::<module>` imports were detected in this module's Rust source files.
+- `procgen`: Imports or references `src/procgen/`. Cross-group dependency from ``Edge/Integration`` into `Foundations`.
 
 ## Notes
 

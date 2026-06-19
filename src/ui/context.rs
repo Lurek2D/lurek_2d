@@ -24,15 +24,17 @@ use crate::ui::controls::{
     Button, CheckBox, ComboBox, Label, ListBox, ProgressBar, RadioButton, ScrollBar, Slider,
     SpinBox, Switch, TabBar, TextInput,
 };
+use crate::ui::diagnostics::{UiAccessibilityNode, UiDiagnostic};
 use crate::ui::extras::{
     Accordion, Badge, ColorPicker, CustomWidget, Dialog, GUITable, ImageWidget, MenuBar, MenuItem,
     Separator, Spacer, StatusBar, Toast, Toolbar, TooltipPanel, TreeNode, TreeView,
 };
 use crate::ui::theme::Theme;
 use crate::ui::widget::{
-    EasingFunction, WidgetBase, WidgetState, WidgetTransition, WidgetTransitionKind, WidgetType,
+    EasingFunction, MouseFilter, WidgetBase, WidgetState, WidgetTransition, WidgetTransitionKind,
+    WidgetType,
 };
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 const COMBO_MIN_ITEM_HEIGHT: f32 = 20.0;
 const TABLE_HEADER_HEIGHT: f32 = 22.0;
@@ -310,6 +312,10 @@ pub struct GuiContext {
     pub base_resolution: (f32, f32),
     /// Computed scale factor = current_height / base_height.
     pub scale_factor: f32,
+    /// Rolling typeahead query buffer used by focused combo boxes.
+    combo_typeahead_buffer: String,
+    /// Seconds remaining before the combo-box typeahead buffer expires.
+    combo_typeahead_ttl: f32,
 }
 impl GuiContext {
     /// Create a new context with a root panel, default dark theme, and dirty=true.
@@ -335,6 +341,8 @@ impl GuiContext {
             last_render_signature: 0,
             base_resolution: (1920.0, 1080.0),
             scale_factor: 1.0,
+            combo_typeahead_buffer: String::new(),
+            combo_typeahead_ttl: 0.0,
         }
     }
     /// Reset the retained widget tree and transient UI state while preserving the active theme.
@@ -367,6 +375,10 @@ impl GuiContext {
     }
     fn dialog_has_footer_chrome(dialog: &Dialog) -> bool {
         dialog.footer_idx.is_some() || !dialog.actions.is_empty()
+    }
+    fn reset_combo_typeahead(&mut self) {
+        self.combo_typeahead_buffer.clear();
+        self.combo_typeahead_ttl = 0.0;
     }
     fn dialog_body_rect(rect: Rect, dialog: &Dialog) -> Rect {
         let pad = 8.0;
@@ -415,11 +427,25 @@ impl GuiContext {
         out
     }
     fn is_descendant_of(&self, root_idx: usize, needle_idx: usize) -> bool {
+        let mut visited = HashSet::new();
+        self.is_descendant_of_inner(root_idx, needle_idx, &mut visited)
+    }
+    fn is_descendant_of_inner(
+        &self,
+        root_idx: usize,
+        needle_idx: usize,
+        visited: &mut HashSet<usize>,
+    ) -> bool {
         if root_idx >= self.widgets.len() {
             return false;
         }
+        if !visited.insert(root_idx) {
+            return false;
+        }
         for child_idx in self.traversal_children(root_idx) {
-            if child_idx == needle_idx || self.is_descendant_of(child_idx, needle_idx) {
+            if child_idx == needle_idx
+                || self.is_descendant_of_inner(child_idx, needle_idx, visited)
+            {
                 return true;
             }
         }
@@ -999,12 +1025,26 @@ impl GuiContext {
     }
     /// Return `true` if `needle_idx` is a descendant of `root_idx` in the widget tree.
     fn contains_descendant(&self, root_idx: usize, needle_idx: usize) -> bool {
+        let mut visited = HashSet::new();
+        self.contains_descendant_inner(root_idx, needle_idx, &mut visited)
+    }
+    fn contains_descendant_inner(
+        &self,
+        root_idx: usize,
+        needle_idx: usize,
+        visited: &mut HashSet<usize>,
+    ) -> bool {
         if root_idx >= self.widgets.len() {
+            return false;
+        }
+        if !visited.insert(root_idx) {
             return false;
         }
         if let Some(children) = self.widgets[root_idx].children() {
             for child in children {
-                if *child == needle_idx || self.contains_descendant(*child, needle_idx) {
+                if *child == needle_idx
+                    || self.contains_descendant_inner(*child, needle_idx, visited)
+                {
                     return true;
                 }
             }
@@ -1288,6 +1328,17 @@ impl GuiContext {
         if parent_idx >= self.widgets.len() || child_idx >= self.widgets.len() {
             return false;
         }
+        if child_idx == 0 || parent_idx == child_idx {
+            return false;
+        }
+        if self.contains_descendant(child_idx, parent_idx) {
+            return false;
+        }
+        for idx in 0..self.widgets.len() {
+            if idx != parent_idx && self.traversal_children(idx).contains(&child_idx) {
+                return false;
+            }
+        }
         if let Some(children) = self.widgets[parent_idx].children_mut() {
             if !children.contains(&child_idx) {
                 children.push(child_idx);
@@ -1297,6 +1348,317 @@ impl GuiContext {
         } else {
             false
         }
+    }
+    /// Validate the retained widget tree and return any structural problems found.
+    pub fn validate_tree(&self) -> Vec<String> {
+        let mut errors = Vec::new();
+        let mut parent_counts = vec![0usize; self.widgets.len()];
+        for idx in 0..self.widgets.len() {
+            let mut seen_children = HashSet::new();
+            for child_idx in self.traversal_children(idx) {
+                if child_idx >= self.widgets.len() {
+                    errors.push(format!("widget {idx} references invalid child {child_idx}"));
+                    continue;
+                }
+                if !seen_children.insert(child_idx) {
+                    errors.push(format!(
+                        "widget {idx} references child {child_idx} more than once"
+                    ));
+                    continue;
+                }
+                if child_idx == 0 {
+                    errors.push(format!(
+                        "widget {idx} references the root widget as a child"
+                    ));
+                }
+                parent_counts[child_idx] += 1;
+            }
+        }
+        for (idx, count) in parent_counts.iter().enumerate().skip(1) {
+            if *count == 0 {
+                errors.push(format!("widget {idx} is orphaned"));
+            } else if *count > 1 {
+                errors.push(format!("widget {idx} has multiple parents"));
+            }
+        }
+        let mut visit_state = vec![0u8; self.widgets.len()];
+        for idx in 0..self.widgets.len() {
+            self.validate_tree_cycles(idx, &mut visit_state, &mut errors);
+        }
+        errors
+    }
+    fn validate_tree_cycles(&self, idx: usize, visit_state: &mut [u8], errors: &mut Vec<String>) {
+        if idx >= self.widgets.len() {
+            return;
+        }
+        match visit_state[idx] {
+            1 => {
+                errors.push(format!("cycle detected at widget {idx}"));
+                return;
+            }
+            2 => return,
+            _ => {}
+        }
+        visit_state[idx] = 1;
+        for child_idx in self.traversal_children(idx) {
+            if child_idx < self.widgets.len() {
+                self.validate_tree_cycles(child_idx, visit_state, errors);
+            }
+        }
+        visit_state[idx] = 2;
+    }
+    fn widget_text_content(&self, idx: usize) -> Option<&str> {
+        match self.widgets.get(idx)? {
+            WidgetKind::Button(button) => Some(button.text.as_str()),
+            WidgetKind::Label(label) => Some(label.text.as_str()),
+            WidgetKind::TextInput(text_input) => {
+                if text_input.text.is_empty() {
+                    None
+                } else {
+                    Some(text_input.text.as_str())
+                }
+            }
+            WidgetKind::CheckBox(check_box) => Some(check_box.text.as_str()),
+            WidgetKind::ComboBox(combo) => combo.selected_item(),
+            WidgetKind::ListBox(list) => list.selected_item(),
+            WidgetKind::TabBar(tab_bar) => tab_bar.tabs.get(tab_bar.active_tab).map(String::as_str),
+            WidgetKind::TreeView(tree) => tree
+                .selected_node
+                .and_then(|node_idx| tree.get_node_text(node_idx)),
+            WidgetKind::RadioButton(radio_button) => Some(radio_button.text.as_str()),
+            WidgetKind::GUIWindow(window) => Some(window.title.as_str()),
+            WidgetKind::MenuItem(menu_item) => Some(menu_item.text.as_str()),
+            WidgetKind::Dialog(dialog) => Some(dialog.title.as_str()),
+            WidgetKind::TooltipPanel(tooltip) => Some(tooltip.text.as_str()),
+            WidgetKind::Accordion(accordion) => accordion
+                .sections
+                .first()
+                .map(|section| section.title.as_str()),
+            WidgetKind::StatusBar(status_bar) => {
+                status_bar.sections.first().map(|(text, _)| text.as_str())
+            }
+            WidgetKind::Badge(_) => None,
+            _ => None,
+        }
+    }
+    fn label_text_for_widget(&self, idx: usize) -> Option<&str> {
+        self.widgets.iter().find_map(|widget| {
+            let base = widget.base();
+            if base.label_for != Some(idx) {
+                return None;
+            }
+            match widget {
+                WidgetKind::Label(label) => {
+                    let text = label.text.trim();
+                    if text.is_empty() {
+                        None
+                    } else {
+                        Some(text)
+                    }
+                }
+                _ => None,
+            }
+        })
+    }
+    fn resolved_role(&self, idx: usize) -> String {
+        self.widgets.get(idx).map_or_else(String::new, |widget| {
+            let base = widget.base();
+            let role = base.role.trim();
+            if role.is_empty() {
+                base.widget_type.default_role().to_string()
+            } else {
+                role.to_string()
+            }
+        })
+    }
+    fn resolved_accessible_name(&self, idx: usize) -> String {
+        let Some(widget) = self.widgets.get(idx) else {
+            return String::new();
+        };
+        let aria_name = widget.base().aria_name.trim();
+        if !aria_name.is_empty() {
+            return aria_name.to_string();
+        }
+        if let Some(text) = self.widget_text_content(idx) {
+            let text = text.trim();
+            if !text.is_empty() {
+                return text.to_string();
+            }
+        }
+        self.label_text_for_widget(idx)
+            .map_or_else(String::new, ToString::to_string)
+    }
+    fn widget_touch_target_size(&self, idx: usize) -> (f32, f32) {
+        self.widget_rect(idx)
+            .map(|rect| (rect.width, rect.height))
+            .unwrap_or_else(|| {
+                let base = self.widgets[idx].base();
+                (base.width, base.height)
+            })
+    }
+    fn widget_is_popup_shell(&self, idx: usize) -> bool {
+        matches!(
+            self.widgets.get(idx),
+            Some(WidgetKind::GUIWindow(_) | WidgetKind::Dialog(_))
+        )
+    }
+    fn widget_is_popup_open(&self, idx: usize) -> bool {
+        match self.widgets.get(idx) {
+            Some(WidgetKind::GUIWindow(window)) => window.base.visible && window.base.is_visible,
+            Some(WidgetKind::Dialog(dialog)) => {
+                dialog.open && dialog.base.visible && dialog.base.is_visible
+            }
+            _ => false,
+        }
+    }
+    fn widget_rect_outside_viewport(&self, idx: usize) -> bool {
+        let Some(rect) = self.widget_rect(idx) else {
+            return false;
+        };
+        let (viewport_w, viewport_h) = self.effective_viewport_size();
+        rect.x < 0.0
+            || rect.y < 0.0
+            || rect.x + rect.width > viewport_w
+            || rect.y + rect.height > viewport_h
+    }
+    fn popup_has_z_order_conflict(&self, idx: usize) -> Option<usize> {
+        if !self.widget_is_popup_shell(idx) || !self.widget_is_popup_open(idx) {
+            return None;
+        }
+        let z_order = self.widgets[idx].base().z_order;
+        (1..self.widgets.len()).find(|other_idx| {
+            *other_idx != idx
+                && self.widget_is_popup_shell(*other_idx)
+                && self.widget_is_popup_open(*other_idx)
+                && self.widgets[*other_idx].base().z_order == z_order
+        })
+    }
+    /// Return a flattened accessibility snapshot for all live non-root widgets.
+    pub fn accessibility_tree(&self) -> Vec<UiAccessibilityNode> {
+        (1..self.widgets.len())
+            .map(|idx| {
+                let base = self.widgets[idx].base();
+                UiAccessibilityNode {
+                    widget_idx: idx,
+                    widget_type: base.widget_type.as_str().to_string(),
+                    role: self.resolved_role(idx),
+                    name: self.resolved_accessible_name(idx),
+                    description: base.description.clone(),
+                    label_for: base.label_for,
+                    focusable: base.focusable,
+                    visible: base.is_visible,
+                    enabled: base.enabled,
+                }
+            })
+            .collect()
+    }
+    /// Validate accessibility and interaction semantics beyond structural tree checks.
+    pub fn validate_ux(&self) -> Vec<UiDiagnostic> {
+        let mut diagnostics = Vec::new();
+        for error in self.validate_tree() {
+            diagnostics.push(UiDiagnostic::new(None, error));
+        }
+        let mut seen_ids: HashMap<&str, usize> = HashMap::new();
+        for idx in 1..self.widgets.len() {
+            let widget = &self.widgets[idx];
+            let base = widget.base();
+            let id = base.id.trim();
+            if !id.is_empty() {
+                if let Some(first_idx) = seen_ids.insert(id, idx) {
+                    diagnostics.push(UiDiagnostic::new(
+                        Some(idx),
+                        format!("widget id '{id}' duplicates widget {first_idx}"),
+                    ));
+                }
+            }
+            if base.label_for.is_some() && !matches!(widget, WidgetKind::Label(_)) {
+                diagnostics.push(UiDiagnostic::new(
+                    Some(idx),
+                    "label_for is only supported on Label widgets",
+                ));
+            }
+            if let Some(target_idx) = base.label_for {
+                if target_idx >= self.widgets.len() {
+                    diagnostics.push(UiDiagnostic::new(
+                        Some(idx),
+                        format!("label_for points to invalid widget {target_idx}"),
+                    ));
+                } else if target_idx == idx {
+                    diagnostics.push(UiDiagnostic::new(
+                        Some(idx),
+                        "label_for cannot point to the same widget",
+                    ));
+                }
+            }
+            if base.focusable && !base.widget_type.default_focusable() {
+                diagnostics.push(UiDiagnostic::new(
+                    Some(idx),
+                    format!(
+                        "{} is focusable even though it is decorative by default",
+                        base.widget_type.as_str()
+                    ),
+                ));
+            }
+            if base.focusable && self.resolved_accessible_name(idx).is_empty() {
+                diagnostics.push(UiDiagnostic::new(
+                    Some(idx),
+                    format!(
+                        "{} is focusable but has no accessible name",
+                        base.widget_type.as_str()
+                    ),
+                ));
+            }
+            if base.enabled && base.widget_type.default_focusable() {
+                let (width, height) = self.widget_touch_target_size(idx);
+                if width < 44.0 || height < 44.0 {
+                    diagnostics.push(UiDiagnostic::new(
+                        Some(idx),
+                        format!(
+                            "{} touch target is only {:.1}x{:.1}; expected at least 44x44",
+                            base.widget_type.as_str(),
+                            width,
+                            height
+                        ),
+                    ));
+                }
+            }
+            if self.widget_is_popup_shell(idx) && self.widget_is_popup_open(idx) {
+                if self.widget_rect_outside_viewport(idx) {
+                    diagnostics.push(UiDiagnostic::new(
+                        Some(idx),
+                        format!(
+                            "{} extends outside the active viewport",
+                            base.widget_type.as_str()
+                        ),
+                    ));
+                }
+                if let Some(conflict_idx) = self.popup_has_z_order_conflict(idx) {
+                    diagnostics.push(UiDiagnostic::new(
+                        Some(idx),
+                        format!(
+                            "{} shares z-order with popup widget {}",
+                            base.widget_type.as_str(),
+                            conflict_idx
+                        ),
+                    ));
+                }
+            }
+            if let WidgetKind::Dialog(dialog) = widget {
+                if dialog.modal && dialog.default_action_idx.is_none() {
+                    diagnostics.push(UiDiagnostic::new(
+                        Some(idx),
+                        "modal dialog has no default action",
+                    ));
+                }
+                if dialog.modal && dialog.cancel_action_idx.is_none() && !dialog.closeable {
+                    diagnostics.push(UiDiagnostic::new(
+                        Some(idx),
+                        "modal dialog has no cancel action and is not closeable",
+                    ));
+                }
+            }
+        }
+        diagnostics
     }
     /// Remove `child_idx` from `parent_idx`'s child list; return `false` if not found.
     pub fn remove_child(&mut self, parent_idx: usize, child_idx: usize) -> bool {
@@ -1336,7 +1698,7 @@ impl GuiContext {
         }
         let next_focus = widget_idx.and_then(|idx| {
             let base = self.widgets.get(idx)?.base();
-            if base.visible && base.enabled && base.focusable {
+            if base.is_visible && base.enabled && base.focusable {
                 Some(idx)
             } else {
                 None
@@ -1351,6 +1713,14 @@ impl GuiContext {
             }
         }
         self.focused_widget = next_focus;
+        if previous_focus != self.focused_widget
+            && !matches!(
+                self.focused_widget.and_then(|idx| self.widgets.get(idx)),
+                Some(WidgetKind::ComboBox(_))
+            )
+        {
+            self.reset_combo_typeahead();
+        }
         if previous_focus != self.focused_widget {
             self.dirty = true;
         }
@@ -1363,7 +1733,7 @@ impl GuiContext {
             .skip(1)
             .filter_map(|(idx, w)| {
                 let b = w.base();
-                if !(b.visible && b.enabled && b.focusable) {
+                if !(b.is_visible && b.enabled && b.focusable) {
                     return None;
                 }
                 if matches!(w, WidgetKind::Dialog(dialog) if !dialog.open) {
@@ -1464,6 +1834,12 @@ impl GuiContext {
     }
     /// Advance toast timers, expire old toasts, and step all active widget transitions by `dt` seconds.
     pub fn update(&mut self, dt: f32) {
+        if self.combo_typeahead_ttl > 0.0 {
+            self.combo_typeahead_ttl = (self.combo_typeahead_ttl - dt).max(0.0);
+            if self.combo_typeahead_ttl <= 0.0 {
+                self.combo_typeahead_buffer.clear();
+            }
+        }
         for toast in &mut self.toasts {
             toast.update(dt);
         }
@@ -1534,14 +1910,26 @@ impl GuiContext {
     }
     /// Search the subtree rooted at `start_idx` for a widget whose `id` matches; return its index or `None`.
     pub fn find_by_id(&self, start_idx: usize, id: &str) -> Option<usize> {
+        let mut visited = HashSet::new();
+        self.find_by_id_inner(start_idx, id, &mut visited)
+    }
+    fn find_by_id_inner(
+        &self,
+        start_idx: usize,
+        id: &str,
+        visited: &mut HashSet<usize>,
+    ) -> Option<usize> {
         if start_idx >= self.widgets.len() {
+            return None;
+        }
+        if !visited.insert(start_idx) {
             return None;
         }
         if self.widgets[start_idx].base().id == id {
             return Some(start_idx);
         }
         for child_idx in self.traversal_children(start_idx) {
-            if let Some(found) = self.find_by_id(child_idx, id) {
+            if let Some(found) = self.find_by_id_inner(child_idx, id, visited) {
                 return Some(found);
             }
         }
@@ -1879,30 +2267,30 @@ impl GuiContext {
         }
     }
 
-    fn hit_test(&self, x: f32, y: f32) -> Option<usize> {
-        let mut hit = None;
+    fn mouse_event_route(&self, x: f32, y: f32) -> Vec<usize> {
+        let mut hits: Vec<(usize, i32, usize)> = Vec::new();
         for idx in 1..self.widgets.len() {
             let base = self.widgets[idx].base();
-            // Hidden or disabled widgets never participate in hit-testing.
             if !base.is_visible || !base.enabled {
                 continue;
             }
             if !self.widget_in_active_input_scope(idx) {
                 continue;
             }
-            // Ignore: the widget itself is not an event target (children are separate entries).
-            // Pass: the widget receives hover styling but is not the authoritative event target.
-            // Both are skipped here; only Stop widgets claim events.
-            if base.mouse_filter != crate::ui::widget::MouseFilter::Stop {
+            if base.mouse_filter == MouseFilter::Ignore || !self.widget_contains_point(idx, x, y) {
                 continue;
             }
-            if !self.widget_contains_point(idx, x, y) {
-                continue;
-            }
-            let z_order = base.z_order;
-            hit = Self::choose_topmost(hit, idx, z_order);
+            hits.push((idx, base.z_order, idx));
         }
-        hit.map(|(idx, _, _)| idx)
+        hits.sort_by(|a, b| b.1.cmp(&a.1).then_with(|| b.2.cmp(&a.2)));
+        let mut route = Vec::with_capacity(hits.len());
+        for (idx, _, _) in hits {
+            route.push(idx);
+            if self.widgets[idx].base().mouse_filter == MouseFilter::Stop {
+                break;
+            }
+        }
+        route
     }
 
     fn hit_test_scroll_target(&self, x: f32, y: f32) -> Option<usize> {
@@ -1934,6 +2322,81 @@ impl GuiContext {
         hit.map(|(idx, _, _)| idx)
     }
 
+    pub(crate) fn combo_dropdown_metrics(
+        &self,
+        idx: usize,
+    ) -> Option<(Rect, f32, usize, usize, f32, usize)> {
+        let WidgetKind::ComboBox(combo) = &self.widgets[idx] else {
+            return None;
+        };
+        if combo.items.is_empty() {
+            return None;
+        }
+        let rect = self.widget_rect(idx)?;
+        let item_height = rect.height.max(COMBO_MIN_ITEM_HEIGHT);
+        let (viewport_w, viewport_h) = self.effective_viewport_size();
+        let max_visible_rows = combo.max_visible_items.max(1).min(combo.items.len());
+        let below_y = rect.y + rect.height;
+        let available_below = (viewport_h - below_y).max(0.0);
+        let available_above = rect.y.max(0.0);
+        let rows_below = (available_below / item_height).floor() as usize;
+        let rows_above = (available_above / item_height).floor() as usize;
+        let open_above = if rows_below >= max_visible_rows {
+            false
+        } else if rows_above >= max_visible_rows {
+            true
+        } else {
+            rows_above > rows_below && rows_above > 0
+        };
+        let available_rows = if open_above { rows_above } else { rows_below };
+        let visible_rows = available_rows.max(1).min(max_visible_rows);
+        let drop_height = visible_rows as f32 * item_height;
+        let max_x = (viewport_w - rect.width).max(0.0);
+        let drop_x = rect.x.clamp(0.0, max_x);
+        let max_y = (viewport_h - drop_height).max(0.0);
+        let drop_y = if open_above {
+            (rect.y - drop_height).clamp(0.0, max_y)
+        } else {
+            below_y.clamp(0.0, max_y)
+        };
+        let max_scroll = combo.items.len().saturating_sub(visible_rows) as f32 * item_height;
+        let scroll_y = combo.scroll_y.clamp(0.0, max_scroll);
+        let start = ((scroll_y / item_height).floor() as usize)
+            .min(combo.items.len().saturating_sub(visible_rows));
+        let scroll_offset = scroll_y - start as f32 * item_height;
+        let extra_row = usize::from(scroll_offset > 0.0);
+        let end = (start + visible_rows + extra_row).min(combo.items.len());
+        Some((
+            Rect::new(drop_x, drop_y, rect.width, drop_height),
+            item_height,
+            start,
+            end,
+            scroll_offset,
+            visible_rows,
+        ))
+    }
+
+    fn open_combo_dropdown_at(&self, x: f32, y: f32) -> Option<usize> {
+        let mut hit = None;
+        for idx in 1..self.widgets.len() {
+            let WidgetKind::ComboBox(combo) = &self.widgets[idx] else {
+                continue;
+            };
+            if !combo.open || !self.widget_accepts_input(idx) {
+                continue;
+            }
+            let Some((rect, ..)) = self.combo_dropdown_metrics(idx) else {
+                continue;
+            };
+            if !rect.contains(x, y) {
+                continue;
+            }
+            let z_order = self.widgets[idx].base().z_order;
+            hit = Self::choose_topmost(hit, idx, z_order);
+        }
+        hit.map(|(idx, _, _)| idx)
+    }
+
     fn open_combo_item_at(&self, x: f32, y: f32) -> Option<(usize, usize)> {
         let mut hit: Option<(usize, i32, usize, usize)> = None;
         for idx in 1..self.widgets.len() {
@@ -1943,16 +2406,16 @@ impl GuiContext {
             if !combo.open || combo.items.is_empty() || !self.widget_accepts_input(idx) {
                 continue;
             }
-            let Some(rect) = self.widget_rect(idx) else {
+            let Some((drop_rect, item_height, start, _end, scroll_offset, _visible_rows)) =
+                self.combo_dropdown_metrics(idx)
+            else {
                 continue;
             };
-            let item_height = rect.height.max(COMBO_MIN_ITEM_HEIGHT);
-            let top = rect.y + rect.height;
-            let bottom = top + item_height * combo.items.len() as f32;
-            if x < rect.x || x > rect.x + rect.width || y < top || y >= bottom {
+            if !drop_rect.contains(x, y) {
                 continue;
             }
-            let item_idx = ((y - top) / item_height).floor() as usize;
+            let item_idx =
+                start + ((y - drop_rect.y + scroll_offset) / item_height).floor() as usize;
             if item_idx >= combo.items.len() {
                 continue;
             }
@@ -1969,6 +2432,65 @@ impl GuiContext {
         hit.map(|(idx, _, _, item_idx)| (idx, item_idx))
     }
 
+    fn scroll_open_combo_dropdown(&mut self, idx: usize, y_delta: f32) -> bool {
+        let Some((_, item_height, _, _, _, visible_rows)) = self.combo_dropdown_metrics(idx) else {
+            return false;
+        };
+        let Some(WidgetKind::ComboBox(combo)) = self.widgets.get_mut(idx) else {
+            return false;
+        };
+        let old_scroll = combo.scroll_y;
+        let max_scroll = combo.items.len().saturating_sub(visible_rows) as f32 * item_height;
+        combo.scroll_y = (combo.scroll_y - y_delta * item_height).clamp(0.0, max_scroll);
+        if (combo.scroll_y - old_scroll).abs() > f32::EPSILON {
+            self.dirty = true;
+        }
+        true
+    }
+
+    fn ensure_combo_item_visible(&mut self, idx: usize, item_idx: usize) {
+        let Some((_, item_height, start, _end, _, visible_rows)) = self.combo_dropdown_metrics(idx)
+        else {
+            return;
+        };
+        let Some(WidgetKind::ComboBox(combo)) = self.widgets.get_mut(idx) else {
+            return;
+        };
+        if item_idx < start {
+            combo.scroll_y = item_idx as f32 * item_height;
+        } else if item_idx >= start + visible_rows {
+            combo.scroll_y =
+                item_idx.saturating_add(1).saturating_sub(visible_rows) as f32 * item_height;
+        }
+    }
+
+    fn set_combo_open(&mut self, idx: usize, open: bool) -> bool {
+        let mut closed = false;
+        let selected_idx = {
+            let Some(WidgetKind::ComboBox(combo_box)) = self.widgets.get_mut(idx) else {
+                return false;
+            };
+            if combo_box.open == open {
+                return true;
+            }
+            combo_box.open = open;
+            if open {
+                Some(combo_box.selected_index.unwrap_or(0))
+            } else {
+                closed = true;
+                None
+            }
+        };
+        if closed {
+            self.reset_combo_typeahead();
+        }
+        if let Some(selected_idx) = selected_idx {
+            self.ensure_combo_item_visible(idx, selected_idx);
+        }
+        self.dirty = true;
+        true
+    }
+
     fn close_open_combos_except(&mut self, keep_idx: Option<usize>) -> bool {
         let mut changed = false;
         for (idx, widget) in self.widgets.iter_mut().enumerate() {
@@ -1983,6 +2505,7 @@ impl GuiContext {
             }
         }
         if changed {
+            self.reset_combo_typeahead();
             self.dirty = true;
         }
         changed
@@ -2161,7 +2684,12 @@ impl GuiContext {
             WidgetKind::ListBox(list) => {
                 let old_y = list.scroll_y;
                 let content_h = list.items.len() as f32 * list.item_height.max(12.0);
-                let max_y = (content_h - list.base.height).max(0.0);
+                let viewport_h = if list.base.computed_rect.height > 0.0 {
+                    list.base.computed_rect.height
+                } else {
+                    list.base.height
+                };
+                let max_y = (content_h - viewport_h).max(0.0);
                 list.scroll_y =
                     (list.scroll_y - y_delta * list.item_height.max(12.0)).clamp(0.0, max_y);
                 if (list.scroll_y - old_y).abs() > f32::EPSILON {
@@ -2171,7 +2699,12 @@ impl GuiContext {
             }
             WidgetKind::GUITable(table) => {
                 let old_y = table.scroll_y;
-                let visible_h = (table.base.height - TABLE_HEADER_HEIGHT).max(0.0);
+                let viewport_h = if table.base.computed_rect.height > 0.0 {
+                    table.base.computed_rect.height
+                } else {
+                    table.base.height
+                };
+                let visible_h = (viewport_h - TABLE_HEADER_HEIGHT).max(0.0);
                 let content_h = table.rows.len() as f32 * TABLE_ROW_HEIGHT;
                 let max_y = (content_h - visible_h).max(0.0);
                 table.scroll_y = (table.scroll_y - y_delta * TABLE_ROW_HEIGHT).clamp(0.0, max_y);
@@ -2296,10 +2829,14 @@ impl GuiContext {
         }
         let changed = combo_box.selected_index != Some(item_idx);
         combo_box.selected_index = Some(item_idx);
+        let combo_is_open = combo_box.open;
         if changed {
             self.pending_events.push(GuiEvent::Select(idx, item_idx));
             self.pending_events.push(GuiEvent::Change(idx));
             self.dirty = true;
+        }
+        if combo_is_open {
+            self.ensure_combo_item_visible(idx, item_idx);
         }
         true
     }
@@ -2324,6 +2861,59 @@ impl GuiContext {
             0
         };
         self.select_combo_index(idx, next)
+    }
+
+    fn find_combo_item_by_prefix(&self, idx: usize, prefix: &str) -> Option<usize> {
+        let (items, current_selection) = match self.widgets.get(idx) {
+            Some(WidgetKind::ComboBox(combo_box)) => (&combo_box.items, combo_box.selected_index),
+            _ => return None,
+        };
+        if items.is_empty() {
+            return None;
+        }
+        let normalized_prefix = prefix.trim().to_lowercase();
+        if normalized_prefix.is_empty() {
+            return None;
+        }
+        let start = current_selection.map_or(0, |current| (current + 1) % items.len());
+        (0..items.len())
+            .map(|offset| (start + offset) % items.len())
+            .find(|item_idx| {
+                items[*item_idx]
+                    .to_lowercase()
+                    .starts_with(&normalized_prefix)
+            })
+    }
+
+    fn combo_typeahead_input(&mut self, idx: usize, text: &str) -> bool {
+        let query = text.trim();
+        if query.is_empty() {
+            return false;
+        }
+        if self.combo_typeahead_ttl <= 0.0 {
+            self.combo_typeahead_buffer.clear();
+        }
+        self.combo_typeahead_buffer.push_str(query);
+        self.combo_typeahead_ttl = 0.75;
+        if let Some(item_idx) = self.find_combo_item_by_prefix(idx, &self.combo_typeahead_buffer) {
+            return self.select_combo_index(idx, item_idx);
+        }
+        if query.chars().count() > 1 {
+            self.combo_typeahead_buffer = query.to_string();
+            if let Some(item_idx) =
+                self.find_combo_item_by_prefix(idx, &self.combo_typeahead_buffer)
+            {
+                return self.select_combo_index(idx, item_idx);
+            }
+        } else if let Some(last_char) = query.chars().last() {
+            self.combo_typeahead_buffer = last_char.to_string();
+            if let Some(item_idx) =
+                self.find_combo_item_by_prefix(idx, &self.combo_typeahead_buffer)
+            {
+                return self.select_combo_index(idx, item_idx);
+            }
+        }
+        false
     }
 
     fn select_tab_index(&mut self, idx: usize, tab_idx: usize) -> bool {
@@ -3160,13 +3750,8 @@ impl GuiContext {
                 consumed
             }
             WidgetType::ComboBox => {
-                if let Some(WidgetKind::ComboBox(combo_box)) = self.widgets.get_mut(idx) {
-                    combo_box.open = !combo_box.open;
-                    self.dirty = true;
-                    true
-                } else {
-                    false
-                }
+                let next_open = matches!(self.widgets.get(idx), Some(WidgetKind::ComboBox(combo_box)) if !combo_box.open);
+                self.set_combo_open(idx, next_open)
             }
             _ => false,
         }
@@ -3244,12 +3829,29 @@ impl GuiContext {
             return true;
         }
         self.dismiss_dialog_on_outside_click(x, y);
-        let hit = self.hit_test(x, y);
-        if let Some(idx) = hit {
-            let keep_combo = matches!(self.widgets[idx], WidgetKind::ComboBox(_)).then_some(idx);
+        let route = self.mouse_event_route(x, y);
+        let hit = route
+            .iter()
+            .copied()
+            .find(|idx| self.widgets[*idx].base().mouse_filter == MouseFilter::Stop);
+        if !route.is_empty() {
+            let keep_combo =
+                hit.filter(|idx| matches!(self.widgets[*idx], WidgetKind::ComboBox(_)));
             self.close_open_combos_except(keep_combo);
-            self.set_focus(Some(idx));
-            self.widgets[idx].base_mut().state = WidgetState::Pressed;
+            let focus_target = hit.or_else(|| {
+                route.iter().copied().find(|idx| {
+                    let base = self.widgets[*idx].base();
+                    base.focusable && base.is_visible && base.enabled
+                })
+            });
+            self.set_focus(focus_target);
+            for idx in &route {
+                self.widgets[*idx].base_mut().state = WidgetState::Pressed;
+            }
+            let Some(idx) = hit else {
+                self.dirty = true;
+                return true;
+            };
             let widget_type = self.widgets[idx].base().widget_type;
             match widget_type {
                 WidgetType::CheckBox => {
@@ -3274,10 +3876,8 @@ impl GuiContext {
                     self.select_tab_at(idx, x, y);
                 }
                 WidgetType::ComboBox => {
-                    if let WidgetKind::ComboBox(combo_box) = &mut self.widgets[idx] {
-                        combo_box.open = !combo_box.open;
-                    }
-                    self.dirty = true;
+                    let next_open = matches!(self.widgets.get(idx), Some(WidgetKind::ComboBox(combo_box)) if !combo_box.open);
+                    self.set_combo_open(idx, next_open);
                 }
                 WidgetType::ListBox => {
                     self.select_list_row_at(idx, x, y);
@@ -3345,6 +3945,7 @@ impl GuiContext {
         self.last_mouse_pos = Some((x, y));
         self.ensure_input_layout();
         let mut consumed = false;
+        let mut click_targets = Vec::new();
         if let Some(capture) = self.captured_pointer.take() {
             match capture {
                 PointerCapture::Slider(idx)
@@ -3363,29 +3964,32 @@ impl GuiContext {
                 }
             }
         }
+        for idx in self.mouse_event_route(x, y) {
+            let base = self.widgets[idx].base();
+            if base.state != WidgetState::Pressed
+                || !base.is_visible
+                || !base.enabled
+                || base.mouse_filter == MouseFilter::Ignore
+            {
+                continue;
+            }
+            let is_clickable = base.mouse_filter == MouseFilter::Pass
+                || matches!(
+                    self.widgets[idx],
+                    WidgetKind::Button(_) | WidgetKind::RadioButton(_) | WidgetKind::MenuItem(_)
+                );
+            if is_clickable {
+                click_targets.push(idx);
+            }
+        }
         for i in 1..self.widgets.len() {
             let base = self.widgets[i].base();
             if base.state == WidgetState::Pressed {
-                // Defensive: skip widgets that should not have reached Pressed state.
-                if !base.is_visible
-                    || !base.enabled
-                    || base.mouse_filter != crate::ui::widget::MouseFilter::Stop
-                {
+                if !base.is_visible || !base.enabled || base.mouse_filter == MouseFilter::Ignore {
                     self.widgets[i].base_mut().state = WidgetState::Normal;
                     continue;
                 }
                 let inside = self.widget_contains_point(i, x, y);
-                if inside {
-                    let is_clickable = matches!(
-                        self.widgets[i],
-                        WidgetKind::Button(_)
-                            | WidgetKind::RadioButton(_)
-                            | WidgetKind::MenuItem(_)
-                    );
-                    if is_clickable {
-                        self.pending_events.push(GuiEvent::Click(i));
-                    }
-                }
                 let new_state = if inside {
                     WidgetState::Hovered
                 } else {
@@ -3394,6 +3998,9 @@ impl GuiContext {
                 self.widgets[i].base_mut().state = new_state;
                 consumed = true;
             }
+        }
+        for idx in click_targets {
+            self.pending_events.push(GuiEvent::Click(idx));
         }
         consumed
     }
@@ -3458,6 +4065,21 @@ impl GuiContext {
     pub fn key_pressed(&mut self, key: &str) -> bool {
         let normalized_key = key.to_ascii_lowercase();
         match normalized_key.as_str() {
+            "ctrl+a" => {
+                if let Some(idx) = self.focused_widget {
+                    if let WidgetKind::TextInput(ti) = &mut self.widgets[idx] {
+                        if ti.select_all() {
+                            self.dirty = true;
+                        }
+                        return true;
+                    }
+                }
+                false
+            }
+            "shift+tab" => {
+                self.focus_prev();
+                true
+            }
             "tab" => {
                 self.focus_next();
                 true
@@ -3466,6 +4088,18 @@ impl GuiContext {
                 if let Some(idx) = self.focused_widget {
                     if let WidgetKind::TextInput(ti) = &mut self.widgets[idx] {
                         if ti.backspace() {
+                            self.pending_events.push(GuiEvent::Change(idx));
+                            self.dirty = true;
+                        }
+                        return true;
+                    }
+                }
+                false
+            }
+            "delete" => {
+                if let Some(idx) = self.focused_widget {
+                    if let WidgetKind::TextInput(ti) = &mut self.widgets[idx] {
+                        if ti.delete_forward() {
                             self.pending_events.push(GuiEvent::Change(idx));
                             self.dirty = true;
                         }
@@ -3492,12 +4126,54 @@ impl GuiContext {
                 }
                 self.navigate_focused_widget(&normalized_key)
             }
+            "ctrl+left" | "ctrl+right" => {
+                if let Some(idx) = self.focused_widget {
+                    if let WidgetKind::TextInput(ti) = &mut self.widgets[idx] {
+                        let moved = match normalized_key.as_str() {
+                            "ctrl+left" => ti.move_cursor_word_left(),
+                            "ctrl+right" => ti.move_cursor_word_right(),
+                            _ => false,
+                        };
+                        if moved {
+                            self.dirty = true;
+                        }
+                        return true;
+                    }
+                }
+                false
+            }
+            "shift+left" | "shift+right" | "shift+home" | "shift+end" => {
+                if let Some(idx) = self.focused_widget {
+                    if let WidgetKind::TextInput(ti) = &mut self.widgets[idx] {
+                        let moved = match normalized_key.as_str() {
+                            "shift+left" => ti.move_cursor_left_with_selection(true),
+                            "shift+right" => ti.move_cursor_right_with_selection(true),
+                            "shift+home" => ti.move_cursor_home_with_selection(true),
+                            "shift+end" => ti.move_cursor_end_with_selection(true),
+                            _ => false,
+                        };
+                        if moved {
+                            self.dirty = true;
+                        }
+                        return true;
+                    }
+                }
+                false
+            }
             "up" | "down" => self.navigate_focused_widget(&normalized_key),
             "return" | "enter" => {
                 if let Some(dialog_idx) = self.active_modal_dialog() {
-                    let focused_is_text_input = self.focused_widget.is_some_and(|idx| {
-                        matches!(self.widgets.get(idx), Some(WidgetKind::TextInput(_)))
+                    let text_input_submit_on_enter = self.focused_widget.and_then(|idx| match self
+                        .widgets
+                        .get(idx)
+                    {
+                        Some(WidgetKind::TextInput(text_input)) => Some(text_input.submit_on_enter),
+                        _ => None,
                     });
+                    if matches!(text_input_submit_on_enter, Some(false)) {
+                        return true;
+                    }
+                    let focused_is_text_input = text_input_submit_on_enter.is_some();
                     let focused_is_dialog_shell = self.focused_widget == Some(dialog_idx);
                     if focused_is_text_input
                         || focused_is_dialog_shell
@@ -3528,12 +4204,18 @@ impl GuiContext {
     /// Insert `text` into the focused `TextInput`; return `true` if consumed.
     pub fn text_input(&mut self, text: &str) -> bool {
         if let Some(idx) = self.focused_widget {
-            if let WidgetKind::TextInput(ti) = &mut self.widgets[idx] {
-                if ti.insert_text(text) {
-                    self.pending_events.push(GuiEvent::Change(idx));
-                    self.dirty = true;
+            match &mut self.widgets[idx] {
+                WidgetKind::TextInput(ti) => {
+                    if ti.insert_text(text) {
+                        self.pending_events.push(GuiEvent::Change(idx));
+                        self.dirty = true;
+                    }
+                    return true;
                 }
-                return true;
+                WidgetKind::ComboBox(_) => {
+                    return self.combo_typeahead_input(idx, text);
+                }
+                _ => {}
             }
         }
         false
@@ -3542,6 +4224,9 @@ impl GuiContext {
     pub fn wheel_moved(&mut self, x: f32, y: f32) -> bool {
         self.ensure_input_layout();
         if let Some((mouse_x, mouse_y)) = self.last_mouse_pos {
+            if let Some(idx) = self.open_combo_dropdown_at(mouse_x, mouse_y) {
+                return self.scroll_open_combo_dropdown(idx, y);
+            }
             if let Some(idx) = self.hit_test_scroll_target(mouse_x, mouse_y) {
                 return self.scroll_widget(idx, x, y);
             }

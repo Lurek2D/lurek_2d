@@ -8,6 +8,13 @@
 //! Open this file when editable values, selection rules, or control defaults behave differently than expected.
 
 use crate::ui::widget::{WidgetBase, WidgetType};
+
+fn normalized_range_or(min: f64, max: f64, fallback: (f64, f64)) -> (f64, f64) {
+    if !(min.is_finite() && max.is_finite()) {
+        return fallback;
+    }
+    (min.min(max), min.max(max))
+}
 /// Clickable push button with a text label.
 #[derive(Debug, Clone)]
 pub struct Button {
@@ -42,7 +49,7 @@ impl Label {
         }
     }
 }
-/// Single-line editable text field with cursor tracking and optional max length.
+/// Single-line editable text field with cursor tracking, selection, and optional max length.
 #[derive(Debug, Clone)]
 pub struct TextInput {
     /// Shared layout, style, and state fields.
@@ -55,8 +62,12 @@ pub struct TextInput {
     pub max_length: usize,
     /// Byte offset of the insertion cursor within `text`.
     pub cursor_pos: usize,
+    /// Optional byte offset anchoring the active selection range.
+    pub selection_anchor: Option<usize>,
     /// Whether this widget currently holds keyboard focus.
     pub focused: bool,
+    /// Whether pressing Enter while focused should submit the surrounding dialog default action.
+    pub submit_on_enter: bool,
 }
 impl TextInput {
     /// Create an empty text input with no placeholder and unlimited length.
@@ -67,7 +78,9 @@ impl TextInput {
             placeholder: String::new(),
             max_length: 0,
             cursor_pos: 0,
+            selection_anchor: None,
             focused: false,
+            submit_on_enter: true,
         }
     }
     fn byte_index_for_char_limit(text: &str, max_length: usize) -> usize {
@@ -83,6 +96,13 @@ impl TextInput {
         while !self.text.is_char_boundary(self.cursor_pos) {
             self.cursor_pos -= 1;
         }
+        if let Some(anchor) = self.selection_anchor {
+            let mut anchor = anchor.min(self.text.len());
+            while !self.text.is_char_boundary(anchor) {
+                anchor -= 1;
+            }
+            self.selection_anchor = Some(anchor);
+        }
     }
     fn enforce_max_length(&mut self) {
         if self.max_length > 0 {
@@ -90,11 +110,80 @@ impl TextInput {
             self.text.truncate(limit);
         }
         self.clamp_cursor_to_text();
+        if self.selection_anchor == Some(self.cursor_pos) {
+            self.selection_anchor = None;
+        }
+    }
+    fn set_cursor_internal(&mut self, next_pos: usize, extend_selection: bool) -> bool {
+        self.clamp_cursor_to_text();
+        let mut next_pos = next_pos.min(self.text.len());
+        while !self.text.is_char_boundary(next_pos) {
+            next_pos -= 1;
+        }
+        let previous_cursor = self.cursor_pos;
+        let previous_anchor = self.selection_anchor;
+        if extend_selection {
+            if previous_anchor.is_none() {
+                self.selection_anchor = Some(previous_cursor);
+            }
+        } else {
+            self.selection_anchor = None;
+        }
+        self.cursor_pos = next_pos;
+        if self.selection_anchor == Some(self.cursor_pos) {
+            self.selection_anchor = None;
+        }
+        previous_cursor != self.cursor_pos || previous_anchor != self.selection_anchor
+    }
+    /// Return the current selection range as byte offsets, or `None` when no text is selected.
+    pub fn selection_range(&self) -> Option<(usize, usize)> {
+        let anchor = self.selection_anchor?;
+        if anchor == self.cursor_pos {
+            return None;
+        }
+        Some((anchor.min(self.cursor_pos), anchor.max(self.cursor_pos)))
+    }
+    /// Return `true` when a non-empty selection range is active.
+    pub fn has_selection(&self) -> bool {
+        self.selection_range().is_some()
+    }
+    /// Return the current cursor position as a character index instead of a byte offset.
+    pub fn cursor_char_pos(&self) -> usize {
+        self.text[..self.cursor_pos.min(self.text.len())]
+            .chars()
+            .count()
+    }
+    /// Clear any active selection without moving the cursor.
+    pub fn clear_selection(&mut self) -> bool {
+        let had_selection = self.selection_anchor.is_some();
+        self.selection_anchor = None;
+        had_selection
+    }
+    /// Select all text in the input.
+    pub fn select_all(&mut self) -> bool {
+        if self.text.is_empty() {
+            return self.clear_selection();
+        }
+        let changed = self.selection_anchor != Some(0) || self.cursor_pos != self.text.len();
+        self.selection_anchor = Some(0);
+        self.cursor_pos = self.text.len();
+        changed
+    }
+    /// Delete the active selection range; return `false` when no selection is present.
+    pub fn delete_selection(&mut self) -> bool {
+        let Some((start, end)) = self.selection_range() else {
+            return false;
+        };
+        self.text.drain(start..end);
+        self.cursor_pos = start;
+        self.selection_anchor = None;
+        true
     }
     /// Replace the text and clamp it to `max_length` when one is configured.
     pub fn set_text(&mut self, text: impl Into<String>) {
         self.text = text.into();
         self.cursor_pos = self.text.len();
+        self.selection_anchor = None;
         self.enforce_max_length();
     }
     /// Set the maximum character count, truncating existing text when needed.
@@ -102,20 +191,33 @@ impl TextInput {
         self.max_length = max_length;
         self.enforce_max_length();
     }
-    /// Insert `input` at the cursor position; return `false` if it would exceed `max_length`.
+    /// Insert `input` at the cursor position; truncates pasted text to `max_length` when needed.
     pub fn insert_text(&mut self, input: &str) -> bool {
-        if self.max_length > 0
-            && self.text.chars().count() + input.chars().count() > self.max_length
-        {
+        self.clamp_cursor_to_text();
+        let _ = self.delete_selection();
+        let allowed_input = if self.max_length == 0 {
+            input
+        } else {
+            let remaining = self.max_length.saturating_sub(self.text.chars().count());
+            if remaining == 0 {
+                return false;
+            }
+            let limit = Self::byte_index_for_char_limit(input, remaining);
+            &input[..limit]
+        };
+        if allowed_input.is_empty() {
             return false;
         }
-        self.clamp_cursor_to_text();
-        self.text.insert_str(self.cursor_pos, input);
-        self.cursor_pos += input.len();
+        self.text.insert_str(self.cursor_pos, allowed_input);
+        self.cursor_pos += allowed_input.len();
+        self.selection_anchor = None;
         true
     }
     /// Delete the character before the cursor; return `false` if already at position 0.
     pub fn backspace(&mut self) -> bool {
+        if self.delete_selection() {
+            return true;
+        }
         if self.cursor_pos > 0 {
             let prev = self.text[..self.cursor_pos]
                 .char_indices()
@@ -129,21 +231,11 @@ impl TextInput {
             false
         }
     }
-    /// Move the insertion cursor one character left; return `false` when already at the start.
-    pub fn move_cursor_left(&mut self) -> bool {
-        if self.cursor_pos == 0 {
-            return false;
+    /// Delete the character at the cursor; return `false` when already at the end.
+    pub fn delete_forward(&mut self) -> bool {
+        if self.delete_selection() {
+            return true;
         }
-        let prev = self.text[..self.cursor_pos]
-            .char_indices()
-            .next_back()
-            .map(|(index, _)| index)
-            .unwrap_or(0);
-        self.cursor_pos = prev;
-        true
-    }
-    /// Move the insertion cursor one character right; return `false` when already at the end.
-    pub fn move_cursor_right(&mut self) -> bool {
         if self.cursor_pos >= self.text.len() {
             return false;
         }
@@ -152,24 +244,106 @@ impl TextInput {
             .nth(1)
             .map(|(offset, _)| self.cursor_pos + offset)
             .unwrap_or(self.text.len());
-        self.cursor_pos = next;
+        self.text.drain(self.cursor_pos..next);
         true
+    }
+    /// Move the insertion cursor one character left; return `false` when already at the start.
+    pub fn move_cursor_left(&mut self) -> bool {
+        self.move_cursor_left_with_selection(false)
+    }
+    /// Move the insertion cursor one character left and optionally extend the selection.
+    pub fn move_cursor_left_with_selection(&mut self, extend_selection: bool) -> bool {
+        if self.cursor_pos == 0 {
+            if !extend_selection {
+                return self.clear_selection();
+            }
+            return false;
+        }
+        let prev = self.text[..self.cursor_pos]
+            .char_indices()
+            .next_back()
+            .map(|(index, _)| index)
+            .unwrap_or(0);
+        self.set_cursor_internal(prev, extend_selection)
+    }
+    /// Move the insertion cursor one character right; return `false` when already at the end.
+    pub fn move_cursor_right(&mut self) -> bool {
+        self.move_cursor_right_with_selection(false)
+    }
+    /// Move the insertion cursor one character right and optionally extend the selection.
+    pub fn move_cursor_right_with_selection(&mut self, extend_selection: bool) -> bool {
+        if self.cursor_pos >= self.text.len() {
+            if !extend_selection {
+                return self.clear_selection();
+            }
+            return false;
+        }
+        let next = self.text[self.cursor_pos..]
+            .char_indices()
+            .nth(1)
+            .map(|(offset, _)| self.cursor_pos + offset)
+            .unwrap_or(self.text.len());
+        self.set_cursor_internal(next, extend_selection)
     }
     /// Move the insertion cursor to the start; return `false` when already there.
     pub fn move_cursor_home(&mut self) -> bool {
-        if self.cursor_pos == 0 {
+        self.move_cursor_home_with_selection(false)
+    }
+    /// Move the insertion cursor to the start and optionally extend the selection.
+    pub fn move_cursor_home_with_selection(&mut self, extend_selection: bool) -> bool {
+        if self.cursor_pos == 0 && (!extend_selection || self.selection_anchor.is_none()) {
             return false;
         }
-        self.cursor_pos = 0;
-        true
+        self.set_cursor_internal(0, extend_selection)
     }
     /// Move the insertion cursor to the end; return `false` when already there.
     pub fn move_cursor_end(&mut self) -> bool {
-        if self.cursor_pos == self.text.len() {
+        self.move_cursor_end_with_selection(false)
+    }
+    /// Move the insertion cursor to the end and optionally extend the selection.
+    pub fn move_cursor_end_with_selection(&mut self, extend_selection: bool) -> bool {
+        if self.cursor_pos == self.text.len()
+            && (!extend_selection || self.selection_anchor.is_none())
+        {
             return false;
         }
-        self.cursor_pos = self.text.len();
-        true
+        self.set_cursor_internal(self.text.len(), extend_selection)
+    }
+    /// Move the insertion cursor to the start of the previous word.
+    pub fn move_cursor_word_left(&mut self) -> bool {
+        self.clamp_cursor_to_text();
+        let prefix = &self.text[..self.cursor_pos];
+        let trimmed = prefix.trim_end_matches(char::is_whitespace);
+        if trimmed.is_empty() {
+            return self.set_cursor_internal(0, false);
+        }
+        let target = trimmed
+            .char_indices()
+            .rev()
+            .find_map(|(index, ch)| ch.is_whitespace().then_some(index + ch.len_utf8()))
+            .unwrap_or(0);
+        self.set_cursor_internal(target, false)
+    }
+    /// Move the insertion cursor to the start of the next word.
+    pub fn move_cursor_word_right(&mut self) -> bool {
+        self.clamp_cursor_to_text();
+        let suffix = &self.text[self.cursor_pos..];
+        let mut target = self.text.len();
+        let mut seen_non_whitespace = false;
+        for (offset, ch) in suffix.char_indices() {
+            if ch.is_whitespace() {
+                if seen_non_whitespace {
+                    target = self.cursor_pos + offset + ch.len_utf8();
+                    break;
+                }
+            } else {
+                seen_non_whitespace = true;
+            }
+        }
+        if !seen_non_whitespace {
+            target = self.text.len();
+        }
+        self.set_cursor_internal(target, false)
     }
 }
 /// Provide a default `TextInput` via `Self::new()`.
@@ -215,22 +389,48 @@ pub struct Slider {
 impl Slider {
     /// Create a slider with the given range; initial value is `min`, step defaults to 0 (continuous).
     pub fn new(min: f64, max: f64) -> Self {
-        Self {
+        let (min, max) = normalized_range_or(min, max, (0.0, 1.0));
+        let mut slider = Self {
             base: WidgetBase::new(WidgetType::Slider),
             value: min,
             min,
             max,
             step: 0.0,
+        };
+        let _ = slider.set_value(min);
+        slider
+    }
+    /// Update the allowed range and re-clamp the current value; returns `false` for NaN/Inf.
+    pub fn set_range(&mut self, min: f64, max: f64) -> bool {
+        if !(min.is_finite() && max.is_finite()) {
+            return false;
         }
+        self.min = min.min(max);
+        self.max = min.max(max);
+        let _ = self.set_value(self.value);
+        true
+    }
+    /// Update the snapping step; non-positive values switch back to continuous mode.
+    pub fn set_step(&mut self, step: f64) -> bool {
+        if !step.is_finite() {
+            return false;
+        }
+        self.step = if step > 0.0 { step } else { 0.0 };
+        let _ = self.set_value(self.value);
+        true
     }
     /// Clamp `v` to `[min, max]` and snap to the nearest step if step > 0.
-    pub fn set_value(&mut self, v: f64) {
+    pub fn set_value(&mut self, v: f64) -> bool {
+        if !v.is_finite() {
+            return false;
+        }
         let mut v = v.clamp(self.min, self.max);
-        if self.step > 0.0 {
+        if self.step.is_finite() && self.step > 0.0 {
             v = ((v - self.min) / self.step).round() * self.step + self.min;
             v = v.clamp(self.min, self.max);
         }
         self.value = v;
+        true
     }
 }
 /// Read-only bounded progress indicator.
@@ -248,12 +448,33 @@ pub struct ProgressBar {
 impl ProgressBar {
     /// Create a progress bar with the given range; initial value is `min`.
     pub fn new(min: f64, max: f64) -> Self {
-        Self {
+        let (min, max) = normalized_range_or(min, max, (0.0, 1.0));
+        let mut bar = Self {
             base: WidgetBase::new(WidgetType::ProgressBar),
             value: min,
             min,
             max,
+        };
+        let _ = bar.set_value(min);
+        bar
+    }
+    /// Update the allowed range and re-clamp the current value; returns `false` for NaN/Inf.
+    pub fn set_range(&mut self, min: f64, max: f64) -> bool {
+        if !(min.is_finite() && max.is_finite()) {
+            return false;
         }
+        self.min = min.min(max);
+        self.max = min.max(max);
+        let _ = self.set_value(self.value);
+        true
+    }
+    /// Clamp `v` to `[min, max]`; returns `false` for NaN/Inf.
+    pub fn set_value(&mut self, v: f64) -> bool {
+        if !v.is_finite() {
+            return false;
+        }
+        self.value = v.clamp(self.min, self.max);
+        true
     }
     /// Return the normalised fill fraction in `[0.0, 1.0]`; returns 0.0 when `max == min`.
     pub fn progress(&self) -> f64 {
@@ -276,6 +497,10 @@ pub struct ComboBox {
     pub selected_index: Option<usize>,
     /// Whether the drop-down list is currently visible.
     pub open: bool,
+    /// Maximum number of items shown at once before the dropdown scrolls.
+    pub max_visible_items: usize,
+    /// Vertical scroll offset used while the dropdown is open.
+    pub scroll_y: f32,
 }
 impl ComboBox {
     /// Create an empty combo box with no selection.
@@ -285,7 +510,13 @@ impl ComboBox {
             items: Vec::new(),
             selected_index: None,
             open: false,
+            max_visible_items: 8,
+            scroll_y: 0.0,
         }
+    }
+    /// Clamp the dropdown viewport capacity to at least one visible row.
+    pub fn set_max_visible_items(&mut self, count: usize) {
+        self.max_visible_items = count.max(1);
     }
     /// Append a new item to the drop-down list.
     pub fn add_item(&mut self, text: impl Into<String>) {
@@ -304,6 +535,7 @@ impl ComboBox {
                     };
                 }
             }
+            self.scroll_y = self.scroll_y.max(0.0);
             true
         } else {
             false
@@ -313,6 +545,7 @@ impl ComboBox {
     pub fn clear(&mut self) {
         self.items.clear();
         self.selected_index = None;
+        self.scroll_y = 0.0;
     }
     /// Return the text of the selected ComboBox item, or `None`.
     pub fn selected_item(&self) -> Option<&str> {
@@ -498,23 +731,29 @@ pub struct SpinBox {
 impl SpinBox {
     /// Create a spin box clamped to `[min, max]` with step=1.0; initial value is `min`.
     pub fn new(min: f64, max: f64) -> Self {
-        let clamped_min = min.min(max);
-        Self {
+        let (min, max) = normalized_range_or(min, max, (0.0, 100.0));
+        let mut spin_box = Self {
             base: WidgetBase::new(WidgetType::SpinBox),
-            value: clamped_min,
-            min: clamped_min,
-            max: min.max(max),
+            value: min,
+            min,
+            max,
             step: 1.0,
-        }
+        };
+        let _ = spin_box.set_value(min);
+        spin_box
     }
     /// Snap `v` to the nearest step and clamp to `[min, max]`.
-    pub fn set_value(&mut self, v: f64) {
-        let snapped = if self.step > 0.0 {
-            (v / self.step).round() * self.step
+    pub fn set_value(&mut self, v: f64) -> bool {
+        if !v.is_finite() {
+            return false;
+        }
+        let snapped = if self.step.is_finite() && self.step > 0.0 {
+            ((v - self.min) / self.step).round() * self.step + self.min
         } else {
             v
         };
         self.value = snapped.clamp(self.min, self.max);
+        true
     }
     /// Increase value by one step. This function is part of the public API.
     pub fn increment(&mut self) {
@@ -526,9 +765,20 @@ impl SpinBox {
     }
     /// Update the allowed range and re-clamp the current value.
     pub fn set_range(&mut self, min: f64, max: f64) {
-        self.min = min.min(max);
-        self.max = min.max(max);
-        self.value = self.value.clamp(self.min, self.max);
+        if min.is_finite() && max.is_finite() {
+            self.min = min.min(max);
+            self.max = min.max(max);
+            let _ = self.set_value(self.value);
+        }
+    }
+    /// Update the step size; invalid or non-positive values are ignored.
+    pub fn set_step(&mut self, step: f64) -> bool {
+        if !(step.is_finite() && step > 0.0) {
+            return false;
+        }
+        self.step = step.max(1e-9);
+        let _ = self.set_value(self.value);
+        true
     }
 }
 /// Animated on/off toggle switch.

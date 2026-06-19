@@ -20,6 +20,11 @@ use crate::render::shader::UniformValue;
 use crate::runtime::resource_keys::ShaderKey;
 use std::f32::consts::PI;
 
+/// Clamp arc segment counts so tessellation never divides by zero.
+pub fn sanitize_arc_segments(segments: u32) -> u32 {
+    segments.max(1)
+}
+
 impl GpuRenderer {
     /// Tessellate a rectangle into flat-color vertices and indices.
     #[allow(clippy::too_many_arguments)]
@@ -245,6 +250,7 @@ impl GpuRenderer {
         segs: u32,
         lw: f32,
     ) {
+        let segs = sanitize_arc_segments(segs);
         match mode {
             DrawMode::Fill => {
                 let base = cv.len() as u32;
@@ -302,12 +308,44 @@ pub(crate) fn append_color_draw(
     verts: Vec<ColorVertex>,
     idxs: Vec<u32>,
 ) {
+    append_color_draw_slices(
+        draws,
+        all_verts,
+        all_idxs,
+        target,
+        blend_mode,
+        scissor,
+        color_mask_bits,
+        shader,
+        stencil_mode,
+        stencil_reference,
+        &verts,
+        &idxs,
+    );
+}
+
+/// Append flat-color geometry from reusable scratch slices to the frame-local draw list.
+#[allow(clippy::too_many_arguments)]
+pub(crate) fn append_color_draw_slices(
+    draws: &mut Vec<PreparedDraw>,
+    all_verts: &mut Vec<ColorVertex>,
+    all_idxs: &mut Vec<u32>,
+    target: RenderTargetId,
+    blend_mode: BlendMode,
+    scissor: ScissorRect,
+    color_mask_bits: u32,
+    shader: Option<ShaderKey>,
+    stencil_mode: GpuStencilMode,
+    stencil_reference: u8,
+    verts: &[ColorVertex],
+    idxs: &[u32],
+) {
     if idxs.is_empty() {
         return;
     }
     let base = all_verts.len() as u32;
     let idx_start = all_idxs.len() as u32;
-    all_verts.extend_from_slice(&verts);
+    all_verts.extend_from_slice(verts);
     all_idxs.extend(idxs.iter().map(|&idx| idx + base));
     draws.push(PreparedDraw {
         target,
@@ -327,9 +365,48 @@ pub(crate) fn append_color_draw(
         instance_count: 0,
     });
 }
-/// Append a textured draw call — vertices and indices — to the frame-local draw list.
+
+/// Append a flat-color draw call for indices already written into the shared frame index buffer.
+///
+/// This is used by direct tessellation paths where primitive builders write vertices and absolute
+/// indices straight into the final per-frame buffers, avoiding scratch-buffer copies.
 #[allow(clippy::too_many_arguments)]
-pub(crate) fn append_tex_draw(
+pub fn append_color_draw_range(
+    draws: &mut Vec<PreparedDraw>,
+    idx_start: usize,
+    idx_end: usize,
+    target: RenderTargetId,
+    blend_mode: BlendMode,
+    scissor: ScissorRect,
+    color_mask_bits: u32,
+    shader: Option<ShaderKey>,
+    stencil_mode: GpuStencilMode,
+    stencil_reference: u8,
+) {
+    if idx_end <= idx_start {
+        return;
+    }
+    draws.push(PreparedDraw {
+        target,
+        geometry: GeometryKind::Color,
+        texture_ref: None,
+        idx_start: idx_start as u32,
+        idx_count: (idx_end - idx_start) as u32,
+        blend_mode,
+        scissor,
+        color_mask_bits,
+        shader,
+        stencil_mode,
+        stencil_reference: stencil_reference as u32,
+        static_geometry: None,
+        instance_buffer: None,
+        instance_start: 0,
+        instance_count: 0,
+    });
+}
+/// Append textured geometry from reusable scratch slices to the frame-local draw list.
+#[allow(clippy::too_many_arguments)]
+pub(crate) fn append_tex_draw_slices(
     draws: &mut Vec<PreparedDraw>,
     all_verts: &mut Vec<TexVertex>,
     all_idxs: &mut Vec<u32>,
@@ -341,15 +418,15 @@ pub(crate) fn append_tex_draw(
     shader: Option<ShaderKey>,
     stencil_mode: GpuStencilMode,
     stencil_reference: u8,
-    verts: Vec<TexVertex>,
-    idxs: Vec<u32>,
+    verts: &[TexVertex],
+    idxs: &[u32],
 ) {
     if idxs.is_empty() {
         return;
     }
     let base = all_verts.len() as u32;
     let idx_start = all_idxs.len() as u32;
-    all_verts.extend_from_slice(&verts);
+    all_verts.extend_from_slice(verts);
     all_idxs.extend(idxs.iter().map(|&idx| idx + base));
     draws.push(PreparedDraw {
         target,
@@ -565,6 +642,7 @@ pub(crate) fn build_rounded_rect_path(
     ry: f32,
     segs: u32,
 ) -> Vec<(f32, f32)> {
+    let segs = sanitize_arc_segments(segs);
     let mut pts = Vec::new();
     let corners = [
         (x + rx, y + ry, PI, 1.5 * PI),

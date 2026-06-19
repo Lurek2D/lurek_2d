@@ -11,6 +11,8 @@ use crate::ui::context::{GuiContext, WidgetKind};
 use crate::ui::extras::{DialogAction, DialogActionRole};
 use crate::ui::widget::TextVAlign;
 use serde::Deserialize;
+use std::collections::{HashMap, HashSet};
+use std::path::{Component, Path};
 #[derive(Debug, Clone, Deserialize, Default)]
 /// Declarative dialog footer action loaded from TOML or Lua layout definitions.
 pub struct DialogActionDef {
@@ -54,6 +56,8 @@ pub struct WidgetDef {
     pub enabled: Option<bool>,
     /// Placeholder text for text-input widgets.
     pub placeholder: Option<String>,
+    /// Whether Enter on a focused text input should submit the surrounding dialog.
+    pub submit_on_enter: Option<bool>,
     /// Hover tooltip text.
     pub tooltip: Option<String>,
     /// Inner padding `[top, right, bottom, left]` in pixels.
@@ -84,6 +88,8 @@ pub struct WidgetDef {
     pub columns: Option<usize>,
     /// Whether layout children wrap when they exceed available space.
     pub wrap: Option<bool>,
+    /// Maximum number of visible rows in combo-box dropdowns before scrolling.
+    pub max_visible_items: Option<usize>,
     /// Orientation string (`"horizontal"` / `"vertical"`) for separators, scroll bars, etc.
     pub orientation: Option<String>,
     /// Radio-button group identifier.
@@ -113,10 +119,102 @@ pub struct LayoutDef {
 }
 /// Recursively instantiate `def` and all its `children` into `ctx`; return the root widget index or an error string.
 pub fn load_layout_def(ctx: &mut GuiContext, def: &WidgetDef) -> Result<usize, String> {
+    let idx = load_layout_def_inner(ctx, def)?;
+    let errors = validate_loaded_subtree(ctx, idx);
+    if !errors.is_empty() {
+        return Err(format!(
+            "layout tree validation failed: {}",
+            errors.join("; ")
+        ));
+    }
+    Ok(idx)
+}
+
+fn subtree_children(ctx: &GuiContext, idx: usize) -> Vec<usize> {
+    let mut out = ctx
+        .widgets
+        .get(idx)
+        .and_then(|widget| widget.children())
+        .cloned()
+        .unwrap_or_default();
+    if let Some(WidgetKind::Dialog(dialog)) = ctx.widgets.get(idx) {
+        if let Some(child_idx) = dialog.content_idx {
+            if !out.contains(&child_idx) {
+                out.push(child_idx);
+            }
+        }
+        if let Some(child_idx) = dialog.footer_idx {
+            if !out.contains(&child_idx) {
+                out.push(child_idx);
+            }
+        }
+    }
+    out
+}
+
+fn validate_loaded_subtree(ctx: &GuiContext, root_idx: usize) -> Vec<String> {
+    fn visit(
+        ctx: &GuiContext,
+        idx: usize,
+        visited: &mut HashSet<usize>,
+        stack: &mut HashSet<usize>,
+        parent_counts: &mut HashMap<usize, usize>,
+        errors: &mut Vec<String>,
+    ) {
+        if idx >= ctx.widgets.len() {
+            errors.push(format!("widget {idx} is out of range"));
+            return;
+        }
+        if !stack.insert(idx) {
+            errors.push(format!("cycle detected at widget {idx}"));
+            return;
+        }
+        visited.insert(idx);
+        let mut seen_children = HashSet::new();
+        for child_idx in subtree_children(ctx, idx) {
+            if child_idx >= ctx.widgets.len() {
+                errors.push(format!("widget {idx} references invalid child {child_idx}"));
+                continue;
+            }
+            if !seen_children.insert(child_idx) {
+                errors.push(format!(
+                    "widget {idx} references child {child_idx} more than once"
+                ));
+                continue;
+            }
+            *parent_counts.entry(child_idx).or_insert(0) += 1;
+            if parent_counts[&child_idx] > 1 {
+                errors.push(format!("widget {child_idx} has multiple parents"));
+            }
+            if !visited.contains(&child_idx) {
+                visit(ctx, child_idx, visited, stack, parent_counts, errors);
+            } else if stack.contains(&child_idx) {
+                errors.push(format!("cycle detected at widget {child_idx}"));
+            }
+        }
+        stack.remove(&idx);
+    }
+
+    let mut visited = HashSet::new();
+    let mut stack = HashSet::new();
+    let mut parent_counts = HashMap::new();
+    let mut errors = Vec::new();
+    visit(
+        ctx,
+        root_idx,
+        &mut visited,
+        &mut stack,
+        &mut parent_counts,
+        &mut errors,
+    );
+    errors
+}
+
+fn load_layout_def_inner(ctx: &mut GuiContext, def: &WidgetDef) -> Result<usize, String> {
     let idx = create_from_def(ctx, def)?;
     if let Some(children) = &def.children {
         for child_def in children {
-            let child_idx = load_layout_def(ctx, child_def)?;
+            let child_idx = load_layout_def_inner(ctx, child_def)?;
             match child_def.slot.as_deref() {
                 Some("content") => match ctx.widgets.get_mut(idx) {
                     Some(WidgetKind::Dialog(dialog)) => {
@@ -157,7 +255,13 @@ pub fn load_layout_def(ctx: &mut GuiContext, def: &WidgetDef) -> Result<usize, S
                     ))
                 }
                 None => {
-                    ctx.add_child(idx, child_idx);
+                    if !ctx.add_child(idx, child_idx) {
+                        return Err(format!(
+                            "failed to attach child \"{}\" to parent \"{}\"",
+                            child_def.id.as_deref().unwrap_or(&child_def.widget_type),
+                            def.id.as_deref().unwrap_or(&def.widget_type)
+                        ));
+                    }
                 }
             }
         }
@@ -177,10 +281,37 @@ pub fn render_to_image(
     height: u32,
     path: &str,
 ) -> Result<(), String> {
+    let path = Path::new(path);
+    if path.is_absolute()
+        || path
+            .components()
+            .any(|component| matches!(component, Component::ParentDir | Component::Prefix(_)))
+    {
+        return Err(
+            "render_to_image: output path must stay relative to the current workspace".to_string(),
+        );
+    }
     ctx.set_viewport(width as f32, height as f32);
     let img = ctx.draw_to_image(width, height);
     let png = img.encode_png()?;
-    std::fs::write(path, png).map_err(|e| format!("render_to_image: failed to save '{path}': {e}"))
+    std::fs::write(path, png)
+        .map_err(|e| format!("render_to_image: failed to save '{}': {e}", path.display()))
+}
+
+fn ensure_finite_f32(name: &str, value: f32) -> Result<f32, String> {
+    if value.is_finite() {
+        Ok(value)
+    } else {
+        Err(format!("field \"{name}\" must be finite"))
+    }
+}
+
+fn ensure_finite_f64(name: &str, value: f64) -> Result<f64, String> {
+    if value.is_finite() {
+        Ok(value)
+    } else {
+        Err(format!("field \"{name}\" must be finite"))
+    }
 }
 /// Instantiate a single widget from `def` in `ctx` without recursing into children; return its index or an error.
 fn create_from_def(ctx: &mut GuiContext, def: &WidgetDef) -> Result<usize, String> {
@@ -190,8 +321,26 @@ fn create_from_def(ctx: &mut GuiContext, def: &WidgetDef) -> Result<usize, Strin
         "label" => ctx.add_label(def.text.clone().unwrap_or_default()),
         "textinput" => ctx.add_text_input(),
         "checkbox" => ctx.add_checkbox(def.text.clone().unwrap_or_default()),
-        "slider" => ctx.add_slider(def.min.unwrap_or(0.0), def.max.unwrap_or(1.0)),
-        "progressbar" => ctx.add_progress_bar(def.min.unwrap_or(0.0), def.max.unwrap_or(1.0)),
+        "slider" => ctx.add_slider(
+            def.min
+                .map(|value| ensure_finite_f64("min", value))
+                .transpose()?
+                .unwrap_or(0.0),
+            def.max
+                .map(|value| ensure_finite_f64("max", value))
+                .transpose()?
+                .unwrap_or(1.0),
+        ),
+        "progressbar" => ctx.add_progress_bar(
+            def.min
+                .map(|value| ensure_finite_f64("min", value))
+                .transpose()?
+                .unwrap_or(0.0),
+            def.max
+                .map(|value| ensure_finite_f64("max", value))
+                .transpose()?
+                .unwrap_or(1.0),
+        ),
         "combobox" => ctx.add_combo_box(),
         "listbox" | "list" => ctx.add_list_box(),
         "panel" => ctx.add_panel(),
@@ -214,7 +363,16 @@ fn create_from_def(ctx: &mut GuiContext, def: &WidgetDef) -> Result<usize, Strin
                 .unwrap_or(false);
             ctx.add_separator(vertical)
         }
-        "spacer" => ctx.add_spacer(def.w.unwrap_or(0.0), def.h.unwrap_or(0.0)),
+        "spacer" => ctx.add_spacer(
+            def.w
+                .map(|value| ensure_finite_f32("w", value))
+                .transpose()?
+                .unwrap_or(0.0),
+            def.h
+                .map(|value| ensure_finite_f32("h", value))
+                .transpose()?
+                .unwrap_or(0.0),
+        ),
         "treeview" => ctx.add_tree_view(),
         "radiobutton" => ctx.add_radio_button(
             def.text.clone().unwrap_or_default(),
@@ -254,7 +412,16 @@ fn create_from_def(ctx: &mut GuiContext, def: &WidgetDef) -> Result<usize, Strin
             ctx.add_panel()
         }
         "imagewidget" | "image" => ctx.add_image_widget(),
-        "spinbox" => ctx.add_spin_box(def.min.unwrap_or(0.0), def.max.unwrap_or(100.0)),
+        "spinbox" => ctx.add_spin_box(
+            def.min
+                .map(|value| ensure_finite_f64("min", value))
+                .transpose()?
+                .unwrap_or(0.0),
+            def.max
+                .map(|value| ensure_finite_f64("max", value))
+                .transpose()?
+                .unwrap_or(100.0),
+        ),
         "switch" => ctx.add_switch(def.on.unwrap_or(false)),
         "badge" => ctx.add_badge(def.value.map(|v| v as u32).unwrap_or(0)),
         "custom" => ctx.add_custom_widget(),
@@ -269,16 +436,16 @@ fn apply_base_props(ctx: &mut GuiContext, idx: usize, def: &WidgetDef) -> Result
     if let Some(w) = ctx.widgets.get_mut(idx) {
         let base = w.base_mut();
         if let Some(x) = def.x {
-            base.x = x;
+            base.x = ensure_finite_f32("x", x)?;
         }
         if let Some(y) = def.y {
-            base.y = y;
+            base.y = ensure_finite_f32("y", y)?;
         }
         if let Some(wv) = def.w {
-            base.width = wv;
+            base.width = ensure_finite_f32("w", wv)?.max(0.0);
         }
         if let Some(h) = def.h {
-            base.height = h;
+            base.height = ensure_finite_f32("h", h)?.max(0.0);
         }
         if let Some(ref id) = def.id {
             base.id = id.clone();
@@ -293,10 +460,20 @@ fn apply_base_props(ctx: &mut GuiContext, idx: usize, def: &WidgetDef) -> Result
             base.tooltip = tt.clone();
         }
         if let Some(padding) = def.padding {
-            base.padding = padding.map(|v| v.max(0.0));
+            base.padding = [
+                ensure_finite_f32("padding[0]", padding[0])?.max(0.0),
+                ensure_finite_f32("padding[1]", padding[1])?.max(0.0),
+                ensure_finite_f32("padding[2]", padding[2])?.max(0.0),
+                ensure_finite_f32("padding[3]", padding[3])?.max(0.0),
+            ];
         }
         if let Some(margin) = def.margin {
-            base.margin = margin.map(|v| v.max(0.0));
+            base.margin = [
+                ensure_finite_f32("margin[0]", margin[0])?.max(0.0),
+                ensure_finite_f32("margin[1]", margin[1])?.max(0.0),
+                ensure_finite_f32("margin[2]", margin[2])?.max(0.0),
+                ensure_finite_f32("margin[3]", margin[3])?.max(0.0),
+            ];
         }
         if let Some(ref align) = def.text_align {
             if matches!(align.as_str(), "left" | "center" | "right") {
@@ -316,34 +493,40 @@ fn apply_base_props(ctx: &mut GuiContext, idx: usize, def: &WidgetDef) -> Result
             base.text_ellipsis = value;
         }
         if let Some(value) = def.flex_grow {
-            base.flex_grow = value.max(0.0);
+            base.flex_grow = ensure_finite_f32("flex_grow", value)?.max(0.0);
         }
         if let Some(value) = def.flex_shrink {
-            base.flex_shrink = value.max(0.0);
+            base.flex_shrink = ensure_finite_f32("flex_shrink", value)?.max(0.0);
         }
         if let Some([min_w, min_h]) = def.min_size {
-            base.min_width = min_w.max(0.0);
-            base.min_height = min_h.max(0.0);
+            base.min_width = ensure_finite_f32("min_size[0]", min_w)?.max(0.0);
+            base.min_height = ensure_finite_f32("min_size[1]", min_h)?.max(0.0);
         }
         if let Some([max_w, max_h]) = def.max_size {
-            base.max_width = max_w.max(base.min_width);
-            base.max_height = max_h.max(base.min_height);
+            base.max_width = ensure_finite_f32("max_size[0]", max_w)?.max(base.min_width);
+            base.max_height = ensure_finite_f32("max_size[1]", max_h)?.max(base.min_height);
         }
     }
     match ctx.widgets.get_mut(idx) {
         Some(WidgetKind::Slider(sl)) => {
             if let Some(v) = def.value {
-                sl.value = v;
+                if !sl.set_value(ensure_finite_f64("value", v)?) {
+                    return Err("slider value is invalid".to_string());
+                }
             }
         }
         Some(WidgetKind::ProgressBar(pb)) => {
             if let Some(v) = def.value {
-                pb.value = v;
+                if !pb.set_value(ensure_finite_f64("value", v)?) {
+                    return Err("progress bar value is invalid".to_string());
+                }
             }
         }
         Some(WidgetKind::SpinBox(sb)) => {
             if let Some(v) = def.value {
-                sb.value = v;
+                if !sb.set_value(ensure_finite_f64("value", v)?) {
+                    return Err("spin box value is invalid".to_string());
+                }
             }
         }
         Some(WidgetKind::CheckBox(cb)) => {
@@ -353,20 +536,28 @@ fn apply_base_props(ctx: &mut GuiContext, idx: usize, def: &WidgetDef) -> Result
         }
         Some(WidgetKind::Switch(sw)) => {
             if let Some(o) = def.on {
-                sw.on = o;
+                sw.set_on(o);
             }
         }
         Some(WidgetKind::TextInput(ti)) => {
             if let Some(ref p) = def.placeholder {
                 ti.placeholder = p.clone();
             }
+            if let Some(value) = def.submit_on_enter {
+                ti.submit_on_enter = value;
+            }
             if let Some(ref t) = def.text {
                 ti.set_text(t.clone());
             }
         }
+        Some(WidgetKind::ComboBox(combo_box)) => {
+            if let Some(value) = def.max_visible_items {
+                combo_box.set_max_visible_items(value);
+            }
+        }
         Some(WidgetKind::Layout(lay)) => {
             if let Some(sp) = def.spacing {
-                lay.spacing = sp;
+                lay.spacing = ensure_finite_f32("spacing", sp)?;
             }
             if let Some(ref align) = def.align {
                 lay.align = align.clone();

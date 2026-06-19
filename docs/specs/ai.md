@@ -14,7 +14,7 @@
 - Source path: `src/ai/`
 - Binding: `src/lua_api/ai_api.rs`
 - Namespace: `lurek.ai`
-- Lua API surface: `36` functions, `24` types, `241` methods
+- Lua API surface: `36` functions, `24` types, `247` methods
 - Rust test path(s): tests/rust/unit/ai_tests.rs, tests/rust/game/ai_tests.rs
 - Lua test path(s): tests/lua/unit/test_ai.lua, tests/lua/golden/test_ai_golden.lua, tests/lua/integration/test_ecs_ai.lua, tests/lua/integration/test_ai_physics.lua, tests/lua/integration/test_ai_pathfind.lua, tests/lua/integration/test_ai_ecs_scene.lua, tests/lua/stress/test_ai_stress.lua
 
@@ -43,6 +43,8 @@
 - That common vocabulary matters once several actor types share a world.
 - The module is therefore not only about smarter enemies; it is also about giving complex runtime behavior a legible structure that can be tuned, debugged, and scaled over the lifetime of a project.
 - For wiki readers, the key takeaway is that `ai` is not one algorithm or one enemy helper. It is the engine's full runtime toolkit for building decision-rich actors whose perception, planning, movement, group behavior, and debugging story are treated as one coherent feature family.
+
+This module primarily collaborates with `dialog`, `image`, `learning`, `patterns`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
 
 ## Imports
 
@@ -90,6 +92,12 @@
 - This file matters when directional slot math or danger suppression yields jittery or obviously unsafe motion.
 - Open this owner before generic steering when the bug is in lane choice rather than force combination policy.
 
+### diagnostics.rs
+
+- Owns lightweight diagnostics and decision traces shared by AI scorers, planners, search, and callback wrappers.
+- It keeps last-decision evidence structured so Lua bindings, tests, and debugging tools can inspect what an AI subsystem just did.
+- Open it when new AI owners need to expose traceable decisions or callback failures.
+
 ### director.rs
 
 - Owns the encounter pacing director that turns accumulated tension into build-up, peak, sustain, and relief phases.
@@ -106,6 +114,12 @@
 - Supports dominant-emotion queries and active-name filtering so higher AI layers can read compact affect summaries.
 - Provides the affect boundary between raw events and reusable mood state that can bias planning or scoring.
 - Open this owner when emotional decay, trigger clamping, or dominant-state semantics need coordinated changes.
+
+### error.rs
+
+- Owns typed validation and safety errors shared by AI planners, steering, scoring, and Lua-facing helpers.
+- It keeps failure reasons explicit so AI owners can reject invalid numeric input, unsafe tree shapes, and bad budgets consistently.
+- Open it when AI callers need clearer diagnostics or when a new AI subsystem joins the shared validation contract.
 
 ### fsm.rs
 
@@ -241,6 +255,12 @@
 - Calls action scorers, applies momentum bonuses, and records the chosen action so later systems can read results.
 - Provides the continuous scoring boundary between raw Lua evaluations and one selected utility-driven action.
 - Open this owner when nonlinear score shaping, momentum behavior, or action-evaluation bookkeeping needs changes.
+
+### validation.rs
+
+- Owns shared AI sizing, traversal, and numeric validation limits used by planners, steering, trees, and scoring helpers.
+- It centralizes checked counts and finite-value policy so AI owners share one narrow validation contract.
+- Open it when AI ceilings or numeric hardening rules change across the subsystem.
 
 ### world.rs
 
@@ -394,8 +414,8 @@
 - `LAIWorld:addAgent(name) -> LBot`: Creates a named agent in this world and returns a handle that can edit its movement and decision state.
 - `LAIWorld:getAgent(name) -> LuaValue`: Returns the named agent handle when it exists in this world.
 - `LAIWorld:getAgentCount() -> integer`: Returns the number of agents currently stored in this world.
-- `LAIWorld:getLastCallbackErrors() -> table`: Returns callback errors recorded during the most recent custom-model update pulse.
 - `LAIWorld:getGlobalBlackboard() -> LAIBlackboard`: Returns a blackboard snapshot containing the world's shared AI facts.
+- `LAIWorld:getLastCallbackErrors() -> table`: Returns callback errors recorded during the most recent `update` call.
 - `LAIWorld:removeAgent(agent) -> nil`: Removes an agent from this world by using an existing agent handle.
 - `LAIWorld:type() -> string`: Returns the Lua-visible type name for this AI world handle.
 - `LAIWorld:typeOf(name) -> boolean`: Returns whether this AI world handle matches a supported type name.
@@ -433,7 +453,7 @@
 
 ##### Methods
 
-- `LBehaviorTree:getDebugState() -> table`: Returns behavior tree debug counters, guarded depth info, limit state, and status in a Lua table.
+- `LBehaviorTree:getDebugState() -> table`: Returns behavior tree debug counters and status in a Lua table.
 - `LBehaviorTree:getLastStatus() -> string`: Returns the last behavior tree status string recorded by the tree.
 - `LBehaviorTree:setRoot(node) -> nil`: Sets the behavior tree root by moving a node handle into the tree.
 - `LBehaviorTree:type() -> string`: Returns the Lua-visible type name for this behavior tree handle.
@@ -559,11 +579,11 @@
 - `LGOAPPlanner:addAction(name, cost?, callback?) -> nil`: Adds a GOAP action with optional cost and completion callback.
 - `LGOAPPlanner:addGoal(name, priority?) -> nil`: Adds a GOAP goal with an optional priority weight.
 - `LGOAPPlanner:getActionCount() -> integer`: Returns the number of GOAP actions registered in this planner.
+- `LGOAPPlanner:getGoalCount() -> integer`: Returns the number of GOAP goals registered in this planner.
 - `LGOAPPlanner:getLastFailureReason() -> LuaValue`: Returns the last planner failure reason string when planning did not succeed.
 - `LGOAPPlanner:getLastTrace() -> table`: Returns the last structured GOAP planning trace.
-- `LGOAPPlanner:getGoalCount() -> integer`: Returns the number of GOAP goals registered in this planner.
 - `LGOAPPlanner:getMaxIterations() -> integer`: Returns the maximum number of planner iterations allowed during search.
-- `LGOAPPlanner:plan(world_state_tbl, max_depth?) -> string[]`: Builds a plan from the supplied boolean world state, records a failure taxonomy on miss, and returns action names in execution order.
+- `LGOAPPlanner:plan(world_state_tbl, max_depth?) -> string[]`: Builds a plan from the supplied boolean world state and returns action names in execution order.
 - `LGOAPPlanner:setEffect(action_name, key, value) -> nil`: Sets one boolean effect produced by an existing GOAP action.
 - `LGOAPPlanner:setGoalState(goal_name, key, value) -> nil`: Sets one desired world-state key for an existing GOAP goal.
 - `LGOAPPlanner:setMaxIterations(n) -> nil`: Sets the maximum number of planner iterations allowed during search.
@@ -628,7 +648,7 @@
 ##### Methods
 
 - `LMCTSEngine:getLastTrace() -> table`: Returns the last structured MCTS search trace.
-- `LMCTSEngine:search(root_state, get_actions_fn, apply_fn, eval_fn) -> LuaValue`: Runs MCTS from a root state using Lua callbacks for actions, transitions, evaluation, and invalid-score diagnostics.
+- `LMCTSEngine:search(root_state, get_actions_fn, apply_fn, eval_fn) -> LuaValue`: Runs MCTS from a root state using Lua callbacks for actions, transitions, and evaluation.
 - `LMCTSEngine:type() -> string`: Returns the Lua-visible type name for this MCTS engine handle.
 - `LMCTSEngine:typeOf(name) -> boolean`: Returns whether this MCTS engine handle matches a supported type name.
 
@@ -723,7 +743,7 @@
 
 ##### Methods
 
-- `LSteeringManager:addArrive(tx, ty, slowing?, weight?) -> nil`: Adds an arrive behavior that slows the agent as it approaches a target point and rejects non-positive slowing radii at the Lua boundary.
+- `LSteeringManager:addArrive(tx, ty, slowing?, weight?) -> nil`: Adds an arrive behavior that slows the agent as it approaches a target point.
 - `LSteeringManager:addCustomBehavior(func, weight?) -> nil`: Adds a custom steering behavior backed by a Lua callback.
 - `LSteeringManager:addEvade(threat_name?, weight?) -> nil`: Adds an evade behavior that moves away from another named agent when a threat name is supplied.
 - `LSteeringManager:addFlee(tx, ty, panic_dist?, weight?) -> nil`: Adds a flee behavior that pushes the agent away from a target point inside a panic distance.
@@ -731,7 +751,6 @@
 - `LSteeringManager:addPursue(target_name?, weight?) -> nil`: Adds a pursue behavior that chases another named agent when a target name is supplied.
 - `LSteeringManager:addSeek(tx, ty, weight?) -> nil`: Adds a seek behavior that pulls the agent toward a target point.
 - `LSteeringManager:addWander(radius?, dist?, jitter?, weight?) -> nil`: Adds a wander behavior that produces jittered exploratory movement.
-- `LSteeringManager:getLastDiagnostic() -> LuaValue`: Returns the most recent steering validation or runtime diagnostic string.
 - `LSteeringManager:applyCustomSteering(agent, dt) -> number, number`: Runs enabled custom steering callbacks for an agent and returns the weighted combined force.
 - `LSteeringManager:calculate(px, py, vx, vy, max_speed, max_force, dt) -> number, number`: Calculates a steering force for the supplied agent movement state.
 - `LSteeringManager:clearEntities() -> nil`: Clears all steering-context entities.
@@ -740,6 +759,7 @@
 - `LSteeringManager:entityCount() -> integer`: Returns the number of steering-context entities.
 - `LSteeringManager:getBehaviorCount() -> integer`: Returns the number of steering behaviors configured on this manager.
 - `LSteeringManager:getCombineMode() -> string`: Returns the current steering force combination mode.
+- `LSteeringManager:getLastDiagnostic() -> LuaValue`: Returns the most recent steering validation or runtime diagnostic.
 - `LSteeringManager:getLastSteering() -> number, number`: Returns the last steering force calculated by this manager.
 - `LSteeringManager:getPathProgress() -> integer, integer`: Returns the current one-based waypoint index and total waypoint count.
 - `LSteeringManager:hasPath() -> boolean`: Returns whether this manager currently has an active waypoint path.
@@ -824,7 +844,7 @@
 
 - `LUtilityAI:addAction(name, scorer_fn, weight?) -> nil`: Adds an action scored by a Lua callback and optional momentum weight.
 - `LUtilityAI:addConsideration(action_name, name, scorer_fn, curve_arg, p1?, p2?, p3?, weight?) -> nil`: Adds a consideration scorer and response curve to an existing utility action.
-- `LUtilityAI:evaluate() -> LuaValue`: Evaluates all actions, folds consideration scores into the final ranking, and returns the winning action name when one is available.
+- `LUtilityAI:evaluate() -> LuaValue`: Evaluates all actions and returns the winning action name when one is available.
 - `LUtilityAI:getActionCount() -> integer`: Returns the number of actions registered in this utility AI.
 - `LUtilityAI:getLastAction() -> LuaValue`: Returns the last winning action name when evaluation has selected one.
 - `LUtilityAI:getLastTrace() -> table`: Returns the last structured utility evaluation trace.

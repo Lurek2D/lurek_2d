@@ -69,9 +69,7 @@ pub use mapgen::{
 /// Re-export polygon map types.
 pub use polygon_map::{PolygonMap, PolygonRegion};
 /// Re-export core tilemap types.
-pub use tilemap::{
-    SweepResult, TileIndexPolicy, TileLayer, TileMap, TileMapDiagnosticsSnapshot,
-};
+pub use tilemap::{SweepResult, TileIndexPolicy, TileLayer, TileMap, TileMapDiagnosticsSnapshot};
 /// Re-export tileset types.
 pub use tileset::{TileAnimFrame, TileSet};
 /// Re-export TMX import types and loader function.

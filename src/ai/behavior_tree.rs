@@ -5,7 +5,7 @@
 //! Provides the control-flow boundary between authored hierarchical behavior logic and runtime execution state.
 //! Open this owner when branching policy, decorator semantics, or tree reset behavior needs coordinated revision.
 
-use crate::ai::validation::{AiValidationLimits, validate_count, validate_depth};
+use crate::ai::validation::{validate_count, validate_depth, AiValidationLimits};
 use mlua::RegistryKey;
 /// Execution result produced by a behavior-tree node or whole tree.
 #[derive(Debug, Clone, PartialEq)]
@@ -240,7 +240,10 @@ impl BehaviorTree {
     }
 }
 
-fn validate_tree_shape(node: &BTNode, limits: &AiValidationLimits) -> Result<(), crate::ai::AiError> {
+fn validate_tree_shape(
+    node: &BTNode,
+    limits: &AiValidationLimits,
+) -> Result<(), crate::ai::AiError> {
     let (node_count, max_depth, limit_exceeded) = guarded_tree_summary(node, limits);
     validate_count("behavior tree nodes", node_count, limits.max_bt_nodes)?;
     validate_depth("behavior tree", max_depth, limits.max_bt_depth)?;

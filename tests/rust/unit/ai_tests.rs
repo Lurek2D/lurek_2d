@@ -1,5 +1,5 @@
 use lurek2d::ai::{
-    BehaviorTree, BTNode, GOAPPlanner, MCTSConfig, MCTSEngine, PlanFailureReason, SteeringManager,
+    BTNode, BehaviorTree, GOAPPlanner, MCTSConfig, MCTSEngine, PlanFailureReason, SteeringManager,
     UtilityAI,
 };
 use mlua::Lua;
@@ -155,7 +155,11 @@ fn utility_ai_rejects_nan_score() {
     let chosen = ai.evaluate(&lua).unwrap();
 
     assert_eq!(chosen.as_deref(), Some("good"));
-    assert!(ai.last_trace.actions.iter().any(|entry| entry.invalid_scorer));
+    assert!(ai
+        .last_trace
+        .actions
+        .iter()
+        .any(|entry| entry.invalid_scorer));
 }
 
 #[test]
@@ -190,14 +194,10 @@ fn goap_budget_returns_failure_reason() {
         .add_action("get_axe".to_string(), 1.0, None)
         .unwrap();
     planner.add_effect("get_axe", "has_axe".to_string(), true);
-    planner
-        .add_action("chop".to_string(), 1.0, None)
-        .unwrap();
+    planner.add_action("chop".to_string(), 1.0, None).unwrap();
     planner.add_precondition("chop", "has_axe".to_string(), true);
     planner.add_effect("chop", "has_wood".to_string(), true);
-    planner
-        .add_action("build".to_string(), 1.0, None)
-        .unwrap();
+    planner.add_action("build".to_string(), 1.0, None).unwrap();
     planner.add_precondition("build", "has_wood".to_string(), true);
     planner.add_effect("build", "has_house".to_string(), true);
     planner.add_goal("house".to_string(), 1.0).unwrap();
@@ -213,7 +213,10 @@ fn goap_budget_returns_failure_reason() {
     );
 
     assert!(plan.is_empty());
-    assert_eq!(planner.last_failure_reason, Some(PlanFailureReason::BudgetExhausted));
+    assert_eq!(
+        planner.last_failure_reason,
+        Some(PlanFailureReason::BudgetExhausted)
+    );
     assert_eq!(
         planner.last_trace.failure_reason.as_deref(),
         Some("budget_exhausted")

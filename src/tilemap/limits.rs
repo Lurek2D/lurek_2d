@@ -108,14 +108,13 @@ pub(crate) fn checked_image_pixels(
             height_tiles,
             tile_size,
         })?;
-    let pixels =
-        width_px
-            .checked_mul(height_px)
-            .ok_or(TileMapError::ImagePixelOverflow {
-                width_tiles,
-                height_tiles,
-                tile_size,
-            })?;
+    let pixels = width_px
+        .checked_mul(height_px)
+        .ok_or(TileMapError::ImagePixelOverflow {
+            width_tiles,
+            height_tiles,
+            tile_size,
+        })?;
     if pixels > limits.max_image_pixels {
         return Err(TileMapError::ImagePixelLimitExceeded {
             pixels,
@@ -144,10 +143,7 @@ pub(crate) fn validate_finite(field: &'static str, value: f64) -> Result<(), Til
 }
 
 /// Reject non-positive rectangle dimensions after confirming the value is finite.
-pub(crate) fn validate_positive_rect(
-    field: &'static str,
-    value: f64,
-) -> Result<(), TileMapError> {
+pub(crate) fn validate_positive_rect(field: &'static str, value: f64) -> Result<(), TileMapError> {
     validate_finite(field, value)?;
     if value <= 0.0 {
         return Err(TileMapError::NonPositiveRect { field, value });

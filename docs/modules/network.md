@@ -17,6 +17,8 @@
 - Domain modules define what should be exchanged, while `network` owns how those exchanges are carried, coordinated, monitored, and kept off the blocking path.
 - Read `network` as the engine feature that turns remote communication into a reusable runtime capability.
 
+This module primarily collaborates with `runtime`. Its responsibility should stay inside the Core Runtime group rather than absorb behavior owned by those neighbors.
+
 ## Functions
 
 ### `lurek.network.createLobby`

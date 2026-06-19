@@ -3,7 +3,9 @@
 //! Fitness assignment and generation advancement live here because this wrapper coordinates model decoding with search.
 //! Open it when genome-to-network mapping changes; dense layer math and raw genetic operators live in sibling files.
 
-use crate::learning::{genetic::GeneticAlgorithm, neural_net::NeuralNet};
+use crate::learning::{
+    error::LearningError, genetic::GeneticAlgorithm, limits::validate_finite, neural_net::NeuralNet,
+};
 /// GA-backed neural-network population manager.
 pub struct Neuroevolution {
     /// Underlying genetic algorithm.
@@ -16,16 +18,26 @@ pub struct Neuroevolution {
 impl Neuroevolution {
     /// Create a population for the provided layer spec.
     pub fn new(layer_spec: Vec<(usize, usize, &str)>, pop_size: usize, seed: u64) -> Self {
+        Self::try_new(layer_spec, pop_size, seed)
+            .expect("Neuroevolution::new received invalid layer spec or population settings")
+    }
+
+    /// Create a population for the provided layer spec after validating the underlying GA settings.
+    pub fn try_new(
+        layer_spec: Vec<(usize, usize, &str)>,
+        pop_size: usize,
+        seed: u64,
+    ) -> Result<Self, LearningError> {
         let gene_count = Self::total_params(&layer_spec);
-        let ga = GeneticAlgorithm::new(pop_size, gene_count, seed);
-        Self {
+        let ga = GeneticAlgorithm::try_new(pop_size, gene_count, seed)?;
+        Ok(Self {
             ga,
             template_layer_spec: layer_spec
                 .into_iter()
                 .map(|(i, o, a)| (i, o, a.to_string()))
                 .collect(),
             generation: 0,
-        }
+        })
     }
     /// Return the flattened parameter count for the template spec.
     fn total_params(spec: &[(usize, usize, &str)]) -> usize {
@@ -44,14 +56,23 @@ impl Neuroevolution {
     }
     /// Assign fitness to chromosome `i` when present.
     pub fn set_fitness(&mut self, i: usize, fitness: f32) {
+        if !fitness.is_finite() {
+            return;
+        }
         if let Some(c) = self.ga.population.get_mut(i) {
             c.fitness = fitness;
         }
     }
     /// Advance the underlying genetic algorithm and generation counter.
     pub fn evolve(&mut self) {
-        self.ga.evolve();
+        let _ = self.try_evolve();
+    }
+
+    /// Advance the underlying genetic algorithm and generation counter.
+    pub fn try_evolve(&mut self) -> Result<(), LearningError> {
+        self.ga.try_evolve()?;
         self.generation += 1;
+        Ok(())
     }
     /// Build the network for the best chromosome, or `None` if the population is empty.
     pub fn best_network(&self) -> Option<NeuralNet> {
@@ -62,7 +83,13 @@ impl Neuroevolution {
     }
     /// Return the best fitness in the current population, or 0.0 if empty.
     pub fn best_fitness(&self) -> f32 {
-        self.ga.best().map(|c| c.fitness).unwrap_or(0.0)
+        self.ga
+            .best()
+            .and_then(|c| {
+                validate_finite("neuroevolution fitness", c.fitness as f64).ok()?;
+                Some(c.fitness)
+            })
+            .unwrap_or(0.0)
     }
     /// Return the current chromosome slice.
     pub fn population(&self) -> &[crate::learning::genetic::Chromosome] {

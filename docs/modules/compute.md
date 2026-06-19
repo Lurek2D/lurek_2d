@@ -12,6 +12,8 @@
 - This gives the engine a practical middle layer between generic Lua tables and fully specialized numeric subsystems.
 - Read `compute` as the engine feature that turns numerical data processing into a first-class runtime capability rather than an external preprocessing step.
 
+This module is mostly self-contained inside the Foundations group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
+
 ## Functions
 
 ### `lurek.compute.affine2d`

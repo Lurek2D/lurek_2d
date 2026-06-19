@@ -33,6 +33,8 @@
 - From a boundary perspective, domain modules define the world, rewards, and consequences, while `learning` owns the tensors, models, adaptation strategies, and training-oriented utilities that make machine learning usable inside that world.
 - Read `learning` as the place where research-oriented AI and practical engine workflows meet.
 
+This module is mostly self-contained inside the `Feature Systems` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
+
 ## Imports
 
 - No top-level `crate::<module>` imports were detected in this module's Rust source files.
@@ -80,6 +82,12 @@
 - Padding and reset behavior live here because frame-history ownership belongs with the stack rather than with learners.
 - Open it when observation-surface semantics change; policies, value tables, and neural blocks live in sibling files.
 
+### error.rs
+
+- This file owns typed validation and safety errors shared by learning constructors, inference, serialization, and Lua-facing helpers.
+- It keeps failure reasons explicit so safe `try_*` APIs can reject invalid shapes, counts, paths, and numeric inputs consistently.
+- Open it when learning callers need clearer diagnostics or when a new learning owner starts participating in the shared safety contract.
+
 ### evolutionary.rs
 
 - This file owns the shared `EvolutionaryLayer` trait used by learning blocks that expose flat trainable parameters.
@@ -91,8 +99,14 @@
 - This file owns population-based genetic optimization over flat chromosomes with ids, fitness, mutation, and elitism.
 - `Chromosome` stores one genome, while `GeneticAlgorithm` owns the live population, RNG state, and generation counter.
 - Tournament selection, crossover, mutation, and elite carryover all live here because they define reproduction semantics.
-- Deterministic RNG and Gaussian mutation helpers stay local so repeated runs can reproduce the same evolution steps.
+- Deterministic RNG is shared through a versioned learning RNG contract so repeated runs can reproduce the same evolution steps.
 - Open it when genome evolution policy changes; neural decoding and bandit or Q-learning logic live in sibling files.
+
+### limits.rs
+
+- This file owns shared learning sizing and validation limits used by safe constructors, inference, and persistence helpers.
+- It centralizes checked arithmetic and numeric policy so tensors, learners, genomes, and ONNX interop share one resource contract.
+- Open it when ceilings or validation rules change across learning modules.
 
 ### mod.rs
 
@@ -125,15 +139,15 @@
 
 - This file owns ONNX model loading and inference through tract, bridging `LurekTensor` data into runnable CPU plans.
 - `OnnxModel` stores the optimized tract plan plus cached input and output counts used for validation and inspection.
-- Load and run helpers live here because external model optimization, execution, and tensor conversion are this boundary.
+- Safe load and run helpers live here because external model optimization, sandboxing, and tensor conversion are this boundary.
 - Open it when ONNX interop changes; native tensors and in-repo learning layers live in sibling files.
 
 ### qlearner.rs
 
 - This file owns tabular Q-learning state, including the flat Q-table, exploration rate, and episode counters.
 - `QLearner` keeps discrete state-action values in one row-major table so updates and greedy lookups stay cheap.
-- Epsilon-greedy action choice and Bellman updates live here because they directly mutate the learner-owned value table.
-- Serialization and deserialization also stay here so saved tables preserve state and action dimensions on reload.
+- Epsilon-greedy action choice, deterministic RNG state, and Bellman updates live here because they directly mutate learner-owned state.
+- Serialization and deserialization also stay here so saved tables preserve dimensions, hyperparameters, and RNG state on reload.
 - Open it when discrete RL policy changes; bandits, environments, and neural optimizers are owned by sibling files.
 
 ### recurrent.rs
@@ -144,6 +158,12 @@
 - Both layers implement `EvolutionaryLayer` locally so genomes can load and export full recurrent parameter buffers.
 - No sequence batching framework lives here; the file focuses on one-step recurrent primitives for higher-level systems.
 - Open it when temporal-state math changes; dense layers, attention blocks, and engine orchestration live elsewhere.
+
+### rng.rs
+
+- This file owns the deterministic RNG contract shared by learning components that need seedable, replayable randomness.
+- It stores a small versioned state snapshot plus helpers for bounded integers, normalized floats, and Gaussian samples.
+- Open it when learning reproducibility, replay restoration, or shared RNG semantics change.
 
 ### tensor.rs
 
@@ -182,7 +202,7 @@
 - `lurek.learning.newNeuralNet() -> LNeuralNet`: Creates an empty feed-forward neural network.
 - `lurek.learning.newNeuroevolution(layer_spec, pop_size, seed) -> LNeuroevolution`: Creates a neuroevolution population from a layer specification table.
 - `lurek.learning.newPositionalEncoding(d_model, max_len) -> LPositionalEncoding`: Creates a sinusoidal positional encoding helper.
-- `lurek.learning.newQLearner(sc, ac) -> LQLearner`: Creates a Q-learner with fixed state and action counts.
+- `lurek.learning.newQLearner(sc, ac, seed?) -> LQLearner`: Creates a Q-learner with fixed state and action counts.
 - `lurek.learning.newTensor(shape, data) -> LTensor`: Creates a tensor from a shape (integer array) and flat float data (number array).
 - `lurek.learning.newTransformerDecoder(d_model, num_heads, d_ff) -> LTransformerDecoder`: Creates a transformer decoder block.
 - `lurek.learning.newTransformerEncoder(d_model, num_heads, d_ff) -> LTransformerEncoder`: Creates a transformer encoder block.

@@ -6,9 +6,7 @@
 //! Open this owner when plan search cost, iteration ceilings, or goal satisfaction semantics need shared fixes.
 
 use crate::ai::diagnostics::GoapPlanTrace;
-use crate::ai::validation::{
-    finite_f64, non_negative, validate_count, AiValidationLimits,
-};
+use crate::ai::validation::{finite_f64, non_negative, validate_count, AiValidationLimits};
 use crate::log_msg;
 use crate::runtime::log_messages::{GP01, GP02, GP03};
 use mlua::RegistryKey;
@@ -340,8 +338,12 @@ impl GOAPPlanner {
     }
 
     fn validate_registrations(&self) -> Result<(), String> {
-        validate_count("goap actions", self.actions.len(), self.limits.max_goap_actions)
-            .map_err(|err| err.to_string())?;
+        validate_count(
+            "goap actions",
+            self.actions.len(),
+            self.limits.max_goap_actions,
+        )
+        .map_err(|err| err.to_string())?;
         validate_count("goap goals", self.goals.len(), self.limits.max_goap_goals)
             .map_err(|err| err.to_string())?;
         for action in &self.actions {

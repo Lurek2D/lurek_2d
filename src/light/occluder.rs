@@ -1,6 +1,7 @@
 //! This file owns `Occluder`, the convex polygon shadow caster used by `LightWorld` to block and mask lighting.
 //! It stores local vertices, world offset, opacity, layer mask, and enabled state for runtime shadow participation.
 //! Construction helpers validate vertex counts and support both typed point lists and flat coordinate arrays.
+//! Tracks geometry generations so render caches can reuse transformed edge data until shadow geometry changes.
 //! Open this file when shadow-geometry semantics change; light collection logic and filter presets live in siblings.
 
 use crate::math::Vec2;
@@ -17,6 +18,8 @@ pub struct Occluder {
     pub light_mask: u16,
     /// Whether this occluder participates in shadow computation; when false, it is skipped.
     pub enabled: bool,
+    /// Monotonic generation for local vertices and world-space position used by shadow edge caches.
+    edge_generation: u64,
 }
 impl Occluder {
     /// Create an occluder from vertices; panics if count is outside 3..=512.
@@ -32,6 +35,7 @@ impl Occluder {
             opacity: 1.0,
             light_mask: 0xFFFF,
             enabled: true,
+            edge_generation: 0,
         }
     }
     /// Replace vertices; panics if new count is outside 3..=512.
@@ -41,7 +45,10 @@ impl Occluder {
             "Occluder vertex count must be 3..=512, got {}",
             vertices.len()
         );
-        self.vertices = vertices;
+        if self.vertices != vertices {
+            self.vertices = vertices;
+            self.bump_edge_generation();
+        }
     }
     /// Build an occluder from a flat `[x, y, x, y, ...]` coordinate slice; returns error on invalid length.
     pub fn from_flat_coords(flat: &[f32]) -> Result<Self, String> {
@@ -60,7 +67,10 @@ impl Occluder {
     }
     /// Set the world-space position offset.
     pub fn set_position(&mut self, position: Vec2) {
-        self.position = position;
+        if self.position != position {
+            self.position = position;
+            self.bump_edge_generation();
+        }
     }
     /// Return the world-space position offset.
     pub fn get_position(&self) -> Vec2 {
@@ -89,5 +99,14 @@ impl Occluder {
     /// Return whether this occluder is enabled.
     pub fn is_enabled(&self) -> bool {
         self.enabled
+    }
+
+    /// Return the geometry generation used to invalidate cached shadow edges.
+    pub fn edge_generation(&self) -> u64 {
+        self.edge_generation
+    }
+
+    fn bump_edge_generation(&mut self) {
+        self.edge_generation = self.edge_generation.wrapping_add(1);
     }
 }

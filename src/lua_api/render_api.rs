@@ -6,6 +6,7 @@ use crate::image::ImageData;
 use crate::image::Texture;
 use crate::image::TextureColorSpace;
 use crate::math::Rect;
+use crate::render::draw_layer::allocate_callback_id;
 use crate::render::renderer::{BevelStyle, GradientDirection, HexOrientation, PathSegment};
 use crate::render::shape::{CompoundShape, ShapeCommand};
 use crate::render::{
@@ -1098,7 +1099,13 @@ impl LuaUserData for LuaMesh {
                 b: data.get(7).unwrap_or(1.0),
                 a: data.get(8).unwrap_or(1.0),
             };
-            mesh.set_vertex(index.wrapping_sub(1), vertex);
+            if !mesh.set_vertex(index.wrapping_sub(1), vertex) {
+                return Err(LuaError::RuntimeError(
+                    "LMesh:setVertex: mesh vertex index out of bounds".into(),
+                ));
+            }
+            mesh.validate()
+                .map_err(|err| LuaError::RuntimeError(format!("LMesh:setVertex: {err}")))?;
             let mesh_clone = mesh.clone();
             st.render_commands.push(RenderCommand::SyncMesh {
                 mesh_key: this.key,
@@ -1162,7 +1169,9 @@ impl LuaUserData for LuaShader {
                 LuaError::RuntimeError("Shader handle is not valid or was released".into())
             })?;
             let uv = lua_value_to_uniform(&value)?;
-            shader.send(name, uv);
+            shader
+                .send(name, uv)
+                .map_err(|err| LuaError::RuntimeError(format!("LShader:send: {err}")))?;
             Ok(())
         });
         // -- hasUniform --
@@ -1663,7 +1672,8 @@ impl LuaUserData for LuaShape {
 }
 /// Z-ordered draw callback layer for sorting draw calls by depth before flushing.
 struct LuaDrawLayer {
-    entries: Vec<(f64, mlua::RegistryKey)>,
+    entries: Vec<(f64, usize, mlua::RegistryKey)>,
+    next_id: usize,
 }
 impl LuaUserData for LuaDrawLayer {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
@@ -1672,17 +1682,18 @@ impl LuaUserData for LuaDrawLayer {
         /// @param | z | number | Z-depth value used for sorting (lower draws first).
         /// @param | f | function | Callback to invoke during flush.
         methods.add_method_mut("queue", |lua, this, (z, f): (f64, LuaFunction)| {
+            let id = allocate_callback_id(&mut this.next_id).map_err(LuaError::external)?;
             let key = lua.create_registry_value(f)?;
-            this.entries.push((z, key));
+            this.entries.push((z, id, key));
             Ok(())
         });
         // -- flush --
         /// Sorts all queued callbacks by z-depth and executes them in order, then empties the layer.
         methods.add_method_mut("flush", |lua, this, ()| {
             this.entries
-                .sort_by(|a, b| a.0.partial_cmp(&b.0).unwrap_or(std::cmp::Ordering::Equal));
+                .sort_by(|a, b| a.0.total_cmp(&b.0).then_with(|| a.1.cmp(&b.1)));
             let entries: Vec<_> = this.entries.drain(..).collect();
-            for (_, key) in entries {
+            for (_, _, key) in entries {
                 let f = lua.registry_value::<LuaFunction>(&key)?;
                 lua.remove_registry_value(key)?;
                 f.call::<_, ()>(())?;
@@ -1692,7 +1703,7 @@ impl LuaUserData for LuaDrawLayer {
         // -- clear --
         /// Discards all queued callbacks without executing them.
         methods.add_method_mut("clear", |lua, this, ()| {
-            for (_, key) in this.entries.drain(..) {
+            for (_, _, key) in this.entries.drain(..) {
                 lua.remove_registry_value(key)?;
             }
             Ok(())
@@ -3027,6 +3038,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 })
                 .collect::<LuaResult<_>>()?;
             let mesh = Mesh::from_vertex_rows(&rows, draw_mode);
+            mesh.validate()
+                .map_err(|err| LuaError::RuntimeError(format!("lurek.render.newMesh: {err}")))?;
             let mut st = s.borrow_mut();
             let mesh_clone = mesh.clone();
             let key = st.meshes.insert(mesh);
@@ -3803,6 +3816,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         lua.create_function(|_, ()| {
             Ok(LuaDrawLayer {
                 entries: Vec::new(),
+                next_id: 0,
             })
         })?,
     )?;

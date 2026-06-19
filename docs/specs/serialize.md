@@ -25,6 +25,8 @@
 - That also makes migrations easier to reason about.
 - Read `serialize` as the normalization layer for structured data moving between external formats and engine-facing workflows.
 
+This module primarily collaborates with `runtime`. Its responsibility should stay inside the Foundations group rather than absorb behavior owned by those neighbors.
+
 ## Imports
 
 - `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Foundations` into `Core Runtime`.

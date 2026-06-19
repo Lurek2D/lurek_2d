@@ -12,6 +12,8 @@
 - It keeps raw layout work first-class.
 - Read `binary` as the shared byte-language of the engine: other modules decide what the data means, but `binary` owns how that data is packed, transformed, verified, and moved around safely.
 
+This module is mostly self-contained inside the `Foundations` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
+
 ## Functions
 
 ### `lurek.binary.compress`

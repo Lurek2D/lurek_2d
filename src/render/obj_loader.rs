@@ -13,7 +13,7 @@ use crate::image::ImageData;
 use crate::render::mesh::{Mesh, MeshDrawMode, MeshVertex};
 use crate::runtime::resource_keys::TextureKey;
 use std::collections::HashMap;
-use std::path::Path;
+use std::path::{Component, Path, PathBuf};
 /// Error returned from OBJ loading or parsing.
 #[derive(Debug)]
 pub enum ObjError {
@@ -654,14 +654,14 @@ impl ObjLoader {
                     normals.push(p);
                 }
                 "mtllib" => {
-                    let mtl_path = base_dir.join(rest);
-                    if let Ok(mtl_src) = std::fs::read_to_string(&mtl_path) {
-                        let loaded = Self::parse_mtl(&mtl_src, base_dir);
-                        for m in loaded {
-                            if !mat_index.contains_key(&m.name) {
-                                mat_index.insert(m.name.clone(), materials.len());
-                                materials.push(m);
-                            }
+                    let mtl_path = Self::resolve_mtllib_path(rest, base_dir)?;
+                    let mtl_src = std::fs::read_to_string(&mtl_path)?;
+                    let material_base = mtl_path.parent().unwrap_or(base_dir);
+                    let loaded = Self::parse_mtl(&mtl_src, material_base)?;
+                    for m in loaded {
+                        if !mat_index.contains_key(&m.name) {
+                            mat_index.insert(m.name.clone(), materials.len());
+                            materials.push(m);
                         }
                     }
                 }
@@ -689,8 +689,52 @@ impl ObjLoader {
             materials,
         })
     }
+    /// Resolve a material-library path without allowing absolute paths or parent traversal.
+    fn resolve_mtllib_path(rest: &str, base_dir: &Path) -> Result<PathBuf, ObjError> {
+        if rest.is_empty() {
+            return Err(ObjError::Parse("mtllib path is empty".to_string()));
+        }
+        let requested = Path::new(rest);
+        if requested.is_absolute() {
+            return Err(ObjError::Parse(format!(
+                "mtllib path '{}' must be relative",
+                rest
+            )));
+        }
+        if requested.components().any(|component| {
+            matches!(
+                component,
+                Component::ParentDir | Component::RootDir | Component::Prefix(_)
+            )
+        }) {
+            return Err(ObjError::Parse(format!(
+                "mtllib path '{}' escapes the OBJ base directory",
+                rest
+            )));
+        }
+        let is_mtl = requested
+            .extension()
+            .and_then(|ext| ext.to_str())
+            .map(|ext| ext.eq_ignore_ascii_case("mtl"))
+            .unwrap_or(false);
+        if !is_mtl {
+            return Err(ObjError::Parse(format!(
+                "mtllib path '{}' must use .mtl extension",
+                rest
+            )));
+        }
+        let base = base_dir.canonicalize()?;
+        let target = base.join(requested).canonicalize()?;
+        if !target.starts_with(&base) {
+            return Err(ObjError::Parse(format!(
+                "mtllib path '{}' escapes the OBJ base directory",
+                rest
+            )));
+        }
+        Ok(target)
+    }
     /// Parse MTL text; extract `newmtl`, `Kd`, and `map_Kd` entries into `ObjMaterial` list.
-    fn parse_mtl(src: &str, _base_dir: &Path) -> Vec<ObjMaterial> {
+    fn parse_mtl(src: &str, _base_dir: &Path) -> Result<Vec<ObjMaterial>, ObjError> {
         let mut out: Vec<ObjMaterial> = Vec::new();
         let mut current: Option<ObjMaterial> = None;
         for line in src.lines() {
@@ -703,6 +747,11 @@ impl ObjLoader {
             let rest = tokens.next().unwrap_or("").trim();
             match keyword {
                 "newmtl" => {
+                    if rest.is_empty() {
+                        return Err(ObjError::Parse(
+                            "MTL material name cannot be empty".to_string(),
+                        ));
+                    }
                     if let Some(m) = current.take() {
                         out.push(m);
                     }
@@ -714,13 +763,17 @@ impl ObjLoader {
                 }
                 "Kd" => {
                     if let Some(m) = current.as_mut() {
-                        if let Ok(parts) = Self::split_floats(rest, 3) {
-                            m.diffuse_color = [parts[0], parts[1], parts[2]];
-                        }
+                        let parts = Self::split_floats(rest, 3)?;
+                        m.diffuse_color = [parts[0], parts[1], parts[2]];
                     }
                 }
                 "map_Kd" => {
                     if let Some(m) = current.as_mut() {
+                        if rest.is_empty() {
+                            return Err(ObjError::Parse(
+                                "MTL diffuse texture path cannot be empty".to_string(),
+                            ));
+                        }
                         m.diffuse_map = Some(rest.to_owned());
                     }
                 }
@@ -730,7 +783,7 @@ impl ObjLoader {
         if let Some(m) = current {
             out.push(m);
         }
-        out
+        Ok(out)
     }
     /// Parse `s` as three whitespace-separated floats into a `Vec3`; return error on bad input.
     fn parse_vec3(s: &str) -> Result<Vec3, ObjError> {
@@ -769,8 +822,8 @@ impl ObjLoader {
         for token in s.split_whitespace() {
             let mut parts = token.split('/');
             let pi = Self::parse_index(parts.next(), pos_count)?;
-            let ti = Self::parse_index_opt(parts.next(), uv_count);
-            let ni = Self::parse_index_opt(parts.next(), norm_count);
+            let ti = Self::parse_index_opt(parts.next(), uv_count)?;
+            let ni = Self::parse_index_opt(parts.next(), norm_count)?;
             out.push((pi, ti, ni));
         }
         if out.len() < 3 {
@@ -787,31 +840,29 @@ impl ObjLoader {
         match s {
             None | Some("") => Err(ObjError::Parse("missing face index".into())),
             Some(t) => {
-                let i: i32 = t
+                let i: i64 = t
                     .parse()
                     .map_err(|_| ObjError::Parse(format!("bad index '{}'", t)))?;
-                let idx = if i < 0 {
-                    (count as i32 + i) as usize
-                } else {
-                    (i - 1) as usize
-                };
-                Ok(idx)
+                if i == 0 {
+                    return Err(ObjError::Parse(
+                        "OBJ indices are 1-based; got 0".to_string(),
+                    ));
+                }
+                let idx = if i < 0 { count as i64 + i } else { i - 1 };
+                if idx < 0 || idx >= count as i64 {
+                    return Err(ObjError::Parse(format!(
+                        "OBJ index {i} is out of range for {count} values"
+                    )));
+                }
+                Ok(idx as usize)
             }
         }
     }
     /// Like `parse_index` but return `None` for empty or missing tokens.
-    fn parse_index_opt(s: Option<&str>, count: usize) -> Option<usize> {
+    fn parse_index_opt(s: Option<&str>, count: usize) -> Result<Option<usize>, ObjError> {
         match s {
-            None | Some("") => None,
-            Some(t) => {
-                let i: i32 = t.parse().ok()?;
-                let idx = if i < 0 {
-                    (count as i32 + i) as usize
-                } else {
-                    (i - 1) as usize
-                };
-                Some(idx)
-            }
+            None | Some("") => Ok(None),
+            Some(_) => Self::parse_index(s, count).map(Some),
         }
     }
 }

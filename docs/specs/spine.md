@@ -25,6 +25,8 @@
 - That keeps imported rigs flexible at runtime.
 - Read `spine` as the owner of skeletal rig state and timeline evaluation.
 
+This module primarily collaborates with `image`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
+
 ## Imports
 
 - `image`: Imports or references `image` from `src/image/`.

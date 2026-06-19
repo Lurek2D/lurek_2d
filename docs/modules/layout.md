@@ -7,6 +7,8 @@
 - This is useful when a graph changes and still needs readable coordinates without manual upkeep.
 - Read it as the module that turns abstract structure into stable coordinates.
 
+This module is mostly self-contained inside the `Edge/Integration` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
+
 ## Functions
 
 ### `lurek.layout.centerInArea`

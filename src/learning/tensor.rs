@@ -3,6 +3,10 @@
 //! `gemm` also lives here because basic matrix multiply with optional bias is a shared primitive across learning layers.
 //! Open it when tensor layout or interop changes; model-specific forward logic lives in sibling learning files.
 
+use super::{
+    error::LearningError,
+    limits::{checked_product2, checked_tensor_elements, validate_non_zero_count, LearningLimits},
+};
 use ndarray::ArrayD;
 use tract_onnx::prelude::{IntoTensor, Tensor};
 
@@ -18,16 +22,46 @@ pub struct LurekTensor {
 impl LurekTensor {
     /// Create a tensor with the given `shape` and flat `data`.
     pub fn new(shape: Vec<usize>, data: Vec<f32>) -> Self {
-        Self { shape, data }
+        Self::try_new(shape, data).expect("LurekTensor::new received invalid shape or data")
+    }
+
+    /// Create a tensor with the given `shape` and flat `data` after validation.
+    pub fn try_new(shape: Vec<usize>, data: Vec<f32>) -> Result<Self, LearningError> {
+        let expected = checked_tensor_elements(&shape, "tensor shape", &LearningLimits::default())?;
+        if data.len() != expected {
+            return Err(LearningError::ShapeDataLenMismatch {
+                expected,
+                actual: data.len(),
+            });
+        }
+        for &value in &data {
+            if !value.is_finite() {
+                return Err(LearningError::InvalidFloat {
+                    field: "tensor data",
+                    value: value as f64,
+                });
+            }
+        }
+        Ok(Self { shape, data })
     }
 
     /// Create a zero-filled tensor for the given `shape`.
     pub fn zeros(shape: Vec<usize>) -> Self {
-        let len = shape.iter().product();
-        Self {
+        Self::try_zeros(shape).expect("LurekTensor::zeros received invalid shape")
+    }
+
+    /// Create a zero-filled tensor for the given `shape` after validation.
+    pub fn try_zeros(shape: Vec<usize>) -> Result<Self, LearningError> {
+        let len = checked_tensor_elements(&shape, "tensor shape", &LearningLimits::default())?;
+        Ok(Self {
             shape,
             data: vec![0.0; len],
-        }
+        })
+    }
+
+    /// Create a tensor without validating the shape or data invariants.
+    pub(crate) fn new_unchecked(shape: Vec<usize>, data: Vec<f32>) -> Self {
+        Self { shape, data }
     }
 
     /// Returns the total number of tensor elements.
@@ -52,12 +86,18 @@ impl LurekTensor {
         }
         let mut idx = 0usize;
         let mut stride = 1usize;
-        for (&i, &s) in indices.iter().zip(self.shape.iter()).rev() {
+        for (axis, (&i, &s)) in indices.iter().zip(self.shape.iter()).enumerate().rev() {
+            if s == 0 {
+                return None;
+            }
             if i >= s {
                 return None;
             }
-            idx += i * stride;
-            stride *= s;
+            idx = idx.checked_add(i.checked_mul(stride)?)?;
+            stride = stride.checked_mul(s)?;
+            if axis == 0 && idx >= self.data.len() {
+                return None;
+            }
         }
         Some(idx)
     }
@@ -79,8 +119,45 @@ impl LurekTensor {
 }
 
 /// Multiply matrix A `[m x k]` by matrix B `[k x n]` and optionally add a bias `[n]`.
-pub fn gemm(m: usize, k: usize, n: usize, a: &[f32], b: &[f32], bias: Option<&[f32]>) -> Vec<f32> {
-    let mut out = vec![0.0; m * n];
+pub fn try_gemm(
+    m: usize,
+    k: usize,
+    n: usize,
+    a: &[f32],
+    b: &[f32],
+    bias: Option<&[f32]>,
+) -> Result<Vec<f32>, LearningError> {
+    let limits = LearningLimits::default();
+    validate_non_zero_count("gemm rows", m)?;
+    validate_non_zero_count("gemm inner dimension", k)?;
+    validate_non_zero_count("gemm columns", n)?;
+    let a_expected = checked_product2(m, k, "gemm left matrix", limits.max_tensor_elements)?;
+    let b_expected = checked_product2(k, n, "gemm right matrix", limits.max_tensor_elements)?;
+    let out_len = checked_product2(m, n, "gemm output matrix", limits.max_tensor_elements)?;
+    if a.len() != a_expected {
+        return Err(LearningError::InvalidLength {
+            context: "gemm left matrix",
+            expected: a_expected,
+            actual: a.len(),
+        });
+    }
+    if b.len() != b_expected {
+        return Err(LearningError::InvalidLength {
+            context: "gemm right matrix",
+            expected: b_expected,
+            actual: b.len(),
+        });
+    }
+    if let Some(values) = bias {
+        if values.len() != n {
+            return Err(LearningError::InvalidLength {
+                context: "gemm bias",
+                expected: n,
+                actual: values.len(),
+            });
+        }
+    }
+    let mut out = vec![0.0; out_len];
     for i in 0..m {
         for j in 0..n {
             let mut sum = bias.map_or(0.0, |v| v[j]);
@@ -90,5 +167,10 @@ pub fn gemm(m: usize, k: usize, n: usize, a: &[f32], b: &[f32], bias: Option<&[f
             out[i * n + j] = sum;
         }
     }
-    out
+    Ok(out)
+}
+
+/// Multiply matrix A `[m x k]` by matrix B `[k x n]` and optionally add a bias `[n]`.
+pub fn gemm(m: usize, k: usize, n: usize, a: &[f32], b: &[f32], bias: Option<&[f32]>) -> Vec<f32> {
+    try_gemm(m, k, n, a, b, bias).expect("gemm received invalid matrix dimensions")
 }

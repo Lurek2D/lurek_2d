@@ -303,9 +303,7 @@ pub fn load_tmx_with_options(
     let mut tilesets = Vec::new();
     for child in map_node.children() {
         if child.has_tag_name("tileset") {
-            tilesets.push(
-                parse_tileset(&child, options).map_err(TmxImportError::invalid_content)?,
-            );
+            tilesets.push(parse_tileset(&child, options).map_err(TmxImportError::invalid_content)?);
         }
     }
     let mut layers = Vec::new();

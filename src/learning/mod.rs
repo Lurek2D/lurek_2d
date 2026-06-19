@@ -17,10 +17,14 @@ pub mod conv;
 pub mod engine;
 /// Gym-compatible RL environment wrappers.
 pub mod env;
+/// Shared learning validation and safety errors.
+pub mod error;
 /// Flat parameter contract for evolutionary layers.
 pub mod evolutionary;
 /// Genetic algorithm primitives.
 pub mod genetic;
+/// Shared learning sizing and numeric policy helpers.
+pub mod limits;
 /// Feed-forward neural network helpers.
 pub mod neural_net;
 /// Neuroevolution orchestration.
@@ -31,6 +35,8 @@ pub mod onnx;
 pub mod qlearner;
 /// Recurrent learning layers.
 pub mod recurrent;
+/// Deterministic RNG shared by learning components.
+pub mod rng;
 /// Lightweight tensor helpers.
 pub mod tensor;
 /// Transformer encoder and decoder blocks.
@@ -41,12 +47,15 @@ pub use bandit::{Bandit, BanditArm, BanditStrategy};
 pub use conv::{Conv2D, MaxPool2D};
 pub use engine::{LurekNeuralEngine, NeuralBlock};
 pub use env::{FrameStack, SpaceSpec};
+pub use error::LearningError;
 pub use evolutionary::EvolutionaryLayer;
 pub use genetic::{Chromosome, GeneticAlgorithm};
+pub use limits::LearningLimits;
 pub use neural_net::{Activation, NeuralLayer, NeuralNet};
 pub use neuroevolution::Neuroevolution;
-pub use onnx::OnnxModel;
+pub use onnx::{OnnxLoadOptions, OnnxModel};
 pub use qlearner::QLearner;
 pub use recurrent::{GruLayer, LstmLayer};
+pub use rng::{LearningRng, LearningRngSnapshot, LEARNING_RNG_VERSION};
 pub use tensor::{gemm, LurekTensor};
 pub use transformer::{LayerNorm, TransformerDecoderBlock, TransformerEncoderBlock};

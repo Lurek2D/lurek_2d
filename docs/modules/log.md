@@ -7,6 +7,8 @@
 - That common path makes filtering and correlation across subsystems easier.
 - Read it as the standard language for script diagnostics when several systems need to be debugged through the same output flow.
 
+This module primarily collaborates with `binary`, `runtime`. Its responsibility should stay inside the Foundations group rather than absorb behavior owned by those neighbors.
+
 ## Functions
 
 ### `lurek.log.addSink`

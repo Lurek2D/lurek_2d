@@ -34,6 +34,8 @@
 - Downstream modules render, navigate, or simulate the output, but `procgen` owns the samplers, constructive rules, and algorithmic helpers that create it.
 - Read `procgen` as the engine's creation toolkit for algorithmic content.
 
+This module is mostly self-contained inside the Foundations group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
+
 ## Imports
 
 - No top-level `crate::<module>` imports were detected in this module's Rust source files.
@@ -81,6 +83,12 @@
 - The conversion stays here because clamping and flat buffer layout are color-export concerns, not noise semantics.
 - Open it when scalar preview encoding changes; terrain generation and sampled grids live in sibling modules.
 
+### error.rs
+
+- This file owns procgen-local validation and resource-limit errors shared by generators in this module group.
+- It keeps failure reasons typed so safe `try_*` constructors can reject invalid dimensions, options, bytes, and WFC rules consistently.
+- Open it when procgen callers need clearer diagnostics or when a new generator starts participating in the shared safety contract.
+
 ### flood_fill.rs
 
 - This file owns the flat-grid flood-fill helper used to find connected regions above or below a byte threshold.
@@ -101,6 +109,12 @@
 - This file owns the tiny deterministic LCG used by multiple generators that need repeatable pseudo-random stepping.
 - `Lcg` stores only the current state, making seeded advancement and normalized float sampling its core contract.
 - Open it when baseline RNG semantics change; higher-level noise and layout generators live in sibling modules.
+
+### limits.rs
+
+- This file owns shared procgen sizing and validation limits used by safe constructors across generators.
+- It centralizes checked cell-count arithmetic, byte-budget checks, and common option validation helpers.
+- Open it when procgen resource ceilings or shared validation policy changes.
 
 ### lsystem.rs
 
@@ -154,6 +168,12 @@
 - `NoiseGrid` stores width, height, and cells, while `from_perlin` builds values from periodic Perlin sampling.
 - RGBA conversion also belongs here because preview-oriented export is part of the grid wrapper's contract.
 
+### report.rs
+
+- This file owns lightweight diagnostic summaries shared by procgen generators that expose safe reports.
+- It centralizes seed, cell-count, iteration, and attempt metadata so feature-specific reports stay consistent.
+- Open it when a generator needs to surface deterministic run context or bounded-work diagnostics.
+
 ### rooms.rs
 
 - This file owns the random-room dungeon generator that places non-overlapping rectangles and links them by corridors.
@@ -181,8 +201,8 @@
 ### wfc_llm.rs
 
 - This file owns the JSON parsing bridge from LLM-produced tile specs into concrete WFC options and constraints.
-- It converts loose response objects into `WfcTile`, `WfcRules`, and `WfcOpts` so generation stays deterministic.
-- Adjacency parsing remains local because malformed or partial LLM output must collapse into one structured boundary.
+- It converts response objects into `WfcTile`, `WfcRules`, and `WfcOpts` so generation stays deterministic.
+- Strict schema and parser limits remain local because malformed or oversized LLM output must stop at one boundary.
 - Open it when AI-assisted tiling input changes; the actual collapse algorithm lives in `wfc.rs`.
 
 ### world_graph.rs

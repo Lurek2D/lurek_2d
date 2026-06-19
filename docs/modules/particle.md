@@ -16,6 +16,8 @@
 - `render` draws the result and `physics` may inform light collision behavior, but `particle` owns effect spawning, pooled update logic, and transient visual behavior over time.
 - Read `particle` as the subsystem that decides how short-lived procedural effects are described, updated, reused, and inspected.
 
+This module primarily collaborates with `color`, `image`, `math`, `physics`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
+
 ## Functions
 
 ### `lurek.particle.drawLifecycleToImage`

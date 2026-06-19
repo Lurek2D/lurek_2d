@@ -132,10 +132,7 @@ impl InputRecording {
     }
 
     /// Deserialise from JSON using explicit validation limits.
-    pub fn from_json_with_limits(
-        json: &str,
-        limits: InputRecordingLimits,
-    ) -> Result<Self, String> {
+    pub fn from_json_with_limits(json: &str, limits: InputRecordingLimits) -> Result<Self, String> {
         if json.len() > limits.max_json_bytes {
             return Err(format!(
                 "InputRecording parse error: JSON size {} exceeds limit {}",

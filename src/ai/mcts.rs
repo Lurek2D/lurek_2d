@@ -6,9 +6,7 @@
 //! Open this owner when search-policy behavior changes without affecting deterministic planners like GOAP or HTN.
 
 use crate::ai::diagnostics::{CallbackErrorTrace, MctsDecisionTrace};
-use crate::ai::validation::{
-    finite_f32, validate_count, validate_depth, AiValidationLimits,
-};
+use crate::ai::validation::{finite_f32, validate_count, validate_depth, AiValidationLimits};
 
 /// Configuration for one MCTS search run.
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -48,8 +46,12 @@ impl MCTSConfig {
         if self.uct_c < 0.0 {
             return Err("mcts uct_c must be >= 0".to_string());
         }
-        validate_depth("mcts rollout depth", self.rollout_depth, limits.max_mcts_rollout_depth)
-            .map_err(|err| err.to_string())?;
+        validate_depth(
+            "mcts rollout depth",
+            self.rollout_depth,
+            limits.max_mcts_rollout_depth,
+        )
+        .map_err(|err| err.to_string())?;
         Ok(())
     }
 }

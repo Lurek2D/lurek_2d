@@ -205,13 +205,11 @@ impl Shape {
                     return Err("polygon requires at least 3 vertex pairs".into());
                 }
                 if !args.len().is_multiple_of(2) {
-                    return Err(
-                        PhysicsError::OddCoordinateCount {
-                            context: "physics polygon",
-                            count: args.len(),
-                        }
-                        .to_string(),
-                    );
+                    return Err(PhysicsError::OddCoordinateCount {
+                        context: "physics polygon",
+                        count: args.len(),
+                    }
+                    .to_string());
                 }
                 let vertices = args
                     .chunks(2)
@@ -233,13 +231,11 @@ impl Shape {
                     return Err("chain requires at least 2 vertex pairs".into());
                 }
                 if !args.len().is_multiple_of(2) {
-                    return Err(
-                        PhysicsError::OddCoordinateCount {
-                            context: "physics chain",
-                            count: args.len(),
-                        }
-                        .to_string(),
-                    );
+                    return Err(PhysicsError::OddCoordinateCount {
+                        context: "physics chain",
+                        count: args.len(),
+                    }
+                    .to_string());
                 }
                 let vertices = args
                     .chunks(2)

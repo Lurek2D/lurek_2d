@@ -20,6 +20,8 @@
 - It keeps mix policy legible as projects scale.
 - `dsp` specializes lower-level signal processing and `midi` specializes symbolic music data, but `audio` owns the user-facing contract for how sounds are loaded, instantiated, routed, timed, and heard at runtime.
 
+This module primarily collaborates with `dsp`, `image`, `midi`, `runtime`. Its responsibility should stay inside the Platform Services group rather than absorb behavior owned by those neighbors.
+
 ## Functions
 
 ### `lurek.audio.beatClockFromSource`

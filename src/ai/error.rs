@@ -65,12 +65,20 @@ impl fmt::Display for AiError {
                 context,
                 count,
                 max,
-            } => write!(f, "{} count {} exceeds configured limit {}", context, count, max),
+            } => write!(
+                f,
+                "{} count {} exceeds configured limit {}",
+                context, count, max
+            ),
             Self::DepthLimitExceeded {
                 context,
                 depth,
                 max,
-            } => write!(f, "{} depth {} exceeds configured limit {}", context, depth, max),
+            } => write!(
+                f,
+                "{} depth {} exceeds configured limit {}",
+                context, depth, max
+            ),
             Self::InvalidConfig { context, detail } => {
                 write!(f, "{} configuration is invalid: {}", context, detail)
             }

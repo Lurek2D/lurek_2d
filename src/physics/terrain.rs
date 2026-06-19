@@ -341,8 +341,14 @@ impl TerrainMap {
         positions
             .iter()
             .filter_map(|&(wx, wy)| {
-                let mut body = Body::try_new(wx, wy, self.cell_size, self.cell_size, BodyType::Dynamic).ok()?;
-                body.mass = if cell_mass.is_finite() { cell_mass.max(0.000_1) } else { 1.0 };
+                let mut body =
+                    Body::try_new(wx, wy, self.cell_size, self.cell_size, BodyType::Dynamic)
+                        .ok()?;
+                body.mass = if cell_mass.is_finite() {
+                    cell_mass.max(0.000_1)
+                } else {
+                    1.0
+                };
                 body.restitution = if restitution.is_finite() {
                     restitution.clamp(0.0, 1.0)
                 } else {

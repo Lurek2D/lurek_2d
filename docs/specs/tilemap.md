@@ -13,8 +13,8 @@
 - Module group: `Feature Systems`
 - Source path: `src/tilemap/`
 - Binding: `src/lua_api/tilemap_api.rs`
-- Namespace: `lurek.tilemap`
-- Lua API surface: `29` functions, `23` types, `162` methods
+- Namespace: `lurek.physics`
+- Lua API surface: `29` functions, `23` types, `168` methods
 - Rust test path(s): tests/rust/unit/tilemap_tests.rs
 - Lua test path(s): tests/lua/unit/test_tilemap_core_unit.lua, tests/lua/stress/test_tilemap_stress.lua, tests/lua/integration/test_tilemap_physics.lua, tests/lua/integration/test_tilemap_pathfind.lua, tests/lua/integration/test_tilemap_camera.lua, tests/lua/integration/test_save_tilemap.lua, tests/lua/integration/test_procgen_tilemap.lua, tests/lua/golden/test_tilemap_golden.lua, tests/lua/evidence/test_evidence_tilemap.lua
 
@@ -40,6 +40,8 @@
 - That authority lets authored maps, generated chunks, and runtime overlays remain compatible.
 - `pathfind`, `physics`, `raycaster`, and `render` all consume tile-space in specialized ways, but `tilemap` owns what the grid world fundamentally is.
 - Read `tilemap` as the engine's main authority for tile space and tile-world structure.
+
+This module primarily collaborates with `color`, `image`, `math`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
 
 ## Imports
 
@@ -77,6 +79,12 @@
 - Keeps orientation-specific math out of map storage owners so projection changes stay locally auditable.
 - Open this file when iso or hex coordinate conversion, direction naming, or grid metric math is wrong.
 
+### error.rs
+
+- Owns typed validation and safety errors shared by tilemap constructors, queries, and import helpers.
+- It keeps failure reasons explicit so safe `try_*` APIs can reject invalid dimensions, limits, and paths consistently.
+- Open this file when tilemap callers need clearer diagnostics or when a new tilemap owner joins the shared safety contract.
+
 ### isomap.rs
 
 - Defines a multi-level isometric map model where each tile can carry separate floor, wall, and object parts.
@@ -103,6 +111,12 @@
 - Keeps external LDtk import rules separate from TMX and procedural paths so format-specific failures stay local.
 - Acts as the LDtk boundary between authored project files and the engine layered tilemap representation.
 - Open this file when LDtk levels, layer placement, or imported tileset reconstruction behaves incorrectly.
+
+### limits.rs
+
+- Owns shared tilemap sizing and validation limits used by safe constructors, importers, and bounded queries.
+- It centralizes checked arithmetic and default safety ceilings so tilemap owners share one resource policy.
+- Open this file when tilemap budgets or query guards change across storage, rendering, and importer code.
 
 ### mapgen.rs
 
@@ -212,7 +226,7 @@
 
 ### Functions
 
-- `lurek.tilemap.fromLDtk(jsonStr, levelName?, opts?) -> LTileMap`: Loads a tilemap from an LDtk JSON string, optionally targeting a specific level with bounded import limits.
+- `lurek.tilemap.fromLDtk(jsonStr, levelName?, opts?) -> LTileMap`: Loads a tilemap from an LDtk JSON string, optionally targeting a specific level.
 - `lurek.tilemap.fromScreenHex(sx, sy, size) -> integer`: Converts screen-space pixel coordinates to axial hex coordinates.
 - `lurek.tilemap.fromScreenIso(sx, sy, tw, th) -> number`: Converts screen-space coordinates back to tile coordinates for isometric projection.
 - `lurek.tilemap.hexArea(q, r, radius) -> table`: Returns all hex cells within a filled area of a given radius.
@@ -227,16 +241,16 @@
 - `lurek.tilemap.isoDirectionFromAngle(angle) -> integer`: Converts an angle in degrees to the nearest isometric direction index.
 - `lurek.tilemap.isoDirectionName(direction) -> string`: Returns a human-readable name for an isometric direction index.
 - `lurek.tilemap.isoRotate(direction, steps) -> integer`: Rotates an isometric direction index by a number of 90-degree steps.
-- `lurek.tilemap.loadTMX(xml, opts?) -> table`: Parses a TMX (Tiled XML) string and returns a table describing the map structure with optional strict/path-safe import policy.
+- `lurek.tilemap.loadTMX(xml, opts?) -> table`: Parses a TMX (Tiled XML) string and returns a table describing the map structure.
 - `lurek.tilemap.newAutoTileSheet(tileW, tileH, layout) -> LAutoTileSheet`: Creates an auto-tile sheet with a given tile size and layout.
-- `lurek.tilemap.newChunkMap(chunkSize?, opts?) -> LChunkMap`: Creates a new infinite chunk-based tile map with optional allocation/query limits.
+- `lurek.tilemap.newChunkMap(chunkSize?, opts?) -> LChunkMap`: Creates a new infinite chunk-based tile map.
 - `lurek.tilemap.newIsoMap(width, height, tileW, tileH, levelHeight, partCount?) -> LIsoMap`: Creates a new isometric map with the given dimensions and tile geometry.
 - `lurek.tilemap.newLargeMapRenderer(tileW, tileH) -> LLargeMapRenderer`: Creates a chunk-based large-map renderer for efficient rendering of very large maps.
 - `lurek.tilemap.newMapBlock(width, height, layers?, segmentSize?) -> LMapBlock`: Creates a new procedural map block with the given dimensions.
 - `lurek.tilemap.newMapGen(group, presetOrWidth, segmentSizeOrHeight, segmentSize?) -> LMapGen`: Creates a procedural map generator from a group and either a size preset or explicit dimensions.
 - `lurek.tilemap.newMapGroup(name) -> LMapGroup`: Creates a new map group to hold blocks and generation scripts.
 - `lurek.tilemap.newMapScript() -> LMapScript`: Creates a new empty map-generation script.
-- `lurek.tilemap.newTileMap(tileWidth, tileHeight, chunkSize?, opts?) -> LTileMap`: Creates a new empty tilemap with the given tile dimensions and optional safety limits.
+- `lurek.tilemap.newTileMap(tileWidth, tileHeight, chunkSize?, opts?) -> LTileMap`: Creates a new empty tilemap with the given tile dimensions.
 - `lurek.tilemap.newTileSet(firstGid, tileCount, columns, tileWidth, tileHeight, spacing?, margin?) -> LTileSet`: Creates a new tileset from atlas parameters.
 - `lurek.tilemap.syncMinimap(map, layer, minimap, opts?) -> nil`: Synchronizes a tilemap layer's solid tiles into a minimap's terrain grid.
 - `lurek.tilemap.toScreenHex(q, r, size) -> number`: Converts axial hex coordinates to screen-space pixel position.
@@ -485,6 +499,7 @@
 - `LTileMap:fireTileExit(gid, entity, tx, ty) -> nil`: Manually fires the tile-exit callback for a specific GID and entity at a tile position.
 - `LTileMap:fireTileStep(gid, entity, tx, ty) -> nil`: Manually fires the tile-step callback for a specific GID and entity at a tile position.
 - `LTileMap:getChunkSize() -> integer`: Returns the chunk size used for internal tile storage.
+- `LTileMap:getDiagnostics() -> nil`: Returns tilemap diagnostics counters for invalid calls, unknown gids, and lazy index rebuilds.
 - `LTileMap:getLayerColor(idx) -> number`: Returns the tint color of a layer as four RGBA components.
 - `LTileMap:getLayerCount() -> integer`: Returns the total number of layers in this map.
 - `LTileMap:getLayerName(idx) -> string`: Returns the name of a layer by index.
@@ -517,6 +532,11 @@
 - `LTileMap:tileToWorld(tx, ty) -> number`: Converts tile-grid coordinates to world-space pixel coordinates (top-left corner of the tile).
 - `LTileMap:tileTypeIndex(layer) -> table`: Builds an index mapping each GID present on a layer to an array of `{x, y}` positions.
 - `LTileMap:toNavGrid(layer, gids) -> boolean[]`: Converts a layer into a 2D boolean grid for pathfinding. Tiles with GIDs in the given list are marked walkable.
+- `LTileMap:tryAddLayer(name, w, h) -> integer?`: Creates a new tile layer and returns `nil, error` instead of throwing on invalid dimensions or layer limits.
+- `LTileMap:tryGetTile(layer, x, y) -> integer?`: Returns the tile GID at a specific grid position, or `nil, error` when the layer or coord is invalid.
+- `LTileMap:trySetTile(layer, x, y, gid) -> boolean`: Sets a tile and returns `false, error` instead of throwing on invalid layer or coordinate input.
+- `LTileMap:trySetTileTint(layer, x, y, r, g, b, a) -> nil`: Sets a per-cell tint override and returns `false, error` instead of throwing on invalid input.
+- `LTileMap:tryWorldToTile(wx, wy) -> integer?`: Converts world-space pixel coordinates to tile-grid coordinates, returning nils for negative or non-finite input.
 - `LTileMap:type() -> string`: Returns the type name of this userdata.
 - `LTileMap:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
 - `LTileMap:update(dt) -> nil`: Advances tile animations by the given delta time.

@@ -8,6 +8,8 @@
 - It also needs a clear lifecycle for selecting, migrating, and restoring stored game state.
 - Read `save` as the owner of save and load policy. Serialization modules decide how data is encoded, but `save` decides how game-state persistence is packaged, versioned, and coordinated for users.
 
+This module primarily collaborates with `binary`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
+
 ## Functions
 
 ### `lurek.save.newSaveManager`

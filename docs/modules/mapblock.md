@@ -16,6 +16,8 @@
 - Neighboring modules consume the output, but `mapblock` owns the modular grammar that decides how authored fragments connect into a legal larger space.
 - Read `mapblock` as the subsystem that turns reusable map pieces into generated layouts with explicit connection rules.
 
+This module primarily collaborates with `procgen`. Its responsibility should stay inside the `Edge/Integration` group rather than absorb behavior owned by those neighbors.
+
 ## Functions
 
 ### `lurek.mapblock.newBlock`

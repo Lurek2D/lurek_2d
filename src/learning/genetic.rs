@@ -1,8 +1,16 @@
 //! This file owns population-based genetic optimization over flat chromosomes with ids, fitness, mutation, and elitism.
 //! `Chromosome` stores one genome, while `GeneticAlgorithm` owns the live population, RNG state, and generation counter.
 //! Tournament selection, crossover, mutation, and elite carryover all live here because they define reproduction semantics.
-//! Deterministic RNG and Gaussian mutation helpers stay local so repeated runs can reproduce the same evolution steps.
+//! Deterministic RNG is shared through a versioned learning RNG contract so repeated runs can reproduce the same evolution steps.
 //! Open it when genome evolution policy changes; neural decoding and bandit or Q-learning logic live in sibling files.
+
+use crate::learning::{
+    error::LearningError,
+    limits::{
+        enforce_limit, validate_finite, validate_non_zero_count, validate_range, LearningLimits,
+    },
+    rng::{LearningRng, LearningRngSnapshot},
+};
 
 /// Evolving genome with fitness and stable id.
 #[derive(Clone)]
@@ -14,6 +22,7 @@ pub struct Chromosome {
     /// Stable identifier across generations.
     pub id: u64,
 }
+
 impl Chromosome {
     /// Create a zeroed chromosome with `gene_count` genes.
     pub fn new(gene_count: usize, id: u64) -> Self {
@@ -24,6 +33,7 @@ impl Chromosome {
         }
     }
 }
+
 /// Population-based genetic optimizer.
 pub struct GeneticAlgorithm {
     /// Current population.
@@ -42,12 +52,29 @@ pub struct GeneticAlgorithm {
     pub generation: usize,
     /// Next chromosome id.
     next_id: u64,
-    /// Internal RNG state.
-    rng: u64,
+    /// Internal deterministic RNG state.
+    rng: LearningRng,
 }
+
 impl GeneticAlgorithm {
     /// Create a population with random initial genes.
     pub fn new(pop_size: usize, gene_count: usize, seed: u64) -> Self {
+        Self::try_new(pop_size, gene_count, seed)
+            .expect("GeneticAlgorithm::new received invalid population settings")
+    }
+
+    /// Create a population with random initial genes after validating dimensions and budgets.
+    pub fn try_new(pop_size: usize, gene_count: usize, seed: u64) -> Result<Self, LearningError> {
+        validate_non_zero_count("genetic population size", pop_size)?;
+        validate_non_zero_count("genetic gene_count", gene_count)?;
+        let limits = LearningLimits::default();
+        enforce_limit("genetic population", pop_size, limits.max_population)?;
+        enforce_limit(
+            "genetic genome length",
+            gene_count,
+            limits.max_genome_length,
+        )?;
+
         let mut ga = Self {
             population: Vec::with_capacity(pop_size),
             gene_count,
@@ -57,32 +84,54 @@ impl GeneticAlgorithm {
             elitism: 1,
             generation: 0,
             next_id: 0,
-            rng: seed,
+            rng: LearningRng::new(seed),
         };
         for _ in 0..pop_size {
             let id = ga.next_id;
             ga.next_id += 1;
             let mut c = Chromosome::new(gene_count, id);
             for g in &mut c.genes {
-                *g = ga.randn();
+                *g = ga.rng.normal_f32();
             }
             ga.population.push(c);
         }
-        ga
+        ga.validate_hyperparams()?;
+        Ok(ga)
     }
+
     /// Return the current population size.
     pub fn pop_size(&self) -> usize {
         self.population.len()
     }
+
     /// Return the chromosome with the highest fitness, or `None` if empty.
     pub fn best(&self) -> Option<&Chromosome> {
         self.population
             .iter()
             .max_by(|a, b| a.fitness.total_cmp(&b.fitness))
     }
+
     /// Build the next generation using elitism, tournament selection, crossover, and mutation.
     pub fn evolve(&mut self) {
+        let _ = self.try_evolve();
+    }
+
+    /// Build the next generation using elitism, tournament selection, crossover, and mutation.
+    pub fn try_evolve(&mut self) -> Result<(), LearningError> {
+        self.validate_hyperparams()?;
         let pop_size = self.population.len();
+        if pop_size == 0 {
+            return Err(LearningError::ZeroCount {
+                field: "genetic population size",
+            });
+        }
+
+        for chromosome in &self.population {
+            validate_finite("genetic fitness", chromosome.fitness as f64)?;
+        }
+
+        let elitism = self.elitism.min(pop_size);
+        let tournament_size = self.tournament_size.clamp(1, pop_size);
         let mut next_gen: Vec<Chromosome> = Vec::with_capacity(pop_size);
         let mut sorted: Vec<usize> = (0..pop_size).collect();
         sorted.sort_by(|&a, &b| {
@@ -90,15 +139,15 @@ impl GeneticAlgorithm {
                 .fitness
                 .total_cmp(&self.population[a].fitness)
         });
-        for &i in sorted.iter().take(self.elitism) {
+        for &i in sorted.iter().take(elitism) {
             next_gen.push(self.population[i].clone());
         }
         while next_gen.len() < pop_size {
-            let p1 = self.tournament_select(pop_size);
-            let p2 = self.tournament_select(pop_size);
+            let p1 = self.tournament_select(pop_size, tournament_size)?;
+            let p2 = self.tournament_select(pop_size, tournament_size)?;
             let mut child =
-                self.crossover(&self.population[p1].clone(), &self.population[p2].clone());
-            self.mutate(&mut child);
+                self.crossover(&self.population[p1].clone(), &self.population[p2].clone())?;
+            self.mutate(&mut child)?;
             child.id = self.next_id;
             self.next_id += 1;
             child.fitness = 0.0;
@@ -106,64 +155,71 @@ impl GeneticAlgorithm {
         }
         self.population = next_gen;
         self.generation += 1;
+        Ok(())
     }
+
+    /// Return the current exact RNG snapshot for reproducible replay.
+    pub fn rng_snapshot(&self) -> LearningRngSnapshot {
+        self.rng.snapshot()
+    }
+
+    /// Restore the internal evolution RNG from an exact saved snapshot.
+    pub fn restore_rng_snapshot(
+        &mut self,
+        snapshot: LearningRngSnapshot,
+    ) -> Result<(), LearningError> {
+        self.rng.restore(snapshot)
+    }
+
+    /// Validate hyperparameter ranges and mutation policy.
+    pub fn validate_hyperparams(&self) -> Result<(), LearningError> {
+        validate_range("genetic mutation_rate", self.mutation_rate as f64, 0.0, 1.0)?;
+        validate_range(
+            "genetic mutation_std",
+            self.mutation_std as f64,
+            0.0,
+            f64::INFINITY,
+        )?;
+        Ok(())
+    }
+
     /// Return one selected parent index using tournament selection.
-    fn tournament_select(&mut self, pop_size: usize) -> usize {
-        let mut best_idx = self.rand_usize(pop_size);
-        for _ in 1..self.tournament_size {
-            let idx = self.rand_usize(pop_size);
+    fn tournament_select(
+        &mut self,
+        pop_size: usize,
+        tournament_size: usize,
+    ) -> Result<usize, LearningError> {
+        let mut best_idx = self.rng.next_index(pop_size)?;
+        for _ in 1..tournament_size {
+            let idx = self.rng.next_index(pop_size)?;
             if self.population[idx].fitness > self.population[best_idx].fitness {
                 best_idx = idx;
             }
         }
-        best_idx
+        Ok(best_idx)
     }
+
     /// Create a child chromosome by choosing each gene from one parent.
-    fn crossover(&mut self, p1: &Chromosome, p2: &Chromosome) -> Chromosome {
+    fn crossover(&mut self, p1: &Chromosome, p2: &Chromosome) -> Result<Chromosome, LearningError> {
         let mut child = Chromosome::new(self.gene_count, 0);
         for i in 0..self.gene_count {
-            child.genes[i] = if self.rand_bool() {
+            child.genes[i] = if self.rng.next_index(2)? == 0 {
                 p1.genes[i]
             } else {
                 p2.genes[i]
             };
         }
-        child
+        Ok(child)
     }
+
     /// Mutate a chromosome in place.
-    fn mutate(&mut self, c: &mut Chromosome) {
+    fn mutate(&mut self, c: &mut Chromosome) -> Result<(), LearningError> {
         for g in &mut c.genes {
-            if self.rand_f01() < self.mutation_rate {
-                *g += self.randn() * self.mutation_std;
+            if self.rng.next_f32() < self.mutation_rate {
+                *g += self.rng.normal_f32() * self.mutation_std;
+                validate_finite("genetic gene", *g as f64)?;
             }
         }
+        Ok(())
     }
-    /// Sample a random index in `[0, n)`.
-    fn rand_usize(&mut self, n: usize) -> usize {
-        self.rng = xorshift64(self.rng);
-        (self.rng as usize) % n
-    }
-    /// Sample a uniform float in `[0, 1)`.
-    fn rand_f01(&mut self) -> f32 {
-        self.rng = xorshift64(self.rng);
-        (self.rng >> 11) as f32 * (1.0 / (1u64 << 53) as f32)
-    }
-    /// Sample a standard normal float with Box-Muller.
-    fn randn(&mut self) -> f32 {
-        let u1 = self.rand_f01().max(1e-7);
-        let u2 = self.rand_f01();
-        (-2.0 * u1.ln()).sqrt() * (2.0 * std::f32::consts::PI * u2).cos()
-    }
-    /// Sample a random boolean.
-    fn rand_bool(&mut self) -> bool {
-        self.rng = xorshift64(self.rng);
-        self.rng & 1 == 0
-    }
-}
-/// Xorshift64 RNG step used by the algorithm.
-fn xorshift64(mut x: u64) -> u64 {
-    x ^= x << 13;
-    x ^= x >> 7;
-    x ^= x << 17;
-    x
 }

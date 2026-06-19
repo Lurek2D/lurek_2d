@@ -5,6 +5,8 @@
 //! Deterministic RNG and Beta or Gamma samplers are local because probabilistic arm choice is part of bandit semantics.
 //! Open it when exploration strategy changes; Q-learning, genomes, and neural model execution live in sibling files.
 
+use crate::learning::rng::LearningRng;
+
 /// A single bandit arm with accumulated reward statistics.
 #[derive(Clone)]
 pub struct BanditArm {
@@ -51,7 +53,7 @@ pub struct Bandit {
     /// Total number of pulls across all arms.
     pub total_pulls: u64,
     /// Internal RNG state.
-    rng: u64,
+    rng: LearningRng,
 }
 impl Bandit {
     /// Create a bandit with `arm_count` arms and a fixed RNG seed.
@@ -69,7 +71,7 @@ impl Bandit {
             arms,
             strategy,
             total_pulls: 0,
-            rng: seed,
+            rng: LearningRng::new(seed),
         }
     }
     /// Return the number of available arms.
@@ -79,6 +81,9 @@ impl Bandit {
     /// Select an arm index according to the current strategy.
     pub fn select(&mut self) -> usize {
         let n = self.arms.len();
+        if n == 0 {
+            return 0;
+        }
         match self.strategy {
             BanditStrategy::EpsilonGreedy { epsilon } => {
                 if self.rand_f32() < epsilon {
@@ -151,13 +156,11 @@ impl Bandit {
     }
     /// Sample a random index in `[0, n)` using the internal RNG.
     fn rand_usize(&mut self, n: usize) -> usize {
-        self.rng = xorshift64(self.rng);
-        (self.rng as usize) % n
+        self.rng.next_index(n).unwrap_or(0)
     }
     /// Sample a uniform float in `[0, 1)` using the internal RNG.
     fn rand_f32(&mut self) -> f32 {
-        self.rng = xorshift64(self.rng);
-        (self.rng >> 11) as f32 * (1.0 / (1u64 << 53) as f32)
+        self.rng.next_f32()
     }
     /// Sample from a Beta distribution using gamma sampling.
     fn beta_sample(&mut self, alpha: f64, beta: f64) -> f64 {
@@ -194,20 +197,10 @@ impl Bandit {
     }
     /// Sample a uniform float in `[0, 1)` using the internal RNG.
     fn rand_f64(&mut self) -> f64 {
-        self.rng = xorshift64(self.rng);
-        (self.rng >> 11) as f64 * (1.0 / (1u64 << 53) as f64)
+        self.rng.next_f64()
     }
     /// Sample a standard normal value using Box-Muller.
     fn normal_f64(&mut self) -> f64 {
-        let u1 = self.rand_f64().max(1e-15);
-        let u2 = self.rand_f64();
-        (-2.0 * u1.ln()).sqrt() * (2.0 * std::f64::consts::PI * u2).cos()
+        self.rng.normal_f64()
     }
-}
-/// Xorshift64 RNG step used by the bandit sampler.
-fn xorshift64(mut x: u64) -> u64 {
-    x ^= x << 13;
-    x ^= x >> 7;
-    x ^= x << 17;
-    x
 }

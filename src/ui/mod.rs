@@ -11,6 +11,8 @@ pub mod containers;
 pub mod context;
 /// Interactive control widgets: buttons, sliders, inputs, combo boxes.
 pub mod controls;
+/// Accessibility dump and UX diagnostics payload types.
+pub mod diagnostics;
 /// Extended widgets: dialogs, menus, trees, tables, toasts, toolbars.
 pub mod extras;
 /// UI render helpers and draw-command generation.
@@ -28,6 +30,7 @@ pub use controls::{
     Button, CheckBox, ComboBox, Label, ListBox, ProgressBar, RadioButton, ScrollBar, Slider,
     SpinBox, Switch, TabBar, TextInput,
 };
+pub use diagnostics::{UiAccessibilityNode, UiDiagnostic};
 pub use extras::{
     Accordion, AccordionSection, Badge, ColorPicker, CustomWidget, Dialog, GUITable, ImageWidget,
     MenuBar, MenuItem, Separator, Spacer, StatusBar, TableColumn, Toast, Toolbar, ToolbarButton,

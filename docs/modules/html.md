@@ -11,6 +11,8 @@
 - It also keeps document structure visible at runtime.
 - Read `html` as the module that turns markup and CSS-like data into live engine UI. Rendering shows the result, but `html` owns how the document is parsed, laid out, mutated, and interacted with.
 
+This module primarily collaborates with `color`. Its responsibility should stay inside the `Edge/Integration` group rather than absorb behavior owned by those neighbors.
+
 ## Functions
 
 ### `lurek.html.isDefaultPrevented`

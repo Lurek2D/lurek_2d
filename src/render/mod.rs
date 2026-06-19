@@ -15,6 +15,12 @@ pub mod decal_surface;
 pub mod draw_layer;
 /// Fontdue-backed font rasterisation and glyph atlas management.
 pub mod font;
+/// GPU canvas render-target synchronization and dimension helpers.
+pub mod gpu_canvas_pass;
+/// Prepared draw encoding into active GPU render passes.
+pub mod gpu_draw_encode;
+/// Per-frame prepared draw list building and coalescing helpers.
+pub mod gpu_frame_builder;
 /// GPU light extraction, uniform packing, and light pass helpers.
 pub mod gpu_light;
 /// High-level wgpu pipeline descriptors and render pipeline construction helpers.
@@ -23,6 +29,10 @@ pub mod gpu_pipeline;
 pub mod gpu_renderer;
 /// GPU resource upload and bind-group management for textures, buffers, and samplers.
 pub mod gpu_resources;
+/// GPU surface readback helpers for screenshot capture.
+pub mod gpu_screenshot_readback;
+/// Custom shader cache rebuilds, uniform uploads, and custom pipeline lookup.
+pub mod gpu_shader_cache;
 /// WGSL shader loading, preprocessing, and module creation utilities.
 pub mod gpu_shaders;
 /// Shadow-map and occluder rendering support for GPU lighting passes.
@@ -35,6 +45,8 @@ pub mod gpu_tess;
 pub mod gpu_types;
 /// Per-frame image post-processing effect descriptors and shader parameter blocks.
 pub mod image_effect;
+/// Central validation for render command scalar, color, topology, and count invariants.
+pub mod input_validation;
 /// GPU-uploadable mesh geometry: vertices, indices, and draw modes.
 pub mod mesh;
 /// Wavefront OBJ parser producing `Mesh` instances from `.obj` text data.
@@ -44,6 +56,8 @@ pub mod obj_loader;
 pub mod postfx_pipeline;
 /// Fullscreen province map shader pipeline and bind-group setup.
 pub mod province_map_pipeline;
+/// Per-frame diagnostics for skipped render commands and invalid render resources.
+pub mod render_diagnostics;
 /// `RenderCommand` enum and all draw-state types consumed by `GpuRenderer`.
 pub mod renderer;
 /// User-uploaded WGSL shader wrappers and `UniformValue` binding types.
@@ -62,10 +76,11 @@ pub use image_effect::ShaderPassDescriptor;
 pub use mesh::{Mesh, MeshDrawMode, MeshVertex};
 pub use postfx_pipeline::PostFxPipeline;
 pub use province_map_pipeline::ProvinceMapPipeline;
+pub use render_diagnostics::RenderDiagnostics;
 pub use renderer::StencilMode;
 pub use renderer::{
-    BlendMode, CompareMode, DepthMode, DrawMode, DrawableKind, RenderCommand, StencilAction,
-    TextAlign, TextureData,
+    BlendMode, CompareMode, DepthMode, DrawMode, DrawableKind, RenderCommand,
+    RenderCommandCategory, StencilAction, TextAlign, TextureData,
 };
 pub use shader::{Shader, UniformValue};
 pub use shape::{CompoundShape, ShapeCommand};

@@ -37,10 +37,7 @@ pub enum TileMapError {
         tile_size: u32,
     },
     /// A computed image pixel count exceeded the configured image limit.
-    ImagePixelLimitExceeded {
-        pixels: u64,
-        max_pixels: u64,
-    },
+    ImagePixelLimitExceeded { pixels: u64, max_pixels: u64 },
     /// The requested layer index is outside the current layer list.
     InvalidLayerIndex { layer: usize, layer_count: usize },
     /// The requested tile coordinate is outside the layer bounds.
@@ -166,7 +163,11 @@ impl fmt::Display for TileMapError {
                 write!(f, "tilemap field '{}' must be finite, got {}", field, value)
             }
             Self::NonPositiveRect { field, value } => {
-                write!(f, "tilemap rect field '{}' must be > 0, got {}", field, value)
+                write!(
+                    f,
+                    "tilemap rect field '{}' must be > 0, got {}",
+                    field, value
+                )
             }
             Self::CollisionQueryLimitExceeded { checks, max_checks } => write!(
                 f,

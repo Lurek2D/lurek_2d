@@ -16,6 +16,8 @@
 - `runtime` should stabilize common policy and state, but it should not absorb the domain logic of the modules that depend on it.
 - Read `runtime` as the shared operating layer of the engine.
 
+This module primarily collaborates with `audio`, `camera`, `event`, `filesystem`, `image`, `input`, `light`, `lua_api`, and adjacent engine modules. Its responsibility should stay inside the Core Runtime group rather than absorb behavior owned by those neighbors.
+
 ## Functions
 
 ### `lurek.runtime.errorSnapshot`

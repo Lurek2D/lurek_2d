@@ -16,6 +16,8 @@
 - It also gives simulation and map UI one shared authority for ownership and adjacency.
 - Read `province` as the territory authority of the engine. Other systems may navigate, draw, or summarize provinces, but this module decides how provinces are represented, connected, labeled, updated, and queried with one stable region model.
 
+This module primarily collaborates with `image`, `render`, `runtime`. Its responsibility should stay inside the `Edge/Integration` group rather than absorb behavior owned by those neighbors.
+
 ## Functions
 
 ### `lurek.province.clearProperties`

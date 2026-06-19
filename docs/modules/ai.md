@@ -26,6 +26,8 @@
 - The module is therefore not only about smarter enemies; it is also about giving complex runtime behavior a legible structure that can be tuned, debugged, and scaled over the lifetime of a project.
 - For wiki readers, the key takeaway is that `ai` is not one algorithm or one enemy helper. It is the engine's full runtime toolkit for building decision-rich actors whose perception, planning, movement, group behavior, and debugging story are treated as one coherent feature family.
 
+This module primarily collaborates with `dialog`, `image`, `learning`, `patterns`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
+
 ## Functions
 
 ### `lurek.ai.newAIDirector`
@@ -2308,6 +2310,35 @@ do
   gb:setString("weather", "rain")
   example_print_log("LAIWorld:getGlobalBlackboard: ok=" .. tostring(gb ~= nil))
   example_print_log("LAIWorld:getGlobalBlackboard: weather=" .. gb:getString("weather", "none"))
+end
+```
+
+---
+
+#### `LAIWorld:getLastCallbackErrors`
+
+Returns callback errors recorded during the most recent `update` call.
+
+```lua
+LAIWorld:getLastCallbackErrors()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of `{ context, message }` tables. |
+
+**Example**
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  local agent = world:addAgent("callback_probe")
+  agent:setCustomModel(function() error("probe failure") end)
+  world:update(1 / 60)
+  local errors = world:getLastCallbackErrors()
+  example_print_log("LAIWorld:getLastCallbackErrors: count=" .. tostring(#errors))
 end
 ```
 
@@ -5204,6 +5235,59 @@ end
 
 ---
 
+#### `LGOAPPlanner:getLastFailureReason`
+
+Returns the last planner failure reason string when planning did not succeed.
+
+```lua
+LGOAPPlanner:getLastFailureReason()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| LuaValue | Failure reason string, or nil when the last plan succeeded. |
+
+**Example**
+
+```lua
+do
+  local goap = lurek.ai.newGOAPPlanner()
+  local plan = goap:plan({}, 4)
+  example_print_log("LGOAPPlanner:getLastFailureReason: " .. tostring(goap:getLastFailureReason()))
+end
+```
+
+---
+
+#### `LGOAPPlanner:getLastTrace`
+
+Returns the last structured GOAP planning trace.
+
+```lua
+LGOAPPlanner:getLastTrace()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Table containing `selected_goal`, `chosen_plan`, `iterations`, `expanded_nodes`, and `failure_reason`. |
+
+**Example**
+
+```lua
+do
+  local goap = lurek.ai.newGOAPPlanner()
+  goap:plan({}, 4)
+  local trace = goap:getLastTrace()
+  example_print_log("LGOAPPlanner:getLastTrace: failure=" .. tostring(trace.failure_reason))
+end
+```
+
+---
+
 #### `LGOAPPlanner:getMaxIterations`
 
 Returns the maximum number of planner iterations allowed during search.
@@ -6410,6 +6494,38 @@ end
 *No documented fields for this handle.*
 
 ### Type Methods
+
+#### `LMCTSEngine:getLastTrace`
+
+Returns the last structured MCTS search trace.
+
+```lua
+LMCTSEngine:getLastTrace()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Table containing `chosen_action`, `iterations_run`, `nodes_expanded`, `invalid_score_count`, `callback_errors`, and `failure_reason`. |
+
+**Example**
+
+```lua
+do
+  local mcts = lurek.ai.newMCTSEngine(8, 1.4, 4, 42)
+  mcts:search(
+    1,
+    function(_) return { 7 } end,
+    function(state, act) return state + act end,
+    function(_) return 0 / 0 end
+  )
+  local trace = mcts:getLastTrace()
+  example_print_log("LMCTSEngine:getLastTrace: invalid_scores=" .. tostring(trace.invalid_score_count))
+end
+```
+
+---
 
 #### `LMCTSEngine:search`
 
@@ -8943,6 +9059,35 @@ end
 
 ---
 
+#### `LSteeringManager:getLastDiagnostic`
+
+Returns the most recent steering validation or runtime diagnostic.
+
+```lua
+LSteeringManager:getLastDiagnostic()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| LuaValue | Diagnostic string, or nil when no diagnostic has been recorded. |
+
+**Example**
+
+```lua
+do
+  local steer = lurek.ai.newSteeringManager()
+  local world = lurek.ai.newWorld()
+  local agent = world:addAgent("steer_probe")
+  steer:addCustomBehavior(function() error("custom steering failure") end, 1.0)
+  steer:applyCustomSteering(agent, 1 / 60)
+  example_print_log("LSteeringManager:getLastDiagnostic: " .. tostring(steer:getLastDiagnostic()))
+end
+```
+
+---
+
 #### `LSteeringManager:getLastSteering`
 
 Returns the last steering force calculated by this manager.
@@ -10316,6 +10461,35 @@ do
     uai:evaluate()
     local last = uai:getLastAction()
     example_print_log("last action = " .. tostring(last))
+end
+```
+
+---
+
+#### `LUtilityAI:getLastTrace`
+
+Returns the last structured utility evaluation trace.
+
+```lua
+LUtilityAI:getLastTrace()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Table containing `chosen_action`, `callbacks_used`, `actions`, and `callback_errors`. |
+
+**Example**
+
+```lua
+do
+  local uai = lurek.ai.newUtilityAI()
+  uai:addAction("heal", function() return 0.8 end)
+  uai:addConsideration("heal", "low_health", function() return 1.0 end, "linear", 1.0, 0.0, 0.0, 1.0)
+  uai:evaluate()
+  local trace = uai:getLastTrace()
+  example_print_log("LUtilityAI:getLastTrace: chosen=" .. tostring(trace.chosen_action))
 end
 ```
 

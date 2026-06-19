@@ -329,7 +329,7 @@
   - [LPromise](#lpromise)
   - [LThreadHandle](#lthreadhandle)
   - [LThreadPool](#lthreadpool)
-- [lurek.tilemap](#lurektilemap)
+- [lurek.physics](#lurekphysics)
   - [LAutoTileSheet](#lautotilesheet)
   - [LChunkMap](#lchunkmap)
   - [LIsoMap](#lisomap)
@@ -652,6 +652,7 @@ LAIWorld:addAgent(name: string) -> LBot -- Creates a named agent in this world a
 LAIWorld:getAgent(name: string) -> LuaValue -- Returns the named agent handle when it exists in this world.
 LAIWorld:getAgentCount() -> integer -- Returns the number of agents currently stored in this world.
 LAIWorld:getGlobalBlackboard() -> LAIBlackboard -- Returns a blackboard snapshot containing the world's shared AI facts.
+LAIWorld:getLastCallbackErrors() -> table -- Returns callback errors recorded during the most recent `update` call.
 LAIWorld:removeAgent(agent: LBot) -- Removes an agent from this world by using an existing agent handle.
 LAIWorld:type() -> string -- Returns the Lua-visible type name for this AI world handle.
 LAIWorld:typeOf(name: string) -> boolean -- Returns whether this AI world handle matches a supported type name.
@@ -761,6 +762,8 @@ LGOAPPlanner:addAction(name: string, [cost]: number, [callback]: function) -- Ad
 LGOAPPlanner:addGoal(name: string, [priority]: number) -- Adds a GOAP goal with an optional priority weight.
 LGOAPPlanner:getActionCount() -> integer -- Returns the number of GOAP actions registered in this planner.
 LGOAPPlanner:getGoalCount() -> integer -- Returns the number of GOAP goals registered in this planner.
+LGOAPPlanner:getLastFailureReason() -> LuaValue -- Returns the last planner failure reason string when planning did not succeed.
+LGOAPPlanner:getLastTrace() -> table -- Returns the last structured GOAP planning trace.
 LGOAPPlanner:getMaxIterations() -> integer -- Returns the maximum number of planner iterations allowed during search.
 LGOAPPlanner:plan(world_state_tbl: table, [max_depth]: integer) -> string[] -- Builds a plan from the supplied boolean world state and returns action names in execution order.
 LGOAPPlanner:setEffect(action_name: string, key: string, value: boolean) -- Sets one boolean effect produced by an existing GOAP action.
@@ -808,6 +811,7 @@ LInfluenceMap:typeOf(name: string) -> boolean -- Returns whether this influence 
 ### LMCTSEngine
 
 ```lua
+LMCTSEngine:getLastTrace() -> table -- Returns the last structured MCTS search trace.
 LMCTSEngine:search(root_state: integer, get_actions_fn: function, apply_fn: function, eval_fn: function) -> LuaValue -- Runs MCTS from a root state using Lua callbacks for actions, transitions, and evaluation.
 LMCTSEngine:type() -> string -- Returns the Lua-visible type name for this MCTS engine handle.
 LMCTSEngine:typeOf(name: string) -> boolean -- Returns whether this MCTS engine handle matches a supported type name.
@@ -889,6 +893,7 @@ LSteeringManager:enableSpatialHash(enabled: boolean) -- Enables or disables spat
 LSteeringManager:entityCount() -> integer -- Returns the number of steering-context entities.
 LSteeringManager:getBehaviorCount() -> integer -- Returns the number of steering behaviors configured on this manager.
 LSteeringManager:getCombineMode() -> string -- Returns the current steering force combination mode.
+LSteeringManager:getLastDiagnostic() -> LuaValue -- Returns the most recent steering validation or runtime diagnostic.
 LSteeringManager:getLastSteering() -> number, number -- Returns the last steering force calculated by this manager.
 LSteeringManager:getPathProgress() -> integer, integer -- Returns the current one-based waypoint index and total waypoint count.
 LSteeringManager:hasPath() -> boolean -- Returns whether this manager currently has an active waypoint path.
@@ -952,6 +957,7 @@ LUtilityAI:addConsideration(action_name: string, name: string, scorer_fn: functi
 LUtilityAI:evaluate() -> LuaValue -- Evaluates all actions and returns the winning action name when one is available.
 LUtilityAI:getActionCount() -> integer -- Returns the number of actions registered in this utility AI.
 LUtilityAI:getLastAction() -> LuaValue -- Returns the last winning action name when evaluation has selected one.
+LUtilityAI:getLastTrace() -> table -- Returns the last structured utility evaluation trace.
 LUtilityAI:type() -> string -- Returns the Lua-visible type name for this utility AI handle.
 LUtilityAI:typeOf(name: string) -> boolean -- Returns whether this utility AI handle matches a supported type name.
 ```
@@ -3797,7 +3803,7 @@ lurek.learning.newMultiHeadAttention(d_model: integer, num_heads: integer) -> LM
 lurek.learning.newNeuralNet() -> LNeuralNet -- Creates an empty feed-forward neural network.
 lurek.learning.newNeuroevolution(layer_spec: table, pop_size: integer, seed: integer) -> LNeuroevolution -- Creates a neuroevolution population from a layer specification table.
 lurek.learning.newPositionalEncoding(d_model: integer, max_len: integer) -> LPositionalEncoding -- Creates a sinusoidal positional encoding helper.
-lurek.learning.newQLearner(sc: integer, ac: integer) -> LQLearner -- Creates a Q-learner with fixed state and action counts.
+lurek.learning.newQLearner(sc: integer, ac: integer, [seed]: integer) -> LQLearner -- Creates a Q-learner with fixed state and action counts.
 lurek.learning.newTensor(shape: integer[], data: number[]) -> LTensor -- Creates a tensor from a shape (integer array) and flat float data (number array).
 lurek.learning.newTransformerDecoder(d_model: integer, num_heads: integer, d_ff: integer) -> LTransformerDecoder -- Creates a transformer decoder block.
 lurek.learning.newTransformerEncoder(d_model: integer, num_heads: integer, d_ff: integer) -> LTransformerEncoder -- Creates a transformer encoder block.
@@ -7309,7 +7315,7 @@ LThreadPool:type() -> string -- Returns the type name of this object.
 LThreadPool:typeOf(name: string) -> boolean -- Checks whether this object matches the given type name.
 ```
 
-## lurek.tilemap
+## lurek.physics
 
 [Module page](Module-tilemap)
 
@@ -7780,6 +7786,7 @@ lurek.ui.focusDirection(dx: number, dy: number) -> boolean -- Move focus in a sp
 lurek.ui.focusNeighbor(direction: string) -> boolean -- Moves keyboard focus using an explicit directional focus link.
 lurek.ui.focusNext() -- Moves keyboard focus to the next focusable widget.
 lurek.ui.focusPrev() -- Moves keyboard focus to the previous focusable widget.
+lurek.ui.getAccessibilityTree() -> table -- Returns a flattened accessibility snapshot for all live widgets except the root.
 lurek.ui.getActiveDrag() -> integer -- Returns the widget index currently being dragged, or nil.
 lurek.ui.getFocus() -> integer -- Returns the index of the currently focused widget, or nil.
 lurek.ui.getFont() -> LFont -- Returns the global UI font assigned to the root widget, or nil when UI uses the render fallback font.
@@ -7851,6 +7858,7 @@ lurek.ui.update(dt: number) -- Updates the UI context and dispatches pending eve
 lurek.ui.update_bindings(data: table) -> integer -- Updates data bindings for widgets that reference binding keys.
 lurek.ui.updateBindings(data: table) -> integer -- Updates data bindings for widgets that reference binding keys.
 lurek.ui.updateResolution(width: number, height: number) -- Update the current viewport resolution and recompute UI scale factor.
+lurek.ui.validateUx() -> table -- Returns accessibility and usability diagnostics for the live widget tree.
 lurek.ui.visibleRange(widget: table, item_count: integer, item_height: number) -> integer -- Calculate the visible item range for a scrollable list widget.
 lurek.ui.wheelmoved(x: number, y: number) -> boolean -- Delivers a mouse wheel event to the UI.
 ```
@@ -7910,9 +7918,11 @@ LComboBox:addItem(text: string) -- Appends a new text item to this combo box's d
 LComboBox:clearItems() -- Removes all items from this combo box.
 LComboBox:getItem(index: integer) -> string -- Returns the text of the item at the given 1-based index.
 LComboBox:getItemCount() -> integer -- Returns the number of items in this combo box.
+LComboBox:getMaxVisibleItems() -> integer -- Returns the maximum number of dropdown rows shown before the combo box scrolls.
 LComboBox:getSelectedIndex() -> integer -- Returns the 1-based index of the currently selected item, or 0 if none is selected.
 LComboBox:getSelectedItem() -> string -- Returns the text of the currently selected item, or nil if none is selected.
 LComboBox:removeItem(index: integer) -> boolean -- Removes the item at the given 1-based index from this combo box.
+LComboBox:setMaxVisibleItems(count: integer) -- Sets the maximum number of dropdown rows shown at once before the combo box scrolls.
 LComboBox:setSelectedIndex(index: integer) -- Sets the selected item by 1-based index.
 ```
 
@@ -8212,10 +8222,12 @@ LTabBar:setActiveTab(index: integer) -- Sets the active (selected) tab by 1-base
 ```lua
 LTextInput:getCursorPosition() -> integer -- Returns the current cursor position (character index) within the text input.
 LTextInput:getPlaceholder() -> string -- Returns the placeholder text of this text input.
+LTextInput:getSubmitOnEnter() -> boolean -- Returns whether pressing Enter in this text input submits the surrounding dialog default action.
 LTextInput:getText() -> string -- Returns the current text content of this text input field.
 LTextInput:isFocused() -> boolean -- Returns whether this text input currently has keyboard focus.
 LTextInput:setMaxLength(n: integer) -- Sets the maximum number of characters allowed in this text input.
 LTextInput:setPlaceholder(text: string) -- Sets the placeholder text shown when the input is empty.
+LTextInput:setSubmitOnEnter(value: boolean) -- Controls whether pressing Enter in this text input submits the surrounding dialog default action.
 LTextInput:setText(text: string) -- Sets the text content of this text input field and moves the cursor to the end.
 ```
 
@@ -8304,11 +8316,13 @@ LUiWidget:fadeIn() -- Instantly makes this widget fully opaque and visible.
 LUiWidget:fadeOut() -- Instantly makes this widget fully transparent and hidden.
 LUiWidget:findById(id: string) -> LWidget -- Searches this widget's subtree for a child with the given ID.
 LUiWidget:getAlpha() -> number -- Returns the current opacity of this widget.
+LUiWidget:getAriaName() -> string -- Returns the explicit accessible name metadata for this widget.
 LUiWidget:getChildCount() -> integer -- Returns the number of direct child widgets attached to this widget.
 LUiWidget:getChildren() -> table -- Returns a table of lightweight child widget references, each containing an _idx field.
 LUiWidget:getFlexGrow() -> number -- Returns the flex-grow factor of this widget.
 LUiWidget:getFlexShrink() -> number -- Returns the flex-shrink factor of this widget.
 LUiWidget:getId() -> string -- Returns the string identifier assigned to this widget.
+LUiWidget:getLabelFor() -> integer -- Returns the widget index associated through `setLabelFor`, or nil.
 LUiWidget:getMargin() -> number, number, number, number -- Returns the outer margin of this widget.
 LUiWidget:getMaxSize() -> number, number -- Returns the maximum width and height of this widget.
 LUiWidget:getMinSize() -> number, number -- Returns the minimum width and height of this widget.
@@ -8316,6 +8330,7 @@ LUiWidget:getMouseFilter() -> string -- Returns the mouse filter of this widget.
 LUiWidget:getPadding() -> number, number, number, number -- Returns the inner padding of this widget.
 LUiWidget:getPosition() -> number, number -- Returns the local position of this widget relative to its parent.
 LUiWidget:getRect() -> number, number, number, number -- Returns the computed bounding rectangle of this widget in screen coordinates after layout.
+LUiWidget:getRole() -> string -- Returns the semantic role string for this widget.
 LUiWidget:getSize() -> number, number -- Returns the width and height of this widget.
 LUiWidget:getState() -> string -- Returns the current interaction state of this widget (e.g. "normal", "hovered", "pressed", "disabled").
 LUiWidget:getStyleClass() -> string -- Returns the style class of this widget.
@@ -8339,6 +8354,7 @@ LUiWidget:setFocusGroup(group: string) -- Sets the focus traversal group for thi
 LUiWidget:setFocusNeighbor(direction: string, [target]: integer) -> boolean -- Sets an explicit directional focus neighbor for this widget.
 LUiWidget:setFont(font: LFont) -- Assigns a specific font to this widget and its descendants unless overridden further down the tree.
 LUiWidget:setId(id: string) -- Assigns a string identifier to this widget for lookup with findById.
+LUiWidget:setLabelFor([target]: integer) -- Associates this label widget with another widget for accessibility naming.
 LUiWidget:setMargin(top: number, [right]: number, [bottom]: number, [left]: number) -- Sets the outer margin of this widget. Accepts 1 to 4 values (top, right?, bottom?, left?) following CSS sho...
 LUiWidget:setMaxSize(w: number, h: number) -- Sets the maximum allowed width and height for this widget during layout.
 LUiWidget:setMinSize(w: number, h: number) -- Sets the minimum allowed width and height for this widget during layout.

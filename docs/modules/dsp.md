@@ -11,6 +11,8 @@
 - In other words, `dsp` gives the engine a place to reason about signal shape itself, not just about the existence of a sound event or playback source.
 - Read it as the audio-processing authority above raw playback: neighboring audio systems own device-facing streaming and transport, while `dsp` owns what happens to the signal itself.
 
+This module primarily collaborates with `audio`, `runtime`. Its responsibility should stay inside the `Platform Services` group rather than absorb behavior owned by those neighbors.
+
 ## Functions
 
 ### `lurek.dsp.addEffectToBus`

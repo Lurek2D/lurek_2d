@@ -10,6 +10,8 @@
 - It also keeps team knowledge explicit.
 - Read this module as the authority for what an actor currently knows about a space.
 
+This module is mostly self-contained inside the `Edge/Integration` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
+
 ## Functions
 
 ### `lurek.visibility.new`

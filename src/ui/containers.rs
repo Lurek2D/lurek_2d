@@ -122,13 +122,14 @@ impl Layout {
                     cx += child.width + child.margin[1] + child.margin[3] + self.spacing;
                 }
                 LayoutDirection::Grid => {
+                    let columns = self.columns.max(1);
                     let col = self
                         .children
                         .iter()
                         .position(|&i| i == child_idx)
                         .unwrap_or(0);
-                    let col_in_row = col % self.columns;
-                    if col_in_row == self.columns - 1 {
+                    let col_in_row = col % columns;
+                    if col_in_row == columns - 1 {
                         cx = self.base.x + pad[3];
                         cy += child.height + child.margin[0] + child.margin[2] + self.spacing;
                     } else {
@@ -178,8 +179,18 @@ impl ScrollPanel {
     }
     /// Return `(max_scroll_x, max_scroll_y)` derived from content and widget dimensions.
     pub fn max_scroll(&self) -> (f32, f32) {
-        let mx = (self.content_width - self.base.width).max(0.0);
-        let my = (self.content_height - self.base.height).max(0.0);
+        let viewport_w = if self.base.computed_rect.width > 0.0 {
+            self.base.computed_rect.width
+        } else {
+            self.base.width
+        };
+        let viewport_h = if self.base.computed_rect.height > 0.0 {
+            self.base.computed_rect.height
+        } else {
+            self.base.height
+        };
+        let mx = (self.content_width - viewport_w).max(0.0);
+        let my = (self.content_height - viewport_h).max(0.0);
         (mx, my)
     }
     /// Clamp `scroll_x` and `scroll_y` to the valid `[0, max_scroll]` range.
@@ -230,30 +241,70 @@ impl NinePatch {
     }
     /// Return the 9 `NineSlice` tuples describing source and destination rects for each patch region.
     pub fn get_slices(&self) -> Vec<NineSlice> {
-        let il = self.inset_left as f32;
-        let it = self.inset_top as f32;
-        let ir = self.inset_right as f32;
-        let ib = self.inset_bottom as f32;
+        let mut il = self.inset_left as f32;
+        let mut it = self.inset_top as f32;
+        let mut ir = self.inset_right as f32;
+        let mut ib = self.inset_bottom as f32;
         let iw = self.image_width as f32;
         let ih = self.image_height as f32;
         let dw = self.base.width;
         let dh = self.base.height;
         let dx = self.base.x;
         let dy = self.base.y;
-        let sm = iw - il - ir;
-        let smh = ih - it - ib;
-        let dm = dw - il - ir;
-        let dmh = dh - it - ib;
+        if iw <= 0.0 || ih <= 0.0 || dw <= 0.0 || dh <= 0.0 {
+            return Vec::new();
+        }
+        let inset_w = il + ir;
+        if inset_w > iw && inset_w > 0.0 {
+            let scale = iw / inset_w;
+            il *= scale;
+            ir *= scale;
+        }
+        let inset_h = it + ib;
+        if inset_h > ih && inset_h > 0.0 {
+            let scale = ih / inset_h;
+            it *= scale;
+            ib *= scale;
+        }
+        let mut dil = il;
+        let mut dir = ir;
+        let border_w = dil + dir;
+        if border_w > dw && border_w > 0.0 {
+            let scale = dw / border_w;
+            dil *= scale;
+            dir *= scale;
+        }
+        let mut dit = it;
+        let mut dib = ib;
+        let border_h = dit + dib;
+        if border_h > dh && border_h > 0.0 {
+            let scale = dh / border_h;
+            dit *= scale;
+            dib *= scale;
+        }
+        let sm = (iw - il - ir).max(0.0);
+        let smh = (ih - it - ib).max(0.0);
+        let dm = (dw - dil - dir).max(0.0);
+        let dmh = (dh - dit - dib).max(0.0);
         vec![
-            (0.0, 0.0, il, it, dx, dy, il, it),
-            (il, 0.0, sm, it, dx + il, dy, dm, it),
-            (iw - ir, 0.0, ir, it, dx + dw - ir, dy, ir, it),
-            (0.0, it, il, smh, dx, dy + it, il, dmh),
-            (il, it, sm, smh, dx + il, dy + it, dm, dmh),
-            (iw - ir, it, ir, smh, dx + dw - ir, dy + it, ir, dmh),
-            (0.0, ih - ib, il, ib, dx, dy + dh - ib, il, ib),
-            (il, ih - ib, sm, ib, dx + il, dy + dh - ib, dm, ib),
-            (iw - ir, ih - ib, ir, ib, dx + dw - ir, dy + dh - ib, ir, ib),
+            (0.0, 0.0, il, it, dx, dy, dil, dit),
+            (il, 0.0, sm, it, dx + dil, dy, dm, dit),
+            (iw - ir, 0.0, ir, it, dx + dw - dir, dy, dir, dit),
+            (0.0, it, il, smh, dx, dy + dit, dil, dmh),
+            (il, it, sm, smh, dx + dil, dy + dit, dm, dmh),
+            (iw - ir, it, ir, smh, dx + dw - dir, dy + dit, dir, dmh),
+            (0.0, ih - ib, il, ib, dx, dy + dh - dib, dil, dib),
+            (il, ih - ib, sm, ib, dx + dil, dy + dh - dib, dm, dib),
+            (
+                iw - ir,
+                ih - ib,
+                ir,
+                ib,
+                dx + dw - dir,
+                dy + dh - dib,
+                dir,
+                dib,
+            ),
         ]
     }
 }

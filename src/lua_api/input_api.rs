@@ -70,9 +70,7 @@ fn binding_was_pressed(st: &SharedState, binding: &str) -> bool {
 /// Returns whether a keyboard, mouse, or gamepad binding was released this frame.
 fn binding_was_released(st: &SharedState, binding: &str) -> bool {
     match InputBinding::parse(binding) {
-        Ok(InputBinding::KeyboardKey(key)) => {
-            st.keyboard.get_released().iter().any(|k| k == &key)
-        }
+        Ok(InputBinding::KeyboardKey(key)) => st.keyboard.get_released().iter().any(|k| k == &key),
         Ok(InputBinding::Scancode(scancode)) => st.keyboard.was_scancode_released(&scancode),
         Ok(InputBinding::MouseButton(button)) => st.mouse.buttons_released[(button - 1) as usize],
         Ok(InputBinding::GamepadButton { gamepad_id, button }) => st
@@ -933,7 +931,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             s.borrow_mut()
                 .gamepad_mappings
                 .set_mapping(&guid, &mapping)
-                .map_err(|e| LuaError::RuntimeError(format!("input.gamepad.setGamepadMapping: {e}")))?;
+                .map_err(|e| {
+                    LuaError::RuntimeError(format!("input.gamepad.setGamepadMapping: {e}"))
+                })?;
             Ok(())
         })?,
     )?;

@@ -15,6 +15,8 @@
 - `agent` owns prompts, memory, agent identity, structured responses, and request orchestration semantics.
 - Read `agent` as the place where assistants become first-class runtime capabilities rather than thin HTTP wrappers.
 
+This module primarily collaborates with `network`. Its responsibility should stay inside the `Feature Systems` group rather than absorb behavior owned by those neighbors.
+
 ## Functions
 
 ### `lurek.agent.cancel`

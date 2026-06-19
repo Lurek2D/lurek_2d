@@ -6,8 +6,8 @@
 //! The file is the owner for device state and mapping schema, while app-side polling and rumble dispatch live higher.
 //! Open it when gamepad semantics change; combo logic, recording, and window-event orchestration live in siblings.
 
-use crate::log_msg;
 use crate::filesystem::GameFS;
+use crate::log_msg;
 use crate::runtime::log_messages::{GD01, GD02, GD03};
 use crate::runtime::EngineError;
 use std::collections::{HashMap, HashSet};
@@ -408,7 +408,10 @@ fn parse_mapping_line(raw_line: &str) -> Result<ParsedMappingLine, String> {
         let key = pieces.next().unwrap_or_default().trim();
         let value = pieces.next().unwrap_or_default().trim();
         if key.is_empty() || value.is_empty() {
-            return Err(format!("mapping token '{}' must contain key:value data", token));
+            return Err(format!(
+                "mapping token '{}' must contain key:value data",
+                token
+            ));
         }
     }
     Ok(ParsedMappingLine {

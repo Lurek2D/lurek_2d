@@ -6,9 +6,13 @@ use std::collections::HashMap;
 
 use lurek2d::render::canvas::Canvas;
 use lurek2d::render::decal_surface::DecalSurface;
-use lurek2d::render::font::{Font, AVAILABLE_CELL_SIZES, AVAILABLE_HEIGHTS};
+use lurek2d::render::font::{
+    validate_dynamic_font_atlas_dimensions, validate_dynamic_font_point_size, Font,
+    AVAILABLE_CELL_SIZES, AVAILABLE_HEIGHTS, MAX_DYNAMIC_FONT_ATLAS_DIMENSION,
+    MAX_DYNAMIC_FONT_POINT_SIZE,
+};
 use lurek2d::render::image_effect::ShaderPassDescriptor;
-use lurek2d::render::mesh::{Mesh, MeshDrawMode, MeshVertex};
+use lurek2d::render::mesh::{Mesh, MeshDrawMode, MeshError, MeshVertex};
 use lurek2d::render::postfx_pipeline::params_to_uniform;
 use lurek2d::render::province_map_pipeline::ProvinceMapUniforms;
 use lurek2d::render::renderer::{
@@ -16,7 +20,9 @@ use lurek2d::render::renderer::{
     PhysicsDebugConfig, RenderCommand, StencilAction, StencilMode, TextSpan, TextureData,
 };
 use lurek2d::render::shape::{CompoundShape, ShapeCommand};
-use lurek2d::render::software_capture::capture_commands_to_image;
+use lurek2d::render::software_capture::{
+    capture_commands_to_image, capture_commands_to_image_with_diagnostics,
+};
 
 mod province_map_pipeline_tests {
     use super::*;
@@ -104,7 +110,62 @@ mod decal_surface_tests {
     }
 }
 
-// DrawLayer queue/flush/z-order behavior: `tests/lua/unit/test_render_drawlayer_unit.lua`.
+mod draw_layer_tests {
+    use lurek2d::render::draw_layer::{allocate_callback_id, DrawLayer, DrawLayerError};
+
+    #[test]
+    fn flush_uses_total_order_and_callback_id_tie_breaker() {
+        let mut layer = DrawLayer::new();
+        let nan_id = layer.try_queue(f64::NAN).unwrap();
+        let low_id = layer.try_queue(-1.0).unwrap();
+        let first_equal_id = layer.try_queue(2.0).unwrap();
+        let second_equal_id = layer.try_queue(2.0).unwrap();
+        let inf_id = layer.try_queue(f64::INFINITY).unwrap();
+
+        let ids: Vec<_> = layer
+            .flush()
+            .into_iter()
+            .map(|entry| entry.callback_id)
+            .collect();
+
+        assert_eq!(
+            ids,
+            vec![low_id, first_equal_id, second_equal_id, inf_id, nan_id]
+        );
+        assert_eq!(layer.get_count(), 0);
+    }
+
+    #[test]
+    fn callback_id_allocation_reports_exhaustion_without_wrapping() {
+        let mut next_id = usize::MAX - 1;
+        assert_eq!(allocate_callback_id(&mut next_id).unwrap(), usize::MAX - 1);
+        assert_eq!(next_id, usize::MAX);
+
+        assert_eq!(
+            allocate_callback_id(&mut next_id).unwrap_err(),
+            DrawLayerError::CallbackIdExhausted
+        );
+        assert_eq!(next_id, usize::MAX);
+    }
+
+    #[test]
+    fn callback_id_allocation_reserves_max_as_queue_failure_sentinel() {
+        let mut next_id = usize::MAX;
+
+        assert_eq!(
+            allocate_callback_id(&mut next_id).unwrap_err(),
+            DrawLayerError::CallbackIdExhausted
+        );
+        assert_eq!(next_id, usize::MAX);
+    }
+
+    #[test]
+    fn queue_convenience_path_does_not_expect_on_exhaustion() {
+        let source = include_str!("../../../src/render/draw_layer.rs");
+        assert!(!source.contains(".expect(\"DrawLayer callback id counter exhausted\")"));
+        assert!(source.contains("usize::MAX"));
+    }
+}
 
 // Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬ font tests Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬
 
@@ -251,6 +312,41 @@ mod font_tests {
         let lines = font.wrap_text("", 100.0);
         assert_eq!(lines, vec![""]);
     }
+
+    #[test]
+    fn wrap_text_long_line_preserves_words_with_incremental_widths() {
+        let fonts = Font::load_all_sizes();
+        let (ref font, _, _) = fonts[0];
+        let text = (0..200)
+            .map(|i| format!("w{i}"))
+            .collect::<Vec<_>>()
+            .join(" ");
+        let lines = font.wrap_text(&text, 96.0);
+
+        assert!(lines.len() > 1);
+        assert!(lines.iter().all(|line| font.text_width(line) <= 96.0));
+        assert_eq!(lines.join(" "), text);
+    }
+
+    #[test]
+    fn dynamic_font_point_size_rejects_nonfinite_and_huge_values() {
+        assert!(validate_dynamic_font_point_size(f32::NAN).is_err());
+        assert!(validate_dynamic_font_point_size(MAX_DYNAMIC_FONT_POINT_SIZE + 1.0).is_err());
+        assert_eq!(validate_dynamic_font_point_size(0.25).unwrap(), 1.0);
+    }
+
+    #[test]
+    fn dynamic_font_atlas_dimensions_reject_zero_and_huge_values() {
+        assert!(validate_dynamic_font_atlas_dimensions(0, 16).is_err());
+        assert!(
+            validate_dynamic_font_atlas_dimensions(MAX_DYNAMIC_FONT_ATLAS_DIMENSION + 1, 16)
+                .is_err()
+        );
+        assert_eq!(
+            validate_dynamic_font_atlas_dimensions(16, 16).unwrap(),
+            16 * 16 * 4
+        );
+    }
 }
 
 // Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬ image_effect tests Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬
@@ -339,21 +435,21 @@ mod mesh_tests {
     #[test]
     fn set_vertex_updates_position() {
         let mut m = Mesh::new(2, MeshDrawMode::Triangles);
-        m.set_vertex(
+        assert!(m.set_vertex(
             1,
             MeshVertex {
                 x: 99.0,
                 y: 88.0,
                 ..Default::default()
             },
-        );
+        ));
         assert!((m.get_vertex(1).unwrap().x - 99.0).abs() < 1e-5);
     }
 
     #[test]
     fn set_vertex_out_of_bounds_is_noop() {
         let mut m = Mesh::new(1, MeshDrawMode::Triangles);
-        m.set_vertex(5, MeshVertex::default());
+        assert!(!m.set_vertex(5, MeshVertex::default()));
         assert_eq!(m.vertex_count(), 1);
     }
 
@@ -404,6 +500,51 @@ mod mesh_tests {
         m.set_vertex_map(vec![3, 2, 1]);
         let tri = m.triangulate();
         assert_eq!(tri, vec![3, 2, 1]);
+    }
+
+    #[test]
+    fn validate_rejects_index_out_of_range() {
+        let mut m = Mesh::new(3, MeshDrawMode::Triangles);
+        m.set_vertex_map(vec![0, 1, 3]);
+        assert_eq!(
+            m.validate().unwrap_err(),
+            MeshError::InvalidIndex {
+                index_position: 2,
+                vertex_index: 3,
+                vertex_count: 3,
+            }
+        );
+        assert!(m.try_triangulate().is_err());
+        assert!(m.triangulate().is_empty());
+    }
+
+    #[test]
+    fn validate_rejects_nonfinite_vertex_fields() {
+        let mut m = Mesh::new(3, MeshDrawMode::Triangles);
+        assert!(m.set_vertex(
+            1,
+            MeshVertex {
+                x: f32::NAN,
+                ..Default::default()
+            },
+        ));
+        assert_eq!(
+            m.validate().unwrap_err(),
+            MeshError::NonFiniteVertex {
+                vertex_index: 1,
+                field: "x",
+            }
+        );
+    }
+
+    #[test]
+    fn validate_rejects_triangle_lists_with_partial_triangles() {
+        let m = Mesh::new(4, MeshDrawMode::Triangles);
+        assert_eq!(
+            m.validate().unwrap_err(),
+            MeshError::InvalidTriangleIndexCount { index_count: 4 }
+        );
+        assert!(m.try_triangulate().is_err());
     }
 
     #[test]
@@ -561,15 +702,17 @@ mod renderer_tests {
 
     #[test]
     fn texture_data_clone() {
-        let td = TextureData {
-            pixels: vec![255, 0, 0, 255],
-            width: 1,
-            height: 1,
-            color_space: lurek2d::image::TextureColorSpace::Srgb,
-        };
+        let mut td = TextureData::new(
+            vec![255, 0, 0, 255],
+            1,
+            1,
+            lurek2d::image::TextureColorSpace::Srgb,
+        );
+        td.mark_dirty();
         let td2 = td.clone();
         assert_eq!(td2.pixels, vec![255, 0, 0, 255]);
         assert_eq!(td2.width, 1);
+        assert_eq!(td2.revision, 1);
     }
 }
 
@@ -617,10 +760,63 @@ mod software_capture_tests {
         assert_eq!(pixel(15, 15), [255, 0, 0, 255]);
         assert_eq!(pixel(5, 5), [0, 0, 0, 255]);
     }
+
+    #[test]
+    fn clamps_partly_offscreen_polygon_bbox_before_fill() {
+        let (_, diagnostics) = capture_commands_to_image_with_diagnostics(
+            &[
+                RenderCommand::SetColor(1.0, 0.0, 0.0, 1.0),
+                RenderCommand::Rectangle {
+                    mode: DrawMode::Fill,
+                    x: -10_000.0,
+                    y: 10.0,
+                    w: 10_010.0,
+                    h: 10.0,
+                },
+            ],
+            [0.0, 0.0, 0.0, 1.0],
+        );
+        assert_eq!(diagnostics.clamped_polygon_bboxes, 1);
+        assert_eq!(diagnostics.skipped_offscreen_polygons, 0);
+    }
+
+    #[test]
+    fn skips_fully_offscreen_polygon_bbox_before_fill() {
+        let (_, diagnostics) = capture_commands_to_image_with_diagnostics(
+            &[RenderCommand::Polygon {
+                mode: DrawMode::Fill,
+                vertices: vec![
+                    -1_000_000.0,
+                    -1_000_000.0,
+                    -999_900.0,
+                    -1_000_000.0,
+                    -999_900.0,
+                    -999_900.0,
+                ],
+            }],
+            [0.0, 0.0, 0.0, 1.0],
+        );
+        assert_eq!(diagnostics.skipped_offscreen_polygons, 1);
+    }
+
+    #[test]
+    fn counts_unsupported_capture_commands() {
+        let (_, diagnostics) = capture_commands_to_image_with_diagnostics(
+            &[RenderCommand::SetBlendMode(BlendMode::Add)],
+            [0.0, 0.0, 0.0, 1.0],
+        );
+        assert_eq!(diagnostics.unsupported_capture_commands, 1);
+    }
 }
 
 mod postfx_pipeline_tests {
     use super::*;
+
+    #[test]
+    fn postfx_cache_accessors_do_not_use_expect_panics() {
+        let source = include_str!("../../../src/render/postfx_pipeline.rs");
+        assert!(!source.contains("expect(\"postfx"));
+    }
 
     #[test]
     fn params_to_uniform_empty_map_returns_zeros() {
@@ -679,18 +875,548 @@ mod postfx_pipeline_tests {
     }
 }
 
+mod obj_loader_tests {
+    use lurek2d::render::obj_loader::ObjLoader;
+    use std::path::{Path, PathBuf};
+
+    fn parse_obj_error_contains(src: &str, expected: &str) {
+        parse_obj_error_contains_with_base(src, Path::new("."), expected);
+    }
+
+    fn parse_obj_error_contains_with_base(src: &str, base: &Path, expected: &str) {
+        let result = ObjLoader::parse_obj(src, base);
+        let message = match result {
+            Ok(_) => panic!("expected OBJ parse error containing '{expected}'"),
+            Err(err) => err.to_string(),
+        };
+        assert!(
+            message.contains(expected),
+            "expected '{message}' to contain '{expected}'"
+        );
+    }
+
+    fn fixture_base() -> PathBuf {
+        Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("tests")
+            .join("rust")
+            .join("fixtures")
+            .join("render")
+            .join("obj")
+    }
+
+    #[test]
+    fn obj_rejects_zero_face_index() {
+        parse_obj_error_contains("v 0 0 0\nv 1 0 0\nv 0 1 0\nf 0 1 2\n", "got 0");
+    }
+
+    #[test]
+    fn obj_rejects_positive_out_of_range_face_index() {
+        parse_obj_error_contains("v 0 0 0\nv 1 0 0\nv 0 1 0\nf 1 2 4\n", "out of range");
+    }
+
+    #[test]
+    fn obj_rejects_too_negative_face_index() {
+        parse_obj_error_contains("v 0 0 0\nv 1 0 0\nv 0 1 0\nf -4 -1 -2\n", "out of range");
+    }
+
+    #[test]
+    fn obj_rejects_mtllib_parent_traversal() {
+        parse_obj_error_contains("mtllib ../secret.mtl\n", "escapes");
+    }
+
+    #[test]
+    fn obj_rejects_absolute_mtllib_path() {
+        let absolute = fixture_base().join("bad_material.mtl");
+        parse_obj_error_contains(
+            &format!("mtllib {}\n", absolute.display()),
+            "must be relative",
+        );
+    }
+
+    #[test]
+    fn obj_rejects_non_mtl_material_library_extension() {
+        parse_obj_error_contains("mtllib material.txt\n", "must use .mtl extension");
+    }
+
+    #[test]
+    fn obj_reports_missing_material_library_instead_of_ignoring_it() {
+        parse_obj_error_contains_with_base("mtllib missing.mtl\n", &fixture_base(), "OBJ IO error");
+    }
+
+    #[test]
+    fn obj_rejects_malformed_material_diffuse_color() {
+        parse_obj_error_contains_with_base(
+            "mtllib bad_material.mtl\n",
+            &fixture_base(),
+            "expected float",
+        );
+    }
+}
+
+mod render_diagnostics_tests {
+    use lurek2d::render::RenderDiagnostics;
+
+    fn source_section<'a>(source: &'a str, start: &str, end: &str) -> &'a str {
+        source
+            .split(start)
+            .nth(1)
+            .unwrap_or_else(|| panic!("missing source marker {start}"))
+            .split(end)
+            .next()
+            .unwrap_or_else(|| panic!("missing source end marker {end}"))
+    }
+
+    #[test]
+    fn records_drop_reasons_and_invalid_resources() {
+        let mut diagnostics = RenderDiagnostics::default();
+
+        diagnostics.record_missing_texture();
+        diagnostics.record_missing_canvas();
+        diagnostics.record_missing_mesh();
+        diagnostics.record_missing_static_geometry();
+        diagnostics.record_missing_instance_buffer();
+        diagnostics.record_unsupported_instanced_sprite_batch();
+        diagnostics.record_invalid_texture_upload();
+        diagnostics.record_invalid_canvas_allocation();
+        diagnostics.record_invalid_mesh();
+        diagnostics.record_invalid_render_input();
+        diagnostics.record_shader_pipeline_failure();
+        diagnostics.record_buffer_growth_event();
+        diagnostics.record_shadow_dispatch(4, 8);
+
+        assert!(diagnostics.has_findings());
+        assert_eq!(diagnostics.dropped_commands, 7);
+        assert_eq!(diagnostics.missing_textures, 1);
+        assert_eq!(diagnostics.missing_canvases, 1);
+        assert_eq!(diagnostics.missing_meshes, 1);
+        assert_eq!(diagnostics.missing_static_geometry, 1);
+        assert_eq!(diagnostics.missing_instance_buffers, 1);
+        assert_eq!(diagnostics.unsupported_instanced_sprite_batches, 1);
+        assert_eq!(diagnostics.invalid_texture_uploads, 1);
+        assert_eq!(diagnostics.invalid_canvas_allocations, 1);
+        assert_eq!(diagnostics.invalid_meshes, 1);
+        assert_eq!(diagnostics.invalid_render_inputs, 1);
+        assert_eq!(diagnostics.shader_pipeline_failures, 1);
+        assert_eq!(diagnostics.buffer_growth_events, 1);
+        assert_eq!(diagnostics.shadow_lights_rendered, 1);
+        assert_eq!(diagnostics.shadow_edges_collected, 4);
+        assert_eq!(diagnostics.shadow_edges_culled, 8);
+        assert_eq!(diagnostics.finding_total(), 32);
+    }
+
+    #[test]
+    fn resets_and_saturates_counters() {
+        let mut diagnostics = RenderDiagnostics {
+            dropped_commands: u32::MAX,
+            ..RenderDiagnostics::default()
+        };
+
+        diagnostics.record_missing_texture();
+        assert_eq!(diagnostics.dropped_commands, u32::MAX);
+        assert_eq!(diagnostics.missing_textures, 1);
+        assert_eq!(diagnostics.finding_total(), u32::MAX);
+
+        diagnostics.reset();
+        assert_eq!(diagnostics, RenderDiagnostics::default());
+        assert!(!diagnostics.has_findings());
+    }
+
+    #[test]
+    fn gpu_renderer_preparation_reports_missing_texture_and_canvas_sources() {
+        let source = include_str!("../../../src/render/gpu_renderer.rs");
+        let texture_sections = [
+            ("RenderCommand::DrawImage {", "RenderCommand::DrawImageEx {"),
+            ("RenderCommand::DrawImageEx {", "RenderCommand::DrawQuad {"),
+            (
+                "RenderCommand::DrawQuad {",
+                "RenderCommand::DrawTexturedQuad {",
+            ),
+            (
+                "RenderCommand::DrawTexturedQuad {",
+                "RenderCommand::DrawBatch {",
+            ),
+            ("RenderCommand::DrawBatch {", "RenderCommand::SetCanvas"),
+            ("RenderCommand::DrawNineSlice {", "RenderCommand::SetShader"),
+        ];
+
+        for (start, end) in texture_sections {
+            assert!(
+                source_section(source, start, end).contains("record_missing_texture()"),
+                "{start} should report missing texture resources"
+            );
+        }
+
+        assert!(
+            source_section(
+                source,
+                "RenderCommand::DrawCanvas {",
+                "RenderCommand::SetPointSize"
+            )
+            .contains("record_missing_canvas()"),
+            "DrawCanvas should report missing canvas resources"
+        );
+    }
+}
+
+mod gpu_shadow_tests {
+    use lurek2d::light::occluder::Occluder;
+    use lurek2d::math::Vec2;
+    use lurek2d::render::gpu_shadows::{
+        collect_shadow_edges, collect_shadow_edges_with_cache, collect_shadow_edges_with_stats,
+        ShadowEdgeCache,
+    };
+
+    fn square_at(x: f32, y: f32) -> Occluder {
+        let mut occluder = Occluder::new(vec![
+            Vec2::new(-1.0, -1.0),
+            Vec2::new(1.0, -1.0),
+            Vec2::new(1.0, 1.0),
+            Vec2::new(-1.0, 1.0),
+        ]);
+        occluder.set_position(Vec2::new(x, y));
+        occluder
+    }
+
+    #[test]
+    fn shadow_edge_collection_culls_occluders_outside_light_radius() {
+        let near = square_at(4.0, 0.0);
+        let far = square_at(100.0, 0.0);
+        let collection = collect_shadow_edges_with_stats(0.0, 0.0, 10.0, 0xFFFF, [&near, &far]);
+
+        assert_eq!(collection.edges.len(), 4);
+        assert_eq!(collection.edges_collected, 4);
+        assert_eq!(collection.edges_culled_by_radius, 4);
+    }
+
+    #[test]
+    fn shadow_edge_collection_preserves_mask_filtering_and_legacy_wrapper() {
+        let mut matching = square_at(100.0, 0.0);
+        matching.set_light_mask(0b0010);
+        let mut skipped_by_mask = square_at(0.0, 0.0);
+        skipped_by_mask.set_light_mask(0b0100);
+
+        let edges = collect_shadow_edges(0.0, 0.0, 0b0010, [&matching, &skipped_by_mask]);
+
+        assert_eq!(edges.len(), 4);
+    }
+
+    #[test]
+    fn shadow_edge_cache_reuses_edges_until_occluder_generation_changes() {
+        let mut cache = ShadowEdgeCache::default();
+        let mut occluder = square_at(0.0, 0.0);
+
+        let first =
+            collect_shadow_edges_with_cache(0.0, 0.0, 10.0, 0xFFFF, [&occluder], &mut cache);
+        assert_eq!(first.edges.len(), 4);
+        assert_eq!(first.cache_hits, 0);
+        assert_eq!(first.cache_misses, 1);
+
+        let second =
+            collect_shadow_edges_with_cache(4.0, 0.0, 10.0, 0xFFFF, [&occluder], &mut cache);
+        assert_eq!(second.edges.len(), 4);
+        assert_eq!(second.cache_hits, 1);
+        assert_eq!(second.cache_misses, 0);
+
+        let generation_before = occluder.edge_generation();
+        occluder.set_position(Vec2::new(2.0, 0.0));
+        assert_ne!(occluder.edge_generation(), generation_before);
+
+        let third =
+            collect_shadow_edges_with_cache(0.0, 0.0, 10.0, 0xFFFF, [&occluder], &mut cache);
+        assert_eq!(third.edges.len(), 4);
+        assert_eq!(third.cache_hits, 0);
+        assert_eq!(third.cache_misses, 1);
+    }
+}
+
+mod frame_buffer_tests {
+    use lurek2d::render::gpu_state::FrameRenderBuffers;
+
+    #[test]
+    fn frame_render_buffers_clear_without_shrinking_capacity() {
+        let mut buffers = FrameRenderBuffers::default();
+        buffers.reserve_for_frame(8, 12, 16, 20, 4, 6);
+        buffers.scratch_color_verts.reserve(10);
+        buffers.scratch_color_idxs.reserve(14);
+        buffers.scratch_tex_verts.reserve(18);
+        buffers.scratch_tex_idxs.reserve(22);
+        let capacities = buffers.capacities();
+
+        buffers.clear_for_frame();
+
+        assert_eq!(buffers.lengths(), [0; 11]);
+        assert_eq!(buffers.capacities(), capacities);
+        assert!(capacities[0] >= 8);
+        assert!(capacities[1] >= 12);
+        assert!(capacities[2] >= 16);
+        assert!(capacities[3] >= 20);
+        assert!(capacities[4] >= 4);
+        assert!(capacities[5] >= 6);
+        assert!(capacities[6] >= 10);
+        assert!(capacities[7] >= 14);
+        assert!(capacities[8] >= 18);
+        assert!(capacities[9] >= 22);
+        assert!(capacities[10] >= 4);
+    }
+}
+
+mod render_input_validation_tests {
+    use lurek2d::math::Vec2;
+    use lurek2d::render::input_validation::{
+        validate_render_command, validate_render_command_with_category, RenderInputError,
+        RenderInputLimits,
+    };
+    use lurek2d::render::{DrawMode, RenderCommand, RenderCommandCategory};
+    use lurek2d::runtime::resource_keys::{CanvasKey, FontKey};
+    use slotmap::SlotMap;
+
+    fn dummy_font_key() -> FontKey {
+        let mut fonts: SlotMap<FontKey, ()> = SlotMap::with_key();
+        fonts.insert(())
+    }
+
+    fn dummy_canvas_key() -> CanvasKey {
+        let mut canvases: SlotMap<CanvasKey, ()> = SlotMap::with_key();
+        canvases.insert(())
+    }
+
+    #[test]
+    fn command_category_groups_representative_render_families() {
+        assert_eq!(
+            RenderCommand::SetColor(1.0, 1.0, 1.0, 1.0).category(),
+            RenderCommandCategory::State
+        );
+        assert_eq!(
+            RenderCommand::Translate { x: 1.0, y: 2.0 }.category(),
+            RenderCommandCategory::Transform
+        );
+        assert_eq!(
+            RenderCommand::Rectangle {
+                mode: DrawMode::Fill,
+                x: 0.0,
+                y: 0.0,
+                w: 8.0,
+                h: 8.0,
+            }
+            .category(),
+            RenderCommandCategory::Shape
+        );
+        assert_eq!(
+            RenderCommand::DrawRichText {
+                font_key: dummy_font_key(),
+                spans: Vec::new(),
+                x: 0.0,
+                y: 0.0,
+            }
+            .category(),
+            RenderCommandCategory::Text
+        );
+        assert_eq!(
+            RenderCommand::RegisterCanvas {
+                canvas_key: dummy_canvas_key(),
+                width: 32,
+                height: 32,
+            }
+            .category(),
+            RenderCommandCategory::Canvas
+        );
+        assert_eq!(
+            RenderCommand::BeginPostFx { stack_id: 9 }.category(),
+            RenderCommandCategory::Effect
+        );
+    }
+
+    #[test]
+    fn rejects_nonfinite_shape_coordinates_before_tessellation() {
+        let err = validate_render_command(
+            &RenderCommand::Rectangle {
+                mode: DrawMode::Fill,
+                x: f32::NAN,
+                y: 0.0,
+                w: 10.0,
+                h: 10.0,
+            },
+            &RenderInputLimits::default(),
+        )
+        .unwrap_err();
+
+        assert_eq!(
+            err,
+            RenderInputError::NonFinite {
+                field: "rectangle.x"
+            }
+        );
+    }
+
+    #[test]
+    fn categorized_validation_error_preserves_command_family_and_source() {
+        let err = validate_render_command_with_category(
+            &RenderCommand::Print {
+                font_key: dummy_font_key(),
+                text: "bad scale".to_string(),
+                x: 0.0,
+                y: 0.0,
+                scale: 0.0,
+            },
+            &RenderInputLimits::default(),
+        )
+        .unwrap_err();
+
+        assert_eq!(err.category, RenderCommandCategory::Text);
+        assert_eq!(
+            err.error,
+            RenderInputError::NonPositive {
+                field: "print.scale"
+            }
+        );
+        assert_eq!(
+            err.to_string(),
+            "Text command: print.scale must be greater than zero"
+        );
+    }
+
+    #[test]
+    fn rejects_invalid_state_scalars_and_color_ranges() {
+        assert_eq!(
+            validate_render_command(
+                &RenderCommand::SetLineWidth(0.0),
+                &RenderInputLimits::default()
+            )
+            .unwrap_err(),
+            RenderInputError::NonPositive {
+                field: "line_width"
+            }
+        );
+        assert_eq!(
+            validate_render_command(
+                &RenderCommand::SetColor(1.2, 0.0, 0.0, 1.0),
+                &RenderInputLimits::default()
+            )
+            .unwrap_err(),
+            RenderInputError::OutOfRange { field: "SetColor" }
+        );
+    }
+
+    #[test]
+    fn rejects_segment_and_vertex_count_over_limits() {
+        let limits = RenderInputLimits {
+            max_vertices_per_command: 2,
+            max_segments_per_command: 4,
+            max_postfx_passes: 1,
+        };
+
+        assert_eq!(
+            validate_render_command(
+                &RenderCommand::Arc {
+                    mode: DrawMode::Line,
+                    x: 0.0,
+                    y: 0.0,
+                    radius: 5.0,
+                    angle1: 0.0,
+                    angle2: 1.0,
+                    segments: 5,
+                },
+                &limits,
+            )
+            .unwrap_err(),
+            RenderInputError::TooMany {
+                field: "arc.segments",
+                len: 5,
+                max: 4,
+            }
+        );
+        assert_eq!(
+            validate_render_command(
+                &RenderCommand::Points {
+                    points: vec![(0.0, 0.0), (1.0, 1.0), (2.0, 2.0)]
+                },
+                &limits,
+            )
+            .unwrap_err(),
+            RenderInputError::TooMany {
+                field: "points",
+                len: 3,
+                max: 2,
+            }
+        );
+    }
+
+    #[test]
+    fn validates_array_lengths_for_polygon_like_commands() {
+        assert_eq!(
+            validate_render_command(
+                &RenderCommand::Polygon {
+                    mode: DrawMode::Fill,
+                    vertices: vec![0.0, 0.0, 1.0],
+                },
+                &RenderInputLimits::default(),
+            )
+            .unwrap_err(),
+            RenderInputError::OddCoordinateCount {
+                field: "polygon.vertices",
+                len: 3,
+            }
+        );
+        assert_eq!(
+            validate_render_command(
+                &RenderCommand::DrawConvexFan {
+                    vertices: vec![Vec2::new(0.0, 0.0), Vec2::new(1.0, 0.0)],
+                    uvs: vec![Vec2::new(0.0, 0.0)],
+                    texture_key: None,
+                    tint: [1.0, 1.0, 1.0, 1.0],
+                    blend: lurek2d::render::BlendMode::Alpha,
+                },
+                &RenderInputLimits::default(),
+            )
+            .unwrap_err(),
+            RenderInputError::LengthMismatch {
+                field: "convex_fan.uvs",
+                expected: 2,
+                actual: 1,
+            }
+        );
+    }
+
+    #[test]
+    fn accepts_valid_common_render_commands() {
+        let limits = RenderInputLimits::default();
+        assert!(
+            validate_render_command(&RenderCommand::SetColor(0.25, 0.5, 0.75, 1.0), &limits)
+                .is_ok()
+        );
+        assert!(validate_render_command(
+            &RenderCommand::DrawQuadBezier {
+                start: Vec2::new(0.0, 0.0),
+                control: Vec2::new(4.0, 8.0),
+                end: Vec2::new(10.0, 0.0),
+                segments: 16,
+            },
+            &limits,
+        )
+        .is_ok());
+    }
+}
+
 mod gpu_renderer_tests {
+    use lurek2d::render::gpu_frame_builder::merge_adjacent_prepared_draws;
     use lurek2d::render::gpu_pipeline::{
         build_custom_color_shader_source, build_custom_texture_shader_source, depth_stencil_state,
-        GpuStencilMode,
+        GeometryKind, GpuStencilMode,
+    };
+    use lurek2d::render::gpu_resources::{
+        canvas_texture_needs_recreate, is_builtin_static_geometry_key, texture_needs_upload,
+        validate_canvas_size, validate_rgba_texture_upload,
     };
     use lurek2d::render::gpu_shaders::ShaderUniformKind;
     use lurek2d::render::gpu_tess::{
-        color_write_mask_bits, color_write_mask_from_bits, normalize_scissor, parse_filter_mode,
-        uniform_bytes,
+        append_color_draw_range, color_write_mask_bits, color_write_mask_from_bits,
+        normalize_scissor, parse_filter_mode, sanitize_arc_segments, uniform_bytes,
     };
+    use lurek2d::render::gpu_types::{PreparedDraw, RenderTargetId};
     use lurek2d::render::renderer::{CompareMode, StencilAction};
-    use lurek2d::render::{Shader, UniformValue};
+    use lurek2d::render::shader::validate_uniform_name;
+    use lurek2d::render::{BlendMode, Shader, TextureData, UniformValue};
+    use lurek2d::runtime::resource_keys::StaticGeometryKey;
 
     const VALID_WGSL_FRAGMENT_SHADER: &str = r#"
 @fragment
@@ -701,6 +1427,26 @@ fn fs_main(
     return color + vec4<f32>(uv, 0.0, 0.0);
 }
 "#;
+
+    fn prepared_color_draw(idx_start: u32, idx_count: u32) -> PreparedDraw {
+        PreparedDraw {
+            target: RenderTargetId::Screen,
+            geometry: GeometryKind::Color,
+            texture_ref: None,
+            idx_start,
+            idx_count,
+            blend_mode: BlendMode::Alpha,
+            scissor: None,
+            color_mask_bits: color_write_mask_bits((true, true, true, true)),
+            shader: None,
+            stencil_mode: GpuStencilMode::Disabled,
+            stencil_reference: 0,
+            static_geometry: None,
+            instance_buffer: None,
+            instance_start: 0,
+            instance_count: 0,
+        }
+    }
 
     #[test]
     fn scissor_normalization_clamps_to_target_bounds() {
@@ -725,6 +1471,142 @@ fn fs_main(
         assert_eq!(parse_filter_mode("nearest"), wgpu::FilterMode::Nearest);
         assert_eq!(parse_filter_mode("unsupported"), wgpu::FilterMode::Nearest);
     }
+
+    #[test]
+    fn color_draw_range_records_existing_shared_index_span() {
+        let mut draws = Vec::new();
+        append_color_draw_range(
+            &mut draws,
+            3,
+            3,
+            RenderTargetId::Screen,
+            BlendMode::Alpha,
+            None,
+            color_write_mask_bits((true, true, true, true)),
+            None,
+            GpuStencilMode::Disabled,
+            0,
+        );
+        assert!(draws.is_empty());
+
+        append_color_draw_range(
+            &mut draws,
+            3,
+            9,
+            RenderTargetId::Screen,
+            BlendMode::Alpha,
+            Some((1, 2, 3, 4)),
+            color_write_mask_bits((true, false, true, false)),
+            None,
+            GpuStencilMode::Disabled,
+            7,
+        );
+
+        assert_eq!(draws.len(), 1);
+        let draw = draws[0];
+        assert_eq!(draw.idx_start, 3);
+        assert_eq!(draw.idx_count, 6);
+        assert_eq!(draw.scissor, Some((1, 2, 3, 4)));
+        assert_eq!(
+            draw.color_mask_bits,
+            color_write_mask_bits((true, false, true, false))
+        );
+        assert_eq!(draw.stencil_reference, 7);
+    }
+
+    #[test]
+    fn frame_builder_merges_adjacent_compatible_prepared_draws() {
+        let mut draws = vec![prepared_color_draw(0, 6), prepared_color_draw(6, 6)];
+        let mut scratch = Vec::new();
+
+        let merged = merge_adjacent_prepared_draws(&mut draws, &mut scratch);
+
+        assert_eq!(merged, 1);
+        assert_eq!(draws.len(), 1);
+        assert_eq!(draws[0].idx_start, 0);
+        assert_eq!(draws[0].idx_count, 12);
+        assert!(scratch.is_empty());
+    }
+
+    #[test]
+    fn frame_builder_keeps_resource_identity_boundaries() {
+        let mut static_draw = prepared_color_draw(0, 6);
+        static_draw.static_geometry = Some(StaticGeometryKey::default());
+        let mut instanced_a = prepared_color_draw(12, 6);
+        instanced_a.geometry = GeometryKind::ColorInstanced;
+        instanced_a.instance_start = 0;
+        instanced_a.instance_count = 1;
+        let mut instanced_b = prepared_color_draw(18, 6);
+        instanced_b.geometry = GeometryKind::ColorInstanced;
+        instanced_b.instance_start = 1;
+        instanced_b.instance_count = 1;
+        let mut draws = vec![
+            static_draw,
+            prepared_color_draw(6, 6),
+            instanced_a,
+            instanced_b,
+        ];
+        let mut scratch = Vec::new();
+
+        let merged = merge_adjacent_prepared_draws(&mut draws, &mut scratch);
+
+        assert_eq!(merged, 0);
+        assert_eq!(draws.len(), 4);
+        assert_eq!(draws[0].static_geometry, Some(StaticGeometryKey::default()));
+        assert_eq!(draws[2].instance_start, 0);
+        assert_eq!(draws[3].instance_start, 1);
+    }
+
+    #[test]
+    fn texture_upload_validation_rejects_invalid_dimensions_and_lengths() {
+        let limits = wgpu::Limits {
+            max_texture_dimension_2d: 64,
+            ..Default::default()
+        };
+        assert!(validate_rgba_texture_upload(0, 1, 4, &limits).is_err());
+        assert!(validate_rgba_texture_upload(65, 1, 260, &limits).is_err());
+        assert!(validate_rgba_texture_upload(2, 2, 12, &limits).is_err());
+        assert!(validate_rgba_texture_upload(2, 2, 16, &limits).is_ok());
+    }
+
+    #[test]
+    fn texture_upload_freshness_tracks_dimensions_and_revision() {
+        let mut texture =
+            TextureData::new(vec![255; 16], 2, 2, lurek2d::image::TextureColorSpace::Srgb);
+        assert!(texture_needs_upload(None, &texture));
+        assert!(!texture_needs_upload(Some((2, 2, 0)), &texture));
+        assert!(texture_needs_upload(Some((1, 2, 0)), &texture));
+
+        texture.mark_dirty();
+        assert!(texture_needs_upload(Some((2, 2, 0)), &texture));
+        assert!(!texture_needs_upload(Some((2, 2, 1)), &texture));
+    }
+
+    #[test]
+    fn canvas_validation_and_resize_detection_cover_zero_limit_and_size_drift() {
+        let limits = wgpu::Limits {
+            max_texture_dimension_2d: 64,
+            ..Default::default()
+        };
+        assert!(validate_canvas_size(0, 32, &limits).is_err());
+        assert!(validate_canvas_size(32, 65, &limits).is_err());
+        assert!(validate_canvas_size(32, 32, &limits).is_ok());
+        assert!(canvas_texture_needs_recreate(None, 32, 32));
+        assert!(canvas_texture_needs_recreate(Some((16, 32)), 32, 32));
+        assert!(!canvas_texture_needs_recreate(Some((32, 32)), 32, 32));
+    }
+
+    #[test]
+    fn builtin_static_quad_key_is_not_user_mesh_geometry() {
+        assert!(is_builtin_static_geometry_key(StaticGeometryKey::default()));
+    }
+
+    #[test]
+    fn arc_segment_sanitizer_prevents_zero_segments() {
+        assert_eq!(sanitize_arc_segments(0), 1);
+        assert_eq!(sanitize_arc_segments(8), 8);
+    }
+
     #[test]
     fn uniform_bytes_pack_bool_and_vec4_values() {
         let bool_bytes = uniform_bytes(&UniformValue::Bool(true));
@@ -747,6 +1629,26 @@ fn fs_main(
             4.0
         );
     }
+
+    #[test]
+    fn shader_send_rejects_invalid_or_reserved_uniform_names() {
+        assert!(validate_uniform_name("tint_color").is_ok());
+        assert!(validate_uniform_name("bad name").is_err());
+        assert!(validate_uniform_name("lurek").is_err());
+        assert!(validate_uniform_name("let").is_err());
+
+        let mut shader = Shader::new(VALID_WGSL_FRAGMENT_SHADER.to_string())
+            .expect("expected valid fragment shader");
+        assert!(shader
+            .send("tint_color".to_string(), UniformValue::Vec4([1.0; 4]))
+            .is_ok());
+        assert!(shader
+            .send("bad;name".to_string(), UniformValue::Float(1.0))
+            .is_err());
+        assert!(shader.has_uniform("tint_color"));
+        assert!(!shader.has_uniform("bad;name"));
+    }
+
     #[test]
     fn custom_color_shader_source_is_parseable_with_uniforms() {
         let uniform_signature = vec![

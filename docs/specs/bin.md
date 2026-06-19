@@ -20,6 +20,8 @@
 - `lurek_headless` is for automation, while `lurekc` is for interactive startup.
 - Read it as the boundary between tool execution and live play.
 
+This module is mostly self-contained inside the Edge/Integration group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
+
 ## Imports
 
 - No top-level `crate::<module>` imports were detected in this module's Rust source files.

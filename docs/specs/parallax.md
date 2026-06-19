@@ -25,6 +25,8 @@
 - It also keeps background motion readable across scene scales and camera styles.
 - Read it as the place where depth-illusion backgrounds become reusable scene content instead of a one-off renderer trick.
 
+This module primarily collaborates with `image`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
+
 ## Imports
 
 - `image`: Imports or references `image` from `src/image/`.

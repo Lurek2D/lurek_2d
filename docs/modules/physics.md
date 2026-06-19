@@ -19,6 +19,8 @@
 - That authority is what lets gameplay, tools, and effects ask the same world-state questions without maintaining parallel collision logic.
 - Other systems consume the results, but `physics` owns the source of truth for what counts as solid, colliding, constrained, or detectable in 2D space.
 
+This module primarily collaborates with `image`, `math`, `render`, `runtime`. Its responsibility should stay inside the Platform Services group rather than absorb behavior owned by those neighbors.
+
 ## Functions
 
 ### `lurek.physics.attachShape`

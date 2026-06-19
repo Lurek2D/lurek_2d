@@ -1327,6 +1327,11 @@ describe("render strict: LMesh methods", function()
         local x, y = mesh:getVertex(1)
         expect_equal(10, x)
         expect_equal(11, y)
+
+        local ok = pcall(function()
+            mesh:setVertex(99, { 0, 0, 0, 0, 1, 1, 1, 1 })
+        end)
+        expect_false(ok)
     end)
 
     -- @covers LMesh:setTexture
@@ -1483,6 +1488,26 @@ describe("render strict: batch text and OBJ APIs", function()
     it("newMesh creates a mesh userdata", function()
         local mesh = simple_mesh()
         expect_type("userdata", mesh)
+
+        local partial_ok = pcall(function()
+            lurek.render.newMesh({
+                { 0, 0, 0, 0 },
+                { 1, 0, 1, 0 },
+                { 0, 1, 0, 1 },
+                { 1, 1, 1, 1 },
+            }, "triangles")
+        end)
+        expect_false(partial_ok)
+
+        local nan = 0 / 0
+        local nan_ok = pcall(function()
+            lurek.render.newMesh({
+                { nan, 0, 0, 0 },
+                { 1, 0, 1, 0 },
+                { 0, 1, 0, 1 },
+            })
+        end)
+        expect_false(nan_ok)
     end)
 
     -- @covers lurek.render.drawMany
@@ -1685,6 +1710,14 @@ describe("DrawLayer flush", function()
         end
         layer:flush()
         expect_equal(100, sum)
+
+        local nan_order = {}
+        local nan = 0 / 0
+        layer:queue(nan, function() table.insert(nan_order, "nan1") end)
+        layer:queue(nan, function() table.insert(nan_order, "nan2") end)
+        layer:flush()
+        expect_equal("nan1", nan_order[1])
+        expect_equal("nan2", nan_order[2])
     end)
 end)
 

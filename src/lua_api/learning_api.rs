@@ -11,6 +11,10 @@ use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
 
+fn learning_runtime_error(api: &'static str, err: impl ToString) -> LuaError {
+    LuaError::RuntimeError(format!("{}: {}", api, err.to_string()))
+}
+
 /// Lua handle for a Q-learning table with configurable exploration and learning parameters.
 #[derive(Clone)]
 pub(crate) struct LuaQLearner {
@@ -23,15 +27,29 @@ impl LuaUserData for LuaQLearner {
         /// Chooses an action for a one-based state index using the learner's exploration policy.
         /// @param | state | integer | One-based state index.
         /// @return | integer | One-based chosen action index.
-        methods.add_method("chooseAction", |_, this, state: usize| {
-            Ok(this.inner.borrow().choose_action(state.saturating_sub(1)) + 1)
+        methods.add_method_mut("chooseAction", |_, this, state: usize| {
+            let action = this
+                .inner
+                .borrow_mut()
+                .try_choose_action(state.saturating_sub(1))
+                .map_err(|err| {
+                    learning_runtime_error("lurek.learning.LQLearner:chooseAction", err)
+                })?;
+            Ok(action + 1)
         });
         // -- bestAction --
         /// Returns the highest-valued action for a one-based state index without exploration.
         /// @param | state | integer | One-based state index.
         /// @return | integer | One-based best action index.
         methods.add_method("bestAction", |_, this, state: usize| {
-            Ok(this.inner.borrow().best_action(state.saturating_sub(1)) + 1)
+            let action = this
+                .inner
+                .borrow()
+                .try_best_action(state.saturating_sub(1))
+                .map_err(|err| {
+                    learning_runtime_error("lurek.learning.LQLearner:bestAction", err)
+                })?;
+            Ok(action + 1)
         });
         // -- learn --
         /// Applies one Q-learning update from a transition and reward.
@@ -39,15 +57,18 @@ impl LuaUserData for LuaQLearner {
         /// @param | action | integer | One-based action index taken in the previous state.
         /// @param | reward | number | Reward received for the transition.
         /// @param | next_state | integer | One-based next state index.
-        methods.add_method(
+        methods.add_method_mut(
             "learn",
             |_, this, (state, action, reward, next_state): (usize, usize, f64, usize)| {
-                this.inner.borrow_mut().learn(
-                    state.saturating_sub(1),
-                    action.saturating_sub(1),
-                    reward,
-                    next_state.saturating_sub(1),
-                );
+                this.inner
+                    .borrow_mut()
+                    .try_learn(
+                        state.saturating_sub(1),
+                        action.saturating_sub(1),
+                        reward,
+                        next_state.saturating_sub(1),
+                    )
+                    .map_err(|err| learning_runtime_error("lurek.learning.LQLearner:learn", err))?;
                 Ok(())
             },
         );
@@ -67,21 +88,24 @@ impl LuaUserData for LuaQLearner {
         /// @param | state | integer | One-based state index.
         /// @param | action | integer | One-based action index.
         /// @param | value | number | Q-value to store.
-        methods.add_method(
+        methods.add_method_mut(
             "setQValue",
             |_, this, (state, action, value): (usize, usize, f64)| {
-                this.inner.borrow_mut().set_q(
-                    state.saturating_sub(1),
-                    action.saturating_sub(1),
-                    value,
-                );
+                this.inner
+                    .borrow_mut()
+                    .try_set_q(state.saturating_sub(1), action.saturating_sub(1), value)
+                    .map_err(|err| {
+                        learning_runtime_error("lurek.learning.LQLearner:setQValue", err)
+                    })?;
                 Ok(())
             },
         );
         // -- endEpisode --
         /// Decays epsilon and increments the episode count.
-        methods.add_method("endEpisode", |_, this, ()| {
-            this.inner.borrow_mut().end_episode();
+        methods.add_method_mut("endEpisode", |_, this, ()| {
+            this.inner.borrow_mut().try_end_episode().map_err(|err| {
+                learning_runtime_error("lurek.learning.LQLearner:endEpisode", err)
+            })?;
             Ok(())
         });
         // -- getEpisodeCount --
@@ -105,8 +129,17 @@ impl LuaUserData for LuaQLearner {
         // -- setLearningRate --
         /// Sets the Q-learning alpha learning rate.
         /// @param | v | number | Learning rate used by future updates.
-        methods.add_method("setLearningRate", |_, this, v: f64| {
-            this.inner.borrow_mut().alpha = v;
+        methods.add_method_mut("setLearningRate", |_, this, v: f64| {
+            let mut learner = this.inner.borrow_mut();
+            let old = learner.alpha;
+            learner.alpha = v;
+            if let Err(err) = learner.validate_hyperparams() {
+                learner.alpha = old;
+                return Err(learning_runtime_error(
+                    "lurek.learning.LQLearner:setLearningRate",
+                    err,
+                ));
+            }
             Ok(())
         });
         // -- getLearningRate --
@@ -118,8 +151,17 @@ impl LuaUserData for LuaQLearner {
         // -- setDiscountFactor --
         /// Sets the Q-learning gamma discount factor.
         /// @param | v | number | Discount factor used by future updates.
-        methods.add_method("setDiscountFactor", |_, this, v: f64| {
-            this.inner.borrow_mut().gamma = v;
+        methods.add_method_mut("setDiscountFactor", |_, this, v: f64| {
+            let mut learner = this.inner.borrow_mut();
+            let old = learner.gamma;
+            learner.gamma = v;
+            if let Err(err) = learner.validate_hyperparams() {
+                learner.gamma = old;
+                return Err(learning_runtime_error(
+                    "lurek.learning.LQLearner:setDiscountFactor",
+                    err,
+                ));
+            }
             Ok(())
         });
         // -- getDiscountFactor --
@@ -131,8 +173,17 @@ impl LuaUserData for LuaQLearner {
         // -- setExplorationRate --
         /// Sets the exploration rate used by action selection.
         /// @param | v | number | Exploration probability for future `chooseAction` calls.
-        methods.add_method("setExplorationRate", |_, this, v: f64| {
-            this.inner.borrow_mut().epsilon = v;
+        methods.add_method_mut("setExplorationRate", |_, this, v: f64| {
+            let mut learner = this.inner.borrow_mut();
+            let old = learner.epsilon;
+            learner.epsilon = v;
+            if let Err(err) = learner.validate_hyperparams() {
+                learner.epsilon = old;
+                return Err(learning_runtime_error(
+                    "lurek.learning.LQLearner:setExplorationRate",
+                    err,
+                ));
+            }
             Ok(())
         });
         // -- getExplorationRate --
@@ -144,8 +195,17 @@ impl LuaUserData for LuaQLearner {
         // -- setExplorationDecay --
         /// Sets the exploration decay multiplier applied across episodes.
         /// @param | v | number | Exploration decay multiplier.
-        methods.add_method("setExplorationDecay", |_, this, v: f64| {
-            this.inner.borrow_mut().epsilon_decay = v;
+        methods.add_method_mut("setExplorationDecay", |_, this, v: f64| {
+            let mut learner = this.inner.borrow_mut();
+            let old = learner.epsilon_decay;
+            learner.epsilon_decay = v;
+            if let Err(err) = learner.validate_hyperparams() {
+                learner.epsilon_decay = old;
+                return Err(learning_runtime_error(
+                    "lurek.learning.LQLearner:setExplorationDecay",
+                    err,
+                ));
+            }
             Ok(())
         });
         // -- getExplorationDecay --
@@ -164,10 +224,9 @@ impl LuaUserData for LuaQLearner {
         /// Replaces the Q-learner state from a JSON string.
         /// @param | json | string | JSON data previously produced by `serialize`.
         methods.add_method("deserialize", |_, this, json: String| {
-            this.inner
-                .borrow_mut()
-                .deserialize(&json)
-                .map_err(LuaError::RuntimeError)?;
+            this.inner.borrow_mut().deserialize(&json).map_err(|err| {
+                learning_runtime_error("lurek.learning.LQLearner:deserialize", err)
+            })?;
             Ok(())
         });
         // -- type --
@@ -185,8 +244,13 @@ impl LuaUserData for LuaQLearner {
         /// Alias for `chooseAction`. Selects an action for the given one-based state using the learner's policy.
         /// @param | state | integer | One-based state index.
         /// @return | integer | One-based chosen action index.
-        methods.add_method("predict", |_, this, state: usize| {
-            Ok(this.inner.borrow().choose_action(state.saturating_sub(1)) + 1)
+        methods.add_method_mut("predict", |_, this, state: usize| {
+            let action = this
+                .inner
+                .borrow_mut()
+                .try_choose_action(state.saturating_sub(1))
+                .map_err(|err| learning_runtime_error("lurek.learning.LQLearner:predict", err))?;
+            Ok(action + 1)
         });
     }
 }
@@ -208,7 +272,12 @@ impl LuaUserData for LuaNeuralNet {
             "addLayer",
             |_, this, (inputs, outputs, activation): (usize, usize, String)| {
                 let act = Activation::from_str(&activation);
-                this.inner.borrow_mut().add_layer(inputs, outputs, act);
+                this.inner
+                    .borrow_mut()
+                    .try_add_layer(inputs, outputs, act)
+                    .map_err(|err| {
+                        learning_runtime_error("lurek.learning.LNeuralNet:addLayer", err)
+                    })?;
                 Ok(())
             },
         );
@@ -217,7 +286,10 @@ impl LuaUserData for LuaNeuralNet {
         /// @param | input | table | Array of numeric input values.
         /// @return | number[] | Numeric output values.
         methods.add_method("forward", |lua, this, input: Vec<f32>| {
-            let out = this.inner.borrow().forward(&input);
+            let out =
+                this.inner.borrow().try_forward(&input).map_err(|err| {
+                    learning_runtime_error("lurek.learning.LNeuralNet:forward", err)
+                })?;
             let t = lua.create_table()?;
             for (i, v) in out.into_iter().enumerate() {
                 t.raw_set(i + 1, v)?;
@@ -270,7 +342,10 @@ impl LuaUserData for LuaNeuralNet {
         /// @param | input | table | Array of numeric input values.
         /// @return | number[] | Numeric output values.
         methods.add_method("predict", |lua, this, input: Vec<f32>| {
-            let out = this.inner.borrow().forward(&input);
+            let out =
+                this.inner.borrow().try_forward(&input).map_err(|err| {
+                    learning_runtime_error("lurek.learning.LNeuralNet:predict", err)
+                })?;
             let t = lua.create_table()?;
             for (i, v) in out.into_iter().enumerate() {
                 t.raw_set(i + 1, v)?;
@@ -291,7 +366,9 @@ impl LuaUserData for LuaGeneticAlgorithm {
         // -- evolve --
         /// Advances the genetic algorithm by one generation.
         methods.add_method_mut("evolve", |_, this, ()| {
-            this.inner.borrow_mut().evolve();
+            this.inner.borrow_mut().try_evolve().map_err(|err| {
+                learning_runtime_error("lurek.learning.LGeneticAlgorithm:evolve", err)
+            })?;
             Ok(())
         });
         // -- generation --
@@ -311,6 +388,12 @@ impl LuaUserData for LuaGeneticAlgorithm {
         /// @param | idx | integer | Zero-based chromosome index.
         /// @param | fitness | number | Fitness value used by the next evolution step.
         methods.add_method_mut("setFitness", |_, this, (idx, fitness): (usize, f32)| {
+            if !fitness.is_finite() {
+                return Err(learning_runtime_error(
+                    "lurek.learning.LGeneticAlgorithm:setFitness",
+                    "fitness must be finite",
+                ));
+            }
             if let Some(c) = this.inner.borrow_mut().population.get_mut(idx) {
                 c.fitness = fitness;
             }
@@ -434,7 +517,9 @@ impl LuaUserData for LuaNeuroevolution {
         // -- evolve --
         /// Advances the neuroevolution population by one generation.
         methods.add_method_mut("evolve", |_, this, ()| {
-            this.inner.borrow_mut().evolve();
+            this.inner.borrow_mut().try_evolve().map_err(|err| {
+                learning_runtime_error("lurek.learning.LNeuroevolution:evolve", err)
+            })?;
             Ok(())
         });
         // -- setFitness --
@@ -442,6 +527,12 @@ impl LuaUserData for LuaNeuroevolution {
         /// @param | idx | integer | Zero-based chromosome index.
         /// @param | fitness | number | Fitness value used by the next evolution step.
         methods.add_method_mut("setFitness", |_, this, (idx, fitness): (usize, f32)| {
+            if !fitness.is_finite() {
+                return Err(learning_runtime_error(
+                    "lurek.learning.LNeuroevolution:setFitness",
+                    "fitness must be finite",
+                ));
+            }
             this.inner.borrow_mut().set_fitness(idx, fitness);
             Ok(())
         });
@@ -659,11 +750,19 @@ impl LuaUserData for LuaModel {
         methods.add_method_mut("predict", |lua, this, input: LuaValue| match this {
             LuaModel::QLearner(q) => {
                 let state: usize = lua.unpack(input)?;
-                Ok(lua.pack(q.inner.borrow().choose_action(state.saturating_sub(1)) + 1)?)
+                let action = q
+                    .inner
+                    .borrow_mut()
+                    .try_choose_action(state.saturating_sub(1))
+                    .map_err(|err| learning_runtime_error("lurek.learning.LModel:predict", err))?;
+                Ok(lua.pack(action + 1)?)
             }
             LuaModel::NeuralNet(n) => {
                 let v: Vec<f32> = lua.unpack(input)?;
-                let out = n.inner.borrow().forward(&v);
+                let out =
+                    n.inner.borrow().try_forward(&v).map_err(|err| {
+                        learning_runtime_error("lurek.learning.LModel:predict", err)
+                    })?;
                 let t = lua.create_table()?;
                 for (i, val) in out.into_iter().enumerate() {
                     t.raw_set(i + 1, val)?;
@@ -1498,12 +1597,16 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// Creates a Q-learner with fixed state and action counts.
     /// @param | sc | integer | Number of discrete states.
     /// @param | ac | integer | Number of discrete actions.
+    /// @param | seed | integer? | Optional deterministic RNG seed used for exploration and replay.
     /// @return | LQLearner | New Q-learner handle.
     tbl.set(
         "newQLearner",
-        lua.create_function(|_, (sc, ac): (usize, usize)| {
+        lua.create_function(|_, (sc, ac, seed): (usize, usize, Option<u64>)| {
             Ok(LuaQLearner {
-                inner: Rc::new(RefCell::new(QLearner::new(sc, ac))),
+                inner: Rc::new(RefCell::new(
+                    QLearner::try_new_with_seed(sc, ac, seed.unwrap_or(0))
+                        .map_err(|err| learning_runtime_error("lurek.learning.newQLearner", err))?,
+                )),
             })
         })?,
     )?;
@@ -1539,9 +1642,11 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         "newGeneticAlgorithm",
         lua.create_function(|_, (pop_size, gene_count, seed): (usize, usize, u64)| {
             Ok(LuaGeneticAlgorithm {
-                inner: Rc::new(RefCell::new(GeneticAlgorithm::new(
-                    pop_size, gene_count, seed,
-                ))),
+                inner: Rc::new(RefCell::new(
+                    GeneticAlgorithm::try_new(pop_size, gene_count, seed).map_err(|err| {
+                        learning_runtime_error("lurek.learning.newGeneticAlgorithm", err)
+                    })?,
+                )),
             })
         })?,
     )?;
@@ -1596,7 +1701,11 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
                 spec.push((in_size, out_size, act));
             }
             Ok(LuaNeuroevolution {
-                inner: Rc::new(RefCell::new(Neuroevolution::new(spec, pop_size, seed))),
+                inner: Rc::new(RefCell::new(
+                    Neuroevolution::try_new(spec, pop_size, seed).map_err(|err| {
+                        learning_runtime_error("lurek.learning.newNeuroevolution", err)
+                    })?,
+                )),
             })
         })?,
     )?;
@@ -1732,20 +1841,20 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
 
     // -- loadOnnx --
     /// Loads and optimises an ONNX model from a file path.
-    /// @param | path | string | Filesystem path to the `.onnx` model file.
+    /// @param | path | string | Filesystem path to the `.onnx` model file inside the current sandbox root.
     /// @return | LOnnxModel | Loaded model handle ready for inference.
     tbl.set(
         "loadOnnx",
         lua.create_function(|_, path: String| {
             OnnxModel::load(&path)
                 .map(|m| LuaOnnxModel(Rc::new(RefCell::new(m))))
-                .map_err(LuaError::RuntimeError)
+                .map_err(|err| learning_runtime_error("lurek.learning.loadOnnx", err))
         })?,
     )?;
     // -- newTensor --
     /// Creates a tensor from a shape (integer array) and flat float data (number array).
     /// @param | shape | integer[] | Dimension sizes in row-major order.
-    /// @param | data | number[] | Flat element values matching the product of `shape`.
+    /// @param | data | number[] | Flat finite element values matching the product of `shape`.
     /// @return | LTensor | New tensor handle.
     tbl.set(
         "newTensor",
@@ -1762,9 +1871,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
                     Ok(v as f32)
                 })
                 .collect::<LuaResult<Vec<f32>>>()?;
-            Ok(LuaTensor(Rc::new(RefCell::new(LurekTensor::new(
-                shape, data,
-            )))))
+            Ok(LuaTensor(Rc::new(RefCell::new(
+                LurekTensor::try_new(shape, data)
+                    .map_err(|err| learning_runtime_error("lurek.learning.newTensor", err))?,
+            ))))
         })?,
     )?;
 

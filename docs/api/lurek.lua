@@ -373,6 +373,8 @@ LI18nSearchResult = {}
 
 ---@class LInputAdvancePlaybackResult
 ---@field kind string Event kind (press, release, hold).
+---@field mouse_x number? Replayed mouse X coordinate for this frame when recorded.
+---@field mouse_y number? Replayed mouse Y coordinate for this frame when recorded.
 ---@field name string Event name.
 LInputAdvancePlaybackResult = {}
 
@@ -3586,6 +3588,10 @@ function LAIWorld:getAgentCount() end
 ---@return LAIBlackboard Blackboard handle initialized from the world's global blackboard values at call time.
 function LAIWorld:getGlobalBlackboard() end
 
+--- Returns callback errors recorded during the most recent `update` call.
+---@return table Array of `{ context, message }` tables.
+function LAIWorld:getLastCallbackErrors() end
+
 --- Removes an agent from this world by using an existing agent handle.
 ---@param agent LBot Bot handle whose stored name identifies the world entry to remove.
 function LAIWorld:removeAgent(agent) end
@@ -3922,6 +3928,14 @@ function LGOAPPlanner:getActionCount() end
 ---@return number Current goal count.
 function LGOAPPlanner:getGoalCount() end
 
+--- Returns the last planner failure reason string when planning did not succeed.
+---@return LuaValue Failure reason string, or nil when the last plan succeeded.
+function LGOAPPlanner:getLastFailureReason() end
+
+--- Returns the last structured GOAP planning trace.
+---@return table Table containing `selected_goal`, `chosen_plan`, `iterations`, `expanded_nodes`, and `failure_reason`.
+function LGOAPPlanner:getLastTrace() end
+
 --- Returns the maximum number of planner iterations allowed during search.
 ---@return number Current maximum iteration count.
 function LGOAPPlanner:getMaxIterations() end
@@ -4092,6 +4106,10 @@ function LInfluenceMap:type() end
 ---@param name string Type name to compare against `InfluenceMap` and `Object`.
 ---@return boolean True when the supplied type name matches this handle.
 function LInfluenceMap:typeOf(name) end
+
+--- Returns the last structured MCTS search trace.
+---@return table Table containing `chosen_action`, `iterations_run`, `nodes_expanded`, `invalid_score_count`, `callback_errors`, and `failure_reason`.
+function LMCTSEngine:getLastTrace() end
 
 --- Runs MCTS from a root state using Lua callbacks for actions, transitions, and evaluation.
 ---@param root_state number Opaque integer state identifier supplied by game code.
@@ -4377,6 +4395,10 @@ function LSteeringManager:getBehaviorCount() end
 ---@return string Combine mode name.
 function LSteeringManager:getCombineMode() end
 
+--- Returns the most recent steering validation or runtime diagnostic.
+---@return LuaValue Diagnostic string, or nil when no diagnostic has been recorded.
+function LSteeringManager:getLastDiagnostic() end
+
 --- Returns the last steering force calculated by this manager.
 ---@return number X and Y force values from the previous calculation. (value 1).
 ---@return number X and Y force values from the previous calculation. (value 2).
@@ -4589,6 +4611,10 @@ function LUtilityAI:getActionCount() end
 --- Returns the last winning action name when evaluation has selected one.
 ---@return LuaValue Last action name, or nil before an action has won.
 function LUtilityAI:getLastAction() end
+
+--- Returns the last structured utility evaluation trace.
+---@return table Table containing `chosen_action`, `callbacks_used`, `actions`, and `callback_errors`.
+function LUtilityAI:getLastTrace() end
 
 --- Returns the Lua-visible type name for this utility AI handle.
 ---@return string The string `LUtilityAI`.
@@ -15749,7 +15775,7 @@ lurek.learning.defineEnv = function(config) end
 lurek.learning.frameStack = function(n) end
 
 --- Loads and optimises an ONNX model from a file path.
----@param path string Filesystem path to the `.onnx` model file.
+---@param path string Filesystem path to the `.onnx` model file inside the current sandbox root.
 ---@return LOnnxModel Loaded model handle ready for inference.
 lurek.learning.loadOnnx = function(path) end
 
@@ -15830,12 +15856,13 @@ lurek.learning.newPositionalEncoding = function(d_model, max_len) end
 --- Creates a Q-learner with fixed state and action counts.
 ---@param sc number Number of discrete states.
 ---@param ac number Number of discrete actions.
+---@param seed? number Optional deterministic RNG seed used for exploration and replay.
 ---@return LQLearner New Q-learner handle.
-lurek.learning.newQLearner = function(sc, ac) end
+lurek.learning.newQLearner = function(sc, ac, seed) end
 
 --- Creates a tensor from a shape (integer array) and flat float data (number array).
 ---@param shape number[] Dimension sizes in row-major order.
----@param data number[] Flat element values matching the product of `shape`.
+---@param data number[] Flat finite element values matching the product of `shape`.
 ---@return LTensor New tensor handle.
 lurek.learning.newTensor = function(shape, data) end
 
@@ -30411,6 +30438,10 @@ function LComboBox:getItem(index) end
 ---@return number The item count.
 function LComboBox:getItemCount() end
 
+--- Returns the maximum number of dropdown rows shown before the combo box scrolls.
+---@return number Maximum visible dropdown row count.
+function LComboBox:getMaxVisibleItems() end
+
 --- Returns the 1-based index of the currently selected item, or 0 if none is selected.
 ---@return number The selected index.
 function LComboBox:getSelectedIndex() end
@@ -30423,6 +30454,10 @@ function LComboBox:getSelectedItem() end
 ---@param index number The 1-based index of the item to remove.
 ---@return boolean True if the item was removed.
 function LComboBox:removeItem(index) end
+
+--- Sets the maximum number of dropdown rows shown at once before the combo box scrolls.
+---@param count number Maximum visible dropdown rows; values below 1 clamp to 1.
+function LComboBox:setMaxVisibleItems(count) end
 
 --- Sets the selected item by 1-based index.
 ---@param index number The 1-based index of the item to select.
@@ -31191,6 +31226,10 @@ function LTextInput:getCursorPosition() end
 ---@return string The placeholder text.
 function LTextInput:getPlaceholder() end
 
+--- Returns whether pressing Enter in this text input submits the surrounding dialog default action.
+---@return boolean True if Enter submits the parent dialog default action.
+function LTextInput:getSubmitOnEnter() end
+
 --- Returns the current text content of this text input field.
 ---@return string The input text.
 function LTextInput:getText() end
@@ -31206,6 +31245,10 @@ function LTextInput:setMaxLength(n) end
 --- Sets the placeholder text shown when the input is empty.
 ---@param text string The placeholder text.
 function LTextInput:setPlaceholder(text) end
+
+--- Controls whether pressing Enter in this text input submits the surrounding dialog default action.
+---@param value boolean True to submit on Enter, false to consume Enter locally.
+function LTextInput:setSubmitOnEnter(value) end
 
 --- Sets the text content of this text input field and moves the cursor to the end.
 ---@param text string The text to set.
@@ -31469,6 +31512,10 @@ function LUiWidget:findById(id) end
 ---@return number The alpha value between 0.0 and 1.0.
 function LUiWidget:getAlpha() end
 
+--- Returns the explicit accessible name metadata for this widget.
+---@return string The stored accessible name, or an empty string when unset.
+function LUiWidget:getAriaName() end
+
 --- Returns the number of direct child widgets attached to this widget.
 ---@return number The child count.
 function LUiWidget:getChildCount() end
@@ -31488,6 +31535,10 @@ function LUiWidget:getFlexShrink() end
 --- Returns the string identifier assigned to this widget.
 ---@return string The widget ID, or an empty string if none was set.
 function LUiWidget:getId() end
+
+--- Returns the widget index associated through `setLabelFor`, or nil.
+---@return number The linked widget index.
+function LUiWidget:getLabelFor() end
 
 --- Returns the outer margin of this widget.
 ---@return number Top; right; bottom; and left margin in pixels. (value 1).
@@ -31528,6 +31579,10 @@ function LUiWidget:getPosition() end
 ---@return number The x; y; width; and height of the computed rect. (value 3).
 ---@return number The x; y; width; and height of the computed rect. (value 4).
 function LUiWidget:getRect() end
+
+--- Returns the semantic role string for this widget.
+---@return string The configured or default semantic role.
+function LUiWidget:getRole() end
 
 --- Returns the width and height of this widget.
 ---@return number The width and height in pixels. (value 1).
@@ -31628,6 +31683,10 @@ function LUiWidget:setFont(font) end
 --- Assigns a string identifier to this widget for lookup with findById.
 ---@param id string A unique identifier string.
 function LUiWidget:setId(id) end
+
+--- Associates this label widget with another widget for accessibility naming.
+---@param target? number Target widget index, or nil to clear the link.
+function LUiWidget:setLabelFor(target) end
 
 --- Sets the outer margin of this widget. Accepts 1 to 4 values (top, right?, bottom?, left?) following CSS shorthand rules.
 ---@param top number Top margin in pixels (also used as default for other sides).
@@ -31831,6 +31890,10 @@ lurek.ui.focusNext = function() end
 
 --- Moves keyboard focus to the previous focusable widget.
 lurek.ui.focusPrev = function() end
+
+--- Returns a flattened accessibility snapshot for all live widgets except the root.
+---@return table Array of accessibility node tables.
+lurek.ui.getAccessibilityTree = function() end
 
 --- Returns the widget index currently being dragged, or nil.
 ---@return number The dragged widget index.
@@ -32166,6 +32229,10 @@ lurek.ui.updateResolution = function(width, height) end
 ---@param data table A table mapping binding keys to values.
 ---@return number The number of widgets whose state changed.
 lurek.ui.update_bindings = function(data) end
+
+--- Returns accessibility and usability diagnostics for the live widget tree.
+---@return table Array of diagnostic tables containing `message` and optional `widget_idx`.
+lurek.ui.validateUx = function() end
 
 --- Calculate the visible item range for a scrollable list widget.
 ---@param widget table Widget table with _idx field.

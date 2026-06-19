@@ -5,12 +5,30 @@
 //! Keeps capture logic separate from the main GPU renderer so test-friendly output does not complicate frame code.
 //! Acts as the software-capture boundary between front-end render commands and headless image generation.
 //! Provides one owner for CPU replay semantics, making screenshot differences easier to debug in non-GPU runs.
+//! Support matrix:
+//! - Supported state: color, line width, point size, transforms, scissor, color masks, and stencil controls.
+//! - Supported geometry: rectangles, rounded rectangles, circles, ellipses, triangles, polygons, lines, polylines, arcs, and points.
+//! - Approximated geometry: colored polygons, convex fans, and transient meshes render as solid CPU polygons.
+//! - Ignored and counted: GPU resources, textures, text, shaders, post-fx, layers, sort groups, batches, registered meshes, and physics/Spine debug paths.
 //! Open this file when headless capture output differs from expected draw behavior or misses command coverage.
 //! Use this owner before GPU renderer changes when only software screenshot evidence appears incorrect.
 
 use crate::image::ImageData;
 use crate::render::mesh::Mesh;
 use crate::render::renderer::{CompareMode, DrawMode, RenderCommand, StencilAction};
+
+/// Counters collected while replaying render commands through the software capture path.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub struct SoftwareCaptureDiagnostics {
+    /// Commands intentionally ignored because CPU capture does not approximate them yet.
+    pub unsupported_capture_commands: u32,
+    /// Polygons whose transformed bounding box was clipped to the image bounds before rasterization.
+    pub clamped_polygon_bboxes: u32,
+    /// Polygons skipped because their transformed bounding box did not intersect the image.
+    pub skipped_offscreen_polygons: u32,
+    /// Geometry inputs skipped because transformed coordinates were not finite.
+    pub invalid_geometry_inputs: u32,
+}
 
 #[derive(Clone, Copy)]
 struct Mat3 {
@@ -81,6 +99,7 @@ struct CaptureState {
     stencil_mode: CaptureStencilMode,
     stencil: Vec<u8>,
     width: u32,
+    height: u32,
 }
 
 impl CaptureState {
@@ -96,6 +115,7 @@ impl CaptureState {
             stencil_mode: CaptureStencilMode::Disabled,
             stencil: vec![0; (width as usize).saturating_mul(height as usize)],
             width,
+            height,
         }
     }
 }
@@ -327,7 +347,44 @@ fn point_in_polygon(point: (f32, f32), vertices: &[(f32, f32)]) -> bool {
     inside
 }
 
-fn fill_polygon(img: &mut ImageData, state: &mut CaptureState, vertices: &[(f32, f32)]) {
+fn clamp_polygon_bbox_to_image(
+    min_x: f32,
+    max_x: f32,
+    min_y: f32,
+    max_y: f32,
+    width: u32,
+    height: u32,
+) -> Option<(i32, i32, i32, i32, bool)> {
+    if width == 0 || height == 0 {
+        return None;
+    }
+    if !min_x.is_finite() || !max_x.is_finite() || !min_y.is_finite() || !max_y.is_finite() {
+        return None;
+    }
+    let raw_min_x = min_x.floor() as i32;
+    let raw_max_x = max_x.ceil() as i32;
+    let raw_min_y = min_y.floor() as i32;
+    let raw_max_y = max_y.ceil() as i32;
+    let image_max_x = width.saturating_sub(1).min(i32::MAX as u32) as i32;
+    let image_max_y = height.saturating_sub(1).min(i32::MAX as u32) as i32;
+    if raw_max_x < 0 || raw_max_y < 0 || raw_min_x > image_max_x || raw_min_y > image_max_y {
+        return None;
+    }
+    let min_x = raw_min_x.clamp(0, image_max_x);
+    let max_x = raw_max_x.clamp(0, image_max_x);
+    let min_y = raw_min_y.clamp(0, image_max_y);
+    let max_y = raw_max_y.clamp(0, image_max_y);
+    let clamped =
+        min_x != raw_min_x || max_x != raw_max_x || min_y != raw_min_y || max_y != raw_max_y;
+    Some((min_x, max_x, min_y, max_y, clamped))
+}
+
+fn fill_polygon(
+    img: &mut ImageData,
+    state: &mut CaptureState,
+    diagnostics: &mut SoftwareCaptureDiagnostics,
+    vertices: &[(f32, f32)],
+) {
     if vertices.len() < 3 {
         return;
     }
@@ -335,26 +392,39 @@ fn fill_polygon(img: &mut ImageData, state: &mut CaptureState, vertices: &[(f32,
         .iter()
         .map(|(x, y)| state.transform.transform_point(*x, *y))
         .collect();
+    if transformed
+        .iter()
+        .any(|(x, y)| !x.is_finite() || !y.is_finite())
+    {
+        diagnostics.invalid_geometry_inputs = diagnostics.invalid_geometry_inputs.saturating_add(1);
+        return;
+    }
     let min_x = transformed
         .iter()
         .map(|(x, _)| *x)
-        .fold(f32::INFINITY, f32::min)
-        .floor() as i32;
+        .fold(f32::INFINITY, f32::min);
     let max_x = transformed
         .iter()
         .map(|(x, _)| *x)
-        .fold(f32::NEG_INFINITY, f32::max)
-        .ceil() as i32;
+        .fold(f32::NEG_INFINITY, f32::max);
     let min_y = transformed
         .iter()
         .map(|(_, y)| *y)
-        .fold(f32::INFINITY, f32::min)
-        .floor() as i32;
+        .fold(f32::INFINITY, f32::min);
     let max_y = transformed
         .iter()
         .map(|(_, y)| *y)
-        .fold(f32::NEG_INFINITY, f32::max)
-        .ceil() as i32;
+        .fold(f32::NEG_INFINITY, f32::max);
+    let Some((min_x, max_x, min_y, max_y, clamped)) =
+        clamp_polygon_bbox_to_image(min_x, max_x, min_y, max_y, state.width, state.height)
+    else {
+        diagnostics.skipped_offscreen_polygons =
+            diagnostics.skipped_offscreen_polygons.saturating_add(1);
+        return;
+    };
+    if clamped {
+        diagnostics.clamped_polygon_bboxes = diagnostics.clamped_polygon_bboxes.saturating_add(1);
+    }
     for py in min_y..=max_y {
         for px in min_x..=max_x {
             if point_in_polygon((px as f32 + 0.5, py as f32 + 0.5), &transformed) {
@@ -367,18 +437,21 @@ fn fill_polygon(img: &mut ImageData, state: &mut CaptureState, vertices: &[(f32,
 fn draw_polygon(
     img: &mut ImageData,
     state: &mut CaptureState,
+    diagnostics: &mut SoftwareCaptureDiagnostics,
     mode: &DrawMode,
     vertices: &[(f32, f32)],
 ) {
     match mode {
-        DrawMode::Fill => fill_polygon(img, state, vertices),
+        DrawMode::Fill => fill_polygon(img, state, diagnostics, vertices),
         DrawMode::Line => draw_polyline(img, state, vertices, true),
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 fn draw_rect(
     img: &mut ImageData,
     state: &mut CaptureState,
+    diagnostics: &mut SoftwareCaptureDiagnostics,
     mode: &DrawMode,
     x: f32,
     y: f32,
@@ -386,12 +459,13 @@ fn draw_rect(
     h: f32,
 ) {
     let vertices = [(x, y), (x + w, y), (x + w, y + h), (x, y + h)];
-    draw_polygon(img, state, mode, &vertices);
+    draw_polygon(img, state, diagnostics, mode, &vertices);
 }
 
 fn draw_circle(
     img: &mut ImageData,
     state: &mut CaptureState,
+    diagnostics: &mut SoftwareCaptureDiagnostics,
     mode: &DrawMode,
     cx: f32,
     cy: f32,
@@ -403,12 +477,14 @@ fn draw_circle(
         let angle = (i as f32 / segments as f32) * std::f32::consts::TAU;
         vertices.push((cx + radius * angle.cos(), cy + radius * angle.sin()));
     }
-    draw_polygon(img, state, mode, &vertices);
+    draw_polygon(img, state, diagnostics, mode, &vertices);
 }
 
+#[allow(clippy::too_many_arguments)]
 fn draw_ellipse(
     img: &mut ImageData,
     state: &mut CaptureState,
+    diagnostics: &mut SoftwareCaptureDiagnostics,
     mode: &DrawMode,
     cx: f32,
     cy: f32,
@@ -421,13 +497,14 @@ fn draw_ellipse(
         let angle = (i as f32 / segments as f32) * std::f32::consts::TAU;
         vertices.push((cx + rx * angle.cos(), cy + ry * angle.sin()));
     }
-    draw_polygon(img, state, mode, &vertices);
+    draw_polygon(img, state, diagnostics, mode, &vertices);
 }
 
 #[allow(clippy::too_many_arguments)]
 fn draw_arc(
     img: &mut ImageData,
     state: &mut CaptureState,
+    diagnostics: &mut SoftwareCaptureDiagnostics,
     mode: &DrawMode,
     cx: f32,
     cy: f32,
@@ -449,7 +526,7 @@ fn draw_arc(
             let mut fan = Vec::with_capacity(points.len() + 1);
             fan.push((cx, cy));
             fan.extend(points);
-            fill_polygon(img, state, &fan);
+            fill_polygon(img, state, diagnostics, &fan);
         }
     }
 }
@@ -476,6 +553,7 @@ fn average_rgba8(colors: &[[f32; 4]]) -> [u8; 4] {
 fn draw_transient_mesh(
     img: &mut ImageData,
     state: &mut CaptureState,
+    diagnostics: &mut SoftwareCaptureDiagnostics,
     mesh: &Mesh,
     transform: &MeshTransform,
 ) {
@@ -512,12 +590,23 @@ fn draw_transient_mesh(
         let (ax, ay) = map_vertex(a.x, a.y);
         let (bx, by) = map_vertex(b.x, b.y);
         let (cx, cy) = map_vertex(c.x, c.y);
-        draw_polygon(img, state, &DrawMode::Fill, &[(ax, ay), (bx, by), (cx, cy)]);
+        draw_polygon(
+            img,
+            state,
+            diagnostics,
+            &DrawMode::Fill,
+            &[(ax, ay), (bx, by), (cx, cy)],
+        );
     }
     state.color = previous;
 }
 
-fn replay_command(img: &mut ImageData, state: &mut CaptureState, command: &RenderCommand) {
+fn replay_command(
+    img: &mut ImageData,
+    state: &mut CaptureState,
+    diagnostics: &mut SoftwareCaptureDiagnostics,
+    command: &RenderCommand,
+) {
     match command {
         RenderCommand::SetColor(r, g, b, a) => {
             state.color = color_to_rgba8([*r, *g, *b, *a]);
@@ -569,14 +658,16 @@ fn replay_command(img: &mut ImageData, state: &mut CaptureState, command: &Rende
             None => state.stencil_mode = CaptureStencilMode::Disabled,
         },
         RenderCommand::Rectangle { mode, x, y, w, h } => {
-            draw_rect(img, state, mode, *x, *y, *w, *h)
+            draw_rect(img, state, diagnostics, mode, *x, *y, *w, *h)
         }
         RenderCommand::RoundedRectangle {
             mode, x, y, w, h, ..
-        } => draw_rect(img, state, mode, *x, *y, *w, *h),
-        RenderCommand::Circle { mode, x, y, r } => draw_circle(img, state, mode, *x, *y, *r),
+        } => draw_rect(img, state, diagnostics, mode, *x, *y, *w, *h),
+        RenderCommand::Circle { mode, x, y, r } => {
+            draw_circle(img, state, diagnostics, mode, *x, *y, *r)
+        }
         RenderCommand::Ellipse { mode, x, y, rx, ry } => {
-            draw_ellipse(img, state, mode, *x, *y, *rx, *ry)
+            draw_ellipse(img, state, diagnostics, mode, *x, *y, *rx, *ry)
         }
         RenderCommand::Triangle {
             mode,
@@ -586,13 +677,19 @@ fn replay_command(img: &mut ImageData, state: &mut CaptureState, command: &Rende
             y2,
             x3,
             y3,
-        } => draw_polygon(img, state, mode, &[(*x1, *y1), (*x2, *y2), (*x3, *y3)]),
+        } => draw_polygon(
+            img,
+            state,
+            diagnostics,
+            mode,
+            &[(*x1, *y1), (*x2, *y2), (*x3, *y3)],
+        ),
         RenderCommand::Polygon { mode, vertices } => {
             let points: Vec<(f32, f32)> = vertices
                 .chunks_exact(2)
                 .map(|pair| (pair[0], pair[1]))
                 .collect();
-            draw_polygon(img, state, mode, &points);
+            draw_polygon(img, state, diagnostics, mode, &points);
         }
         RenderCommand::Line { x1, y1, x2, y2 } => draw_line(img, state, *x1, *y1, *x2, *y2),
         RenderCommand::Polyline { points } => {
@@ -611,7 +708,16 @@ fn replay_command(img: &mut ImageData, state: &mut CaptureState, command: &Rende
             angle2,
             segments,
         } => draw_arc(
-            img, state, mode, *x, *y, *radius, *angle1, *angle2, *segments,
+            img,
+            state,
+            diagnostics,
+            mode,
+            *x,
+            *y,
+            *radius,
+            *angle1,
+            *angle2,
+            *segments,
         ),
         RenderCommand::DrawColoredPolygon {
             vertices,
@@ -624,14 +730,14 @@ fn replay_command(img: &mut ImageData, state: &mut CaptureState, command: &Rende
                 .collect();
             let previous = state.color;
             state.color = average_rgba8(colors);
-            draw_polygon(img, state, mode, &points);
+            draw_polygon(img, state, diagnostics, mode, &points);
             state.color = previous;
         }
         RenderCommand::DrawConvexFan { vertices, tint, .. } => {
             let points: Vec<(f32, f32)> = vertices.iter().map(|v| (v.x, v.y)).collect();
             let previous = state.color;
             state.color = color_to_rgba8(*tint);
-            draw_polygon(img, state, &DrawMode::Fill, &points);
+            draw_polygon(img, state, diagnostics, &DrawMode::Fill, &points);
             state.color = previous;
         }
         RenderCommand::DrawMeshTransient {
@@ -646,6 +752,7 @@ fn replay_command(img: &mut ImageData, state: &mut CaptureState, command: &Rende
         } => draw_transient_mesh(
             img,
             state,
+            diagnostics,
             mesh,
             &MeshTransform {
                 x: *x,
@@ -668,7 +775,10 @@ fn replay_command(img: &mut ImageData, state: &mut CaptureState, command: &Rende
                 }
             }
         }
-        _ => {}
+        _ => {
+            diagnostics.unsupported_capture_commands =
+                diagnostics.unsupported_capture_commands.saturating_add(1);
+        }
     }
 }
 
@@ -677,13 +787,22 @@ pub fn capture_commands_to_image(
     commands: &[RenderCommand],
     background_color: [f32; 4],
 ) -> ImageData {
+    capture_commands_to_image_with_diagnostics(commands, background_color).0
+}
+
+/// Replay queued render commands and return software-capture diagnostics alongside the image.
+pub fn capture_commands_to_image_with_diagnostics(
+    commands: &[RenderCommand],
+    background_color: [f32; 4],
+) -> (ImageData, SoftwareCaptureDiagnostics) {
     let (width, height) = estimate_canvas_size(commands);
     let bg = color_to_rgba8(background_color);
     let mut img = ImageData::new(width, height);
     img.draw_rect(0, 0, width, height, bg[0], bg[1], bg[2], bg[3]);
     let mut state = CaptureState::new(width, height);
+    let mut diagnostics = SoftwareCaptureDiagnostics::default();
     for command in commands {
-        replay_command(&mut img, &mut state, command);
+        replay_command(&mut img, &mut state, &mut diagnostics, command);
     }
-    img
+    (img, diagnostics)
 }

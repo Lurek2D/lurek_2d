@@ -30,6 +30,8 @@
 - `render` draws the final result, but `light` owns how 2D light entities, falloff, and occlusion semantics are represented together.
 - Read `light` as the owner of light definitions and light-world state inside the engine.
 
+This module primarily collaborates with `color`, `image`, `math`, `runtime`. Its responsibility should stay inside the Platform Services group rather than absorb behavior owned by those neighbors.
+
 ## Imports
 
 - `color`: Imports or references `src/color/`. Cross-group dependency from `Platform Services` into `Edge/Integration`.

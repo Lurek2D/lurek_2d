@@ -24,6 +24,7 @@
 - This makes `render` less like one feature among many and more like the final translation authority for visual state. Other modules decide what should exist visually, but `render` decides how that existence is encoded, ordered, shaded, and emitted.
 - The module spans several rendering families at once: sprite and texture drawing, text output, shape drawing, mesh and geometry support, canvas-like targets, shader pipelines, post-processing, lighting, shadows, decals, screenshots, and software-render evidence paths.
 - GPU resource ownership is a core part of that responsibility. Buffers, textures, samplers, shader modules, bind groups, pipelines, intermediate targets, typed GPU-side records, and staging resources live here so the rest of the engine does not fragment backend management.
+- Resource inputs are validated before backend allocation or shader-source generation: texture and canvas dimensions must be non-zero and within device limits, RGBA uploads must match exact byte length, dynamic font atlases are bounded, OBJ material paths must stay under their base directory, and shader uniform names must be valid non-reserved WGSL identifiers.
 - Centralizing those resources matters because otherwise each visual feature would invent its own backend conventions, lifetime rules, and upload paths. `render` provides one stable home for those concerns and reduces backend duplication.
 - Rendering commands and pipeline structures give the engine a common language between feature modules and execution code. This shared command vocabulary is what allows gameplay-facing APIs to remain expressive while still mapping onto a disciplined backend.
 - The module is broader than simple 2D quad drawing. Mesh support, OBJ loading, tessellation, decals, shape batching, and specialized pipelines show that it can represent both standard 2D workflows and richer geometric or stylized visual features without leaving the engine's main render authority.
@@ -38,6 +39,24 @@
 - That backend discipline is what lets several higher-level modules share one frame pipeline without each inventing its own incompatible render lifecycle.
 - For users, the important boundary is that `render` does not usually define domain meaning. It does not decide enemy AI, tile adjacency, or UI layout policy. Instead, it owns the visual execution model that allows those domains to appear consistently.
 - Read `render` as the final visual translation layer of the engine. Feature modules describe visual state and intent, and `render` turns that intent into frames, captures, shadows, text, effects, and finished composited output for a shared frame contract.
+
+This module primarily collaborates with `font`, `image`, `light`, `math`, `runtime`, `sprite`. Its responsibility should stay inside the Platform Services group rather than absorb behavior owned by those neighbors.
+
+### Render Input Invariants
+
+- Texture uploads require non-zero width and height, exact RGBA8 byte length, checked pixel arithmetic, and dimensions no larger than the active wgpu device limit.
+- Canvas GPU allocations require non-zero width and height within the same 2D texture dimension limit; changing a canvas size under the same key recreates its GPU backing texture.
+- Dynamic font creation clamps very small point sizes upward and rejects non-finite, oversized, zero-dimension, or oversized atlas allocations before CPU buffer growth.
+- Mesh upload and Lua-facing mesh construction reject non-finite vertex fields, out-of-range indices, and incomplete triangle-list topology before static geometry is synchronized.
+- OBJ face indices are bounded after 1-based or negative-index normalization, index zero is invalid, and material-library paths must stay under the supplied base directory.
+- Shader uniform names must be valid, non-reserved WGSL identifiers before they can participate in wrapper-source generation.
+- Render commands pass through a central input sanitizer before backend work; non-finite floats, invalid sizes, out-of-range colors, excessive segments, and malformed point arrays are rejected and counted.
+- Arc tessellation clamps zero segment counts to a safe minimum before vertex generation.
+- Draw-layer ordering uses total floating-point ordering and callback ID tie-breaks, so NaN and equal depths flush deterministically.
+- `RenderDiagnostics` records skipped render commands, missing GPU resources, invalid uploads, invalid meshes, GPU buffer growth, and shader or pipeline cache fallback events without turning the frame into a hard error.
+- Frame-local color, texture, draw, instance, merge, and command scratch buffers clear between frames without shrinking; hot flat-color primitives tessellate directly into shared frame buffers and textured paths reuse scratch buffers instead of allocating per command.
+- Shadow edge collection filters disabled, masked-out, and out-of-radius occluders before GPU upload, reuses per-occluder world-space edge caches for shadow lights in the same frame, and records rendered shadow rows plus collected and culled edge counts.
+- `SoftwareCaptureDiagnostics` records unsupported capture commands and bounded polygon fill behavior; software capture is evidence-oriented and does not promise pixel parity for GPU-only texture, shader, post-fx, layer, batch, or registered-resource commands.
 
 ## Imports
 
@@ -67,6 +86,8 @@
 - Owns deferred draw-layer callbacks that are queued first and flushed later in depth-sorted order.
 - Lets gameplay and UI code enqueue layered draw work cheaply without issuing immediate GPU commands.
 - Acts as the ordering boundary between ad hoc producers and the final render dispatch pass.
+- Uses total floating-point ordering plus callback ID tie-breaks so equal and NaN depths flush deterministically, and checked ID allocation reports exhaustion instead of wrapping.
+- Keeps `queue` non-panicking on callback ID exhaustion by reserving `usize::MAX` as a skipped-callback sentinel while `try_queue` returns a structured error.
 - Open this file when layer sorting, queueing, flushing, or layer counts behave incorrectly.
 
 ### extracted_blocks.rs
@@ -88,6 +109,7 @@
 - Maps characters to atlas cells, UV coordinates, advances, and fallback substitutions under one font contract.
 - Provides nearest-size lookup so callers can request practical font points without managing raw atlas sets.
 - Handles wrapping, alignment metrics, and pen movement needed by layout and draw code above this layer.
+- Wraps text with incremental word-width tracking so long lines avoid repeated full-line measurement.
 - Extends character mapping with retro symbols and box characters used by terminal or pixel-art interfaces.
 - Acts as the text-asset boundary rather than the owner of final UI or renderer command emission.
 - Open this file when glyph lookup, atlas data, wrapping, or dynamic font loading behaves incorrectly.
@@ -107,6 +129,7 @@
 - Generates helper WGSL fragments and uniform declarations needed by custom color and texture pipelines.
 - Standardizes alpha, additive, multiplicative, and replace blend policies for the whole render subsystem.
 - Configures depth and stencil state mapping so pipeline creation reflects the front-end render command model.
+- Treats missing custom shader pipelines as recoverable renderer findings so draws can fall back to built-in pipelines.
 - Acts as the pipeline-construction boundary rather than the owner of per-frame draw traversal.
 - Open this file when render state caching, blend mapping, or custom shader pipeline assembly is incorrect.
 
@@ -115,16 +138,21 @@
 - Owns the main hardware renderer that turns front-end render commands into concrete wgpu draw submission.
 - Manages device, queue, swapchain, canvases, textures, and persistent GPU state under one frame orchestrator.
 - Drives multi-pass flow for scene color, shadows, decals, text, province maps, and post-processing output.
-- Coalesces compatible draw calls so repeated materials and textures do not force unnecessary pipeline churn.
+- Delegates prepared draw coalescing to `gpu_frame_builder.rs` so repeated materials and textures do not force unnecessary pipeline churn.
+- Delegates prepared draw pipeline selection and render-pass encoding to `gpu_draw_encode.rs`.
 - Uploads and reuses static geometry to bypass repeated tessellation and reduce CPU-side frame overhead.
+- Reuses high-water CPU frame buffers for prepared draws, vertices, indices, instances, and merge scratch space, with direct range finalization for hot flat-color primitive draws.
 - Supports GPU instancing for repeated sprites, particles, and grid-like content that share one draw shape.
 - Resolves text rendering by expanding glyph quads from atlas data and batching them with other draw work.
-- Maintains offscreen canvases as render targets so composite views and multi-surface workflows stay possible.
-- Handles resize, viewport updates, and target-dimension logic that keep swapchain-backed output coherent.
-- Owns readback orchestration for surfaces when screenshots or software-visible capture need GPU results.
+- Maintains frame orchestration for offscreen canvases while delegating canvas target sync and dimension helpers to `gpu_canvas_pass.rs`.
+- Handles resize and viewport updates that keep swapchain-backed output coherent.
+- Delegates GPU surface readback for screenshots and software-visible capture to `gpu_screenshot_readback.rs`.
 - Bridges lighting, shadows, geometry, and resource owners instead of embedding their detailed policies here.
 - Acts as the runtime boundary between the engine's render command language and low-level wgpu execution.
 - Concentrates helper routines near state so render-frame changes remain auditable despite subsystem breadth.
+- Resets and fills `RenderDiagnostics` each frame when non-fatal drops or invalid render resources are observed.
+- Reports missing texture and canvas sources during command preparation when a command cannot emit a prepared draw.
+- Delegates custom shader cache rebuilds, uniform uploads, and custom pipeline lookup to `gpu_shader_cache.rs`.
 - Open this file when full-frame GPU output is wrong and the fault is not isolated to one narrow helper owner.
 - It is the right owner for render orchestration bugs because most GPU passes and resource handoffs converge here.
 
@@ -134,10 +162,55 @@
 - Grows vertex, index, and instance buffers on demand so render workloads can scale without manual sizing.
 - Caches texture and sampler bind groups so compatible resources reuse stable GPU-side descriptors.
 - Creates raw textures and canvas resources while hiding wgpu allocation details from higher render layers.
+- Reuploads user textures when CPU texture dimensions or source revisions differ from the cached GPU entry.
 - Prunes stale resources to keep GPU memory usage bounded during long sessions or heavy content churn.
 - Uploads static geometry into dedicated buffers so later frames can reuse cached meshes efficiently.
 - Acts as the resource-allocation boundary rather than the owner of draw ordering or pass sequencing.
 - Open this file when GPU buffers, textures, samplers, or resource cleanup behavior looks incorrect.
+
+### gpu_draw_encode.rs
+
+- Owns encoding prepared GPU draw calls into active wgpu render passes.
+- Resolves pipeline selection, default pipeline caches, texture bind groups, and draw-time resource diagnostics.
+- Keeps prepared-draw submission separate from frame command interpretation and high-level render orchestration.
+- Handles custom shader fallback to default pipelines without panicking when cache invariants are missing.
+- Applies scissor, stencil reference, vertex/index buffers, and instance ranges before issuing indexed draws.
+- Open this file when prepared draws bind the wrong resources, select the wrong pipeline, or skip unexpectedly.
+
+### gpu_frame_builder.rs
+
+- Owns per-frame prepared draw-list building helpers that run after command tessellation and before render-pass encoding.
+- Coalesces only adjacent prepared draws with identical target, resource, pipeline, scissor, stencil, static geometry, and instance state.
+- Requires contiguous index ranges before merging so each batched draw still references one continuous span in the selected index buffer.
+- Preserves caller-owned scratch buffer capacity across frames to keep draw-list batching allocation-stable.
+- Open this file when compatible draws fail to batch or resource-distinct prepared draws merge incorrectly.
+
+### gpu_canvas_pass.rs
+
+- Owns GPU canvas target synchronization and render-target dimension helpers.
+- Keeps off-screen canvas lifecycle checks close to canvas pass concerns instead of the main frame loop.
+- Recreates canvas backing textures when logical canvas dimensions change under a stable key.
+- Reports invalid canvas allocation attempts through `RenderDiagnostics` while allowing the frame to continue.
+- Resolves logical and GPU-backed target sizes for screen and canvas draw preparation.
+- Open this file when canvas resize handling, canvas target dimensions, or canvas backing allocation is wrong.
+
+### gpu_shader_cache.rs
+
+- Owns custom GPU shader cache rebuilds, uniform uploads, and custom pipeline lookup.
+- Keeps user shader lifecycle separate from the full-frame renderer orchestration loop.
+- Builds color and texture WGSL wrappers, uniform bind groups, and per-state render pipelines on demand.
+- Uses the renderer's device, queue, bind-group layouts, and surface format without owning frame state.
+- Records no draw commands itself; callers ask for cached pipelines and bind groups during render encoding.
+- Open this file when custom shader uniform upload, wrapper compilation, or pipeline reuse behaves incorrectly.
+
+### gpu_screenshot_readback.rs
+
+- Owns GPU surface readback for screenshots and software-visible frame capture.
+- Copies a rendered surface texture into a mappable buffer with wgpu row-padding rules.
+- Maps the readback buffer after submission, strips padding, and converts supported surface formats to RGBA bytes.
+- Keeps readback error logging and format handling separate from the main render-frame orchestration.
+- Uses `PendingSurfaceReadback` as the short-lived handoff between command encoding and post-submit mapping.
+- Open this file when GPU screenshots fail, return wrong channel order, or mishandle readback padding.
 
 ### gpu_shaders.rs
 
@@ -152,6 +225,9 @@
 - Collects occluder edge geometry and uploads it into GPU buffers consumed by shadow compute passes.
 - Dispatches one-dimensional shadow map work per visible light source so light distance fields stay current.
 - Performs viewport and radius culling before queueing shadow work, reducing unnecessary compute load.
+- Reuses cached world-space occluder edges across shadow-light dispatches until the occluder edge generation changes.
+- Uses entry-based cache refresh so shadow edge reuse does not rely on post-insert panics.
+- Tracks shadow light rows, collected edges, and radius-culled edges through `RenderDiagnostics`.
 - Manages the bind groups, buffers, and pipelines that connect light data to the shadow atlas workflow.
 - Filters occluders by light masks so only relevant blocking geometry contributes to a given light pass.
 - Acts as the shadow-runtime boundary rather than the owner of general draw command interpretation.
@@ -161,6 +237,7 @@
 
 - Defines the registry of live GPU allocations, cached geometry, readback state, and frame statistics.
 - Stores textures, fonts, canvases, depth targets, and other handles in structured collections with stable keys.
+- Owns reusable CPU frame buffers so the frame loop can clear vectors instead of reallocating the main draw streams.
 - Keeps static geometry cache records and pending surface readbacks separate from the main renderer loop.
 - Acts as the persistent state boundary for GPU resources shared across multiple render passes.
 - Open this file when cached handles, depth targets, or readback bookkeeping state behaves incorrectly.
@@ -192,11 +269,29 @@
 - Keeps effect identity and lightweight setup separate from the heavier postfx pipeline that executes it.
 - Open this file when per-effect descriptor shape changes rather than full post-processing runtime behavior.
 
+### input_validation.rs
+
+- Defines shared render-command validation for scalar finiteness, normalized colors, dimensions, segments, array lengths, and per-command count ceilings.
+- Provides `RenderInputLimits` and `RenderInputError` so render backends reject malformed command data before tessellation or GPU resource work begins.
+- Validates common command families such as shapes, transforms, text, particles, paths, gradients, physics debug, Spine slots, and convex fans.
+- Keeps command-boundary skip policy separate from resource validation, mesh validation, shader validation, and backend pass encoding.
+- Open this file when a new `RenderCommand` variant introduces scalar, color, topology, or count invariants that should fail deterministically.
+
+### render_diagnostics.rs
+
+- Defines per-frame counters for skipped render commands, missing resource lookups, and invalid resource inputs.
+- Records non-fatal renderer findings without changing the render-frame error contract or relying only on log output.
+- Counts shader and pipeline cache invariant failures separately from resource lookup skips.
+- Counts GPU buffer growth events when shared geometry, instance, or shadow edge buffers must be reallocated.
+- Keeps diagnostic saturation and reset policy centralized so GPU orchestration code can report drops consistently.
+- Open this file when a render path starts intentionally skipping work or debug tooling needs a new counter.
+
 ### mesh.rs
 
 - Defines reusable 2D mesh data for custom vector geometry, imported models, and textured draw content.
 - Stores vertex positions, colors, uv maps, topology mode, and optional texture binding under one asset type.
 - Supports multiple draw topologies so callers can express lists, strips, fans, or related mesh patterns.
+- Validates finite vertex fields, index bounds, and complete triangle-list grouping before public Lua construction/mutation or GPU static-geometry sync.
 - Acts as the mesh-asset boundary between content generation and later tessellation or draw submission code.
 - Open this file when mesh vertex data, topology choice, or texture attachment behavior looks incorrect.
 
@@ -215,6 +310,7 @@
 
 - Loads Wavefront OBJ and MTL data into reusable mesh structures and CPU-projected renderable geometry.
 - Parses faces, materials, vertices, normals, and texture coordinates while normalizing OBJ indexing rules.
+- Rejects out-of-range face indices, unsafe material-library paths, non-MTL material libraries, missing material files, and malformed material values instead of silently producing partial imports.
 - Projects source geometry into viewport-friendly coordinates using simple camera-style transforms.
 - Computes normals and back-face filtering so software preview and shading logic can make stable decisions.
 - Resolves diffuse colors and texture paths from materials without forcing those rules into generic mesh owners.
@@ -231,6 +327,7 @@
 - Groups effect parameters and swap textures so multi-pass blur, CRT, or color-correction chains stay organized.
 - Configures pipeline states, write masks, and fallback shaders needed by default and custom postfx passes.
 - Minimizes allocation churn by reusing descriptors and intermediate textures sized to current output targets.
+- Treats missing ping-pong cache state as recoverable by copying the unprocessed capture instead of panicking mid-frame.
 - Stores custom post-processing registrations separately from the frame renderer so effect catalogs stay modular.
 - Acts as the screen-pass boundary between a finished scene texture and final composited presentation output.
 - Keeps shader-source and uniform conversion concerns local instead of spreading them across the main renderer.
@@ -251,6 +348,7 @@
 - Defines the front-end render command language consumed by the software and GPU renderer implementations.
 - Owns draw-mode enums, blend and stencil policy types, text alignment, gradients, and related draw metadata.
 - Packages shapes, sprites, particles, typography, and effect requests into structured command variants.
+- Exposes `RenderCommandCategory` and `RenderCommand::category()` so validation, diagnostics, and backend splits can route broad command families without duplicating enum-wide matches.
 - Standardizes sampler filters, repeat modes, depth behavior, and outline settings used across render paths.
 - Keeps the abstract rendering vocabulary separate from the backends that later execute or rasterize commands.
 - Provides adaptive circle and ellipse segment helpers used when front-end callers request curved primitives.
@@ -285,6 +383,9 @@
 - Keeps capture logic separate from the main GPU renderer so test-friendly output does not complicate frame code.
 - Acts as the software-capture boundary between front-end render commands and headless image generation.
 - Provides one owner for CPU replay semantics, making screenshot differences easier to debug in non-GPU runs.
+- Treats shape, transform, color-mask, stencil, point, and transient-mesh commands as supported or approximated capture inputs; GPU texture, shader, post-fx, layer, batch, and registered-resource commands remain ignored by design and are counted in `SoftwareCaptureDiagnostics`.
+- Support matrix: state commands, transforms, scissor, color masks, stencil controls, rectangles, rounded rectangles, circles, ellipses, triangles, polygons, lines, polylines, arcs, and points are supported; colored polygons, convex fans, and transient meshes are approximated as solid CPU polygons; GPU resources, textures, text, shaders, post-fx, layers, sort groups, batches, registered meshes, physics debug, and Spine paths are ignored and counted.
+- Clamps filled polygon bounding boxes to image bounds and skips fully offscreen polygons before pixel iteration so evidence captures stay bounded for extreme coordinates.
 - Open this file when headless capture output differs from expected draw behavior or misses command coverage.
 - Use this owner before GPU renderer changes when only software screenshot evidence appears incorrect.
 

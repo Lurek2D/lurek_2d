@@ -13,7 +13,7 @@
 - Source path: `src/physics/`
 - Binding: `src/lua_api/physics_api.rs`
 - Namespace: `lurek.physics`
-- Lua API surface: `22` functions, `17` types, `172` methods
+- Lua API surface: `22` functions, `17` types, `173` methods
 - Rust test path(s): src/physics/world_tests.rs, inline #[cfg(test)] in body.rs, shape.rs, zone.rs, cellular.rs, terrain.rs, render.rs, collision_helpers.rs
 - Lua test path(s): tests/lua/unit/test_physics_unit.lua
 
@@ -36,32 +36,7 @@
 - That authority is what lets gameplay, tools, and effects ask the same world-state questions without maintaining parallel collision logic.
 - Other systems consume the results, but `physics` owns the source of truth for what counts as solid, colliding, constrained, or detectable in 2D space.
 
-## Validation And Safety Contract
-
-- Lua-facing body, shape, terrain, fixture, joint, and zone creation paths reject invalid numeric input instead of silently normalizing all failures.
-- `BodyId` rejects negative Lua integers, so accidental `-1` inputs do not wrap into huge slot indices.
-- Shape validation rejects non-finite coordinates, non-positive rectangle and circle sizes, degenerate polygons, invalid edge lengths, and malformed chain vertex lists before Rapier collider creation.
-- Terrain constructors and deserializers enforce finite positive `cellSize`, checked dimension arithmetic, versioned byte headers, and allocation limits before creating cell buffers or image exports.
-- Legacy APIs that still expose no-op or sentinel-return behavior for compatibility now increment world diagnostics so scripts can detect invalid operations through `LWorld:getStats()`.
-
-## Stepping And Determinism
-
-- `LWorld:step(dt)` rejects non-finite or non-positive `dt` values and does not forward them into Rapier.
-- Large `dt` values are clamped to the configured world limit, and diagnostics record skipped and clamped steps.
-- After a body is added, Rapier is the authoritative dynamic-body state. Mirror `Body` state only syncs back into Rapier when explicit setters mark that body dirty.
-- `LWorld:stepFixed(accumulator, stepDt, maxSteps)` remains the preferred API for deterministic gameplay loops because it bounds substeps and reduces frame-time-driven drift.
-- Stable body, joint, and zone slot ids are preserved until explicit destruction, but floating-point determinism is still bounded by Rapier and host-platform behavior.
-
-## World Reset Policy
-
-- `LWorld:clear()` removes runtime state such as bodies, joints, terrain colliders, and zones while preserving world-level configuration like gravity, solver iterations, and meter scale.
-- `LWorld:resetWorld()` performs a full post-construction reset: it clears runtime state and restores constructor-owned settings such as the original gravity vector and default solver configuration.
-- Use `clear()` when loading a new scene into the same tuned world configuration; use `resetWorld()` when the next scene should behave like a freshly created world.
-
-## Diagnostics
-
-- `LWorld:getStats()` returns active counts plus diagnostics: `skippedSteps`, `clampedSteps`, `invalidOperations`, `bodiesScanned`, `collidersRebuilt`, `zoneChecks`, `contacts`, and `syncedBodies`.
-- These counters describe safety fallbacks and per-step work so scripts can audit invalid API use, oversized frame deltas, and expensive simulation updates without attaching a profiler.
+This module primarily collaborates with `image`, `math`, `render`, `runtime`. Its responsibility should stay inside the Platform Services group rather than absorb behavior owned by those neighbors.
 
 ## Imports
 
@@ -92,6 +67,18 @@
 - This file owns lightweight overlap helpers for AABBs, circles, and point tests without a full physics world.
 - It provides stateless boolean queries used by gameplay code that only needs immediate geometric answers.
 - Open this file when simple collision predicates change; buffered collision events and bodies live elsewhere.
+
+### error.rs
+
+- This file owns typed validation and safety errors shared by physics constructors, stepping, terrain, and Lua-facing helpers.
+- It keeps failure reasons explicit so `try_*` APIs can reject invalid geometry, ids, bytes, and time-step inputs consistently.
+- Open it when physics callers need clearer diagnostics or when a new owner starts participating in the shared safety contract.
+
+### limits.rs
+
+- This file owns shared physics sizing and validation limits used by safe constructors, stepping, terrain, and shape helpers.
+- It centralizes checked arithmetic and numeric policy so physics owners share one resource and finite-value contract.
+- Open it when ceilings or validation rules change across world, body, shape, zone, or terrain code.
 
 ### mod.rs
 
@@ -358,7 +345,7 @@
 - `LWorld:addWeldJoint(bodyA, bodyB, anchorX, anchorY) -> integer`: Creates a weld joint that rigidly connects two bodies at an anchor point (no relative movement).
 - `LWorld:addWheelJoint(bodyA, bodyB, anchorX, anchorY, axisX, axisY) -> integer`: Creates a wheel joint simulating a suspension: allows rotation and linear movement along an axis.
 - `LWorld:addZone(x, y, w, h) -> LZone`: Creates a rectangular physics zone for area-based effects (custom gravity, damping overrides).
-- `LWorld:clear() -> nil`: Removes all bodies and joints from the world, resetting it to an empty state.
+- `LWorld:clear() -> nil`: Removes bodies, joints, terrain colliders, and zones while preserving world-level settings.
 - `LWorld:clearBeginContact() -> nil`: Removes the begin-contact callback so it is no longer called.
 - `LWorld:clearBodyData(id) -> nil`: Removes and releases the Lua data attached to a body.
 - `LWorld:clearBodyOneWay(id) -> nil`: Removes the one-way platform behavior from a body, making it block from all directions.
@@ -404,6 +391,7 @@
 - `LWorld:raycast(x1, y1, x2, y2, filter?) -> table`: Casts a ray from point (x1,y1) to (x2,y2) and returns the first body hit, or nil.
 - `LWorld:raycastAll(x, y, dx, dy, maxDist, filter?) -> table`: Casts a directional ray and returns all bodies hit within max distance as a table of results.
 - `LWorld:raycastClosest(x, y, dx, dy, maxDist, filter?) -> table`: Casts a directional ray from a point and returns the closest hit within max distance.
+- `LWorld:resetWorld() -> nil`: Fully resets the world to its post-construction state.
 - `LWorld:setBeginContact(callback) -> nil`: Registers a callback function invoked whenever two bodies begin touching.
 - `LWorld:setBodyCCD(id, enabled) -> nil`: Enables or disables continuous collision detection (bullet mode) on a body to prevent tunneling.
 - `LWorld:setBodyData(id, value) -> nil`: Attaches arbitrary Lua data to a body ID for later retrieval (e.g. entity reference, tag).

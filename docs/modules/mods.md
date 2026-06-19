@@ -11,6 +11,8 @@
 - It keeps mod power visible, explicit, and reviewable.
 - Read `mods` as the runtime policy layer for modded content: filesystem and runtime systems provide capabilities, but `mods` decides how external content is described, admitted, isolated, and managed.
 
+This module primarily collaborates with `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
+
 ## Functions
 
 ### `lurek.mods.checkApiVersion`

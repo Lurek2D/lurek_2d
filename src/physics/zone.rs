@@ -229,8 +229,16 @@ impl PhysicsZone {
             boundary: ZoneBoundary::Rect {
                 x: if x.is_finite() { x } else { 0.0 },
                 y: if y.is_finite() { y } else { 0.0 },
-                width: if width.is_finite() { width.abs().max(1.0) } else { 1.0 },
-                height: if height.is_finite() { height.abs().max(1.0) } else { 1.0 },
+                width: if width.is_finite() {
+                    width.abs().max(1.0)
+                } else {
+                    1.0
+                },
+                height: if height.is_finite() {
+                    height.abs().max(1.0)
+                } else {
+                    1.0
+                },
             },
             gravity_mode: ZoneGravityMode::Zero,
             priority: 0,

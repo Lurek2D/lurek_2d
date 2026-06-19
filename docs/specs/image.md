@@ -34,6 +34,8 @@
 - `render` consumes prepared results, but `image` owns pixel-domain manipulation, inspection, packing, and export before or outside final rendering.
 - Read `image` as the engine's pixel-domain authority for asset prep and tooling.
 
+This module primarily collaborates with `animation`, `camera`, `color`, `math`, `province`, `render`, `runtime`. Its responsibility should stay inside the Platform Services group rather than absorb behavior owned by those neighbors.
+
 ## Imports
 
 - `animation`: Imports or references `animation` from `src/animation/`.

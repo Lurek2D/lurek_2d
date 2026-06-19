@@ -24,6 +24,8 @@
 - It keeps worker isolation visible to scripts while still making background jobs practical and safe.
 - Read it as the engine's sanctioned script-concurrency model.
 
+This module primarily collaborates with `runtime`. Its responsibility should stay inside the Core Runtime group rather than absorb behavior owned by those neighbors.
+
 ## Imports
 
 - `runtime`: Imports or references `runtime` from `src/runtime/`.

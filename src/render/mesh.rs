@@ -7,6 +7,8 @@
 use crate::log_msg;
 use crate::runtime::log_messages::MS01;
 use crate::runtime::resource_keys::TextureKey;
+use std::fmt;
+
 /// Triangle topology when submitting a `Mesh` to the GPU.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum MeshDrawMode {
@@ -52,6 +54,61 @@ impl Default for MeshVertex {
         }
     }
 }
+
+/// Validation error for malformed mesh topology or vertex data.
+#[derive(Debug, Clone, PartialEq)]
+pub enum MeshError {
+    /// A vertex field contains NaN or infinity.
+    NonFiniteVertex {
+        /// Zero-based vertex position.
+        vertex_index: usize,
+        /// Field name on `MeshVertex`.
+        field: &'static str,
+    },
+    /// An index references a vertex outside the mesh.
+    InvalidIndex {
+        /// Zero-based position inside the index/source sequence.
+        index_position: usize,
+        /// Referenced vertex index.
+        vertex_index: usize,
+        /// Number of vertices available.
+        vertex_count: usize,
+    },
+    /// Triangle-list topology has a source index count that is not divisible by 3.
+    InvalidTriangleIndexCount {
+        /// Number of source indices.
+        index_count: usize,
+    },
+}
+
+impl fmt::Display for MeshError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::NonFiniteVertex {
+                vertex_index,
+                field,
+            } => write!(
+                f,
+                "mesh vertex {vertex_index} has non-finite {field} value"
+            ),
+            Self::InvalidIndex {
+                index_position,
+                vertex_index,
+                vertex_count,
+            } => write!(
+                f,
+                "mesh index {index_position} references vertex {vertex_index}, but mesh has {vertex_count} vertices"
+            ),
+            Self::InvalidTriangleIndexCount { index_count } => write!(
+                f,
+                "triangle-list mesh source index count {index_count} is not divisible by 3"
+            ),
+        }
+    }
+}
+
+impl std::error::Error for MeshError {}
+
 /// A drawable 2D geometry object built from `MeshVertex` data.
 #[derive(Debug, Clone)]
 pub struct Mesh {
@@ -101,10 +158,13 @@ impl Mesh {
             .collect();
         Self::from_vertices(vertices, mode)
     }
-    /// Set the vertex at `index`; silently ignored when `index` is out of bounds.
-    pub fn set_vertex(&mut self, index: usize, vertex: MeshVertex) {
-        if index < self.vertices.len() {
-            self.vertices[index] = vertex;
+    /// Set the vertex at `index`; returns `false` when `index` is out of bounds.
+    pub fn set_vertex(&mut self, index: usize, vertex: MeshVertex) -> bool {
+        if let Some(slot) = self.vertices.get_mut(index) {
+            *slot = vertex;
+            true
+        } else {
+            false
         }
     }
     /// Return a reference to the vertex at `index`, or `None` when out of bounds.
@@ -127,8 +187,54 @@ impl Mesh {
     pub fn set_draw_mode(&mut self, mode: MeshDrawMode) {
         self.draw_mode = mode;
     }
+    /// Validate vertex finiteness, index bounds, and triangle-list grouping.
+    pub fn validate(&self) -> Result<(), MeshError> {
+        for (vertex_index, vertex) in self.vertices.iter().enumerate() {
+            validate_finite(vertex.x, vertex_index, "x")?;
+            validate_finite(vertex.y, vertex_index, "y")?;
+            validate_finite(vertex.u, vertex_index, "u")?;
+            validate_finite(vertex.v, vertex_index, "v")?;
+            validate_finite(vertex.r, vertex_index, "r")?;
+            validate_finite(vertex.g, vertex_index, "g")?;
+            validate_finite(vertex.b, vertex_index, "b")?;
+            validate_finite(vertex.a, vertex_index, "a")?;
+        }
+
+        let source_len = self
+            .indices
+            .as_ref()
+            .map_or(self.vertices.len(), std::vec::Vec::len);
+        if self.draw_mode == MeshDrawMode::Triangles && !source_len.is_multiple_of(3) {
+            return Err(MeshError::InvalidTriangleIndexCount {
+                index_count: source_len,
+            });
+        }
+
+        if let Some(indices) = &self.indices {
+            for (index_position, &vertex_index) in indices.iter().enumerate() {
+                let vertex_index = vertex_index as usize;
+                if vertex_index >= self.vertices.len() {
+                    return Err(MeshError::InvalidIndex {
+                        index_position,
+                        vertex_index,
+                        vertex_count: self.vertices.len(),
+                    });
+                }
+            }
+        }
+
+        Ok(())
+    }
+    /// Return independent triangle indices after validating mesh input.
+    pub fn try_triangulate(&self) -> Result<Vec<usize>, MeshError> {
+        self.validate()?;
+        Ok(self.triangulate_unchecked())
+    }
     /// Return a flat list of vertex indices expanding Fan/Strip and indexed modes into independent triangles.
     pub fn triangulate(&self) -> Vec<usize> {
+        self.try_triangulate().unwrap_or_default()
+    }
+    fn triangulate_unchecked(&self) -> Vec<usize> {
         let source_indices: Vec<usize> = if let Some(idx) = &self.indices {
             idx.iter().map(|i| *i as usize).collect()
         } else {
@@ -168,5 +274,16 @@ impl Mesh {
                 out
             }
         }
+    }
+}
+
+fn validate_finite(value: f32, vertex_index: usize, field: &'static str) -> Result<(), MeshError> {
+    if value.is_finite() {
+        Ok(())
+    } else {
+        Err(MeshError::NonFiniteVertex {
+            vertex_index,
+            field,
+        })
     }
 }

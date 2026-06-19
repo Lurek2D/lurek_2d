@@ -13,6 +13,8 @@
 - This makes `animation` useful for straightforward sprite loops and richer authored motion systems where timing, transitions, and events need to stay deterministic enough for debugging, preview, and gameplay integration.
 - `render` shows the result and `spine` specializes skeletal rigs, but `animation` owns clip selection, transitions, and timeline advancement.
 
+This module primarily collaborates with `image`, `math`, `render`, `runtime`, `spine`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
+
 ## Functions
 
 ### `lurek.animation.buildCharacter`

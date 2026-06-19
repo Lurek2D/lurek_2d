@@ -21,6 +21,8 @@
 - This is useful for UI artwork that should survive scaling without raster duplication.
 - Read it as the point where scalable art becomes usable in the rest of the engine while staying distinct from raster-first asset workflows.
 
+This module primarily collaborates with `math`, `render`, `runtime`. Its responsibility should stay inside the `Edge/Integration` group rather than absorb behavior owned by those neighbors.
+
 ## Imports
 
 - `math`: Imports or references `src/math/`. Cross-group dependency from `Edge/Integration` into `Foundations`.

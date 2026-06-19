@@ -573,6 +573,21 @@ fn create_widget_table<'a>(
     )?;
 
     let c = ctx.clone();
+    // -- getRole --
+    /// Returns the semantic role string for this widget.
+    /// @param | self | LUiWidget | The widget instance.
+    /// @return | string | The configured or default semantic role.
+    t.set(
+        "getRole",
+        lua.create_function(move |_, _self: LuaValue| {
+            let g = c.borrow();
+            Ok(g.widgets
+                .get(idx)
+                .map_or_else(String::new, |w| w.base().role.clone()))
+        })?,
+    )?;
+
+    let c = ctx.clone();
     // -- setAriaName --
     /// Sets the accessible name metadata for this widget.
     /// @summary Stores a human-readable assistive label independent from visible text.
@@ -586,6 +601,50 @@ fn create_widget_table<'a>(
                 w.base_mut().aria_name = name;
             }
             Ok(())
+        })?,
+    )?;
+
+    let c = ctx.clone();
+    // -- getAriaName --
+    /// Returns the explicit accessible name metadata for this widget.
+    /// @param | self | LUiWidget | The widget instance.
+    /// @return | string | The stored accessible name, or an empty string when unset.
+    t.set(
+        "getAriaName",
+        lua.create_function(move |_, _self: LuaValue| {
+            let g = c.borrow();
+            Ok(g.widgets
+                .get(idx)
+                .map_or_else(String::new, |w| w.base().aria_name.clone()))
+        })?,
+    )?;
+
+    let c = ctx.clone();
+    // -- setLabelFor --
+    /// Associates this label widget with another widget for accessibility naming.
+    /// @param | self | LUiWidget | The widget instance.
+    /// @param | target | integer? | Target widget index, or nil to clear the link.
+    t.set(
+        "setLabelFor",
+        lua.create_function(move |_, (_self, target): (LuaValue, Option<u32>)| {
+            let mut g = c.borrow_mut();
+            if let Some(w) = g.widgets.get_mut(idx) {
+                w.base_mut().label_for = target.map(|value| value as usize);
+            }
+            Ok(())
+        })?,
+    )?;
+
+    let c = ctx.clone();
+    // -- getLabelFor --
+    /// Returns the widget index associated through `setLabelFor`, or nil.
+    /// @param | self | LUiWidget | The widget instance.
+    /// @return | integer | The linked widget index.
+    t.set(
+        "getLabelFor",
+        lua.create_function(move |_, _self: LuaValue| {
+            let g = c.borrow();
+            Ok(g.widgets.get(idx).and_then(|w| w.base().label_for))
         })?,
     )?;
 
@@ -1766,8 +1825,38 @@ fn add_text_input_methods(
         lua.create_function(move |_, _self: LuaValue| {
             let g = c.borrow();
             Ok(match g.widgets.get(idx) {
-                Some(WidgetKind::TextInput(ti)) => ti.cursor_pos,
+                Some(WidgetKind::TextInput(ti)) => ti.cursor_char_pos(),
                 _ => 0,
+            })
+        })?,
+    )?;
+    let c = ctx.clone();
+    // -- setSubmitOnEnter --
+    /// Controls whether pressing Enter in this text input submits the surrounding dialog default action.
+    /// @param | self | LTextInput | The widget instance.
+    /// @param | value | boolean | True to submit on Enter, false to consume Enter locally.
+    t.set(
+        "setSubmitOnEnter",
+        lua.create_function(move |_, (_self, value): (LuaValue, bool)| {
+            let mut g = c.borrow_mut();
+            if let Some(WidgetKind::TextInput(ti)) = g.widgets.get_mut(idx) {
+                ti.submit_on_enter = value;
+            }
+            Ok(())
+        })?,
+    )?;
+    let c = ctx.clone();
+    // -- getSubmitOnEnter --
+    /// Returns whether pressing Enter in this text input submits the surrounding dialog default action.
+    /// @param | self | LTextInput | The widget instance.
+    /// @return | boolean | True if Enter submits the parent dialog default action.
+    t.set(
+        "getSubmitOnEnter",
+        lua.create_function(move |_, _self: LuaValue| {
+            let g = c.borrow();
+            Ok(match g.widgets.get(idx) {
+                Some(WidgetKind::TextInput(ti)) => ti.submit_on_enter,
+                _ => true,
             })
         })?,
     )?;
@@ -1890,9 +1979,7 @@ fn add_slider_methods(
         lua.create_function(move |_, (_self, min, max): (LuaValue, f64, f64)| {
             let mut g = c.borrow_mut();
             if let Some(WidgetKind::Slider(sl)) = g.widgets.get_mut(idx) {
-                sl.min = min;
-                sl.max = max;
-                sl.set_value(sl.value);
+                sl.set_range(min, max);
             }
             Ok(())
         })?,
@@ -1907,7 +1994,7 @@ fn add_slider_methods(
         lua.create_function(move |_, (_self, step): (LuaValue, f64)| {
             let mut g = c.borrow_mut();
             if let Some(WidgetKind::Slider(sl)) = g.widgets.get_mut(idx) {
-                sl.step = step;
+                sl.set_step(step);
             }
             Ok(())
         })?,
@@ -1961,7 +2048,7 @@ fn add_progress_bar_methods(
         lua.create_function(move |_, (_self, v): (LuaValue, f64)| {
             let mut g = c.borrow_mut();
             if let Some(WidgetKind::ProgressBar(pb)) = g.widgets.get_mut(idx) {
-                pb.value = v.clamp(pb.min, pb.max);
+                pb.set_value(v);
             }
             Ok(())
         })?,
@@ -2007,9 +2094,7 @@ fn add_progress_bar_methods(
         lua.create_function(move |_, (_self, min, max): (LuaValue, f64, f64)| {
             let mut g = c.borrow_mut();
             if let Some(WidgetKind::ProgressBar(pb)) = g.widgets.get_mut(idx) {
-                pb.min = min;
-                pb.max = max;
-                pb.value = pb.value.clamp(min, max);
+                pb.set_range(min, max);
             }
             Ok(())
         })?,
@@ -2182,6 +2267,36 @@ fn add_combo_box_methods(
             Ok(match g.widgets.get(idx) {
                 Some(WidgetKind::ComboBox(cb)) => cb.selected_item().map(|s| s.to_string()),
                 _ => None,
+            })
+        })?,
+    )?;
+    let c = ctx.clone();
+    // -- setMaxVisibleItems --
+    /// Sets the maximum number of dropdown rows shown at once before the combo box scrolls.
+    /// @param | self | LComboBox | The widget instance.
+    /// @param | count | integer | Maximum visible dropdown rows; values below 1 clamp to 1.
+    t.set(
+        "setMaxVisibleItems",
+        lua.create_function(move |_, (_self, count): (LuaValue, usize)| {
+            let mut g = c.borrow_mut();
+            if let Some(WidgetKind::ComboBox(cb)) = g.widgets.get_mut(idx) {
+                cb.set_max_visible_items(count);
+            }
+            Ok(())
+        })?,
+    )?;
+    let c = ctx.clone();
+    // -- getMaxVisibleItems --
+    /// Returns the maximum number of dropdown rows shown before the combo box scrolls.
+    /// @param | self | LComboBox | The widget instance.
+    /// @return | integer | Maximum visible dropdown row count.
+    t.set(
+        "getMaxVisibleItems",
+        lua.create_function(move |_, _self: LuaValue| {
+            let g = c.borrow();
+            Ok(match g.widgets.get(idx) {
+                Some(WidgetKind::ComboBox(cb)) => cb.max_visible_items,
+                _ => 1,
             })
         })?,
     )?;
@@ -2529,7 +2644,7 @@ fn add_spin_box_methods(
         lua.create_function(move |_, (_self, step): (LuaValue, f64)| {
             let mut g = c.borrow_mut();
             if let Some(WidgetKind::SpinBox(sb)) = g.widgets.get_mut(idx) {
-                sb.step = step.max(1e-9);
+                sb.set_step(step);
             }
             Ok(())
         })?,
@@ -6974,6 +7089,51 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         })?,
     )?;
 
+    let c = ctx.clone();
+    // -- getAccessibilityTree --
+    /// Returns a flattened accessibility snapshot for all live widgets except the root.
+    /// @return | table | Array of accessibility node tables.
+    tbl.set(
+        "getAccessibilityTree",
+        lua.create_function(move |lua, ()| {
+            let nodes = c.borrow().accessibility_tree();
+            let result = lua.create_table()?;
+            for (out_index, node) in nodes.iter().enumerate() {
+                let entry = lua.create_table()?;
+                entry.set("widget_idx", node.widget_idx as u64)?;
+                entry.set("widget_type", node.widget_type.clone())?;
+                entry.set("role", node.role.clone())?;
+                entry.set("name", node.name.clone())?;
+                entry.set("description", node.description.clone())?;
+                entry.set("label_for", node.label_for.map(|idx| idx as u64))?;
+                entry.set("focusable", node.focusable)?;
+                entry.set("visible", node.visible)?;
+                entry.set("enabled", node.enabled)?;
+                result.set((out_index + 1) as i64, entry)?;
+            }
+            Ok(result)
+        })?,
+    )?;
+
+    let c = ctx.clone();
+    // -- validateUx --
+    /// Returns accessibility and usability diagnostics for the live widget tree.
+    /// @return | table | Array of diagnostic tables containing `message` and optional `widget_idx`.
+    tbl.set(
+        "validateUx",
+        lua.create_function(move |lua, ()| {
+            let diagnostics = c.borrow().validate_ux();
+            let result = lua.create_table()?;
+            for (out_index, diagnostic) in diagnostics.iter().enumerate() {
+                let entry = lua.create_table()?;
+                entry.set("widget_idx", diagnostic.widget_idx.map(|idx| idx as u64))?;
+                entry.set("message", diagnostic.message.clone())?;
+                result.set((out_index + 1) as i64, entry)?;
+            }
+            Ok(result)
+        })?,
+    )?;
+
     // -- updateResolution --
     /// Update the current viewport resolution and recompute UI scale factor.
     /// @param | width | number | New viewport width in pixels.
@@ -7603,7 +7763,11 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
             let mut g = c.borrow_mut();
             let root_idx =
                 crate::ui::load_layout_toml(&mut g, &src).map_err(mlua::Error::external)?;
-            g.add_child(0, root_idx);
+            if !g.add_child(0, root_idx) {
+                return Err(mlua::Error::external(
+                    "loadLayoutFile: failed to attach loaded layout root",
+                ));
+            }
             Ok(root_idx as u32)
         })?,
     )?;
@@ -7623,7 +7787,11 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
             let mut g = c.borrow_mut();
             let root_idx =
                 crate::ui::load_layout_toml(&mut g, &src).map_err(mlua::Error::external)?;
-            g.add_child(0, root_idx);
+            if !g.add_child(0, root_idx) {
+                return Err(mlua::Error::external(
+                    "loadLayoutGameFile: failed to attach loaded layout root",
+                ));
+            }
             Ok(root_idx as u32)
         })?,
     )?;

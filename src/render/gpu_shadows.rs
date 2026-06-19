@@ -4,8 +4,12 @@
 //! Performs viewport and radius culling before queueing shadow work, reducing unnecessary compute load.
 //! Manages the bind groups, buffers, and pipelines that connect light data to the shadow atlas workflow.
 //! Filters occluders by light masks so only relevant blocking geometry contributes to a given light pass.
+//! Reuses per-occluder world-space edge lists across shadow lights until occluder geometry generation changes.
 //! Acts as the shadow-runtime boundary rather than the owner of general draw command interpretation.
 //! Open this file when shadow edges, light culling, or compute-driven shadow atlas updates behave incorrectly.
+
+use std::borrow::Borrow;
+use std::collections::{hash_map::Entry, HashMap};
 
 use crate::math::Mat3;
 use crate::render::gpu_light::MAX_SHADOW_LIGHTS;
@@ -18,16 +22,80 @@ use crate::render::renderer::BlendMode;
 
 use super::GpuRenderer;
 use crate::light::occluder::Occluder;
+use crate::math::Vec2;
 use crate::render::gpu_light::{LightGpuState, SHADOW_COMPUTE_WORKGROUP_SIZE, SHADOW_MAP_RES};
 
+/// Result of collecting shadow caster edges for one light.
+#[derive(Default, Clone)]
+pub struct ShadowEdgeCollection {
+    /// Light-relative edges that should be uploaded to the GPU shadow pass.
+    pub edges: Vec<ShadowEdgeGpu>,
+    /// Number of edges kept after mask, enabled-state, and radius filtering.
+    pub edges_collected: usize,
+    /// Number of edges skipped because their occluder AABB was outside the light radius.
+    pub edges_culled_by_radius: usize,
+    /// Number of occluders whose cached world-space edge list was reused.
+    pub cache_hits: usize,
+    /// Number of occluders whose world-space edge list was rebuilt.
+    pub cache_misses: usize,
+}
+
+/// Reusable per-frame cache for shadow occluder edge geometry.
+#[derive(Default)]
+pub struct ShadowEdgeCache {
+    entries: HashMap<usize, CachedShadowEdges>,
+}
+
+struct CachedShadowEdges {
+    generation: u64,
+    edge_count: usize,
+    world_aabb: Option<(f32, f32, f32, f32)>,
+    world_edges: Option<Vec<ShadowEdgeGpu>>,
+}
+
 /// Converts occluder polygons into light-relative shadow edge segments.
-pub(crate) fn collect_shadow_edges(
+pub fn collect_shadow_edges(
     light_x: f32,
     light_y: f32,
     shadow_mask: u16,
-    occluders: impl IntoIterator<Item = impl std::borrow::Borrow<Occluder>>,
+    occluders: impl IntoIterator<Item = impl Borrow<Occluder>>,
 ) -> Vec<ShadowEdgeGpu> {
+    collect_shadow_edges_with_stats(light_x, light_y, f32::INFINITY, shadow_mask, occluders).edges
+}
+
+/// Converts occluder polygons into light-relative shadow edge segments and culls distant casters.
+pub fn collect_shadow_edges_with_stats(
+    light_x: f32,
+    light_y: f32,
+    light_radius: f32,
+    shadow_mask: u16,
+    occluders: impl IntoIterator<Item = impl Borrow<Occluder>>,
+) -> ShadowEdgeCollection {
+    let mut cache = ShadowEdgeCache::default();
+    collect_shadow_edges_with_cache(
+        light_x,
+        light_y,
+        light_radius,
+        shadow_mask,
+        occluders,
+        &mut cache,
+    )
+}
+
+/// Converts occluder polygons into light-relative shadow edge segments using a reusable edge cache.
+pub fn collect_shadow_edges_with_cache(
+    light_x: f32,
+    light_y: f32,
+    light_radius: f32,
+    shadow_mask: u16,
+    occluders: impl IntoIterator<Item = impl Borrow<Occluder>>,
+    cache: &mut ShadowEdgeCache,
+) -> ShadowEdgeCollection {
     let mut edges = Vec::new();
+    let mut edges_culled_by_radius = 0usize;
+    let mut cache_hits = 0usize;
+    let mut cache_misses = 0usize;
+    let light_pos = Vec2::new(light_x, light_y);
     for occ_ref in occluders {
         let occ = occ_ref.borrow();
         if !occ.enabled {
@@ -36,27 +104,143 @@ pub(crate) fn collect_shadow_edges(
         if occ.light_mask & shadow_mask == 0 {
             continue;
         }
-        let verts = occ.get_vertices();
-        let n = verts.len();
-        if n < 2 {
+        let cached = cached_shadow_edges(cache, occ);
+        if cached.cache_hit {
+            cache_hits = cache_hits.saturating_add(1);
+        } else {
+            cache_misses = cache_misses.saturating_add(1);
+        }
+        if cached.edges.edge_count < 2 {
             continue;
         }
-        for j in 0..n {
-            let a = verts[j];
-            let b = verts[(j + 1) % n];
-            let ax = a.x + occ.position.x - light_x;
-            let ay = a.y + occ.position.y - light_y;
-            let bx = b.x + occ.position.x - light_x;
-            let by = b.y + occ.position.y - light_y;
+        if !aabb_intersects_light_radius(cached.edges.world_aabb, light_pos, light_radius) {
+            edges_culled_by_radius = edges_culled_by_radius.saturating_add(cached.edges.edge_count);
+            continue;
+        }
+        let world_edges = cached.edges.world_edges(occ);
+        for edge in world_edges {
             edges.push(ShadowEdgeGpu {
-                ax,
-                ay,
-                sx: bx - ax,
-                sy: by - ay,
+                ax: edge.ax - light_x,
+                ay: edge.ay - light_y,
+                sx: edge.sx,
+                sy: edge.sy,
             });
         }
     }
-    edges
+    ShadowEdgeCollection {
+        edges_collected: edges.len(),
+        edges,
+        edges_culled_by_radius,
+        cache_hits,
+        cache_misses,
+    }
+}
+
+struct CachedShadowEdgeLookup<'a> {
+    edges: &'a mut CachedShadowEdges,
+    cache_hit: bool,
+}
+
+fn cached_shadow_edges<'a>(
+    cache: &'a mut ShadowEdgeCache,
+    occ: &Occluder,
+) -> CachedShadowEdgeLookup<'a> {
+    let key = occ as *const Occluder as usize;
+    let generation = occ.edge_generation();
+    let mut cache_hit = false;
+    let edges = match cache.entries.entry(key) {
+        Entry::Occupied(mut entry) => {
+            if entry.get().generation == generation {
+                cache_hit = true;
+            } else {
+                entry.insert(CachedShadowEdges::from_occluder_bounds(occ));
+            }
+            entry.into_mut()
+        }
+        Entry::Vacant(entry) => entry.insert(CachedShadowEdges::from_occluder_bounds(occ)),
+    };
+    CachedShadowEdgeLookup { edges, cache_hit }
+}
+
+impl CachedShadowEdges {
+    fn from_occluder_bounds(occ: &Occluder) -> Self {
+        let verts = occ.get_vertices();
+        let mut min_x = f32::INFINITY;
+        let mut max_x = f32::NEG_INFINITY;
+        let mut min_y = f32::INFINITY;
+        let mut max_y = f32::NEG_INFINITY;
+        let mut aabb_valid = true;
+        for vertex in verts {
+            let x = vertex.x + occ.position.x;
+            let y = vertex.y + occ.position.y;
+            if !x.is_finite() || !y.is_finite() {
+                aabb_valid = false;
+            }
+            min_x = min_x.min(x);
+            max_x = max_x.max(x);
+            min_y = min_y.min(y);
+            max_y = max_y.max(y);
+        }
+        let world_aabb = if aabb_valid
+            && min_x.is_finite()
+            && max_x.is_finite()
+            && min_y.is_finite()
+            && max_y.is_finite()
+        {
+            Some((min_x, max_x, min_y, max_y))
+        } else {
+            None
+        };
+        Self {
+            generation: occ.edge_generation(),
+            edge_count: verts.len(),
+            world_aabb,
+            world_edges: None,
+        }
+    }
+
+    fn world_edges(&mut self, occ: &Occluder) -> &[ShadowEdgeGpu] {
+        self.world_edges.get_or_insert_with(|| {
+            let verts = occ.get_vertices();
+            let mut edges = Vec::with_capacity(verts.len());
+            for j in 0..verts.len() {
+                let a = verts[j];
+                let b = verts[(j + 1) % verts.len()];
+                let ax = a.x + occ.position.x;
+                let ay = a.y + occ.position.y;
+                let bx = b.x + occ.position.x;
+                let by = b.y + occ.position.y;
+                edges.push(ShadowEdgeGpu {
+                    ax,
+                    ay,
+                    sx: bx - ax,
+                    sy: by - ay,
+                });
+            }
+            edges
+        })
+    }
+}
+
+fn aabb_intersects_light_radius(
+    world_aabb: Option<(f32, f32, f32, f32)>,
+    light_pos: Vec2,
+    light_radius: f32,
+) -> bool {
+    if !light_radius.is_finite() {
+        return true;
+    }
+    if light_radius <= 0.0 {
+        return false;
+    }
+    let Some((min_x, max_x, min_y, max_y)) = world_aabb else {
+        return false;
+    };
+    let closest_x = light_pos.x.clamp(min_x, max_x);
+    let closest_y = light_pos.y.clamp(min_y, max_y);
+    let dx = closest_x - light_pos.x;
+    let dy = closest_y - light_pos.y;
+    dx.mul_add(dx, dy * dy) <= light_radius * light_radius
 }
 
 impl GpuRenderer {
@@ -417,6 +601,7 @@ impl GpuRenderer {
         lg.shadow_edge_buffer = shadow_edge_buffer;
         lg.shadow_edge_capacity = new_capacity;
         lg.shadow_compute_bind_group = shadow_compute_bind_group;
+        self.render_diagnostics.record_buffer_growth_event();
     }
 
     /// Uploads shadow edges and dispatches the compute shader for one light row.
@@ -424,13 +609,21 @@ impl GpuRenderer {
         &mut self,
         encoder: &mut wgpu::CommandEncoder,
         input: ShadowDispatchInput<'_>,
+        shadow_edge_cache: &mut ShadowEdgeCache,
     ) {
-        let edges = collect_shadow_edges(
+        let edge_collection = collect_shadow_edges_with_cache(
             input.light_x,
             input.light_y,
+            input.light_radius,
             input.shadow_mask,
             input.occluders.iter().copied(),
+            shadow_edge_cache,
         );
+        self.render_diagnostics.record_shadow_dispatch(
+            edge_collection.edges_collected,
+            edge_collection.edges_culled_by_radius,
+        );
+        let edges = edge_collection.edges;
         self.ensure_shadow_edge_capacity(edges.len());
         let Some(lg) = self.light_gpu.as_ref() else {
             return;

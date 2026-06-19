@@ -1,6 +1,7 @@
 //! Registers the `lurek.ai` Lua API for AI command helpers, option parsing, and thin bindings over engine logic.
 
 use super::SharedState;
+use crate::ai::validation::{finite_f32, finite_f64, non_negative, positive_nonzero};
 use crate::ai::{
     AIDirector, AILod, AIWorld, AiValidationLimits, BTNode, Bandit, BanditStrategy, BehaviorTree,
     Blackboard, CallbackErrorTrace, CommandQueue, Consideration, ContextSteering, DecisionModel,
@@ -9,7 +10,6 @@ use crate::ai::{
     ORCAAgent, ORCASolver, ParallelPolicy, QLearner, ResponseCurve, Squad, SteeringManager,
     StimulusWorld, StrategyAI, TraitProfile, UtilityAI, WorldState,
 };
-use crate::ai::validation::{finite_f32, finite_f64, non_negative, positive_nonzero};
 use crate::lua_api::callback_registry::CallbackRegistry;
 use crate::pathfind::InfluenceMap;
 use mlua::prelude::*;
@@ -60,7 +60,10 @@ fn utility_trace_to_lua<'lua>(
     let out = lua.create_table()?;
     out.set("chosen_action", trace.chosen_action.clone())?;
     out.set("callbacks_used", trace.callbacks_used as u32)?;
-    out.set("callback_errors", callback_errors_to_lua(lua, &trace.callback_errors)?)?;
+    out.set(
+        "callback_errors",
+        callback_errors_to_lua(lua, &trace.callback_errors)?,
+    )?;
     let actions = lua.create_table()?;
     for (i, action) in trace.actions.iter().enumerate() {
         let entry = lua.create_table()?;
@@ -113,7 +116,10 @@ fn mcts_trace_to_lua<'lua>(
     out.set("iterations_run", trace.iterations_run)?;
     out.set("nodes_expanded", trace.nodes_expanded as u32)?;
     out.set("invalid_score_count", trace.invalid_score_count as u32)?;
-    out.set("callback_errors", callback_errors_to_lua(lua, &trace.callback_errors)?)?;
+    out.set(
+        "callback_errors",
+        callback_errors_to_lua(lua, &trace.callback_errors)?,
+    )?;
     out.set("failure_reason", trace.failure_reason.clone())?;
     Ok(out)
 }
@@ -933,12 +939,7 @@ impl LuaUserData for LuaSteeringManager {
                     "steering flee weight",
                     f64::from(weight.unwrap_or(1.0)),
                 )? as f32;
-                this.inner.borrow_mut().add_flee(
-                    tx,
-                    ty,
-                    panic_dist,
-                    weight,
-                );
+                this.inner.borrow_mut().add_flee(tx, ty, panic_dist, weight);
                 Ok(())
             },
         );
@@ -953,20 +954,13 @@ impl LuaUserData for LuaSteeringManager {
             |_, this, (tx, ty, slowing, weight): (f32, f32, Option<f32>, Option<f32>)| {
                 let tx = lua_require_finite_f32("steering arrive target.x", tx)?;
                 let ty = lua_require_finite_f32("steering arrive target.y", ty)?;
-                let slowing = lua_require_positive_f32(
-                    "steering slowing_radius",
-                    slowing.unwrap_or(50.0),
-                )?;
+                let slowing =
+                    lua_require_positive_f32("steering slowing_radius", slowing.unwrap_or(50.0))?;
                 let weight = lua_require_non_negative_f64(
                     "steering arrive weight",
                     f64::from(weight.unwrap_or(1.0)),
                 )? as f32;
-                this.inner.borrow_mut().add_arrive(
-                    tx,
-                    ty,
-                    slowing,
-                    weight,
-                );
+                this.inner.borrow_mut().add_arrive(tx, ty, slowing, weight);
                 Ok(())
             },
         );
@@ -998,12 +992,9 @@ impl LuaUserData for LuaSteeringManager {
                     "steering wander weight",
                     f64::from(weight.unwrap_or(1.0)),
                 )? as f32;
-                this.inner.borrow_mut().add_wander(
-                    radius,
-                    dist,
-                    jitter,
-                    weight,
-                );
+                this.inner
+                    .borrow_mut()
+                    .add_wander(radius, dist, jitter, weight);
                 Ok(())
             },
         );
@@ -1179,11 +1170,7 @@ impl LuaUserData for LuaSteeringManager {
                 let y = lua_require_finite_f32("steering entity.y", y)?;
                 let vx = lua_require_finite_f32("steering entity.vx", vx.unwrap_or(0.0))?;
                 let vy = lua_require_finite_f32("steering entity.vy", vy.unwrap_or(0.0))?;
-                this.inner.borrow_mut().set_entity(
-                    name,
-                    (x, y),
-                    (vx, vy),
-                );
+                this.inner.borrow_mut().set_entity(name, (x, y), (vx, vy));
                 Ok(())
             },
         );
@@ -1335,10 +1322,8 @@ impl LuaUserData for LuaUtilityAI {
             "addAction",
             |lua, this, (name, scorer_fn, weight): (String, LuaFunction, Option<f64>)| {
                 let key = lua.create_registry_value(scorer_fn)?;
-                let momentum_bonus = lua_require_non_negative_f64(
-                    "utility momentum_bonus",
-                    weight.unwrap_or(1.0),
-                )?;
+                let momentum_bonus =
+                    lua_require_non_negative_f64("utility momentum_bonus", weight.unwrap_or(1.0))?;
                 this.inner
                     .borrow_mut()
                     .add_action(name, key, momentum_bonus)
@@ -1405,9 +1390,12 @@ impl LuaUserData for LuaUtilityAI {
                         let curve_key = lua.create_registry_value(f)?;
                         let callback_id = this.custom_callbacks.borrow_mut().register(curve_key);
                         let curve = ResponseCurve::Custom { callback_id };
-                        let p1 = lua_require_finite_f64("utility consideration p1", p1.unwrap_or(1.0))?;
-                        let p2 = lua_require_finite_f64("utility consideration p2", p2.unwrap_or(0.0))?;
-                        let p3 = lua_require_finite_f64("utility consideration p3", p3.unwrap_or(0.0))?;
+                        let p1 =
+                            lua_require_finite_f64("utility consideration p1", p1.unwrap_or(1.0))?;
+                        let p2 =
+                            lua_require_finite_f64("utility consideration p2", p2.unwrap_or(0.0))?;
+                        let p3 =
+                            lua_require_finite_f64("utility consideration p3", p3.unwrap_or(0.0))?;
                         let weight = lua_require_non_negative_f64(
                             "utility consideration weight",
                             weight.unwrap_or(1.0),
@@ -1435,30 +1423,34 @@ impl LuaUserData for LuaUtilityAI {
                     }
                     LuaValue::String(s) => {
                         let curve_str = s.to_str().unwrap_or("linear").to_string();
-                        this.inner.borrow_mut().add_consideration(
-                            &action_name,
-                            name,
-                            scorer_key,
-                            &curve_str,
-                            p1.unwrap_or(1.0),
-                            p2.unwrap_or(0.0),
-                            p3.unwrap_or(0.0),
-                            weight.unwrap_or(1.0),
-                        )
-                        .map_err(lua_ai_runtime_error)?;
+                        this.inner
+                            .borrow_mut()
+                            .add_consideration(
+                                &action_name,
+                                name,
+                                scorer_key,
+                                &curve_str,
+                                p1.unwrap_or(1.0),
+                                p2.unwrap_or(0.0),
+                                p3.unwrap_or(0.0),
+                                weight.unwrap_or(1.0),
+                            )
+                            .map_err(lua_ai_runtime_error)?;
                     }
                     _ => {
-                        this.inner.borrow_mut().add_consideration(
-                            &action_name,
-                            name,
-                            scorer_key,
-                            "linear",
-                            p1.unwrap_or(1.0),
-                            p2.unwrap_or(0.0),
-                            p3.unwrap_or(0.0),
-                            weight.unwrap_or(1.0),
-                        )
-                        .map_err(lua_ai_runtime_error)?;
+                        this.inner
+                            .borrow_mut()
+                            .add_consideration(
+                                &action_name,
+                                name,
+                                scorer_key,
+                                "linear",
+                                p1.unwrap_or(1.0),
+                                p2.unwrap_or(0.0),
+                                p3.unwrap_or(0.0),
+                                weight.unwrap_or(1.0),
+                            )
+                            .map_err(lua_ai_runtime_error)?;
                     }
                 }
                 Ok(())

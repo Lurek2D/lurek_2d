@@ -803,24 +803,28 @@ impl PostFxPipeline {
         ));
         self.cache_key = Some(key);
     }
-    fn cached_texture(&self, slot: CachedPostFxSlot) -> &CachedPostFxTexture {
+    fn cached_texture(&self, slot: CachedPostFxSlot) -> Option<&CachedPostFxTexture> {
         match slot {
-            CachedPostFxSlot::Ping => self.ping.as_ref().expect("postfx ping cache exists"),
-            CachedPostFxSlot::Pong => self.pong.as_ref().expect("postfx pong cache exists"),
+            CachedPostFxSlot::Ping => self.ping.as_ref(),
+            CachedPostFxSlot::Pong => self.pong.as_ref(),
         }
     }
     fn bind_group_for_source<'a>(
         &'a self,
         device: &wgpu::Device,
         source: PostFxSource<'a>,
-    ) -> PostFxBindGroup<'a> {
+    ) -> Option<PostFxBindGroup<'a>> {
         match source {
-            PostFxSource::Cached(slot) => {
-                PostFxBindGroup::Borrowed(&self.cached_texture(slot).bind_group)
-            }
+            PostFxSource::Cached(slot) => self
+                .cached_texture(slot)
+                .map(|texture| PostFxBindGroup::Borrowed(&texture.bind_group)),
             PostFxSource::External(view) => {
                 // Capture views are frame-owned; only stable ping-pong views are cached here.
-                PostFxBindGroup::Owned(self.create_bind_group(device, "postfx_external_bg", view))
+                Some(PostFxBindGroup::Owned(self.create_bind_group(
+                    device,
+                    "postfx_external_bg",
+                    view,
+                )))
             }
         }
     }
@@ -884,7 +888,20 @@ impl PostFxPipeline {
             let dst_view: &wgpu::TextureView = if is_last {
                 target_view
             } else {
-                &self.cached_texture(dst_slot).texture.view
+                let Some(texture) = self.cached_texture(dst_slot) else {
+                    log::warn!(
+                        "PostFxPipeline: missing ping-pong target texture; copied unprocessed frame"
+                    );
+                    self.run_copy_pass(
+                        device,
+                        encoder,
+                        queue,
+                        PostFxSource::External(capture_view),
+                        target_view,
+                    );
+                    return;
+                };
+                &texture.texture.view
             };
             let mut raw = params_to_uniform(&pass.params);
             if pass.auto_uniforms {
@@ -897,14 +914,35 @@ impl PostFxPipeline {
             let effect_key = pass.effect_name.as_str();
             let Some(pipeline) = self.pipelines.get(effect_key) else {
                 log::warn!("PostFxPipeline: unknown effect '{}' — skipped", effect_key);
-                self.run_copy_pass(device, encoder, queue, source, dst_view);
+                if !self.run_copy_pass(device, encoder, queue, source, dst_view) {
+                    self.run_copy_pass(
+                        device,
+                        encoder,
+                        queue,
+                        PostFxSource::External(capture_view),
+                        target_view,
+                    );
+                    return;
+                }
                 if !is_last {
                     source = PostFxSource::Cached(dst_slot);
                     dst_slot = dst_slot.next();
                 }
                 continue;
             };
-            let bind_group = self.bind_group_for_source(device, source);
+            let Some(bind_group) = self.bind_group_for_source(device, source) else {
+                log::warn!(
+                    "PostFxPipeline: missing cached source texture; copied unprocessed frame"
+                );
+                self.run_copy_pass(
+                    device,
+                    encoder,
+                    queue,
+                    PostFxSource::External(capture_view),
+                    target_view,
+                );
+                return;
+            };
             Self::encode_fullscreen_pass(
                 encoder,
                 "postfx_pass",
@@ -926,13 +964,15 @@ impl PostFxPipeline {
         queue: &wgpu::Queue,
         source: PostFxSource<'_>,
         dst_view: &wgpu::TextureView,
-    ) {
+    ) -> bool {
         let raw = [0.0f32; 16];
         queue.write_buffer(&self.params_buf, 0, bytemuck::cast_slice(&raw));
         let Some(copy_pipeline) = self.pipelines.get("__copy") else {
-            return;
+            return false;
         };
-        let bind_group = self.bind_group_for_source(device, source);
+        let Some(bind_group) = self.bind_group_for_source(device, source) else {
+            return false;
+        };
         Self::encode_fullscreen_pass(
             encoder,
             "postfx_copy_pass",
@@ -940,6 +980,7 @@ impl PostFxPipeline {
             copy_pipeline,
             bind_group.as_ref(),
         );
+        true
     }
 }
 enum PostFxBindGroup<'a> {

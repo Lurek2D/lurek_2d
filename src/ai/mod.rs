@@ -138,23 +138,23 @@ pub use crate::learning::Neuroevolution;
 pub use crate::learning::{Activation, NeuralLayer, NeuralNet};
 /// Multi-armed bandit policies and arm stats (re-exported from learning module).
 pub use crate::learning::{Bandit, BanditArm, BanditStrategy};
+/// Genetic algorithm public types (re-exported from learning module).
+pub use crate::learning::{Chromosome, GeneticAlgorithm};
+/// Context-steering behaviors and runtime type.
+pub use context_steering::{ContextBehavior, ContextBehaviorKind, ContextSteering};
 /// Shared AI callback and decision traces.
 pub use diagnostics::{
     CallbackErrorTrace, GoapPlanTrace, MctsDecisionTrace, UtilityActionTrace,
     UtilityConsiderationTrace, UtilityDecisionTrace,
 };
-/// Shared AI validation errors and limits.
-pub use error::AiError;
-/// Genetic algorithm public types (re-exported from learning module).
-pub use crate::learning::{Chromosome, GeneticAlgorithm};
-/// Context-steering behaviors and runtime type.
-pub use context_steering::{ContextBehavior, ContextBehaviorKind, ContextSteering};
 /// Dialogue decision types.
 pub use dialogue::{DialogueAI, DialogueBranch, DialogueTopic};
 /// High-level encounter director types.
 pub use director::{AIDirector, DirectorConfig, DirectorPhase};
 /// Emotion model types.
 pub use emotion::{Emotion, EmotionModel};
+/// Shared AI validation errors and limits.
+pub use error::AiError;
 /// HTN planner domain and task types.
 pub use htn::{HTNDomain, HTNMethod, HTNPlanner, HTNTask, WorldState};
 /// AI level-of-detail types.

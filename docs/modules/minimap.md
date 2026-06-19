@@ -12,6 +12,8 @@
 - A minimap is therefore not only a tiny render, but a compact policy layer for world awareness.
 - Read it as the owner of compact map presentation.
 
+This module primarily collaborates with `camera`, `image`, `province`, `raycaster`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
+
 ## Functions
 
 ### `lurek.minimap.newMinimap`

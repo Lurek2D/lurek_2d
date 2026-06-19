@@ -219,7 +219,12 @@ impl TileMap {
         tile_height: u32,
         chunk_size: u32,
     ) -> Result<Self, TileMapError> {
-        Self::try_new_with_limits(tile_width, tile_height, chunk_size, TileMapLimits::default())
+        Self::try_new_with_limits(
+            tile_width,
+            tile_height,
+            chunk_size,
+            TileMapLimits::default(),
+        )
     }
 
     /// Create a validated `TileMap` using explicit limits.
@@ -330,12 +335,13 @@ impl TileMap {
     ) -> Result<(), TileMapError> {
         let width = u64::from(tx1.saturating_sub(tx0)) + 1;
         let height = u64::from(ty1.saturating_sub(ty0)) + 1;
-        let checks = width
-            .checked_mul(height)
-            .ok_or(TileMapError::CollisionQueryLimitExceeded {
-                checks: u64::MAX,
-                max_checks: self.limits.max_collision_tile_checks,
-            })?;
+        let checks =
+            width
+                .checked_mul(height)
+                .ok_or(TileMapError::CollisionQueryLimitExceeded {
+                    checks: u64::MAX,
+                    max_checks: self.limits.max_collision_tile_checks,
+                })?;
         if checks > self.limits.max_collision_tile_checks {
             return Err(TileMapError::CollisionQueryLimitExceeded {
                 checks,
@@ -526,11 +532,7 @@ impl TileMap {
     }
 
     /// Set the visibility flag on layer `idx`, returning a typed error when the layer is missing.
-    pub fn try_set_layer_visible(
-        &mut self,
-        idx: usize,
-        visible: bool,
-    ) -> Result<(), TileMapError> {
+    pub fn try_set_layer_visible(&mut self, idx: usize, visible: bool) -> Result<(), TileMapError> {
         if idx >= self.layers.len() {
             return Err(self.invalid_layer_error(idx));
         }
@@ -627,7 +629,9 @@ impl TileMap {
             .layers
             .get(layer)
             .ok_or_else(|| self.invalid_layer_error(layer))?;
-        let idx = l.index(x, y).ok_or_else(|| self.invalid_coord_error(layer, x, y))?;
+        let idx = l
+            .index(x, y)
+            .ok_or_else(|| self.invalid_coord_error(layer, x, y))?;
         Ok(l.tiles[idx])
     }
 
@@ -863,11 +867,7 @@ impl TileMap {
     }
 
     /// Return `true` when any tile overlapped by `rect` in `layer` is solid, or a typed error for invalid input.
-    pub fn try_rect_overlaps_solid(
-        &self,
-        layer: usize,
-        rect: Rect,
-    ) -> Result<bool, TileMapError> {
+    pub fn try_rect_overlaps_solid(&self, layer: usize, rect: Rect) -> Result<bool, TileMapError> {
         if self.validate_collision_query(rect).is_err() {
             TileMapDiagnostics::bump(&self.diagnostics.invalid_queries);
             self.validate_collision_query(rect)?;

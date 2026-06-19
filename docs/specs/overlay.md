@@ -28,6 +28,8 @@
 - `render` still draws the final image, but `overlay` owns the grouping, configuration, and temporal behavior of these large-scale scene treatments.
 - Read `overlay` as the orchestration layer for scene-wide atmospheric and transitional effects.
 
+This module primarily collaborates with `color`, `image`, `render`, `runtime`. Its responsibility should stay inside the `Edge/Integration` group rather than absorb behavior owned by those neighbors.
+
 ## Imports
 
 - `color`: Imports or references `src/color/`. Dependency stays inside `Edge/Integration` and should remain acyclic.

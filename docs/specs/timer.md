@@ -26,6 +26,8 @@
 - The module therefore serves both as a low-level clock source and as a coordination surface for anything that must happen later, repeatedly, or after a measured duration.
 - Read `timer` as the engine's common timing layer: neighboring modules consume time, but this module turns it into a reusable, schedulable runtime resource.
 
+This module primarily collaborates with `runtime`. Its responsibility should stay inside the Core Runtime group rather than absorb behavior owned by those neighbors.
+
 ## Imports
 
 - `runtime`: Imports or references `runtime` from `src/runtime/`.

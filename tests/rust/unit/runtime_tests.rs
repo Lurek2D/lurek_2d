@@ -200,12 +200,12 @@ mod shared_state_tests {
         width: u32,
         height: u32,
     ) -> lurek2d::runtime::resource_keys::TextureKey {
-        st.textures.insert(TextureData {
-            pixels: vec![255; (width * height * 4) as usize],
+        st.textures.insert(TextureData::new(
+            vec![255; (width * height * 4) as usize],
             width,
             height,
-            color_space: TextureColorSpace::Srgb,
-        })
+            TextureColorSpace::Srgb,
+        ))
     }
 
     fn sample_shader() -> Shader {

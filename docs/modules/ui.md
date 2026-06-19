@@ -561,6 +561,22 @@ end
 
 ---
 
+### `lurek.ui.getAccessibilityTree`
+
+Returns a flattened accessibility snapshot for all live widgets except the root.
+
+```lua
+lurek.ui.getAccessibilityTree()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of accessibility node tables. |
+
+---
+
 ### `lurek.ui.getActiveDrag`
 
 Returns the widget index currently being dragged, or nil.
@@ -2928,6 +2944,22 @@ end
 
 ---
 
+### `lurek.ui.validateUx`
+
+Returns accessibility and usability diagnostics for the live widget tree.
+
+```lua
+lurek.ui.validateUx()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of diagnostic tables containing `message` and optional `widget_idx`. |
+
+---
+
 ### `lurek.ui.visibleRange`
 
 Calculate the visible item range for a scrollable list widget.
@@ -3989,6 +4021,22 @@ end
 
 ---
 
+#### `LComboBox:getMaxVisibleItems`
+
+Returns the maximum number of dropdown rows shown before the combo box scrolls.
+
+```lua
+LComboBox:getMaxVisibleItems()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Maximum visible dropdown row count. |
+
+---
+
 #### `LComboBox:getSelectedIndex`
 
 Returns the 1-based index of the currently selected item, or 0 if none is selected.
@@ -4090,6 +4138,22 @@ do
     example_print_log("getSelectedItem:", selItem, "removeItem ok")
 end
 ```
+
+---
+
+#### `LComboBox:setMaxVisibleItems`
+
+Sets the maximum number of dropdown rows shown at once before the combo box scrolls.
+
+```lua
+LComboBox:setMaxVisibleItems(count)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `count` | number | Maximum visible dropdown rows; values below 1 clamp to 1. |
 
 ---
 
@@ -11298,6 +11362,22 @@ end
 
 ---
 
+#### `LTextInput:getSubmitOnEnter`
+
+Returns whether pressing Enter in this text input submits the surrounding dialog default action.
+
+```lua
+LTextInput:getSubmitOnEnter()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True if Enter submits the parent dialog default action. |
+
+---
+
 #### `LTextInput:getText`
 
 Returns the current text content of this text input field.
@@ -11412,6 +11492,22 @@ do
     example_print_log("placeholder = " .. input:getPlaceholder())
 end
 ```
+
+---
+
+#### `LTextInput:setSubmitOnEnter`
+
+Controls whether pressing Enter in this text input submits the surrounding dialog default action.
+
+```lua
+LTextInput:setSubmitOnEnter(value)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `value` | boolean | True to submit on Enter, false to consume Enter locally. |
 
 ---
 
@@ -13276,6 +13372,22 @@ end
 
 ---
 
+#### `LUiWidget:getAriaName`
+
+Returns the explicit accessible name metadata for this widget.
+
+```lua
+LUiWidget:getAriaName()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | The stored accessible name, or an empty string when unset. |
+
+---
+
 #### `LUiWidget:getChildCount`
 
 Returns the number of direct child widgets attached to this widget.
@@ -13423,6 +13535,22 @@ do
     example_print_log("tooltip = " .. btn:getTooltip())
 end
 ```
+
+---
+
+#### `LUiWidget:getLabelFor`
+
+Returns the widget index associated through `setLabelFor`, or nil.
+
+```lua
+LUiWidget:getLabelFor()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | The linked widget index. |
 
 ---
 
@@ -13640,6 +13768,22 @@ do
     example_print_log("rect = " .. x .. "," .. y .. " " .. w .. "x" .. h)
 end
 ```
+
+---
+
+#### `LUiWidget:getRole`
+
+Returns the semantic role string for this widget.
+
+```lua
+LUiWidget:getRole()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | The configured or default semantic role. |
 
 ---
 
@@ -14324,6 +14468,22 @@ do
     example_print_log("tooltip = " .. btn:getTooltip())
 end
 ```
+
+---
+
+#### `LUiWidget:setLabelFor`
+
+Associates this label widget with another widget for accessibility naming.
+
+```lua
+LUiWidget:setLabelFor(target)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `target?` | number | Target widget index, or nil to clear the link. |
 
 ---
 

@@ -331,6 +331,81 @@ impl WidgetType {
             Self::Custom => (128.0, 128.0),
         }
     }
+    /// Return whether this widget type should participate in keyboard focus by default.
+    pub fn default_focusable(self) -> bool {
+        matches!(
+            self,
+            Self::Button
+                | Self::TextInput
+                | Self::CheckBox
+                | Self::Slider
+                | Self::ComboBox
+                | Self::ListBox
+                | Self::ScrollPanel
+                | Self::TabBar
+                | Self::TreeView
+                | Self::RadioButton
+                | Self::ScrollBar
+                | Self::GUIWindow
+                | Self::Toolbar
+                | Self::MenuBar
+                | Self::MenuItem
+                | Self::Dialog
+                | Self::Accordion
+                | Self::ColorPicker
+                | Self::GUITable
+                | Self::ImageWidget
+                | Self::SpinBox
+                | Self::Switch
+        )
+    }
+    /// Return the default mouse interaction policy for this widget type.
+    pub fn default_mouse_filter(self) -> MouseFilter {
+        match self {
+            Self::Layout
+            | Self::Panel
+            | Self::Spacer
+            | Self::Separator
+            | Self::Badge
+            | Self::Custom
+            | Self::Label => MouseFilter::Ignore,
+            _ => MouseFilter::Stop,
+        }
+    }
+    /// Return the default accessibility role string for this widget type.
+    pub fn default_role(self) -> &'static str {
+        match self {
+            Self::Button => "button",
+            Self::Label => "label",
+            Self::TextInput => "textbox",
+            Self::CheckBox => "checkbox",
+            Self::Slider => "slider",
+            Self::ProgressBar => "progressbar",
+            Self::ComboBox => "combobox",
+            Self::ListBox => "listbox",
+            Self::Panel | Self::Layout | Self::ScrollPanel | Self::DockPanel => "group",
+            Self::NinePatch | Self::ImageWidget => "image",
+            Self::TabBar => "tablist",
+            Self::Toast | Self::TooltipPanel | Self::StatusBar => "status",
+            Self::Separator => "separator",
+            Self::Spacer => "presentation",
+            Self::TreeView => "tree",
+            Self::RadioButton => "radio",
+            Self::ScrollBar => "scrollbar",
+            Self::GUIWindow | Self::Dialog => "dialog",
+            Self::SplitPanel => "splitter",
+            Self::Toolbar => "toolbar",
+            Self::MenuBar => "menubar",
+            Self::MenuItem => "menuitem",
+            Self::Accordion => "disclosure",
+            Self::ColorPicker => "colorwell",
+            Self::GUITable => "table",
+            Self::SpinBox => "spinbutton",
+            Self::Switch => "switch",
+            Self::Badge => "note",
+            Self::Custom => "generic",
+        }
+    }
 }
 /// Easing function for property animations.
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -655,16 +730,6 @@ impl WidgetBase {
     /// Create a `WidgetBase` with `widget_type` defaults from `WidgetType::default_size`, visible, enabled, alpha 1.
     pub fn new(widget_type: WidgetType) -> Self {
         let (width, height) = widget_type.default_size();
-        let mouse_filter = match widget_type {
-            WidgetType::Layout
-            | WidgetType::Panel
-            | WidgetType::Spacer
-            | WidgetType::Separator
-            | WidgetType::Badge
-            | WidgetType::Custom
-            | WidgetType::Label => MouseFilter::Ignore,
-            _ => MouseFilter::Stop,
-        };
         Self {
             id: String::new(),
             widget_type,
@@ -699,19 +764,19 @@ impl WidgetBase {
             computed_rect: crate::math::Rect::new(0.0, 0.0, 0.0, 0.0),
             is_visible: true,
             style_class: None,
-            mouse_filter,
+            mouse_filter: widget_type.default_mouse_filter(),
             text_align: "left".to_string(),
             text_wrap: false,
             text_ellipsis: true,
             text_v_align: TextVAlign::Middle,
-            focusable: true,
+            focusable: widget_type.default_focusable(),
             tab_index: 0,
             focus_group: String::new(),
             focus_neighbor_up: None,
             focus_neighbor_down: None,
             focus_neighbor_left: None,
             focus_neighbor_right: None,
-            role: "generic".to_string(),
+            role: widget_type.default_role().to_string(),
             aria_name: String::new(),
             description: String::new(),
             label_for: None,

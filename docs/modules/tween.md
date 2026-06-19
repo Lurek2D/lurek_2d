@@ -17,6 +17,8 @@
 - The module improves consistency across UI, cameras, overlays, and feedback systems by giving them one temporal vocabulary.
 - Read `tween` as the engine's reusable workflow for interpolation, sequencing, and spring-like motion.
 
+This module primarily collaborates with `math`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
+
 ## Functions
 
 ### `lurek.tween.cancelAll`

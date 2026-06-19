@@ -23,6 +23,8 @@
 - `pathfind`, `physics`, `raycaster`, and `render` all consume tile-space in specialized ways, but `tilemap` owns what the grid world fundamentally is.
 - Read `tilemap` as the engine's main authority for tile space and tile-world structure.
 
+This module primarily collaborates with `color`, `image`, `math`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
+
 ## Functions
 
 ### `lurek.tilemap.fromLDtk`

@@ -1085,13 +1085,13 @@ impl World {
             body_id,
             fixture_index: fixture_idx,
         })?;
-        let collider = self
-            .rcolliders
-            .get_mut(handle)
-            .ok_or(PhysicsError::InvalidFixtureReference {
-                body_id,
-                fixture_index: fixture_idx,
-            })?;
+        let collider =
+            self.rcolliders
+                .get_mut(handle)
+                .ok_or(PhysicsError::InvalidFixtureReference {
+                    body_id,
+                    fixture_index: fixture_idx,
+                })?;
         collider.set_friction(friction);
         Ok(())
     }
@@ -1133,13 +1133,13 @@ impl World {
             body_id,
             fixture_index: fixture_idx,
         })?;
-        let collider = self
-            .rcolliders
-            .get_mut(handle)
-            .ok_or(PhysicsError::InvalidFixtureReference {
-                body_id,
-                fixture_index: fixture_idx,
-            })?;
+        let collider =
+            self.rcolliders
+                .get_mut(handle)
+                .ok_or(PhysicsError::InvalidFixtureReference {
+                    body_id,
+                    fixture_index: fixture_idx,
+                })?;
         collider.set_restitution(restitution);
         Ok(())
     }
@@ -1177,13 +1177,13 @@ impl World {
             body_id,
             fixture_index: fixture_idx,
         })?;
-        let collider = self
-            .rcolliders
-            .get_mut(handle)
-            .ok_or(PhysicsError::InvalidFixtureReference {
-                body_id,
-                fixture_index: fixture_idx,
-            })?;
+        let collider =
+            self.rcolliders
+                .get_mut(handle)
+                .ok_or(PhysicsError::InvalidFixtureReference {
+                    body_id,
+                    fixture_index: fixture_idx,
+                })?;
         collider.set_sensor(sensor);
         Ok(())
     }
@@ -2575,7 +2575,8 @@ impl World {
         max_force: f32,
         max_torque: f32,
     ) -> usize {
-        match self.try_add_friction_joint(body_a, body_b, anchor_x, anchor_y, max_force, max_torque) {
+        match self.try_add_friction_joint(body_a, body_b, anchor_x, anchor_y, max_force, max_torque)
+        {
             Ok(id) => id,
             Err(_) => {
                 self.record_invalid_operation();

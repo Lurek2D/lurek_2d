@@ -30,8 +30,11 @@
 - The result is a surface that serves players, tools, and tests at the same time: it turns noisy device events into deterministic, serializable, reusable intent.
 - Other systems consume the result, but `input` owns normalization, mapping, serialization, and replay semantics for device-originated intent.
 
+This module primarily collaborates with `filesystem`, `runtime`. Its responsibility should stay inside the Platform Services group rather than absorb behavior owned by those neighbors.
+
 ## Imports
 
+- `filesystem`: Imports or references `src/filesystem/`. Cross-group dependency from `Platform Services` into `Core Runtime`.
 - `runtime`: Imports or references `runtime` from `src/runtime/`.
 
 ## Files
@@ -287,6 +290,8 @@
 ##### Fields
 
 - `kind` (`string`): Event kind (press, release, hold).
+- `mouse_x` (`number?`): Replayed mouse X coordinate for this frame when recorded.
+- `mouse_y` (`number?`): Replayed mouse Y coordinate for this frame when recorded.
 - `name` (`string`): Event name.
 
 ##### Methods
@@ -340,6 +345,7 @@
 
 ## References
 
+- `filesystem`: Imports or references `src/filesystem/`. Cross-group dependency from `Platform Services` into `Core Runtime`.
 - `runtime`: Imports or references `runtime` from `src/runtime/`.
 
 ## Notes

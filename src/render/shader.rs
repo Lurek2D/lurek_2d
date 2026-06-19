@@ -10,6 +10,44 @@ use crate::log_msg;
 use crate::runtime::log_messages::SH01_SHADER_OK;
 use std::collections::HashMap;
 use wgpu::naga::{Binding, ScalarKind, TypeInner, VectorSize};
+
+const MAX_SHADER_UNIFORM_NAME_LEN: usize = 64;
+
+const RESERVED_SHADER_UNIFORM_NAMES: &[&str] = &[
+    "lurek",
+    "t_diffuse",
+    "s_diffuse",
+    "sampled",
+    "viewport",
+    "in",
+    "out",
+    "fn",
+    "let",
+    "var",
+    "const",
+    "override",
+    "struct",
+    "return",
+    "if",
+    "else",
+    "for",
+    "loop",
+    "while",
+    "break",
+    "continue",
+    "discard",
+    "true",
+    "false",
+    "alias",
+    "bitcast",
+    "case",
+    "continuing",
+    "default",
+    "diagnostic",
+    "enable",
+    "requires",
+    "switch",
+];
 /// Fragment input location slot decoded from a user shader entry point.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ShaderFragmentInput {
@@ -81,8 +119,10 @@ impl Shader {
         })
     }
     /// Set or replace the named uniform value used on subsequent frames.
-    pub fn send(&mut self, name: String, value: UniformValue) {
+    pub fn send(&mut self, name: String, value: UniformValue) -> Result<(), String> {
+        validate_uniform_name(&name)?;
         self.uniforms.insert(name, value);
+        Ok(())
     }
     /// Return `true` when a uniform with `name` has been set.
     pub fn has_uniform(&self, name: &str) -> bool {
@@ -110,6 +150,41 @@ impl Shader {
     pub(crate) fn fragment_inputs(&self) -> &[ShaderFragmentInput] {
         &self.fragment_inputs
     }
+}
+/// Validate a user-supplied shader uniform name before it is interpolated into WGSL.
+pub fn validate_uniform_name(name: &str) -> Result<(), String> {
+    if name.is_empty() {
+        return Err("shader uniform name must not be empty".to_string());
+    }
+    if name.len() > MAX_SHADER_UNIFORM_NAME_LEN {
+        return Err(format!(
+            "shader uniform name '{}' exceeds {} bytes",
+            name, MAX_SHADER_UNIFORM_NAME_LEN
+        ));
+    }
+    let mut chars = name.chars();
+    let Some(first) = chars.next() else {
+        return Err("shader uniform name must not be empty".to_string());
+    };
+    if !(first == '_' || first.is_ascii_alphabetic()) {
+        return Err(format!(
+            "shader uniform name '{}' must start with ASCII letter or underscore",
+            name
+        ));
+    }
+    if !chars.all(|ch| ch == '_' || ch.is_ascii_alphanumeric()) {
+        return Err(format!(
+            "shader uniform name '{}' may only contain ASCII letters, digits, and underscores",
+            name
+        ));
+    }
+    if RESERVED_SHADER_UNIFORM_NAMES.contains(&name) {
+        return Err(format!(
+            "shader uniform name '{}' is reserved by WGSL or Lurek2D",
+            name
+        ));
+    }
+    Ok(())
 }
 /// Parse `source` and confirm it contains a valid fragment entry point; return error on failure.
 fn validate_wgsl(source: &str) -> Result<(), String> {

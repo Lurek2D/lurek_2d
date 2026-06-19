@@ -22,6 +22,8 @@
 - Determinism is the key promise: authored steps should replay under controlled timing.
 - Read it as the coordination layer above raw input and clocks. Neighboring modules provide the low-level events and timing primitives, while `automation` turns them into a reusable test workflow.
 
+This module primarily collaborates with `event`, `input`, `runtime`, `timer`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
+
 ## Imports
 
 - `event`: Imports or references `event` from `src/event/`.

@@ -18,6 +18,8 @@
 - From a boundary perspective, domain modules define the world, rewards, and consequences, while `learning` owns the tensors, models, adaptation strategies, and training-oriented utilities that make machine learning usable inside that world.
 - Read `learning` as the place where research-oriented AI and practical engine workflows meet.
 
+This module is mostly self-contained inside the `Feature Systems` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
+
 ## Functions
 
 ### `lurek.learning.defineEnv`
@@ -105,7 +107,7 @@ lurek.learning.loadOnnx(path)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | string | Filesystem path to the `.onnx` model file. |
+| `path` | string | Filesystem path to the `.onnx` model file inside the current sandbox root. |
 
 **Returns**
 
@@ -537,7 +539,7 @@ end
 Creates a Q-learner with fixed state and action counts.
 
 ```lua
-lurek.learning.newQLearner(sc, ac)
+lurek.learning.newQLearner(sc, ac, seed)
 ```
 
 **Parameters**
@@ -546,6 +548,7 @@ lurek.learning.newQLearner(sc, ac)
 |------|------|-------------|
 | `sc` | number | Number of discrete states. |
 | `ac` | number | Number of discrete actions. |
+| `seed?` | number | Optional deterministic RNG seed used for exploration and replay. |
 
 **Returns**
 
@@ -584,7 +587,7 @@ lurek.learning.newTensor(shape, data)
 | Name | Type | Description |
 |------|------|-------------|
 | `shape` | number[] | Dimension sizes in row-major order. |
-| `data` | number[] | Flat element values matching the product of `shape`. |
+| `data` | number[] | Flat finite element values matching the product of `shape`. |
 
 **Returns**
 

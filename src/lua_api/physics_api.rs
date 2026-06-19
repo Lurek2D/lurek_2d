@@ -540,14 +540,9 @@ impl LuaUserData for LuaWorld {
             "newEdgeBody",
             |_, this, (x, y, x1, y1, x2, y2, bt): (f32, f32, f32, f32, f32, f32, String)| {
                 let body_type = parse_body_type(&bt)?;
-                let body = Body::try_new_edge(
-                    x,
-                    y,
-                    Vec2::new(x1, y1),
-                    Vec2::new(x2, y2),
-                    body_type,
-                )
-                .map_err(|err| physics_runtime_error("newEdgeBody", err))?;
+                let body =
+                    Body::try_new_edge(x, y, Vec2::new(x1, y1), Vec2::new(x2, y2), body_type)
+                        .map_err(|err| physics_runtime_error("newEdgeBody", err))?;
                 let id = this.world.borrow_mut().add_body(body);
                 Ok(LuaBody {
                     world: Rc::clone(&this.world),
@@ -1774,7 +1769,10 @@ impl LuaUserData for LuaTerrain {
         /// @param | data | string | Binary terrain data.
         /// @return | boolean | True if loading succeeded.
         methods.add_method_mut("loadFromBytes", |_, this, data: LuaString| {
-            Ok(this.terrain.borrow_mut().load_from_bytes(data.as_bytes().as_ref()))
+            Ok(this
+                .terrain
+                .borrow_mut()
+                .load_from_bytes(data.as_bytes().as_ref()))
         });
         // -- type --
         /// Returns the type name of this object ("LTerrain").
@@ -2271,7 +2269,10 @@ impl LuaUserData for LuaPhysicsShape {
         /// @param | density | number | Mass density.
         methods.add_method("setDensity", |_, this, density: f32| {
             if !density.is_finite() || density <= 0.0 {
-                return Err(physics_runtime_error("setDensity", "density must be finite and > 0"));
+                return Err(physics_runtime_error(
+                    "setDensity",
+                    "density must be finite and > 0",
+                ));
             }
             this.inner.borrow_mut().density = density;
             Ok(())

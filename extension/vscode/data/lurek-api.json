@@ -1,6 +1,6 @@
 {
   "version": "auto-generated",
-  "generated": "2026-06-18",
+  "generated": "2026-06-19",
   "modules": [
     {
       "name": "agent",
@@ -13494,7 +13494,7 @@
         {
           "name": "newQLearner",
           "fullPath": "lurek.learning.newQLearner",
-          "signature": "(sc, ac)",
+          "signature": "(sc, ac, [seed])",
           "description": "Creates a Q-learner with fixed state and action counts.",
           "parameters": [
             {
@@ -13508,6 +13508,12 @@
               "type": "integer",
               "description": "Number of discrete actions.",
               "optional": false
+            },
+            {
+              "name": "seed",
+              "type": "integer",
+              "description": "Optional deterministic RNG seed used for exploration and replay.",
+              "optional": true
             }
           ],
           "returns": "LQLearner",
@@ -13750,7 +13756,7 @@
             {
               "name": "path",
               "type": "string",
-              "description": "Filesystem path to the `.onnx` model file.",
+              "description": "Filesystem path to the `.onnx` model file inside the current sandbox root.",
               "optional": false
             }
           ],
@@ -13774,7 +13780,7 @@
             {
               "name": "data",
               "type": "number[]",
-              "description": "Flat element values matching the product of `shape`.",
+              "description": "Flat finite element values matching the product of `shape`.",
               "optional": false
             }
           ],
@@ -30177,6 +30183,28 @@
           "objectType": null
         },
         {
+          "name": "getAccessibilityTree",
+          "fullPath": "lurek.ui.getAccessibilityTree",
+          "signature": "()",
+          "description": "Returns a flattened accessibility snapshot for all live widgets except the root.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "validateUx",
+          "fullPath": "lurek.ui.validateUx",
+          "signature": "()",
+          "description": "Returns accessibility and usability diagnostics for the live widget tree.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
           "name": "updateResolution",
           "fullPath": "lurek.ui.updateResolution",
           "signature": "(w, h)",
@@ -32994,6 +33022,17 @@
           "objectType": "LAIWorld"
         },
         {
+          "name": "getLastCallbackErrors",
+          "fullPath": "LAIWorld:getLastCallbackErrors",
+          "signature": "()",
+          "description": "Returns callback errors recorded during the most recent `update` call.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LAIWorld"
+        },
+        {
           "name": "type",
           "fullPath": "LAIWorld:type",
           "signature": "()",
@@ -33760,6 +33799,17 @@
           "objectType": "LAccordion"
         },
         {
+          "name": "getRole",
+          "fullPath": "LAccordion.getRole",
+          "signature": "()",
+          "description": "Returns the semantic role string for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LAccordion"
+        },
+        {
           "name": "setAriaName",
           "fullPath": "LAccordion.setAriaName",
           "signature": "(name)",
@@ -33774,6 +33824,46 @@
           ],
           "returns": "nil",
           "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAccordion"
+        },
+        {
+          "name": "getAriaName",
+          "fullPath": "LAccordion.getAriaName",
+          "signature": "()",
+          "description": "Returns the explicit accessible name metadata for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LAccordion"
+        },
+        {
+          "name": "setLabelFor",
+          "fullPath": "LAccordion.setLabelFor",
+          "signature": "([target])",
+          "description": "Associates this label widget with another widget for accessibility naming.",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "integer",
+              "description": "Target widget index, or nil to clear the link.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAccordion"
+        },
+        {
+          "name": "getLabelFor",
+          "fullPath": "LAccordion.getLabelFor",
+          "signature": "()",
+          "description": "Returns the widget index associated through `setLabelFor`, or nil.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LAccordion"
         },
@@ -39484,6 +39574,17 @@
           "objectType": "LBadge"
         },
         {
+          "name": "getRole",
+          "fullPath": "LBadge.getRole",
+          "signature": "()",
+          "description": "Returns the semantic role string for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LBadge"
+        },
+        {
           "name": "setAriaName",
           "fullPath": "LBadge.setAriaName",
           "signature": "(name)",
@@ -39498,6 +39599,46 @@
           ],
           "returns": "nil",
           "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBadge"
+        },
+        {
+          "name": "getAriaName",
+          "fullPath": "LBadge.getAriaName",
+          "signature": "()",
+          "description": "Returns the explicit accessible name metadata for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LBadge"
+        },
+        {
+          "name": "setLabelFor",
+          "fullPath": "LBadge.setLabelFor",
+          "signature": "([target])",
+          "description": "Associates this label widget with another widget for accessibility naming.",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "integer",
+              "description": "Target widget index, or nil to clear the link.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBadge"
+        },
+        {
+          "name": "getLabelFor",
+          "fullPath": "LBadge.getLabelFor",
+          "signature": "()",
+          "description": "Returns the widget index associated through `setLabelFor`, or nil.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LBadge"
         },
@@ -44099,6 +44240,17 @@
           "objectType": "LButton"
         },
         {
+          "name": "getRole",
+          "fullPath": "LButton.getRole",
+          "signature": "()",
+          "description": "Returns the semantic role string for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LButton"
+        },
+        {
           "name": "setAriaName",
           "fullPath": "LButton.setAriaName",
           "signature": "(name)",
@@ -44113,6 +44265,46 @@
           ],
           "returns": "nil",
           "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LButton"
+        },
+        {
+          "name": "getAriaName",
+          "fullPath": "LButton.getAriaName",
+          "signature": "()",
+          "description": "Returns the explicit accessible name metadata for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LButton"
+        },
+        {
+          "name": "setLabelFor",
+          "fullPath": "LButton.setLabelFor",
+          "signature": "([target])",
+          "description": "Associates this label widget with another widget for accessibility naming.",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "integer",
+              "description": "Target widget index, or nil to clear the link.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LButton"
+        },
+        {
+          "name": "getLabelFor",
+          "fullPath": "LButton.getLabelFor",
+          "signature": "()",
+          "description": "Returns the widget index associated through `setLabelFor`, or nil.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LButton"
         },
@@ -48066,6 +48258,17 @@
           "objectType": "LCheckbox"
         },
         {
+          "name": "getRole",
+          "fullPath": "LCheckbox.getRole",
+          "signature": "()",
+          "description": "Returns the semantic role string for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LCheckbox"
+        },
+        {
           "name": "setAriaName",
           "fullPath": "LCheckbox.setAriaName",
           "signature": "(name)",
@@ -48080,6 +48283,46 @@
           ],
           "returns": "nil",
           "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LCheckbox"
+        },
+        {
+          "name": "getAriaName",
+          "fullPath": "LCheckbox.getAriaName",
+          "signature": "()",
+          "description": "Returns the explicit accessible name metadata for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LCheckbox"
+        },
+        {
+          "name": "setLabelFor",
+          "fullPath": "LCheckbox.setLabelFor",
+          "signature": "([target])",
+          "description": "Associates this label widget with another widget for accessibility naming.",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "integer",
+              "description": "Target widget index, or nil to clear the link.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LCheckbox"
+        },
+        {
+          "name": "getLabelFor",
+          "fullPath": "LCheckbox.getLabelFor",
+          "signature": "()",
+          "description": "Returns the widget index associated through `setLabelFor`, or nil.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LCheckbox"
         },
@@ -50247,6 +50490,17 @@
           "objectType": "LColorPicker"
         },
         {
+          "name": "getRole",
+          "fullPath": "LColorPicker.getRole",
+          "signature": "()",
+          "description": "Returns the semantic role string for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LColorPicker"
+        },
+        {
           "name": "setAriaName",
           "fullPath": "LColorPicker.setAriaName",
           "signature": "(name)",
@@ -50261,6 +50515,46 @@
           ],
           "returns": "nil",
           "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LColorPicker"
+        },
+        {
+          "name": "getAriaName",
+          "fullPath": "LColorPicker.getAriaName",
+          "signature": "()",
+          "description": "Returns the explicit accessible name metadata for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LColorPicker"
+        },
+        {
+          "name": "setLabelFor",
+          "fullPath": "LColorPicker.setLabelFor",
+          "signature": "([target])",
+          "description": "Associates this label widget with another widget for accessibility naming.",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "integer",
+              "description": "Target widget index, or nil to clear the link.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LColorPicker"
+        },
+        {
+          "name": "getLabelFor",
+          "fullPath": "LColorPicker.getLabelFor",
+          "signature": "()",
+          "description": "Returns the widget index associated through `setLabelFor`, or nil.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LColorPicker"
         },
@@ -51373,6 +51667,35 @@
           "objectType": "LComboBox"
         },
         {
+          "name": "setMaxVisibleItems",
+          "fullPath": "LComboBox:setMaxVisibleItems",
+          "signature": "(count)",
+          "description": "Sets the maximum number of dropdown rows shown at once before the combo box scrolls.",
+          "parameters": [
+            {
+              "name": "count",
+              "type": "integer",
+              "description": "Maximum visible dropdown rows; values below 1 clamp to 1.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LComboBox"
+        },
+        {
+          "name": "getMaxVisibleItems",
+          "fullPath": "LComboBox:getMaxVisibleItems",
+          "signature": "()",
+          "description": "Returns the maximum number of dropdown rows shown before the combo box scrolls.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LComboBox"
+        },
+        {
           "name": "type",
           "fullPath": "LComboBox.type",
           "signature": "()",
@@ -51738,6 +52061,17 @@
           "objectType": "LComboBox"
         },
         {
+          "name": "getRole",
+          "fullPath": "LComboBox.getRole",
+          "signature": "()",
+          "description": "Returns the semantic role string for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LComboBox"
+        },
+        {
           "name": "setAriaName",
           "fullPath": "LComboBox.setAriaName",
           "signature": "(name)",
@@ -51752,6 +52086,46 @@
           ],
           "returns": "nil",
           "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LComboBox"
+        },
+        {
+          "name": "getAriaName",
+          "fullPath": "LComboBox.getAriaName",
+          "signature": "()",
+          "description": "Returns the explicit accessible name metadata for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LComboBox"
+        },
+        {
+          "name": "setLabelFor",
+          "fullPath": "LComboBox.setLabelFor",
+          "signature": "([target])",
+          "description": "Associates this label widget with another widget for accessibility naming.",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "integer",
+              "description": "Target widget index, or nil to clear the link.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LComboBox"
+        },
+        {
+          "name": "getLabelFor",
+          "fullPath": "LComboBox.getLabelFor",
+          "signature": "()",
+          "description": "Returns the widget index associated through `setLabelFor`, or nil.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LComboBox"
         },
@@ -57862,6 +58236,17 @@
           "objectType": "LDialog"
         },
         {
+          "name": "getRole",
+          "fullPath": "LDialog.getRole",
+          "signature": "()",
+          "description": "Returns the semantic role string for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LDialog"
+        },
+        {
           "name": "setAriaName",
           "fullPath": "LDialog.setAriaName",
           "signature": "(name)",
@@ -57876,6 +58261,46 @@
           ],
           "returns": "nil",
           "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LDialog"
+        },
+        {
+          "name": "getAriaName",
+          "fullPath": "LDialog.getAriaName",
+          "signature": "()",
+          "description": "Returns the explicit accessible name metadata for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LDialog"
+        },
+        {
+          "name": "setLabelFor",
+          "fullPath": "LDialog.setLabelFor",
+          "signature": "([target])",
+          "description": "Associates this label widget with another widget for accessibility naming.",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "integer",
+              "description": "Target widget index, or nil to clear the link.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LDialog"
+        },
+        {
+          "name": "getLabelFor",
+          "fullPath": "LDialog.getLabelFor",
+          "signature": "()",
+          "description": "Returns the widget index associated through `setLabelFor`, or nil.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LDialog"
         },
@@ -60008,6 +60433,17 @@
           "objectType": "LDockPanel"
         },
         {
+          "name": "getRole",
+          "fullPath": "LDockPanel.getRole",
+          "signature": "()",
+          "description": "Returns the semantic role string for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LDockPanel"
+        },
+        {
           "name": "setAriaName",
           "fullPath": "LDockPanel.setAriaName",
           "signature": "(name)",
@@ -60022,6 +60458,46 @@
           ],
           "returns": "nil",
           "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LDockPanel"
+        },
+        {
+          "name": "getAriaName",
+          "fullPath": "LDockPanel.getAriaName",
+          "signature": "()",
+          "description": "Returns the explicit accessible name metadata for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LDockPanel"
+        },
+        {
+          "name": "setLabelFor",
+          "fullPath": "LDockPanel.setLabelFor",
+          "signature": "([target])",
+          "description": "Associates this label widget with another widget for accessibility naming.",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "integer",
+              "description": "Target widget index, or nil to clear the link.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LDockPanel"
+        },
+        {
+          "name": "getLabelFor",
+          "fullPath": "LDockPanel.getLabelFor",
+          "signature": "()",
+          "description": "Returns the widget index associated through `setLabelFor`, or nil.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LDockPanel"
         },
@@ -63140,6 +63616,17 @@
           "objectType": "LFont"
         },
         {
+          "name": "getRole",
+          "fullPath": "LFont.getRole",
+          "signature": "()",
+          "description": "Returns the semantic role string for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LFont"
+        },
+        {
           "name": "setAriaName",
           "fullPath": "LFont.setAriaName",
           "signature": "(name)",
@@ -63154,6 +63641,46 @@
           ],
           "returns": "nil",
           "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LFont"
+        },
+        {
+          "name": "getAriaName",
+          "fullPath": "LFont.getAriaName",
+          "signature": "()",
+          "description": "Returns the explicit accessible name metadata for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LFont"
+        },
+        {
+          "name": "setLabelFor",
+          "fullPath": "LFont.setLabelFor",
+          "signature": "([target])",
+          "description": "Associates this label widget with another widget for accessibility naming.",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "integer",
+              "description": "Target widget index, or nil to clear the link.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LFont"
+        },
+        {
+          "name": "getLabelFor",
+          "fullPath": "LFont.getLabelFor",
+          "signature": "()",
+          "description": "Returns the widget index associated through `setLabelFor`, or nil.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LFont"
         },
@@ -64658,6 +65185,28 @@
           ],
           "returns": "nil",
           "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LGOAPPlanner"
+        },
+        {
+          "name": "getLastFailureReason",
+          "fullPath": "LGOAPPlanner:getLastFailureReason",
+          "signature": "()",
+          "description": "Returns the last planner failure reason string when planning did not succeed.",
+          "parameters": [],
+          "returns": "LuaValue",
+          "returnType": "LuaValue",
+          "isMethod": true,
+          "objectType": "LGOAPPlanner"
+        },
+        {
+          "name": "getLastTrace",
+          "fullPath": "LGOAPPlanner:getLastTrace",
+          "signature": "()",
+          "description": "Returns the last structured GOAP planning trace.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LGOAPPlanner"
         },
@@ -70370,6 +70919,17 @@
           "objectType": "LGuiTable"
         },
         {
+          "name": "getRole",
+          "fullPath": "LGuiTable.getRole",
+          "signature": "()",
+          "description": "Returns the semantic role string for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LGuiTable"
+        },
+        {
           "name": "setAriaName",
           "fullPath": "LGuiTable.setAriaName",
           "signature": "(name)",
@@ -70384,6 +70944,46 @@
           ],
           "returns": "nil",
           "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LGuiTable"
+        },
+        {
+          "name": "getAriaName",
+          "fullPath": "LGuiTable.getAriaName",
+          "signature": "()",
+          "description": "Returns the explicit accessible name metadata for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LGuiTable"
+        },
+        {
+          "name": "setLabelFor",
+          "fullPath": "LGuiTable.setLabelFor",
+          "signature": "([target])",
+          "description": "Associates this label widget with another widget for accessibility naming.",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "integer",
+              "description": "Target widget index, or nil to clear the link.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LGuiTable"
+        },
+        {
+          "name": "getLabelFor",
+          "fullPath": "LGuiTable.getLabelFor",
+          "signature": "()",
+          "description": "Returns the widget index associated through `setLabelFor`, or nil.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LGuiTable"
         },
@@ -71764,6 +72364,17 @@
           "objectType": "LGuiWindow"
         },
         {
+          "name": "getRole",
+          "fullPath": "LGuiWindow.getRole",
+          "signature": "()",
+          "description": "Returns the semantic role string for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LGuiWindow"
+        },
+        {
           "name": "setAriaName",
           "fullPath": "LGuiWindow.setAriaName",
           "signature": "(name)",
@@ -71778,6 +72389,46 @@
           ],
           "returns": "nil",
           "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LGuiWindow"
+        },
+        {
+          "name": "getAriaName",
+          "fullPath": "LGuiWindow.getAriaName",
+          "signature": "()",
+          "description": "Returns the explicit accessible name metadata for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LGuiWindow"
+        },
+        {
+          "name": "setLabelFor",
+          "fullPath": "LGuiWindow.setLabelFor",
+          "signature": "([target])",
+          "description": "Associates this label widget with another widget for accessibility naming.",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "integer",
+              "description": "Target widget index, or nil to clear the link.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LGuiWindow"
+        },
+        {
+          "name": "getLabelFor",
+          "fullPath": "LGuiWindow.getLabelFor",
+          "signature": "()",
+          "description": "Returns the widget index associated through `setLabelFor`, or nil.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LGuiWindow"
         },
@@ -76691,6 +77342,17 @@
           "objectType": "LImageData"
         },
         {
+          "name": "getRole",
+          "fullPath": "LImageData.getRole",
+          "signature": "()",
+          "description": "Returns the semantic role string for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LImageData"
+        },
+        {
           "name": "setAriaName",
           "fullPath": "LImageData.setAriaName",
           "signature": "(name)",
@@ -76705,6 +77367,46 @@
           ],
           "returns": "nil",
           "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LImageData"
+        },
+        {
+          "name": "getAriaName",
+          "fullPath": "LImageData.getAriaName",
+          "signature": "()",
+          "description": "Returns the explicit accessible name metadata for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LImageData"
+        },
+        {
+          "name": "setLabelFor",
+          "fullPath": "LImageData.setLabelFor",
+          "signature": "([target])",
+          "description": "Associates this label widget with another widget for accessibility naming.",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "integer",
+              "description": "Target widget index, or nil to clear the link.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LImageData"
+        },
+        {
+          "name": "getLabelFor",
+          "fullPath": "LImageData.getLabelFor",
+          "signature": "()",
+          "description": "Returns the widget index associated through `setLabelFor`, or nil.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LImageData"
         },
@@ -78218,6 +78920,17 @@
           "objectType": "LImageWidget"
         },
         {
+          "name": "getRole",
+          "fullPath": "LImageWidget.getRole",
+          "signature": "()",
+          "description": "Returns the semantic role string for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LImageWidget"
+        },
+        {
           "name": "setAriaName",
           "fullPath": "LImageWidget.setAriaName",
           "signature": "(name)",
@@ -78232,6 +78945,46 @@
           ],
           "returns": "nil",
           "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LImageWidget"
+        },
+        {
+          "name": "getAriaName",
+          "fullPath": "LImageWidget.getAriaName",
+          "signature": "()",
+          "description": "Returns the explicit accessible name metadata for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LImageWidget"
+        },
+        {
+          "name": "setLabelFor",
+          "fullPath": "LImageWidget.setLabelFor",
+          "signature": "([target])",
+          "description": "Associates this label widget with another widget for accessibility naming.",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "integer",
+              "description": "Target widget index, or nil to clear the link.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LImageWidget"
+        },
+        {
+          "name": "getLabelFor",
+          "fullPath": "LImageWidget.getLabelFor",
+          "signature": "()",
+          "description": "Returns the widget index associated through `setLabelFor`, or nil.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LImageWidget"
         },
@@ -80599,6 +81352,17 @@
           "objectType": "LLabel"
         },
         {
+          "name": "getRole",
+          "fullPath": "LLabel.getRole",
+          "signature": "()",
+          "description": "Returns the semantic role string for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LLabel"
+        },
+        {
           "name": "setAriaName",
           "fullPath": "LLabel.setAriaName",
           "signature": "(name)",
@@ -80613,6 +81377,46 @@
           ],
           "returns": "nil",
           "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LLabel"
+        },
+        {
+          "name": "getAriaName",
+          "fullPath": "LLabel.getAriaName",
+          "signature": "()",
+          "description": "Returns the explicit accessible name metadata for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LLabel"
+        },
+        {
+          "name": "setLabelFor",
+          "fullPath": "LLabel.setLabelFor",
+          "signature": "([target])",
+          "description": "Associates this label widget with another widget for accessibility naming.",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "integer",
+              "description": "Target widget index, or nil to clear the link.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LLabel"
+        },
+        {
+          "name": "getLabelFor",
+          "fullPath": "LLabel.getLabelFor",
+          "signature": "()",
+          "description": "Returns the widget index associated through `setLabelFor`, or nil.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LLabel"
         },
@@ -82717,6 +83521,17 @@
           "objectType": "LLayout"
         },
         {
+          "name": "getRole",
+          "fullPath": "LLayout.getRole",
+          "signature": "()",
+          "description": "Returns the semantic role string for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LLayout"
+        },
+        {
           "name": "setAriaName",
           "fullPath": "LLayout.setAriaName",
           "signature": "(name)",
@@ -82731,6 +83546,46 @@
           ],
           "returns": "nil",
           "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LLayout"
+        },
+        {
+          "name": "getAriaName",
+          "fullPath": "LLayout.getAriaName",
+          "signature": "()",
+          "description": "Returns the explicit accessible name metadata for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LLayout"
+        },
+        {
+          "name": "setLabelFor",
+          "fullPath": "LLayout.setLabelFor",
+          "signature": "([target])",
+          "description": "Associates this label widget with another widget for accessibility naming.",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "integer",
+              "description": "Target widget index, or nil to clear the link.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LLayout"
+        },
+        {
+          "name": "getLabelFor",
+          "fullPath": "LLayout.getLabelFor",
+          "signature": "()",
+          "description": "Returns the widget index associated through `setLabelFor`, or nil.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LLayout"
         },
@@ -86111,6 +86966,17 @@
           "objectType": "LListBox"
         },
         {
+          "name": "getRole",
+          "fullPath": "LListBox.getRole",
+          "signature": "()",
+          "description": "Returns the semantic role string for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LListBox"
+        },
+        {
           "name": "setAriaName",
           "fullPath": "LListBox.setAriaName",
           "signature": "(name)",
@@ -86125,6 +86991,46 @@
           ],
           "returns": "nil",
           "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LListBox"
+        },
+        {
+          "name": "getAriaName",
+          "fullPath": "LListBox.getAriaName",
+          "signature": "()",
+          "description": "Returns the explicit accessible name metadata for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LListBox"
+        },
+        {
+          "name": "setLabelFor",
+          "fullPath": "LListBox.setLabelFor",
+          "signature": "([target])",
+          "description": "Associates this label widget with another widget for accessibility naming.",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "integer",
+              "description": "Target widget index, or nil to clear the link.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LListBox"
+        },
+        {
+          "name": "getLabelFor",
+          "fullPath": "LListBox.getLabelFor",
+          "signature": "()",
+          "description": "Returns the widget index associated through `setLabelFor`, or nil.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LListBox"
         },
@@ -87279,6 +88185,17 @@
           ],
           "returns": "LuaValue",
           "returnType": "LuaValue",
+          "isMethod": true,
+          "objectType": "LMCTSEngine"
+        },
+        {
+          "name": "getLastTrace",
+          "fullPath": "LMCTSEngine:getLastTrace",
+          "signature": "()",
+          "description": "Returns the last structured MCTS search trace.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LMCTSEngine"
         },
@@ -89649,6 +90566,17 @@
           "objectType": "LMenuBar"
         },
         {
+          "name": "getRole",
+          "fullPath": "LMenuBar.getRole",
+          "signature": "()",
+          "description": "Returns the semantic role string for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LMenuBar"
+        },
+        {
           "name": "setAriaName",
           "fullPath": "LMenuBar.setAriaName",
           "signature": "(name)",
@@ -89663,6 +90591,46 @@
           ],
           "returns": "nil",
           "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LMenuBar"
+        },
+        {
+          "name": "getAriaName",
+          "fullPath": "LMenuBar.getAriaName",
+          "signature": "()",
+          "description": "Returns the explicit accessible name metadata for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LMenuBar"
+        },
+        {
+          "name": "setLabelFor",
+          "fullPath": "LMenuBar.setLabelFor",
+          "signature": "([target])",
+          "description": "Associates this label widget with another widget for accessibility naming.",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "integer",
+              "description": "Target widget index, or nil to clear the link.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LMenuBar"
+        },
+        {
+          "name": "getLabelFor",
+          "fullPath": "LMenuBar.getLabelFor",
+          "signature": "()",
+          "description": "Returns the widget index associated through `setLabelFor`, or nil.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LMenuBar"
         },
@@ -91043,6 +92011,17 @@
           "objectType": "LMenuItem"
         },
         {
+          "name": "getRole",
+          "fullPath": "LMenuItem.getRole",
+          "signature": "()",
+          "description": "Returns the semantic role string for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LMenuItem"
+        },
+        {
           "name": "setAriaName",
           "fullPath": "LMenuItem.setAriaName",
           "signature": "(name)",
@@ -91057,6 +92036,46 @@
           ],
           "returns": "nil",
           "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LMenuItem"
+        },
+        {
+          "name": "getAriaName",
+          "fullPath": "LMenuItem.getAriaName",
+          "signature": "()",
+          "description": "Returns the explicit accessible name metadata for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LMenuItem"
+        },
+        {
+          "name": "setLabelFor",
+          "fullPath": "LMenuItem.setLabelFor",
+          "signature": "([target])",
+          "description": "Associates this label widget with another widget for accessibility naming.",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "integer",
+              "description": "Target widget index, or nil to clear the link.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LMenuItem"
+        },
+        {
+          "name": "getLabelFor",
+          "fullPath": "LMenuItem.getLabelFor",
+          "signature": "()",
+          "description": "Returns the widget index associated through `setLabelFor`, or nil.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LMenuItem"
         },
@@ -98988,6 +100007,17 @@
           "objectType": "LNinePatch"
         },
         {
+          "name": "getRole",
+          "fullPath": "LNinePatch.getRole",
+          "signature": "()",
+          "description": "Returns the semantic role string for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LNinePatch"
+        },
+        {
           "name": "setAriaName",
           "fullPath": "LNinePatch.setAriaName",
           "signature": "(name)",
@@ -99002,6 +100032,46 @@
           ],
           "returns": "nil",
           "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LNinePatch"
+        },
+        {
+          "name": "getAriaName",
+          "fullPath": "LNinePatch.getAriaName",
+          "signature": "()",
+          "description": "Returns the explicit accessible name metadata for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LNinePatch"
+        },
+        {
+          "name": "setLabelFor",
+          "fullPath": "LNinePatch.setLabelFor",
+          "signature": "([target])",
+          "description": "Associates this label widget with another widget for accessibility naming.",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "integer",
+              "description": "Target widget index, or nil to clear the link.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LNinePatch"
+        },
+        {
+          "name": "getLabelFor",
+          "fullPath": "LNinePatch.getLabelFor",
+          "signature": "()",
+          "description": "Returns the widget index associated through `setLabelFor`, or nil.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LNinePatch"
         },
@@ -103321,6 +104391,17 @@
           "objectType": "LPanel"
         },
         {
+          "name": "getRole",
+          "fullPath": "LPanel.getRole",
+          "signature": "()",
+          "description": "Returns the semantic role string for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LPanel"
+        },
+        {
           "name": "setAriaName",
           "fullPath": "LPanel.setAriaName",
           "signature": "(name)",
@@ -103335,6 +104416,46 @@
           ],
           "returns": "nil",
           "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LPanel"
+        },
+        {
+          "name": "getAriaName",
+          "fullPath": "LPanel.getAriaName",
+          "signature": "()",
+          "description": "Returns the explicit accessible name metadata for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LPanel"
+        },
+        {
+          "name": "setLabelFor",
+          "fullPath": "LPanel.setLabelFor",
+          "signature": "([target])",
+          "description": "Associates this label widget with another widget for accessibility naming.",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "integer",
+              "description": "Target widget index, or nil to clear the link.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LPanel"
+        },
+        {
+          "name": "getLabelFor",
+          "fullPath": "LPanel.getLabelFor",
+          "signature": "()",
+          "description": "Returns the widget index associated through `setLabelFor`, or nil.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LPanel"
         },
@@ -110270,6 +111391,17 @@
           "objectType": "LProgressBar"
         },
         {
+          "name": "getRole",
+          "fullPath": "LProgressBar.getRole",
+          "signature": "()",
+          "description": "Returns the semantic role string for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LProgressBar"
+        },
+        {
           "name": "setAriaName",
           "fullPath": "LProgressBar.setAriaName",
           "signature": "(name)",
@@ -110284,6 +111416,46 @@
           ],
           "returns": "nil",
           "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressBar"
+        },
+        {
+          "name": "getAriaName",
+          "fullPath": "LProgressBar.getAriaName",
+          "signature": "()",
+          "description": "Returns the explicit accessible name metadata for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LProgressBar"
+        },
+        {
+          "name": "setLabelFor",
+          "fullPath": "LProgressBar.setLabelFor",
+          "signature": "([target])",
+          "description": "Associates this label widget with another widget for accessibility naming.",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "integer",
+              "description": "Target widget index, or nil to clear the link.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LProgressBar"
+        },
+        {
+          "name": "getLabelFor",
+          "fullPath": "LProgressBar.getLabelFor",
+          "signature": "()",
+          "description": "Returns the widget index associated through `setLabelFor`, or nil.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LProgressBar"
         },
@@ -113827,6 +114999,17 @@
           "objectType": "LRadioButton"
         },
         {
+          "name": "getRole",
+          "fullPath": "LRadioButton.getRole",
+          "signature": "()",
+          "description": "Returns the semantic role string for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LRadioButton"
+        },
+        {
           "name": "setAriaName",
           "fullPath": "LRadioButton.setAriaName",
           "signature": "(name)",
@@ -113841,6 +115024,46 @@
           ],
           "returns": "nil",
           "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRadioButton"
+        },
+        {
+          "name": "getAriaName",
+          "fullPath": "LRadioButton.getAriaName",
+          "signature": "()",
+          "description": "Returns the explicit accessible name metadata for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LRadioButton"
+        },
+        {
+          "name": "setLabelFor",
+          "fullPath": "LRadioButton.setLabelFor",
+          "signature": "([target])",
+          "description": "Associates this label widget with another widget for accessibility naming.",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "integer",
+              "description": "Target widget index, or nil to clear the link.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRadioButton"
+        },
+        {
+          "name": "getLabelFor",
+          "fullPath": "LRadioButton.getLabelFor",
+          "signature": "()",
+          "description": "Returns the widget index associated through `setLabelFor`, or nil.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LRadioButton"
         },
@@ -120470,6 +121693,17 @@
           "objectType": "LScrollBar"
         },
         {
+          "name": "getRole",
+          "fullPath": "LScrollBar.getRole",
+          "signature": "()",
+          "description": "Returns the semantic role string for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LScrollBar"
+        },
+        {
           "name": "setAriaName",
           "fullPath": "LScrollBar.setAriaName",
           "signature": "(name)",
@@ -120484,6 +121718,46 @@
           ],
           "returns": "nil",
           "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LScrollBar"
+        },
+        {
+          "name": "getAriaName",
+          "fullPath": "LScrollBar.getAriaName",
+          "signature": "()",
+          "description": "Returns the explicit accessible name metadata for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LScrollBar"
+        },
+        {
+          "name": "setLabelFor",
+          "fullPath": "LScrollBar.setLabelFor",
+          "signature": "([target])",
+          "description": "Associates this label widget with another widget for accessibility naming.",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "integer",
+              "description": "Target widget index, or nil to clear the link.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LScrollBar"
+        },
+        {
+          "name": "getLabelFor",
+          "fullPath": "LScrollBar.getLabelFor",
+          "signature": "()",
+          "description": "Returns the widget index associated through `setLabelFor`, or nil.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LScrollBar"
         },
@@ -121822,6 +123096,17 @@
           "objectType": "LScrollPanel"
         },
         {
+          "name": "getRole",
+          "fullPath": "LScrollPanel.getRole",
+          "signature": "()",
+          "description": "Returns the semantic role string for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LScrollPanel"
+        },
+        {
           "name": "setAriaName",
           "fullPath": "LScrollPanel.setAriaName",
           "signature": "(name)",
@@ -121836,6 +123121,46 @@
           ],
           "returns": "nil",
           "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LScrollPanel"
+        },
+        {
+          "name": "getAriaName",
+          "fullPath": "LScrollPanel.getAriaName",
+          "signature": "()",
+          "description": "Returns the explicit accessible name metadata for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LScrollPanel"
+        },
+        {
+          "name": "setLabelFor",
+          "fullPath": "LScrollPanel.setLabelFor",
+          "signature": "([target])",
+          "description": "Associates this label widget with another widget for accessibility naming.",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "integer",
+              "description": "Target widget index, or nil to clear the link.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LScrollPanel"
+        },
+        {
+          "name": "getLabelFor",
+          "fullPath": "LScrollPanel.getLabelFor",
+          "signature": "()",
+          "description": "Returns the widget index associated through `setLabelFor`, or nil.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LScrollPanel"
         },
@@ -123235,6 +124560,17 @@
           "objectType": "LSeparator"
         },
         {
+          "name": "getRole",
+          "fullPath": "LSeparator.getRole",
+          "signature": "()",
+          "description": "Returns the semantic role string for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LSeparator"
+        },
+        {
           "name": "setAriaName",
           "fullPath": "LSeparator.setAriaName",
           "signature": "(name)",
@@ -123249,6 +124585,46 @@
           ],
           "returns": "nil",
           "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LSeparator"
+        },
+        {
+          "name": "getAriaName",
+          "fullPath": "LSeparator.getAriaName",
+          "signature": "()",
+          "description": "Returns the explicit accessible name metadata for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LSeparator"
+        },
+        {
+          "name": "setLabelFor",
+          "fullPath": "LSeparator.setLabelFor",
+          "signature": "([target])",
+          "description": "Associates this label widget with another widget for accessibility naming.",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "integer",
+              "description": "Target widget index, or nil to clear the link.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LSeparator"
+        },
+        {
+          "name": "getLabelFor",
+          "fullPath": "LSeparator.getLabelFor",
+          "signature": "()",
+          "description": "Returns the widget index associated through `setLabelFor`, or nil.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LSeparator"
         },
@@ -126486,6 +127862,17 @@
           "objectType": "LSlider"
         },
         {
+          "name": "getRole",
+          "fullPath": "LSlider.getRole",
+          "signature": "()",
+          "description": "Returns the semantic role string for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LSlider"
+        },
+        {
           "name": "setAriaName",
           "fullPath": "LSlider.setAriaName",
           "signature": "(name)",
@@ -126500,6 +127887,46 @@
           ],
           "returns": "nil",
           "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LSlider"
+        },
+        {
+          "name": "getAriaName",
+          "fullPath": "LSlider.getAriaName",
+          "signature": "()",
+          "description": "Returns the explicit accessible name metadata for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LSlider"
+        },
+        {
+          "name": "setLabelFor",
+          "fullPath": "LSlider.setLabelFor",
+          "signature": "([target])",
+          "description": "Associates this label widget with another widget for accessibility naming.",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "integer",
+              "description": "Target widget index, or nil to clear the link.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LSlider"
+        },
+        {
+          "name": "getLabelFor",
+          "fullPath": "LSlider.getLabelFor",
+          "signature": "()",
+          "description": "Returns the widget index associated through `setLabelFor`, or nil.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LSlider"
         },
@@ -128447,6 +129874,17 @@
           "objectType": "LSpacer"
         },
         {
+          "name": "getRole",
+          "fullPath": "LSpacer.getRole",
+          "signature": "()",
+          "description": "Returns the semantic role string for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LSpacer"
+        },
+        {
           "name": "setAriaName",
           "fullPath": "LSpacer.setAriaName",
           "signature": "(name)",
@@ -128461,6 +129899,46 @@
           ],
           "returns": "nil",
           "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LSpacer"
+        },
+        {
+          "name": "getAriaName",
+          "fullPath": "LSpacer.getAriaName",
+          "signature": "()",
+          "description": "Returns the explicit accessible name metadata for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LSpacer"
+        },
+        {
+          "name": "setLabelFor",
+          "fullPath": "LSpacer.setLabelFor",
+          "signature": "([target])",
+          "description": "Associates this label widget with another widget for accessibility naming.",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "integer",
+              "description": "Target widget index, or nil to clear the link.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LSpacer"
+        },
+        {
+          "name": "getLabelFor",
+          "fullPath": "LSpacer.getLabelFor",
+          "signature": "()",
+          "description": "Returns the widget index associated through `setLabelFor`, or nil.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LSpacer"
         },
@@ -130250,6 +131728,17 @@
           "objectType": "LSpinBox"
         },
         {
+          "name": "getRole",
+          "fullPath": "LSpinBox.getRole",
+          "signature": "()",
+          "description": "Returns the semantic role string for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LSpinBox"
+        },
+        {
           "name": "setAriaName",
           "fullPath": "LSpinBox.setAriaName",
           "signature": "(name)",
@@ -130264,6 +131753,46 @@
           ],
           "returns": "nil",
           "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LSpinBox"
+        },
+        {
+          "name": "getAriaName",
+          "fullPath": "LSpinBox.getAriaName",
+          "signature": "()",
+          "description": "Returns the explicit accessible name metadata for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LSpinBox"
+        },
+        {
+          "name": "setLabelFor",
+          "fullPath": "LSpinBox.setLabelFor",
+          "signature": "([target])",
+          "description": "Associates this label widget with another widget for accessibility naming.",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "integer",
+              "description": "Target widget index, or nil to clear the link.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LSpinBox"
+        },
+        {
+          "name": "getLabelFor",
+          "fullPath": "LSpinBox.getLabelFor",
+          "signature": "()",
+          "description": "Returns the widget index associated through `setLabelFor`, or nil.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LSpinBox"
         },
@@ -131655,6 +133184,17 @@
           "objectType": "LSplitPanel"
         },
         {
+          "name": "getRole",
+          "fullPath": "LSplitPanel.getRole",
+          "signature": "()",
+          "description": "Returns the semantic role string for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LSplitPanel"
+        },
+        {
           "name": "setAriaName",
           "fullPath": "LSplitPanel.setAriaName",
           "signature": "(name)",
@@ -131669,6 +133209,46 @@
           ],
           "returns": "nil",
           "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LSplitPanel"
+        },
+        {
+          "name": "getAriaName",
+          "fullPath": "LSplitPanel.getAriaName",
+          "signature": "()",
+          "description": "Returns the explicit accessible name metadata for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LSplitPanel"
+        },
+        {
+          "name": "setLabelFor",
+          "fullPath": "LSplitPanel.setLabelFor",
+          "signature": "([target])",
+          "description": "Associates this label widget with another widget for accessibility naming.",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "integer",
+              "description": "Target widget index, or nil to clear the link.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LSplitPanel"
+        },
+        {
+          "name": "getLabelFor",
+          "fullPath": "LSplitPanel.getLabelFor",
+          "signature": "()",
+          "description": "Returns the widget index associated through `setLabelFor`, or nil.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LSplitPanel"
         },
@@ -135082,6 +136662,17 @@
           "objectType": "LStatusBar"
         },
         {
+          "name": "getRole",
+          "fullPath": "LStatusBar.getRole",
+          "signature": "()",
+          "description": "Returns the semantic role string for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LStatusBar"
+        },
+        {
           "name": "setAriaName",
           "fullPath": "LStatusBar.setAriaName",
           "signature": "(name)",
@@ -135096,6 +136687,46 @@
           ],
           "returns": "nil",
           "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LStatusBar"
+        },
+        {
+          "name": "getAriaName",
+          "fullPath": "LStatusBar.getAriaName",
+          "signature": "()",
+          "description": "Returns the explicit accessible name metadata for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LStatusBar"
+        },
+        {
+          "name": "setLabelFor",
+          "fullPath": "LStatusBar.setLabelFor",
+          "signature": "([target])",
+          "description": "Associates this label widget with another widget for accessibility naming.",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "integer",
+              "description": "Target widget index, or nil to clear the link.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LStatusBar"
+        },
+        {
+          "name": "getLabelFor",
+          "fullPath": "LStatusBar.getLabelFor",
+          "signature": "()",
+          "description": "Returns the widget index associated through `setLabelFor`, or nil.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LStatusBar"
         },
@@ -136451,6 +138082,17 @@
           "parameters": [],
           "returns": "integer",
           "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LSteeringManager"
+        },
+        {
+          "name": "getLastDiagnostic",
+          "fullPath": "LSteeringManager:getLastDiagnostic",
+          "signature": "()",
+          "description": "Returns the most recent steering validation or runtime diagnostic.",
+          "parameters": [],
+          "returns": "LuaValue",
+          "returnType": "LuaValue",
           "isMethod": true,
           "objectType": "LSteeringManager"
         },
@@ -137966,6 +139608,17 @@
           "objectType": "LSwitch"
         },
         {
+          "name": "getRole",
+          "fullPath": "LSwitch.getRole",
+          "signature": "()",
+          "description": "Returns the semantic role string for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LSwitch"
+        },
+        {
           "name": "setAriaName",
           "fullPath": "LSwitch.setAriaName",
           "signature": "(name)",
@@ -137980,6 +139633,46 @@
           ],
           "returns": "nil",
           "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LSwitch"
+        },
+        {
+          "name": "getAriaName",
+          "fullPath": "LSwitch.getAriaName",
+          "signature": "()",
+          "description": "Returns the explicit accessible name metadata for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LSwitch"
+        },
+        {
+          "name": "setLabelFor",
+          "fullPath": "LSwitch.setLabelFor",
+          "signature": "([target])",
+          "description": "Associates this label widget with another widget for accessibility naming.",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "integer",
+              "description": "Target widget index, or nil to clear the link.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LSwitch"
+        },
+        {
+          "name": "getLabelFor",
+          "fullPath": "LSwitch.getLabelFor",
+          "signature": "()",
+          "description": "Returns the widget index associated through `setLabelFor`, or nil.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LSwitch"
         },
@@ -139434,6 +141127,17 @@
           "objectType": "LTabBar"
         },
         {
+          "name": "getRole",
+          "fullPath": "LTabBar.getRole",
+          "signature": "()",
+          "description": "Returns the semantic role string for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LTabBar"
+        },
+        {
           "name": "setAriaName",
           "fullPath": "LTabBar.setAriaName",
           "signature": "(name)",
@@ -139448,6 +141152,46 @@
           ],
           "returns": "nil",
           "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTabBar"
+        },
+        {
+          "name": "getAriaName",
+          "fullPath": "LTabBar.getAriaName",
+          "signature": "()",
+          "description": "Returns the explicit accessible name metadata for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LTabBar"
+        },
+        {
+          "name": "setLabelFor",
+          "fullPath": "LTabBar.setLabelFor",
+          "signature": "([target])",
+          "description": "Associates this label widget with another widget for accessibility naming.",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "integer",
+              "description": "Target widget index, or nil to clear the link.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTabBar"
+        },
+        {
+          "name": "getLabelFor",
+          "fullPath": "LTabBar.getLabelFor",
+          "signature": "()",
+          "description": "Returns the widget index associated through `setLabelFor`, or nil.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LTabBar"
         },
@@ -141290,6 +143034,35 @@
           "objectType": "LTextInput"
         },
         {
+          "name": "setSubmitOnEnter",
+          "fullPath": "LTextInput:setSubmitOnEnter",
+          "signature": "(value)",
+          "description": "Controls whether pressing Enter in this text input submits the surrounding dialog default action.",
+          "parameters": [
+            {
+              "name": "value",
+              "type": "boolean",
+              "description": "True to submit on Enter, false to consume Enter locally.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTextInput"
+        },
+        {
+          "name": "getSubmitOnEnter",
+          "fullPath": "LTextInput:getSubmitOnEnter",
+          "signature": "()",
+          "description": "Returns whether pressing Enter in this text input submits the surrounding dialog default action.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LTextInput"
+        },
+        {
           "name": "type",
           "fullPath": "LTextInput.type",
           "signature": "()",
@@ -141655,6 +143428,17 @@
           "objectType": "LTextInput"
         },
         {
+          "name": "getRole",
+          "fullPath": "LTextInput.getRole",
+          "signature": "()",
+          "description": "Returns the semantic role string for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LTextInput"
+        },
+        {
           "name": "setAriaName",
           "fullPath": "LTextInput.setAriaName",
           "signature": "(name)",
@@ -141669,6 +143453,46 @@
           ],
           "returns": "nil",
           "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTextInput"
+        },
+        {
+          "name": "getAriaName",
+          "fullPath": "LTextInput.getAriaName",
+          "signature": "()",
+          "description": "Returns the explicit accessible name metadata for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LTextInput"
+        },
+        {
+          "name": "setLabelFor",
+          "fullPath": "LTextInput.setLabelFor",
+          "signature": "([target])",
+          "description": "Associates this label widget with another widget for accessibility naming.",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "integer",
+              "description": "Target widget index, or nil to clear the link.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTextInput"
+        },
+        {
+          "name": "getLabelFor",
+          "fullPath": "LTextInput.getLabelFor",
+          "signature": "()",
+          "description": "Returns the widget index associated through `setLabelFor`, or nil.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LTextInput"
         },
@@ -145116,6 +146940,17 @@
           "objectType": "LToast"
         },
         {
+          "name": "getRole",
+          "fullPath": "LToast.getRole",
+          "signature": "()",
+          "description": "Returns the semantic role string for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LToast"
+        },
+        {
           "name": "setAriaName",
           "fullPath": "LToast.setAriaName",
           "signature": "(name)",
@@ -145130,6 +146965,46 @@
           ],
           "returns": "nil",
           "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LToast"
+        },
+        {
+          "name": "getAriaName",
+          "fullPath": "LToast.getAriaName",
+          "signature": "()",
+          "description": "Returns the explicit accessible name metadata for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LToast"
+        },
+        {
+          "name": "setLabelFor",
+          "fullPath": "LToast.setLabelFor",
+          "signature": "([target])",
+          "description": "Associates this label widget with another widget for accessibility naming.",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "integer",
+              "description": "Target widget index, or nil to clear the link.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LToast"
+        },
+        {
+          "name": "getLabelFor",
+          "fullPath": "LToast.getLabelFor",
+          "signature": "()",
+          "description": "Returns the widget index associated through `setLabelFor`, or nil.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LToast"
         },
@@ -146542,6 +148417,17 @@
           "objectType": "LToolbar"
         },
         {
+          "name": "getRole",
+          "fullPath": "LToolbar.getRole",
+          "signature": "()",
+          "description": "Returns the semantic role string for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LToolbar"
+        },
+        {
           "name": "setAriaName",
           "fullPath": "LToolbar.setAriaName",
           "signature": "(name)",
@@ -146556,6 +148442,46 @@
           ],
           "returns": "nil",
           "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LToolbar"
+        },
+        {
+          "name": "getAriaName",
+          "fullPath": "LToolbar.getAriaName",
+          "signature": "()",
+          "description": "Returns the explicit accessible name metadata for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LToolbar"
+        },
+        {
+          "name": "setLabelFor",
+          "fullPath": "LToolbar.setLabelFor",
+          "signature": "([target])",
+          "description": "Associates this label widget with another widget for accessibility naming.",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "integer",
+              "description": "Target widget index, or nil to clear the link.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LToolbar"
+        },
+        {
+          "name": "getLabelFor",
+          "fullPath": "LToolbar.getLabelFor",
+          "signature": "()",
+          "description": "Returns the widget index associated through `setLabelFor`, or nil.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LToolbar"
         },
@@ -147889,6 +149815,17 @@
           "objectType": "LTooltipPanel"
         },
         {
+          "name": "getRole",
+          "fullPath": "LTooltipPanel.getRole",
+          "signature": "()",
+          "description": "Returns the semantic role string for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LTooltipPanel"
+        },
+        {
           "name": "setAriaName",
           "fullPath": "LTooltipPanel.setAriaName",
           "signature": "(name)",
@@ -147903,6 +149840,46 @@
           ],
           "returns": "nil",
           "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTooltipPanel"
+        },
+        {
+          "name": "getAriaName",
+          "fullPath": "LTooltipPanel.getAriaName",
+          "signature": "()",
+          "description": "Returns the explicit accessible name metadata for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LTooltipPanel"
+        },
+        {
+          "name": "setLabelFor",
+          "fullPath": "LTooltipPanel.setLabelFor",
+          "signature": "([target])",
+          "description": "Associates this label widget with another widget for accessibility naming.",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "integer",
+              "description": "Target widget index, or nil to clear the link.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTooltipPanel"
+        },
+        {
+          "name": "getLabelFor",
+          "fullPath": "LTooltipPanel.getLabelFor",
+          "signature": "()",
+          "description": "Returns the widget index associated through `setLabelFor`, or nil.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LTooltipPanel"
         },
@@ -150444,6 +152421,17 @@
           "objectType": "LTreeView"
         },
         {
+          "name": "getRole",
+          "fullPath": "LTreeView.getRole",
+          "signature": "()",
+          "description": "Returns the semantic role string for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LTreeView"
+        },
+        {
           "name": "setAriaName",
           "fullPath": "LTreeView.setAriaName",
           "signature": "(name)",
@@ -150458,6 +152446,46 @@
           ],
           "returns": "nil",
           "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTreeView"
+        },
+        {
+          "name": "getAriaName",
+          "fullPath": "LTreeView.getAriaName",
+          "signature": "()",
+          "description": "Returns the explicit accessible name metadata for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LTreeView"
+        },
+        {
+          "name": "setLabelFor",
+          "fullPath": "LTreeView.setLabelFor",
+          "signature": "([target])",
+          "description": "Associates this label widget with another widget for accessibility naming.",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "integer",
+              "description": "Target widget index, or nil to clear the link.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTreeView"
+        },
+        {
+          "name": "getLabelFor",
+          "fullPath": "LTreeView.getLabelFor",
+          "signature": "()",
+          "description": "Returns the widget index associated through `setLabelFor`, or nil.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LTreeView"
         },
@@ -153028,6 +155056,17 @@
           "objectType": "LUiWidget"
         },
         {
+          "name": "getRole",
+          "fullPath": "LUiWidget:getRole",
+          "signature": "()",
+          "description": "Returns the semantic role string for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LUiWidget"
+        },
+        {
           "name": "setAriaName",
           "fullPath": "LUiWidget:setAriaName",
           "signature": "(name)",
@@ -153042,6 +155081,46 @@
           ],
           "returns": "nil",
           "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LUiWidget"
+        },
+        {
+          "name": "getAriaName",
+          "fullPath": "LUiWidget:getAriaName",
+          "signature": "()",
+          "description": "Returns the explicit accessible name metadata for this widget.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LUiWidget"
+        },
+        {
+          "name": "setLabelFor",
+          "fullPath": "LUiWidget:setLabelFor",
+          "signature": "([target])",
+          "description": "Associates this label widget with another widget for accessibility naming.",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "integer",
+              "description": "Target widget index, or nil to clear the link.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LUiWidget"
+        },
+        {
+          "name": "getLabelFor",
+          "fullPath": "LUiWidget:getLabelFor",
+          "signature": "()",
+          "description": "Returns the widget index associated through `setLabelFor`, or nil.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LUiWidget"
         },
@@ -155828,6 +157907,17 @@
           "parameters": [],
           "returns": "LuaValue",
           "returnType": "LuaValue",
+          "isMethod": true,
+          "objectType": "LUtilityAI"
+        },
+        {
+          "name": "getLastTrace",
+          "fullPath": "LUtilityAI:getLastTrace",
+          "signature": "()",
+          "description": "Returns the last structured utility evaluation trace.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LUtilityAI"
         },

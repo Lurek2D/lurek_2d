@@ -955,7 +955,8 @@ mod safety_tests {
             strict_layer_size: true,
             ..TmxLoadOptions::default()
         };
-        let err = load_tmx_with_options(short, &options).expect_err("short strict layer should fail");
+        let err =
+            load_tmx_with_options(short, &options).expect_err("short strict layer should fail");
         assert_eq!(err.code, "tmx_invalid_content");
 
         let long = r#"
@@ -1014,12 +1015,11 @@ mod safety_tests {
     #[test]
     fn collision_queries_reject_invalid_rects() {
         let map = TileMap::try_new(16, 16, 8).unwrap();
-        assert!(
-            map.try_rect_overlaps_solid(0, Rect::new(f32::NAN, 0.0, 1.0, 1.0))
-                .expect_err("NaN rect should error")
-                .to_string()
-                .contains("finite")
-        );
+        assert!(map
+            .try_rect_overlaps_solid(0, Rect::new(f32::NAN, 0.0, 1.0, 1.0))
+            .expect_err("NaN rect should error")
+            .to_string()
+            .contains("finite"));
         assert!(map
             .try_sweep_rect(0, Rect::new(0.0, 0.0, -1.0, 1.0), 1.0, 0.0)
             .is_err());

@@ -27,6 +27,8 @@
 - File watching and retained traces further reduce iteration cost by keeping content changes, script reloads, and inspection history inside the same feedback loop.
 - Read `devtools` as the developer-facing observability hub of the engine.
 
+This module primarily collaborates with `filesystem`, `repl`. Its responsibility should stay inside the Edge/Integration group rather than absorb behavior owned by those neighbors.
+
 ## Imports
 
 - `filesystem`: Imports or references `src/filesystem/`. Cross-group dependency from `Edge/Integration` into `Core Runtime`.

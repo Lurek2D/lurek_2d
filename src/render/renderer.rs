@@ -562,6 +562,111 @@ pub enum RenderCommand {
         instances: InstanceBufferKey,
     },
 }
+
+/// Broad owner bucket for one `RenderCommand` variant.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum RenderCommandCategory {
+    /// Mutable draw state such as color, blend, stencil, shader, scissor, and line width.
+    State,
+    /// Current transform-stack operations.
+    Transform,
+    /// Shape and vector geometry draw commands.
+    Shape,
+    /// Texture-backed draw commands.
+    Texture,
+    /// Text draw commands.
+    Text,
+    /// Canvas allocation, targeting, reset, and draw commands.
+    Canvas,
+    /// Mesh, compound-shape, and static-geometry commands.
+    Mesh,
+    /// Sprite, particle, or other pre-batched draw commands.
+    Batch,
+    /// Post-processing capture and apply commands.
+    Effect,
+    /// Explicit draw ordering commands.
+    Ordering,
+    /// Offscreen compositing layer commands.
+    Layer,
+    /// Instanced draw commands.
+    Instance,
+    /// Debug or specialized visualization commands.
+    Debug,
+}
+
+impl RenderCommand {
+    /// Return the broad owner bucket for this command so validators and backends can route work.
+    pub fn category(&self) -> RenderCommandCategory {
+        use RenderCommand::*;
+
+        match self {
+            SetColor(..)
+            | SetLineWidth(..)
+            | SetBlendMode(..)
+            | SetPointSize(..)
+            | SetScissor(..)
+            | SetColorMask(..)
+            | SetWireframe(..)
+            | StencilBegin { .. }
+            | StencilEnd
+            | SetStencilTest(..)
+            | SetShader(..) => RenderCommandCategory::State,
+            PushTransform
+            | PopTransform
+            | Translate { .. }
+            | Rotate { .. }
+            | Scale { .. }
+            | Shear { .. }
+            | Origin
+            | ApplyTransform { .. } => RenderCommandCategory::Transform,
+            Rectangle { .. }
+            | RoundedRectangle { .. }
+            | Circle { .. }
+            | Ellipse { .. }
+            | Triangle { .. }
+            | Polygon { .. }
+            | Line { .. }
+            | Polyline { .. }
+            | Arc { .. }
+            | Points { .. }
+            | DrawQuadBezier { .. }
+            | DrawCubicBezier { .. }
+            | DrawPath { .. }
+            | DrawGradientRect { .. }
+            | DrawColoredPolygon { .. }
+            | DrawIsoCubeTile { .. }
+            | DrawHexTile { .. }
+            | DrawBevelRect { .. } => RenderCommandCategory::Shape,
+            DrawImage { .. }
+            | DrawImageEx { .. }
+            | DrawQuad { .. }
+            | DrawNineSlice { .. }
+            | DrawTexturedQuad { .. }
+            | DrawConvexFan { .. } => RenderCommandCategory::Texture,
+            Print { .. } | DrawRichText { .. } | PrintFormatted { .. } => {
+                RenderCommandCategory::Text
+            }
+            SetCanvas(..) | DrawCanvas { .. } | RegisterCanvas { .. } | ResetCanvas(..) => {
+                RenderCommandCategory::Canvas
+            }
+            DrawMesh { .. }
+            | SyncMesh { .. }
+            | DrawMeshTransient { .. }
+            | DrawShape { .. }
+            | DrawStaticGeometry { .. } => RenderCommandCategory::Mesh,
+            DrawBatch { .. } | DrawParticleSystem { .. } => RenderCommandCategory::Batch,
+            BeginPostFx { .. } | EndPostFx { .. } | ApplyPostFx { .. } => {
+                RenderCommandCategory::Effect
+            }
+            BeginSortGroup { .. } | PushSortKey(..) | FlushSortGroup { .. } => {
+                RenderCommandCategory::Ordering
+            }
+            PushLayer { .. } | PopLayer { .. } => RenderCommandCategory::Layer,
+            InstancedDraw { .. } => RenderCommandCategory::Instance,
+            DrawPhysicsDebug { .. } | DrawSpineSkeleton { .. } => RenderCommandCategory::Debug,
+        }
+    }
+}
 /// Raw CPU-side texture pixel data passed to `GpuRenderer::upload_texture`.
 #[derive(Clone)]
 pub struct TextureData {
@@ -573,6 +678,31 @@ pub struct TextureData {
     pub height: u32,
     /// Color space declared for this texture.
     pub color_space: crate::image::TextureColorSpace,
+    /// Monotonic source revision; increment when pixels or dimensions change under the same key.
+    pub revision: u64,
+}
+
+impl TextureData {
+    /// Create CPU texture data at revision 0.
+    pub fn new(
+        pixels: Vec<u8>,
+        width: u32,
+        height: u32,
+        color_space: crate::image::TextureColorSpace,
+    ) -> Self {
+        Self {
+            pixels,
+            width,
+            height,
+            color_space,
+            revision: 0,
+        }
+    }
+
+    /// Advance the source revision after in-place pixel or dimension changes.
+    pub fn mark_dirty(&mut self) {
+        self.revision = self.revision.saturating_add(1);
+    }
 }
 /// Shape used to render a single particle in `DrawParticleSystem`.
 #[derive(Clone, Debug)]

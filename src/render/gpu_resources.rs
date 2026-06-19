@@ -20,6 +20,82 @@ use slotmap::{Key, SlotMap};
 
 use super::GpuRenderer;
 
+/// Validate an RGBA8 texture upload before touching the GPU backend.
+pub fn validate_rgba_texture_upload(
+    width: u32,
+    height: u32,
+    pixel_len: usize,
+    limits: &wgpu::Limits,
+) -> Result<(), String> {
+    if width == 0 || height == 0 {
+        return Err("texture dimensions must be non-zero".to_string());
+    }
+    if width > limits.max_texture_dimension_2d || height > limits.max_texture_dimension_2d {
+        return Err(format!(
+            "texture dimensions {width}x{height} exceed device limit {}",
+            limits.max_texture_dimension_2d
+        ));
+    }
+    let expected_len = u64::from(width)
+        .checked_mul(u64::from(height))
+        .and_then(|pixels| pixels.checked_mul(4))
+        .ok_or_else(|| format!("texture dimensions {width}x{height} overflow byte length"))?;
+    if expected_len > usize::MAX as u64 {
+        return Err(format!(
+            "texture dimensions {width}x{height} exceed addressable memory"
+        ));
+    }
+    if pixel_len != expected_len as usize {
+        return Err(format!(
+            "texture pixel buffer has {pixel_len} bytes, expected {expected_len}"
+        ));
+    }
+    Ok(())
+}
+
+/// Validate a render-target canvas size before allocating its GPU backing texture.
+pub fn validate_canvas_size(width: u32, height: u32, limits: &wgpu::Limits) -> Result<(), String> {
+    if width == 0 || height == 0 {
+        return Err("canvas dimensions must be non-zero".to_string());
+    }
+    if width > limits.max_texture_dimension_2d || height > limits.max_texture_dimension_2d {
+        return Err(format!(
+            "canvas dimensions {width}x{height} exceed device limit {}",
+            limits.max_texture_dimension_2d
+        ));
+    }
+    Ok(())
+}
+
+/// Return whether an existing GPU canvas texture is absent or no longer matches logical dimensions.
+pub fn canvas_texture_needs_recreate(
+    existing_size: Option<(u32, u32)>,
+    width: u32,
+    height: u32,
+) -> bool {
+    existing_size
+        .map(|(existing_width, existing_height)| {
+            existing_width != width || existing_height != height
+        })
+        .unwrap_or(true)
+}
+
+/// Return true when a GPU texture is missing or stale for the CPU texture source.
+pub fn texture_needs_upload(existing: Option<(u32, u32, u64)>, source: &TextureData) -> bool {
+    existing
+        .map(|(existing_width, existing_height, existing_revision)| {
+            existing_width != source.width
+                || existing_height != source.height
+                || existing_revision != source.revision
+        })
+        .unwrap_or(true)
+}
+
+/// Return true for static geometry owned by the renderer rather than a user mesh slot.
+pub fn is_builtin_static_geometry_key(key: StaticGeometryKey) -> bool {
+    key == StaticGeometryKey::default()
+}
+
 impl GpuRenderer {
     /// Returns the next power-of-two-style capacity large enough for `needed`.
     pub(crate) fn grow_capacity(current: u64, needed: u64) -> u64 {
@@ -51,6 +127,7 @@ impl GpuRenderer {
                 mapped_at_creation: false,
             });
             self.color_vertex_capacity = new_cap;
+            self.render_diagnostics.record_buffer_growth_event();
         }
         let color_i_needed = color_idxs_needed as u64;
         if color_i_needed > self.color_index_capacity {
@@ -62,6 +139,7 @@ impl GpuRenderer {
                 mapped_at_creation: false,
             });
             self.color_index_capacity = new_cap;
+            self.render_diagnostics.record_buffer_growth_event();
         }
         let tex_v_needed = tex_verts_needed as u64;
         if tex_v_needed > self.tex_vertex_capacity {
@@ -73,6 +151,7 @@ impl GpuRenderer {
                 mapped_at_creation: false,
             });
             self.tex_vertex_capacity = new_cap;
+            self.render_diagnostics.record_buffer_growth_event();
             log::warn!(
                 "[G003] grew tex vertex buffer capacity to {} vertices",
                 self.tex_vertex_capacity
@@ -88,6 +167,7 @@ impl GpuRenderer {
                 mapped_at_creation: false,
             });
             self.tex_index_capacity = new_cap;
+            self.render_diagnostics.record_buffer_growth_event();
             log::warn!(
                 "[G003] grew tex index buffer capacity to {} indices",
                 self.tex_index_capacity
@@ -108,6 +188,7 @@ impl GpuRenderer {
                 mapped_at_creation: false,
             });
             self.instance_capacity = new_cap;
+            self.render_diagnostics.record_buffer_growth_event();
         }
     }
 
@@ -162,8 +243,10 @@ impl GpuRenderer {
         width: u32,
         height: u32,
         color_space: crate::image::TextureColorSpace,
+        source_revision: u64,
         default_filter: &(String, String, u32),
-    ) -> GpuTexture {
+    ) -> Result<GpuTexture, String> {
+        validate_rgba_texture_upload(width, height, pixels.len(), &self.device.limits())?;
         let size = wgpu::Extent3d {
             width,
             height,
@@ -200,27 +283,33 @@ impl GpuRenderer {
         let view = texture.create_view(&wgpu::TextureViewDescriptor::default());
         let sampler = self.create_sampler(default_filter);
         let bind_group = self.create_texture_bind_group(&view, &sampler, "sprite_bg");
-        GpuTexture {
+        Ok(GpuTexture {
             _texture: texture,
             view,
             bind_group,
             width,
             height,
-        }
+            source_revision,
+        })
     }
 
     /// Uploads pixel data to a new GPU texture associated with the given key.
     pub fn upload_texture(
         &mut self,
         key: TextureKey,
-        pixels: &[u8],
-        width: u32,
-        height: u32,
-        color_space: crate::image::TextureColorSpace,
+        source: &TextureData,
         default_filter: &(String, String, u32),
-    ) {
-        let gt = self.create_gpu_texture_raw(pixels, width, height, color_space, default_filter);
+    ) -> Result<(), String> {
+        let gt = self.create_gpu_texture_raw(
+            &source.pixels,
+            source.width,
+            source.height,
+            source.color_space,
+            source.revision,
+            default_filter,
+        )?;
         self.gpu_textures.insert(key, gt);
+        Ok(())
     }
 
     /// Ensures the font atlas texture exists and is synchronized with dirty font atlas data.
@@ -232,13 +321,16 @@ impl GpuRenderer {
     ) -> bool {
         let (data, w, h) = font.atlas_data();
         if font.is_dirty() || !self.font_atlas_textures.contains_key(font_key) {
-            let gt = self.create_gpu_texture_raw(
+            let Ok(gt) = self.create_gpu_texture_raw(
                 data,
                 w,
                 h,
                 crate::image::TextureColorSpace::Srgb,
+                0,
                 default_filter,
-            );
+            ) else {
+                return false;
+            };
             self.font_atlas_textures.insert(font_key, gt);
             font.mark_clean();
         }
@@ -252,7 +344,8 @@ impl GpuRenderer {
         width: u32,
         height: u32,
         default_filter: &(String, String, u32),
-    ) {
+    ) -> Result<(), String> {
+        validate_canvas_size(width, height, &self.device.limits())?;
         let texture = self.device.create_texture(&wgpu::TextureDescriptor {
             label: Some("canvas_texture"),
             size: wgpu::Extent3d {
@@ -270,6 +363,7 @@ impl GpuRenderer {
         let view = texture.create_view(&wgpu::TextureViewDescriptor::default());
         let sampler = self.create_sampler(default_filter);
         let bind_group = self.create_texture_bind_group(&view, &sampler, "canvas_bg");
+        self.canvas_stencil_targets.remove(key);
         self.canvas_gpu_textures.insert(
             key,
             GpuTexture {
@@ -278,9 +372,11 @@ impl GpuRenderer {
                 bind_group,
                 width,
                 height,
+                source_revision: 0,
             },
         );
         self.canvas_needs_clear.insert(key, true);
+        Ok(())
     }
 
     /// Creates a depth-stencil render target matching the provided dimensions.
@@ -397,6 +493,9 @@ impl GpuRenderer {
             .keys()
             .cloned()
             .filter(|key| {
+                if is_builtin_static_geometry_key(*key) {
+                    return false;
+                }
                 let mesh_key = MeshKey::from(key.data());
                 !meshes.contains_key(mesh_key)
             })
@@ -407,11 +506,21 @@ impl GpuRenderer {
     }
 
     /// Synchronizes one mesh into cached static GPU geometry buffers.
-    pub(crate) fn sync_mesh(&mut self, mesh_key: MeshKey, mesh: &crate::render::Mesh) {
+    pub(crate) fn sync_mesh(
+        &mut self,
+        mesh_key: MeshKey,
+        mesh: &crate::render::Mesh,
+    ) -> Result<(), crate::render::mesh::MeshError> {
         use wgpu::util::DeviceExt;
 
-        let tri_indices = mesh.triangulate();
         let static_key = StaticGeometryKey::from(mesh_key.data());
+        let tri_indices = match mesh.try_triangulate() {
+            Ok(indices) => indices,
+            Err(err) => {
+                self.mesh_cache.static_geometry.remove(&static_key);
+                return Err(err);
+            }
+        };
 
         let entry = if mesh.texture.is_some() {
             let mut verts = Vec::with_capacity(tri_indices.len());
@@ -487,5 +596,6 @@ impl GpuRenderer {
         };
 
         self.mesh_cache.static_geometry.insert(static_key, entry);
+        Ok(())
     }
 }

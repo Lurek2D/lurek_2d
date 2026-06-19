@@ -28,6 +28,8 @@
 - Other modules own behavior and signatures, but `docs` owns how that behavior is discovered, checked, cataloged, and published.
 - Read `docs` as the coordination layer between engine reality and documentation output.
 
+This module is mostly self-contained inside the Edge/Integration group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
+
 ## Imports
 
 - No top-level `crate::<module>` imports were detected in this module's Rust source files.

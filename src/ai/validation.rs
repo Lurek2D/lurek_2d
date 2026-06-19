@@ -109,11 +109,7 @@ pub fn positive_nonzero(
 }
 
 /// Reject counts above a configured ceiling.
-pub fn validate_count(
-    context: &'static str,
-    count: usize,
-    max: usize,
-) -> Result<usize, AiError> {
+pub fn validate_count(context: &'static str, count: usize, max: usize) -> Result<usize, AiError> {
     if count > max {
         return Err(AiError::CountLimitExceeded {
             context,
@@ -125,11 +121,7 @@ pub fn validate_count(
 }
 
 /// Reject depths above a configured ceiling.
-pub fn validate_depth(
-    context: &'static str,
-    depth: usize,
-    max: usize,
-) -> Result<usize, AiError> {
+pub fn validate_depth(context: &'static str, depth: usize, max: usize) -> Result<usize, AiError> {
     if depth > max {
         return Err(AiError::DepthLimitExceeded {
             context,

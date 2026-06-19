@@ -71,12 +71,7 @@ impl Texture {
         let (width, height) = rgba.dimensions();
         let mut pixels = rgba.into_raw();
         premultiply_alpha_rgba8_in_place(&mut pixels);
-        let key = textures.insert(TextureData {
-            pixels,
-            width,
-            height,
-            color_space,
-        });
+        let key = textures.insert(TextureData::new(pixels, width, height, color_space));
         log_msg!(debug, TX01_TEX_DECODED, "{}x{}", width, height);
         Ok(Texture { key, width, height })
     }
@@ -109,12 +104,7 @@ impl Texture {
             )));
         }
         premultiply_alpha_rgba8_in_place(&mut pixels);
-        let key = textures.insert(TextureData {
-            pixels,
-            width,
-            height,
-            color_space,
-        });
+        let key = textures.insert(TextureData::new(pixels, width, height, color_space));
         Ok(Texture { key, width, height })
     }
 }

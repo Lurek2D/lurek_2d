@@ -19,9 +19,12 @@ use crate::render::renderer::{DrawMode, GradientDirection, RenderCommand};
 use crate::render::Font;
 use crate::runtime::resource_keys::FontKey;
 use crate::ui::context::{GuiContext, WidgetKind};
-use crate::ui::theme::WidgetStyle;
-use crate::ui::widget::{TextVAlign, WidgetBase};
+use crate::ui::theme::{ThemeToken, WidgetStyle};
+use crate::ui::widget::{TextVAlign, WidgetBase, WidgetState};
 use slotmap::SlotMap;
+use std::collections::HashMap;
+
+const ELLIPSIS: &str = "\u{2026}";
 
 fn text_scale(style: &WidgetStyle, font: Option<&Font>) -> f32 {
     let base_height = font.map(|font| font.size()).unwrap_or(14.0).max(1.0);
@@ -33,6 +36,146 @@ fn measure_text(text: &str, style: &WidgetStyle, font: Option<&Font>) -> f32 {
         Some(font) => font.text_width(text) * text_scale(style, Some(font)),
         None => text.chars().count() as f32 * 6.0 * text_scale(style, None),
     }
+}
+
+fn measure_text_cached(
+    cache: &mut HashMap<String, f32>,
+    text: &str,
+    style: &WidgetStyle,
+    font: Option<&Font>,
+) -> f32 {
+    if let Some(width) = cache.get(text) {
+        *width
+    } else {
+        let width = measure_text(text, style, font);
+        cache.insert(text.to_string(), width);
+        width
+    }
+}
+
+fn best_prefix_end_for_width(
+    text: &str,
+    max_width: f32,
+    prefix_cache: &mut HashMap<usize, f32>,
+    style: &WidgetStyle,
+    font: Option<&Font>,
+) -> usize {
+    if text.is_empty() || max_width <= 0.0 {
+        return 0;
+    }
+    let mut boundaries: Vec<usize> = text.char_indices().map(|(idx, _)| idx).skip(1).collect();
+    boundaries.push(text.len());
+    let mut low = 0usize;
+    let mut high = boundaries.len();
+    let mut best_end = 0usize;
+    while low < high {
+        let mid = (low + high) / 2;
+        let end = boundaries[mid];
+        let width = *prefix_cache
+            .entry(end)
+            .or_insert_with(|| measure_text(&text[..end], style, font));
+        if width <= max_width {
+            best_end = end;
+            low = mid + 1;
+        } else {
+            high = mid;
+        }
+    }
+    best_end
+}
+
+fn focus_ring_color(ctx: &GuiContext, base: &WidgetBase) -> Option<[f32; 4]> {
+    if !base.focusable
+        || !base.enabled
+        || !base.is_visible
+        || base.state != WidgetState::Focused
+        || base.alpha <= 0.0
+    {
+        return None;
+    }
+    let mut color = match ctx
+        .theme
+        .as_ref()
+        .and_then(|theme| theme.get_token("focus_ring_color"))
+    {
+        Some(ThemeToken::Color(color)) => *color,
+        _ => [0.3, 0.6, 1.0, 0.8],
+    };
+    color[3] *= base.alpha.clamp(0.0, 1.0);
+    (color[3] > 0.0).then_some(color)
+}
+
+fn emit_focus_ring(ctx: &GuiContext, base: &WidgetBase, cmds: &mut Vec<RenderCommand>) {
+    let Some([r, g, b, a]) = focus_ring_color(ctx, base) else {
+        return;
+    };
+    let thickness = 2.0;
+    cmds.push(RenderCommand::SetColor(r, g, b, a));
+    cmds.push(RenderCommand::Rectangle {
+        mode: DrawMode::Fill,
+        x: base.x - thickness,
+        y: base.y - thickness,
+        w: base.width + thickness * 2.0,
+        h: thickness,
+    });
+    cmds.push(RenderCommand::Rectangle {
+        mode: DrawMode::Fill,
+        x: base.x - thickness,
+        y: base.y + base.height,
+        w: base.width + thickness * 2.0,
+        h: thickness,
+    });
+    cmds.push(RenderCommand::Rectangle {
+        mode: DrawMode::Fill,
+        x: base.x - thickness,
+        y: base.y,
+        w: thickness,
+        h: base.height,
+    });
+    cmds.push(RenderCommand::Rectangle {
+        mode: DrawMode::Fill,
+        x: base.x + base.width,
+        y: base.y,
+        w: thickness,
+        h: base.height,
+    });
+}
+
+fn draw_cpu_focus_ring(ctx: &GuiContext, base: &WidgetBase, img: &mut crate::image::ImageData) {
+    let Some([r, g, b, a]) = focus_ring_color(ctx, base) else {
+        return;
+    };
+    let thickness = 2i32;
+    let x = base.computed_rect.x.round() as i32;
+    let y = base.computed_rect.y.round() as i32;
+    let w = base.computed_rect.width.max(1.0).round() as u32;
+    let h = base.computed_rect.height.max(1.0).round() as u32;
+    let rr = (r * 255.0) as u8;
+    let gg = (g * 255.0) as u8;
+    let bb = (b * 255.0) as u8;
+    let aa = (a * 255.0) as u8;
+    img.draw_rect(
+        x - thickness,
+        y - thickness,
+        w + (thickness as u32 * 2),
+        thickness as u32,
+        rr,
+        gg,
+        bb,
+        aa,
+    );
+    img.draw_rect(
+        x - thickness,
+        y + h as i32,
+        w + (thickness as u32 * 2),
+        thickness as u32,
+        rr,
+        gg,
+        bb,
+        aa,
+    );
+    img.draw_rect(x - thickness, y, thickness as u32, h, rr, gg, bb, aa);
+    img.draw_rect(x + w as i32, y, thickness as u32, h, rr, gg, bb, aa);
 }
 /// A single laid-out text run with absolute screen position and clip bounds.
 pub struct TextLine {
@@ -69,30 +212,26 @@ fn layout_text(
     let inner_w = (rect.width - padding[1] - padding[3]).max(0.0);
     let inner_h = (rect.height - padding[0] - padding[2]).max(0.0);
     let clip = Rect::new(rect.x, rect.y, rect.width, rect.height);
+    let mut width_cache = HashMap::new();
 
-    // Break text into raw lines (respecting existing newlines).
     let raw_lines: Vec<&str> = text.split('\n').collect();
     let mut final_lines: Vec<String> = Vec::new();
 
     if wrap {
+        let space_w = measure_text_cached(&mut width_cache, " ", style, font);
         for raw in &raw_lines {
             let mut current = String::new();
             let mut current_w = 0.0_f32;
             for word in raw.split_whitespace() {
-                let word_w = measure_text(word, style, font);
-                let space_w = if current.is_empty() {
-                    0.0
-                } else {
-                    measure_text(" ", style, font)
-                };
-                if !current.is_empty() && current_w + space_w + word_w > inner_w {
-                    final_lines.push(current.clone());
-                    current.clear();
+                let word_w = measure_text_cached(&mut width_cache, word, style, font);
+                let gap_w = if current.is_empty() { 0.0 } else { space_w };
+                if !current.is_empty() && current_w + gap_w + word_w > inner_w {
+                    final_lines.push(std::mem::take(&mut current));
                     current_w = 0.0;
                 }
                 if !current.is_empty() {
                     current.push(' ');
-                    current_w += space_w;
+                    current_w += gap_w;
                 }
                 current.push_str(word);
                 current_w += word_w;
@@ -102,25 +241,26 @@ fn layout_text(
             }
         }
     } else {
-        // Single-line: concatenate all raw lines, apply ellipsis if needed.
         let single: String = raw_lines.join(" ");
         if ellipsis && inner_w > 0.0 {
-            let total_w = measure_text(&single, style, font);
+            let total_w = measure_text_cached(&mut width_cache, &single, style, font);
             if total_w > inner_w {
-                // Truncate character-by-character, appending "…".
-                let ellipsis_w = measure_text("…", style, font);
-                let mut truncated = String::new();
-                let mut used_w = 0.0_f32;
-                for ch in single.chars() {
-                    let ch_w = measure_text(&ch.to_string(), style, font);
-                    if used_w + ch_w + ellipsis_w > inner_w {
-                        break;
-                    }
-                    truncated.push(ch);
-                    used_w += ch_w;
+                let ellipsis_w = measure_text_cached(&mut width_cache, ELLIPSIS, style, font);
+                if ellipsis_w >= inner_w {
+                    final_lines.push(ELLIPSIS.to_string());
+                } else {
+                    let mut prefix_cache = HashMap::new();
+                    let end = best_prefix_end_for_width(
+                        &single,
+                        inner_w - ellipsis_w,
+                        &mut prefix_cache,
+                        style,
+                        font,
+                    );
+                    let mut truncated = single[..end].to_string();
+                    truncated.push_str(ELLIPSIS);
+                    final_lines.push(truncated);
                 }
-                truncated.push('…');
-                final_lines.push(truncated);
             } else {
                 final_lines.push(single);
             }
@@ -140,7 +280,7 @@ fn layout_text(
         .into_iter()
         .enumerate()
         .map(|(i, line)| {
-            let line_w = measure_text(&line, style, font);
+            let line_w = measure_text_cached(&mut width_cache, &line, style, font);
             let lx = match h_align {
                 "left" => inner_x + 4.0,
                 "right" => (inner_x + inner_w - line_w - 6.0).max(inner_x),
@@ -1147,6 +1287,32 @@ fn render_widget(
             }
         }
         WidgetKind::TextInput(w) => {
+            if let Some((sel_start, sel_end)) = w.selection_range() {
+                let selection_x = base.x
+                    + base.padding[3]
+                    + 4.0
+                    + measure_text(&w.text[..sel_start.min(w.text.len())], style, font);
+                let selection_end_x = base.x
+                    + base.padding[3]
+                    + 4.0
+                    + measure_text(&w.text[..sel_end.min(w.text.len())], style, font);
+                let selection_width = (selection_end_x - selection_x).max(0.0);
+                if selection_width > 0.0 {
+                    cmds.push(RenderCommand::SetColor(
+                        style.fg_color[0],
+                        style.fg_color[1],
+                        style.fg_color[2],
+                        0.22,
+                    ));
+                    cmds.push(RenderCommand::Rectangle {
+                        mode: DrawMode::Fill,
+                        x: selection_x,
+                        y: base.y + 3.0,
+                        w: selection_width,
+                        h: (base.height - 6.0).max(0.0),
+                    });
+                }
+            }
             let content = if w.text.is_empty() {
                 w.placeholder.as_str()
             } else {
@@ -1204,45 +1370,51 @@ fn render_widget(
                 );
             }
             if w.open && !w.items.is_empty() {
-                let row_h = base.height.max(20.0);
-                let drop_y = base.y + base.height;
-                cmds.push(RenderCommand::SetColor(0.10, 0.11, 0.16, 1.0));
-                cmds.push(RenderCommand::Rectangle {
-                    mode: DrawMode::Fill,
-                    x: base.x,
-                    y: drop_y,
-                    w: base.width,
-                    h: row_h * w.items.len() as f32,
-                });
-                for (item_idx, item) in w.items.iter().enumerate() {
-                    let row_y = drop_y + item_idx as f32 * row_h;
-                    if w.selected_index == Some(item_idx) {
-                        cmds.push(RenderCommand::SetColor(0.22, 0.36, 0.60, 0.85));
-                        cmds.push(RenderCommand::Rectangle {
-                            mode: DrawMode::Fill,
-                            x: base.x + 1.0,
-                            y: row_y,
-                            w: (base.width - 2.0).max(0.0),
-                            h: row_h,
-                        });
-                    }
-                    emit_text_at(
-                        item,
-                        base.x + 6.0,
-                        row_y + (row_h - style.font_size) * 0.5,
-                        font_key,
-                        font,
-                        style,
-                        cmds,
-                    );
-                    cmds.push(RenderCommand::SetColor(0.22, 0.24, 0.30, 0.60));
+                if let Some((drop_rect, row_h, start, end, scroll_offset, _visible_rows)) =
+                    ctx.combo_dropdown_metrics(idx)
+                {
+                    cmds.push(RenderCommand::SetColor(0.10, 0.11, 0.16, 1.0));
                     cmds.push(RenderCommand::Rectangle {
                         mode: DrawMode::Fill,
-                        x: base.x,
-                        y: row_y + row_h - 1.0,
-                        w: base.width,
-                        h: 1.0,
+                        x: drop_rect.x,
+                        y: drop_rect.y,
+                        w: drop_rect.width,
+                        h: drop_rect.height,
                     });
+                    for (item_idx, item) in w.items.iter().enumerate().skip(start).take(end - start)
+                    {
+                        let row_y = drop_rect.y + (item_idx - start) as f32 * row_h - scroll_offset;
+                        if row_y + row_h <= drop_rect.y || row_y >= drop_rect.y + drop_rect.height {
+                            continue;
+                        }
+                        if w.selected_index == Some(item_idx) {
+                            cmds.push(RenderCommand::SetColor(0.22, 0.36, 0.60, 0.85));
+                            cmds.push(RenderCommand::Rectangle {
+                                mode: DrawMode::Fill,
+                                x: drop_rect.x + 1.0,
+                                y: row_y,
+                                w: (drop_rect.width - 2.0).max(0.0),
+                                h: row_h,
+                            });
+                        }
+                        emit_text_at(
+                            item,
+                            drop_rect.x + 6.0,
+                            row_y + (row_h - style.font_size) * 0.5,
+                            font_key,
+                            font,
+                            style,
+                            cmds,
+                        );
+                        cmds.push(RenderCommand::SetColor(0.22, 0.24, 0.30, 0.60));
+                        cmds.push(RenderCommand::Rectangle {
+                            mode: DrawMode::Fill,
+                            x: drop_rect.x,
+                            y: row_y + row_h - 1.0,
+                            w: drop_rect.width,
+                            h: 1.0,
+                        });
+                    }
                 }
             }
         }
@@ -1895,6 +2067,7 @@ fn render_widget(
         }
         _ => {}
     }
+    emit_focus_ring(ctx, base, cmds);
     let skip_text = matches!(
         widget,
         WidgetKind::Badge(_)
@@ -2367,6 +2540,39 @@ impl GuiContext {
                     skip_text = true;
                 }
                 WidgetKind::TextInput(ti) => {
+                    if let Some((sel_start, sel_end)) = ti.selection_range() {
+                        let selection_x = x
+                            + base.padding[3] as i32
+                            + 4
+                            + ui_font
+                                .as_ref()
+                                .map(|f| {
+                                    f.text_width(&ti.text[..sel_start.min(ti.text.len())]) as i32
+                                })
+                                .unwrap_or(sel_start.min(ti.text.len()) as i32 * 6);
+                        let selection_end_x = x
+                            + base.padding[3] as i32
+                            + 4
+                            + ui_font
+                                .as_ref()
+                                .map(|f| {
+                                    f.text_width(&ti.text[..sel_end.min(ti.text.len())]) as i32
+                                })
+                                .unwrap_or(sel_end.min(ti.text.len()) as i32 * 6);
+                        let selection_width = (selection_end_x - selection_x).max(0) as u32;
+                        if selection_width > 0 {
+                            img.draw_rect(
+                                selection_x,
+                                y + 3,
+                                selection_width,
+                                h.saturating_sub(6),
+                                fr,
+                                fg,
+                                fb,
+                                55,
+                            );
+                        }
+                    }
                     if ti.text.is_empty() && !ti.placeholder.is_empty() {
                         draw_cpu_text(
                             &mut img,
@@ -2423,43 +2629,57 @@ impl GuiContext {
                     img.draw_line(ax - 4, ay - 2, ax, ay + 3, 200, 205, 215, 255);
                     img.draw_line(ax, ay + 3, ax + 4, ay - 2, 200, 205, 215, 255);
                     if cb.open && !cb.items.is_empty() {
-                        let row_h = (h as i32).max(20);
-                        let drop_y = y + h as i32;
-                        img.draw_rect(
-                            x,
-                            drop_y,
-                            w,
-                            (row_h as usize * cb.items.len()) as u32,
-                            24,
-                            26,
-                            36,
-                            255,
-                        );
-                        for (item_idx, item) in cb.items.iter().enumerate() {
-                            let row_y = drop_y + item_idx as i32 * row_h;
-                            if cb.selected_index == Some(item_idx) {
+                        if let Some((drop_rect, row_h, start, end, scroll_offset, _)) =
+                            layout_ctx.combo_dropdown_metrics(idx)
+                        {
+                            let drop_x = drop_rect.x.round() as i32;
+                            let drop_y = drop_rect.y.round() as i32;
+                            let drop_w = drop_rect.width.max(1.0).round() as u32;
+                            let drop_h = drop_rect.height.max(1.0).round() as u32;
+                            let row_h_px = row_h.max(1.0).round() as i32;
+                            img.draw_rect(drop_x, drop_y, drop_w, drop_h, 24, 26, 36, 255);
+                            for (item_idx, item) in
+                                cb.items.iter().enumerate().skip(start).take(end - start)
+                            {
+                                let row_y = drop_y
+                                    + (((item_idx - start) as f32 * row_h) - scroll_offset).round()
+                                        as i32;
+                                if row_y + row_h_px <= drop_y || row_y >= drop_y + drop_h as i32 {
+                                    continue;
+                                }
+                                if cb.selected_index == Some(item_idx) {
+                                    img.draw_rect(
+                                        drop_x + 1,
+                                        row_y,
+                                        drop_w.saturating_sub(2),
+                                        row_h_px.max(1) as u32,
+                                        55,
+                                        90,
+                                        155,
+                                        220,
+                                    );
+                                }
+                                draw_cpu_text(
+                                    &mut img,
+                                    ui_font.as_ref(),
+                                    item,
+                                    drop_x + 6,
+                                    row_y + ((row_h_px - 7) / 2).max(1),
+                                    fr,
+                                    fg,
+                                    fb,
+                                );
                                 img.draw_rect(
-                                    x + 1,
-                                    row_y,
-                                    w.saturating_sub(2),
-                                    row_h as u32,
+                                    drop_x,
+                                    row_y + row_h_px - 1,
+                                    drop_w,
+                                    1,
                                     55,
-                                    90,
-                                    155,
-                                    220,
+                                    60,
+                                    75,
+                                    160,
                                 );
                             }
-                            draw_cpu_text(
-                                &mut img,
-                                ui_font.as_ref(),
-                                item,
-                                x + 6,
-                                row_y + (row_h - 7) / 2,
-                                fr,
-                                fg,
-                                fb,
-                            );
-                            img.draw_rect(x, row_y + row_h - 1, w, 1, 55, 60, 75, 160);
                         }
                     }
                     skip_text = true;
@@ -3059,6 +3279,7 @@ impl GuiContext {
                 | WidgetKind::Label(_)
                 | WidgetKind::Custom(_) => {}
             }
+            draw_cpu_focus_ring(&layout_ctx, base, &mut img);
             if !skip_text {
                 if let Some(text) = display_text(widget) {
                     let approx_w = ui_font

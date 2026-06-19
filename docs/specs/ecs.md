@@ -30,6 +30,8 @@
 - The ECS world becomes a shared substrate for other systems, but `ecs` owns its organization.
 - Read `ecs` as the authority for entity identity, component storage, queries, and shared world composition.
 
+This module primarily collaborates with `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
+
 ## Imports
 
 - `runtime`: Imports or references `runtime` from `src/runtime/`.
