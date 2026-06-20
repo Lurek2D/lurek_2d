@@ -231,6 +231,33 @@ fn theme_default_dark_has_normal_style_for_every_widget_type() {
     }
 }
 
+#[test]
+fn theme_default_dark_panel_and_layout_are_chrome_free_by_default() {
+    use lurek2d::ui::widget::{WidgetState, WidgetType};
+
+    let theme = Theme::default_dark();
+    for widget_type in [WidgetType::Panel, WidgetType::Layout] {
+        let style = theme
+            .get_style(widget_type, WidgetState::Normal)
+            .unwrap_or_else(|| panic!("missing normal style for {:?}", widget_type));
+        assert!(
+            style.bg_color[3].abs() < 1e-6,
+            "{:?} default background should be transparent",
+            widget_type
+        );
+        assert!(
+            style.border_color[3].abs() < 1e-6,
+            "{:?} default border should be transparent",
+            widget_type
+        );
+        assert!(
+            style.border_width.abs() < 1e-6,
+            "{:?} default border width should be zero",
+            widget_type
+        );
+    }
+}
+
 // â”€â”€â”€ GuiContext private internals â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // GuiContext fields (dirty, viewport_w/h, theme, widget pool) are not exposed
 // via `lurek.ui.*`; only the effects of mutation are observable from Lua.

@@ -1,176 +1,132 @@
-# Lurek2D Games
+# Lurek2D Demo Catalog
 
-Ta lista jest generowana ręcznie przez agenta i grupuje wszystkie gry według kategorii.
+This catalog is generated from runnable `content/games/<category>/<name>` folders and the product decisions in issue #30.
+It separates playable catalog candidates from rewrite and trim work so skeletons are not presented as complete games.
 
-## action
+## Run
 
-| Gra | Opis | Folder | Screen |
-|---|---|---|---|
-| brick_breaker | Classic Arkanoid-style brick breaking game. Bounce the ball off your paddle to destroy rows of bricks, collect power-ups, and advance through increasingly di... | [Otworz folder](./action/brick_breaker) | ![](./action/brick_breaker/screen.png) |
-| bullet_hell | Dodge intricate bullet patterns, graze for bonus points, and bomb your way through relentless waves. | [Otworz folder](./action/bullet_hell) | ![](./action/bullet_hell/screen.png) |
-| cannon_fodder | Top-down military squad action inspired by Cannon Fodder (Amiga). Lead four soldiers across a tile-based jungle map, click to move the squad, while they auto... | [Otworz folder](./action/cannon_fodder) | ![](./action/cannon_fodder/screen.png) |
-| endless_runner | Auto-scrolling side-view runner — dodge tall barriers, slide under low beams, leap across gaps, and collect coins while the world accelerates. | [Otworz folder](./action/endless_runner) | ![](./action/endless_runner/screen.png) |
-| fighting_game | 1v1 fighting game with Player vs AI — land combos, build super meter, and win best of 3 rounds. | [Otworz folder](./action/fighting_game) | ![](./action/fighting_game/screen.png) |
-| horde_survivor | Vampire Survivors-style top-down horde survival — auto-attack with orbiting projectiles while dodging waves of enemies. | [Otworz folder](./action/horde_survivor) | ![](./action/horde_survivor/screen.png) |
-| infiltration | Top-down stealth puzzle — sneak through a guarded facility using gadgets, avoid cameras, hack terminals, and escape with the data. | [Otworz folder](./action/infiltration) | ![](./action/infiltration/screen.png) |
-| metroidvania | Side-scrolling exploration platformer with interconnected rooms, ability unlocks, and multiple enemy types. | [Otworz folder](./action/metroidvania) | ![](./action/metroidvania/screen.png) |
-| platform_fighter | Smash Bros-inspired 2-player local platform fighter with damage percentage, knockback scaling, stocks, and blast zones. | [Otworz folder](./action/platform_fighter) | ![](./action/platform_fighter/screen.png) |
-| platformer | Classic side-scrolling 2D platformer — run, jump, and stomp through three tile-based levels. | [Otworz folder](./action/platformer) | ![](./action/platformer/screen.png) |
-| roguelite | Hades-style top-down action roguelite — fight through room-based dungeons, collect perks, and face bosses every five rooms. | [Otworz folder](./action/roguelite) | ![](./action/roguelite/screen.png) |
-| sniper | A ballistics puzzle sniper game built with Lurek2D. | [Otworz folder](./action/sniper) | ![](./action/sniper/screen.png) |
-| soulslike | Precision boss fight with stamina management, dodge i-frames, estus heals, and a 3-phase boss AI. | [Otworz folder](./action/soulslike) | ![](./action/soulslike/screen.png) |
-| stealth | Top-down stealth game — sneak past patrolling guards, collect keycards, and reach the exit unseen. | [Otworz folder](./action/stealth) | ![](./action/stealth/screen.png) |
-| vertical_climber | Endless Doodle Jump-style vertical platformer — auto-bounce upward through procedurally generated platforms, dodge enemies, and climb as high as you can. | [Otworz folder](./action/vertical_climber) | ![](./action/vertical_climber/screen.png) |
+```powershell
+cargo run -- content/games/<category>/<name>
+python tools/demos/audit_games.py
+python tools/demos/gen_demo_catalog.py
+```
 
-## arcade
+## Status Rules
 
-| Gra | Opis | Folder | Screen |
-|---|---|---|---|
-| asteroids | _Fly, shoot, and survive the asteroid field — classic arcade action with thrust physics, screen wrapping, and particle explosions._ | [Otworz folder](./arcade/asteroids) | ![](./arcade/asteroids/screen.png) |
-| centipede | Classic arcade shooter — blast a segmented centipede as it winds through a mushroom field. | [Otworz folder](./arcade/centipede) | ![](./arcade/centipede/screen.png) |
-| donkey_kong | Classic platform climber — navigate sloped girders, dodge rolling barrels, and rescue Pauline at the top. | [Otworz folder](./arcade/donkey_kong) | ![](./arcade/donkey_kong/screen.png) |
-| frogger | Classic Frogger arcade game — guide the frog across busy roads and treacherous rivers to reach the home slots. | [Otworz folder](./arcade/frogger) | ![](./arcade/frogger/screen.png) |
-| galaga | Classic Galaga arcade shooter with formation enemies, dive-bombing attacks, boss capture mechanics, and dual-fire power-ups. | [Otworz folder](./arcade/galaga) | ![](./arcade/galaga/screen.png) |
-| pac_man | _Navigate a maze, eat dots, avoid four ghosts with distinct AI personalities — classic arcade action with power pellets and chase/scatter modes._ | [Otworz folder](./arcade/pac_man) | ![](./arcade/pac_man/screen.png) |
-| pong | Classic two-player paddle game. First to 7 wins. | [Otworz folder](./arcade/pong) | ![](./arcade/pong/screen.png) |
-| snake | _Eat, grow, avoid yourself — classic arcade snake with particles and tweened score._ | [Otworz folder](./arcade/snake) | ![](./arcade/snake/screen.png) |
-| space_invaders | Defend Earth from descending alien formations. Shoot them before they reach you. | [Otworz folder](./arcade/space_invaders) | ![](./arcade/space_invaders/screen.png) |
-| tetris | _Rotate and stack falling tetrominoes — classic arcade puzzle with hold piece, ghost preview, and line-clear particles._ | [Otworz folder](./arcade/tetris) | ![](./arcade/tetris/screen.png) |
+- `KEEP` rows are public catalog candidates once README, screen, preview GIF, validation, and smoke evidence are current.
+- `REWRITE_API` and `TRIM` rows stay visible as priority public work, but are not advertised as finished.
+- `MOVE_EXAMPLE` and `MOVE_INCUBATOR` rows belong on `content/showcase/` or `content/games/_incubator/` once migrated.
+- Unresolved `MERGE_OR_DROP` rows are listed only while duplicate ownership remains unresolved.
 
-## retro
+## Catalog Candidates
 
-| Gra | Opis | Folder | Screen |
-|---|---|---|---|
-| another_world | Cinematic puzzle-platformer inspired by Eric Chahi's 1991 classic. Navigate interconnected alien scenes, fight hostile creatures with a three-mode energy gun... | [Otworz folder](./retro/another_world) | ![](./retro/another_world/screen.png) |
-| boulder_dash | _Dig through a cave, collect sparkling diamonds, dodge falling boulders, and escape before the clock runs out._ | [Otworz folder](./retro/boulder_dash) | ![](./retro/boulder_dash/screen.png) |
-| cannon_fodder | _Command a squad of soldiers through five escalating jungle missions — move, shoot, and use grenades wisely, because every casualty is permanent._ | [Otworz folder](./retro/cannon_fodder) | ![](./retro/cannon_fodder/screen.png) |
-| commando | Vertical-scrolling top-down shooter inspired by Capcom's 1985 arcade classic. Fight through dense jungle, rescue POW prisoners, hurl grenades at bunkers, and... | [Otworz folder](./retro/commando) | ![](./retro/commando/screen.png) |
-| dungeon_crawler | **Category:** retro | [Otworz folder](./retro/dungeon_crawler) | ![](./retro/dungeon_crawler/screen.png) |
-| giana_sisters | **Category:** retro | [Otworz folder](./retro/giana_sisters) | ![](./retro/giana_sisters/screen.png) |
-| lemmings | **Category:** retro | [Otworz folder](./retro/lemmings) | ![](./retro/lemmings/screen.png) |
-| paradroid | **Category:** retro | [Otworz folder](./retro/paradroid) | ![](./retro/paradroid/screen.png) |
-| raycaster_fps | **Category:** retro | [Otworz folder](./retro/raycaster_fps) | ![](./retro/raycaster_fps/screen.png) |
-| sensible_soccer | **Category:** Retro | [Otworz folder](./retro/sensible_soccer) | ![](./retro/sensible_soccer/screen.png) |
-| shadow_beast | Atmospheric side-scrolling action game inspired by Psygnosis' 1989 Amiga masterpiece. Battle through a dark, beautiful world with 5-layer parallax scrolling,... | [Otworz folder](./retro/shadow_beast) | ![](./retro/shadow_beast/screen.png) |
-| turrican | Run-and-gun platformer inspired by Manfred Trenz's legendary 1990 C-64/Amiga classic, featuring a dual weapon system and tile-based levels. | [Otworz folder](./retro/turrican) | ![](./retro/turrican/screen.png) |
+| Demo | Type | Decision | Status | APIs | Preview | Run |
+|---|---|---|---|---|---|---|
+| [Asteroids](./arcade/asteroids) | `arcade` | `KEEP` | unspecified; smoke:PASS | `automation`, `camera`, `event`, `input`, `particle`, `render`, `timer`, +3 | ![](./arcade/asteroids/preview.gif) | `cargo run -- content/games/arcade/asteroids` |
+| [Centipede](./arcade/centipede) | `arcade` | `KEEP` | unspecified; smoke:NO_IMAGE; known-failing:content-demo-maintainers (exited cleanly but no PNG written) | `automation`, `event`, `input`, `particle`, `render`, `timer`, `tween`, +2 | ![](./arcade/centipede/preview.gif) | `cargo run -- content/games/arcade/centipede` |
+| [Dyna Blaster](./arcade/dyna_blaster) | `arcade` | `KEEP` | unspecified; smoke:PASS | `ai`, `automation`, `ecs`, `event`, `input`, `pathfind`, `render`, +4 | ![](./arcade/dyna_blaster/preview.gif) | `cargo run -- content/games/arcade/dyna_blaster` |
+| [Frogger](./arcade/frogger) | `arcade` | `KEEP` | unspecified; smoke:NO_IMAGE; known-failing:content-demo-maintainers (exited cleanly but no PNG written) | `automation`, `camera`, `event`, `input`, `render`, `timer`, `ui`, +1 | ![](./arcade/frogger/preview.gif) | `cargo run -- content/games/arcade/frogger` |
+| [Maze Chase](./arcade/pac_man) | `arcade` | `KEEP` | playable rewrite; smoke:PASS | `automation`, `event`, `input`, `particle`, `render`, `timer`, `window` | ![](./arcade/pac_man/preview.gif) | `cargo run -- content/games/arcade/pac_man` |
+| [Pong](./arcade/pong) | `arcade` | `KEEP` | unspecified; smoke:PASS | `automation`, `event`, `input`, `particle`, `render`, `timer`, `tween`, +2 | ![](./arcade/pong/preview.gif) | `cargo run -- content/games/arcade/pong` |
+| [Snake](./arcade/snake) | `arcade` | `KEEP` | unspecified; smoke:NO_IMAGE; known-failing:content-demo-maintainers (exited cleanly but no PNG written) | `automation`, `camera`, `event`, `input`, `particle`, `ready`, `render`, +4 | ![](./arcade/snake/preview.gif) | `cargo run -- content/games/arcade/snake` |
+| [Space Invaders](./arcade/space_invaders) | `arcade` | `KEEP` | unspecified; smoke:PASS | `automation`, `camera`, `event`, `input`, `render`, `timer`, `ui`, +1 | ![](./arcade/space_invaders/preview.gif) | `cargo run -- content/games/arcade/space_invaders` |
+| [Falling Blocks](./arcade/tetris) | `arcade` | `KEEP` | playable rewrite; smoke:PASS | `automation`, `event`, `input`, `particle`, `render`, `timer`, `tween`, +2 | ![](./arcade/tetris/preview.gif) | `cargo run -- content/games/arcade/tetris` |
+| [Brick Breaker](./action/brick_breaker) | `action` | `KEEP` | unspecified; smoke:NO_IMAGE; known-failing:content-demo-maintainers (exited cleanly but no PNG written) | `automation`, `camera`, `event`, `input`, `particle`, `render`, `timer`, +3 | ![](./action/brick_breaker/preview.gif) | `cargo run -- content/games/action/brick_breaker` |
+| [Bullet Hell](./action/bullet_hell) | `action` | `KEEP` | unspecified; smoke:NO_IMAGE; known-failing:content-demo-maintainers (exited cleanly but no PNG written) | `automation`, `camera`, `event`, `input`, `render`, `timer`, `ui`, +1 | ![](./action/bullet_hell/preview.gif) | `cargo run -- content/games/action/bullet_hell` |
+| [Cannon Fodder](./action/cannon_fodder) | `action` | `KEEP` | unspecified; smoke:PASS | `automation`, `event`, `math`, `render`, `ui`, `window` | ![](./action/cannon_fodder/preview.gif) | `cargo run -- content/games/action/cannon_fodder` |
+| [Endless Runner](./action/endless_runner) | `action` | `KEEP` | unspecified; smoke:NO_IMAGE; known-failing:content-demo-maintainers (exited cleanly but no PNG written) | `automation`, `event`, `input`, `particle`, `render`, `timer`, `tween`, +2 | ![](./action/endless_runner/preview.gif) | `cargo run -- content/games/action/endless_runner` |
+| [Horde Survivor](./action/horde_survivor) | `action` | `KEEP` | unspecified; smoke:NO_IMAGE; known-failing:content-demo-maintainers (exited cleanly but no PNG written) | `automation`, `camera`, `event`, `input`, `particle`, `render`, `timer`, +3 | ![](./action/horde_survivor/preview.gif) | `cargo run -- content/games/action/horde_survivor` |
+| [Infiltration](./action/infiltration) | `action` | `KEEP` | unspecified; smoke:NO_IMAGE; known-failing:content-demo-maintainers (exited cleanly but no PNG written) | `automation`, `event`, `input`, `particle`, `ready`, `render`, `timer`, +2 | ![](./action/infiltration/preview.gif) | `cargo run -- content/games/action/infiltration` |
+| [Sniper](./action/sniper) | `action` | `KEEP` | unspecified; smoke:PASS | `automation`, `event`, `input`, `render`, `ui`, `window` | ![](./action/sniper/preview.gif) | `cargo run -- content/games/action/sniper` |
+| [Stealth](./action/stealth) | `action` | `KEEP` | unspecified; smoke:PASS | `automation`, `camera`, `event`, `input`, `particle`, `render`, `timer`, +3 | ![](./action/stealth/preview.gif) | `cargo run -- content/games/action/stealth` |
+| [Vertical Climber](./action/vertical_climber) | `action` | `KEEP` | unspecified; smoke:PASS | `automation`, `camera`, `event`, `input`, `particle`, `render`, `timer`, +3 | ![](./action/vertical_climber/preview.gif) | `cargo run -- content/games/action/vertical_climber` |
+| [Adventure](./rpg/adventure) | `rpg` | `KEEP` | unspecified; smoke:PASS | `automation`, `camera`, `event`, `input`, `particle`, `render`, `timer`, +3 | ![](./rpg/adventure/preview.gif) | `cargo run -- content/games/rpg/adventure` |
+| [Alchemy](./rpg/alchemy) | `rpg` | `KEEP` | unspecified; smoke:PASS | `automation`, `camera`, `event`, `input`, `render`, `timer`, `ui`, +1 | ![](./rpg/alchemy/preview.gif) | `cargo run -- content/games/rpg/alchemy` |
+| [Courtroom](./rpg/courtroom) | `rpg` | `KEEP` | unspecified; smoke:PASS | `automation`, `event`, `input`, `render`, `timer`, `ui`, `window` | ![](./rpg/courtroom/preview.gif) | `cargo run -- content/games/rpg/courtroom` |
+| [Dungeon Eye](./rpg/dungeon_eye) | `rpg` | `KEEP` | unspecified; smoke:PASS | `automation`, `event`, `raycaster`, `render`, `window` | ![](./rpg/dungeon_eye/preview.gif) | `cargo run -- content/games/rpg/dungeon_eye` |
+| [Loot Rpg](./rpg/loot_rpg) | `rpg` | `KEEP` | unspecified; smoke:PASS | `automation`, `camera`, `event`, `input`, `particle`, `render`, `timer`, +2 | ![](./rpg/loot_rpg/preview.gif) | `cargo run -- content/games/rpg/loot_rpg` |
+| [Merchant](./rpg/merchant) | `rpg` | `KEEP` | unspecified; smoke:PASS | `automation`, `camera`, `event`, `input`, `render`, `timer`, `window` | ![](./rpg/merchant/preview.gif) | `cargo run -- content/games/rpg/merchant` |
+| [Roguelike](./rpg/roguelike) | `rpg` | `KEEP` | unspecified; smoke:NO_IMAGE; known-failing:content-demo-maintainers (exited cleanly but no PNG written) | `automation`, `camera`, `event`, `input`, `render`, `timer`, `window` | ![](./rpg/roguelike/preview.gif) | `cargo run -- content/games/rpg/roguelike` |
+| [Visual Novel](./rpg/visual_novel) | `rpg` | `KEEP` | unspecified; smoke:PASS | `automation`, `event`, `input`, `render`, `timer`, `window` | ![](./rpg/visual_novel/preview.gif) | `cargo run -- content/games/rpg/visual_novel` |
+| [Bridge Builder](./strategy/bridge_builder) | `strategy` | `KEEP` | unspecified; smoke:NO_IMAGE; known-failing:content-demo-maintainers (exited cleanly but no PNG written) | `automation`, `camera`, `event`, `input`, `particle`, `render`, `timer`, +2 | ![](./strategy/bridge_builder/preview.gif) | `cargo run -- content/games/strategy/bridge_builder` |
+| [Card Game](./strategy/card_game) | `strategy` | `KEEP` | unspecified; smoke:PASS | `automation`, `camera`, `event`, `input`, `render`, `timer`, `window` | ![](./strategy/card_game/preview.gif) | `cargo run -- content/games/strategy/card_game` |
+| [Deckbuilder](./strategy/deckbuilder) | `strategy` | `KEEP` | unspecified; smoke:PASS | `automation`, `event`, `input`, `particle`, `render`, `tween`, `window` | ![](./strategy/deckbuilder/preview.gif) | `cargo run -- content/games/strategy/deckbuilder` |
+| [Hex Logistics](./strategy/hex_logistics) | `strategy` | `KEEP` | unspecified; smoke:PASS | `automation`, `event`, `input`, `math`, `render`, `tilemap`, `timer`, +1 | ![](./strategy/hex_logistics/preview.gif) | `cargo run -- content/games/strategy/hex_logistics` |
+| [Hex Strategy](./strategy/hex_strategy) | `strategy` | `KEEP` | unspecified; smoke:PASS | `automation`, `event`, `input`, `particle`, `render`, `window` | ![](./strategy/hex_strategy/preview.gif) | `cargo run -- content/games/strategy/hex_strategy` |
+| [Logic Game](./strategy/logic_game) | `strategy` | `KEEP` | unspecified; smoke:PASS | `automation`, `event`, `input`, `particle`, `render`, `window` | ![](./strategy/logic_game/preview.gif) | `cargo run -- content/games/strategy/logic_game` |
+| [Match3](./strategy/match3) | `strategy` | `KEEP` | unspecified; smoke:PASS | `automation`, `event`, `input`, `particle`, `render`, `window` | ![](./strategy/match3/preview.gif) | `cargo run -- content/games/strategy/match3` |
+| [Maze Defense](./strategy/maze_defense) | `strategy` | `KEEP` | unspecified; smoke:PASS | `automation`, `event`, `input`, `particle`, `render`, `window` | ![](./strategy/maze_defense/preview.gif) | `cargo run -- content/games/strategy/maze_defense` |
+| [Physics Puzzle](./strategy/physics_puzzle) | `strategy` | `KEEP` | unspecified; smoke:PASS | `automation`, `event`, `input`, `particle`, `render`, `window` | ![](./strategy/physics_puzzle/preview.gif) | `cargo run -- content/games/strategy/physics_puzzle` |
+| [Tactical Battle](./strategy/tactical_battle) | `strategy` | `KEEP` | unspecified; smoke:PASS | `automation`, `event`, `input`, `particle`, `render`, `window` | ![](./strategy/tactical_battle/preview.gif) | `cargo run -- content/games/strategy/tactical_battle` |
+| [Tower Defense](./strategy/tower_defense) | `strategy` | `KEEP` | unspecified; smoke:PASS | `automation`, `event`, `input`, `particle`, `render`, `window` | ![](./strategy/tower_defense/preview.gif) | `cargo run -- content/games/strategy/tower_defense` |
+| [Cooking Sim](./simulation/cooking_sim) | `simulation` | `KEEP` | unspecified; smoke:PASS | `automation`, `camera`, `event`, `input`, `render`, `timer`, `window` | ![](./simulation/cooking_sim/preview.gif) | `cargo run -- content/games/simulation/cooking_sim` |
+| [Factory](./simulation/factory) | `simulation` | `KEEP` | unspecified; smoke:NO_IMAGE; known-failing:content-demo-maintainers (exited cleanly but no PNG written) | `automation`, `event`, `input`, `render`, `timer`, `window` | ![](./simulation/factory/preview.gif) | `cargo run -- content/games/simulation/factory` |
+| [Idle Game](./simulation/idle_game) | `simulation` | `KEEP` | unspecified; smoke:PASS | `automation`, `camera`, `event`, `input`, `render`, `timer`, `window` | ![](./simulation/idle_game/preview.gif) | `cargo run -- content/games/simulation/idle_game` |
+| [Mining](./simulation/mining) | `simulation` | `KEEP` | unspecified; smoke:PASS | `automation`, `camera`, `event`, `input`, `render`, `timer`, `window` | ![](./simulation/mining/preview.gif) | `cargo run -- content/games/simulation/mining` |
+| [Wildlife Photo](./simulation/wildlife_photo) | `simulation` | `KEEP` | unspecified; smoke:PASS | `automation`, `camera`, `event`, `input`, `particle`, `render`, `timer`, +2 | ![](./simulation/wildlife_photo/preview.gif) | `cargo run -- content/games/simulation/wildlife_photo` |
+| [Boxing Ring](./sports/boxing_ring) | `sports` | `KEEP` | unspecified; smoke:NO_IMAGE; known-failing:content-demo-maintainers (exited cleanly but no PNG written) | `automation`, `camera`, `event`, `input`, `particle`, `render`, `timer`, +3 | ![](./sports/boxing_ring/preview.gif) | `cargo run -- content/games/sports/boxing_ring` |
+| [Drift Racing](./sports/drift_racing) | `sports` | `KEEP` | unspecified; smoke:NO_IMAGE; known-failing:content-demo-maintainers (exited cleanly but no PNG written) | `automation`, `event`, `input`, `render`, `timer`, `ui`, `window` | ![](./sports/drift_racing/preview.gif) | `cargo run -- content/games/sports/drift_racing` |
+| [Fishing](./sports/fishing) | `sports` | `KEEP` | unspecified; smoke:NO_IMAGE; known-failing:content-demo-maintainers (exited cleanly but no PNG written) | `automation`, `event`, `input`, `render`, `timer`, `ui`, `window` | ![](./sports/fishing/preview.gif) | `cargo run -- content/games/sports/fishing` |
+| [Golf Classic](./sports/golf_classic) | `sports` | `KEEP` | unspecified; smoke:PASS | `event`, `input`, `render`, `timer`, `window` | ![](./sports/golf_classic/preview.gif) | `cargo run -- content/games/sports/golf_classic` |
+| [Pinball](./sports/pinball) | `sports` | `KEEP` | unspecified; smoke:NO_IMAGE; known-failing:content-demo-maintainers (exited cleanly but no PNG written) | `automation`, `event`, `input`, `render`, `timer`, `ui`, `window` | ![](./sports/pinball/preview.gif) | `cargo run -- content/games/sports/pinball` |
+| [Rhythm Game](./sports/rhythm_game) | `sports` | `KEEP` | unspecified; smoke:NO_IMAGE; known-failing:content-demo-maintainers (exited cleanly but no PNG written) | `automation`, `camera`, `event`, `input`, `particle`, `render`, `timer`, +3 | ![](./sports/rhythm_game/preview.gif) | `cargo run -- content/games/sports/rhythm_game` |
+| [Ski Jump](./sports/ski_jump) | `sports` | `KEEP` | unspecified; smoke:NO_IMAGE; known-failing:content-demo-maintainers (exited cleanly but no PNG written) | `automation`, `event`, `input`, `render`, `timer`, `ui`, `window` | ![](./sports/ski_jump/preview.gif) | `cargo run -- content/games/sports/ski_jump` |
+| [Tennis Classic](./sports/tennis_classic) | `sports` | `KEEP` | unspecified; smoke:NO_IMAGE; known-failing:content-demo-maintainers (exited cleanly but no PNG written) | `automation`, `camera`, `event`, `input`, `particle`, `render`, `timer`, +2 | ![](./sports/tennis_classic/preview.gif) | `cargo run -- content/games/sports/tennis_classic` |
+| [Track And Field](./sports/track_and_field) | `sports` | `KEEP` | unspecified; smoke:NO_IMAGE; known-failing:content-demo-maintainers (exited cleanly but no PNG written) | `automation`, `camera`, `event`, `input`, `particle`, `ready`, `render`, +4 | ![](./sports/track_and_field/preview.gif) | `cargo run -- content/games/sports/track_and_field` |
+| [Learning Route Attention Lab](./apps/learning_route_attention_lab) | `apps` | `KEEP` | unspecified; smoke:PASS | `learning` | ![](./apps/learning_route_attention_lab/preview.gif) | `cargo run -- content/games/apps/learning_route_attention_lab` |
+| [Learning Sales Forecast Lab](./apps/learning_sales_forecast_lab) | `apps` | `KEEP` | unspecified; smoke:PASS | `learning` | ![](./apps/learning_sales_forecast_lab/preview.gif) | `cargo run -- content/games/apps/learning_sales_forecast_lab` |
+| [Mapblock Labyrinth](./puzzle/mapblock_labyrinth) | `puzzle` | `KEEP` | playable; smoke:PASS | `event`, `image`, `mapblock`, `render`, `window` | ![](./puzzle/mapblock_labyrinth/preview.gif) | `cargo run -- content/games/puzzle/mapblock_labyrinth` |
+| [Commando](./retro/commando) | `retro` | `KEEP` | unspecified; smoke:NO_IMAGE; known-failing:content-demo-maintainers (exited cleanly but no PNG written) | `automation`, `camera`, `event`, `input`, `render`, `timer`, `ui`, +1 | ![](./retro/commando/preview.gif) | `cargo run -- content/games/retro/commando` |
+| [Raycaster Fps](./retro/raycaster_fps) | `retro` | `KEEP` | unspecified; smoke:PASS | `automation`, `camera`, `event`, `input`, `render`, `timer`, `ui`, +1 | ![](./retro/raycaster_fps/preview.gif) | `cargo run -- content/games/retro/raycaster_fps` |
+| [Demo Game](./showcase/demo_game) | `showcase` | `KEEP` | unspecified; smoke:PASS | `automation`, `camera`, `event`, `input`, `particle`, `render`, `timer`, +2 | ![](./showcase/demo_game/preview.gif) | `cargo run -- content/games/showcase/demo_game` |
+| [Globe Demo](./showcase/globe_demo) | `showcase` | `KEEP` | unspecified; smoke:NO_IMAGE; known-failing:content-demo-maintainers (exited cleanly but no PNG written) | `automation`, `event`, `globe`, `input`, `log`, `render` | ![](./showcase/globe_demo/preview.gif) | `cargo run -- content/games/showcase/globe_demo` |
+| [Hacking Game](./showcase/hacking_game) | `showcase` | `KEEP` | unspecified; smoke:PASS | `automation`, `camera`, `event`, `input`, `particle`, `render`, `textinput`, +3 | ![](./showcase/hacking_game/preview.gif) | `cargo run -- content/games/showcase/hacking_game` |
 
-## rpg
+## Rewrite Or Trim Queue
 
-| Gra | Opis | Folder | Screen |
-|---|---|---|---|
-| adventure | **Category:** rpg | [Otworz folder](./rpg/adventure) | ![](./rpg/adventure/screen.png) |
-| alchemy | **Category:** RPG | [Otworz folder](./rpg/alchemy) | ![](./rpg/alchemy/screen.png) |
-| courtroom | **Category:** RPG | [Otworz folder](./rpg/courtroom) | ![](./rpg/courtroom/screen.png) |
-| creature_collector | _Pokemon-style creature collection RPG with tile-based overworld, turn-based battles, type advantages, and party management._ | [Otworz folder](./rpg/creature_collector) | ![](./rpg/creature_collector/screen.png) |
-| dialog_demo | **Category:** RPG | [Otworz folder](./rpg/dialog_demo) | ![](./rpg/dialog_demo/screen.png) |
-| dungeon_eye | First-person dungeon crawler inspired by Eye of the Beholder (PC 1992). Navigate a hand-crafted grid dungeon using a raycaster renderer, fight enemies in mel... | [Otworz folder](./rpg/dungeon_eye) | ![](./rpg/dungeon_eye/screen.png) |
-| horror | **Category:** rpg | [Otworz folder](./rpg/horror) | ![](./rpg/horror/screen.png) |
-| loot_rpg | _Descend through procedural dungeons, smash enemies for gear, and climb floors until your build is unstoppable._ | [Otworz folder](./rpg/loot_rpg) | ![](./rpg/loot_rpg/screen.png) |
-| loot_rpg_demo | _A focused demo of the Lurek2D loot-and-combat loop — fight enemies, collect tiered gear, and see how many floors you can climb._ | [Otworz folder](./rpg/loot_rpg_demo) | ![](./rpg/loot_rpg_demo/screen.png) |
-| merchant | _Run a medieval trading shop over five days — buy low, sell high, serve customers, and build your reputation to maximise final gold._ | [Otworz folder](./rpg/merchant) | ![](./rpg/merchant/screen.png) |
-| merchant_demo | _A playable demo of the Lurek2D merchant simulation — buy, sell, serve customers, and turn a profit over five in-game days._ | [Otworz folder](./rpg/merchant_demo) | ![](./rpg/merchant_demo/screen.png) |
-| roguelike | **Category**: rpg | [Otworz folder](./rpg/roguelike) | ![](./rpg/roguelike/screen.png) |
-| social_deduction | **Category:** RPG | [Otworz folder](./rpg/social_deduction) | ![](./rpg/social_deduction/screen.png) |
-| star_voyage | Space exploration RPG inspired by Star Control 2 (PC 1994). Navigate a vast starfield, approach alien worlds to dock, and engage in branching dialog with pro... | [Otworz folder](./rpg/star_voyage) | ![](./rpg/star_voyage/screen.png) |
-| survival_crafting | **Category:** RPG | [Otworz folder](./rpg/survival_crafting) | ![](./rpg/survival_crafting/screen.png) |
-| visual_novel | A branching visual novel with three acts, three characters, affection tracking, and multiple endings. | [Otworz folder](./rpg/visual_novel) | ![](./rpg/visual_novel/screen.png) |
-
-## showcase
-
-| Gra | Opis | Folder | Screen |
-|---|---|---|---|
-| automation_demo | **Category:** showcase | [Otworz folder](./showcase/automation_demo) | ![](./showcase/automation_demo/screen.png) |
-| debugbridge_demo | Simulated debug bridge visualization demonstrating runtime inspection concepts: a debug console with typed commands, real-time engine metrics, entity inspect... | [Otworz folder](./showcase/debugbridge_demo) | ![](./showcase/debugbridge_demo/screen.png) |
-| demo_game | Physics-based shooting gallery with moving targets, combo scoring, and power-ups. Aim with the mouse and fire balls at swaying targets across three increasin... | [Otworz folder](./showcase/demo_game) | ![](./showcase/demo_game/screen.png) |
-| devtools_demo | Developer tools profiling showcase: toggle real-time FPS graphs, memory profilers, entity inspectors, performance heatmaps, and draw call counters while a li... | [Otworz folder](./showcase/devtools_demo) | ![](./showcase/devtools_demo/screen.png) |
-| docs_demo | Interactive API documentation browser and viewer: navigate 12 `lurek.*` namespaces in a sidebar, inspect function signatures with syntax-highlighted params a... | [Otworz folder](./showcase/docs_demo) | ![](./showcase/docs_demo/screen.png) |
-| entity_showcase | **Category:** showcase | [Otworz folder](./showcase/entity_showcase) | ![](./showcase/entity_showcase/screen.png) |
-| globe_demo | A showcase of the `lurek.globe.*` API: an interactive world globe with ~200 | [Otworz folder](./showcase/globe_demo) | ![](./showcase/globe_demo/screen.png) |
-| hacking_game | Terminal-based hacking game with full CRT aesthetics. Type commands at the prompt to scan networks, connect to servers, crack passwords, and download classif... | [Otworz folder](./showcase/hacking_game) | ![](./showcase/hacking_game/screen.png) |
-| hello_world | Complete engine feature sampler showcasing basic Lurek2D capabilities in a single interactive screen: animated text, geometric shapes, mouse tracking, partic... | [Otworz folder](./showcase/hello_world) | ![](./showcase/hello_world/screen.png) |
-| html-dialog | An RPG-style NPC conversation system using HTML dialog boxes with branching | [Otworz folder](./showcase/html-dialog) | ![](./showcase/html-dialog/screen.png) |
-| html-hud | ﻿# HTML HUD Demo | [Otworz folder](./showcase/html-hud) | ![](./showcase/html-hud/screen.png) |
-| html-inventory | An inventory grid screen built entirely with HTML/CSS, demonstrating how to | [Otworz folder](./showcase/html-inventory) | ![](./showcase/html-inventory/screen.png) |
-| html-scoreboard | A live leaderboard that automatically refreshes every two seconds, built with | [Otworz folder](./showcase/html-scoreboard) | ![](./showcase/html-scoreboard/screen.png) |
-| html-settings | A full settings screen with toggle switches and radio groups, demonstrating | [Otworz folder](./showcase/html-settings) | ![](./showcase/html-settings/screen.png) |
-| light_demo | Complete 2D lighting system showcase featuring dynamic point lights, spotlights, flickering torches, shadow-casting wall occluders, and ambient light control... | [Otworz folder](./showcase/light_demo) | ![](./showcase/light_demo/screen.png) |
-| light_showcase | **Category:** showcase | [Otworz folder](./showcase/light_showcase) | ![](./showcase/light_showcase/screen.png) |
-| localization_demo | **Category:** showcase | [Otworz folder](./showcase/localization_demo) | ![](./showcase/localization_demo/screen.png) |
-| minimap_demo | **Category:** showcase | [Otworz folder](./showcase/minimap_demo) | ![](./showcase/minimap_demo/screen.png) |
-| modding_demo | **Category:** showcase | [Otworz folder](./showcase/modding_demo) | ![](./showcase/modding_demo/screen.png) |
-| music_composer | Visual piano roll music sequencer. Place and remove notes on a 32-beat × 24-note grid across three colored tracks, then play back in a looping sweep with smo... | [Otworz folder](./showcase/music_composer) | ![](./showcase/music_composer/screen.png) |
-| nine_slice_demo | **Category:** showcase | [Otworz folder](./showcase/nine_slice_demo) | ![](./showcase/nine_slice_demo/screen.png) |
-| overlay_demo | Screen overlay effects showcase demonstrating weather particles, time-of-day tinting, fog, and vignette — all composable and intensity-adjustable. | [Otworz folder](./showcase/overlay_demo) | ![](./showcase/overlay_demo/screen.png) |
-| particles_demo | **Category:** showcase | [Otworz folder](./showcase/particles_demo) | ![](./showcase/particles_demo/screen.png) |
-| patterns_demo | **Category:** showcase | [Otworz folder](./showcase/patterns_demo) | ![](./showcase/patterns_demo/screen.png) |
-| pipeline_showcase | Interactive visualization of the full Lurek2D engine callback pipeline — ready, process, process_physics, process_late, render, render_ui — across three scen... | [Otworz folder](./showcase/pipeline_showcase) | ![](./showcase/pipeline_showcase/screen.png) |
-| postfx_demo | Complete post-processing effects stacking showcase with 10 toggleable effects, adjustable intensity, and real-time before/after comparison. | [Otworz folder](./showcase/postfx_demo) | ![](./showcase/postfx_demo/screen.png) |
-| province_demo | Procedural Voronoi-like province map generator with terrain, ownership, fog of war, pathfinding, and multiple visualization modes. | [Otworz folder](./showcase/province_demo) | ![](./showcase/province_demo/screen.png) |
-| scene_demo | Scene state machine with enter/exit callbacks, three transition effects, and a collect-the-coins mini-game — all wired through a reusable scene manager. | [Otworz folder](./showcase/scene_demo) | ![](./showcase/scene_demo/screen.png) |
-| signal_demo | Complete pub-sub event signal system showcase demonstrating the publisher-subscriber pattern with five distinct signal types, cascading chain reactions, and ... | [Otworz folder](./showcase/signal_demo) | ![](./showcase/signal_demo/screen.png) |
-| sprites | **Category:** showcase | [Otworz folder](./showcase/sprites) | ![](./showcase/sprites/screen.png) |
-| terminal_demo | Full-screen terminal UI character creation wizard with box-drawing borders, colored text, stat allocation, and multi-page navigation — all rendered on an 80×... | [Otworz folder](./showcase/terminal_demo) | ![](./showcase/terminal_demo/screen.png) |
-| tween_demo | **Category:** showcase | [Otworz folder](./showcase/tween_demo) | ![](./showcase/tween_demo/screen.png) |
-
-## simulation
-
-| Gra | Opis | Folder | Screen |
-|---|---|---|---|
-| colony_sim | **Category:** simulation | [Otworz folder](./simulation/colony_sim) | ![](./simulation/colony_sim/screen.png) |
-| cooking_sim | Kitchen cooking simulation where you prep ingredients, cook dishes, and serve customers under time pressure. | [Otworz folder](./simulation/cooking_sim) | ![](./simulation/cooking_sim/screen.png) |
-| factory | Factory automation game inspired by Factorio-lite: place conveyor belts, miners, smelters, and assemblers to build a production line that turns raw ore into ... | [Otworz folder](./simulation/factory) | ![](./simulation/factory/screen.png) |
-| farming_sim | Grow crops, trade at the market, and earn 200 gold to win. Manage your farm through day/night cycles and weather events. | [Otworz folder](./simulation/farming_sim) | ![](./simulation/farming_sim/screen.png) |
-| god_game | **Category:** Simulation | [Otworz folder](./simulation/god_game) | ![](./simulation/god_game/screen.png) |
-| hotel_manager | **Category:** Simulation | [Otworz folder](./simulation/hotel_manager) | ![](./simulation/hotel_manager/screen.png) |
-| idle_game | **Category:** Simulation | [Otworz folder](./simulation/idle_game) | ![](./simulation/idle_game/screen.png) |
-| medical_sim | Hospital management simulation — triage patients, assign staff, upgrade departments, and maintain a 4+ star rating. | [Otworz folder](./simulation/medical_sim) | ![](./simulation/medical_sim/screen.png) |
-| mining | **Category:** Simulation | [Otworz folder](./simulation/mining) | ![](./simulation/mining/screen.png) |
-| physics_demo | **Category:** simulation | [Otworz folder](./simulation/physics_demo) | ![](./simulation/physics_demo/screen.png) |
-| physics_sandbox | Free-form physics playground where you build structures and destroy them with explosions, heavy balls, and gravity manipulation. | [Otworz folder](./simulation/physics_sandbox) | ![](./simulation/physics_sandbox/screen.png) |
-| railroad | **Category:** Simulation | [Otworz folder](./simulation/railroad) | ![](./simulation/railroad/screen.png) |
-| settlers_rise | Settlement-building simulation inspired by The Settlers 2 (Amiga 1998). Place production buildings on a procedurally generated map, watch settlers carry good... | [Otworz folder](./simulation/settlers_rise) | ![](./simulation/settlers_rise/screen.png) |
-| tower_sim | **Category:** simulation | [Otworz folder](./simulation/tower_sim) | ![](./simulation/tower_sim/screen.png) |
-| tycoon | Business empire tycoon — buy ventures, hire managers, upgrade revenue, and prestige your way to a million gold. | [Otworz folder](./simulation/tycoon) | ![](./simulation/tycoon/screen.png) |
-| vehicle_builder | Grid-based vehicle construction and physics-driven test track game. Design vehicles from modular parts on a snap-to-grid editor, then switch to a side-scroll... | [Otworz folder](./simulation/vehicle_builder) | ![](./simulation/vehicle_builder/screen.png) |
-| wildlife_photo | Explore a scrolling nature landscape, frame wildlife in your camera viewfinder, and snap photos to fill your species journal. Photograph all 8 species to com... | [Otworz folder](./simulation/wildlife_photo) | ![](./simulation/wildlife_photo/screen.png) |
-| zoo_tycoon | **Category:** Simulation | [Otworz folder](./simulation/zoo_tycoon) | ![](./simulation/zoo_tycoon/screen.png) |
-
-## sports
-
-| Gra | Opis | Folder | Screen |
-|---|---|---|---|
-| boxing_ring | Side-view boxing game with a full 3-round fight system, stamina management, combo tracking, and an AI opponent that gets tougher each round. | [Otworz folder](./sports/boxing_ring) | ![](./sports/boxing_ring/screen.png) |
-| drift_racing | **Category:** Sports | [Otworz folder](./sports/drift_racing) | ![](./sports/drift_racing/screen.png) |
-| fishing | **Category:** Sports | [Otworz folder](./sports/fishing) | ![](./sports/fishing/screen.png) |
-| golf_classic | **Category:** Sports | [Otworz folder](./sports/golf_classic) | ![](./sports/golf_classic/screen.png) |
-| pinball | **Category:** Sports | [Otworz folder](./sports/pinball) | ![](./sports/pinball/screen.png) |
-| rhythm_game | **Category:** Sports | [Otworz folder](./sports/rhythm_game) | ![](./sports/rhythm_game/screen.png) |
-| sensible_soccer | Arcade top-down football inspired by Sensible Soccer (Amiga 1997). 5-a-side with aftertouch shooting, CPU opponents, and a 90-second match clock. | [Otworz folder](./sports/sensible_soccer) | ![](./sports/sensible_soccer/screen.png) |
-| ski_jump | _Choose your hill, crouch for speed on the approach, time your jump at the ramp lip, and lean through the air for maximum distance and style points._ | [Otworz folder](./sports/ski_jump) | ![](./sports/ski_jump/screen.png) |
-| sports_manager | **Category:** Sports | [Otworz folder](./sports/sports_manager) | ![](./sports/sports_manager/screen.png) |
-| tennis_classic | Complete top-down tennis game with serve/return mechanics, topspin/slice, AI opponent, and full tennis scoring (games, sets, match). | [Otworz folder](./sports/tennis_classic) | ![](./sports/tennis_classic/screen.png) |
-| track_and_field | **Category:** sports | [Otworz folder](./sports/track_and_field) | ![](./sports/track_and_field/screen.png) |
-| trajectory_sports | **Category:** sports | [Otworz folder](./sports/trajectory_sports) | ![](./sports/trajectory_sports/screen.png) |
-
-## strategy
-
-| Gra | Opis | Folder | Screen |
-|---|---|---|---|
-| bridge_builder | **Category:** strategy | [Otworz folder](./strategy/bridge_builder) | ![](./strategy/bridge_builder/screen.png) |
-| card_game | **Category:** strategy | [Otworz folder](./strategy/card_game) | ![](./strategy/card_game/screen.png) |
-| deckbuilder | Slay-the-Spire-style turn-based card battler. Build your deck as you climb three floors. | [Otworz folder](./strategy/deckbuilder) | ![](./strategy/deckbuilder/screen.png) |
-| eu2 | Playable grand-strategy province slice with semi-historical countries, campaign time, economy, armies, map modes, and AI movement. | [Otworz folder](./strategy/eu2) | ![](./strategy/eu2/screen.png) |
-| eu2_province_map | Render dema mapy prowincji (PNG 2000x900) w stylu EU2. | [Otworz folder](./strategy/eu2_province_map) | ![](./strategy/eu2_province_map/screen.png) |
-| hex_logistics | Real-time hex logistics prototype with ship-based construction, local building storage, and physical resource drones. | [Otworz folder](./strategy/hex_logistics) | ![](./strategy/hex_logistics/screen.png) |
-| hex_strategy | Turn-based hex-grid expansion game — claim territory, build cities, and accumulate resources over successive turns. | [Otworz folder](./strategy/hex_strategy) | ![](./strategy/hex_strategy/screen.png) |
-| logic_game | Robot programming puzzle — write a program of movement commands to guide your robot to the goal in limited steps. | [Otworz folder](./strategy/logic_game) | ![](./strategy/logic_game/screen.png) |
-| match3 | **Category:** strategy | [Otworz folder](./strategy/match3) | ![](./strategy/match3/screen.png) |
-| maze_defense | Hybrid tower defense where YOU build the maze. Place walls to extend the enemy path, then add towers to mow them down — but you can never fully block the route. | [Otworz folder](./strategy/maze_defense) | ![](./strategy/maze_defense/screen.png) |
-| party_games | 4 mini-game party collection for 2 players: Reaction, Memory, Typing Race, and Math Duel. | [Otworz folder](./strategy/party_games) | ![](./strategy/party_games/screen.png) |
-| physics_puzzle | Place planks, ramps, and blocks to guide a falling ball into the goal — with a limited shape budget. | [Otworz folder](./strategy/physics_puzzle) | ![](./strategy/physics_puzzle/screen.png) |
-| rts | Real-time strategy game — build a base, train units, harvest resources, and survive 5 enemy waves. | [Otworz folder](./strategy/rts) | ![](./strategy/rts/screen.png) |
-| tactical_battle | Turn-based grid squad tactics with 4 unit types, terrain effects, and AI-driven enemy turns. | [Otworz folder](./strategy/tactical_battle) | ![](./strategy/tactical_battle/screen.png) |
-| tower_defense | Classic grid-based tower defense — place towers on a pre-laid path, survive 6 enemy waves. | [Otworz folder](./strategy/tower_defense) | ![](./strategy/tower_defense/screen.png) |
-| wargame | Hex-grid turn-based wargame with infantry, tanks, artillery, and recon across terrain-varied battlefields. | [Otworz folder](./strategy/wargame) | ![](./strategy/wargame/screen.png) |
-| worms_artillery | Turn-based artillery game inspired by Worms (Amiga 1998). Two teams take turns firing bazookas across procedurally generated terrain, with wind drift, blast ... | [Otworz folder](./strategy/worms_artillery) | ![](./strategy/worms_artillery/screen.png) |
-
+| Demo | Type | Decision | Status | APIs | Preview | Run |
+|---|---|---|---|---|---|---|
+| [Donkey Kong](./arcade/donkey_kong) | `arcade` | `REWRITE_API` | unspecified; smoke:PASS | `automation`, `camera`, `event`, `input`, `particle`, `render`, `timer`, +3 | ![](./arcade/donkey_kong/preview.gif) | `cargo run -- content/games/arcade/donkey_kong` |
+| [Galaga](./arcade/galaga) | `arcade` | `REWRITE_API` | unspecified; smoke:PASS | `ai`, `automation`, `camera`, `ecs`, `event`, `input`, `particle`, +5 | ![](./arcade/galaga/preview.gif) | `cargo run -- content/games/arcade/galaga` |
+| [Fighting Game](./action/fighting_game) | `action` | `TRIM` | unspecified; smoke:PASS | `automation`, `camera`, `event`, `input`, `particle`, `render`, `timer`, +3 | ![](./action/fighting_game/preview.gif) | `cargo run -- content/games/action/fighting_game` |
+| [Metroidvania](./action/metroidvania) | `action` | `REWRITE_API` | unspecified; smoke:NO_IMAGE; known-failing:content-demo-maintainers (exited cleanly but no PNG written) | `automation`, `event`, `input`, `particle`, `render`, `timer`, `ui`, +1 | ![](./action/metroidvania/preview.gif) | `cargo run -- content/games/action/metroidvania` |
+| [Platform Fighter](./action/platform_fighter) | `action` | `TRIM` | unspecified; smoke:PASS | `automation`, `event`, `input`, `particle`, `render`, `timer`, `ui`, +1 | ![](./action/platform_fighter/preview.gif) | `cargo run -- content/games/action/platform_fighter` |
+| [Platformer](./action/platformer) | `action` | `REWRITE_API` | unspecified; smoke:PASS | `automation`, `event`, `input`, `particle`, `render`, `timer`, `tween`, +2 | ![](./action/platformer/preview.gif) | `cargo run -- content/games/action/platformer` |
+| [Roguelite](./action/roguelite) | `action` | `TRIM` | unspecified; smoke:NO_IMAGE; known-failing:content-demo-maintainers (exited cleanly but no PNG written) | `automation`, `camera`, `event`, `input`, `particle`, `ready`, `render`, +4 | ![](./action/roguelite/preview.gif) | `cargo run -- content/games/action/roguelite` |
+| [Soulslike](./action/soulslike) | `action` | `TRIM` | unspecified; smoke:PASS | `automation`, `camera`, `event`, `input`, `particle`, `render`, `timer`, +3 | ![](./action/soulslike/preview.gif) | `cargo run -- content/games/action/soulslike` |
+| [Stealth Ops](./action/stealth_ops) | `action` | `REWRITE_API` | playable foundation; smoke:PASS | `ai`, `event`, `input`, `light`, `pathfind`, `render`, `tilemap`, +2 | ![](./action/stealth_ops/preview.gif) | `cargo run -- content/games/action/stealth_ops` |
+| [Creature Collector](./rpg/creature_collector) | `rpg` | `TRIM` | unspecified; smoke:PASS | `automation`, `camera`, `event`, `input`, `render`, `timer`, `window` | ![](./rpg/creature_collector/preview.gif) | `cargo run -- content/games/rpg/creature_collector` |
+| [Horror](./rpg/horror) | `rpg` | `TRIM` | unspecified; smoke:PASS | `automation`, `camera`, `event`, `input`, `particle`, `render`, `timer`, +2 | ![](./rpg/horror/preview.gif) | `cargo run -- content/games/rpg/horror` |
+| [Modded Arena](./rpg/modded_arena) | `rpg` | `REWRITE_API` | skeleton; smoke:PASS | `asset`, `dialog`, `event`, `filesystem`, `input`, `mods`, `render`, +2 | ![](./rpg/modded_arena/preview.gif) | `cargo run -- content/games/rpg/modded_arena` |
+| [Social Deduction](./rpg/social_deduction) | `rpg` | `TRIM` | unspecified; smoke:NO_IMAGE; known-failing:content-demo-maintainers (exited cleanly but no PNG written) | `automation`, `camera`, `event`, `input`, `render`, `tween`, `window` | ![](./rpg/social_deduction/preview.gif) | `cargo run -- content/games/rpg/social_deduction` |
+| [Star Voyage](./rpg/star_voyage) | `rpg` | `TRIM` | unspecified; smoke:NO_IMAGE; known-failing:content-demo-maintainers (exited cleanly but no PNG written) | `automation`, `event`, `input`, `math`, `render`, `window` | ![](./rpg/star_voyage/preview.gif) | `cargo run -- content/games/rpg/star_voyage` |
+| [Survival Crafting](./rpg/survival_crafting) | `rpg` | `TRIM` | unspecified; smoke:PASS | `automation`, `camera`, `event`, `input`, `render`, `timer`, `window` | ![](./rpg/survival_crafting/preview.gif) | `cargo run -- content/games/rpg/survival_crafting` |
+| [Dune2 Like](./strategy/dune2_like) | `strategy` | `REWRITE_API` | unspecified; smoke:PASS | `event`, `input`, `render`, `window` | ![](./strategy/dune2_like/preview.gif) | `cargo run -- content/games/strategy/dune2_like` |
+| [Eu2](./strategy/eu2) | `strategy` | `TRIM` | unspecified; smoke:PASS | `automation`, `event`, `filesystem`, `image`, `input`, `log`, `minimap`, +4 | ![](./strategy/eu2/preview.gif) | `cargo run -- content/games/strategy/eu2` |
+| [Party Games](./strategy/party_games) | `strategy` | `TRIM` | unspecified; smoke:PASS | `automation`, `event`, `input`, `particle`, `render`, `window` | ![](./strategy/party_games/preview.gif) | `cargo run -- content/games/strategy/party_games` |
+| [Rts](./strategy/rts) | `strategy` | `TRIM` | unspecified; smoke:PASS | `automation`, `event`, `input`, `particle`, `render`, `window` | ![](./strategy/rts/preview.gif) | `cargo run -- content/games/strategy/rts` |
+| [Wargame](./strategy/wargame) | `strategy` | `TRIM` | unspecified; smoke:PASS | `automation`, `event`, `input`, `particle`, `render`, `window` | ![](./strategy/wargame/preview.gif) | `cargo run -- content/games/strategy/wargame` |
+| [Worms Artillery](./strategy/worms_artillery) | `strategy` | `REWRITE_API` | unspecified; smoke:PASS | `automation`, `event`, `input`, `math`, `particle`, `procgen`, `render`, +1 | ![](./strategy/worms_artillery/preview.gif) | `cargo run -- content/games/strategy/worms_artillery` |
+| [Colony Sim](./simulation/colony_sim) | `simulation` | `TRIM` | unspecified; smoke:PASS | `automation`, `event`, `input`, `render`, `timer`, `window` | ![](./simulation/colony_sim/preview.gif) | `cargo run -- content/games/simulation/colony_sim` |
+| [Farming Sim](./simulation/farming_sim) | `simulation` | `TRIM` | - **Soil Tilling:** Use the **Hoe** tool to turn dry earth into fertile soil; smoke:PASS | `automation`, `camera`, `event`, `input`, `particle`, `render`, `timer`, +2 | ![](./simulation/farming_sim/preview.gif) | `cargo run -- content/games/simulation/farming_sim` |
+| [God Game](./simulation/god_game) | `simulation` | `TRIM` | unspecified; smoke:PASS | `automation`, `event`, `input`, `render`, `timer`, `window` | ![](./simulation/god_game/preview.gif) | `cargo run -- content/games/simulation/god_game` |
+| [Hotel Manager](./simulation/hotel_manager) | `simulation` | `TRIM` | unspecified; smoke:PASS | `automation`, `camera`, `event`, `input`, `render`, `timer`, `window` | ![](./simulation/hotel_manager/preview.gif) | `cargo run -- content/games/simulation/hotel_manager` |
+| [Medical Sim](./simulation/medical_sim) | `simulation` | `TRIM` | unspecified; smoke:NO_IMAGE; known-failing:content-demo-maintainers (exited cleanly but no PNG written) | `automation`, `camera`, `event`, `input`, `render`, `timer`, `window` | ![](./simulation/medical_sim/preview.gif) | `cargo run -- content/games/simulation/medical_sim` |
+| [Rail Flow Tycoon](./simulation/rail_flow_tycoon) | `simulation` | `TRIM` | playable foundation; smoke:PASS | `charts`, `event`, `graph`, `input`, `pathfind`, `render`, `save`, +2 | ![](./simulation/rail_flow_tycoon/preview.gif) | `cargo run -- content/games/simulation/rail_flow_tycoon` |
+| [Railroad](./simulation/railroad) | `simulation` | `TRIM` | unspecified; smoke:PASS | `automation`, `camera`, `event`, `input`, `render`, `timer`, `window` | ![](./simulation/railroad/preview.gif) | `cargo run -- content/games/simulation/railroad` |
+| [Settlers Rise](./simulation/settlers_rise) | `simulation` | `TRIM` | unspecified; smoke:PASS | `automation`, `event`, `input`, `math`, `pathfind`, `procgen`, `render`, +1 | ![](./simulation/settlers_rise/preview.gif) | `cargo run -- content/games/simulation/settlers_rise` |
+| [Tower Sim](./simulation/tower_sim) | `simulation` | `TRIM` | unspecified; smoke:PASS | `automation`, `event`, `input`, `render`, `timer`, `window` | ![](./simulation/tower_sim/preview.gif) | `cargo run -- content/games/simulation/tower_sim` |
+| [Tycoon](./simulation/tycoon) | `simulation` | `TRIM` | unspecified; smoke:PASS | `automation`, `camera`, `event`, `input`, `render`, `timer`, `window` | ![](./simulation/tycoon/preview.gif) | `cargo run -- content/games/simulation/tycoon` |
+| [Vehicle Builder](./simulation/vehicle_builder) | `simulation` | `TRIM` | unspecified; smoke:PASS | `automation`, `event`, `input`, `render`, `timer`, `window` | ![](./simulation/vehicle_builder/preview.gif) | `cargo run -- content/games/simulation/vehicle_builder` |
+| [Zoo Tycoon](./simulation/zoo_tycoon) | `simulation` | `TRIM` | unspecified; smoke:PASS | `automation`, `camera`, `event`, `input`, `render`, `timer`, `window` | ![](./simulation/zoo_tycoon/preview.gif) | `cargo run -- content/games/simulation/zoo_tycoon` |
+| [Sensible Soccer](./sports/sensible_soccer) | `sports` | `REWRITE_API` | unspecified; smoke:NO_IMAGE; known-failing:content-demo-maintainers (exited cleanly but no PNG written) | `automation`, `event`, `input`, `render`, `ui`, `window` | ![](./sports/sensible_soccer/preview.gif) | `cargo run -- content/games/sports/sensible_soccer` |
+| [Sports Manager](./sports/sports_manager) | `sports` | `TRIM` | unspecified; smoke:NO_IMAGE; known-failing:content-demo-maintainers (exited cleanly but no PNG written) | `automation`, `event`, `input`, `render`, `timer`, `ui`, `window` | ![](./sports/sports_manager/preview.gif) | `cargo run -- content/games/sports/sports_manager` |
+| [Household Finance Lab](./apps/household_finance_lab) | `apps` | `TRIM` | unspecified; smoke:NO_IMAGE; known-failing:content-demo-maintainers (exited cleanly but no PNG written) | `binary`, `charts`, `dataframe`, `engine`, `filesystem`, `image`, `math`, +6 | ![](./apps/household_finance_lab/preview.gif) | `cargo run -- content/games/apps/household_finance_lab` |
+| [Another World](./retro/another_world) | `retro` | `TRIM` | unspecified; smoke:PASS | `automation`, `camera`, `event`, `input`, `render`, `timer`, `ui`, +1 | ![](./retro/another_world/preview.gif) | `cargo run -- content/games/retro/another_world` |
+| [Boulder Dash](./retro/boulder_dash) | `retro` | `REWRITE_API` | unspecified; smoke:NO_IMAGE; known-failing:content-demo-maintainers (exited cleanly but no PNG written) | `automation`, `event`, `input`, `render`, `timer`, `ui`, `window` | ![](./retro/boulder_dash/preview.gif) | `cargo run -- content/games/retro/boulder_dash` |
+| [Dungeon Crawler](./retro/dungeon_crawler) | `retro` | `REWRITE_API` | unspecified; smoke:NO_IMAGE; known-failing:content-demo-maintainers (exited cleanly but no PNG written) | `automation`, `event`, `input`, `raycaster`, `render`, `timer`, `ui`, +1 | ![](./retro/dungeon_crawler/preview.gif) | `cargo run -- content/games/retro/dungeon_crawler` |
+| [Giana Sisters](./retro/giana_sisters) | `retro` | `REWRITE_API` | unspecified; smoke:PASS | `automation`, `event`, `input`, `render`, `timer`, `ui`, `window` | ![](./retro/giana_sisters/preview.gif) | `cargo run -- content/games/retro/giana_sisters` |
+| [Lemmings](./retro/lemmings) | `retro` | `TRIM` | unspecified; smoke:PASS | `automation`, `event`, `input`, `render`, `timer`, `ui`, `window` | ![](./retro/lemmings/preview.gif) | `cargo run -- content/games/retro/lemmings` |
+| [Paradroid](./retro/paradroid) | `retro` | `TRIM` | unspecified; smoke:PASS | `automation`, `event`, `input`, `particle`, `render`, `tween`, `ui`, +1 | ![](./retro/paradroid/preview.gif) | `cargo run -- content/games/retro/paradroid` |
+| [Shadow Beast](./retro/shadow_beast) | `retro` | `TRIM` | unspecified; smoke:NO_IMAGE; known-failing:content-demo-maintainers (exited cleanly but no PNG written) | `automation`, `camera`, `event`, `input`, `render`, `timer`, `ui`, +1 | ![](./retro/shadow_beast/preview.gif) | `cargo run -- content/games/retro/shadow_beast` |
+| [Turrican](./retro/turrican) | `retro` | `TRIM` | unspecified; smoke:NO_IMAGE; known-failing:content-demo-maintainers (exited cleanly but no PNG written) | `automation`, `camera`, `event`, `input`, `particle`, `render`, `timer`, +3 | ![](./retro/turrican/preview.gif) | `cargo run -- content/games/retro/turrican` |

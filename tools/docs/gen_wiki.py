@@ -52,6 +52,7 @@ EXAMPLES_DIR = ROOT / "content" / "examples"
 EXAMPLES_INDEX = EXAMPLES_DIR / "README.md"
 GAMES_DIR = ROOT / "content" / "games"
 GAMES_INDEX = GAMES_DIR / "README.md"
+GAMES_CATALOG = GAMES_DIR / "catalog.json"
 LIBRARY_DOC = ROOT / "docs" / "api" / "lureksome.md"
 LIBRARY_STUB = ROOT / "docs" / "api" / "lureksome.lua"
 API_MARKDOWN = ROOT / "docs" / "api" / "lurek.md"
@@ -387,6 +388,27 @@ def parse_examples() -> list[ExampleInfo]:
 
 def parse_games(api_names: set[str]) -> list[GameInfo]:
     metadata: dict[Path, GameInfo] = {}
+    public_ids: set[str] = set()
+    catalog_text = read(GAMES_CATALOG)
+    if catalog_text:
+        try:
+            catalog = json.loads(catalog_text)
+        except json.JSONDecodeError:
+            catalog = {}
+        for row in catalog.get("demos", []):
+            identifier = str(row.get("id", ""))
+            if not identifier or not bool(row.get("public_candidate", False)):
+                continue
+            public_ids.add(identifier)
+            folder = GAMES_DIR / identifier
+            metadata[folder] = GameInfo(
+                str(row.get("title") or folder.name),
+                str(row.get("category") or game_category_from_folder(folder)),
+                clean_text(str(row.get("description") or "")),
+                folder,
+                [],
+            )
+
     category = ""
     for line in read(GAMES_INDEX).splitlines():
         heading = re.match(r"^##\s+(.+?)\s*$", line)
@@ -407,6 +429,14 @@ def parse_games(api_names: set[str]) -> list[GameInfo]:
     games: list[GameInfo] = []
     for main_path in sorted(GAMES_DIR.glob("**/main.lua")):
         folder = main_path.parent
+        try:
+            identifier = folder.relative_to(GAMES_DIR).as_posix()
+        except ValueError:
+            identifier = ""
+        if any(part.startswith("_") for part in Path(identifier).parts):
+            continue
+        if public_ids and identifier not in public_ids:
+            continue
         game = metadata.get(folder, GameInfo(folder.name, game_category_from_folder(folder), "", folder, []))
         # Fill description from README.md first paragraph when game index has none
         if not game.description:
@@ -1317,7 +1347,13 @@ def game_screenshot_md(context: Context, game: "GameInfo") -> str:
 
 
 def games_page(context: Context) -> Page:
-    body = ["Reference games come from `content/games/`. Module usage is detected by scanning each `main.lua`.", ""]
+    body = [
+        "Reference games come from the generated catalog in `content/games/README.md` and `content/games/catalog.json`.",
+        "Only public catalog candidates are listed here; skeletons, feature-only examples, and duplicate migration work stay out of the ready-games wiki page.",
+        "",
+        f"Catalog source: {file_link(context, GAMES_INDEX, 'content/games/README.md')}",
+        "",
+    ]
     for category in sorted(set(game.category for game in context.games), key=str.lower):
         body += [f"## {category}", ""]
         for game in [item for item in context.games if item.category == category]:
@@ -1332,7 +1368,7 @@ def games_page(context: Context) -> Page:
             if screen:
                 body.append(screen)
                 body.append("")
-            body.append(game.description or "No description available.")
+            body.append(clean_text(game.description) or "No description available.")
             body.append("")
             if module_links:
                 body.append(f"**Modules:** {module_links}")

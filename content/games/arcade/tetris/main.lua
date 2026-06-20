@@ -1,52 +1,5 @@
--- Universal render helpers (handles all legacy and current call signatures)
-local _gfx = lurek.render
-local function _sc(c)
-    if type(c) == "table" then
-        local col = c.color or c
-        if type(col) == "table" then
-            _gfx.setColor(col[1] or 1, col[2] or 1, col[3] or 1, col[4] or 1)
-        end
-    end
-end
-local function rect(a, b, c, d, e, f, g, h)
-    if type(a) == "string" then
-        _gfx.rectangle(a, b, c, d, e)
-    elseif type(e) == "table" then
-        _sc(e); _gfx.rectangle(e.mode or "fill", a, b, c, d)
-    elseif type(e) == "number" then
-        _gfx.setColor(e or 1, f or 1, g or 1, h or 1); _gfx.rectangle("fill", a, b, c, d)
-    else
-        _gfx.rectangle("fill", a, b, c, d)
-    end
-end
-local function circ(a, b, c, d, e, f, g, h)
-    if type(a) == "string" then
-        if type(e) == "table" then _sc(e)
-        elseif type(e) == "number" then _gfx.setColor(e or 1, f or 1, g or 1, h or 1) end
-        _gfx.circle(a, b, c, d)
-    elseif type(d) == "table" then
-        _sc(d); _gfx.circle("fill", a, b, c)
-    elseif type(d) == "number" then
-        _gfx.setColor(d or 1, e or 1, f or 1, g or 1); _gfx.circle("fill", a, b, c)
-    else
-        _gfx.circle("fill", a, b, c)
-    end
-end
-local function text_(a, b, c, d, e, f, g, h)
-    if type(d) == "table" then
-        _sc(d)
-    elseif type(d) == "number" and type(e) == "number" then
-        _gfx.setColor(e or 1, f or 1, g or 1, h or 1)
-    end
-    _gfx.print(tostring(a), b, c)
-end
-local function ln(x1, y1, x2, y2, c)
-    if type(c) == "table" then _sc(c) end
-    _gfx.line(x1, y1, x2, y2)
-end
-
 -- ============================================================================
---  Tetris — Rotate and stack falling tetrominoes
+--  Falling Blocks - rotate and stack descending pieces
 -- ----------------------------------------------------------------------------
 --  Category : arcade
 --  Source   : ../../../../content/demos/arcade/tetris   (original demo)
@@ -62,7 +15,7 @@ end
 --    quit       : Escape
 --
 --  lurek.* namespaces used:
---    window, render, input, time, signal, particles, tween
+--    window, render, input, timer, particle, tween, ui, automation
 -- ============================================================================
 
 -- ── Game-wide constants ───────────────────────────────────────────────────
@@ -75,9 +28,9 @@ local BOARD_Y             = 40
 
 -- ── Scene state enum ──────────────────────────────────────────────────────
 local STATE = { TITLE = 1, PLAYING = 2, GAME_OVER = 3 }
-local state = STATE.PLAYING
+local state = STATE.TITLE
 
--- ── Tetromino definitions ─────────────────────────────────────────────────
+-- ── Piece definitions ──────────────────────────────────────────────────────
 local PIECES = {
     { cells = {{0,0},{1,0},{2,0},{3,0}}, color = {0.0, 0.9, 0.9} }, -- I
     { cells = {{0,0},{1,0},{2,0},{2,1}}, color = {0.0, 0.4, 0.9} }, -- J
@@ -270,7 +223,7 @@ local function draw_cell(x, y, color, alpha)
     local px = BOARD_X + x * CELL
     local py = BOARD_Y + y * CELL
     lurek.render.setColor(color[1], color[2], color[3], alpha or 1)
-    rect("fill", px + 1, py + 1, CELL - 2, CELL - 2)
+    lurek.render.rectangle("fill", px + 1, py + 1, CELL - 2, CELL - 2)
     -- Highlight border
     lurek.render.setColor(
         math.min(1, color[1] * 1.4),
@@ -278,7 +231,7 @@ local function draw_cell(x, y, color, alpha)
         math.min(1, color[3] * 1.4),
         alpha or 1
     )
-    rect("line", px + 1, py + 1, CELL - 2, CELL - 2)
+    lurek.render.rectangle("line", px + 1, py + 1, CELL - 2, CELL - 2)
 end
 
 -- ── Draw a piece preview at arbitrary pixel position ──────────────────────
@@ -288,13 +241,13 @@ local function draw_piece_preview(p, px, py)
         local cx = px + c[1] * CELL
         local cy = py + c[2] * CELL
         lurek.render.setColor(p.color[1], p.color[2], p.color[3])
-        rect("fill", cx + 1, cy + 1, CELL - 2, CELL - 2)
+        lurek.render.rectangle("fill", cx + 1, cy + 1, CELL - 2, CELL - 2)
         lurek.render.setColor(
             math.min(1, p.color[1] * 1.4),
             math.min(1, p.color[2] * 1.4),
             math.min(1, p.color[3] * 1.4)
         )
-        rect("line", cx + 1, cy + 1, CELL - 2, CELL - 2)
+        lurek.render.rectangle("line", cx + 1, cy + 1, CELL - 2, CELL - 2)
     end
 end
 
@@ -303,7 +256,7 @@ end
 -- ===========================================================================
 
 function lurek.init()
-    lurek.window.setTitle("Tetris — Lurek2D")
+    lurek.window.setTitle("Falling Blocks - Lurek2D")
     lurek.render.setBackgroundColor(0.05, 0.05, 0.1)
 
     -- Action-based input bindings
@@ -506,7 +459,7 @@ function lurek.draw()
 
     -- Board border
     lurek.render.setColor(0.3, 0.3, 0.5)
-    rect("line",
+    lurek.render.rectangle("line",
         BOARD_X - 1 + sx_off, BOARD_Y - 1 + sy_off,
         COLS * CELL + 2, ROWS * CELL + 2)
 
@@ -514,7 +467,7 @@ function lurek.draw()
     lurek.render.setColor(0.12, 0.12, 0.18)
     for y = 0, ROWS - 1 do
         for x = 0, COLS - 1 do
-            rect("line",
+            lurek.render.rectangle("line",
                 BOARD_X + x * CELL + 1 + sx_off,
                 BOARD_Y + y * CELL + 1 + sy_off,
                 CELL - 2, CELL - 2)
@@ -529,12 +482,12 @@ function lurek.draw()
                 local py = BOARD_Y + (y - 1) * CELL + sy_off
                 local c = board[y][x]
                 lurek.render.setColor(c[1], c[2], c[3])
-                rect("fill", px + 1, py + 1, CELL - 2, CELL - 2)
+                lurek.render.rectangle("fill", px + 1, py + 1, CELL - 2, CELL - 2)
                 lurek.render.setColor(
                     math.min(1, c[1] * 1.4),
                     math.min(1, c[2] * 1.4),
                     math.min(1, c[3] * 1.4))
-                rect("line", px + 1, py + 1, CELL - 2, CELL - 2)
+                lurek.render.rectangle("line", px + 1, py + 1, CELL - 2, CELL - 2)
             end
         end
     end
@@ -548,7 +501,7 @@ function lurek.draw()
                 local px = BOARD_X + cx * CELL + sx_off
                 local py = BOARD_Y + cy * CELL + sy_off
                 lurek.render.setColor(piece.color[1], piece.color[2], piece.color[3], 0.25)
-                rect("fill", px + 1, py + 1, CELL - 2, CELL - 2)
+                lurek.render.rectangle("fill", px + 1, py + 1, CELL - 2, CELL - 2)
             end
         end
 
@@ -559,12 +512,12 @@ function lurek.draw()
                 local px = BOARD_X + cx * CELL + sx_off
                 local py = BOARD_Y + cy * CELL + sy_off
                 lurek.render.setColor(piece.color[1], piece.color[2], piece.color[3])
-                rect("fill", px + 1, py + 1, CELL - 2, CELL - 2)
+                lurek.render.rectangle("fill", px + 1, py + 1, CELL - 2, CELL - 2)
                 lurek.render.setColor(
                     math.min(1, piece.color[1] * 1.4),
                     math.min(1, piece.color[2] * 1.4),
                     math.min(1, piece.color[3] * 1.4))
-                rect("line", px + 1, py + 1, CELL - 2, CELL - 2)
+                lurek.render.rectangle("line", px + 1, py + 1, CELL - 2, CELL - 2)
             end
         end
     end
@@ -575,7 +528,7 @@ function lurek.draw()
     -- Line-clear flash overlay
     if flash_alpha > 0.01 then
         lurek.render.setColor(1, 1, 1, flash_alpha)
-        rect("fill", BOARD_X, BOARD_Y, COLS * CELL, ROWS * CELL)
+        lurek.render.rectangle("fill", BOARD_X, BOARD_Y, COLS * CELL, ROWS * CELL)
     end
 end
 

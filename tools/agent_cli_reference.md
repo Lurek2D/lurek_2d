@@ -64,8 +64,13 @@ Quick entrypoint for repo tools. Start with `tools/python.cmd tools/<path>.py --
 - `audit/wiki_coverage.py` - Audit wiki page coverage against engine modules and Lua API. [durable; mcp:no]
 
 ## /demos
+- `demos/audit_games.py` - Audit content/games readiness for the public demo catalog. [targeted-maintenance; mcp:no]
+- `demos/capture_demo_gifs.py` - Create preview.gif files for content/games demos from existing screen.png. [targeted-maintenance; mcp:no]
+- `demos/game_catalog.py` - Shared discovery and classification helpers for content/games catalogs. [internal; mcp:no]
+- `demos/gen_demo_catalog.py` - Generate content/games/README.md and catalog.json from audited metadata. [targeted-maintenance; mcp:no]
 - `demos/gen_demo_screenshots.py` - gen_demo_screenshots.py — Capture a screen.png for every Lurek2D game demo. [targeted-maintenance; mcp:no]
 - `demos/gen_game_readmes.py` - gen_game_readmes.py — Generate or repair README.md files for content/games/ projects. [targeted-maintenance; mcp:no]
+- `demos/migrate_game_shelves.py` - Move non-public game catalog entries into explicit holding shelves. [targeted-maintenance; mcp:no]
 - `demos/organize_demos.py` - organize_demos.py — Three-in-one demos maintenance tool. [targeted-maintenance; mcp:no]
 - `demos/smoke_sweep.py` - Smoke-sweep every playable project under content/games/ and every single-file [targeted-maintenance; mcp:no]
 
@@ -170,4 +175,3 @@ Quick entrypoint for repo tools. Start with `tools/python.cmd tools/<path>.py --
 - `validate/validate_rust_file_docs.py` - Validate Rust file-level //! docs with the repository docstring coverage policy. [durable; mcp:no]
 - `validate/validate_rust_source_docs.py` - Validate file-level and public-item Rust docs-general under src/. [durable; mcp:no]
 - `validate/validate_snippets.py` - Validate content/snippets marker structure and VS Code snippet output freshness. [durable; mcp:candidate]
-

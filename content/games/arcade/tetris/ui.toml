@@ -13,7 +13,7 @@ visible = false
 
   [[root.children.children]]
   widget_type = "label"
-  text = "T E T R I S"
+  text = "FALLING BLOCKS"
   font_size = 30
   color = [0.0, 0.9, 0.9, 1]
   anchor = "center"
@@ -21,7 +21,7 @@ visible = false
 
   [[root.children.children]]
   widget_type = "label"
-  text = "Rotate and stack falling tetrominoes"
+  text = "Rotate and stack falling blocks"
   font_size = 24
   color = [0.7, 0.7, 0.9, 1]
   anchor = "center"
@@ -38,7 +38,7 @@ visible = false
 
   [[root.children.children]]
   widget_type = "label"
-  text = "Ă˘â€ ÂĂ˘â€ â€™ / AD   Move\nĂ˘â€ â€  / W    Rotate\nĂ˘â€ â€ś  / S    Soft drop\nSpace     Hard drop\nC         Hold\nEscape    Quit"
+  text = "Left/Right or AD   Move\nUp or W           Rotate\nDown or S         Soft drop\nSpace             Hard drop\nC                 Hold\nEscape            Quit"
   font_size = 20
   color = [0.4, 0.4, 0.5, 1]
   anchor = "center"
@@ -130,7 +130,7 @@ visible = true
 
   [[root.children.children]]
   widget_type = "label"
-  text = "Ă˘â€ ÂĂ˘â€ â€™  Move\nĂ˘â€ â€   Rotate\nĂ˘â€ â€ś   Soft drop\nSPC Hard drop\nC   Hold\nESC Quit"
+  text = "Left/Right Move\nUp Rotate\nDown Soft drop\nSPC Hard drop\nC Hold\nESC Quit"
   font_size = 16
   color = [0.4, 0.4, 0.5, 1]
   x = 584
@@ -147,7 +147,7 @@ visible = true
   y = -20
 
 [[root.children]]
-type = "panel"
+widget_type = "panel"
 id = "game_over_screen"
 anchor = "center"
 w = 800
@@ -156,7 +156,7 @@ bg_color = [0, 0, 0, 0.7]
 visible = false
 
   [[root.children.children]]
-  type = "label"
+  widget_type = "label"
   text = "GAME OVER"
   font_size = 30
   color = [1, 0.2, 0.2, 1]
@@ -164,7 +164,7 @@ visible = false
   y = -40
 
   [[root.children.children]]
-  type = "label"
+  widget_type = "label"
   id = "final_score"
   text = "Score: 0"
   font_size = 30
@@ -173,7 +173,7 @@ visible = false
   y = 10
 
   [[root.children.children]]
-  type = "label"
+  widget_type = "label"
   id = "final_level"
   text = "Level: 0"
   font_size = 30
@@ -182,7 +182,7 @@ visible = false
   y = 35
 
   [[root.children.children]]
-  type = "label"
+  widget_type = "label"
   id = "final_lines"
   text = "Lines: 0"
   font_size = 30
@@ -191,7 +191,7 @@ visible = false
   y = 60
 
   [[root.children.children]]
-  type = "button"
+  widget_type = "button"
   id = "press_restart"
   text = "Press R to restart"
   font_size = 30

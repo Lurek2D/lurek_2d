@@ -71,6 +71,11 @@ Single registry for all durable tooling under `tools/`.
 
 ## demos
 
+- `demos/audit_games.py` [maintenance; targeted-maintenance; mcp:no] - Audit content/games readiness for the public demo catalog.
+- `demos/capture_demo_gifs.py` [maintenance; targeted-maintenance; mcp:no] - Create preview.gif files for content/games demos from existing screen.png.
+- `demos/game_catalog.py` [internal-helper; internal; mcp:no] - Shared discovery and classification helpers for content/games catalogs.
+- `demos/gen_demo_catalog.py` [maintenance; targeted-maintenance; mcp:no] - Generate content/games/README.md and catalog.json from audited metadata.
+- `demos/migrate_game_shelves.py` [maintenance; targeted-maintenance; mcp:no] - Move non-public game catalog entries into explicit holding shelves.
 - `demos/gen_demo_screenshots.py` [maintenance; targeted-maintenance; mcp:no] - gen_demo_screenshots.py — Capture a screen.png for every Lurek2D game demo.
 - `demos/gen_game_readmes.py` [maintenance; targeted-maintenance; mcp:no] - gen_game_readmes.py — Generate or repair README.md files for content/games/ projects.
 - `demos/organize_demos.py` [maintenance; targeted-maintenance; mcp:no] - organize_demos.py — Three-in-one demos maintenance tool.
@@ -189,4 +194,3 @@ Single registry for all durable tooling under `tools/`.
 - `validate/validate_rust_file_docs.py` [validate; durable; mcp:no] - Validate Rust file-level //! docs with the repository docstring coverage policy.
 - `validate/validate_rust_source_docs.py` [validate; durable; mcp:no] - Validate file-level and public-item Rust docs-general under src/.
 - `validate/validate_snippets.py` [validate; durable; mcp:candidate] - Validate content/snippets marker structure and VS Code snippet output freshness.
-
