@@ -67,19 +67,19 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 ### mod_loader.rs
 
 - `src/mods/mod_loader.rs` parses TOML content files into typed `ModInstance` records ready for registry validation.
-- It owns `FieldValue`, `ModInstance`, scalar coercion helpers, line-based manifest parsing, and source-path attachment.
+- It owns `FieldValue`, `ModContentLoadOptions`, scalar coercion helpers, real TOML decoding, and source-path attachment.
 - Instance bootstrap from content files happens here so manifest decoding stays separate from registration and execution.
-- Complex field values are flattened for validation, while richer table and array data stay in `FieldValue`.
+- Complex field values remain structured instead of being flattened into strings during parse time.
 - This file does not manage dependency order or sandbox policy; it only turns content text into structured instances.
 - Read it when TOML parsing, field coercion, instance IDs, or source-file tracking for mods needs to change.
 
 ### mod_manager.rs
 
 - `src/mods/mod_manager.rs` owns the runtime registry for discovered mods, manifest metadata, reload queues, and order.
-- It stores `ModInfo` records with dependencies, capabilities, asset paths, config schema, signatures, and session state.
-- Registration, lookup, enable-state tracking, capability queries, and custom load-order overrides all live in this file.
-- Dependency validation and topological ordering live here so mod startup remains deterministic and cycle-aware.
-- Manifest parsing from `mod.toml` also happens here, including warnings, signature checks, and asset conflicts.
+- It stores `ModInfo` records with dependencies, capabilities, asset paths, config schema, checksum metadata, and session state.
+- Registration, lookup, enable-state tracking, capability queries, structured scans, and atomic hot reloads all live here.
+- Dependency validation and topological ordering stay here so mod startup remains deterministic and cycle-aware.
+- Manifest parsing from `mod.toml` also happens here, including limits, schema checks, checksum checks, and asset conflicts.
 - Folder scanning and hot-reload processing are coordinated here so disk changes can update registered mods safely.
 - This file is the lifecycle and integrity boundary for mods; it does not define schema types or sandbox policy details.
 - Read it when manifest semantics, reload behavior, dependency resolution, or mod registry ownership needs to change.
@@ -88,10 +88,18 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 ### mod_sandbox.rs
 
 - `src/mods/mod_sandbox.rs` defines the capability sandbox that filters what a mod may call, read, write, or hook into.
-- It owns allowed API namespaces, blocked operations, hook permissions, memory and network flags, and read-path policy.
+- It owns allowlist policy modes, blocked operations, hook permissions, memory and network flags, and canonical read roots.
 - `HookPoint` parsing and canonical names live here so manifest declarations and runtime checks use one hook vocabulary.
 - This file does not load mods or resolve dependencies; it only describes and answers capability checks for mod execution.
 - Read it when sandbox defaults, hook permissions, or file and API access rules for mods need to change.
+
+### types.rs
+
+- `src/mods/types.rs` defines shared error, limit, policy, and report types for the mods subsystem.
+- It owns the structured vocabulary used by sandbox checks, manifest scanning, dependency planning, and hot reloads.
+- Default limits and policies live here so loaders and managers can share one safety baseline instead of hard-coding copies.
+- This file does not parse manifests, touch Lua, or mutate runtime state; it only describes contracts and diagnostics.
+- Read it when mod safety defaults, scan reports, or lifecycle validation payloads need to change.
 
 
 
@@ -154,13 +162,13 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - `LMod:getId() -> string`: Returns the mod id. This method is available to Lua scripts.
 - `LMod:getName() -> string`: Returns the mod display name. This method is available to Lua scripts.
 - `LMod:getPriority() -> integer`: Returns the mod priority. This method is available to Lua scripts.
-- `LMod:getSandbox() -> table`: Returns the configured sandbox policy table, or nil when unset.
+- `LMod:getSandbox() -> table`: Returns the configured sandbox policy.
 - `LMod:getVersion() -> string`: Returns the mod version. This method is available to Lua scripts.
 - `LMod:hasHook(name) -> boolean`: Returns whether a hook name is registered.
 - `LMod:isEnabled() -> boolean`: Returns whether the mod is enabled.
 - `LMod:isLoaded() -> boolean`: Returns whether the mod is loaded. This method is available to Lua scripts.
 - `LMod:releaseRefs() -> nil`: Releases stored Lua registry references for hooks and config.
-- `LMod:runHook(name) -> any`: Executes one stored hook under the mod sandbox and returns its Lua return values.
+- `LMod:runHook(name) -> any`: Executes one registered hook under the mod's configured sandbox policy.
 - `LMod:setApiVersion(api_version) -> nil`: Sets the required API version string.
 - `LMod:setCapabilities(caps) -> nil`: Sets capability names from an array table.
 - `LMod:setConfig(value) -> nil`: Stores a Lua config value for this mod.

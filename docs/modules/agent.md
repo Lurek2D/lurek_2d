@@ -90,7 +90,7 @@ end
 
 ### `lurek.agent.completeAsync`
 
-Sends a prompt asynchronously using a background thread; calls `callback(text, err)` on completion.
+Queues a prompt on the module-level bounded worker pool; calls `callback(text, err)` on completion.
 
 ```lua
 lurek.agent.completeAsync(prompt, callback)
@@ -177,7 +177,7 @@ lurek.agent.configure(config)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `config` | table | Config with `provider`, `base_url`, `model`, `timeout_ms`, and `api_key` fields. |
+| `config` | table | Config with `provider`, `base_url`, `model`, `timeout_ms`, `api_key`, and optional `allow_external_hosts`. |
 
 **Returns**
 
@@ -232,6 +232,22 @@ do
     example_print_log("Embedding dimensions:", ok and #vec or 0)
 end
 ```
+
+---
+
+### `lurek.agent.getDiagnostics`
+
+Returns module-level async transport diagnostics for `completeAsync`.
+
+```lua
+lurek.agent.getDiagnostics()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Diagnostics with queue, latency, and failure counters. |
 
 ---
 
@@ -476,7 +492,7 @@ lurek.agent.newOllama(config)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `config?` | table | Optional config with `url` (default `"http://127.0.0.1:11434"`). |
+| `config?` | table | Optional config with `url`, `binary_path`, `trusted_path`, `allowed_prefixes`, `protected_models`, `max_concurrent_pulls`, and `max_queued_pulls`. |
 
 **Returns**
 
@@ -917,6 +933,45 @@ do
     example_print_log("Context preview:\n", ctx)
 end
 ```
+
+---
+
+#### `LAISystem:buildContextReport`
+
+Builds context and returns both the rendered text and provenance list.
+
+```lua
+LAISystem:buildContextReport(instruction, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `instruction` | any |  |
+| `opts?` | any |  |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | `{ text = string, provenance = { ... } }`. |
+
+---
+
+#### `LAISystem:getDiagnostics`
+
+Returns transport diagnostics for the AI system runtime.
+
+```lua
+LAISystem:getDiagnostics()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Diagnostics with queue, latency, and failure counters. |
 
 ---
 
@@ -1572,6 +1627,22 @@ end
 
 ---
 
+#### `LAgent:getDiagnostics`
+
+Returns transport diagnostics for the agent runtime.
+
+```lua
+LAgent:getDiagnostics()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Diagnostics with queue, latency, and failure counters. |
+
+---
+
 #### `LAgent:getFormat`
 
 Returns the current response format string.
@@ -2212,7 +2283,7 @@ end
 
 #### `LAgent:setUrl`
 
-Changes the LLM endpoint URL for future prompts.
+Changes the LLM endpoint URL for future prompts after safe-mode validation.
 
 ```lua
 LAgent:setUrl(url)
@@ -2222,7 +2293,7 @@ LAgent:setUrl(url)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `url` | string | Full endpoint URL (e.g. `"http://127.0.0.1:11434/api/generate"`). |
+| `url` | string | Full endpoint URL (typically local, e.g. `"http://127.0.0.1:11434/api/generate"`). |
 
 **Returns**
 
@@ -2602,6 +2673,22 @@ end
 
 ---
 
+#### `LAgentMemory:getDiagnostics`
+
+Returns diagnostics for the bundled memory state and persistence policy.
+
+```lua
+LAgentMemory:getDiagnostics()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Counts, approximate bytes, and storage-policy information. |
+
+---
+
 #### `LAgentMemory:load`
 
 Deserialises memory state from the configured persist_path.
@@ -2960,12 +3047,34 @@ end
 
 ---
 
+#### `LOllamaManager:cancelPull`
+
+Marks a queued or in-flight pull as cancelled so its result is ignored on completion.
+
+```lua
+LOllamaManager:cancelPull(callback_id)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `callback_id` | number | ID returned by `pullModel`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | `true` when the callback ID was marked as cancelled. |
+
+---
+
 #### `LOllamaManager:deleteModel`
 
 Sends `DELETE /api/delete` to remove a model from local Ollama storage.
 
 ```lua
-LOllamaManager:deleteModel(name)
+LOllamaManager:deleteModel(name, confirm_token)
 ```
 
 **Parameters**
@@ -2973,6 +3082,7 @@ LOllamaManager:deleteModel(name)
 | Name | Type | Description |
 |------|------|-------------|
 | `name` | string | Model name to delete (e.g. `"llama3:latest"`). |
+| `confirm_token?` | string | Required when deleting a model protected by policy. |
 
 **Returns**
 
@@ -2994,6 +3104,22 @@ do
     lurek.log.info("pending pull jobs=" .. tostring(pending))
 end
 ```
+
+---
+
+#### `LOllamaManager:getDiagnostics`
+
+Returns operational diagnostics for the Ollama manager.
+
+```lua
+LOllamaManager:getDiagnostics()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Diagnostics with pull queue state and last error information. |
 
 ---
 

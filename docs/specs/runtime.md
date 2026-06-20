@@ -34,17 +34,6 @@
 
 This module primarily collaborates with `audio`, `camera`, `event`, `filesystem`, `image`, `input`, `light`, `lua_api`, and adjacent engine modules. Its responsibility should stay inside the Core Runtime group rather than absorb behavior owned by those neighbors.
 
-## Runtime Contracts
-
-- `conf.toml` is bounded before read, may advertise `schema_version = 1`, and supports strict unknown-key rejection through the runtime config loader.
-- Known config fields are validated centrally. Strict validation rejects invalid dimensions, tick rates, scale modes, log levels, and non-finite headless timing. Permissive validation clamps them back to supported defaults.
-- Headless `main.lua` and `--eval` chunks run under the same `LuaExecutionPolicy` timeout semantics used by guarded runtime callbacks.
-- Headless `game_dir` is canonicalized before `package.path` is built. Runtime-owned search roots are inserted in this order: game root, game `?/init.lua`, `content/?.lua`, and `content/?/init.lua`.
-- Runtime resource budgeting treats textures and canvases as evictable LRU entries, while fonts and shaders remain counted as non-evictable overage.
-- `SharedState::validate_frame_state()` is the diagnostics entry point for invalid colors, zero window dimensions, stale active handles, pending texture-release acknowledgements, and invalid frame-profile values.
-- Released texture handles are queued with frame and config-revision metadata until the host acknowledges cleanup, preventing silent growth across repeated release/recreate cycles.
-- Runtime mode policy remains split by owner: GUI app loop, headless runner, and REPL helpers all share the same timeout primitive instead of maintaining separate hook behavior.
-
 ## Imports
 
 - `audio`: Imports or references `audio` from `src/audio/`.
@@ -56,6 +45,7 @@ This module primarily collaborates with `audio`, `camera`, `event`, `filesystem`
 - `light`: Imports or references `light` from `src/light/`.
 - `lua_api`: `src/lua_api/system_api.rs`, `src/lua_api/engine_api.rs`, and `src/lua_api/register.rs` expose the runtime contract to Lua. `src/runtime/` must not import the binding layer.
 - `midi`: Imports or references `src/midi/`. Cross-group dependency from `Core Runtime` into `Edge/Integration`.
+- `mods`: Imports or references `src/mods/`. Cross-group dependency from `Core Runtime` into `Feature Systems`.
 - `parallax`: Imports or references `parallax` from `src/parallax/`.
 - `particle`: Imports or references `particle` from `src/particle/`.
 - `province`: Imports or references `src/province/`. Cross-group dependency from `Core Runtime` into `Edge/Integration`.
@@ -108,6 +98,14 @@ This module primarily collaborates with `audio`, `camera`, `event`, `filesystem`
 - Open this file when adding or changing a stable runtime log code, not when editing the prose catalog text.
 - Use `messages.rs` for human-readable strings and this file for durable ids, macro wiring, and level helpers.
 - Open it when logging contracts change; runtime modules across the repo depend on these shared identifiers.
+
+### lua_execution.rs
+
+- This file owns shared Lua execution policy used by GUI app, headless runs, and other host-side callers.
+- `LuaExecutionPolicy` centralizes callback timeout configuration and instruction-hook cadence.
+- The helper executes already-resolved Lua functions and removes timeout hooks with RAII cleanup.
+- Keeping this logic in runtime avoids diverging timeout semantics between GUI and headless hosts.
+- Open it when Lua callback timeout policy or hook cleanup behavior changes.
 
 ### messages.rs
 
@@ -376,6 +374,7 @@ This module primarily collaborates with `audio`, `camera`, `event`, `filesystem`
 - `light`: Imports or references `light` from `src/light/`.
 - `lua_api`: `src/lua_api/system_api.rs`, `src/lua_api/engine_api.rs`, and `src/lua_api/register.rs` expose the runtime contract to Lua. `src/runtime/` must not import the binding layer.
 - `midi`: Imports or references `src/midi/`. Cross-group dependency from `Core Runtime` into `Edge/Integration`.
+- `mods`: Imports or references `src/mods/`. Cross-group dependency from `Core Runtime` into `Feature Systems`.
 - `parallax`: Imports or references `parallax` from `src/parallax/`.
 - `particle`: Imports or references `particle` from `src/particle/`.
 - `province`: Imports or references `src/province/`. Cross-group dependency from `Core Runtime` into `Edge/Integration`.

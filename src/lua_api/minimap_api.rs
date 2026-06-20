@@ -3,7 +3,9 @@
 use super::camera_api::LuaCamera2D;
 use super::render_api::LuaImage;
 use super::SharedState;
-use crate::minimap::{ColorMode, FogLevel, LayerData, MarkerAnimation, Minimap};
+use crate::minimap::{
+    ColorMode, FogLevel, LayerData, MarkerAnimation, Minimap, MinimapError, MinimapLimits,
+};
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -28,6 +30,13 @@ fn parse_lua_image_icon(
     f32,
     f32,
 )> {
+    if default_width.is_some_and(|value| !value.is_finite() || value <= 0.0)
+        || default_height.is_some_and(|value| !value.is_finite() || value <= 0.0)
+    {
+        return Err(LuaError::RuntimeError(format!(
+            "lurek.minimap: {method_name} width and height overrides must be finite positive numbers"
+        )));
+    }
     let image = image_ud.borrow::<LuaImage>().map_err(|_| {
         LuaError::RuntimeError(format!(
             "lurek.minimap: {} expects an LImage from lurek.render.newImage()",
@@ -51,6 +60,29 @@ fn parse_lua_image_icon(
         default_width.unwrap_or(texture_width),
         default_height.unwrap_or(texture_height),
     ))
+}
+
+fn minimap_error(err: MinimapError) -> LuaError {
+    LuaError::RuntimeError(format!("lurek.minimap: {err}"))
+}
+
+fn validate_finite_number(field: &'static str, value: f32) -> LuaResult<f32> {
+    if value.is_finite() {
+        Ok(value)
+    } else {
+        Err(LuaError::RuntimeError(format!(
+            "lurek.minimap: {field} must be finite"
+        )))
+    }
+}
+
+fn clamp_unit_color(field: &'static str, color: [f32; 4]) -> LuaResult<[f32; 4]> {
+    if color.iter().any(|channel| !channel.is_finite()) {
+        return Err(LuaError::RuntimeError(format!(
+            "lurek.minimap: {field} must contain only finite color components"
+        )));
+    }
+    Ok(color.map(|channel| channel.clamp(0.0, 1.0)))
 }
 /// Lua-side wrapper for a minimap instance and access to render command state.
 pub struct LuaMinimap {
@@ -105,8 +137,7 @@ impl LuaUserData for LuaMinimap {
         /// @param | w | integer | Display width in pixels.
         /// @param | h | integer | Display height in pixels.
         methods.add_method_mut("setDisplaySize", |_, this, (w, h): (u32, u32)| {
-            this.inner.set_display_size(w, h);
-            Ok(())
+            this.inner.try_set_display_size(w, h).map_err(minimap_error)
         });
         // -- setTerrain --
         /// Sets terrain type for a one-based grid cell.
@@ -148,8 +179,9 @@ impl LuaUserData for LuaMinimap {
                 let v: u32 = data.get(i)?;
                 values.push(v);
             }
-            this.inner.set_terrain_data(&values);
-            Ok(())
+            this.inner
+                .try_set_terrain_data(&values)
+                .map_err(minimap_error)
         });
         // -- setTerrainColor --
         /// Sets the RGBA display color for a terrain type.
@@ -161,8 +193,8 @@ impl LuaUserData for LuaMinimap {
         methods.add_method_mut(
             "setTerrainColor",
             |_, this, (terrain_type, r, g, b, a): (u32, f32, f32, f32, Option<f32>)| {
-                this.inner
-                    .set_terrain_color(terrain_type, [r, g, b, a.unwrap_or(1.0)]);
+                let color = clamp_unit_color("terrain color", [r, g, b, a.unwrap_or(1.0)])?;
+                this.inner.set_terrain_color(terrain_type, color);
                 Ok(())
             },
         );
@@ -246,7 +278,8 @@ impl LuaUserData for LuaMinimap {
         methods.add_method_mut(
             "setFogColor",
             |_, this, (r, g, b, a): (f32, f32, f32, Option<f32>)| {
-                this.inner.set_fog_color([r, g, b, a.unwrap_or(0.8)]);
+                let color = clamp_unit_color("fog color", [r, g, b, a.unwrap_or(0.8)])?;
+                this.inner.set_fog_color(color);
                 Ok(())
             },
         );
@@ -270,8 +303,7 @@ impl LuaUserData for LuaMinimap {
                 let v: u8 = data.get(i)?;
                 bytes.push(v);
             }
-            this.inner.set_fog_data(&bytes);
-            Ok(())
+            this.inner.try_set_fog_data(&bytes).map_err(minimap_error)
         });
         // -- addObjectType --
         /// Adds an object type and returns its one-based index.
@@ -284,9 +316,8 @@ impl LuaUserData for LuaMinimap {
         methods.add_method_mut(
             "addObjectType",
             |_, this, (name, r, g, b, a): (String, f32, f32, f32, Option<f32>)| {
-                let idx = this
-                    .inner
-                    .add_object_type(name, [r, g, b, a.unwrap_or(1.0)]);
+                let color = clamp_unit_color("object type color", [r, g, b, a.unwrap_or(1.0)])?;
+                let idx = this.inner.add_object_type(name, color);
                 Ok(idx + 1)
             },
         );
@@ -302,8 +333,13 @@ impl LuaUserData for LuaMinimap {
                         "lurek.minimap: object type index is 1-based".into(),
                     ));
                 }
-                this.inner.set_object_type_visible(type_idx - 1, visible);
-                Ok(())
+                if this.inner.set_object_type_visible(type_idx - 1, visible) {
+                    Ok(())
+                } else {
+                    Err(minimap_error(MinimapError::MissingObjectType {
+                        index: type_idx - 1,
+                    }))
+                }
             },
         );
         // -- isObjectTypeVisible --
@@ -347,15 +383,20 @@ impl LuaUserData for LuaMinimap {
                 }
                 let (texture_key, tex_w, tex_h, display_w, display_h) =
                     parse_lua_image_icon(image_ud, width, height, "setObjectTypeTexture")?;
-                this.inner.set_object_type_texture(
+                if this.inner.set_object_type_texture(
                     type_idx - 1,
                     texture_key,
                     tex_w,
                     tex_h,
                     display_w,
                     display_h,
-                );
-                Ok(())
+                ) {
+                    Ok(())
+                } else {
+                    Err(minimap_error(MinimapError::MissingObjectType {
+                        index: type_idx - 1,
+                    }))
+                }
             },
         );
         // -- clearObjectTypeTexture --
@@ -385,9 +426,22 @@ impl LuaUserData for LuaMinimap {
                         "lurek.minimap: object type index is 1-based".into(),
                     ));
                 }
-                this.inner
-                    .set_object(id, x, y, type_idx - 1, owner.unwrap_or(0));
-                Ok(())
+                let x = validate_finite_number("object x", x)?;
+                let y = validate_finite_number("object y", y)?;
+                if this
+                    .inner
+                    .set_object(id, x, y, type_idx - 1, owner.unwrap_or(0))
+                {
+                    Ok(())
+                } else if type_idx - 1 >= this.inner.object_type_count() {
+                    Err(minimap_error(MinimapError::MissingObjectType {
+                        index: type_idx - 1,
+                    }))
+                } else {
+                    Err(minimap_error(MinimapError::ObjectLimitExceeded {
+                        limit: this.inner.limits().max_objects,
+                    }))
+                }
             },
         );
         // -- removeObject --
@@ -419,8 +473,8 @@ impl LuaUserData for LuaMinimap {
         methods.add_method_mut(
             "setOwnerColor",
             |_, this, (owner, r, g, b, a): (u32, f32, f32, f32, Option<f32>)| {
-                this.inner
-                    .set_owner_color(owner, [r, g, b, a.unwrap_or(1.0)]);
+                let color = clamp_unit_color("owner color", [r, g, b, a.unwrap_or(1.0)])?;
+                this.inner.set_owner_color(owner, color);
                 Ok(())
             },
         );
@@ -458,8 +512,7 @@ impl LuaUserData for LuaMinimap {
         /// Sets the minimap zoom magnification level.
         /// @param | zoom | number | Zoom value.
         methods.add_method_mut("setZoom", |_, this, zoom: f32| {
-            this.inner.set_zoom(zoom);
-            Ok(())
+            this.inner.try_set_zoom(zoom).map_err(minimap_error)
         });
         // -- getZoom --
         /// Returns the current minimap zoom magnification level.
@@ -470,8 +523,7 @@ impl LuaUserData for LuaMinimap {
         /// @param | x | number | Center x coordinate.
         /// @param | y | number | Center y coordinate.
         methods.add_method_mut("setCenter", |_, this, (x, y): (f32, f32)| {
-            this.inner.set_center(x, y);
-            Ok(())
+            this.inner.try_set_center(x, y).map_err(minimap_error)
         });
         // -- trackCamera --
         /// Centers the minimap and viewport rectangle from a camera handle.
@@ -485,9 +537,12 @@ impl LuaUserData for LuaMinimap {
             })?;
             let (camera_x, camera_y) = camera.position();
             let (vx, vy, vw, vh) = camera.visible_area();
-            this.inner.set_center(camera_x, camera_y);
-            this.inner.set_viewport_rect(vx, vy, vw, vh);
-            Ok(())
+            this.inner
+                .try_set_center(camera_x, camera_y)
+                .map_err(minimap_error)?;
+            this.inner
+                .try_set_viewport_rect(vx, vy, vw, vh)
+                .map_err(minimap_error)
         });
         // -- revealRadius --
         /// Reveals fog inside a world-space radius.
@@ -497,8 +552,9 @@ impl LuaUserData for LuaMinimap {
         methods.add_method_mut(
             "revealRadius",
             |_, this, (cx, cy, radius): (f32, f32, f32)| {
-                this.inner.reveal_radius(cx, cy, radius);
-                Ok(())
+                this.inner
+                    .try_reveal_radius(cx, cy, radius)
+                    .map_err(minimap_error)
             },
         );
         // -- getCenter --
@@ -525,8 +581,9 @@ impl LuaUserData for LuaMinimap {
         methods.add_method_mut(
             "setViewportRect",
             |_, this, (x, y, w, h): (f32, f32, f32, f32)| {
-                this.inner.set_viewport_rect(x, y, w, h);
-                Ok(())
+                this.inner
+                    .try_set_viewport_rect(x, y, w, h)
+                    .map_err(minimap_error)
             },
         );
         // -- clearViewportRect --
@@ -569,7 +626,8 @@ impl LuaUserData for LuaMinimap {
         methods.add_method_mut(
             "setViewportColor",
             |_, this, (r, g, b, a): (f32, f32, f32, Option<f32>)| {
-                this.inner.set_viewport_color([r, g, b, a.unwrap_or(0.8)]);
+                let color = clamp_unit_color("viewport color", [r, g, b, a.unwrap_or(0.8)])?;
+                this.inner.set_viewport_color(color);
                 Ok(())
             },
         );
@@ -606,14 +664,30 @@ impl LuaUserData for LuaMinimap {
                 Option<f32>,
                 Option<f32>,
             )| {
-                let color = [
-                    r.unwrap_or(1.0),
-                    g.unwrap_or(1.0),
-                    b.unwrap_or(0.0),
-                    a.unwrap_or(1.0),
-                ];
-                this.inner.add_ping(x, y, duration, color);
-                Ok(())
+                let x = validate_finite_number("ping x", x)?;
+                let y = validate_finite_number("ping y", y)?;
+                let duration = validate_finite_number("ping duration", duration)?;
+                if duration < 0.0 {
+                    return Err(LuaError::RuntimeError(
+                        "lurek.minimap: ping duration must be non-negative".into(),
+                    ));
+                }
+                let color = clamp_unit_color(
+                    "ping color",
+                    [
+                        r.unwrap_or(1.0),
+                        g.unwrap_or(1.0),
+                        b.unwrap_or(0.0),
+                        a.unwrap_or(1.0),
+                    ],
+                )?;
+                if this.inner.add_ping(x, y, duration, color) {
+                    Ok(())
+                } else {
+                    Err(minimap_error(MinimapError::PingLimitExceeded {
+                        limit: this.inner.limits().max_pings,
+                    }))
+                }
             },
         );
         // -- getPingCount --
@@ -644,13 +718,19 @@ impl LuaUserData for LuaMinimap {
                 Option<f32>,
                 Option<f32>,
             )| {
-                let color = [
-                    r.unwrap_or(1.0),
-                    g.unwrap_or(0.0),
-                    b.unwrap_or(0.0),
-                    a.unwrap_or(1.0),
-                ];
-                let id = this.inner.add_marker(x, y, desc.unwrap_or_default(), color);
+                let color = clamp_unit_color(
+                    "marker color",
+                    [
+                        r.unwrap_or(1.0),
+                        g.unwrap_or(0.0),
+                        b.unwrap_or(0.0),
+                        a.unwrap_or(1.0),
+                    ],
+                )?;
+                let id = this
+                    .inner
+                    .try_add_marker(x, y, desc.unwrap_or_default(), color)
+                    .map_err(minimap_error)?;
                 Ok(id)
             },
         );
@@ -692,8 +772,14 @@ impl LuaUserData for LuaMinimap {
             |_, this, (id, image_ud, width, height): (u32, LuaAnyUserData, Option<f32>, Option<f32>)| {
                 let (texture_key, tex_w, tex_h, display_w, display_h) =
                     parse_lua_image_icon(image_ud, width, height, "setMarkerTexture")?;
-                this.inner.set_marker_texture(id, texture_key, tex_w, tex_h, display_w, display_h);
-                Ok(())
+                if this
+                    .inner
+                    .set_marker_texture(id, texture_key, tex_w, tex_h, display_w, display_h)
+                {
+                    Ok(())
+                } else {
+                    Err(minimap_error(MinimapError::MissingMarker { id }))
+                }
             },
         );
         // -- clearMarkerTexture --
@@ -711,6 +797,7 @@ impl LuaUserData for LuaMinimap {
         methods.add_method_mut(
             "setMarkerAnimation",
             |_, this, (id, anim_type, speed): (u32, String, f32)| {
+                let speed = validate_finite_number("marker animation speed", speed)?;
                 let anim = match anim_type.as_str() {
                     "blink" => MarkerAnimation::Blink { speed, phase: 0.0 },
                     "pulse" => MarkerAnimation::Pulse { speed, phase: 0.0 },
@@ -745,8 +832,13 @@ impl LuaUserData for LuaMinimap {
             "drawLine",
             |_, this, (x1, y1, x2, y2, color_tbl): (f32, f32, f32, f32, LuaTable)| {
                 let color = parse_color_table(color_tbl)?;
-                this.inner.draw_line(x1, y1, x2, y2, color);
-                Ok(())
+                if this.inner.draw_line(x1, y1, x2, y2, color) {
+                    Ok(())
+                } else {
+                    Err(minimap_error(MinimapError::OverlayLimitExceeded {
+                        limit: this.inner.limits().max_overlay_shapes,
+                    }))
+                }
             },
         );
         // -- drawRect --
@@ -760,8 +852,13 @@ impl LuaUserData for LuaMinimap {
             "drawRect",
             |_, this, (x, y, w, h, color_tbl): (f32, f32, f32, f32, LuaTable)| {
                 let color = parse_color_table(color_tbl)?;
-                this.inner.draw_rect(x, y, w, h, color);
-                Ok(())
+                if this.inner.draw_rect(x, y, w, h, color) {
+                    Ok(())
+                } else {
+                    Err(minimap_error(MinimapError::OverlayLimitExceeded {
+                        limit: this.inner.limits().max_overlay_shapes,
+                    }))
+                }
             },
         );
         // -- clearOverlay --
@@ -791,9 +888,14 @@ impl LuaUserData for LuaMinimap {
                     let pt: LuaTable = points_tbl.get(i)?;
                     let x: f32 = pt.get(1)?;
                     let y: f32 = pt.get(2)?;
+                    validate_finite_number("path x", x)?;
+                    validate_finite_number("path y", y)?;
                     points.push((x, y));
                 }
-                let id = this.inner.show_path(points, color);
+                let id = this
+                    .inner
+                    .try_show_path(points, color)
+                    .map_err(minimap_error)?;
                 Ok(id)
             },
         );
@@ -812,8 +914,13 @@ impl LuaUserData for LuaMinimap {
         /// Sets the active minimap display layer index.
         /// @param | layer | integer | Layer index.
         methods.add_method_mut("setLayer", |_, this, layer: usize| {
-            this.inner.set_layer(layer);
-            Ok(())
+            if this.inner.set_layer(layer) {
+                Ok(())
+            } else if this.inner.layer_data(layer).is_none() {
+                Err(minimap_error(MinimapError::InvalidLayer { layer }))
+            } else {
+                Err(minimap_error(MinimapError::EmptyLayer { layer }))
+            }
         });
         // -- getLayer --
         /// Returns the active minimap display layer index.
@@ -838,15 +945,16 @@ impl LuaUserData for LuaMinimap {
                 }
                 let w = this.inner.grid_width();
                 let h = this.inner.grid_height();
-                this.inner.set_layer_data(
-                    layer,
-                    LayerData {
-                        cells,
-                        width: w,
-                        height: h,
-                    },
-                );
-                Ok(())
+                this.inner
+                    .try_set_layer_data(
+                        layer,
+                        LayerData {
+                            cells,
+                            width: w,
+                            height: h,
+                        },
+                    )
+                    .map_err(minimap_error)
             },
         );
         // -- getLayerData --
@@ -907,12 +1015,17 @@ impl LuaUserData for LuaMinimap {
         /// @param | sy | number | Screen y coordinate.
         /// @param | mx | number | Minimap x position.
         /// @param | my | number | Minimap y position.
-        /// @return | number | Grid x coordinate.
-        /// @return | number | Grid y coordinate.
+        /// @return | number | Grid x coordinate, or nil when the transform state is invalid.
+        /// @return | number | Grid y coordinate, or nil when the transform state is invalid.
         methods.add_method(
             "screenToGrid",
-            |_, this, (sx, sy, mx, my): (f32, f32, f32, f32)| {
-                Ok(this.inner.screen_to_grid(sx, sy, mx, my))
+            |_, this, (sx, sy, mx, my): (f32, f32, f32, f32)| match this
+                .inner
+                .try_screen_to_grid(sx, sy, mx, my)
+            {
+                Ok((gx, gy)) => Ok((Some(gx), Some(gy))),
+                Err(MinimapError::TransformUnavailable { .. }) => Ok((None, None)),
+                Err(err) => Err(minimap_error(err)),
             },
         );
         // -- gridToScreen --
@@ -921,18 +1034,24 @@ impl LuaUserData for LuaMinimap {
         /// @param | gy | number | Grid y coordinate.
         /// @param | mx | number | Minimap x position.
         /// @param | my | number | Minimap y position.
-        /// @return | number | Screen x coordinate.
-        /// @return | number | Screen y coordinate.
+        /// @return | number | Screen x coordinate, or nil when the transform state is invalid.
+        /// @return | number | Screen y coordinate, or nil when the transform state is invalid.
         methods.add_method(
             "gridToScreen",
-            |_, this, (gx, gy, mx, my): (f32, f32, f32, f32)| {
-                Ok(this.inner.grid_to_screen(gx, gy, mx, my))
+            |_, this, (gx, gy, mx, my): (f32, f32, f32, f32)| match this
+                .inner
+                .try_grid_to_screen(gx, gy, mx, my)
+            {
+                Ok((sx, sy)) => Ok((Some(sx), Some(sy))),
+                Err(MinimapError::TransformUnavailable { .. }) => Ok((None, None)),
+                Err(err) => Err(minimap_error(err)),
             },
         );
         // -- update --
         /// Advances minimap animations and timers.
         /// @param | dt | number | Delta time in seconds.
         methods.add_method_mut("update", |_, this, dt: f32| {
+            validate_finite_number("update dt", dt)?;
             this.inner.update(dt);
             Ok(())
         });
@@ -963,7 +1082,10 @@ impl LuaUserData for LuaMinimap {
         /// @param | pixel_size | integer | Pixel size scale.
         /// @return | LImageData | Image data containing the rendered minimap.
         methods.add_method("drawToImage", |_, this, pixel_size: u32| {
-            let img = this.inner.draw_to_image(pixel_size);
+            let img = this
+                .inner
+                .try_draw_to_image(pixel_size)
+                .map_err(minimap_error)?;
             Ok(img)
         });
     }
@@ -984,7 +1106,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 let dw = display_w.unwrap_or(200);
                 let dh = display_h.unwrap_or(200);
                 Ok(LuaMinimap {
-                    inner: Minimap::new(grid_w, grid_h, dw, dh),
+                    inner: Minimap::try_new(grid_w, grid_h, dw, dh, MinimapLimits::default())
+                        .map_err(minimap_error)?,
                     state: s.clone(),
                 })
             },

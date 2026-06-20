@@ -2989,6 +2989,16 @@ function LAISystem:agentCount() end
 ---@return string The assembled system context block.
 function LAISystem:buildContext(instruction, opts) end
 
+--- Builds context and returns both the rendered text and provenance list.
+---@param instruction any
+---@param opts? any
+---@return table `{ text = string, provenance = { ... } }`.
+function LAISystem:buildContextReport(instruction, opts) end
+
+--- Returns transport diagnostics for the AI system runtime.
+---@return table Diagnostics with queue, latency, and failure counters.
+function LAISystem:getDiagnostics() end
+
 --- Returns `true` if an agent with `name` is registered.
 ---@param name string Agent name to check.
 ---@return boolean `true` if the agent exists.
@@ -3077,6 +3087,10 @@ function LAgent:evalCode(code) end
 ---@return string Role description, or `""` if not set.
 function LAgent:getDescription() end
 
+--- Returns transport diagnostics for the agent runtime.
+---@return table Diagnostics with queue, latency, and failure counters.
+function LAgent:getDiagnostics() end
+
 --- Returns the current response format string.
 ---@return string One of `"json"`, `"csv"`, or `"text"`.
 function LAgent:getFormat() end
@@ -3164,8 +3178,8 @@ function LAgent:setTemperature(t) end
 ---@return nil No value is returned.
 function LAgent:setTimeout(secs) end
 
---- Changes the LLM endpoint URL for future prompts.
----@param url string Full endpoint URL (e.g. `"http://127.0.0.1:11434/api/generate"`).
+--- Changes the LLM endpoint URL for future prompts after safe-mode validation.
+---@param url string Full endpoint URL (typically local, e.g. `"http://127.0.0.1:11434/api/generate"`).
 ---@return nil No value is returned.
 function LAgent:setUrl(url) end
 
@@ -3214,6 +3228,10 @@ function LAgentManager:update() end
 ---@return LEpisodicMemory Episodic memory handle.
 function LAgentMemory:episodic() end
 
+--- Returns diagnostics for the bundled memory state and persistence policy.
+---@return table Counts, approximate bytes, and storage-policy information.
+function LAgentMemory:getDiagnostics() end
+
 --- Deserialises memory state from the configured persist_path.
 ---@return boolean `true` on success, raises an error on failure.
 function LAgentMemory:load() end
@@ -3259,10 +3277,20 @@ function LEpisodicMemory:record(tick, data) end
 ---@return string Base URL (e.g. `"http://127.0.0.1:11434"`).
 function LOllamaManager:baseUrl() end
 
+--- Marks a queued or in-flight pull as cancelled so its result is ignored on completion.
+---@param callback_id number ID returned by `pullModel`.
+---@return boolean `true` when the callback ID was marked as cancelled.
+function LOllamaManager:cancelPull(callback_id) end
+
 --- Sends `DELETE /api/delete` to remove a model from local Ollama storage.
 ---@param name string Model name to delete (e.g. `"llama3:latest"`).
+---@param confirm_token? string Required when deleting a model protected by policy.
 ---@return boolean `true` if the request succeeded.
-function LOllamaManager:deleteModel(name) end
+function LOllamaManager:deleteModel(name, confirm_token) end
+
+--- Returns operational diagnostics for the Ollama manager.
+---@return table Diagnostics with pull queue state and last error information.
+function LOllamaManager:getDiagnostics() end
 
 --- Returns `true` if a model with the given name (or name prefix) is available locally.
 ---@param name string Model name to check (e.g. `"llama3"` or `"llama3:latest"`).
@@ -3375,7 +3403,7 @@ lurek.agent.cancel = function(callback_id) end
 ---@return string Response text, or raises an error on failure.
 lurek.agent.complete = function(prompt) end
 
---- Sends a prompt asynchronously using a background thread; calls `callback(text, err)` on completion.
+--- Queues a prompt on the module-level bounded worker pool; calls `callback(text, err)` on completion.
 ---@param prompt string Prompt text.
 ---@param callback function Called with `(text, err)` on completion (`err` is `nil` on success).
 ---@return number Callback ID used to cancel or track the request.
@@ -3387,7 +3415,7 @@ lurek.agent.completeAsync = function(prompt, callback) end
 lurek.agent.completeJson = function(prompt) end
 
 --- Configures the global LLM provider settings used by module-level functions.
----@param config table Config with `provider`, `base_url`, `model`, `timeout_ms`, and `api_key` fields.
+---@param config table Config with `provider`, `base_url`, `model`, `timeout_ms`, `api_key`, and optional `allow_external_hosts`.
 ---@return nil No value is returned.
 lurek.agent.configure = function(config) end
 
@@ -3395,6 +3423,10 @@ lurek.agent.configure = function(config) end
 ---@param text string Text to embed.
 ---@return table Number array of float embedding values, or raises an error on failure.
 lurek.agent.embed = function(text) end
+
+--- Returns module-level async transport diagnostics for `completeAsync`.
+---@return table Diagnostics with queue, latency, and failure counters.
+lurek.agent.getDiagnostics = function() end
 
 --- Returns `true` if the configured LLM server responds within 5 seconds.
 ---@return boolean `true` if the server is reachable.
@@ -3427,7 +3459,7 @@ lurek.agent.newEpisodicMemory = function() end
 lurek.agent.newManager = function() end
 
 --- Creates an Ollama infrastructure manager for server lifecycle and model management.
----@param config? table Optional config with `url` (default `"http://127.0.0.1:11434"`).
+---@param config? table Optional config with `url`, `binary_path`, `trusted_path`, `allowed_prefixes`, `protected_models`, `max_concurrent_pulls`, and `max_queued_pulls`.
 ---@return LOllamaManager A new Ollama manager object.
 lurek.agent.newOllama = function(config) end
 
@@ -18532,8 +18564,8 @@ function LMinimap:getZoom() end
 ---@param gy number Grid y coordinate.
 ---@param mx number Minimap x position.
 ---@param my number Minimap y position.
----@return number Screen x coordinate.
----@return number Screen y coordinate.
+---@return number Screen x coordinate; or nil when the transform state is invalid.
+---@return number Screen y coordinate; or nil when the transform state is invalid.
 function LMinimap:gridToScreen(gx, gy, mx, my) end
 
 --- Returns whether a marker id exists.
@@ -18588,8 +18620,8 @@ function LMinimap:revealRadius(cx, cy, radius) end
 ---@param sy number Screen y coordinate.
 ---@param mx number Minimap x position.
 ---@param my number Minimap y position.
----@return number Grid x coordinate.
----@return number Grid y coordinate.
+---@return number Grid x coordinate; or nil when the transform state is invalid.
+---@return number Grid y coordinate; or nil when the transform state is invalid.
 function LMinimap:screenToGrid(sx, sy, mx, my) end
 
 --- Enables or disables minimap anti-aliasing.

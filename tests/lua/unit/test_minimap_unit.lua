@@ -19,6 +19,16 @@ describe("lurek.minimap.newMinimap", function()
         expect_equal(150, custom:getDisplayHeight())
     end)
 
+    -- @covers lurek.minimap.newMinimap
+    it("rejects zero grid dimensions", function()
+        expect_error(function()
+            lurek.minimap.newMinimap(0, 16)
+        end)
+        expect_error(function()
+            lurek.minimap.newMinimap(16, 0)
+        end)
+    end)
+
     -- @covers LMinimap:type
     it("reports correct type", function()
         local m = lurek.minimap.newMinimap(10, 10)
@@ -61,6 +71,17 @@ describe("display size", function()
         local w, h = m:getDisplaySize()
         expect_equal(300, w)
         expect_equal(200, h)
+    end)
+
+    -- @covers LMinimap:setDisplaySize
+    it("rejects zero display dimensions", function()
+        local m = lurek.minimap.newMinimap(10, 10)
+        expect_error(function()
+            m:setDisplaySize(0, 100)
+        end)
+        expect_error(function()
+            m:setDisplaySize(100, 0)
+        end)
     end)
 end)
 
@@ -156,6 +177,14 @@ describe("fog of war", function()
         expect_equal(2, m:getFogLevel(2, 2))
         expect_equal(2, m:getFogLevel(3, 3))
     end)
+
+    -- @covers LMinimap:setFogData
+    it("rejects fog data length mismatches", function()
+        local m = lurek.minimap.newMinimap(3, 3)
+        expect_error(function()
+            m:setFogData({ 1, 2, 3 })
+        end)
+    end)
 end)
 
 -- Object types
@@ -185,6 +214,17 @@ describe("object types", function()
         expect_true(m:isObjectTypeVisible(idx))
         m:setObjectTypeVisible(idx, false)
         expect_false(m:isObjectTypeVisible(idx))
+    end)
+
+    -- @covers LMinimap:setObjectTypeVisible
+    it("rejects unknown object type targets", function()
+        local m = lurek.minimap.newMinimap(10, 10)
+        expect_error(function()
+            m:setObjectTypeVisible(1, false)
+        end)
+        expect_error(function()
+            m:setObjectTypeTexture(1, lurek.render.newImage("assets/icon.png"), 8, 8)
+        end)
     end)
 end)
 
@@ -274,6 +314,14 @@ describe("zoom and pan", function()
         expect_near(2.5, m:getZoom())
     end)
 
+    -- @covers LMinimap:setZoom
+    it("rejects invalid zoom values", function()
+        local m = lurek.minimap.newMinimap(10, 10)
+        expect_error(function()
+            m:setZoom(0)
+        end)
+    end)
+
     -- @covers LMinimap:setCenter
     it("can set center", function()
         local m = lurek.minimap.newMinimap(10, 10)
@@ -315,6 +363,14 @@ describe("zoom and pan", function()
         expect_equal(2, m:getFogLevel(4, 4))
         expect_equal(2, m:getFogLevel(3, 4))
         expect_equal(0, m:getFogLevel(1, 1))
+    end)
+
+    -- @covers LMinimap:revealRadius
+    it("rejects non-finite reveal inputs", function()
+        local m = lurek.minimap.newMinimap(8, 8)
+        expect_error(function()
+            m:revealRadius(0 / 0, 3.5, 1.6)
+        end)
     end)
 end)
 
@@ -477,7 +533,7 @@ end)
 -- @describe terrain data bulk set
 describe("terrain data bulk set", function()
     -- @covers LMinimap:setTerrainData
-    it("sets cells from flat tables and ignores excess values", function()
+    it("sets cells from exact flat tables and rejects mismatches", function()
         local m = lurek.minimap.newMinimap(3, 2)
         m:setTerrainData({1, 2, 3, 4, 5, 6})
         expect_equal(1, m:getTerrain(1, 1))
@@ -486,10 +542,9 @@ describe("terrain data bulk set", function()
         expect_equal(4, m:getTerrain(1, 2))
         expect_equal(5, m:getTerrain(2, 2))
         expect_equal(6, m:getTerrain(3, 2))
-        local compact = lurek.minimap.newMinimap(2, 2)
-        compact:setTerrainData({7, 8, 9, 10, 11, 12, 13})
-        expect_equal(7, compact:getTerrain(1, 1))
-        expect_equal(10, compact:getTerrain(2, 2))
+        expect_error(function()
+            m:setTerrainData({7, 8, 9})
+        end)
     end)
 end)
 
@@ -597,6 +652,14 @@ describe("minimap layers", function()
     -- @covers LMinimap:setLayer
     it("setLayer switches between layers", function()
         local mm = lurek.minimap.newMinimap(64, 64)
+        local data1 = {}
+        local data2 = {}
+        for i = 1, 64 * 64 do
+            data1[i] = 1
+            data2[i] = 2
+        end
+        mm:setLayerData(1, data1)
+        mm:setLayerData(2, data2)
         mm:setLayer(1)
         expect_equal(mm:getLayer(), 1)
         mm:setLayer(2)
@@ -633,6 +696,17 @@ describe("minimap layers", function()
         expect_equal(data[1], out[1])
         expect_equal(data[16], out[16])
         expect_nil(mm:getLayerData(5))
+    end)
+
+    -- @covers LMinimap:setLayer
+    it("rejects invalid layer selection and wrong-sized layer data", function()
+        local mm = lurek.minimap.newMinimap(4, 4)
+        expect_error(function()
+            mm:setLayer(2)
+        end)
+        expect_error(function()
+            mm:setLayerData(1, {1, 2, 3})
+        end)
     end)
 end)
 
@@ -749,6 +823,13 @@ describe("minimap icon helpers", function()
 
         expect_no_error(function() mm:setMarkerTexture(marker_id, tex, 10, 10) end)
         expect_no_error(function() mm:clearMarkerTexture(marker_id) end)
+    end)
+
+    -- @covers LMinimap:setMarkerTexture
+    it("rejects texture assignment for missing markers", function()
+        local mm = lurek.minimap.newMinimap(32, 32)
+        local tex = lurek.render.newImage("assets/icon.png")
+        expect_error(function() mm:setMarkerTexture(999, tex, 10, 10) end)
     end)
 end)
 

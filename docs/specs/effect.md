@@ -38,6 +38,12 @@ This module primarily collaborates with `image`, `overlay`, `render`, `runtime`.
 
 ## Files
 
+### contract.rs
+
+- This file owns the shared post-effect validation contract: limits, parameter schemas, errors, and diagnostics.
+- It keeps post-fx safety policy centralized so effect instances, stacks, debug images, and Lua bindings agree.
+- Open this file when post-fx validation semantics, dimension ceilings, or diagnostic vocabulary need to change.
+
 ### draw.rs
 
 - This file owns the lightweight `PostFxStack` preview renderer that turns stack activity into a diagnostic image.

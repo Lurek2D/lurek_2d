@@ -14,7 +14,7 @@
 - Source path: `src/ui/`
 - Binding: `src/lua_api/ui_api.rs`
 - Namespace: `lurek.ui`
-- Lua API surface: `90` functions, `39` types, `331` methods
+- Lua API surface: `92` functions, `39` types, `339` methods
 - Rust test path(s): tests/rust/unit/gui_tests.rs
 - Lua test path(s): tests/lua/unit/test_gui.lua, tests/lua/unit/test_ui_input_unit.lua, tests/lua/unit/test_ui_layout.lua, tests/lua/integration/test_i18n_ui.lua
 
@@ -44,25 +44,6 @@
 - The module is therefore not only a widget library but also a screen-architecture system. It gives projects a stable way to build interfaces that can grow from a few controls to full editors, dashboards, and data-heavy tool surfaces without changing mental models.
 - For wiki readers, the practical boundary is clear: if a feature is about widget identity, composition, style, layout, focus, event dispatch, data binding, or retained state over time, it belongs to `ui` even when another system supplies the data being shown.
 - Read `ui` as the engine's main authority for structured interactive surfaces. It is the module that makes screens persistent, composable, themeable, testable, and interoperable, whether the result is a simple pause menu or a full internal editor workspace.
-
-## UX Contracts
-
-- Decorative widgets such as labels, panels, layouts, spacers, separators, badges, and custom shells do not enter keyboard focus order unless `setFocusable(true)` overrides the default.
-- Focus traversal uses computed visibility, so widgets hidden by layout are skipped even when their raw `visible` flag is still true.
-- Tree attachment rejects cycles, root reparenting, and multi-parent links through the public `addChild` path, and declarative layouts are validated after load.
-- `lurek.ui.keyPressed("shift+tab")` moves focus backward while keeping existing `keyPressed("tab")` behavior unchanged.
-- Layout loading rejects non-finite geometry or numeric control values and applies control setters so slider, progress, spin box, and switch state remain internally consistent.
-- Combo-box dropdowns clamp to the active viewport, limit visible rows, and scroll instead of rendering an unbounded off-screen list.
-- Focused combo boxes support incremental keyboard typeahead so text input can jump to matching options without opening a separate filter UI.
-- Text inputs can opt out of dialog default-action submission on Enter, preventing accidental modal confirmation while editing.
-- Text inputs support replace-selection editing, `Delete`, `Ctrl+A`, `Ctrl+Left/Right` word navigation, and selection-preserving cursor movement with `Shift+Left/Right/Home/End`.
-- `MouseFilter::Pass` widgets receive press/release click semantics and still allow the first underlying `Stop` widget to consume the same pointer interaction.
-- Accessibility export resolves names from explicit `aria_name`, visible widget text, or a linked label declared through `label_for`.
-- Focused interactive widgets render a contrast focus ring from the theme token set, and `drawToImage` uses the same focus indicator so headless captures reflect keyboard-accessible state.
-- `validateUx` reports structural tree issues, duplicate ids, invalid `label_for` usage, decorative focus targets, focusable widgets that still lack an accessible name, undersized touch targets, modal dialog action gaps, offscreen popups, and popup z-order conflicts.
-- `renderToImage` writes only to relative workspace paths to avoid path traversal through layout-driven tooling calls.
-- Long single-line labels use cached width measurements plus binary-search ellipsis truncation to avoid character-by-character text measuring on every overflowed render.
-- Headless combo-box dropdown capture uses the same viewport clamp and visible-row window as the live render path.
 
 This module primarily collaborates with `dataframe`, `image`, `math`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
 
@@ -114,6 +95,14 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 - Provides the control-layer boundary between generic widget nodes and user-facing interactive primitives.
 - Feeds consistent layout, style, and interaction semantics into the context and renderer without extra adapters.
 - Open this file when editable values, selection rules, or control defaults behave differently than expected.
+
+### diagnostics.rs
+
+- Defines lightweight accessibility snapshots and UX diagnostics for the retained UI system.
+- Keeps report payload types separate from the live context owner so diagnostics APIs stay readable.
+- Provides stable data shapes used by Lua bindings, tests, and tooling that inspect UI semantics.
+- Acts as the type boundary for validation output without owning tree traversal or interaction logic.
+- Open this file when accessibility dumps or diagnostics payloads need to grow without bloating `context.rs`.
 
 ### extras.rs
 
@@ -215,8 +204,8 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 - `lurek.ui.focusNeighbor(direction) -> boolean`: Moves keyboard focus using an explicit directional focus link.
 - `lurek.ui.focusNext() -> nil`: Moves keyboard focus to the next focusable widget.
 - `lurek.ui.focusPrev() -> nil`: Moves keyboard focus to the previous focusable widget.
+- `lurek.ui.getAccessibilityTree() -> table`: Returns a flattened accessibility snapshot for all live widgets except the root.
 - `lurek.ui.getActiveDrag() -> integer`: Returns the widget index currently being dragged, or nil.
-- `lurek.ui.getAccessibilityTree() -> table`: Returns one table entry per live widget with `widget_idx`, `widget_type`, `role`, `name`, `description`, `label_for`, `focusable`, `visible`, and `enabled`.
 - `lurek.ui.getFocus() -> integer`: Returns the index of the currently focused widget, or nil.
 - `lurek.ui.getFont() -> LFont`: Returns the global UI font assigned to the root widget, or nil when UI uses the render fallback font.
 - `lurek.ui.getRoot() -> LPanel`: Returns the root panel widget of the UI tree.
@@ -287,7 +276,7 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 - `lurek.ui.updateBindings(data) -> integer`: Updates data bindings for widgets that reference binding keys.
 - `lurek.ui.updateResolution(width, height) -> nil`: Update the current viewport resolution and recompute UI scale factor.
 - `lurek.ui.update_bindings(data) -> integer`: Updates data bindings for widgets that reference binding keys.
-- `lurek.ui.validateUx() -> table`: Returns diagnostic tables with `message` and optional `widget_idx` for tree, focus, and accessibility issues.
+- `lurek.ui.validateUx() -> table`: Returns accessibility and usability diagnostics for the live widget tree.
 - `lurek.ui.visibleRange(widget, item_count, item_height) -> integer`: Calculate the visible item range for a scrollable list widget.
 - `lurek.ui.wheelmoved(x, y) -> boolean`: Delivers a mouse wheel event to the UI.
 
@@ -871,12 +860,12 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 
 - `LTextInput:getCursorPosition() -> integer`: Returns the current cursor position (character index) within the text input.
 - `LTextInput:getPlaceholder() -> string`: Returns the placeholder text of this text input.
-- `LTextInput:getSubmitOnEnter() -> boolean`: Returns whether Enter submits the surrounding dialog default action while this input is focused.
+- `LTextInput:getSubmitOnEnter() -> boolean`: Returns whether pressing Enter in this text input submits the surrounding dialog default action.
 - `LTextInput:getText() -> string`: Returns the current text content of this text input field.
 - `LTextInput:isFocused() -> boolean`: Returns whether this text input currently has keyboard focus.
 - `LTextInput:setMaxLength(n) -> nil`: Sets the maximum number of characters allowed in this text input.
 - `LTextInput:setPlaceholder(text) -> nil`: Sets the placeholder text shown when the input is empty.
-- `LTextInput:setSubmitOnEnter(value) -> nil`: Controls whether Enter submits the surrounding dialog default action while this input is focused.
+- `LTextInput:setSubmitOnEnter(value) -> nil`: Controls whether pressing Enter in this text input submits the surrounding dialog default action.
 - `LTextInput:setText(text) -> nil`: Sets the text content of this text input field and moves the cursor to the end.
 
 #### LTheme Type
@@ -1016,21 +1005,21 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 - `LUiWidget:fadeOut() -> nil`: Instantly makes this widget fully transparent and hidden.
 - `LUiWidget:findById(id) -> LWidget`: Searches this widget's subtree for a child with the given ID.
 - `LUiWidget:getAlpha() -> number`: Returns the current opacity of this widget.
+- `LUiWidget:getAriaName() -> string`: Returns the explicit accessible name metadata for this widget.
 - `LUiWidget:getChildCount() -> integer`: Returns the number of direct child widgets attached to this widget.
 - `LUiWidget:getChildren() -> table`: Returns a table of lightweight child widget references, each containing an _idx field.
 - `LUiWidget:getFlexGrow() -> number`: Returns the flex-grow factor of this widget.
 - `LUiWidget:getFlexShrink() -> number`: Returns the flex-shrink factor of this widget.
 - `LUiWidget:getId() -> string`: Returns the string identifier assigned to this widget.
+- `LUiWidget:getLabelFor() -> integer`: Returns the widget index associated through `setLabelFor`, or nil.
 - `LUiWidget:getMargin() -> number, number, number, number`: Returns the outer margin of this widget.
 - `LUiWidget:getMaxSize() -> number, number`: Returns the maximum width and height of this widget.
 - `LUiWidget:getMinSize() -> number, number`: Returns the minimum width and height of this widget.
-- `LUiWidget:getAriaName() -> string`: Returns the explicit accessible name metadata stored on this widget.
-- `LUiWidget:getLabelFor() -> integer`: Returns the widget index linked through `setLabelFor`, or nil.
 - `LUiWidget:getMouseFilter() -> string`: Returns the mouse filter of this widget.
 - `LUiWidget:getPadding() -> number, number, number, number`: Returns the inner padding of this widget.
 - `LUiWidget:getPosition() -> number, number`: Returns the local position of this widget relative to its parent.
 - `LUiWidget:getRect() -> number, number, number, number`: Returns the computed bounding rectangle of this widget in screen coordinates after layout.
-- `LUiWidget:getRole() -> string`: Returns the semantic role metadata stored on this widget.
+- `LUiWidget:getRole() -> string`: Returns the semantic role string for this widget.
 - `LUiWidget:getSize() -> number, number`: Returns the width and height of this widget.
 - `LUiWidget:getState() -> string`: Returns the current interaction state of this widget (e.g. "normal", "hovered", "pressed", "disabled").
 - `LUiWidget:getStyleClass() -> string`: Returns the style class of this widget.
@@ -1054,7 +1043,7 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 - `LUiWidget:setFocusable(value) -> nil`: Sets whether this widget participates in keyboard focus traversal.
 - `LUiWidget:setFont(font) -> nil`: Assigns a specific font to this widget and its descendants unless overridden further down the tree.
 - `LUiWidget:setId(id) -> nil`: Assigns a string identifier to this widget for lookup with findById.
-- `LUiWidget:setLabelFor(target?) -> nil`: Associates this label widget with another widget so accessibility name fallback can use visible label text.
+- `LUiWidget:setLabelFor(target?) -> nil`: Associates this label widget with another widget for accessibility naming.
 - `LUiWidget:setMargin(top, right?, bottom?, left?) -> nil`: Sets the outer margin of this widget. Accepts 1 to 4 values (top, right?, bottom?, left?) following CSS shorthand rules.
 - `LUiWidget:setMaxSize(w, h) -> nil`: Sets the maximum allowed width and height for this widget during layout.
 - `LUiWidget:setMinSize(w, h) -> nil`: Sets the minimum allowed width and height for this widget during layout.

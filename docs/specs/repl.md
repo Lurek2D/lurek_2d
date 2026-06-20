@@ -24,7 +24,7 @@ This module is mostly self-contained inside the `Core Runtime` group. Cross-modu
 
 ## Imports
 
-- No top-level `crate::<module>` imports were detected in this module's Rust source files.
+- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from ``Core Runtime`` into `Core Runtime`.
 
 ## Files
 
@@ -103,7 +103,7 @@ This module is mostly self-contained inside the `Core Runtime` group. Cross-modu
 
 ## References
 
-- No top-level `crate::<module>` imports were detected in this module's Rust source files.
+- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from ``Core Runtime`` into `Core Runtime`.
 
 ## Notes
 

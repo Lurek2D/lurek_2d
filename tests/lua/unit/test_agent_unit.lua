@@ -154,9 +154,13 @@ describe("lurek.agent module", function()
     end)
 
     -- @covers LAgent:setUrl
-    it("LAgent:setUrl changes the endpoint URL", function()
+    it("LAgent:setUrl rejects external hosts in safe mode", function()
         local agent = lurek.agent.new({})
-        agent:setUrl("http://10.0.0.1:11434/api/generate")
+        local ok, err = pcall(function()
+            agent:setUrl("http://10.0.0.1:11434/api/generate")
+        end)
+        expect_false(ok)
+        expect_not_nil(err)
     end)
 
     -- @covers LAgent:setTimeout
@@ -271,6 +275,15 @@ describe("lurek.agent module", function()
         local n = agent:pendingCount()
         expect_type("number", n)
         expect_true(n >= 0, "pendingCount must be non-negative")
+    end)
+
+    -- @covers LAgent:getDiagnostics
+    it("LAgent:getDiagnostics exposes transport counters", function()
+        local agent = lurek.agent.new({})
+        local diagnostics = agent:getDiagnostics()
+        expect_type("table", diagnostics)
+        expect_type("number", diagnostics.in_flight)
+        expect_type("number", diagnostics.queued)
     end)
 
     -- @covers LAgent:update
@@ -453,6 +466,21 @@ describe("lurek.agent module", function()
         expect_true(#ctx > 0, "context should not be empty")
     end)
 
+    -- @covers LAISystem:buildContextReport
+    it("LAISystem:buildContextReport reports provenance for instructions and matched skills", function()
+        local sys = lurek.agent.newSystem({ system_prompt = "base context" })
+        sys:addInstruction("safety", "be safe")
+        sys:addSkill("math", { "matrix" }, "help with math")
+        local report = sys:buildContextReport("solve matrix problem", {
+            instructions = { "safety" },
+        })
+        expect_type("table", report)
+        expect_type("string", report.text)
+        expect_type("table", report.provenance)
+        expect_true(#report.provenance >= 2)
+        expect_equal("instruction", report.provenance[1].kind)
+    end)
+
     -- @covers LAISystem:prompt
     it("LAISystem:prompt returns a callback id for known agents and errors for unknown ones", function()
         local sys   = lurek.agent.newSystem({ system_prompt = "ctx" })
@@ -537,11 +565,17 @@ describe("lurek.agent module", function()
     end)
 
     -- @covers LOllamaManager:start
-    it("LOllamaManager:start returns a boolean", function()
+    it("LOllamaManager:start returns a boolean or raises a descriptive error", function()
         local ollama = lurek.agent.newOllama()
-        local ok     = ollama:start()
-        expect_type("boolean", ok)
-        if ok then ollama:stop() end
+        local ok, result = pcall(function()
+            return ollama:start()
+        end)
+        if ok then
+            expect_type("boolean", result)
+            if result then ollama:stop() end
+        else
+            expect_not_nil(result)
+        end
     end)
 
     -- @covers LOllamaManager:stop
@@ -567,6 +601,14 @@ describe("lurek.agent module", function()
         expect_true(id > 0, "pullModel should return a positive callback ID")
     end)
 
+    -- @covers LOllamaManager:cancelPull
+    it("LOllamaManager:cancelPull accepts a callback ID", function()
+        local ollama = lurek.agent.newOllama()
+        local id     = ollama:pullModel("llama3", function(ok, err) end)
+        local ok     = ollama:cancelPull(id)
+        expect_type("boolean", ok)
+    end)
+
     -- @covers LOllamaManager:deleteModel
     it("LOllamaManager:deleteModel returns a boolean", function()
         local ollama = lurek.agent.newOllama()
@@ -582,6 +624,15 @@ describe("lurek.agent module", function()
         expect_true(n >= 0)
     end)
 
+    -- @covers LOllamaManager:getDiagnostics
+    it("LOllamaManager:getDiagnostics returns a diagnostics table", function()
+        local ollama = lurek.agent.newOllama()
+        local diagnostics = ollama:getDiagnostics()
+        expect_type("table", diagnostics)
+        expect_type("number", diagnostics.in_flight_pulls)
+        expect_type("number", diagnostics.queued_pulls)
+    end)
+
     -- @covers LOllamaManager:update
     it("LOllamaManager:update runs without error", function()
         local ollama = lurek.agent.newOllama()
@@ -594,6 +645,14 @@ describe("lurek.agent module", function()
         configure_dead_agent_backend()
         expect_type("function", lurek.agent.complete)
         expect_type("function", lurek.agent.completeAsync)
+    end)
+
+    -- @covers lurek.agent.getDiagnostics
+    it("lurek.agent.getDiagnostics exposes module-level async counters", function()
+        local diagnostics = lurek.agent.getDiagnostics()
+        expect_type("table", diagnostics)
+        expect_type("number", diagnostics.in_flight)
+        expect_type("number", diagnostics.queued)
     end)
     -- @covers lurek.agent.complete
     it("lurek.agent.complete raises a Lua error when the backend is unreachable", function()
@@ -885,6 +944,16 @@ describe("lurek.agent module", function()
         local memory = lurek.agent.newAgentMemory({ persist_path = AGENT_MEMORY_PATH })
         expect_true(memory:save())
         expect_true(memory:load())
+    end)
+
+    -- @covers LAgentMemory:getDiagnostics
+    it("LAgentMemory:getDiagnostics reports counts and storage policy", function()
+        local memory = lurek.agent.newAgentMemory({ working_capacity = 6 })
+        local diagnostics = memory:getDiagnostics()
+        expect_type("table", diagnostics)
+        expect_type("number", diagnostics.working_entries)
+        expect_type("number", diagnostics.max_bytes)
+        expect_type("string", diagnostics.sandbox_root)
     end)
     -- @covers LWorkingMemory:get
     it("LWorkingMemory:get retrieves stored values", function()

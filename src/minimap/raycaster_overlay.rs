@@ -5,9 +5,11 @@
 //! Read it when line-of-sight reveal rules, minimap preview pixels, or player-direction overlay drawing needs to change.
 //! General minimap storage and HUD command rendering stay elsewhere; this file produces sampled overlay data and images.
 
+use super::types::{MinimapError, MinimapLimits};
 use crate::raycaster::dda::Raycaster2D;
 use crate::raycaster::lighting::{compute_lighting, PointLight};
 use std::collections::HashSet;
+
 /// A tile sample used to build a minimap view window centered on the player.
 #[derive(Debug, Clone)]
 pub struct MinimapTileSample {
@@ -24,6 +26,7 @@ pub struct MinimapTileSample {
     /// Luminance (average of `light` channels) in 0.0..1.0.
     pub luma: f32,
 }
+
 /// Return true when the Bresenham grid path from `(x0,y0)` to `(x1,y1)` is unobstructed.
 fn tile_line_of_sight(raycaster: &Raycaster2D, x0: i32, y0: i32, x1: i32, y1: i32) -> bool {
     raycaster.line_of_sight(
@@ -33,6 +36,7 @@ fn tile_line_of_sight(raycaster: &Raycaster2D, x0: i32, y0: i32, x1: i32, y1: i3
         y1 as f32 + 0.5,
     )
 }
+
 /// Compute accumulated RGB light for the center of tile `(x, y)` using `compute_lighting`.
 pub fn compute_tile_light(
     raycaster: &Raycaster2D,
@@ -52,6 +56,7 @@ pub fn compute_tile_light(
     };
     compute_lighting(wx, wy, ambient, lights, &wall_at)
 }
+
 /// Return all `MinimapTileSample`s in a `radius`-tile square window centered on `(center_x, center_y)`.
 pub fn build_minimap_tile_window(
     raycaster: &Raycaster2D,
@@ -91,6 +96,7 @@ pub fn build_minimap_tile_window(
     }
     out
 }
+
 /// Cast a FOV fan of `count` rays from `(ox, oy)` and collect all traversed tile coordinates.
 #[allow(clippy::too_many_arguments)]
 pub fn reveal_cells_from_rays(
@@ -103,6 +109,14 @@ pub fn reveal_cells_from_rays(
     max_dist: f32,
     step: f32,
 ) -> Vec<(u32, u32)> {
+    if !ox.is_finite()
+        || !oy.is_finite()
+        || !angle.is_finite()
+        || !fov.is_finite()
+        || !max_dist.is_finite()
+    {
+        return Vec::new();
+    }
     let step = step.max(0.05);
     let mut visited: HashSet<(u32, u32)> = HashSet::new();
     let mut cells = Vec::new();
@@ -119,27 +133,18 @@ pub fn reveal_cells_from_rays(
     add_cell(&mut visited, &mut cells, ox, oy);
     let hits = raycaster.cast_rays(ox, oy, angle, fov, count, max_dist);
     for hit in hits {
-        let hx = if hit.hit {
-            hit.hit_x
-        } else {
-            ox + angle.cos() * max_dist
-        };
-        let hy = if hit.hit {
-            hit.hit_y
-        } else {
-            oy + angle.sin() * max_dist
-        };
-        let dx = hx - ox;
-        let dy = hy - oy;
+        let dx = hit.hit_x - ox;
+        let dy = hit.hit_y - oy;
         let dist = (dx * dx + dy * dy).sqrt();
         let steps = (dist / step).max(1.0).floor() as u32;
         for i in 0..=steps {
-            let t = i as f32 / steps as f32;
+            let t = i as f32 / steps.max(1) as f32;
             add_cell(&mut visited, &mut cells, ox + dx * t, oy + dy * t);
         }
     }
     cells
 }
+
 /// Render a `view_radius`-tile minimap pixel grid centered on the player; return `(pixels, width, height)`.
 #[allow(clippy::too_many_arguments)]
 pub fn extract_minimap(
@@ -153,10 +158,105 @@ pub fn extract_minimap(
     floor_color: [u8; 4],
     player_color: [u8; 4],
 ) -> (Vec<u8>, u32, u32) {
-    let diameter = view_radius * 2 + 1;
-    let pixel_w = diameter * cell_size;
-    let pixel_h = diameter * cell_size;
-    let mut pixels = vec![0u8; (pixel_w * pixel_h * 4) as usize];
+    try_extract_minimap(
+        raycaster,
+        player_x,
+        player_y,
+        player_angle,
+        view_radius,
+        cell_size,
+        wall_color,
+        floor_color,
+        player_color,
+    )
+    .expect("extract_minimap received invalid dimensions; use try_extract_minimap for fallible extraction")
+}
+
+/// Render a `view_radius`-tile minimap pixel grid centered on the player; return `(pixels, width, height)`.
+#[allow(clippy::too_many_arguments)]
+pub fn try_extract_minimap(
+    raycaster: &Raycaster2D,
+    player_x: f32,
+    player_y: f32,
+    player_angle: f32,
+    view_radius: u32,
+    cell_size: u32,
+    wall_color: [u8; 4],
+    floor_color: [u8; 4],
+    player_color: [u8; 4],
+) -> Result<(Vec<u8>, u32, u32), MinimapError> {
+    if !player_x.is_finite() || !player_y.is_finite() {
+        return Err(MinimapError::InvalidFloat {
+            field: "player position",
+        });
+    }
+    if !player_angle.is_finite() {
+        return Err(MinimapError::InvalidFloat {
+            field: "player angle",
+        });
+    }
+    if cell_size == 0 {
+        return Err(MinimapError::CellSizeZero);
+    }
+    let limits = MinimapLimits::default();
+    if view_radius > limits.max_view_radius {
+        return Err(MinimapError::PixelLimitExceeded {
+            pixel_count: u64::from(view_radius),
+            limit: u64::from(limits.max_view_radius),
+        });
+    }
+
+    let diameter = view_radius
+        .checked_mul(2)
+        .and_then(|value| value.checked_add(1))
+        .ok_or(MinimapError::PixelLimitExceeded {
+            pixel_count: u64::MAX,
+            limit: limits.max_display_pixels,
+        })?;
+    let pixel_w = diameter
+        .checked_mul(cell_size)
+        .ok_or(MinimapError::PixelLimitExceeded {
+            pixel_count: u64::MAX,
+            limit: limits.max_display_pixels,
+        })?;
+    let pixel_h = diameter
+        .checked_mul(cell_size)
+        .ok_or(MinimapError::PixelLimitExceeded {
+            pixel_count: u64::MAX,
+            limit: limits.max_display_pixels,
+        })?;
+
+    let pixel_count = u64::from(pixel_w).checked_mul(u64::from(pixel_h)).ok_or(
+        MinimapError::PixelLimitExceeded {
+            pixel_count: u64::MAX,
+            limit: limits.max_display_pixels,
+        },
+    )?;
+    if pixel_count > limits.max_display_pixels {
+        return Err(MinimapError::PixelLimitExceeded {
+            pixel_count,
+            limit: limits.max_display_pixels,
+        });
+    }
+
+    let byte_count = pixel_count
+        .checked_mul(4)
+        .ok_or(MinimapError::OutputByteLimitExceeded {
+            byte_count: u64::MAX,
+            limit: limits.max_output_bytes,
+        })?;
+    if byte_count > limits.max_output_bytes {
+        return Err(MinimapError::OutputByteLimitExceeded {
+            byte_count,
+            limit: limits.max_output_bytes,
+        });
+    }
+
+    let len = usize::try_from(byte_count).map_err(|_| MinimapError::OutputByteLimitExceeded {
+        byte_count,
+        limit: limits.max_output_bytes,
+    })?;
+    let mut pixels = vec![0u8; len];
     let player_cell_x = player_x.floor() as i32;
     let player_cell_y = player_y.floor() as i32;
     for vy in 0..diameter {
@@ -174,40 +274,79 @@ pub fn extract_minimap(
                     let img_x = vx * cell_size + px;
                     let img_y = vy * cell_size + py;
                     let idx = ((img_y * pixel_w + img_x) * 4) as usize;
-                    if idx + 3 < pixels.len() {
-                        pixels[idx] = color[0];
-                        pixels[idx + 1] = color[1];
-                        pixels[idx + 2] = color[2];
-                        pixels[idx + 3] = color[3];
-                    }
+                    pixels[idx] = color[0];
+                    pixels[idx + 1] = color[1];
+                    pixels[idx + 2] = color[2];
+                    pixels[idx + 3] = color[3];
                 }
             }
         }
     }
     let center_px = view_radius * cell_size + cell_size / 2;
     let center_py = view_radius * cell_size + cell_size / 2;
-    draw_player_arrow(
+    try_draw_player_arrow(
         &mut pixels,
         pixel_w,
+        pixel_h,
         center_px,
         center_py,
         player_angle,
         cell_size.max(3),
         player_color,
-    );
-    (pixels, pixel_w, pixel_h)
+    )?;
+    Ok((pixels, pixel_w, pixel_h))
 }
+
 /// Draw a filled circle with a forward-direction line at `(center_x, center_y)` into a raw RGBA pixel slice.
 #[allow(clippy::too_many_arguments)]
 pub fn draw_player_arrow(
     pixels: &mut [u8],
     img_width: u32,
+    img_height: u32,
     center_x: u32,
     center_y: u32,
     angle: f32,
     size: u32,
     color: [u8; 4],
 ) {
+    let _ = try_draw_player_arrow(
+        pixels, img_width, img_height, center_x, center_y, angle, size, color,
+    );
+}
+
+/// Draw a filled circle with a forward-direction line at `(center_x, center_y)` into a raw RGBA pixel slice.
+#[allow(clippy::too_many_arguments)]
+pub fn try_draw_player_arrow(
+    pixels: &mut [u8],
+    img_width: u32,
+    img_height: u32,
+    center_x: u32,
+    center_y: u32,
+    angle: f32,
+    size: u32,
+    color: [u8; 4],
+) -> Result<(), MinimapError> {
+    if !angle.is_finite() {
+        return Err(MinimapError::InvalidFloat {
+            field: "player angle",
+        });
+    }
+    let expected = u64::from(img_width)
+        .checked_mul(u64::from(img_height))
+        .and_then(|pixels_len| pixels_len.checked_mul(4))
+        .ok_or(MinimapError::OutputByteLimitExceeded {
+            byte_count: u64::MAX,
+            limit: MinimapLimits::default().max_output_bytes,
+        })?;
+    if pixels.len() != expected as usize {
+        return Err(MinimapError::InvalidImageBuffer {
+            width: img_width,
+            height: img_height,
+            len: pixels.len(),
+            expected: expected as usize,
+        });
+    }
+
     let half = size as f32 / 2.0;
     let radius = (half * 0.6).max(1.0);
     let r2 = radius * radius;
@@ -216,14 +355,12 @@ pub fn draw_player_arrow(
             if (dx * dx + dy * dy) as f32 <= r2 {
                 let px = center_x as i32 + dx;
                 let py = center_y as i32 + dy;
-                if px >= 0 && py >= 0 && (px as u32) < img_width {
+                if px >= 0 && py >= 0 && (px as u32) < img_width && (py as u32) < img_height {
                     let idx = ((py as u32 * img_width + px as u32) * 4) as usize;
-                    if idx + 3 < pixels.len() {
-                        pixels[idx] = color[0];
-                        pixels[idx + 1] = color[1];
-                        pixels[idx + 2] = color[2];
-                        pixels[idx + 3] = color[3];
-                    }
+                    pixels[idx] = color[0];
+                    pixels[idx + 1] = color[1];
+                    pixels[idx + 2] = color[2];
+                    pixels[idx + 3] = color[3];
                 }
             }
         }
@@ -236,16 +373,18 @@ pub fn draw_player_arrow(
         let t = i as f32 / steps.max(1) as f32;
         let lx = center_x as f32 + (tip_x - center_x as f32) * t;
         let ly = center_y as f32 + (tip_y - center_y as f32) * t;
-        let px = lx as u32;
-        let py = ly as u32;
-        if px < img_width {
-            let idx = ((py * img_width + px) * 4) as usize;
-            if idx + 3 < pixels.len() {
-                pixels[idx] = color[0];
-                pixels[idx + 1] = color[1];
-                pixels[idx + 2] = color[2];
-                pixels[idx + 3] = color[3];
-            }
+        if !lx.is_finite() || !ly.is_finite() {
+            continue;
+        }
+        let px = lx as i32;
+        let py = ly as i32;
+        if px >= 0 && py >= 0 && (px as u32) < img_width && (py as u32) < img_height {
+            let idx = ((py as u32 * img_width + px as u32) * 4) as usize;
+            pixels[idx] = color[0];
+            pixels[idx + 1] = color[1];
+            pixels[idx + 2] = color[2];
+            pixels[idx + 3] = color[3];
         }
     }
+    Ok(())
 }

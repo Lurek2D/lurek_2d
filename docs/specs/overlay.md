@@ -11,7 +11,7 @@
 - Source path: `src/overlay/`
 - Binding: `src/lua_api/overlay_api.rs`
 - Namespace: `lurek.overlay`
-- Lua API surface: `2` functions, `3` types, `89` methods
+- Lua API surface: `2` functions, `3` types, `95` methods
 - Rust test path(s): None found in the workspace
 - Lua test path(s): tests/lua/unit/test_overlay_unit.lua
 
@@ -27,15 +27,6 @@
 - The module is useful whenever a project needs stronger screen-space presentation than a local sprite effect but does not need a full scene rewrite.
 - `render` still draws the final image, but `overlay` owns the grouping, configuration, temporal behavior, accessibility policy, and diagnostics for these large-scale scene treatments.
 - Read `overlay` as the orchestration layer for scene-wide atmospheric and transitional effects.
-
-## Runtime Contracts
-
-- Reduced-motion and photosensitivity behavior is owned by `OverlayAccessibilityPolicy`. Flash alpha and duration, shake intensity, lightning triggers, and film grain must respect that policy even when state was mutated directly before `update`, `render`, or debug-image helpers.
-- Full-screen rectangle commands emitted directly by `build_render_commands` are limited to flash, fade, lightning, and vignette. Ambient, weather, clouds, fog, heat haze, film grain, water, and custom shaders remain active overlay layers, but they are reported through the render plan as externally handled instead of being silently ignored.
-- Weather simulation is deterministic for a given RNG seed and update sequence. `setWeatherSeed`, `getWeatherRngState`, and `setWeatherRngState` expose that contract, while per-type `WeatherProfile` data provides validated spawn, size, alpha, velocity, and culling bounds.
-- Weather work remains budgeted: particle count is capped, per-update spawns are capped, and dropped/backlogged spawns are surfaced in overlay telemetry so large `dt` spikes do not silently degrade behavior.
-- Custom overlay shader names must satisfy `OverlayShaderPolicy`: bounded length, identifier-safe ASCII characters, and membership in the built-in overlay shader allowlist.
-- Debug image helpers are protected by `OverlayImageLimits`. Checked `try_draw_*` variants must reject oversized width, height, pixel, or RGBA byte requests instead of overflowing or allocating unbounded buffers.
 
 This module primarily collaborates with `color`, `image`, `render`, `runtime`. Its responsibility should stay inside the `Edge/Integration` group rather than absorb behavior owned by those neighbors.
 
@@ -64,15 +55,13 @@ This module primarily collaborates with `color`, `image`, `render`, `runtime`. I
 
 ### controller.rs
 
-- This file owns `Overlay` and `OverlayStats`, the main screen-space overlay runtime that coordinates every layer.
-- It stores dimensions plus ambient, weather, flash, shake, fade, clouds, fog, haze, vignette, grain, and water.
-- `update` advances enabled subsystems, including ambient tint refresh, timed decay, cloud scrolling, and water time.
-- Local weather helpers clamp intensity, cap particles, spawn mode-specific particles, and cull entries off-screen.
-- Trigger helpers start flashes, shakes, fades, and lightning with sanitized durations and bounded runtime inputs.
-- Sync helpers copy or resolve ambient color between overlay state and the light world using named merge modes.
-- Query helpers expose shake offsets, flash and lightning alpha, dimensions, active-state checks, and telemetry snapshots.
-- Render helpers build full-screen commands for flash, fade, lightning, and vignette, then draw debug image panels.
-- Open this file when overlay orchestration changes; focused state structs and transition definitions live in siblings.
+- This file owns `Overlay` plus its safety policies, diagnostics, render-plan reporting, and debug image helpers.
+- It stores dimensions plus ambient, weather, flash, shake, fade, clouds, fog, haze, vignette, grain, water, and optional shader intent.
+- `update` advances enabled subsystems, including ambient tint refresh, weather spawn/cull work, timed decay, cloud scrolling, and water time.
+- Local safety helpers sanitize direct public-state mutation, clamp reduced-motion-sensitive effects, validate custom shader names, and bound debug image allocation.
+- Query helpers expose shake offsets, flash and lightning alpha, dimensions, active-state checks, render responsibility, RNG-facing weather telemetry, and diagnostics snapshots.
+- Render helpers build full-screen commands for flash, fade, lightning, and vignette, then offer checked debug image variants for dashboards and docs workflows.
+- Open this file when overlay orchestration, safety policy, telemetry, or renderer-facing ownership changes; focused state structs and transition definitions live in siblings.
 
 ### mod.rs
 
@@ -107,10 +96,10 @@ This module primarily collaborates with `color`, `image`, `render`, `runtime`. I
 
 ### weather.rs
 
-- This file owns `WeatherType`, `WeatherParticle`, and `WeatherState`, the screen-space weather data model.
+- This file owns `WeatherType`, `WeatherParticle`, `WeatherProfile`, and `WeatherState`, the screen-space weather data model.
 - It catalogs rain, snow, hail, dust, leaves, ash, and pollen behaviors with stable lowercase lookup names.
-- Runtime state stores intensity, wind, live particles, spawn timing, and PRNG state used for variation.
-- The only behavior here is a local unit sampler; particle spawning and motion updates live in the controller.
+- Runtime state stores intensity, wind, live particles, spawn timing, validated per-type profiles, and PRNG state used for variation.
+- The local helpers cover RNG sampling, seed/state control, and profile validation; particle spawning and motion updates live in the controller.
 - Open this file when weather data semantics change; overlay orchestration and other atmosphere blocks live in siblings.
 
 
@@ -146,6 +135,7 @@ This module primarily collaborates with `color`, `image`, `render`, `runtime`. I
 - `LOverlay:drawToImage(w, h) -> Image`: Renders overlay state into an image object of the requested size.
 - `LOverlay:fade(r, g, b, a?, dur?) -> nil`: Starts a fade overlay with optional alpha and duration.
 - `LOverlay:flash(r, g, b, a?, dur?) -> nil`: Starts a short flash overlay with optional alpha and duration.
+- `LOverlay:getAccessibilityPolicy() -> table`: Returns the current overlay accessibility policy.
 - `LOverlay:getAmbientColor() -> number`: Returns overlay ambient RGBA color.
 - `LOverlay:getCloudCount() -> integer`: Returns the overlay cloud shadow count.
 - `LOverlay:getCloudOpacity() -> number`: Returns cloud shadow opacity. This method is available to Lua scripts.
@@ -160,6 +150,7 @@ This module primarily collaborates with `color`, `image`, `render`, `runtime`. I
 - `LOverlay:getHeight() -> integer`: Returns the overlay height. This method is available to Lua scripts.
 - `LOverlay:getLightningAlpha() -> number`: Returns the current lightning alpha.
 - `LOverlay:getLightningColor() -> number`: Returns overlay lightning RGBA color.
+- `LOverlay:getRenderPlan() -> table`: Returns the current render responsibility plan for active overlay layers.
 - `LOverlay:getShakeOffset() -> number`: Returns the current screen shake offset.
 - `LOverlay:getStats() -> table`: Returns a telemetry snapshot for dashboard and debug workflows.
 - `LOverlay:getTimeOfDay() -> number`: Returns the overlay time-of-day value.
@@ -167,6 +158,7 @@ This module primarily collaborates with `color`, `image`, `render`, `runtime`. I
 - `LOverlay:getWater() -> table`: Returns a table describing the current water effect settings.
 - `LOverlay:getWeather() -> string`: Returns the overlay weather type name.
 - `LOverlay:getWeatherIntensity() -> number`: Returns weather intensity for the current weather type.
+- `LOverlay:getWeatherRngState() -> integer`: Returns the current deterministic overlay weather RNG state.
 - `LOverlay:getWidth() -> integer`: Returns the overlay width. This method is available to Lua scripts.
 - `LOverlay:getWindDirection() -> number`: Returns the overlay weather wind direction.
 - `LOverlay:getWindSpeed() -> number`: Returns the overlay weather wind speed.
@@ -185,6 +177,7 @@ This module primarily collaborates with `color`, `image`, `render`, `runtime`. I
 - `LOverlay:pushAmbientToLight() -> nil`: Copies this overlay ambient color into the shared light world.
 - `LOverlay:render() -> nil`: Queues renderer commands for the overlay's current visual state.
 - `LOverlay:resize(w, h) -> nil`: Resizes the overlay target dimensions.
+- `LOverlay:setAccessibilityPolicy(policy?) -> nil`: Replaces or partially updates the overlay accessibility policy.
 - `LOverlay:setAmbientColor(r, g, b, a?) -> nil`: Sets the overlay ambient color from RGBA channels.
 - `LOverlay:setAmbientEnabled(v) -> nil`: Enables or disables overlay ambient color rendering.
 - `LOverlay:setCloudCount(v) -> nil`: Sets the overlay cloud shadow count.
@@ -209,6 +202,8 @@ This module primarily collaborates with `color`, `image`, `render`, `runtime`. I
 - `LOverlay:setWeather(name) -> nil`: Sets the overlay weather type by name.
 - `LOverlay:setWeatherEnabled(v) -> nil`: Enables or disables overlay weather rendering.
 - `LOverlay:setWeatherIntensity(v) -> nil`: Sets weather intensity for the current weather type.
+- `LOverlay:setWeatherRngState(state) -> nil`: Replaces the current deterministic overlay weather RNG state.
+- `LOverlay:setWeatherSeed(seed) -> nil`: Sets the deterministic overlay weather seed used for future particle sampling.
 - `LOverlay:setWindDirection(v) -> nil`: Sets the overlay weather wind direction.
 - `LOverlay:setWindSpeed(v) -> nil`: Sets the overlay weather wind speed.
 - `LOverlay:shake(intensity, dur?) -> nil`: Starts a screen shake with optional duration.

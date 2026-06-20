@@ -11,8 +11,8 @@
 - Binding: `src/lua_api/minimap_api.rs`
 - Namespace: `lurek.minimap`
 - Lua API surface: `1` functions, `1` types, `86` methods
-- Rust test path(s): tests/rust/game/minimap_tests.rs
-- Lua test path(s): tests/lua/unit/test_minimap.lua, tests/lua/evidence/test_evidence_minimap.lua
+- Rust test path(s): tests/rust/unit/minimap_tests.rs
+- Lua test path(s): tests/lua/unit/test_minimap_unit.lua, tests/lua/evidence/test_minimap_evidence.lua
 
 ## Summary
 
@@ -219,4 +219,11 @@ This module primarily collaborates with `camera`, `image`, `province`, `raycaste
 
 ## Notes
 
-- No additional module-specific notes.
+- Construction is strict: zero grid dimensions, zero display dimensions, overflowed cell counts, and oversized display buffers are rejected before the minimap is created.
+- Bulk terrain and fog loads use exact-length validation on the Lua-facing API so stale cells are not silently mixed with fresh data.
+- Grid/display transforms require finite coordinates, a finite positive zoom, and positive display dimensions; invalid transform state returns nils for `screenToGrid` and `gridToScreen` instead of leaking NaN or Inf into callers.
+- Layer payloads are grid-shaped contracts: `width` and `height` must match the minimap grid, cell payload length must match `width * height`, and active-layer switches are only valid for populated layers.
+- `drawToImage(pixel_size)` now honors `pixel_size` when provided, falls back to the configured display size when `pixel_size == 0`, and covers the full output image even when display pixels do not divide evenly by grid size.
+- Render-command generation batches adjacent same-color cells into horizontal runs and exposes debug stats through `Minimap::render_stats(screen_x, screen_y)` for tooling and regression tests.
+- Raycaster minimap extraction uses checked arithmetic for radius, cell size, pixel count, and byte count, and player-arrow drawing validates both width and height against the supplied RGBA buffer length.
+- Marker/object/ping/icon setters reject missing ids, invalid type indices, non-finite coordinates, and invalid icon size overrides on the strict Lua path instead of silently no-oping.

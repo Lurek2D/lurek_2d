@@ -108,6 +108,7 @@ This module primarily collaborates with `color`, `image`, `math`, `runtime`. Its
 - This file owns `Occluder`, the convex polygon shadow caster used by `LightWorld` to block and mask lighting.
 - It stores local vertices, world offset, opacity, layer mask, and enabled state for runtime shadow participation.
 - Construction helpers validate vertex counts and support both typed point lists and flat coordinate arrays.
+- Tracks geometry generations so render caches can reuse transformed edge data until shadow geometry changes.
 - Open this file when shadow-geometry semantics change; light collection logic and filter presets live in siblings.
 
 ### shadow.rs

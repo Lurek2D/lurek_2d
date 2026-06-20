@@ -4845,8 +4845,8 @@ LMinimap:gridToScreen(gx, gy, mx, my)
 
 | Type | Description |
 |------|-------------|
-| number | Screen x coordinate. |
-| number | Screen y coordinate. |
+| number | Screen x coordinate; or nil when the transform state is invalid. |
+| number | Screen y coordinate; or nil when the transform state is invalid. |
 
 ---
 
@@ -5058,8 +5058,8 @@ LMinimap:screenToGrid(sx, sy, mx, my)
 
 | Type | Description |
 |------|-------------|
-| number | Grid x coordinate. |
-| number | Grid y coordinate. |
+| number | Grid x coordinate; or nil when the transform state is invalid. |
+| number | Grid y coordinate; or nil when the transform state is invalid. |
 
 ---
 

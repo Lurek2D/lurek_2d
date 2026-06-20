@@ -12,7 +12,7 @@
 - Source path: `src/agent/`
 - Binding: `src/lua_api/agent_api.rs`
 - Namespace: `lurek.agent`
-- Lua API surface: `20` functions, `10` types, `85` methods
+- Lua API surface: `21` functions, `10` types, `91` methods
 - Rust test path(s): tests/rust/unit/agent_tests.rs
 - Lua test path(s): tests/lua/unit/test_agent_core_unit.lua
 
@@ -52,8 +52,8 @@ This module primarily collaborates with `network`. Its responsibility should sta
 ### client.rs
 
 - This file owns `AgentClient`, the background prompt transport that keeps model HTTP work off the frame loop.
-- It tracks pending completions, cancelled callback ids, and in-flight counts so polling stays deterministic.
-- Send logic spawns one worker per request, retries transient failures with backoff, and drops cancelled results.
+- It tracks bounded queued and in-flight work, exposes diagnostics, and keeps cancellation Lua-safe.
+- Send logic uses a fixed worker pool instead of per-request thread spawn and retries only transient failures.
 - Polling returns finished `AgentResponse` values in batches, letting Lua runtimes drain work at safe update points.
 - Open this file when transport lifecycle changes; payload contracts and request shaping live in sibling files.
 
@@ -63,8 +63,8 @@ This module primarily collaborates with `network`. Its responsibility should sta
 - `WorkingMemory` keeps recent key-value context with capacity-based eviction so prompt state stays compact and fresh.
 - `EpisodicMemory` records tick-stamped event snapshots and supports equality-filter queries plus age-based pruning.
 - `SemanticMemory` stores named JSON facts for durable recall and object-field filtering outside immediate chat turns.
-- `AgentMemory` bundles the three stores, optional disk persistence, and JSON save or load paths for one agent.
-- The persistence format mirrors internal structures directly, so reloads restore working slots, episodes, and facts.
+- `AgentMemory` bundles the three stores, safe disk persistence policy, and schema-validated save or load paths.
+- Persistence uses atomic writes, a versioned envelope, and a sandbox rooted in the current workspace directory.
 - Open this file when recall semantics change; request transport and prompt assembly live in sibling files.
 
 ### mod.rs
@@ -80,9 +80,9 @@ This module primarily collaborates with `network`. Its responsibility should sta
 
 - This file owns `OllamaManager`, plus model and pull result structs for local backend lifecycle control.
 - It checks server reachability, reports versions, lists local models, and tests whether specific models are present.
-- Process helpers start, stop, and restart `ollama serve`, keeping child-process ownership inside one runtime owner.
-- Pull operations run in background threads, track in-flight work, and return pollable completion results by id.
-- Deletion and model-name helpers expose maintenance APIs without mixing them into prompt submission code.
+- Process helpers start, stop, and restart `ollama serve` through an explicit process policy with health checks.
+- Pull operations run through a bounded worker pool and validate model names against the configured model policy.
+- Deletion supports protected models and explicit confirmation tokens for destructive actions.
 - Open this file when local backend control changes; synchronous chat calls and async prompt transport live nearby.
 
 ### orchestration.rs
@@ -95,11 +95,10 @@ This module primarily collaborates with `network`. Its responsibility should sta
 ### state.rs
 
 - This file owns `AgentState`, `SystemSkill`, and `AISystemState`, the mutable config layer behind agent requests.
-- `AgentState` stores endpoint, model, prompt, format, options, skills, retries, and timeout for one caller.
-- Request builders turn that state into stable `AgentRequest` payloads, with optional external system-block override.
-- `AISystemState` holds shared system prompts, named instruction blocks, and keyword-matched skills for routing.
-- Context assembly merges explicit instructions and matched skills into deterministic prompt text for downstream agents.
-- This file separates configuration from transport execution so higher layers can mutate policy without network coupling.
+- `AgentState` stores validated endpoint, model, prompt, format, options, skills, retries, and timeout for one caller.
+- Request builders turn that state into stable `AgentRequest` payloads and reject unsafe URLs, options, or oversized context.
+- `AISystemState` holds shared system prompts, named instruction blocks, and keyword-matched skills with provenance.
+- Context assembly merges explicit instructions and matched skills into structured prompt text for downstream agents.
 - Open it when request-shaping rules change; background delivery and memory behavior live in sibling modules.
 
 ### types.rs
@@ -117,10 +116,11 @@ This module primarily collaborates with `network`. Its responsibility should sta
 
 - `lurek.agent.cancel(callback_id) -> nil`: Cancels a module-level asynchronous completion by callback ID.
 - `lurek.agent.complete(prompt) -> string`: Sends a single prompt to the global LLM and returns the response text.
-- `lurek.agent.completeAsync(prompt, callback) -> integer`: Sends a prompt asynchronously using a background thread; calls `callback(text, err)` on completion.
+- `lurek.agent.completeAsync(prompt, callback) -> integer`: Queues a prompt on the module-level bounded worker pool; calls `callback(text, err)` on completion.
 - `lurek.agent.completeJson(prompt) -> table`: Sends a prompt requesting a JSON-format response and returns a parsed Lua table.
 - `lurek.agent.configure(config) -> nil`: Configures the global LLM provider settings used by module-level functions.
 - `lurek.agent.embed(text) -> table`: Returns an embedding vector for `text` from the global LLM.
+- `lurek.agent.getDiagnostics() -> table`: Returns module-level async transport diagnostics for `completeAsync`.
 - `lurek.agent.isAvailable() -> boolean`: Returns `true` if the configured LLM server responds within 5 seconds.
 - `lurek.agent.listModels() -> table`: Returns a list of available model names from the configured LLM server.
 - `lurek.agent.new(config) -> LAgent`: Creates a new configurable LLM Agent runtime instance.
@@ -167,6 +167,8 @@ This module primarily collaborates with `network`. Its responsibility should sta
 - `LAISystem:addSkill(name, keywords, prompt) -> nil`: Adds a keyword-gated system skill that Lurek auto-injects when the prompt overlaps with its keywords.
 - `LAISystem:agentCount() -> integer`: Returns the number of registered agents.
 - `LAISystem:buildContext(instruction, opts?) -> string`: Builds and returns the full context string that would be sent for a given prompt.
+- `LAISystem:buildContextReport(instruction, opts?) -> table`: Builds context and returns both the rendered text and provenance list.
+- `LAISystem:getDiagnostics() -> table`: Returns transport diagnostics for the AI system runtime.
 - `LAISystem:hasAgent(name) -> boolean`: Returns `true` if an agent with `name` is registered.
 - `LAISystem:hasInstruction(key) -> boolean`: Returns `true` if an instruction with `key` is registered.
 - `LAISystem:hasSkill(name) -> boolean`: Returns `true` if a system skill with `name` is registered.
@@ -196,6 +198,7 @@ This module primarily collaborates with `network`. Its responsibility should sta
 - `LAgent:clearSkills() -> nil`: Removes all registered skills from the agent's context.
 - `LAgent:evalCode(code) -> boolean`: Evaluates a Lua code string inside the active VM.
 - `LAgent:getDescription() -> string`: Returns the agent's role description.
+- `LAgent:getDiagnostics() -> table`: Returns transport diagnostics for the agent runtime.
 - `LAgent:getFormat() -> string`: Returns the current response format string.
 - `LAgent:getModel() -> string`: Returns the current model identifier.
 - `LAgent:getName() -> string`: Returns the agent's name identifier.
@@ -214,7 +217,7 @@ This module primarily collaborates with `network`. Its responsibility should sta
 - `LAgent:setOption(key, value) -> nil`: Sets a single model option forwarded to the LLM backend.
 - `LAgent:setTemperature(t) -> nil`: Sets the sampling temperature forwarded to the LLM backend.
 - `LAgent:setTimeout(secs) -> nil`: Sets the per-request timeout in seconds (0 uses the default 60 s).
-- `LAgent:setUrl(url) -> nil`: Changes the LLM endpoint URL for future prompts.
+- `LAgent:setUrl(url) -> nil`: Changes the LLM endpoint URL for future prompts after safe-mode validation.
 - `LAgent:skillCount() -> integer`: Returns the number of registered skills.
 - `LAgent:update() -> nil`: Polls the background client for completed LLM requests and dispatches callbacks.
 
@@ -258,6 +261,7 @@ This module primarily collaborates with `network`. Its responsibility should sta
 ##### Methods
 
 - `LAgentMemory:episodic() -> LEpisodicMemory`: Returns the episodic memory component.
+- `LAgentMemory:getDiagnostics() -> table`: Returns diagnostics for the bundled memory state and persistence policy.
 - `LAgentMemory:load() -> boolean`: Deserialises memory state from the configured persist_path.
 - `LAgentMemory:save() -> boolean`: Serialises all memory banks to the configured persist_path.
 - `LAgentMemory:semantic() -> LSemanticMemory`: Returns the semantic memory component.
@@ -301,7 +305,9 @@ This module primarily collaborates with `network`. Its responsibility should sta
 ##### Methods
 
 - `LOllamaManager:baseUrl() -> string`: Returns the base URL this manager was created with.
-- `LOllamaManager:deleteModel(name) -> boolean`: Sends `DELETE /api/delete` to remove a model from local Ollama storage.
+- `LOllamaManager:cancelPull(callback_id) -> boolean`: Marks a queued or in-flight pull as cancelled so its result is ignored on completion.
+- `LOllamaManager:deleteModel(name, confirm_token?) -> boolean`: Sends `DELETE /api/delete` to remove a model from local Ollama storage.
+- `LOllamaManager:getDiagnostics() -> table`: Returns operational diagnostics for the Ollama manager.
 - `LOllamaManager:hasModel(name) -> boolean`: Returns `true` if a model with the given name (or name prefix) is available locally.
 - `LOllamaManager:isRunning() -> boolean`: Returns `true` if the Ollama HTTP server responds within 5 seconds.
 - `LOllamaManager:listModels() -> table`: Returns a table of locally available models, each with `name` and `size_gb` fields.

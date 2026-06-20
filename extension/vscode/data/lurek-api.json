@@ -62,7 +62,7 @@
             {
               "name": "config",
               "type": "table",
-              "description": "Optional config with `url` (default `\"http://127.0.0.1:11434\"`).",
+              "description": "Optional config with `url`, `binary_path`, `trusted_path`, `allowed_prefixes`, `protected_models`, `max_concurrent_pulls`, and `max_queued_pulls`.",
               "optional": true
             }
           ],
@@ -80,7 +80,7 @@
             {
               "name": "config",
               "type": "table",
-              "description": "Config with `provider`, `base_url`, `model`, `timeout_ms`, and `api_key` fields.",
+              "description": "Config with `provider`, `base_url`, `model`, `timeout_ms`, `api_key`, and optional `allow_external_hosts`.",
               "optional": false
             }
           ],
@@ -111,7 +111,7 @@
           "name": "completeAsync",
           "fullPath": "lurek.agent.completeAsync",
           "signature": "(prompt, callback)",
-          "description": "Sends a prompt asynchronously using a background thread; calls `callback(text, err)` on completion.",
+          "description": "Queues a prompt on the module-level bounded worker pool; calls `callback(text, err)` on completion.",
           "parameters": [
             {
               "name": "prompt",
@@ -150,6 +150,17 @@
           "parameters": [],
           "returns": "integer",
           "returnType": "integer",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "getDiagnostics",
+          "fullPath": "lurek.agent.getDiagnostics",
+          "signature": "()",
+          "description": "Returns module-level async transport diagnostics for `completeAsync`.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
           "isMethod": false,
           "objectType": null
         },
@@ -32899,6 +32910,30 @@
           "objectType": "LAISystem"
         },
         {
+          "name": "buildContextReport",
+          "fullPath": "LAISystem:buildContextReport",
+          "signature": "(instruction, [opts])",
+          "description": "Builds context and returns both the rendered text and provenance list.",
+          "parameters": [
+            {
+              "name": "instruction",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LAISystem"
+        },
+        {
           "name": "prompt",
           "fullPath": "LAISystem:prompt",
           "signature": "LAISystem:prompt(agent_name, instruction, callback, opts)",
@@ -32966,6 +33001,17 @@
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAISystem"
+        },
+        {
+          "name": "getDiagnostics",
+          "fullPath": "LAISystem:getDiagnostics",
+          "signature": "()",
+          "description": "Returns transport diagnostics for the AI system runtime.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LAISystem"
         }
@@ -35049,12 +35095,12 @@
           "name": "setUrl",
           "fullPath": "LAgent:setUrl",
           "signature": "(url)",
-          "description": "Changes the LLM endpoint URL for future prompts.",
+          "description": "Changes the LLM endpoint URL for future prompts after safe-mode validation.",
           "parameters": [
             {
               "name": "url",
               "type": "string",
-              "description": "Full endpoint URL (e.g. `\"http://127.0.0.1:11434/api/generate\"`).",
+              "description": "Full endpoint URL (typically local, e.g. `\"http://127.0.0.1:11434/api/generate\"`).",
               "optional": false
             }
           ],
@@ -35250,6 +35296,17 @@
           "parameters": [],
           "returns": "integer",
           "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LAgent"
+        },
+        {
+          "name": "getDiagnostics",
+          "fullPath": "LAgent:getDiagnostics",
+          "signature": "()",
+          "description": "Returns transport diagnostics for the agent runtime.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LAgent"
         },
@@ -35462,6 +35519,17 @@
           "parameters": [],
           "returns": "boolean",
           "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LAgentMemory"
+        },
+        {
+          "name": "getDiagnostics",
+          "fullPath": "LAgentMemory:getDiagnostics",
+          "signature": "()",
+          "description": "Returns diagnostics for the bundled memory state and persistence policy.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LAgentMemory"
         }
@@ -102491,9 +102559,27 @@
           "objectType": "LOllamaManager"
         },
         {
+          "name": "cancelPull",
+          "fullPath": "LOllamaManager:cancelPull",
+          "signature": "(callback_id)",
+          "description": "Marks a queued or in-flight pull as cancelled so its result is ignored on completion.",
+          "parameters": [
+            {
+              "name": "callback_id",
+              "type": "integer",
+              "description": "ID returned by `pullModel`.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LOllamaManager"
+        },
+        {
           "name": "deleteModel",
           "fullPath": "LOllamaManager:deleteModel",
-          "signature": "(name)",
+          "signature": "(name, [confirm_token])",
           "description": "Sends `DELETE /api/delete` to remove a model from local Ollama storage.",
           "parameters": [
             {
@@ -102501,6 +102587,12 @@
               "type": "string",
               "description": "Model name to delete (e.g. `\"llama3:latest\"`).",
               "optional": false
+            },
+            {
+              "name": "confirm_token",
+              "type": "string",
+              "description": "Required when deleting a model protected by policy.",
+              "optional": true
             }
           ],
           "returns": "boolean",
@@ -102516,6 +102608,17 @@
           "parameters": [],
           "returns": "integer",
           "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LOllamaManager"
+        },
+        {
+          "name": "getDiagnostics",
+          "fullPath": "LOllamaManager:getDiagnostics",
+          "signature": "()",
+          "description": "Returns operational diagnostics for the Ollama manager.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LOllamaManager"
         },

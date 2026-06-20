@@ -20,10 +20,24 @@ pub mod state;
 /// Shared request and response types for LLM transport.
 pub mod types;
 
-pub use chat::{read_global_config, write_global_config, GlobalLlmConfig, LlmChat, LlmTemplate};
-pub use client::AgentClient;
-pub use memory::{AgentMemory, EpisodicMemory, SemanticMemory, WorkingMemory};
-pub use ollama::{ModelInfo, OllamaManager, OllamaPullResult};
+pub use chat::{
+    read_global_config, validate_global_config, write_global_config, GlobalLlmConfig, LlmChat,
+    LlmTemplate,
+};
+pub use client::{
+    AgentClient, AgentClientConfig, AgentDiagnosticsSnapshot, AgentTransport, HttpAgentTransport,
+};
+pub use memory::{
+    AgentMemory, AgentMemoryDiagnosticsSnapshot, AgentMemoryStoragePolicy, EpisodicMemory,
+    SemanticMemory, WorkingMemory,
+};
+pub use ollama::{
+    ModelInfo, OllamaDiagnosticsSnapshot, OllamaManager, OllamaModelPolicy, OllamaProcessPolicy,
+    OllamaPullResult, OllamaStartStatus,
+};
 pub use orchestration::AgentBatchTask;
-pub use state::{AISystemState, AgentState, SystemSkill};
-pub use types::{AgentError, AgentRequest, AgentResponse};
+pub use state::{
+    AISystemState, AgentNetworkPolicy, AgentPromptPolicy, AgentState, PromptBuildReport,
+    PromptProvenanceEntry, SystemSkill,
+};
+pub use types::{AgentError, AgentRequest, AgentResponse, AgentResponseFormat};

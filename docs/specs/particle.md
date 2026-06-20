@@ -75,6 +75,18 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 - `ParticleSystemStats` also lives here because only this file can summarize direct and nested live counts coherently.
 - Open it when pool ownership or per-frame behavior changes; config schema, spawn math, and previews live elsewhere.
 
+### error.rs
+
+- This file owns typed particle validation and safety errors used by strict constructors and bounded helpers.
+- It keeps failure reasons structured so config parsing, runtime limit checks, and strict mutators report the same contract.
+- Open it when particle callers need clearer diagnostics or when new safety ceilings are introduced.
+
+### limits.rs
+
+- This file owns shared particle safety ceilings used by strict config parsing and runtime helpers.
+- It centralizes pool, recursion, parser, and render budgets so particle callers share one bounded contract.
+- Open it when particle resource ceilings or validation policy changes.
+
 ### math.rs
 
 - This file owns particle interpolation and deterministic random helpers used by emission and per-particle animation math.

@@ -11,7 +11,7 @@
 - Source path: `src/terminal/`
 - Binding: `src/lua_api/terminal_api.rs`
 - Namespace: `lurek.terminal`
-- Lua API surface: `29` functions, `3` types, `59` methods
+- Lua API surface: `31` functions, `3` types, `65` methods
 - Rust test path(s): tests/rust/unit/terminal_tests.rs, tests/rust/ext/terminal_demo_smoke_tests.rs
 - Lua test path(s): tests/lua/unit/test_terminal_core_unit.lua
 
@@ -152,6 +152,8 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 - `lurek.terminal.scrollbackLen(terminal) -> integer`: Returns the number of lines currently stored in the terminal scrollback buffer.
 - `lurek.terminal.setScrollbackCap(terminal, cap) -> nil`: Sets the maximum number of lines retained in the terminal scrollback buffer. Older lines are discarded when the cap is exceeded.
 - `lurek.terminal.stripAnsi(text) -> string`: Removes all ANSI escape sequences from a string, returning plain text.
+- `lurek.terminal.tryPushCmdHistory(terminal, cmd) -> boolean, string?`: Strictly appends a command string to the terminal command history.
+- `lurek.terminal.tryPushScrollback(terminal, line) -> boolean, string?`: Strictly appends a line of text to the terminal scrollback buffer.
 
 ### Callbacks
 
@@ -178,11 +180,14 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 - `LTerminal:addWidget(widget) -> nil`: Attaches a widget to this terminal so it is rendered and receives input events.
 - `LTerminal:autoResize() -> nil`: Requests the window to resize so it exactly fits the terminal grid at the current cell size.
 - `LTerminal:clear() -> nil`: Clears all cells in the terminal grid, resetting characters and colors to defaults.
+- `LTerminal:clearDiagnostics() -> nil`: Clears all terminal diagnostics counters.
 - `LTerminal:clearWidgets() -> nil`: Removes all attached widgets from this terminal at once.
 - `LTerminal:get(col, row) -> integer, number, number, number, number, number, number, number, number`: Reads the character and colors at a specific cell in the terminal grid.
 - `LTerminal:getCellSize() -> number, number`: Returns the active terminal cell width and height in pixels, using custom override or font metrics.
+- `LTerminal:getDiagnostics() -> table`: Returns the current terminal diagnostics counters.
 - `LTerminal:getDimensions() -> integer, integer`: Returns the number of columns and rows in the terminal grid.
 - `LTerminal:getFocused() -> LWidget`: Returns the widget that currently has keyboard focus, or nil if no widget is focused.
+- `LTerminal:getRenderStats() -> table`: Returns the most recent render composition stats gathered by terminal render helpers.
 - `LTerminal:getWidgetCount() -> integer`: Returns the number of widgets currently attached to this terminal.
 - `LTerminal:keypressed(key) -> boolean`: Forwards a key press event to the terminal for widget input processing.
 - `LTerminal:mousepressed(px, py, button?) -> nil`: Forwards a mouse press event to the terminal, converting pixel coordinates to cell coordinates.
@@ -195,8 +200,10 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 - `LTerminal:setFocus(widget?) -> nil`: Sets which widget currently has keyboard focus, or clears focus when nil is passed.
 - `LTerminal:setFont(height) -> nil`: Selects the nearest built-in bitmap font by pixel height and refits the window to the terminal grid.
 - `LTerminal:textinput(text) -> boolean`: Forwards a text input event to the terminal for character entry into focused widgets.
+- `LTerminal:trySet(col, row, ch, fr?, fg?, fb?, fa?, br?, bg?, bb?, ba?) -> boolean, string?`: Strictly writes a character with colors to a specific cell and returns an explicit error string on invalid input.
 - `LTerminal:type() -> string`: Returns the type name string "LTerminal".
 - `LTerminal:typeOf(name) -> boolean`: Checks whether this object matches a given type name. Accepts "LTerminal" or "Object".
+- `LTerminal:validateWidgets() -> boolean, string[]?`: Validates panel child ownership, stale references, cycles, and the current focus target.
 
 #### LTerminalParseAnsiResult Type
 
@@ -259,6 +266,7 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 - `LWidget:setText(text) -> nil`: Sets the display text of a label, button, or text box widget. Fires the onChange callback if the text actually changed.
 - `LWidget:setTitle(title) -> nil`: Sets the title text displayed in the border of a border or panel widget.
 - `LWidget:setVisible(visible) -> nil`: Controls whether the widget is drawn and receives input events.
+- `LWidget:trySetText(text) -> boolean, string?`: Strictly sets widget text and returns an explicit error string instead of silently truncating.
 - `LWidget:type() -> string`: Returns the type name string "LWidget".
 - `LWidget:typeOf(name) -> boolean`: Checks whether this object matches a given type name. Accepts "LWidget" or "Object".
 

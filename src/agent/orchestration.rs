@@ -36,22 +36,26 @@ pub fn build_system_context(
     instruction: &str,
     include_instructions: &[String],
     agent_name: Option<&str>,
-) -> String {
-    let mut block = system_state.build_context(instruction, include_instructions);
+) -> Result<String, String> {
+    let mut block = system_state
+        .build_context(instruction, include_instructions)
+        .map_err(|error| error.to_string())?;
 
     if let Some(name) = agent_name {
         if let Some(agent) = agents.get(name) {
             if !agent.description.is_empty() {
                 block.push_str(&format!("\n\n[Agent: {}]:\n{}", name, agent.description));
             }
-            let agent_system = agent.build_system_block();
+            let agent_system = agent
+                .build_system_block()
+                .map_err(|error| error.to_string())?;
             if !agent_system.is_empty() {
                 block.push_str(&format!("\n\n{}", agent_system));
             }
         }
     }
 
-    block
+    Ok(block)
 }
 
 /// Builds a batch task for a named agent, injecting system context.
@@ -74,7 +78,7 @@ pub fn make_system_task(
         &instruction,
         include_instructions,
         Some(agent_name),
-    );
+    )?;
 
     Ok(AgentBatchTask {
         agent_idx: task_idx,

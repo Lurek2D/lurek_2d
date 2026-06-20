@@ -11,7 +11,7 @@
 - Source path: `src/docs/`
 - Binding: `src/lua_api/docs_api.rs`
 - Namespace: `lurek.docs`
-- Lua API surface: `26` functions, `13` types, `60` methods
+- Lua API surface: `26` functions, `15` types, `64` methods
 - Rust test path(s): tests/rust/unit/docs_tests.rs
 - Lua test path(s): tests/lua/unit/test_docs.lua
 
@@ -40,7 +40,7 @@ This module is mostly self-contained inside the Edge/Integration group. Cross-mo
 
 - `src/docs/catalog.rs` owns the in-memory catalog that stores, groups, searches, merges, and clears doc entries.
 - It provides the collection boundary over `DocEntry`, preserving insertion order while exposing module and kind queries.
-- Merge and lookup behavior live here so export and reporting stages can share one consistent documentation container.
+- Merge, duplicate handling, and derived lookup caches live here so export and reporting stages can share one consistent documentation container.
 - Read it when catalog search, deduplication, module grouping, or entry aggregation behavior needs to change.
 
 ### entry.rs
@@ -50,11 +50,18 @@ This module is mostly self-contained inside the Edge/Integration group. Cross-mo
 - This file is the in-memory record contract for the docs pipeline; it does not own catalogs, export, or scoring logic.
 - Read it when docs field requirements, entry completeness rules, or symbol metadata shape needs to change.
 
+### error.rs
+
+- `src/docs/error.rs` owns typed errors shared by catalog, export, schema, and quality-report workflows.
+- It keeps failure reasons stable so tooling can distinguish duplicate entries, sandbox violations, size limits, and rule failures.
+- Cross-cutting docs pipeline operations depend on these errors instead of ad hoc strings, while file I/O and JSON details are normalized here.
+- Read this file when documentation pipeline failure semantics or caller-facing diagnostics need to change.
+
 ### export.rs
 
 - `src/docs/export.rs` transforms normalized doc entries into JSON payloads for completions, hovers, and signatures.
-- It owns completion-kind mapping, hover and signature builders, pretty JSON writing, and bundled export directory output.
-- Compact and richer payload variants are assembled here so IDE-facing consumers can choose size versus detail tradeoffs.
+- It owns completion-kind mapping, hover and signature builders, path-sandbox checks, payload limits, atomic file writes, and bundled export directory output.
+- Legacy payload functions remain available for compatibility, while typed options add versioned metadata and actionable export reports for stricter tooling.
 - This file is the serialization boundary for docs artifacts; it does not own entry collection or quality scoring.
 - Read it when docs JSON shape, file output behavior, or editor integration payload rules need to change.
 
@@ -70,10 +77,10 @@ This module is mostly self-contained inside the Edge/Integration group. Cross-mo
 ### report.rs
 
 - `src/docs/report.rs` evaluates documentation quality by scoring entries and aggregating validation-style issue reports.
-- It owns per-entry score calculation, letter grades, validation buckets, module averages, and overall report synthesis.
-- `ValidationReport` and `QualityReport` live here because issue tracking and score aggregation are linked outputs.
+- It owns per-entry score calculation, rule-based diagnostics, validation issue metadata, module averages, and overall report synthesis.
+- `ValidationReport`, `QualityReport`, and `DocsIssue` live here because actionable rule output and score aggregation are linked products.
 - This file analyzes existing `DocEntry` and `Catalog` data; it does not own entry storage or export serialization.
-- Read it when docs grading policy, validation totals, or module quality rollup behavior needs to change.
+- Read it when docs grading policy, validation issue semantics, or module quality rollup behavior needs to change.
 
 ### schema.rs
 
@@ -266,13 +273,32 @@ This module is mostly self-contained inside the Edge/Integration group. Cross-mo
 - `LQualityReport:getIssues() -> table[]`: Returns structured quality-rule issues with rule ids, severities, and hints.
 - `LQualityReport:getModuleScores() -> table`: Returns per-module documentation quality scores.
 - `LQualityReport:getOverallScore() -> number`: Returns the aggregate documentation quality score.
-- `LQualityReport:issueCount() -> integer`: Returns the number of structured quality issues.
 - `LQualityReport:getSummary() -> string`: Returns a human-readable summary of overall and per-module quality scores.
 - `LQualityReport:getWorst(count?) -> LDocEntry[]`: Returns the lowest-scoring documentation entries.
+- `LQualityReport:issueCount() -> integer`: Returns the number of structured quality issues.
 - `LQualityReport:toJSON() -> string`: Serializes this quality report to formatted JSON.
 - `LQualityReport:toTable() -> table`: Converts this quality report into a plain Lua table.
 - `LQualityReport:type() -> string`: Returns the Lua-visible type name for this quality report handle.
 - `LQualityReport:typeOf(name) -> boolean`: Returns whether this quality report handle matches a supported type name.
+
+#### LQualityReportGetIssuesResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `hint` (`string?`): Optional fix hint.
+- `kind` (`string`): Broad issue kind.
+- `message` (`string`): User-facing issue message.
+- `module` (`string?`): Module name when present.
+- `qualifiedName` (`string?`): Qualified API name when present.
+- `ruleId` (`string`): Stable rule identifier.
+- `severity` (`string`): Issue severity string.
+- `source` (`string?`): Producing stage label.
+
+##### Methods
+
+- No documented methods.
 
 #### LQualityReportToTableResult Type
 
@@ -281,7 +307,7 @@ This module is mostly self-contained inside the Edge/Integration group. Cross-mo
 ##### Fields
 
 - `grade` (`string`): Quality grade letter.
-- `issues` (`table[]`): Structured quality issues with rule ids, severities, and hints.
+- `issues` (`table[]`): Structured issue rows.
 - `moduleScores` (`table`): Per-module score table.
 - `overallScore` (`number`): Overall quality score.
 - `policy` (`table`): Weighting policy used to compute the score.
@@ -337,14 +363,33 @@ This module is mostly self-contained inside the Edge/Integration group. Cross-mo
 - `LValidationReport:getPhantom() -> string[]`: Returns catalog APIs that were not present in the live Lua table.
 - `LValidationReport:getSummary() -> string`: Returns a compact text summary of missing, phantom, and incomplete counts.
 - `LValidationReport:incompleteCount() -> integer`: Returns the number of catalog APIs with incomplete documentation.
-- `LValidationReport:issueCount() -> integer`: Returns the number of structured validation issues.
 - `LValidationReport:isValid() -> boolean`: Returns whether the validation report has no missing live APIs.
+- `LValidationReport:issueCount() -> integer`: Returns the number of structured validation issues.
 - `LValidationReport:missingCount() -> integer`: Returns the number of live APIs missing from the catalog.
 - `LValidationReport:phantomCount() -> integer`: Returns the number of catalog APIs absent from live reflection.
 - `LValidationReport:toJSON() -> string`: Serializes this validation report to formatted JSON.
 - `LValidationReport:toTable() -> table`: Converts this validation report into a plain Lua table.
 - `LValidationReport:type() -> string`: Returns the Lua-visible type name for this validation report handle.
 - `LValidationReport:typeOf(name) -> boolean`: Returns whether this validation report handle matches a supported type name.
+
+#### LValidationReportGetIssuesResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `hint` (`string?`): Optional fix hint.
+- `kind` (`string`): Broad issue kind.
+- `message` (`string`): User-facing issue message.
+- `module` (`string?`): Module name when present.
+- `qualifiedName` (`string?`): Qualified API name when present.
+- `ruleId` (`string`): Stable rule identifier.
+- `severity` (`string`): Issue severity string.
+- `source` (`string?`): Producing stage label.
+
+##### Methods
+
+- No documented methods.
 
 #### LValidationReportToTableResult Type
 
@@ -354,7 +399,7 @@ This module is mostly self-contained inside the Edge/Integration group. Cross-mo
 
 - `incomplete` (`string[]`): Incomplete symbols.
 - `isValid` (`boolean`): Whether no live APIs are missing.
-- `issues` (`table[]`): Structured validation issues with rule ids, severities, and hints.
+- `issues` (`table[]`): Structured issue rows.
 - `missing` (`string[]`): Missing symbols.
 - `phantom` (`string[]`): Phantom symbols.
 

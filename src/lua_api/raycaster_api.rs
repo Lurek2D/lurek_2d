@@ -2087,7 +2087,7 @@ impl LuaUserData for LuaRaycaster {
                 u32,
                 u32,
             )| {
-                let (pixels, width, height) = extract_minimap(
+                let (pixels, width, height) = crate::minimap::try_extract_minimap(
                     &this.inner,
                     player_x,
                     player_y,
@@ -2097,7 +2097,10 @@ impl LuaUserData for LuaRaycaster {
                     [70, 75, 92, 255],
                     [20, 24, 30, 255],
                     [255, 220, 90, 255],
-                );
+                )
+                .map_err(|err| {
+                    LuaError::runtime(format!("lurek.raycaster.extractMinimap: {err}"))
+                })?;
                 let img =
                     ImageData::from_bytes(width, height, pixels).map_err(LuaError::runtime)?;
                 Ok(img)

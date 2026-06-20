@@ -7,8 +7,9 @@ use crate::agent::chat::{
     ollama_embed, ollama_generate, ollama_generate_json, ollama_is_available, ollama_list_models,
 };
 use crate::agent::{
-    read_global_config, write_global_config, AgentMemory, EpisodicMemory, GlobalLlmConfig, LlmChat,
-    LlmTemplate, OllamaManager, SemanticMemory, WorkingMemory,
+    read_global_config, validate_global_config, write_global_config, AgentMemory, EpisodicMemory,
+    GlobalLlmConfig, LlmChat, LlmTemplate, OllamaManager, OllamaModelPolicy, OllamaProcessPolicy,
+    SemanticMemory, WorkingMemory,
 };
 use crate::runtime::SharedState;
 use mlua::prelude::*;
@@ -53,8 +54,7 @@ impl UserData for LuaAgent {
             "setOption",
             |_, this, (key, value): (String, mlua::Value)| {
                 let json_val = lua_to_json(value)?;
-                this.runtime.set_option(key, json_val);
-                Ok(())
+                this.runtime.set_option(key, json_val)
             },
         );
 
@@ -63,8 +63,7 @@ impl UserData for LuaAgent {
         /// @param | format | string | One of `"json"`, `"csv"`, or `"text"`.
         /// @return | nil | No value is returned.
         methods.add_method_mut("setFormat", |_, this, format: String| {
-            this.runtime.set_format(format);
-            Ok(())
+            this.runtime.set_format(format)
         });
 
         // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ setMaxRetries Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
@@ -82,8 +81,7 @@ impl UserData for LuaAgent {
         /// @return | nil | No value is returned.
         methods.add_method_mut("setContextSize", |_, this, n: u32| {
             this.runtime
-                .set_option("num_ctx".to_string(), serde_json::json!(n));
-            Ok(())
+                .set_option("num_ctx".to_string(), serde_json::json!(n))
         });
 
         // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ setTemperature Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
@@ -92,8 +90,7 @@ impl UserData for LuaAgent {
         /// @return | nil | No value is returned.
         methods.add_method_mut("setTemperature", |_, this, t: f64| {
             this.runtime
-                .set_option("temperature".to_string(), serde_json::json!(t));
-            Ok(())
+                .set_option("temperature".to_string(), serde_json::json!(t))
         });
 
         // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ setName Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
@@ -119,18 +116,14 @@ impl UserData for LuaAgent {
         /// @param | model | string | Model name (e.g. `"llama3"`, `"mistral"`).
         /// @return | nil | No value is returned.
         methods.add_method_mut("setModel", |_, this, model: String| {
-            this.runtime.set_model(model);
-            Ok(())
+            this.runtime.set_model(model)
         });
 
         // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ setUrl Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
-        /// Changes the LLM endpoint URL for future prompts.
-        /// @param | url | string | Full endpoint URL (e.g. `"http://127.0.0.1:11434/api/generate"`).
+        /// Changes the LLM endpoint URL for future prompts after safe-mode validation.
+        /// @param | url | string | Full endpoint URL (typically local, e.g. `"http://127.0.0.1:11434/api/generate"`).
         /// @return | nil | No value is returned.
-        methods.add_method_mut("setUrl", |_, this, url: String| {
-            this.runtime.set_url(url);
-            Ok(())
-        });
+        methods.add_method_mut("setUrl", |_, this, url: String| this.runtime.set_url(url));
 
         // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ setTimeout Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Sets the per-request timeout in seconds (0 uses the default 60 s).
@@ -239,6 +232,12 @@ impl UserData for LuaAgent {
         /// @return | integer | Number of pending requests.
         methods.add_method("pendingCount", |_, this, ()| {
             Ok(this.runtime.pending_count())
+        });
+
+        /// Returns transport diagnostics for the agent runtime.
+        /// @return | table | Diagnostics with queue, latency, and failure counters.
+        methods.add_method("getDiagnostics", |lua, this, ()| {
+            agent_diagnostics_to_lua(lua, &this.runtime.diagnostics())
         });
 
         // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ update Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
@@ -459,9 +458,35 @@ impl UserData for LuaAISystem {
                         agent_name = Some(name);
                     }
                 }
-                Ok(this
-                    .runtime
-                    .build_context(&instruction, &include, agent_name.as_deref()))
+                this.runtime
+                    .build_context(&instruction, &include, agent_name.as_deref())
+            },
+        );
+
+        /// Builds context and returns both the rendered text and provenance list.
+        /// @return | table | `{ text = string, provenance = { ... } }`.
+        methods.add_method(
+            "buildContextReport",
+            |lua, this, (instruction, opts): (String, Option<mlua::Table>)| {
+                let mut include = Vec::new();
+                let mut agent_name = None;
+                if let Some(opts_tbl) = opts {
+                    if let Ok(inst_list) = opts_tbl.get::<_, mlua::Table>("instructions") {
+                        for pair in inst_list.pairs::<mlua::Integer, String>() {
+                            let (_, key) = pair?;
+                            include.push(key);
+                        }
+                    }
+                    if let Ok(name) = opts_tbl.get::<_, String>("agent") {
+                        agent_name = Some(name);
+                    }
+                }
+                this.runtime.build_context_report(
+                    lua,
+                    &instruction,
+                    &include,
+                    agent_name.as_deref(),
+                )
             },
         );
 
@@ -531,6 +556,12 @@ impl UserData for LuaAISystem {
         /// Polls the system's background client for completed requests and dispatches callbacks.
         /// @return | nil | No value is returned.
         methods.add_method_mut("update", |lua, this, ()| this.runtime.update(lua));
+
+        /// Returns transport diagnostics for the AI system runtime.
+        /// @return | table | Diagnostics with queue, latency, and failure counters.
+        methods.add_method("getDiagnostics", |lua, this, ()| {
+            agent_diagnostics_to_lua(lua, &this.runtime.diagnostics())
+        });
     }
 }
 
@@ -601,7 +632,12 @@ impl UserData for LuaOllamaManager {
         // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ start Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Spawns `ollama serve` as a managed child process. Returns `true` on success.
         /// @return | boolean | `true` if the process started.
-        methods.add_method_mut("start", |_, this, ()| Ok(this.manager.start()));
+        methods.add_method_mut("start", |_, this, ()| {
+            this.manager
+                .start_with_status()
+                .map(|_| true)
+                .map_err(mlua::Error::RuntimeError)
+        });
 
         // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ stop Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Kills the Ollama process started by this manager. Returns `true` if it was running.
@@ -621,26 +657,50 @@ impl UserData for LuaOllamaManager {
         methods.add_method_mut(
             "pullModel",
             |lua, this, (name, callback): (String, mlua::Function)| {
-                let callback_id = this.manager.pull_model(name);
+                let callback_id = this
+                    .manager
+                    .pull_model(name)
+                    .map_err(mlua::Error::RuntimeError)?;
                 let key = lua.create_registry_value(callback)?;
                 this.callback_registry.insert(callback_id, key);
                 Ok(callback_id)
             },
         );
 
+        // -- cancelPull --
+        /// Marks a queued or in-flight pull as cancelled so its result is ignored on completion.
+        /// @param | callback_id | integer | ID returned by `pullModel`.
+        /// @return | boolean | `true` when the callback ID was marked as cancelled.
+        methods.add_method("cancelPull", |_, this, callback_id: usize| {
+            Ok(this.manager.cancel_pull(callback_id))
+        });
+
         // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ deleteModel Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Sends `DELETE /api/delete` to remove a model from local Ollama storage.
         /// @param | name | string | Model name to delete (e.g. `"llama3:latest"`).
+        /// @param | confirm_token? | string | Required when deleting a model protected by policy.
         /// @return | boolean | `true` if the request succeeded.
-        methods.add_method("deleteModel", |_, this, name: String| {
-            Ok(this.manager.delete_model(&name))
-        });
+        methods.add_method(
+            "deleteModel",
+            |_, this, (name, confirm_token): (String, Option<String>)| {
+                this.manager
+                    .delete_model(&name, confirm_token.as_deref())
+                    .map(|_| true)
+                    .map_err(mlua::Error::RuntimeError)
+            },
+        );
 
         // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ pendingCount Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Returns the number of in-flight model pull operations.
         /// @return | integer | Number of pending pulls.
         methods.add_method("pendingCount", |_, this, ()| {
             Ok(this.manager.in_flight_count())
+        });
+
+        /// Returns operational diagnostics for the Ollama manager.
+        /// @return | table | Diagnostics with pull queue state and last error information.
+        methods.add_method("getDiagnostics", |lua, this, ()| {
+            ollama_diagnostics_to_lua(lua, &this.manager.diagnostics_snapshot())
         });
 
         // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ update Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
@@ -701,6 +761,7 @@ impl UserData for LuaAgentChat {
         /// @return | string | Assistant reply text, or raises an error on failure.
         methods.add_method_mut("complete", |_, this, ()| {
             let cfg = read_global_config();
+            validate_global_config(&cfg).map_err(mlua::Error::RuntimeError)?;
             let timeout_secs = (cfg.timeout_ms / 1000).max(1);
             this.chat
                 .complete(&cfg.base_url, &cfg.model, timeout_secs)
@@ -1040,6 +1101,12 @@ impl UserData for LuaAgentMemory {
                 .map(|_| true)
                 .map_err(mlua::Error::RuntimeError)
         });
+
+        /// Returns diagnostics for the bundled memory state and persistence policy.
+        /// @return | table | Counts, approximate bytes, and storage-policy information.
+        methods.add_method("getDiagnostics", |lua, this, ()| {
+            agent_memory_diagnostics_to_lua(lua, &this.mem.diagnostics_snapshot())
+        });
     }
 }
 
@@ -1090,7 +1157,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
 
     // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ newOllama Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
     /// Creates an Ollama infrastructure manager for server lifecycle and model management.
-    /// @param | config | table? | Optional config with `url` (default `"http://127.0.0.1:11434"`).
+    /// @param | config | table? | Optional config with `url`, `binary_path`, `trusted_path`, `allowed_prefixes`, `protected_models`, `max_concurrent_pulls`, and `max_queued_pulls`.
     /// @return | LOllamaManager | A new Ollama manager object.
     agent_table.set(
         "newOllama",
@@ -1099,8 +1166,46 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
                 .as_ref()
                 .and_then(|t| t.get::<_, String>("url").ok())
                 .unwrap_or_else(|| "http://127.0.0.1:11434".to_string());
+            let mut process_policy = OllamaProcessPolicy::default();
+            let mut model_policy = OllamaModelPolicy::default();
+            if let Some(cfg) = config.as_ref() {
+                process_policy.binary_path = cfg
+                    .get::<_, Option<String>>("binary_path")
+                    .ok()
+                    .flatten()
+                    .map(std::path::PathBuf::from);
+                process_policy.trusted_path = cfg
+                    .get::<_, bool>("trusted_path")
+                    .unwrap_or(process_policy.trusted_path);
+                process_policy.healthcheck_timeout_ms = cfg
+                    .get::<_, u64>("healthcheck_timeout_ms")
+                    .unwrap_or(process_policy.healthcheck_timeout_ms);
+                process_policy.healthcheck_poll_ms = cfg
+                    .get::<_, u64>("healthcheck_poll_ms")
+                    .unwrap_or(process_policy.healthcheck_poll_ms);
+                if let Ok(prefixes) = cfg.get::<_, mlua::Table>("allowed_model_prefixes") {
+                    model_policy.allowed_prefixes.clear();
+                    for pair in prefixes.pairs::<mlua::Integer, String>() {
+                        let (_, prefix) = pair?;
+                        model_policy.allowed_prefixes.push(prefix);
+                    }
+                }
+                if let Ok(models) = cfg.get::<_, mlua::Table>("protected_models") {
+                    model_policy.protected_models.clear();
+                    for pair in models.pairs::<mlua::Integer, String>() {
+                        let (_, model) = pair?;
+                        model_policy.protected_models.push(model);
+                    }
+                }
+                model_policy.max_concurrent_pulls = cfg
+                    .get::<_, usize>("max_concurrent_pulls")
+                    .unwrap_or(model_policy.max_concurrent_pulls);
+                model_policy.max_queued_pulls = cfg
+                    .get::<_, usize>("max_queued_pulls")
+                    .unwrap_or(model_policy.max_queued_pulls);
+            }
             Ok(LuaOllamaManager {
-                manager: OllamaManager::new(url),
+                manager: OllamaManager::with_policies(url, process_policy, model_policy),
                 callback_registry: HashMap::new(),
             })
         })?,
@@ -1108,7 +1213,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
 
     // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ configure Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
     /// Configures the global LLM provider settings used by module-level functions.
-    /// @param | config | table | Config with `provider`, `base_url`, `model`, `timeout_ms`, and `api_key` fields.
+    /// @param | config | table | Config with `provider`, `base_url`, `model`, `timeout_ms`, `api_key`, and optional `allow_external_hosts`.
     /// @return | nil | No value is returned.
     agent_table.set(
         "configure",
@@ -1128,7 +1233,11 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
                 api_key: config
                     .get::<_, Option<String>>("api_key")
                     .unwrap_or(current.api_key),
+                allow_external_hosts: config
+                    .get::<_, bool>("allow_external_hosts")
+                    .unwrap_or(current.allow_external_hosts),
             };
+            validate_global_config(&cfg).map_err(mlua::Error::RuntimeError)?;
             write_global_config(cfg);
             Ok(())
         })?,
@@ -1142,6 +1251,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         "complete",
         lua.create_function(move |_, prompt: String| {
             let cfg = read_global_config();
+            validate_global_config(&cfg).map_err(mlua::Error::RuntimeError)?;
             let timeout_secs = (cfg.timeout_ms / 1000).max(1);
             ollama_generate(&cfg.base_url, &cfg.model, &prompt, "", timeout_secs)
                 .map_err(mlua::Error::RuntimeError)
@@ -1150,7 +1260,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
 
     // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ completeAsync Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
     let complete_async_runtime = Rc::clone(&module_runtime);
-    /// Sends a prompt asynchronously using a background thread; calls `callback(text, err)` on completion.
+    /// Queues a prompt on the module-level bounded worker pool; calls `callback(text, err)` on completion.
     /// @param | prompt | string | Prompt text.
     /// @param | callback | function | Called with `(text, err)` on completion (`err` is `nil` on success).
     /// @return | integer | Callback ID used to cancel or track the request.
@@ -1158,6 +1268,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         "completeAsync",
         lua.create_function(move |lua, (prompt, callback): (String, mlua::Function)| {
             let cfg = read_global_config();
+            validate_global_config(&cfg).map_err(mlua::Error::RuntimeError)?;
             complete_async_runtime
                 .borrow_mut()
                 .complete_async(lua, prompt, callback, cfg)
@@ -1180,6 +1291,16 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     agent_table.set(
         "pendingCount",
         lua.create_function(move |_, ()| Ok(pending_runtime.borrow().pending_count()))?,
+    )?;
+
+    let diagnostics_runtime = Rc::clone(&module_runtime);
+    /// Returns module-level async transport diagnostics for `completeAsync`.
+    /// @return | table | Diagnostics with queue, latency, and failure counters.
+    agent_table.set(
+        "getDiagnostics",
+        lua.create_function(move |lua, ()| {
+            agent_diagnostics_to_lua(lua, &diagnostics_runtime.borrow().diagnostics())
+        })?,
     )?;
 
     // --- cancel ---
@@ -1227,6 +1348,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         "completeJson",
         lua.create_function(move |lua, prompt: String| {
             let cfg = read_global_config();
+            validate_global_config(&cfg).map_err(mlua::Error::RuntimeError)?;
             let timeout_secs = (cfg.timeout_ms / 1000).max(1);
             let val = ollama_generate_json(&cfg.base_url, &cfg.model, &prompt, "", timeout_secs)
                 .map_err(mlua::Error::RuntimeError)?;
@@ -1242,6 +1364,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         "embed",
         lua.create_function(move |lua, text: String| {
             let cfg = read_global_config();
+            validate_global_config(&cfg).map_err(mlua::Error::RuntimeError)?;
             let timeout_secs = (cfg.timeout_ms / 1000).max(1);
             let floats = ollama_embed(&cfg.base_url, &cfg.model, &text, timeout_secs)
                 .map_err(mlua::Error::RuntimeError)?;
@@ -1260,6 +1383,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         "isAvailable",
         lua.create_function(move |_, ()| {
             let cfg = read_global_config();
+            validate_global_config(&cfg).map_err(mlua::Error::RuntimeError)?;
             Ok(ollama_is_available(&cfg.base_url, 5))
         })?,
     )?;
@@ -1271,6 +1395,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         "listModels",
         lua.create_function(move |lua, ()| {
             let cfg = read_global_config();
+            validate_global_config(&cfg).map_err(mlua::Error::RuntimeError)?;
             let timeout_secs = (cfg.timeout_ms / 1000).max(1);
             let names = ollama_list_models(&cfg.base_url, timeout_secs);
             let tbl = lua.create_table()?;
@@ -1358,7 +1483,8 @@ mod runtime {
         unpack_batch_callback_id,
     };
     use crate::agent::{
-        AISystemState, AgentClient, AgentError, AgentRequest, AgentState, GlobalLlmConfig,
+        AISystemState, AgentClient, AgentError, AgentRequest, AgentResponseFormat, AgentState,
+        GlobalLlmConfig,
     };
     use mlua::prelude::*;
     use mlua::{Function, Lua, RegistryKey, Table, Value};
@@ -1382,7 +1508,7 @@ mod runtime {
         /// Number of tasks in this batch; when `results.len() == expected_count` the batch is done.
         expected_count: usize,
         /// Response format per task index, used when converting the body to a Lua value.
-        formats: HashMap<usize, String>,
+        formats: HashMap<usize, AgentResponseFormat>,
         /// Accumulated task results keyed by task index.
         results: HashMap<usize, Result<String, AgentError>>,
     }
@@ -1425,7 +1551,7 @@ mod runtime {
                 model: cfg.model,
                 prompt,
                 system: String::new(),
-                format: "text".to_string(),
+                format: AgentResponseFormat::Text,
                 options: serde_json::Value::Null,
                 callback_id,
                 max_retries: 0,
@@ -1469,6 +1595,11 @@ mod runtime {
         pub(crate) fn pending_count(&self) -> usize {
             self.client.in_flight_count()
         }
+
+        /// Returns transport diagnostics for module-level async completions.
+        pub(crate) fn diagnostics(&self) -> crate::agent::AgentDiagnosticsSnapshot {
+            self.client.diagnostics_snapshot()
+        }
     }
 
     impl BatchDispatcher {
@@ -1507,13 +1638,14 @@ mod runtime {
 
             for task in tasks {
                 let packed_id = pack_batch_callback_id(batch_id, task.agent_idx);
-                formats.insert(task.agent_idx, task.state.format.clone());
+                formats.insert(task.agent_idx, task.state.format);
                 let req = if let Some(sys) = task.system_override {
                     task.state
                         .to_request_with_system(task.instruction, sys, packed_id)
                 } else {
                     task.state.to_request(task.instruction, packed_id)
-                };
+                }
+                .map_err(LuaError::runtime)?;
                 requests.push(req);
             }
 
@@ -1562,8 +1694,8 @@ mod runtime {
                 let format = state
                     .formats
                     .get(&idx)
-                    .map(String::as_str)
-                    .unwrap_or("text");
+                    .copied()
+                    .unwrap_or(AgentResponseFormat::Text);
                 let result = state
                     .results
                     .remove(&idx)
@@ -1589,7 +1721,7 @@ mod runtime {
         /// Shared background HTTP client for this agent.
         client: Rc<AgentClient>,
         /// Single-prompt callbacks: callback_id -> (registry_key, format_string).
-        callback_registry: HashMap<usize, (RegistryKey, String)>,
+        callback_registry: HashMap<usize, (RegistryKey, AgentResponseFormat)>,
         /// Batch dispatcher for promptBatch calls.
         batch_dispatcher: BatchDispatcher,
         /// Next single-prompt callback ID to assign.
@@ -1613,7 +1745,8 @@ mod runtime {
                 }
             }
 
-            let mut state = AgentState::new(url, model, system_prompt, format, options);
+            let mut state = AgentState::new(url, model, system_prompt, format, options)
+                .map_err(LuaError::runtime)?;
 
             if let Ok(name) = config.get::<_, String>("name") {
                 state.set_name(name);
@@ -1648,13 +1781,17 @@ mod runtime {
         }
 
         /// Sets or updates a single model option (e.g. `temperature`, `seed`).
-        pub(crate) fn set_option(&mut self, key: String, value: serde_json::Value) {
-            self.state.set_option(key, value);
+        pub(crate) fn set_option(
+            &mut self,
+            key: String,
+            value: serde_json::Value,
+        ) -> LuaResult<()> {
+            self.state.set_option(key, value).map_err(LuaError::runtime)
         }
 
         /// Changes the response format (`"json"`, `"csv"`, or `"text"`).
-        pub(crate) fn set_format(&mut self, format: String) {
-            self.state.set_format(format);
+        pub(crate) fn set_format(&mut self, format: String) -> LuaResult<()> {
+            self.state.set_format(format).map_err(LuaError::runtime)
         }
 
         /// Sets the maximum retry count for transient errors.
@@ -1673,13 +1810,13 @@ mod runtime {
         }
 
         /// Sets the model identifier forwarded to the LLM backend.
-        pub(crate) fn set_model(&mut self, model: String) {
-            self.state.set_model(model);
+        pub(crate) fn set_model(&mut self, model: String) -> LuaResult<()> {
+            self.state.set_model(model).map_err(LuaError::runtime)
         }
 
         /// Sets the LLM endpoint URL used for future requests.
-        pub(crate) fn set_url(&mut self, url: String) {
-            self.state.set_url(url);
+        pub(crate) fn set_url(&mut self, url: String) -> LuaResult<()> {
+            self.state.set_url(url).map_err(LuaError::runtime)
         }
 
         /// Sets the per-request timeout in seconds.
@@ -1724,7 +1861,7 @@ mod runtime {
 
         /// Returns the response format string.
         pub(crate) fn get_format(&self) -> &str {
-            &self.state.format
+            self.state.format.as_str()
         }
 
         /// Cancels an in-flight or pending callback by ID, discarding its response.
@@ -1737,6 +1874,11 @@ mod runtime {
             self.client.in_flight_count()
         }
 
+        /// Returns transport diagnostics for this agent runtime.
+        pub(crate) fn diagnostics(&self) -> crate::agent::AgentDiagnosticsSnapshot {
+            self.client.diagnostics_snapshot()
+        }
+
         /// Queues one asynchronous prompt and stores its Lua callback.
         pub(crate) fn prompt(
             &mut self,
@@ -1747,13 +1889,17 @@ mod runtime {
             let callback_id = self.next_callback_id;
             self.next_callback_id += 1;
 
-            let format = self.state.format.clone();
+            let format = self.state.format;
             let callback_key = lua.create_registry_value(callback)?;
             self.callback_registry
                 .insert(callback_id, (callback_key, format));
 
             self.client
-                .send_prompt(self.state.to_request(instruction, callback_id))
+                .send_prompt(
+                    self.state
+                        .to_request(instruction, callback_id)
+                        .map_err(LuaError::runtime)?,
+                )
                 .map_err(LuaError::runtime)?;
 
             Ok(callback_id)
@@ -1797,7 +1943,7 @@ mod runtime {
                 {
                     let callback: Function = lua.registry_value(&callback_key)?;
                     lua.remove_registry_value(callback_key)?;
-                    let (success, data, err_info) = process_response(lua, &format, response.body)?;
+                    let (success, data, err_info) = process_response(lua, format, response.body)?;
                     callback.call::<_, ()>((success, data, err_info))?;
                     continue;
                 }
@@ -1916,7 +2062,7 @@ mod runtime {
         /// Shared background HTTP client for all system-routed prompts.
         client: Rc<AgentClient>,
         /// Single-prompt callbacks: callback_id -> (registry_key, format_string).
-        callback_registry: HashMap<usize, (RegistryKey, String)>,
+        callback_registry: HashMap<usize, (RegistryKey, AgentResponseFormat)>,
         /// Batch dispatcher for runAll calls.
         batch_dispatcher: BatchDispatcher,
         /// Next single-prompt callback ID to assign.
@@ -2020,7 +2166,7 @@ mod runtime {
             instruction: &str,
             include_instructions: &[String],
             agent_name: Option<&str>,
-        ) -> String {
+        ) -> LuaResult<String> {
             build_system_context(
                 &self.system_state,
                 &self.agents,
@@ -2028,6 +2174,34 @@ mod runtime {
                 include_instructions,
                 agent_name,
             )
+            .map_err(LuaError::runtime)
+        }
+
+        /// Builds the structured context report used for routing and exposes provenance to Lua.
+        pub(crate) fn build_context_report<'lua>(
+            &self,
+            lua: &'lua Lua,
+            instruction: &str,
+            include_instructions: &[String],
+            agent_name: Option<&str>,
+        ) -> LuaResult<mlua::Table<'lua>> {
+            let text = self.build_context(instruction, include_instructions, agent_name)?;
+            let report = self
+                .system_state
+                .build_context_report(instruction, include_instructions)
+                .map_err(LuaError::runtime)?;
+            let table = lua.create_table()?;
+            table.set("text", text)?;
+            let provenance = lua.create_table()?;
+            for (idx, entry) in report.provenance.iter().enumerate() {
+                let item = lua.create_table()?;
+                item.set("kind", entry.kind.clone())?;
+                item.set("source", entry.source.clone())?;
+                item.set("reason", entry.reason.clone())?;
+                provenance.set(idx + 1, item)?;
+            }
+            table.set("provenance", provenance)?;
+            Ok(table)
         }
 
         /// Sends a single prompt to a named agent through the system, auto-injecting context.
@@ -2046,17 +2220,19 @@ mod runtime {
                 .clone();
 
             let system_block =
-                self.build_context(&instruction, &include_instructions, Some(&agent_name));
+                self.build_context(&instruction, &include_instructions, Some(&agent_name))?;
 
             let callback_id = self.next_callback_id;
             self.next_callback_id += 1;
 
-            let format = agent.format.clone();
+            let format = agent.format;
             let callback_key = lua.create_registry_value(callback)?;
             self.callback_registry
                 .insert(callback_id, (callback_key, format));
 
-            let req = agent.to_request_with_system(instruction, system_block, callback_id);
+            let req = agent
+                .to_request_with_system(instruction, system_block, callback_id)
+                .map_err(LuaError::runtime)?;
             self.client.send_prompt(req).map_err(LuaError::runtime)?;
 
             Ok(callback_id)
@@ -2113,7 +2289,7 @@ mod runtime {
                 {
                     let callback: Function = lua.registry_value(&callback_key)?;
                     lua.remove_registry_value(callback_key)?;
-                    let (success, data, err_info) = process_response(lua, &format, response.body)?;
+                    let (success, data, err_info) = process_response(lua, format, response.body)?;
                     callback.call::<_, ()>((success, data, err_info))?;
                     continue;
                 }
@@ -2132,6 +2308,11 @@ mod runtime {
             }
 
             Ok(())
+        }
+
+        /// Returns transport diagnostics for this AI-system runtime.
+        pub(crate) fn diagnostics(&self) -> crate::agent::AgentDiagnosticsSnapshot {
+            self.client.diagnostics_snapshot()
         }
     }
 
@@ -2225,11 +2406,11 @@ mod runtime {
     /// Parses an agent response body according to `format` and returns `(success, data, error_info)`.
     fn process_response<'lua>(
         lua: &'lua Lua,
-        format: &str,
+        format: AgentResponseFormat,
         body: Result<String, AgentError>,
     ) -> LuaResult<(bool, Value<'lua>, Value<'lua>)> {
         match body {
-            Ok(body) if format == "json" => {
+            Ok(body) if format == AgentResponseFormat::Json => {
                 match serde_json::from_str::<serde_json::Value>(&body) {
                     Ok(value) => Ok((true, json_to_lua(lua, &value)?, Value::Nil)),
                     Err(error) => Ok((
@@ -2239,7 +2420,7 @@ mod runtime {
                     )),
                 }
             }
-            Ok(body) if format == "csv" => match parse_csv_to_lua(lua, &body) {
+            Ok(body) if format == AgentResponseFormat::Csv => match parse_csv_to_lua(lua, &body) {
                 Ok(value) => Ok((true, value, Value::Nil)),
                 Err(error) => Ok((
                     false,
@@ -2267,4 +2448,75 @@ mod runtime {
         table.set("message", message.as_ref())?;
         Ok(Value::Table(table))
     }
+}
+
+fn agent_diagnostics_to_lua<'lua>(
+    lua: &'lua Lua,
+    diagnostics: &crate::agent::AgentDiagnosticsSnapshot,
+) -> LuaResult<mlua::Table<'lua>> {
+    let table = lua.create_table()?;
+    table.set("in_flight", diagnostics.in_flight)?;
+    table.set("queued", diagnostics.queued)?;
+    table.set("cancelled", diagnostics.cancelled)?;
+    table.set("completed", diagnostics.completed)?;
+    table.set("failed", diagnostics.failed)?;
+    table.set("queue_rejected", diagnostics.queue_rejected)?;
+    table.set("network_failures", diagnostics.network_failures)?;
+    table.set("timeout_failures", diagnostics.timeout_failures)?;
+    table.set(
+        "invalid_request_failures",
+        diagnostics.invalid_request_failures,
+    )?;
+    table.set("backend_failures", diagnostics.backend_failures)?;
+    table.set("format_failures", diagnostics.format_failures)?;
+    table.set("model_failures", diagnostics.model_failures)?;
+    table.set("avg_latency_ms", diagnostics.avg_latency_ms)?;
+    table.set(
+        "last_endpoint_host",
+        diagnostics.last_endpoint_host.clone().unwrap_or_default(),
+    )?;
+    table.set(
+        "last_model",
+        diagnostics.last_model.clone().unwrap_or_default(),
+    )?;
+    Ok(table)
+}
+
+fn ollama_diagnostics_to_lua<'lua>(
+    lua: &'lua Lua,
+    diagnostics: &crate::agent::OllamaDiagnosticsSnapshot,
+) -> LuaResult<mlua::Table<'lua>> {
+    let table = lua.create_table()?;
+    table.set("in_flight_pulls", diagnostics.in_flight_pulls)?;
+    table.set("queued_pulls", diagnostics.queued_pulls)?;
+    table.set("completed_pulls", diagnostics.completed_pulls)?;
+    table.set("failed_pulls", diagnostics.failed_pulls)?;
+    table.set("rejected_pulls", diagnostics.rejected_pulls)?;
+    table.set("cancelled_pulls", diagnostics.cancelled_pulls)?;
+    table.set(
+        "last_model",
+        diagnostics.last_model.clone().unwrap_or_default(),
+    )?;
+    table.set(
+        "last_error",
+        diagnostics.last_error.clone().unwrap_or_default(),
+    )?;
+    Ok(table)
+}
+
+fn agent_memory_diagnostics_to_lua<'lua>(
+    lua: &'lua Lua,
+    diagnostics: &crate::agent::AgentMemoryDiagnosticsSnapshot,
+) -> LuaResult<mlua::Table<'lua>> {
+    let table = lua.create_table()?;
+    table.set("working_entries", diagnostics.working_entries)?;
+    table.set("episodic_entries", diagnostics.episodic_entries)?;
+    table.set("semantic_entries", diagnostics.semantic_entries)?;
+    table.set("approx_bytes", diagnostics.approx_bytes)?;
+    table.set("max_bytes", diagnostics.max_bytes)?;
+    table.set(
+        "sandbox_root",
+        diagnostics.sandbox_root.to_string_lossy().to_string(),
+    )?;
+    Ok(table)
 }

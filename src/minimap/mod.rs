@@ -20,9 +20,10 @@ pub mod types;
 pub use minimap::Minimap;
 pub use raycaster_overlay::{
     build_minimap_tile_window, compute_tile_light, draw_player_arrow, extract_minimap,
-    reveal_cells_from_rays, MinimapTileSample,
+    reveal_cells_from_rays, try_draw_player_arrow, try_extract_minimap, MinimapTileSample,
 };
 pub use types::{
-    ColorMode, FogLevel, LayerData, MarkerAnimation, MinimapMarker, MinimapObject,
-    MinimapObjectType, MinimapPing, OverlayPath, OverlayShape,
+    ColorMode, FogLevel, LayerData, MarkerAnimation, MinimapError, MinimapLimits, MinimapMarker,
+    MinimapObject, MinimapObjectType, MinimapPing, MinimapRenderStats, MinimapValidationLimits,
+    OverlayPath, OverlayShape,
 };

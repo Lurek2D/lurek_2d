@@ -402,10 +402,11 @@ Compact index of all functions and methods. Parameter details and examples live 
 ```lua
 lurek.agent.cancel(callback_id: integer) -- Cancels a module-level asynchronous completion by callback ID.
 lurek.agent.complete(prompt: string) -> string -- Sends a single prompt to the global LLM and returns the response text.
-lurek.agent.completeAsync(prompt: string, callback: function) -> integer -- Sends a prompt asynchronously using a background thread; calls `callback(text, err)` on completion.
+lurek.agent.completeAsync(prompt: string, callback: function) -> integer -- Queues a prompt on the module-level bounded worker pool; calls `callback(text, err)` on completion.
 lurek.agent.completeJson(prompt: string) -> table -- Sends a prompt requesting a JSON-format response and returns a parsed Lua table.
 lurek.agent.configure(config: table) -- Configures the global LLM provider settings used by module-level functions.
 lurek.agent.embed(text: string) -> table -- Returns an embedding vector for `text` from the global LLM.
+lurek.agent.getDiagnostics() -> table -- Returns module-level async transport diagnostics for `completeAsync`.
 lurek.agent.isAvailable() -> boolean -- Returns `true` if the configured LLM server responds within 5 seconds.
 lurek.agent.listModels() -> table -- Returns a list of available model names from the configured LLM server.
 lurek.agent.new(config: table) -> LAgent -- Creates a new configurable LLM Agent runtime instance.
@@ -430,6 +431,7 @@ LAgent:cancel(callback_id: integer) -- Cancels an in-flight or pending request b
 LAgent:clearSkills() -- Removes all registered skills from the agent's context.
 LAgent:evalCode(code: string) -> boolean -- Evaluates a Lua code string inside the active VM.
 LAgent:getDescription() -> string -- Returns the agent's role description.
+LAgent:getDiagnostics() -> table -- Returns transport diagnostics for the agent runtime.
 LAgent:getFormat() -> string -- Returns the current response format string.
 LAgent:getModel() -> string -- Returns the current model identifier.
 LAgent:getName() -> string -- Returns the agent's name identifier.
@@ -448,7 +450,7 @@ LAgent:setName(name: string) -- Sets the agent's name identifier used when added
 LAgent:setOption(key: string, value: any) -- Sets a single model option forwarded to the LLM backend.
 LAgent:setTemperature(t: number) -- Sets the sampling temperature forwarded to the LLM backend.
 LAgent:setTimeout(secs: integer) -- Sets the per-request timeout in seconds (0 uses the default 60 s).
-LAgent:setUrl(url: string) -- Changes the LLM endpoint URL for future prompts.
+LAgent:setUrl(url: string) -- Changes the LLM endpoint URL for future prompts after safe-mode validation.
 LAgent:skillCount() -> integer -- Returns the number of registered skills.
 LAgent:update() -- Polls the background client for completed LLM requests and dispatches callbacks.
 ```
@@ -474,6 +476,7 @@ LAgentManager:update() -- Polls the manager's background client for completed ta
 
 ```lua
 LAgentMemory:episodic() -> LEpisodicMemory -- Returns the episodic memory component.
+LAgentMemory:getDiagnostics() -> table -- Returns diagnostics for the bundled memory state and persistence policy.
 LAgentMemory:load() -> boolean -- Deserialises memory state from the configured persist_path.
 LAgentMemory:save() -> boolean -- Serialises all memory banks to the configured persist_path.
 LAgentMemory:semantic() -> LSemanticMemory -- Returns the semantic memory component.
@@ -494,6 +497,8 @@ LAISystem:addInstruction(key: string, text: string) -- Adds a named instruction 
 LAISystem:addSkill(name: string, keywords: table, prompt: string) -- Adds a keyword-gated system skill that Lurek auto-injects when the prompt overlaps with its keywords.
 LAISystem:agentCount() -> integer -- Returns the number of registered agents.
 LAISystem:buildContext(instruction: string, [opts]: table) -> string -- Builds and returns the full context string that would be sent for a given prompt.
+LAISystem:buildContextReport(instruction: any, [opts]: any) -> table -- Builds context and returns both the rendered text and provenance list.
+LAISystem:getDiagnostics() -> table -- Returns transport diagnostics for the AI system runtime.
 LAISystem:hasAgent(name: string) -> boolean -- Returns `true` if an agent with `name` is registered.
 LAISystem:hasInstruction(key: string) -> boolean -- Returns `true` if an instruction with `key` is registered.
 LAISystem:hasSkill(name: string) -> boolean -- Returns `true` if a system skill with `name` is registered.
@@ -522,7 +527,9 @@ LEpisodicMemory:record(tick: integer, data: table) -- Records a new episode at `
 
 ```lua
 LOllamaManager:baseUrl() -> string -- Returns the base URL this manager was created with.
-LOllamaManager:deleteModel(name: string) -> boolean -- Sends `DELETE /api/delete` to remove a model from local Ollama storage.
+LOllamaManager:cancelPull(callback_id: integer) -> boolean -- Marks a queued or in-flight pull as cancelled so its result is ignored on completion.
+LOllamaManager:deleteModel(name: string, [confirm_token]: string) -> boolean -- Sends `DELETE /api/delete` to remove a model from local Ollama storage.
+LOllamaManager:getDiagnostics() -> table -- Returns operational diagnostics for the Ollama manager.
 LOllamaManager:hasModel(name: string) -> boolean -- Returns `true` if a model with the given name (or name prefix) is available locally.
 LOllamaManager:isRunning() -> boolean -- Returns `true` if the Ollama HTTP server responds within 5 seconds.
 LOllamaManager:listModels() -> table -- Returns a table of locally available models, each with `name` and `size_gb` fields.

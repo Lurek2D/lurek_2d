@@ -24,6 +24,8 @@ pub struct GlobalLlmConfig {
     pub timeout_ms: u64,
     /// Optional API key forwarded in the `Authorization` header.
     pub api_key: Option<String>,
+    /// Whether external hosts are allowed for module-level direct helpers.
+    pub allow_external_hosts: bool,
 }
 
 impl Default for GlobalLlmConfig {
@@ -34,6 +36,7 @@ impl Default for GlobalLlmConfig {
             model: "llama3".to_string(),
             timeout_ms: 30_000,
             api_key: None,
+            allow_external_hosts: false,
         }
     }
 }
@@ -57,6 +60,30 @@ pub fn write_global_config(cfg: GlobalLlmConfig) {
     if let Ok(mut guard) = global_cfg_mutex().lock() {
         *guard = cfg;
     }
+}
+
+/// Validates the module-level LLM config under the default safe network policy.
+pub fn validate_global_config(cfg: &GlobalLlmConfig) -> Result<(), String> {
+    use crate::agent::state::{validate_agent_url, AgentNetworkPolicy};
+
+    if cfg.model.trim().is_empty() {
+        return Err("global LLM model must not be empty".to_string());
+    }
+    if !cfg
+        .model
+        .chars()
+        .all(|ch| ch.is_ascii_alphanumeric() || matches!(ch, '_' | '-' | '.' | ':' | '/'))
+    {
+        return Err(format!(
+            "global LLM model '{}' contains unsupported characters",
+            cfg.model
+        ));
+    }
+
+    let mut network_policy = AgentNetworkPolicy::default();
+    network_policy.allow_external_hosts = cfg.allow_external_hosts;
+    let generate_url = format!("{}/api/generate", cfg.base_url.trim_end_matches('/'));
+    validate_agent_url(&generate_url, &network_policy).map_err(|error| error.to_string())
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
