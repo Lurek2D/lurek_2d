@@ -1,0 +1,155 @@
+[root]
+widget_type = "panel"
+id = "root_panel"
+x = 0
+y = 0
+w = 800
+h = 600
+
+[[root.children]]
+id = "title_screen"
+widget_type = "panel"
+x = 0
+y = 0
+w = 800
+h = 600
+visible = false
+
+    [[root.children.children]]
+    id = "title_text"
+    widget_type = "label"
+    x = 350
+    y = 240
+    text = "STEALTH"
+
+    [[root.children.children]]
+    id = "press_start"
+    widget_type = "label"
+    x = 345
+    y = 310
+    text = "PRESS ENTER"
+
+    [[root.children.children]]
+    id = "desc_text"
+    widget_type = "label"
+    x = 175
+    y = 360
+    text = "Sneak past guards. Collect keycards. Reach the exit."
+
+[[root.children]]
+id = "hud"
+widget_type = "panel"
+x = 0
+y = 0
+w = 800
+h = 600
+visible = false
+
+    [[root.children.children]]
+    id = "keys_text"
+    widget_type = "label"
+    x = 10
+    y = 10
+    text = "KEYS: 0/3"
+
+    [[root.children.children]]
+    id = "level_text"
+    widget_type = "label"
+    x = 375
+    y = 10
+    text = "LEVEL 1"
+
+    [[root.children.children]]
+    id = "suspicion_bg"
+    widget_type = "panel"
+    x = 690
+    y = 10
+    w = 100
+    h = 8
+    visible = false
+
+    [[root.children.children]]
+    id = "suspicion_fill"
+    widget_type = "panel"
+    x = 690
+    y = 10
+    w = 0
+    h = 8
+    visible = false
+
+    [[root.children.children]]
+    id = "suspicion_text"
+    widget_type = "label"
+    x = 690
+    y = 22
+    text = "SUSPICION"
+    visible = false
+
+    [[root.children.children]]
+    id = "crouch_text"
+    widget_type = "label"
+    x = 10
+    y = 575
+    text = "CROUCHING"
+    visible = false
+
+    [[root.children.children]]
+    id = "hidden_text"
+    widget_type = "label"
+    x = 10
+    y = 575
+    text = "HIDDEN"
+    visible = false
+
+    [[root.children.children]]
+    id = "message_text"
+    widget_type = "label"
+    x = 340
+    y = 290
+    text = "Message"
+
+[[root.children]]
+id = "game_over_screen"
+widget_type = "panel"
+x = 0
+y = 0
+w = 800
+h = 600
+visible = false
+
+    [[root.children.children]]
+    id = "go_text"
+    widget_type = "label"
+    x = 355
+    y = 270
+    text = "GAME OVER"
+
+    [[root.children.children]]
+    id = "go_retry"
+    widget_type = "label"
+    x = 300
+    y = 310
+    text = "Press ENTER to return to title"
+
+[[root.children]]
+id = "level_complete_screen"
+widget_type = "panel"
+x = 0
+y = 0
+w = 800
+h = 600
+visible = false
+
+    [[root.children.children]]
+    id = "lc_text"
+    widget_type = "label"
+    x = 335
+    y = 270
+    text = "LEVEL 1 COMPLETE!"
+
+    [[root.children.children]]
+    id = "lc_continue"
+    widget_type = "label"
+    x = 320
+    y = 310
+    text = "Press ENTER to continue"

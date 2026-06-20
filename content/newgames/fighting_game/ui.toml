@@ -1,0 +1,164 @@
+[root]
+widget_type = "panel"
+id = "root_panel"
+x = 0
+y = 0
+w = 800
+h = 600
+
+[[root.children]]
+id = "title_screen"
+widget_type = "panel"
+x = 0
+y = 0
+w = 800
+h = 600
+visible = false
+
+    [[root.children.children]]
+    id = "title_text"
+    widget_type = "label"
+    x = 180
+    y = 150
+    text = "FIGHTING GAME"
+
+    [[root.children.children]]
+    id = "subtitle_text"
+    widget_type = "label"
+    x = 220
+    y = 220
+    text = "Two fighters enter. One leaves."
+
+    [[root.children.children]]
+    id = "press_enter"
+    widget_type = "label"
+    x = 280
+    y = 300
+    text = "PRESS ENTER TO START"
+
+    [[root.children.children]]
+    id = "controls_text"
+    widget_type = "label"
+    x = 250
+    y = 400
+    text = "A/D   : Move\nW     : Jump\nS     : Block\nJ     : Light Attack\nK     : Heavy Attack\nL     : Super Move (needs full meter)"
+
+[[root.children]]
+id = "hud"
+widget_type = "panel"
+x = 0
+y = 0
+w = 800
+h = 600
+visible = false
+
+    [[root.children.children]]
+    id = "p1_name"
+    widget_type = "label"
+    x = 24
+    y = 22
+    text = "P1"
+
+    [[root.children.children]]
+    id = "p1_hp_text"
+    widget_type = "label"
+    x = 320
+    y = 22
+    text = "100 HP"
+
+    [[root.children.children]]
+    id = "p2_name"
+    widget_type = "label"
+    x = 730
+    y = 22
+    text = "AI"
+
+    [[root.children.children]]
+    id = "p2_hp_text"
+    widget_type = "label"
+    x = 420
+    y = 22
+    text = "100 HP"
+
+    [[root.children.children]]
+    id = "p1_super_text"
+    widget_type = "label"
+    x = 146
+    y = 34
+    text = "SUPER"
+
+    [[root.children.children]]
+    id = "p2_super_text"
+    widget_type = "label"
+    x = 610
+    y = 34
+    text = "SUPER"
+
+    [[root.children.children]]
+    id = "round_label"
+    widget_type = "label"
+    x = 370
+    y = 8
+    text = "ROUND 1"
+
+    [[root.children.children]]
+    id = "fps_label"
+    widget_type = "label"
+    x = 4
+    y = 582
+    text = "FPS: 60"
+
+[[root.children]]
+id = "round_overlay"
+widget_type = "panel"
+x = 0
+y = 0
+w = 800
+h = 600
+visible = false
+
+    [[root.children.children]]
+    id = "round_text_overlay"
+    widget_type = "label"
+    x = 300
+    y = 240
+    text = "FIGHT!"
+
+[[root.children]]
+id = "match_over_screen"
+widget_type = "panel"
+x = 0
+y = 180
+w = 800
+h = 120
+visible = false
+
+    [[root.children.children]]
+    id = "match_winner"
+    widget_type = "label"
+    x = 280
+    y = 30
+    text = "P1 WINS"
+
+    [[root.children.children]]
+    id = "match_press_enter"
+    widget_type = "label"
+    x = 325
+    y = 90
+    text = "PRESS ENTER"
+
+[[root.children]]
+id = "p1_combo_text"
+widget_type = "label"
+x = 0
+y = 0
+text = "2 HIT COMBO!"
+visible = false
+
+[[root.children]]
+id = "p2_combo_text"
+widget_type = "label"
+x = 0
+y = 0
+text = "2 HIT COMBO!"
+visible = false

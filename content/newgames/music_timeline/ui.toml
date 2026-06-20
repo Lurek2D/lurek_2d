@@ -1,0 +1,11 @@
+[layout]
+name = "music_timeline"
+
+[[label]]
+id = "title"
+x = 24
+y = 18
+w = 420
+h = 24
+text = "Music Timeline"
+font_size = 20

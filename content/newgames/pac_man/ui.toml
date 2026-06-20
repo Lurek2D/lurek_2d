@@ -1,0 +1,12 @@
+[root]
+widget_type = "panel"
+w = 800
+h = 600
+
+[[root.children]]
+widget_type = "label"
+text = "Maze Chase uses direct render UI from main.lua."
+x = 24
+y = 24
+font_size = 16
+color = [0.8, 0.9, 1.0, 1.0]

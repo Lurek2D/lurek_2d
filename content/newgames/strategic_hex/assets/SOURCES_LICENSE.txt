@@ -1,0 +1,3 @@
+Newgames generated assets:
+- assets/generated/icon.png: generated procedural PNG marker for this newgames entry.
+- assets/audio/confirm.wav: generated procedural WAV feedback tone for this newgames entry.

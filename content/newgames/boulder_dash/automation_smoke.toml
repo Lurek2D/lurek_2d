@@ -1,0 +1,32 @@
+[meta]
+description = "Smoke replay: move through the cave"
+
+[[steps]]
+time = 0.10
+action = "keypress"
+key = "right"
+
+[[steps]]
+time = 0.16
+action = "keyrelease"
+key = "right"
+
+[[steps]]
+time = 0.30
+action = "keypress"
+key = "right"
+
+[[steps]]
+time = 0.36
+action = "keyrelease"
+key = "right"
+
+[[steps]]
+time = 0.50
+action = "keypress"
+key = "down"
+
+[[steps]]
+time = 0.56
+action = "keyrelease"
+key = "down"

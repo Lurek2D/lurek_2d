@@ -1,0 +1,9 @@
+[window]
+title = "Sector Runner Template"
+width = 960
+height = 540
+resizable = true
+vsync = true
+
+[game]
+screen_path = "screen.png"

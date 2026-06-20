@@ -1,0 +1,32 @@
+[meta]
+description = "Smoke replay: adjust shot and fire"
+
+[[steps]]
+time = 0.10
+action = "keypress"
+key = "up"
+
+[[steps]]
+time = 0.30
+action = "keyrelease"
+key = "up"
+
+[[steps]]
+time = 0.40
+action = "keypress"
+key = "right"
+
+[[steps]]
+time = 0.60
+action = "keyrelease"
+key = "right"
+
+[[steps]]
+time = 0.80
+action = "keypress"
+key = "space"
+
+[[steps]]
+time = 0.86
+action = "keyrelease"
+key = "space"

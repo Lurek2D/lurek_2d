@@ -1,0 +1,226 @@
+[root]
+widget_type = "panel"
+id = "root_panel"
+x = 0
+y = 0
+w = 800
+h = 600
+
+
+[[root.children]]
+widget_type = "panel"
+id = "title_panel"
+x = 0
+y = 0
+w = 800
+h = 600
+visible = false
+color = [0.0, 0.0, 0.0, 0.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "title_label"
+  text = "ENDLESS RUNNER"
+  x = 240
+  y = 140
+  color = [1.0, 1.0, 1.0, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "subtitle_label"
+  text = "Run. Jump. Slide. Survive."
+  x = 285
+  y = 210
+  color = [0.9, 0.85, 0.7, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "high_score_title"
+  text = "HIGH SCORE: 0m"
+  x = 320
+  y = 270
+  color = [1.0, 0.85, 0.1, 1.0]
+  visible = false
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "start_label"
+  text = "PRESS ENTER"
+  x = 340
+  y = 340
+  color = [1.0, 1.0, 0.3, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "controls_label"
+  text = "Jump: Space/W/Up   Slide: S/Down   Quit: Escape"
+  x = 190
+  y = 430
+  color = [0.7, 0.7, 0.7, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "hint_label"
+  text = "Double jump unlocks at 500m!"
+  x = 280
+  y = 460
+  color = [0.7, 0.7, 0.7, 1.0]
+
+[[root.children]]
+widget_type = "panel"
+id = "hud_panel"
+x = 0
+y = 0
+w = 800
+h = 600
+visible = false
+color = [0.0, 0.0, 0.0, 0.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "dist_label"
+  text = "DISTANCE"
+  x = 10
+  y = 8
+  color = [1.0, 1.0, 1.0, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "dist_val"
+  text = "0m"
+  x = 90
+  y = 8
+  color = [0.3, 1.0, 0.5, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "coins_label"
+  text = "COINS"
+  x = 10
+  y = 30
+  color = [1.0, 0.85, 0.1, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "coins_val"
+  text = "0"
+  x = 65
+  y = 30
+  color = [1.0, 0.9, 0.3, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "score_label"
+  text = "SCORE"
+  x = 360
+  y = 8
+  color = [1.0, 1.0, 1.0, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "score_val"
+  text = "0"
+  x = 420
+  y = 8
+  color = [0.4, 0.9, 1.0, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "speed_label"
+  text = "SPEED"
+  x = 670
+  y = 8
+  color = [0.8, 0.8, 0.8, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "speed_val"
+  text = "300"
+  x = 730
+  y = 8
+  color = [1.0, 0.5, 0.2, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "speed_up"
+  text = "SPEED UP!"
+  x = 355
+  y = 240
+  color = [1.0, 1.0, 0.3, 1.0]
+  visible = false
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "jump_2x"
+  text = "2x JUMP"
+  x = 700
+  y = 30
+  color = [0.3, 0.9, 1.0, 0.7]
+  visible = false
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "best_score"
+  text = "BEST: 0m"
+  x = 670
+  y = 582
+  color = [1.0, 0.85, 0.1, 0.5]
+  visible = false
+
+[[root.children]]
+widget_type = "panel"
+id = "dead_panel"
+x = 220
+y = 220
+w = 360
+h = 180
+visible = false
+color = [0.0, 0.0, 0.0, 0.55]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "go_title"
+  text = "GAME OVER"
+  x = 310
+  y = 240
+  color = [0.9, 0.15, 0.1, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "go_dist"
+  text = "Distance: 0m"
+  x = 335
+  y = 305
+  color = [1.0, 1.0, 1.0, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "go_coins"
+  text = "Coins: 0 (+0)"
+  x = 325
+  y = 330
+  color = [1.0, 1.0, 1.0, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "go_total"
+  text = "TOTAL: 0"
+  x = 350
+  y = 355
+  color = [0.4, 0.9, 1.0, 1.0]
+
+  [[root.children.children]]
+  widget_type = "label"
+  id = "go_restart"
+  text = "PRESS ENTER"
+  x = 340
+  y = 385
+  color = [1.0, 1.0, 0.3, 1.0]
+
+[[root.children]]
+widget_type = "label"
+id = "fps_label"
+text = "60 FPS"
+x = 10
+y = 582
+color = [0.4, 0.4, 0.4, 1.0]

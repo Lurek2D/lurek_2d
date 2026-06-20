@@ -1,0 +1,34 @@
+[meta]
+description = "Smoke replay: cycle build type and place one building"
+
+[[steps]]
+time = 0.10
+action = "keypress"
+key = "tab"
+
+[[steps]]
+time = 0.16
+action = "keyrelease"
+key = "tab"
+
+[[steps]]
+time = 0.40
+action = "mousemove"
+x = 240.0
+y = 220.0
+dx = 240.0
+dy = 220.0
+
+[[steps]]
+time = 0.42
+action = "mousepress"
+x = 240.0
+y = 220.0
+button = 1
+
+[[steps]]
+time = 0.48
+action = "mouserelease"
+x = 240.0
+y = 220.0
+button = 1

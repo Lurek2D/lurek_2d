@@ -1,0 +1,153 @@
+[[widget]]
+type = "panel"
+id = "top_bar"
+anchor = "top_left"
+w = 800
+h = 28
+bg_color = [0.05, 0.05, 0.08, 0.9]
+visible = true
+
+  [[widget.children]]
+  type = "label"
+  id = "score_label"
+  text = "SCORE: 0"
+  font_size = 20
+  color = [1, 1, 1, 1]
+  x = 10
+  y = 4
+
+  [[widget.children]]
+  type = "label"
+  id = "high_score_label"
+  text = "HI: 0"
+  font_size = 20
+  color = [1, 1, 1, 1]
+  anchor = "top_center"
+  x = -40
+  y = 4
+
+  [[widget.children]]
+  type = "label"
+  id = "balls_label"
+  text = "BALLS: 3"
+  font_size = 20
+  color = [1, 1, 1, 1]
+  anchor = "top_right"
+  x = -120
+  y = 4
+
+  [[widget.children]]
+  type = "label"
+  id = "fps_label"
+  text = "FPS: 60"
+  font_size = 20
+  color = [1, 1, 1, 1]
+  anchor = "top_right"
+  x = -200
+  y = 4
+
+[[widget]]
+type = "label"
+id = "multiplier_label"
+text = ""
+font_size = 24
+color = [1, 1, 0, 1]
+anchor = "center"
+y = -216
+visible = false
+
+[[widget]]
+type = "panel"
+id = "title_screen"
+anchor = "center"
+w = 800
+h = 600
+bg_color = [0, 0, 0, 0.7]
+visible = false
+
+  [[widget.children]]
+  type = "label"
+  text = "PINBALL"
+  font_size = 30
+  color = [1, 0.8, 0.2, 1]
+  anchor = "center"
+  y = -40
+
+  [[widget.children]]
+  type = "label"
+  id = "title_flip_it"
+  text = "FLIP IT"
+  font_size = 30
+  color = [1, 1, 1, 1]
+  anchor = "center"
+  y = 0
+
+  [[widget.children]]
+  type = "button"
+  id = "press_start"
+  text = "Press SPACE to start"
+  font_size = 24
+  color = [0.6, 0.6, 0.7, 1]
+  anchor = "center"
+  y = 40
+
+[[widget]]
+type = "panel"
+id = "ball_lost_screen"
+anchor = "center"
+w = 800
+h = 600
+visible = false
+
+  [[widget.children]]
+  type = "label"
+  text = "BALL LOST"
+  font_size = 30
+  color = [1, 0.3, 0.3, 0.8]
+  anchor = "center"
+  y = -10
+
+[[widget]]
+type = "panel"
+id = "game_over_screen"
+anchor = "center"
+w = 800
+h = 600
+bg_color = [0, 0, 0, 0.75]
+visible = false
+
+  [[widget.children]]
+  type = "label"
+  text = "GAME OVER"
+  font_size = 30
+  color = [1, 0.2, 0.2, 1]
+  anchor = "center"
+  y = -30
+
+  [[widget.children]]
+  type = "label"
+  id = "final_score"
+  text = "FINAL SCORE: 0"
+  font_size = 24
+  color = [1, 1, 1, 1]
+  anchor = "center"
+  y = 10
+
+  [[widget.children]]
+  type = "label"
+  id = "new_high_score"
+  text = "NEW HIGH SCORE!"
+  font_size = 24
+  color = [1, 1, 0, 1]
+  anchor = "center"
+  y = 40
+  visible = false
+
+  [[widget.children]]
+  type = "button"
+  id = "press_title"
+  text = "Press SPACE"
+  font_size = 24
+  color = [0.6, 0.6, 0.7, 1]
+  anchor = "center"
+  y = 70

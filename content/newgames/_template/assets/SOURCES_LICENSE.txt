@@ -1,0 +1,7 @@
+Template assets in this folder are generated for Lurek2D and may be replaced by each game.
+
+- assets/sprites/sector_runner.png: generated procedural pixel sprite.
+- assets/audio/pickup.wav: generated procedural tone.
+- assets/audio/hit.wav: generated procedural tone.
+- assets/audio/win.wav: generated procedural tone.
+- screen.png: generated gameplay preview for the template.
