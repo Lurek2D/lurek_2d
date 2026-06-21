@@ -756,6 +756,24 @@ do
     example_print_log("focused = " .. tostring(input:isFocused()))
 end
 
+--@api: LTextInput:setSubmitOnEnter
+do
+    local input = lurek.ui.newTextInput()
+    input:setSubmitOnEnter(false)
+    input:setText("Confirm name")
+    example_print_log("submit_on_enter = " .. tostring(input:getSubmitOnEnter()))
+    example_print_log("text = " .. input:getText())
+end
+
+--@api: LTextInput:getSubmitOnEnter
+do
+    local input = lurek.ui.newTextInput()
+    input:setSubmitOnEnter(false)
+    example_print_log("submit_on_enter = " .. tostring(input:getSubmitOnEnter()))
+    example_print_log("focused = " .. tostring(input:isFocused()))
+    example_print_log("text = " .. input:getText())
+end
+
 --@api: lurek.ui.newCheckbox
 do
     ---@type LCheckbox
@@ -1010,6 +1028,27 @@ do
     example_print_log("selected item = " .. tostring(item))
     combo:clearItems()
     example_print_log("after clear = " .. combo:getItemCount())
+end
+
+--@api: LComboBox:setMaxVisibleItems
+do
+    local combo = lurek.ui.newComboBox()
+    combo:addItem("Easy")
+    combo:addItem("Normal")
+    combo:addItem("Hard")
+    combo:addItem("Nightmare")
+    combo:setMaxVisibleItems(3)
+    example_print_log("max visible = " .. combo:getMaxVisibleItems())
+    example_print_log("item count = " .. combo:getItemCount())
+end
+
+--@api: LComboBox:getMaxVisibleItems
+do
+    local combo = lurek.ui.newComboBox()
+    combo:setMaxVisibleItems(3)
+    example_print_log("max visible = " .. combo:getMaxVisibleItems())
+    example_print_log("selected index = " .. tostring(combo:getSelectedIndex()))
+    example_print_log("item count = " .. combo:getItemCount())
 end
 
 --@api: lurek.ui.setFocus
@@ -7087,6 +7126,42 @@ do
     example_print_log("button enabled = " .. tostring(btn:isEnabled()))
 end
 
+--@api: LUiWidget:getRole
+do
+    local btn = lurek.ui.newButton("Save")
+    btn:setRole("button")
+    example_print_log("button role = " .. btn:getRole())
+    example_print_log("button text = " .. btn:getText())
+    example_print_log("button visible = " .. tostring(btn:isVisible()))
+end
+
+--@api: LUiWidget:getAriaName
+do
+    local btn = lurek.ui.newButton("Save")
+    btn:setAriaName("Save game")
+    example_print_log("aria name = " .. btn:getAriaName())
+    example_print_log("button text = " .. btn:getText())
+    example_print_log("button visible = " .. tostring(btn:isVisible()))
+end
+
+--@api: LUiWidget:setLabelFor
+do
+    local label = lurek.ui.newLabel("Name")
+    local input = lurek.ui.newTextInput()
+    label:setLabelFor(input._idx)
+    example_print_log("label target = " .. tostring(label:getLabelFor()))
+    example_print_log("input idx = " .. tostring(input._idx))
+end
+
+--@api: LUiWidget:getLabelFor
+do
+    local label = lurek.ui.newLabel("Email")
+    local input = lurek.ui.newTextInput()
+    label:setLabelFor(input._idx)
+    example_print_log("label for = " .. tostring(label:getLabelFor()))
+    example_print_log("label text = " .. label:getText())
+end
+
 --@api: lurek.ui.getStyleToken
 do
     local spacing = lurek.ui.getStyleToken("spacing_md")
@@ -7114,6 +7189,33 @@ do
         lurek.ui.clear()
     end
     example_print_log("root widgets = " .. lurek.ui.getWidgetCount())
+end
+
+--@api: lurek.ui.getAccessibilityTree
+do
+    lurek.ui.clear()
+    local label = lurek.ui.newLabel("Name")
+    local input = lurek.ui.newTextInput()
+    label:setLabelFor(input._idx)
+    local nodes = lurek.ui.getAccessibilityTree()
+    example_print_log("a11y nodes = " .. tostring(#nodes))
+    example_print_log("first node role = " .. tostring(nodes[1] and nodes[1].role))
+    example_print_log("first node name = " .. tostring(nodes[1] and nodes[1].name))
+end
+
+--@api: lurek.ui.validateUx
+do
+    lurek.ui.clear()
+    lurek.ui.setViewport(100, 100)
+    local dialog = lurek.ui.newDialog("Confirm")
+    dialog:open()
+    dialog:setModal(true)
+    dialog:setCloseable(false)
+    dialog:setPosition(-20, 10)
+    dialog:setSize(120, 90)
+    local diagnostics = lurek.ui.validateUx()
+    example_print_log("validateUx count = " .. tostring(#diagnostics))
+    example_print_log("validateUx first = " .. tostring(diagnostics[1] and diagnostics[1].message))
 end
 
 --@api: lurek.ui.focusDirection

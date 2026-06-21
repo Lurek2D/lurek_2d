@@ -1,8 +1,4 @@
 -- Canonical evidence file for lurek.camera data and visual outputs.
--- @covers lurek.camera.newCamera
--- @covers lurek.filesystem.write
--- @covers lurek.image.newImageData
--- @covers lurek.image.savePNG
 
 
 local OUT = evidence_output_dir("camera")

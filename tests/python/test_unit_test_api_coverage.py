@@ -123,8 +123,8 @@ class UnitTestApiCoverageStructureTests(unittest.TestCase):
             }
         )
         result = next(item for item in results if item.api.lua_name == "lurek.timer.getDelta")
-        self.assertFalse(result.explicit)
-        self.assertEqual(structure["by_code"].get("duplicate-marker"), 2)
+        self.assertTrue(result.explicit)
+        self.assertEqual(structure["by_code"].get("duplicate-marker"), 1)
 
 
 if __name__ == "__main__":

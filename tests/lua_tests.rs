@@ -210,6 +210,11 @@ fn lua_evidence_animation_evidence() {
 }
 
 #[test]
+fn lua_evidence_automation_evidence() {
+    run_lua_test("evidence/test_automation_evidence.lua");
+}
+
+#[test]
 fn lua_evidence_audio_evidence() {
     run_lua_test("evidence/test_audio_evidence.lua");
 }
@@ -337,6 +342,11 @@ fn lua_evidence_svg_evidence() {
 #[test]
 fn lua_evidence_tilemap_evidence() {
     run_lua_test("evidence/test_tilemap_evidence.lua");
+}
+
+#[test]
+fn lua_evidence_terminal_evidence() {
+    run_lua_test("evidence/test_terminal_evidence.lua");
 }
 
 #[test]

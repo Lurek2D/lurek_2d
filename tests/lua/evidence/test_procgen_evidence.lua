@@ -1,39 +1,5 @@
 -- test_procgen_evidence.lua
 -- Canonical evidence file for lurek.procgen data and visual outputs.
--- @covers lurek.filesystem.write
--- @covers lurek.image.newImageData
--- @covers lurek.image.savePNG
--- @covers lurek.procgen.biomeColor
--- @covers lurek.procgen.bspDungeon
--- @covers lurek.procgen.bspDungeonWithPrefabs
--- @covers lurek.procgen.cellularAutomata
--- @covers lurek.procgen.fbm
--- @covers lurek.procgen.floodFill
--- @covers lurek.procgen.generateName
--- @covers lurek.procgen.generateNames
--- @covers lurek.procgen.heightmap
--- @covers lurek.procgen.heightmapFromCellular
--- @covers lurek.procgen.lsystem
--- @covers lurek.procgen.lsystemSegments
--- @covers lurek.procgen.newBiomeClassifier
--- @covers lurek.procgen.newCellular
--- @covers lurek.procgen.newNoiseGenerator
--- @covers lurek.procgen.noiseMap
--- @covers lurek.procgen.noiseMapParallel
--- @covers lurek.procgen.noiseMapParallelSeeded
--- @covers lurek.procgen.perlin2d
--- @covers lurek.procgen.perlin3d
--- @covers lurek.procgen.perlin4d
--- @covers lurek.procgen.perlinNoise
--- @covers lurek.procgen.poissonDisk
--- @covers lurek.procgen.roomsDungeon
--- @covers lurek.procgen.roomsDungeonWithPrefabs
--- @covers lurek.procgen.simplex2d
--- @covers lurek.procgen.simplex3d
--- @covers lurek.procgen.simplexNoise
--- @covers lurek.procgen.voronoi
--- @covers lurek.procgen.wfcGenerate
--- @covers lurek.procgen.worldGraph
 
 
 local OUT = evidence_output_dir("procgen")

@@ -1,20 +1,5 @@
 -- Evidence tests: pathfind module
 -- Output-only evidence from direct lurek.pathfind API calls.
--- @covers lurek.filesystem.write
--- @covers lurek.image.newImageData
--- @covers lurek.image.savePNG
--- @covers lurek.pathfind.getThreadCount
--- @covers lurek.pathfind.newFlowField
--- @covers lurek.pathfind.newGoalMap
--- @covers lurek.pathfind.newHexGrid
--- @covers lurek.pathfind.newJpsGrid
--- @covers lurek.pathfind.newNavGrid
--- @covers lurek.pathfind.newNavMesh
--- @covers lurek.pathfind.newPathFlowField
--- @covers lurek.pathfind.newPathGrid
--- @covers lurek.pathfind.newPathfinder
--- @covers lurek.pathfind.rangeMap
--- @covers lurek.pathfind.setThreadCount
 
 
 local OUT = evidence_output_dir("pathfind")

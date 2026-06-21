@@ -205,7 +205,10 @@ impl Minimap {
         Ok(())
     }
 
-    fn transform_metrics(&self) -> Result<(f32, f32, f32, f32, f32, f32), MinimapError> {
+    /// Return cached view-to-screen transform metrics shared by sibling minimap render helpers.
+    pub(crate) fn transform_metrics(
+        &self,
+    ) -> Result<(f32, f32, f32, f32, f32, f32), MinimapError> {
         if self.grid_width == 0 || self.grid_height == 0 {
             return Err(MinimapError::TransformUnavailable {
                 reason: "grid dimensions are zero",

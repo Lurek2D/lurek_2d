@@ -1,11 +1,4 @@
 -- Canonical evidence file for lurek.spine visual outputs.
--- @covers lurek.image.newImageData
--- @covers lurek.image.saveGIF
--- @covers lurek.image.savePNG
--- @covers lurek.spine.animationFromJson
--- @covers lurek.spine.newSkeleton
--- @covers lurek.spine.newSkeletonAnimation
--- @covers lurek.spine.skeletonFromJson
 
 
 local OUT = evidence_output_dir("spine")

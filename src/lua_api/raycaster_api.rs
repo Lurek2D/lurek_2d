@@ -7,7 +7,6 @@ use crate::lua_api::physics_api::LuaBody;
 use crate::lua_api::render_api::LuaImage;
 #[cfg(feature = "obj-loader")]
 use crate::lua_api::render_api::LuaObjModel;
-use crate::minimap::raycaster_overlay::extract_minimap;
 use crate::minimap::{build_minimap_tile_window, compute_tile_light, reveal_cells_from_rays};
 use crate::raycaster::lighting::{apply_global_light, apply_lit_shade};
 use crate::raycaster::sprite_manager::SpriteManager;

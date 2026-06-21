@@ -6,12 +6,8 @@ description: "Load this skill when creating or modifying Lua tests for public lu
 
 ## Mission
 - Create or modify Lua tests that are canonical coverage for public `lurek.*` APIs.
-- Keep canonical owners in `tests/lua/unit/` with `1 API = 1 unit it() = 1 directly-adjacent @covers`.
-- For canonical non-unit suites, keep:
-  - `stress/security`: `1 API = 1 family marker = 1 it()`
-  - `evidence`: module-owned files with prose rationale comments above each `it()`; this category is for producing proof artifacts
-  - `golden`: compare current artifacts against stored reference artifacts or baselines
-  - `integration`: markers aligned with the APIs actually exercised by the scenario
+- Keep canonical unit owners in `tests/lua/unit/` with `1 API = 1 unit it() = 1 directly-adjacent @covers`.
+- Keep non-unit suites separated by purpose: integration for scenarios, evidence for artifact generation, golden for artifact comparison.
 
 ## When To Load
 - Creating or modifying Lua tests for public lurek APIs under tests/lua.
@@ -32,8 +28,7 @@ description: "Load this skill when creating or modifying Lua tests for public lu
 - Start from `tools/python.cmd tools/audit/unit_test_api_coverage.py` so the target module is framed by exact counts: total APIs, exactly-one-owner APIs, missing-owner APIs, and duplicated-owner APIs.
 - When editing non-unit canonical suites, also read `tools/python.cmd tools/audit/lua_nonunit_test_coverage.py` for category-specific structural debt before changing files.
 - Modify the matching canonical `tests/lua/unit/test_<module>_unit.lua` file when present; create a new file only for uncovered module coverage.
-- Use directly-adjacent `@covers` markers, specific assertions, and `test_summary()`.
-- For canonical unit coverage, keep `1 API = 1 unit it() = 1 @covers` unless fixture/setup constraints force a temporary shared block.
+- Keep one public API in one owning `it()` block, but put every required assertion for that API inside that same block.
 - Keep module functions first in the file, then userdata/object method coverage for that same module.
 - Register new files in `tests/lua_tests.rs`; that file is the canonical Lua test target registration.
 - Run Lua test target, structure audit, coverage audit, and CAG validation when needed.
@@ -42,6 +37,7 @@ description: "Load this skill when creating or modifying Lua tests for public lu
 ## Success Criteria
 - The target artifact was created or modified in the narrowest owning location.
 - Existing content was preserved and updated when it already owned the behavior.
+- Public Lua API coverage stays 100% with exact owners and no duplicated unit owners.
 - Listed validation tools complete successfully, or any remaining failure is reported with exact output and next owner.
 
 ## Stop Conditions

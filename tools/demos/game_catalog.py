@@ -23,8 +23,9 @@ CATEGORY_ORDER = [
     "test",
 ]
 
-PUBLIC_DECISIONS = {"KEEP", "REWRITE_API", "TRIM"}
-NON_PUBLIC_DECISIONS = {"MOVE_EXAMPLE", "MOVE_INCUBATOR", "MERGE_OR_DROP", "DROP_OR_IDEA"}
+PUBLIC_DECISIONS = {"KEEP"}
+BACKLOG_DECISIONS = {"REWRITE_API", "TRIM"}
+NON_PUBLIC_DECISIONS = {"MOVE_EXAMPLE", "MOVE_INCUBATOR", "MERGE_OR_DROP", "DROP_OR_IDEA", "REVIEW"}
 
 TITLE_OVERRIDES = {
     "arcade/tetris": "Falling Blocks",
@@ -260,6 +261,7 @@ CALLBACKS = {
 }
 
 STATUS_RE = re.compile(r"\*\*Status:\*\*\s*([^\n\r|]+)|\bStatus:\s*([^\n\r|]+)", re.I)
+SCALE_RE = re.compile(r"\*\*Scale:\*\*\s*([^\n\r|]+)|\bScale:\s*([^\n\r|]+)", re.I)
 API_RE = re.compile(r"\blurek\.([a-zA-Z_][a-zA-Z0-9_]*)\b")
 
 
@@ -325,6 +327,17 @@ def extract_status(readme_text: str) -> str:
     return raw or "unspecified"
 
 
+def extract_scale(readme_text: str) -> str:
+    match = SCALE_RE.search(readme_text)
+    if not match:
+        return "unspecified"
+    raw = (match.group(1) or match.group(2) or "").strip().lower()
+    raw = raw.strip(" _*`.")
+    if raw in {"game", "minigame"}:
+        return raw
+    return "unspecified"
+
+
 def extract_description(game_dir: Path) -> str:
     readme = read_text(game_dir / "README.md")
     for line in readme.splitlines():
@@ -351,6 +364,10 @@ def decision_for(identifier: str) -> tuple[str, str]:
 
 def is_public_decision(decision: str) -> bool:
     return decision in PUBLIC_DECISIONS
+
+
+def is_backlog_decision(decision: str) -> bool:
+    return decision in BACKLOG_DECISIONS
 
 
 def is_non_public_decision(decision: str) -> bool:

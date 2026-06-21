@@ -500,11 +500,12 @@ def build_analytics(results: List[CoverageResult], structure: dict, strict: bool
             for api_name in structure.get("duplicated_apis", [])
             if any(result.api.lua_name == api_name for result in module_results)
         )
+        unique_module = explicit_module - len(duplicated_module_apis)
         modules[module_name] = {
             "total": total_module,
-            "unique_unit_owner": explicit_module,
+            "unique_unit_owner": unique_module,
             "duplicated_unit_owner": len(duplicated_module_apis),
-            "missing_unit_owner": total_module - explicit_module - len(duplicated_module_apis),
+            "missing_unit_owner": total_module - explicit_module,
             "covered_explicit": explicit_module,
             "covered_heuristic": heuristic_module,
             "covered_any": covered_module,
@@ -541,6 +542,8 @@ def build_analytics(results: List[CoverageResult], structure: dict, strict: bool
             ],
         }
 
+    duplicated_apis = structure.get("duplicated_apis", [])
+    unique_owner_count = explicit_count - len(duplicated_apis)
     return {
         "generated": datetime.now(timezone.utc).isoformat(),
         "generator": "tools/audit/unit_test_api_coverage.py",
@@ -548,9 +551,9 @@ def build_analytics(results: List[CoverageResult], structure: dict, strict: bool
         "structure": structure,
         "summary": {
             "total_apis": total,
-            "unique_unit_owner": explicit_count,
-            "duplicated_unit_owner": structure.get("duplicate_api_markers", 0),
-            "missing_unit_owner": total - explicit_count - structure.get("duplicate_api_markers", 0),
+            "unique_unit_owner": unique_owner_count,
+            "duplicated_unit_owner": len(duplicated_apis),
+            "missing_unit_owner": total - explicit_count,
             "covered_explicit": explicit_count,
             "covered_heuristic": heuristic_count,
             "covered_any": covered_any,

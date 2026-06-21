@@ -6,6 +6,7 @@ description: "Load this skill when creating or modifying API examples under cont
 
 ## Mission
 - Create or modify concise runnable API examples that cover real public behavior.
+- Keep `content/examples/` at 100% public API coverage with one owner block per API.
 
 ## When To Load
 - Creating or modifying API examples under content/examples for a specific public lurek API.
@@ -23,8 +24,11 @@ description: "Load this skill when creating or modifying API examples under cont
 
 ## Workflow
 - Inspect existing examples and current API signatures before writing.
-- Modify an existing example when it already owns the API; create a new file only for an uncovered surface.
-- Keep the example self-contained, runnable, and free of stub calls.
+- Modify an existing module example file when it already owns the API; create a new file only for a new module owner.
+- Keep one API = one `-- @api:` marker = one runnable `do ... end` block.
+- Keep the block self-contained, runnable, and free of TODO stubs.
+- Show one concrete usage pattern with short context; do not turn the block into an exhaustive test.
+- Keep the full module file runnable in Lurek without errors.
 - Run example coverage before and after the change.
 - Regenerate or validate docs only when example metadata changes.
 - Finish by reporting changed files and validation evidence.
@@ -32,6 +36,7 @@ description: "Load this skill when creating or modifying API examples under cont
 ## Success Criteria
 - The target artifact was created or modified in the narrowest owning location.
 - Existing content was preserved and updated when it already owned the behavior.
+- The example layer keeps 100% coverage with no TODO stubs or thin placeholder blocks.
 - Listed validation tools complete successfully, or any remaining failure is reported with exact output and next owner.
 
 ## Stop Conditions

@@ -1,8 +1,4 @@
 -- Canonical evidence file for lurek.svg data and visual outputs.
--- @covers lurek.filesystem.write
--- @covers lurek.image.newImageData
--- @covers lurek.image.savePNG
--- @covers lurek.svg.load
 
 
 local OUT = evidence_output_dir("svg")

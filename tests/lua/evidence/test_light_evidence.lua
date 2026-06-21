@@ -35,6 +35,11 @@ local function draw_outline(img, x, y, w, h, r, g, b, a)
     img:drawLine(x, y + h - 1, x, y, r, g, b, a or 255)
 end
 
+local function compose_light_layer(base, layer)
+    base:paste(layer, 0, 0)
+    return base
+end
+
 -- @describe Evidence: lurek.light scenarios
 describe("Evidence: lurek.light scenarios", function()
     -- Does: Runs "moving spotlight sweep over one second" and turns the owner-module result into an inspectable artifact.
@@ -387,6 +392,129 @@ describe("Evidence: lurek.light scenarios", function()
         write_text(OUT .. "light_group_transition_flicker_trace.txt", table.concat(lines, "\n") .. "\n")
         left:remove()
         right:remove()
+        lurek.light.clear()
+    end)
+
+    -- Does: Rebuilds the old single-occluder light showcase as a fixed two-panel capture with the light on opposite sides of the same wall.
+    -- Shows: The PNG should let a reviewer compare how one occluder changes the lit region as the light source moves from left to right.
+    -- Artifact: tests/artifacts/current/light/light_occluder_side_comparison.png
+    -- Why: This is meaningful because it preserves the useful proof from the old showcase while converting it into a deterministic artifact.
+    it("PNG: occluder side comparison", function()
+        ensure_evidence_dir("light")
+        local W, H = 800, 260
+        local panel_w, panel_h = 360, 220
+        local wall = { x = 170, y = 40, w = 20, h = 140 }
+        local positions = {
+            { 110, 110 },
+            { 250, 110 },
+        }
+
+        local canvas = lurek.image.newImageData(W, H)
+        canvas:fill(12, 14, 20, 255)
+
+        for i, pos in ipairs(positions) do
+            lurek.light.clear()
+            lurek.light.setEnabled(true)
+            lurek.light.setAmbient(0.06, 0.06, 0.08, 1.0)
+
+            local light = lurek.light.newLight(pos[1], pos[2], 180, {
+                intensity = 1.6,
+                blend = "add",
+                falloff = "smooth",
+                shadowEnabled = true,
+            })
+            light:setColor(1.0, 0.85, 0.5, 1.0)
+            light:setAttenuation(1.0, 0.02, 0.003)
+            local occ = lurek.light.newOccluder({
+                wall.x, wall.y,
+                wall.x + wall.w, wall.y,
+                wall.x + wall.w, wall.y + wall.h,
+                wall.x, wall.y + wall.h,
+            })
+            local layer = lurek.light.drawToImage(panel_w, panel_h)
+            local panel = lurek.image.newImageData(panel_w, panel_h)
+            panel:fill(70, 65, 58, 255)
+            compose_light_layer(panel, layer)
+            panel:drawRect(wall.x, wall.y, wall.w, wall.h, 120, 100, 70, 255)
+            panel:drawCircle(pos[1], pos[2], 5, 255, 245, 180, 255)
+
+            local x = 24 + (i - 1) * 388
+            canvas:drawRect(x - 6, 20, panel_w + 12, panel_h + 12, 24, 28, 36, 255)
+            canvas:paste(panel, x, 26)
+            draw_outline(canvas, x, 26, panel_w, panel_h, 232, 236, 244, 255)
+
+            occ:remove()
+            light:remove()
+            lurek.light.clear()
+        end
+
+        lurek.image.savePNG(canvas, OUT .. "light_occluder_side_comparison.png")
+        expect_evidence_created(OUT .. "light_occluder_side_comparison.png")
+    end)
+
+    -- Does: Rebuilds the vending-machine lighting scene as one deterministic capture with four colored lights and matching occluders.
+    -- Shows: The PNG should let a reviewer inspect colored falloff, local flicker, and machine-body shadow blocking in one artifact.
+    -- Artifact: tests/artifacts/current/light/light_vending_machine_occlusion.png
+    -- Why: This is meaningful because the artifact preserves the useful scene from the old showcase while moving ownership to the light evidence layer.
+    it("PNG: vending machine occlusion scene", function()
+        ensure_evidence_dir("light")
+        lurek.light.clear()
+        lurek.light.setEnabled(true)
+        lurek.light.setAmbient(0.02, 0.025, 0.04, 1.0)
+
+        local W, H = 840, 480
+        local machines = {
+            { x = 120, y = 160, w = 70, h = 140, color = { 0.2, 1.0, 0.9, 1.0 }, radius = 180, intensity = 1.3, screen = { 0.3, 1.0, 0.9 } },
+            { x = 280, y = 175, w = 65, h = 130, color = { 0.3, 0.4, 1.0, 1.0 }, radius = 160, intensity = 1.2, screen = { 0.4, 0.5, 1.0 } },
+            { x = 440, y = 155, w = 60, h = 145, color = { 0.8, 0.95, 0.1, 1.0 }, radius = 170, intensity = 1.25, screen = { 0.9, 0.95, 0.2 } },
+            { x = 620, y = 185, w = 55, h = 110, color = { 0.2, 0.3, 0.9, 1.0 }, radius = 130, intensity = 1.1, screen = { 0.3, 0.4, 1.0 } },
+        }
+
+        local lights = {}
+        local occluders = {}
+        for i, m in ipairs(machines) do
+            lights[i] = lurek.light.newLight(m.x + m.w * 0.5, m.y + m.h - 10, m.radius, {
+                color = m.color,
+                intensity = m.intensity,
+                blend = "add",
+                falloff = "smooth",
+                shadowEnabled = true,
+                shadowFilter = "pcf5",
+                shadowSmooth = 1.2,
+            })
+            lights[i]:setAttenuation(1.0, 0.04, 0.008)
+            occluders[i] = lurek.light.newOccluder({
+                m.x, m.y,
+                m.x + m.w, m.y,
+                m.x + m.w, m.y + m.h,
+                m.x, m.y + m.h,
+            }, { opacity = 0.92 })
+        end
+
+        lights[1]:setFlicker(3.0, 0.08)
+        lights[3]:setFlicker(6.0, 0.12)
+        lurek.light.advanceFlickers(0.16)
+
+        local layer = lurek.light.drawToImage(W, H)
+        local canvas = lurek.image.newImageData(W, H)
+        canvas:fill(8, 10, 14, 255)
+        compose_light_layer(canvas, layer)
+
+        for _, m in ipairs(machines) do
+            canvas:drawRect(m.x, m.y, m.w, m.h, 16, 18, 26, 255)
+            canvas:drawRect(m.x + 6, m.y + 12, m.w - 12, math.floor(m.h * 0.45), m.screen[1] * 102, m.screen[2] * 102, m.screen[3] * 102, 220)
+            draw_outline(canvas, m.x, m.y, m.w, m.h, 48, 58, 72, 255)
+        end
+
+        lurek.image.savePNG(canvas, OUT .. "light_vending_machine_occlusion.png")
+        expect_evidence_created(OUT .. "light_vending_machine_occlusion.png")
+
+        for _, occ in ipairs(occluders) do
+            occ:remove()
+        end
+        for _, light in ipairs(lights) do
+            light:remove()
+        end
         lurek.light.clear()
     end)
 

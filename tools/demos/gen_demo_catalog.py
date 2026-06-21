@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 """Generate content/games/README.md and catalog.json from audited metadata.
 
-The generated README is a public-facing catalog. It does not list skeletons or
-feature-only examples as ready games; migrated entries live on their owning
-shelf, while unresolved duplicates remain visible in a migration queue.
+The generated README is a public-facing catalog. It lists only finished catalog
+candidates. Backlog and migration work stays in work/games-audit.* outputs.
 
 Examples:
     python tools/demos/gen_demo_catalog.py
@@ -72,7 +71,7 @@ def _row(row: audit_games.GameAudit) -> str:
     if not row.has_preview_gif:
         status += "; gif:missing"
     return (
-        f"| [{row.title}](./{row.id}) | `{row.category}` | `{row.decision}` | "
+        f"| [{row.title}](./{row.id}) | `{row.category}` | `{row.scale}` | `{row.decision}` | "
         f"{status} | {_api_cell(row)} | {_preview_cell(row)} | {_run_cell(row)} |"
     )
 
@@ -83,8 +82,8 @@ def _section(title: str, rows: list[audit_games.GameAudit], empty: str) -> list[
         lines += [empty, ""]
         return lines
     lines += [
-        "| Demo | Type | Decision | Status | APIs | Preview | Run |",
-        "|---|---|---|---|---|---|---|",
+        "| Demo | Type | Scale | Decision | Status | APIs | Preview | Run |",
+        "|---|---|---|---|---|---|---|---|",
     ]
     for row in rows:
         lines.append(_row(row))
@@ -107,17 +106,17 @@ def build_readme(rows: list[audit_games.GameAudit]) -> str:
     rows = sorted(rows, key=lambda r: (game_catalog.category_sort_key(r.category), r.name))
     ready = [
         row for row in rows
-        if row.decision == "KEEP" and row.readme_status.lower() not in {"skeleton", "design"}
+        if game_catalog.is_public_decision(row.decision) and row.readme_status.lower() not in {"skeleton", "design"}
     ]
-    rewrite_or_trim = [row for row in rows if row.decision in {"REWRITE_API", "TRIM"}]
-    migration = [row for row in rows if not game_catalog.is_public_decision(row.decision)]
+    backlog = [row for row in rows if game_catalog.is_backlog_decision(row.decision)]
+    migration = [row for row in rows if game_catalog.is_non_public_decision(row.decision)]
     review = [row for row in rows if row.decision == "REVIEW"]
 
     lines: list[str] = [
         "# Lurek2D Demo Catalog",
         "",
         "This catalog is generated from runnable `content/games/<category>/<name>` folders and the product decisions in issue #30.",
-        "It separates playable catalog candidates from rewrite and trim work so skeletons are not presented as complete games.",
+        "It lists only finished catalog candidates. Showcase-like entries, migration targets, and backlog cleanup stay out of this public catalog.",
         "",
         "## Run",
         "",
@@ -129,18 +128,19 @@ def build_readme(rows: list[audit_games.GameAudit]) -> str:
         "",
         "## Status Rules",
         "",
-        "- `KEEP` rows are public catalog candidates once README, screen, preview GIF, validation, and smoke evidence are current.",
-        "- `REWRITE_API` and `TRIM` rows stay visible as priority public work, but are not advertised as finished.",
-        "- `MOVE_EXAMPLE` and `MOVE_INCUBATOR` rows belong on `content/showcase/` or `content/games/_incubator/` once migrated.",
-        "- Unresolved `MERGE_OR_DROP` rows are listed only while duplicate ownership remains unresolved.",
+        "- Only `KEEP` rows appear here.",
+        "- Each row should declare `Scale: game` or `Scale: minigame` in its local README.",
+        "- `REWRITE_API`, `TRIM`, and migration decisions stay in `work/games-audit.md` and `work/games-audit.json` until they are cleaned up.",
         "",
     ]
     lines += _section("Catalog Candidates", ready, "No ready catalog candidates found.")
-    lines += _section("Rewrite Or Trim Queue", rewrite_or_trim, "No rewrite or trim candidates found.")
-    if migration:
-        lines += _section("Migration Queue", migration, "No migration candidates found.")
-    if review:
-        lines += _section("Needs Classification", review, "No unclassified demos found.")
+    if backlog or migration or review:
+        lines += [
+            "## Internal Backlog",
+            "",
+            "Non-catalog rows remain in `work/games-audit.md` and `work/games-audit.json` until they are rewritten, migrated, or removed.",
+            "",
+        ]
 
     return "\n".join(lines).rstrip() + "\n"
 

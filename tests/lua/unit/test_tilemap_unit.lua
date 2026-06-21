@@ -124,12 +124,8 @@ describe("lurek.tilemap module", function()
     end)
 
     -- @covers lurek.tilemap.newTileMap
-    it("newTileMap constructs a tile map", function()
+    it("newTileMap constructs a tile map and rejects zero tile dimensions", function()
         expect_equal("LTileMap", new_tilemap():type())
-    end)
-
-    -- @covers lurek.tilemap.newTileMap
-    it("newTileMap rejects zero tile dimensions", function()
         local ok, err = pcall(function()
             return lurek.tilemap.newTileMap(0, 32, 8)
         end)
@@ -143,12 +139,8 @@ describe("lurek.tilemap module", function()
     end)
 
     -- @covers lurek.tilemap.newChunkMap
-    it("newChunkMap constructs a chunk map", function()
+    it("newChunkMap constructs a chunk map and rejects zero chunk size", function()
         expect_equal("LChunkMap", new_chunkmap():type())
-    end)
-
-    -- @covers lurek.tilemap.newChunkMap
-    it("newChunkMap rejects zero chunk size", function()
         local ok, err = pcall(function()
             return lurek.tilemap.newChunkMap(0)
         end)
@@ -183,14 +175,11 @@ describe("lurek.tilemap module", function()
     end)
 
     -- @covers lurek.tilemap.loadTMX
-    it("loadTMX parses a minimal TMX document", function()
+    it("loadTMX parses valid TMX and reports strict or policy failures", function()
         local result, err = lurek.tilemap.loadTMX(MINIMAL_TMX)
         expect_not_nil(result)
         expect_nil(err)
-    end)
 
-    -- @covers lurek.tilemap.loadTMX
-    it("loadTMX strict mode rejects short and long layer payloads", function()
         local result, err = lurek.tilemap.loadTMX(SHORT_LAYER_TMX, { strictLayerSize = true })
         expect_nil(result)
         expect_equal("tmx_invalid_content", err.code)
@@ -200,10 +189,7 @@ describe("lurek.tilemap module", function()
         expect_nil(result)
         expect_equal("tmx_invalid_content", err.code)
         expect_contains(err.message, "length mismatch")
-    end)
 
-    -- @covers lurek.tilemap.loadTMX
-    it("loadTMX rejects external TSX without an explicit policy", function()
         local result, err = lurek.tilemap.loadTMX(EXTERNAL_TSX_TMX)
         expect_nil(result)
         expect_equal("tmx_invalid_content", err.code)
@@ -608,19 +594,26 @@ describe("LTileMap methods", function()
     end)
 
     -- @covers LTileMap:trySetTile
-    -- @covers LTileMap:tryGetTile
-    -- @covers LTileMap:getDiagnostics
-    it("try tile accessors report validation failures and increment diagnostics", function()
+    it("trySetTile returns false and an error string for invalid coordinates", function()
         local tm = new_ready_tilemap()
         local ok, err = tm:trySetTile(1, 11, 1, 7)
         expect_false(ok)
         expect_contains(err, "out of bounds")
+    end)
 
-        local gid
-        gid, err = tm:tryGetTile(2, 1, 1)
+    -- @covers LTileMap:tryGetTile
+    it("tryGetTile returns nil and an error string for invalid layers", function()
+        local tm = new_ready_tilemap()
+        local gid, err = tm:tryGetTile(2, 1, 1)
         expect_nil(gid)
         expect_contains(err, "out of range")
+    end)
 
+    -- @covers LTileMap:getDiagnostics
+    it("getDiagnostics reports invalid coordinate and layer counters", function()
+        local tm = new_ready_tilemap()
+        tm:trySetTile(1, 11, 1, 7)
+        tm:tryGetTile(2, 1, 1)
         local diagnostics = tm:getDiagnostics()
         expect_true(diagnostics.invalidCoord >= 1)
         expect_true(diagnostics.invalidLayer >= 1)
@@ -794,7 +787,6 @@ describe("LTileMap methods", function()
     end)
 
     -- @covers LTileMap:findTilesByGid
-    -- @covers LTileMap:getDiagnostics
     it("findTilesByGid lazily rebuilds the reverse index after fill", function()
         local tm = new_ready_tilemap()
         tm:fill(1, 7)
@@ -840,6 +832,14 @@ describe("LTileMap methods", function()
         expect_no_error(function()
             tm:setTileTint(1, 1, 1, 1.0, 0.0, 0.0, 1.0)
         end)
+    end)
+
+    -- @covers LTileMap:trySetTileTint
+    it("trySetTileTint returns false and an error string for invalid cells", function()
+        local tm = new_ready_tilemap()
+        local ok, err = tm:trySetTileTint(1, 99, 99, 1.0, 0.0, 0.0, 1.0)
+        expect_equal(false, ok)
+        expect_type("string", err)
     end)
 
     -- @covers LTileMap:toNavGrid

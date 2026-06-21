@@ -4,23 +4,6 @@
 -- The raycaster casts rays through a 2D grid and returns hit data.
 -- Tests verify correctness of ray geometry and render results to a PNG
 -- "depth buffer" image so the output can be visually inspected.
--- @covers lurek.image.newImageData
--- @covers lurek.image.savePNG
--- @covers lurek.physics.newWorld
--- @covers lurek.raycaster.buildMultiLevelScene
--- @covers lurek.raycaster.buildMultiLevelSceneFromAdapter
--- @covers lurek.raycaster.distanceShade
--- @covers lurek.raycaster.getLastBuildStats
--- @covers lurek.raycaster.new
--- @covers lurek.raycaster.newDoorManager
--- @covers lurek.raycaster.newHeightMap
--- @covers lurek.raycaster.newMultiLevelGrid
--- @covers lurek.raycaster.newPointLight
--- @covers lurek.raycaster.newSceneAdapter
--- @covers lurek.raycaster.pickScreenMultiLevelFromAdapter
--- @covers lurek.raycaster.projectColumn
--- @covers lurek.render.loadModel
--- @covers lurek.render.newImage
 
 
 local OUT = evidence_output_dir("raycaster")

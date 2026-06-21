@@ -1,0 +1,22 @@
+# Lua Evidence Contract
+
+## Mission & Scope
+- Own artifact-producing Lua suites that demonstrate selected public APIs.
+- Keep evidence focused on creating meaningful proof artifacts, not on assertion-driven pass/fail logic.
+
+## Files
+- `test_<module>_evidence.lua`: Canonical artifact producer for one owned module.
+- `tests/artifacts/current/<module>/`: Fresh evidence output for that module.
+
+## Rules
+- Use one canonical file per module when the owner is clear: `test_<module>_evidence.lua`.
+- Evidence passes when it produces the intended artifact under `tests/artifacts/current/<module>/`.
+- Do not use file-level `@covers` in this folder.
+- Put a rationale block above every `it()` with `Does`, `Shows`, `Artifact`, and `Why`.
+- The artifact must make the behavior legible to a reviewer. If the artifact does not clearly prove anything, redesign or remove it.
+- Keep helper export APIs incidental; the owned behavior is the module being evidenced.
+
+## Workflow
+- Run `tools/python.cmd tools/audit/lua_nonunit_test_coverage.py --category evidence`.
+- Run `tools/python.cmd tools/audit/lua_evidence_golden_contract_audit.py`.
+- Refresh baselines only after the new evidence output is intentionally reviewed.

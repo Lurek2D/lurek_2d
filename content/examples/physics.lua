@@ -133,6 +133,20 @@ do
     physics_log("scene bodies=" .. world:getBodyCount() .. " floor=" .. floor:getType() .. " ball_y=" .. select(2, ball:getPosition()))
 end
 
+--@api: LWorld:resetWorld
+do
+    local world = lurek.physics.newWorld(0, 100)
+    world:setGravity(5, 6)
+    world:setMeter(96)
+    world:setSolverIterations(12)
+    world:newBody(0, 0, "dynamic")
+    world:resetWorld()
+    local gx, gy = world:getGravity()
+    physics_log("reset bodies=" .. world:getBodyCount() .. " joints=" .. world:jointCount())
+    physics_log("reset gravity=" .. gx .. "," .. gy)
+    physics_log("reset meter=" .. world:getMeter() .. " iterations=" .. world:getSolverIterations())
+end
+
 --@api: LWorld:newBody
 do
     local world = lurek.physics.newWorld(0, 400)
@@ -2100,4 +2114,3 @@ do
     physics_log("inside tile=" .. tostring(inside) .. " ui hover=" .. tostring(buttonHover))
     physics_log("outside tile=" .. tostring(outside) .. " hover miss=" .. tostring(missHover))
 end
-

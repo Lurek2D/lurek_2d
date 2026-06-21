@@ -656,8 +656,14 @@ describe("common ui controls", function()
     end)
 
     -- @covers LTextInput:setSubmitOnEnter
+    it("text input setSubmitOnEnter updates the submit_on_enter flag", function()
+        local input = lurek.ui.newTextInput()
+        input:setSubmitOnEnter(false)
+        expect_equal(false, input:getSubmitOnEnter())
+    end)
+
     -- @covers LTextInput:getSubmitOnEnter
-    it("text input submit_on_enter round-trips through the public API", function()
+    it("text input getSubmitOnEnter returns the current submit_on_enter flag", function()
         local input = lurek.ui.newTextInput()
         input:setSubmitOnEnter(false)
         expect_equal(false, input:getSubmitOnEnter())
@@ -669,8 +675,11 @@ describe("common ui controls", function()
     end)
 
     -- @covers LTextInput:getCursorPosition
-    it("text input getCursorPosition returns a number", function()
+    it("text input getCursorPosition reports numeric indices for ASCII and UTF-8 text", function()
         expect_type("number", lurek.ui.newTextInput():getCursorPosition())
+        local input = lurek.ui.newTextInput()
+        input:setText("ąż")
+        expect_equal(2, input:getCursorPosition())
     end)
 
     -- @covers lurek.ui.newCheckbox
@@ -866,15 +875,27 @@ describe("compound widgets and helpers", function()
     end)
 
     -- @covers LComboBox:setMaxVisibleItems
+    it("combo box setMaxVisibleItems updates the visible item cap", function()
+        local combo = lurek.ui.newComboBox()
+        combo:setMaxVisibleItems(3)
+        expect_equal(3, combo:getMaxVisibleItems())
+    end)
+
     -- @covers LComboBox:getMaxVisibleItems
-    it("combo box max visible items round-trips through the public API", function()
+    it("combo box getMaxVisibleItems returns the current visible item cap", function()
         local combo = lurek.ui.newComboBox()
         combo:setMaxVisibleItems(3)
         expect_equal(3, combo:getMaxVisibleItems())
     end)
 
     -- @covers lurek.ui.textinput
-    it("combo box supports keyboard typeahead through textinput", function()
+    it("textinput updates focused text inputs and combo-box typeahead", function()
+        lurek.ui.clear()
+        local input = lurek.ui.newTextInput()
+        lurek.ui.setFocus(input)
+        expect_true(lurek.ui.textinput("hello"))
+        expect_equal("hello", input:getText())
+
         lurek.ui.clear()
         local combo = lurek.ui.newComboBox()
         combo:addItem("Apple")
@@ -1741,19 +1762,16 @@ describe("supplementary ui module coverage", function()
     end)
 
     -- @covers lurek.ui.keypressed
-    it("keypressed handles text editing keys for focused inputs", function()
+    it("keypressed handles editing, selection shortcuts, and word navigation for focused inputs", function()
         lurek.ui.clear()
         local input = lurek.ui.newTextInput()
         lurek.ui.setFocus(input)
         expect_true(lurek.ui.textinput("ab"))
         expect_true(lurek.ui.keypressed("backspace"))
         expect_equal("a", input:getText())
-    end)
 
-    -- @covers lurek.ui.keypressed
-    it("keypressed supports text selection shortcuts for focused inputs", function()
         lurek.ui.clear()
-        local input = lurek.ui.newTextInput()
+        input = lurek.ui.newTextInput()
         lurek.ui.setFocus(input)
         expect_true(lurek.ui.textinput("abcd"))
         expect_true(lurek.ui.keypressed("shift+left"))
@@ -1763,12 +1781,9 @@ describe("supplementary ui module coverage", function()
         expect_true(lurek.ui.keypressed("ctrl+a"))
         expect_true(lurek.ui.textinput("Z"))
         expect_equal("Z", input:getText())
-    end)
 
-    -- @covers lurek.ui.keypressed
-    it("keypressed supports ctrl word navigation for focused inputs", function()
         lurek.ui.clear()
-        local input = lurek.ui.newTextInput()
+        input = lurek.ui.newTextInput()
         lurek.ui.setFocus(input)
         expect_true(lurek.ui.textinput("alpha beta gamma"))
         expect_true(lurek.ui.keypressed("ctrl+left"))
@@ -1779,14 +1794,6 @@ describe("supplementary ui module coverage", function()
         expect_equal(11, input:getCursorPosition())
     end)
 
-    -- @covers lurek.ui.textinput
-    it("textinput inserts text into the focused text input", function()
-        lurek.ui.clear()
-        local input = lurek.ui.newTextInput()
-        lurek.ui.setFocus(input)
-        expect_true(lurek.ui.textinput("hello"))
-        expect_equal("hello", input:getText())
-    end)
 
     -- @covers LTextInput:getCursorPosition
     it("getCursorPosition reports character indices for UTF-8 text", function()

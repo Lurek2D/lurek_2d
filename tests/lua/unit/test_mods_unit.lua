@@ -249,8 +249,32 @@ describe("lurek.mods", function()
     end)
 
     -- @covers LMod:setSandbox
+    it("stores sandbox configuration tables", function()
+        local root = "save/_mods_sandbox_unit/"
+        remove_if_exists(root, true)
+        lurek.filesystem.createDirectory(root)
+
+        local mod = make_mod({ id = "sandbox_mod" })
+        expect_no_error(function()
+            mod:setSandbox({
+                api_mode = "allow_list",
+                apis = { "filesystem" },
+                hook_mode = "allow_list",
+                hooks = { "on_load" },
+                read_mode = "allow_list",
+                read_roots = { root },
+                blocked_ops = { "filesystem.remove" },
+                allow_network = false,
+                allow_file_write = false,
+                max_memory = 4096,
+            })
+        end)
+
+        remove_if_exists(root, true)
+    end)
+
     -- @covers LMod:getSandbox
-    it("stores and returns sandbox configuration tables", function()
+    it("returns sandbox configuration tables", function()
         local root = "save/_mods_sandbox_unit/"
         remove_if_exists(root, true)
         lurek.filesystem.createDirectory(root)

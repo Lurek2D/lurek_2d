@@ -1,6 +1,4 @@
 -- Canonical evidence file for lurek.mapblock artifacts.
--- @covers lurek.image.savePNG
--- @covers lurek.serial.toJson
 
 
 local World = require("content.games.puzzle.mapblock_labyrinth.modules.world")

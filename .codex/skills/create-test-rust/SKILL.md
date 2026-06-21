@@ -6,6 +6,7 @@ description: "Load this skill when creating or modifying Rust tests for private 
 
 ## Mission
 - Create or modify Rust tests only for internal logic that is not better covered through public Lua API tests.
+- Keep Rust tests focused on private seams; there is no repo-wide 100% Rust unit coverage requirement.
 
 ## When To Load
 - Creating or modifying Rust tests for private engine seams and internal module behavior.
@@ -25,6 +26,7 @@ description: "Load this skill when creating or modifying Rust tests for private 
 - Inspect `Cargo.toml` test targets and existing `tests/rust/unit/` files before editing.
 - Modify the module-specific test target when one exists; create a new Rust test target only when needed and registered in `Cargo.toml`.
 - Do not add `#[cfg(test)]` to `src/`; use public/private seams allowed by `src/AGENTS.md`.
+- Delete or avoid public-Lua duplication rather than expanding it.
 - Run the module-specific Cargo test target from `Cargo.toml`, or `cargo test` when no narrow target exists.
 - Run clippy after changing Rust test code or shared helpers.
 - Finish by reporting changed files and validation evidence.
@@ -32,6 +34,7 @@ description: "Load this skill when creating or modifying Rust tests for private 
 ## Success Criteria
 - The target artifact was created or modified in the narrowest owning location.
 - Existing content was preserved and updated when it already owned the behavior.
+- Rust tests prove only private/internal behavior that cannot be owned better in Lua.
 - Listed validation tools complete successfully, or any remaining failure is reported with exact output and next owner.
 
 ## Stop Conditions

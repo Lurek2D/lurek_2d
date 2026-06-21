@@ -266,6 +266,20 @@ describe("widget property helpers", function()
         expect_equal("Launch", button:getText())
         expect_equal("Updated", textbox.getText(textbox))
     end)
+    -- @covers LWidget:trySetText
+    it("trySetText returns explicit success and failure results", function()
+        local textbox = lurek.terminal.newTextBox(1, 1, 10)
+
+        local ok, err = textbox:trySetText("ready")
+        expect_equal(true, ok)
+        expect_nil(err)
+        expect_equal("ready", textbox:getText())
+
+        local too_long = string.rep("x", 10000)
+        ok, err = textbox:trySetText(too_long)
+        expect_equal(false, ok)
+        expect_type("string", err)
+    end)
     -- @covers LWidget:setMaxLength
     it("supports setMaxLength and getMaxLength on text boxes", function()
         local textbox = lurek.terminal.newTextBox(1, 1, 10)
@@ -401,7 +415,7 @@ describe("text box callbacks", function()
     end)
 
     -- @covers LTerminal:keypressed
-    it("supports ctrl clipboard and word editing shortcuts in text boxes", function()
+    it("supports ctrl shortcuts and tab focus traversal in text boxes", function()
         ---@type any
         local term = lurek.terminal.newTerminal(30, 10)
         local input = lurek.terminal.newTextBox(1, 1, 24)
@@ -424,6 +438,25 @@ describe("text box callbacks", function()
         expect_equal(true, term:keypressed("home"))
         expect_equal(true, term:keypressed("ctrl+delete"))
         expect_equal(" beta ", input:getText())
+
+        local focus_term = lurek.terminal.newTerminal(30, 12)
+        local first = lurek.terminal.newButton(1, 1, 8, 1, "One")
+        local hidden = lurek.terminal.newButton(1, 2, 8, 1, "Two")
+        local disabled = lurek.terminal.newButton(1, 3, 8, 1, "Three")
+        local last = lurek.terminal.newButton(1, 4, 8, 1, "Four")
+
+        hidden:setVisible(false)
+        disabled:setEnabled(false)
+        focus_term:addWidget(first)
+        focus_term:addWidget(hidden)
+        focus_term:addWidget(disabled)
+        focus_term:addWidget(last)
+        focus_term:setFocus(first)
+
+        expect_equal(true, focus_term:keypressed("tab"))
+        expect_true(focus_term:getFocused() == last)
+        expect_equal(true, focus_term:keypressed("shift+tab"))
+        expect_true(focus_term:getFocused() == first)
     end)
 
     -- @covers LTerminal:textinput
@@ -445,6 +478,18 @@ describe("text box callbacks", function()
         expect_equal(true, term:textinput("abc"))
         expect_equal(true, term:keypressed("ctrl+v"))
         expect_equal("abcWX", target:getText())
+
+        local command_term = lurek.terminal.newTerminal(40, 12)
+        local command_input = lurek.terminal.newTextBox(2, 2, 18)
+
+        command_term:addWidget(command_input)
+        command_term:setFocus(command_input)
+
+        expect_true(command_term:textinput("h"))
+        expect_true(command_term:textinput("e"))
+        expect_true(command_term:textinput("l"))
+        expect_true(command_term:textinput("p"))
+        expect_equal("help", command_input:getText())
     end)
 end)
 
@@ -744,6 +789,20 @@ describe("terminal history and scrollback helpers", function()
         end)
     end)
 
+    -- @covers lurek.terminal.tryPushScrollback
+    it("tryPushScrollback returns false when the scrollback cap is already full", function()
+        local t = lurek.terminal.newTerminal(20, 10)
+        lurek.terminal.setScrollbackCap(t, 1)
+
+        local ok, err = lurek.terminal.tryPushScrollback(t, "line-1")
+        expect_equal(true, ok)
+        expect_nil(err)
+
+        ok, err = lurek.terminal.tryPushScrollback(t, "line-2")
+        expect_equal(false, ok)
+        expect_type("string", err)
+    end)
+
     -- @covers lurek.terminal.scrollbackLen
     it("module-level terminal state helpers run without error [lurek.terminal.scrollbackLen]", function()
         local t = lurek.terminal.newTerminal(20, 10)
@@ -783,6 +842,19 @@ describe("terminal strict: LTerminal render / setFont / type / typeOf", function
         local t = lurek.terminal.newTerminal(40, 20)
         local ok = pcall(function() t:render() end)
         expect_type("boolean", ok)
+    end)
+    -- @covers LTerminal:getRenderStats
+    it("LTerminal getRenderStats returns numeric render counters", function()
+        local t = lurek.terminal.newTerminal(40, 20)
+        t:print(1, 1, "hello")
+        expect_no_error(function()
+            t:render()
+        end)
+        local stats = t:getRenderStats()
+        expect_type("table", stats)
+        expect_type("number", stats.cells_composed)
+        expect_type("number", stats.widgets_drawn)
+        expect_type("number", stats.clipped_chars)
     end)
     -- @covers LTerminal:setFont
     it("LTerminal setFont is callable", function()
@@ -835,25 +907,6 @@ describe("terminal strict: LWidget setPosition / setSize / getSize / type / type
     end)
 end)
 
--- @describe unit: migrated from integration/test_terminal_input.lua
-describe("unit: migrated from integration/test_terminal_input.lua", function()
-        -- @covers LTerminal:textinput
-        it("text typed through the terminal appends to the focused command buffer", function()
-            local term = lurek.terminal.newTerminal(40, 12)
-            local input = lurek.terminal.newTextBox(2, 2, 18)
-
-            term:addWidget(input)
-            term:setFocus(input)
-
-            expect_true(term:textinput("h"))
-            expect_true(term:textinput("e"))
-            expect_true(term:textinput("l"))
-            expect_true(term:textinput("p"))
-
-            expect_equal("help", input:getText())
-        end)
-end)
-
 -- @describe scrollback buffer
 describe("scrollback buffer", function()
     -- @covers lurek.terminal.getScrollback
@@ -897,6 +950,19 @@ describe("command history", function()
         lurek.terminal.pushCmdHistory(term, "ls")
         lurek.terminal.clearCmdHistory(term)
         expect_equal(0, lurek.terminal.cmdHistoryLen(term))
+    end)
+    -- @covers lurek.terminal.tryPushCmdHistory
+    it("tryPushCmdHistory returns false for oversized history entries", function()
+        local term = lurek.terminal.newTerminal(40, 10)
+
+        local ok, err = lurek.terminal.tryPushCmdHistory(term, "ls")
+        expect_equal(true, ok)
+        expect_nil(err)
+
+        local huge = string.rep("x", 10000)
+        ok, err = lurek.terminal.tryPushCmdHistory(term, huge)
+        expect_equal(false, ok)
+        expect_type("string", err)
     end)
     -- @covers lurek.terminal.prevCmd
     it("prevCmd and nextCmd navigate history", function()
@@ -1032,27 +1098,6 @@ describe("focus behaviour: mouse and widget removal", function()
         expect_true(term:getFocused() == nil)
     end)
 
-    -- @covers LTerminal:keypressed
-    it("tab focus traversal skips hidden and disabled widgets", function()
-        local term = lurek.terminal.newTerminal(30, 12)
-        local first = lurek.terminal.newButton(1, 1, 8, 1, "One")
-        local hidden = lurek.terminal.newButton(1, 2, 8, 1, "Two")
-        local disabled = lurek.terminal.newButton(1, 3, 8, 1, "Three")
-        local last = lurek.terminal.newButton(1, 4, 8, 1, "Four")
-
-        hidden:setVisible(false)
-        disabled:setEnabled(false)
-        term:addWidget(first)
-        term:addWidget(hidden)
-        term:addWidget(disabled)
-        term:addWidget(last)
-        term:setFocus(first)
-
-        expect_equal(true, term:keypressed("tab"))
-        expect_true(term:getFocused() == last)
-        expect_equal(true, term:keypressed("shift+tab"))
-        expect_true(term:getFocused() == first)
-    end)
 end)
 end
 -- END test_terminal_core_unit.lua
@@ -1286,8 +1331,7 @@ describe("terminal strict safety helpers", function()
     end)
 
     -- @covers LTerminal:getDiagnostics
-    -- @covers LTerminal:clearDiagnostics
-    it("reports and clears diagnostics for permissive writes and clipped textbox input", function()
+    it("getDiagnostics reports counters for permissive writes and clipped textbox input", function()
         local term = lurek.terminal.newTerminal(10, 5)
         local input = lurek.terminal.newTextBox(1, 1, 5)
 
@@ -1302,9 +1346,21 @@ describe("terminal strict safety helpers", function()
         local diagnostics = term:getDiagnostics()
         expect_true(diagnostics.out_of_bounds_writes >= 1)
         expect_true(diagnostics.clipped_text >= 3)
+    end)
 
+    -- @covers LTerminal:clearDiagnostics
+    it("clearDiagnostics resets terminal diagnostics counters", function()
+        local term = lurek.terminal.newTerminal(10, 5)
+        local input = lurek.terminal.newTextBox(1, 1, 5)
+
+        input:setMaxLength(3)
+        term:addWidget(input)
+        term:setFocus(input)
+
+        term:set(0, 1, string.byte("A"), 1, 1, 1, 1, 0, 0, 0, 0)
+        expect_equal(true, term:textinput("abcdef"))
         term:clearDiagnostics()
-        diagnostics = term:getDiagnostics()
+        local diagnostics = term:getDiagnostics()
         expect_equal(0, diagnostics.out_of_bounds_writes)
         expect_equal(0, diagnostics.clipped_text)
     end)

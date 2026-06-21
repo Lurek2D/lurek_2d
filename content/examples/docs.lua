@@ -644,6 +644,16 @@ do
     docs_log("first incomplete = " .. tostring(incomplete[1] and incomplete[1].qualifiedName))
 end
 
+--@api: LValidationReport:getIssues
+do
+    local cat = docs_example_cat
+    local report = docs_example_validate
+    local issues = report:getIssues()
+    docs_log("issues = " .. #issues)
+    docs_log("first issue severity = " .. tostring(issues[1] and issues[1].severity))
+    docs_log("first issue module = " .. tostring(issues[1] and issues[1].module))
+end
+
 --@api: LValidationReport:missingCount
 do
     local cat = docs_example_cat
@@ -669,6 +679,16 @@ do
     docs_log("incomplete count = " .. report:incompleteCount())
     docs_log("phantom count = " .. report:phantomCount())
     docs_log("report type = " .. report:type())
+end
+
+--@api: LValidationReport:issueCount
+do
+    local cat = docs_example_cat
+    local report = docs_example_validate
+    local issues = report:getIssues()
+    docs_log("issue count = " .. report:issueCount())
+    docs_log("issues table size = " .. #issues)
+    docs_log("is valid = " .. tostring(report:isValid()))
 end
 
 --@api: LValidationReport:getSummary
@@ -769,6 +789,26 @@ do
     local a_entries = qr:getByGrade("A")
     docs_log("grade A entries = " .. #a_entries)
     docs_log("first A entry = " .. tostring(a_entries[1] and a_entries[1]:getQualifiedName()))
+end
+
+--@api: LQualityReport:getIssues
+do
+    local cat = docs_example_cat
+    local qr = docs_example_quality
+    local issues = qr:getIssues()
+    docs_log("quality issues = " .. #issues)
+    docs_log("first issue kind = " .. tostring(issues[1] and issues[1].kind))
+    docs_log("first issue message = " .. tostring(issues[1] and issues[1].message))
+end
+
+--@api: LQualityReport:issueCount
+do
+    local cat = docs_example_cat
+    local qr = docs_example_quality
+    local issues = qr:getIssues()
+    docs_log("quality issue count = " .. qr:issueCount())
+    docs_log("issues table size = " .. #issues)
+    docs_log("quality grade = " .. tostring(qr:getGrade()))
 end
 
 --@api: LQualityReport:getSummary

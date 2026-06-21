@@ -41,6 +41,7 @@ class GameAudit:
     path: str
     title: str
     description: str
+    scale: str
     decision: str
     decision_note: str
     public_candidate: bool
@@ -241,6 +242,7 @@ def collect_audit(
                 path=game_catalog.rel_to_repo(game_dir),
                 title=game_catalog.title_from_id(identifier),
                 description=game_catalog.extract_description(game_dir),
+                scale=game_catalog.extract_scale(readme_text),
                 decision=decision,
                 decision_note=decision_note,
                 public_candidate=game_catalog.is_public_decision(decision),

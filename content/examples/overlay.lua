@@ -140,6 +140,19 @@ do
     overlay_log("getDimensions active=" .. tostring(ov:isActive()))
 end
 
+--@api: LOverlay:getRenderPlan
+do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setFogEnabled(true)
+    ov:setWater(0.2, 1.0, 0.5)
+    ov:setCloudShadows(true)
+    ov:setFilmGrainEnabled(true)
+    local plan = ov:getRenderPlan()
+    overlay_log("rendered layers=" .. tostring(#plan.rendered))
+    overlay_log("external layers=" .. tostring(#plan.externally_handled))
+    overlay_log("first external=" .. tostring(plan.externally_handled[1]))
+end
+
 --@api: LOverlay:getFilmGrainIntensity
 do
     local function f2(value)
@@ -215,6 +228,36 @@ do
     local ov = lurek.overlay.new(800, 600)
     ov:triggerLightning()
     example_print_log("LOverlay:getLightningAlpha=" .. f2(ov:getLightningAlpha()))
+end
+
+--@api: LOverlay:setAccessibilityPolicy
+do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setAccessibilityPolicy({
+        reduced_motion = true,
+        max_flash_alpha = 0.2,
+        max_flash_duration = 0.1,
+        max_shake_intensity = 1.25,
+        disable_lightning = true,
+        disable_film_grain = true,
+    })
+    ov:triggerFlash(1.0, 1.0, 1.0, 0.9, 0.5)
+    overlay_log("reduced motion=" .. tostring(ov:getAccessibilityPolicy().reduced_motion))
+    overlay_log("flash alpha after clamp=" .. string.format("%.2f", ov:getFlashAlpha()))
+end
+
+--@api: LOverlay:getAccessibilityPolicy
+do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setAccessibilityPolicy({
+        max_flash_alpha = 0.3,
+        disable_lightning = true,
+        disable_film_grain = true,
+    })
+    local policy = ov:getAccessibilityPolicy()
+    overlay_log("policy flash alpha=" .. string.format("%.2f", policy.max_flash_alpha))
+    overlay_log("policy disable lightning=" .. tostring(policy.disable_lightning))
+    overlay_log("policy disable grain=" .. tostring(policy.disable_film_grain))
 end
 
 --@api: LOverlay:getLightningColor
@@ -780,6 +823,33 @@ do
     example_print_log("LOverlay:setWeatherIntensity=" .. f2(ov:getWeatherIntensity()))
 end
 
+--@api: LOverlay:setWeatherSeed
+do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setWeatherSeed(123456789)
+    overlay_log("weather seed state=" .. tostring(ov:getWeatherRngState()))
+    ov:setWeatherEnabled(true)
+    overlay_log("weather enabled=" .. tostring(ov:isWeatherEnabled()))
+end
+
+--@api: LOverlay:getWeatherRngState
+do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setWeatherSeed(246813579)
+    local state = ov:getWeatherRngState()
+    overlay_log("weather rng state=" .. tostring(state))
+    overlay_log("weather type=" .. tostring(ov:getWeather()))
+end
+
+--@api: LOverlay:setWeatherRngState
+do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setWeatherRngState(987654321)
+    overlay_log("weather rng state=" .. tostring(ov:getWeatherRngState()))
+    ov:setWeather("rain")
+    overlay_log("overlay type=" .. tostring(ov:type()))
+end
+
 --@api: LOverlay:setWindDirection
 do
     local function f2(value)
@@ -1036,4 +1106,3 @@ do
     example_print_log("overlay stats size=" .. stats.width .. "x" .. stats.height)
     example_print_log("overlay stats effects=" .. stats.active_effects .. " weather=" .. tostring(stats.weather_enabled))
 end
-

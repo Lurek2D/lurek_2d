@@ -114,8 +114,26 @@ describe("overlay methods", function()
     end)
 
     -- @covers LOverlay:setAccessibilityPolicy
-    -- @covers LOverlay:getAccessibilityPolicy
     it("setAccessibilityPolicy enables reduced motion and clamps flash/lightning behavior", function()
+        local overlay = new_overlay(320, 240)
+        expect_no_error(function()
+            overlay:setAccessibilityPolicy({
+                reduced_motion = true,
+                max_flash_alpha = 0.2,
+                max_flash_duration = 0.1,
+                max_shake_intensity = 1.25,
+                disable_lightning = true,
+                disable_film_grain = true,
+            })
+        end)
+        overlay:triggerFlash(1.0, 1.0, 1.0, 0.9, 0.5)
+        expect_true(overlay:getFlashAlpha() <= 0.2 + 0.0001)
+        overlay:triggerLightning()
+        expect_near(0.0, overlay:getLightningAlpha(), 0.0001)
+    end)
+
+    -- @covers LOverlay:getAccessibilityPolicy
+    it("getAccessibilityPolicy returns the stored accessibility settings", function()
         local overlay = new_overlay(320, 240)
         overlay:setAccessibilityPolicy({
             reduced_motion = true,
@@ -128,10 +146,6 @@ describe("overlay methods", function()
         local policy = overlay:getAccessibilityPolicy()
         expect_true(policy.reduced_motion)
         expect_near(0.2, policy.max_flash_alpha, 0.0001)
-        overlay:triggerFlash(1.0, 1.0, 1.0, 0.9, 0.5)
-        expect_true(overlay:getFlashAlpha() <= 0.2 + 0.0001)
-        overlay:triggerLightning()
-        expect_near(0.0, overlay:getLightningAlpha(), 0.0001)
     end)
 
     -- @covers LOverlay:getRenderPlan
@@ -500,13 +514,23 @@ describe("overlay methods", function()
     end)
 
     -- @covers LOverlay:setWeatherSeed
-    -- @covers LOverlay:getWeatherRngState
-    -- @covers LOverlay:setWeatherRngState
-    it("weather RNG state roundtrips through the Lua API", function()
+    it("setWeatherSeed initializes the weather RNG state", function()
         local overlay = new_overlay(320, 240)
         overlay:setWeatherSeed(123456789)
-        local seeded = overlay:getWeatherRngState()
-        expect_equal(123456789, seeded)
+        expect_equal(123456789, overlay:getWeatherRngState())
+    end)
+
+    -- @covers LOverlay:getWeatherRngState
+    it("getWeatherRngState returns the seeded weather RNG state", function()
+        local overlay = new_overlay(320, 240)
+        overlay:setWeatherSeed(123456789)
+        expect_equal(123456789, overlay:getWeatherRngState())
+    end)
+
+    -- @covers LOverlay:setWeatherRngState
+    it("setWeatherRngState overwrites the weather RNG state", function()
+        local overlay = new_overlay(320, 240)
+        overlay:setWeatherSeed(123456789)
         overlay:setWeatherRngState(987654321)
         expect_equal(987654321, overlay:getWeatherRngState())
     end)

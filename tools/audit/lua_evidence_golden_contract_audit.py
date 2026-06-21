@@ -14,6 +14,7 @@ Optional strict mode:
 - Evidence rationale fields are treated as contract failures when missing.
 
 Safe autofix currently supports:
+- remove top-level @covers markers from evidence suites.
 - remove obvious non-evidence precheck blocks from evidence suites.
 
 Usage:
@@ -26,8 +27,8 @@ Audit Lua evidence/golden contract compliance.
 options:
   -h, --help   show this help message and exit
   --path PATH  Optional file or directory relative to repo root.
-  --fix        Remove obvious non-evidence precheck blocks from evidence
-               suites.
+  --fix        Remove top-level @covers markers and obvious non-evidence
+               precheck blocks from evidence suites.
   --json       Emit JSON findings.
   --require-descriptions
                Treat missing evidence rationale fields as contract failures.
@@ -328,6 +329,33 @@ def strip_mixed_prechecks(path: Path, lines: List[str]) -> bool:
     return True
 
 
+def strip_top_covers(lines: List[str]) -> bool:
+    first_it_index = None
+    for idx, line in enumerate(lines):
+        if IT_RE.match(line):
+            first_it_index = idx
+            break
+    if first_it_index is None:
+        first_it_index = len(lines)
+
+    changed = False
+    kept: List[str] = []
+    for idx, line in enumerate(lines):
+        if idx < first_it_index and COVERS_RE.match(line):
+            changed = True
+            continue
+        kept.append(line)
+
+    if not changed:
+        return False
+
+    while len(kept) >= 2 and kept[0].strip() == "" and kept[1].strip() == "":
+        del kept[0]
+
+    lines[:] = kept
+    return True
+
+
 def main() -> int:
     from argparse import RawDescriptionHelpFormatter
     epilog = """
@@ -344,7 +372,7 @@ Examples:
         formatter_class=RawDescriptionHelpFormatter
     )
     parser.add_argument("--path", help="Optional file or directory relative to repo root.")
-    parser.add_argument("--fix", action="store_true", help="Remove obvious non-evidence precheck blocks from evidence suites.")
+    parser.add_argument("--fix", action="store_true", help="Remove top-level @covers markers and obvious non-evidence precheck blocks from evidence suites.")
     parser.add_argument("--json", action="store_true", help="Emit JSON findings.")
     parser.add_argument(
         "--require-descriptions",
@@ -366,6 +394,10 @@ Examples:
         for path in files:
             lines = path.read_text(encoding="utf-8").splitlines()
             if args.fix and str(path).startswith(str(evidence_dir)):
+                if strip_top_covers(lines):
+                    changed += 1
+                    path.write_text("\n".join(lines).rstrip() + "\n", encoding="utf-8")
+                    lines = path.read_text(encoding="utf-8").splitlines()
                 if strip_mixed_prechecks(path, lines):
                     changed += 1
                     lines = path.read_text(encoding="utf-8").splitlines()

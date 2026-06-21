@@ -54,6 +54,15 @@ do
     terminal_log("set alert glyph=" .. glyph .. " fg=" .. fr .. "," .. fg .. "," .. fb)
 end
 
+--@api: LTerminal:trySet
+do
+    local term = make_console(32, 8)
+    local ok, err = term:trySet(5, 3, "A", 1, 1, 1, 1, 0, 0, 0, 0)
+    local bad_ok, bad_err = term:trySet(99, 1, string.byte("A"), 1, 1, 1, 1, 0, 0, 0, 0)
+    terminal_log("trySet success=" .. tostring(ok) .. " err=" .. tostring(err))
+    terminal_log("trySet invalid=" .. tostring(bad_ok) .. " reason=" .. tostring(bad_err))
+end
+
 --@api: LTerminal:get
 do
     local term = make_console(32, 8)
@@ -131,6 +140,18 @@ do
     terminal_log("render submitted terminal at " .. cols .. "x" .. rows)
 end
 
+--@api: LTerminal:getRenderStats
+do
+    local term = make_console(32, 8)
+    local list = make_inventory_list()
+    term:addWidget(list)
+    term:render()
+    local stats = term:getRenderStats()
+    terminal_log("render stats cells=" .. tostring(stats.cells_composed))
+    terminal_log("render stats widgets=" .. tostring(stats.widgets_drawn))
+    terminal_log("render stats list_items=" .. tostring(stats.list_items_drawn))
+end
+
 --@api: LTerminal:autoResize
 do
     local term = make_console(50, 18)
@@ -167,6 +188,15 @@ do
     local text = input:getText()
     local max_length = input:getMaxLength()
     terminal_log("newTextBox text='" .. text .. "' max=" .. max_length)
+end
+
+--@api: LWidget:trySetText
+do
+    local input = lurek.terminal.newTextBox(2, 8, 20)
+    local ok, err = input:trySetText("reroute convoy")
+    terminal_log("trySetText ok=" .. tostring(ok) .. " err=" .. tostring(err))
+    terminal_log("trySetText value='" .. tostring(input:getText()) .. "'")
+    terminal_log("trySetText max=" .. tostring(input:getMaxLength()))
 end
 
 --@api: lurek.terminal.newList
@@ -280,6 +310,52 @@ do
     terminal_log("textinput handled=" .. tostring(handled) .. " text='" .. input:getText() .. "'")
 end
 
+--@api: LTerminal:getDiagnostics
+do
+    local term = lurek.terminal.newTerminal(10, 5)
+    local input = lurek.terminal.newTextBox(1, 1, 5)
+    input:setMaxLength(3)
+    term:addWidget(input)
+    term:setFocus(input)
+    term:clearDiagnostics()
+    term:set(0, 1, "A", 1, 1, 1, 1, 0, 0, 0, 0)
+    term:textinput("abcdef")
+    local diagnostics = term:getDiagnostics()
+    terminal_log("diagnostics oob=" .. tostring(diagnostics.out_of_bounds_writes))
+    terminal_log("diagnostics clipped=" .. tostring(diagnostics.clipped_text))
+end
+
+--@api: LTerminal:clearDiagnostics
+do
+    local term = lurek.terminal.newTerminal(10, 5)
+    term:set(0, 1, "A", 1, 1, 1, 1, 0, 0, 0, 0)
+    local before = term:getDiagnostics()
+    term:clearDiagnostics()
+    local after = term:getDiagnostics()
+    terminal_log("clearDiagnostics before=" .. tostring(before.out_of_bounds_writes))
+    terminal_log("clearDiagnostics after=" .. tostring(after.out_of_bounds_writes))
+end
+
+--@api: LTerminal:validateWidgets
+do
+    local term = lurek.terminal.newTerminal(20, 10)
+    local panel_a = lurek.terminal.newPanel(1, 1, 10, 4)
+    local panel_b = lurek.terminal.newPanel(2, 2, 8, 3)
+    local hidden = lurek.terminal.newButton(1, 5, 8, 1, "Hidden")
+    hidden:setVisible(false)
+    term:addWidget(panel_a)
+    term:addWidget(panel_b)
+    term:addWidget(hidden)
+    term:setFocus(hidden)
+    panel_a:addChild(panel_b)
+    pcall(function()
+        panel_b:addChild(panel_a)
+    end)
+    local valid, errors = term:validateWidgets()
+    terminal_log("validateWidgets valid=" .. tostring(valid))
+    terminal_log("validateWidgets errors=" .. tostring(errors and #errors or 0))
+end
+
 --@api: LTerminal:mousepressed
 do
     local term = make_console(48, 16)
@@ -311,6 +387,15 @@ do
     terminal_log("pushCmdHistory last='" .. tostring(previous) .. "' len=" .. lurek.terminal.cmdHistoryLen(term))
 end
 
+--@api: lurek.terminal.tryPushCmdHistory
+do
+    local term = make_console(48, 16)
+    lurek.terminal.clearCmdHistory(term)
+    local ok, err = lurek.terminal.tryPushCmdHistory(term, "dock")
+    terminal_log("tryPushCmdHistory ok=" .. tostring(ok) .. " err=" .. tostring(err))
+    terminal_log("tryPushCmdHistory len=" .. tostring(lurek.terminal.cmdHistoryLen(term)))
+end
+
 --@api: lurek.terminal.cmdHistoryLen
 do
     local term = make_console(48, 16)
@@ -329,6 +414,15 @@ do
     lurek.terminal.pushScrollback(term, "[ok] path locked")
     local lines = lurek.terminal.getScrollback(term, 0, 10)
     terminal_log("pushScrollback first='" .. tostring(lines[1]) .. "' count=" .. #lines)
+end
+
+--@api: lurek.terminal.tryPushScrollback
+do
+    local term = make_console(48, 16)
+    local ok, err = lurek.terminal.tryPushScrollback(term, "[warn] low coolant")
+    terminal_log("tryPushScrollback ok=" .. tostring(ok) .. " err=" .. tostring(err))
+    terminal_log("tryPushScrollback len=" .. tostring(lurek.terminal.scrollbackLen(term)))
+    terminal_log("tryPushScrollback latest='" .. tostring(lurek.terminal.getScrollback(term, 0, 1)[1]) .. "'")
 end
 
 --@api: lurek.terminal.setScrollbackCap

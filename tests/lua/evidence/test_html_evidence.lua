@@ -1,9 +1,4 @@
 -- Canonical evidence file for lurek.html data outputs.
--- @covers lurek.filesystem.write
--- @covers lurek.html.loadDocument
--- @covers lurek.html.newDocument
--- @covers lurek.html.preventDefault
--- @covers lurek.html.supports
 
 
 local OUT = evidence_output_dir("html")

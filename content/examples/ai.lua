@@ -2911,8 +2911,17 @@ end
 --@api: LGOAPPlanner:getLastFailureReason
 do
   local goap = lurek.ai.newGOAPPlanner()
-  local plan = goap:plan({}, 4)
-  example_print_log("LGOAPPlanner:getLastFailureReason: " .. tostring(goap:getLastFailureReason()))
+  goap:setMaxIterations(1)
+  goap:addAction("get_axe", 1.0)
+  goap:setEffect("get_axe", "has_axe", true)
+  goap:addAction("chop", 1.0)
+  goap:setPrecondition("chop", "has_axe", true)
+  goap:setEffect("chop", "has_wood", true)
+  goap:addGoal("house", 1.0)
+  goap:setGoalState("house", "has_house", true)
+  local plan = goap:plan({ has_axe = false, has_wood = false, has_house = false }, 8)
+  example_print_log("LGOAPPlanner:getLastFailureReason: plan_size=" .. tostring(#plan))
+  example_print_log("LGOAPPlanner:getLastFailureReason: failure=" .. tostring(goap:getLastFailureReason()))
 end
 
 --@api: LGOAPPlanner:getLastTrace
@@ -2921,6 +2930,8 @@ do
   goap:plan({}, 4)
   local trace = goap:getLastTrace()
   example_print_log("LGOAPPlanner:getLastTrace: failure=" .. tostring(trace.failure_reason))
+  example_print_log("LGOAPPlanner:getLastTrace: iterations=" .. tostring(trace.iterations))
+  example_print_log("LGOAPPlanner:getLastTrace: selected_goal=" .. tostring(trace.selected_goal))
 end
 
 --@api: LMCTSEngine:getLastTrace

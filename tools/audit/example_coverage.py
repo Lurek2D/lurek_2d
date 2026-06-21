@@ -19,7 +19,8 @@ Structural lint checks (E-codes) run automatically after the summary:
 Workflow:
   1. Run example_add_missing.py  -- adds --@api-stub: blocks with -- TODO: (pending)
   2. Agent writes real Lua code, removes -- TODO: line  (pending -> real)
-  3. This tool gates on: no "missing" items (--report) or no pending (--no-stubs)
+  3. This tool gates on: no "missing" items (--report), no pending (--no-stubs),
+     and optionally no thin partial blocks (--no-partials)
 
 Usage:
     python tools/audit/example_coverage.py                  # summary table + lint
@@ -31,6 +32,7 @@ Usage:
     python tools/audit/example_coverage.py --json           # machine-readable
     python tools/audit/example_coverage.py --report         # exit 1 if any missing or lint issues
     python tools/audit/example_coverage.py --report --no-stubs  # also fail if pending
+    python tools/audit/example_coverage.py --report --no-stubs --no-partials
     python tools/audit/example_coverage.py --examples-dir content/examples --markdown
     python tools/audit/example_coverage.py --markdown FILE  # export Markdown report
 
@@ -894,6 +896,7 @@ def main() -> int:
     p.add_argument('--lint',      action='store_true', help='Check structural quality of example marker blocks')
     p.add_argument('--report',    action='store_true', help='CI gate: exit 1 if any gaps exist')
     p.add_argument('--no-stubs',  action='store_true', help='With --report: also fail if any stub blocks remain')
+    p.add_argument('--no-partials', action='store_true', help='With --report: also fail if any PART example blocks remain')
     p.add_argument('--module',    metavar='NAME',      help='Filter to one module')
     p.add_argument('--markdown',  metavar='FILE',      nargs='?', const='__AUTO__', help='Export Markdown report to FILE')
     args = p.parse_args()
@@ -978,6 +981,10 @@ def main() -> int:
         if args.no_stubs and has_stubs:
             stubs = sum(1 for mc in bk.values() if mc.todo_count)
             failures.append(f'{stubs} module(s) still have TODO stub blocks (not real scenarios).')
+        if args.no_partials:
+            partials = sum(1 for mc in bk.values() if mc.part_count)
+            if partials:
+                failures.append(f'{partials} module(s) still have PART example blocks (too thin to count as real examples).')
         if has_lint:
             failures.append('Structural lint issues found (see lint output above).')
         if failures:

@@ -2,6 +2,7 @@
 
 ## Mission & Scope
 - Own test strategy, harnesses, coverage rules, smoke tests, and artifacts.
+- Keep the public content lifecycle ordered and non-overlapping: API docs -> examples -> Lua unit tests -> evidence artifacts -> golden comparisons -> games.
 - Keep public API coverage Lua-first and internal seams Rust-tested.
 
 ## Files
@@ -16,6 +17,7 @@
 ## Rules
 - Public `lurek.*` behavior is Lua-first. Put canonical ownership in `tests/lua/unit/`.
 - Use Rust tests only for private seams, helpers, internal logic, and Lua-unreachable wrapper glue.
+- Examples show usage. Lua unit tests prove behavior. Evidence emits artifacts. Golden compares artifacts. Games package behavior into complete user-facing projects.
 - Keep one test file per module per layer: `test_<module>_<layer>.lua`.
 - Keep tests deterministic; use epsilon ranges for floats.
 - Register new Lua suites through `tests/lua_tests.rs`.
@@ -33,5 +35,5 @@
 ## Workflow
 - Run `cargo test`.
 - Run `python -m unittest discover -s tests/python -p "test_*.py" -q` when changing Python audit or validation tools.
-- Audit Lua ownership and structure with `python tools/audit/unit_test_api_coverage.py`, `python tools/audit/lua_nonunit_test_coverage.py`, and `python tools/audit/lua_test_structure_audit.py --path tests/lua/unit`.
-- Reseed Lua baselines with `python tools/audit/reseed_lua_artifacts.py --clean` when evidence or golden paths change.
+- Audit example and Lua ownership before broad cleanup with `tools/python.cmd tools/audit/example_coverage.py --report --no-stubs --no-partials`, `tools/python.cmd tools/audit/unit_test_api_coverage.py`, `tools/python.cmd tools/audit/lua_nonunit_test_coverage.py`, and `tools/python.cmd tools/audit/lua_test_structure_audit.py --path tests/lua/unit`.
+- Audit evidence/golden contract drift with `tools/python.cmd tools/audit/lua_evidence_golden_contract_audit.py`, and reseed baselines with `tools/python.cmd tools/audit/reseed_lua_artifacts.py --clean` only after evidence output is intentionally refreshed.

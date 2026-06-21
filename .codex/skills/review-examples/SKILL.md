@@ -6,6 +6,7 @@ description: "Load this skill when auditing and fixing example coverage, example
 
 ## Mission
 - Audit and fix API example coverage and example quality.
+- Enforce one public API = one example owner block in `content/examples/`.
 
 ## When To Load
 - Auditing and fixing example coverage, example correctness, and content/examples conventions.
@@ -23,8 +24,8 @@ description: "Load this skill when auditing and fixing example coverage, example
 
 ## Workflow
 - Run example coverage for the selected scope.
-- Inspect uncovered APIs and existing examples before editing.
-- Report gaps and convention violations first.
+- Inspect uncovered or thin APIs and existing example owners before editing.
+- Report missing, TODO, or PART example blocks first.
 - If edit-capable, add or modify examples and rerun coverage plus validation.
 - If read-only, hand off to `content` with target API methods.
 - Finish by reporting changed files and validation evidence.

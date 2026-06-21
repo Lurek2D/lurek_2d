@@ -54,6 +54,15 @@ do
     example_print_log("layer count = " .. count)
 end
 
+--@api: LTileMap:tryAddLayer
+do
+    local map = lurek.tilemap.newTileMap(32, 32, 8, { maxLayers = 1 })
+    local first, first_err = map:tryAddLayer("ground", 2, 2)
+    local second, second_err = map:tryAddLayer("props", 2, 2)
+    example_print_log("tryAddLayer first = " .. tostring(first) .. " err = " .. tostring(first_err))
+    example_print_log("tryAddLayer second = " .. tostring(second) .. " err = " .. tostring(second_err))
+end
+
 --@api: LTileMap:getLayerName
 do
     ---@type LTileMap
@@ -85,6 +94,15 @@ do
     example_print_log("tile at 3,4 = " .. gid)
 end
 
+--@api: LTileMap:trySetTile
+do
+    local map = lurek.tilemap.newTileMap(32, 32)
+    local layer = map:addLayer("main", 10, 10)
+    local ok, err = map:trySetTile(layer, 11, 1, 7)
+    example_print_log("trySetTile ok = " .. tostring(ok))
+    example_print_log("trySetTile err = " .. tostring(err))
+end
+
 --@api: LTileMap:getTile
 do
     local map = lurek.tilemap.newTileMap(32, 32)
@@ -92,6 +110,26 @@ do
     map:setTile(layer, 3, 4, 5)
     local gid = map:getTile(layer, 3, 4)
     example_print_log("tile at 3,4 = " .. gid)
+end
+
+--@api: LTileMap:tryGetTile
+do
+    local map = lurek.tilemap.newTileMap(32, 32)
+    map:addLayer("main", 10, 10)
+    local gid, err = map:tryGetTile(2, 1, 1)
+    example_print_log("tryGetTile gid = " .. tostring(gid))
+    example_print_log("tryGetTile err = " .. tostring(err))
+end
+
+--@api: LTileMap:getDiagnostics
+do
+    local map = lurek.tilemap.newTileMap(32, 32)
+    local layer = map:addLayer("main", 10, 10)
+    map:trySetTile(layer, 11, 1, 7)
+    map:tryGetTile(2, 1, 1)
+    local diagnostics = map:getDiagnostics()
+    example_print_log("invalid layer = " .. tostring(diagnostics.invalidLayer))
+    example_print_log("invalid coord = " .. tostring(diagnostics.invalidCoord))
 end
 
 --@api: LTileMap:clearTile
@@ -313,6 +351,16 @@ do
     local wx, wy = map:tileToWorld(tx, ty)
     example_print_log("world(100,80) -> tile(" .. tx .. "," .. ty .. ")")
     example_print_log("tile(" .. tx .. "," .. ty .. ") -> world(" .. wx .. "," .. wy .. ")")
+end
+
+--@api: LTileMap:tryWorldToTile
+do
+    local map = lurek.tilemap.newTileMap(32, 32)
+    map:addLayer("main", 20, 20)
+    local tx, ty = map:tryWorldToTile(64, 32)
+    local bad_tx, bad_ty = map:tryWorldToTile(-1, 0)
+    example_print_log("tryWorldToTile valid = " .. tostring(tx) .. "," .. tostring(ty))
+    example_print_log("tryWorldToTile invalid = " .. tostring(bad_tx) .. "," .. tostring(bad_ty))
 end
 
 --@api: LTileMap:tileToWorld
@@ -706,6 +754,16 @@ do
     map:setTileTint(layer, 2, 1, 0.0, 1.0, 0.0, 1.0)
     map:setTileTint(layer, 3, 1, 0.0, 0.0, 1.0, 1.0)
     example_print_log("RGB tints applied to 3 tiles")
+end
+
+--@api: LTileMap:trySetTileTint
+do
+    local map = lurek.tilemap.newTileMap(32, 32)
+    local layer = map:addLayer("tinted", 10, 10)
+    map:setTile(layer, 1, 1, 1)
+    local ok, err = map:trySetTileTint(layer, 1, 1, 1.0, 0.0, 0.0, 1.0)
+    example_print_log("trySetTileTint ok = " .. tostring(ok))
+    example_print_log("trySetTileTint err = " .. tostring(err))
 end
 
 --@api: LTileMap:setOrientation

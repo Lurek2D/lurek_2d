@@ -433,7 +433,7 @@ impl LuaUserData for LuaMinimap {
                     .set_object(id, x, y, type_idx - 1, owner.unwrap_or(0))
                 {
                     Ok(())
-                } else if type_idx - 1 >= this.inner.object_type_count() {
+                } else if type_idx > this.inner.object_type_count() {
                     Err(minimap_error(MinimapError::MissingObjectType {
                         index: type_idx - 1,
                     }))

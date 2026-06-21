@@ -27,16 +27,18 @@ description: "Load this skill when creating or modifying Lua tests that produce 
 ## Workflow
 - Inspect existing evidence tests, golden files, and target API before editing.
 - Modify an existing evidence path when it covers the module; create new artifact coverage only for missing contracts.
-- Put a rationale block directly above every evidence `it()` with `Does`, `Shows`, `Artifact`, and `Why`. Split a block only when one artifact no longer serves as meaningful evidence for the behavior being shown.
-- Save evidence in the established baseline artifact location.
+- Put a rationale block directly above every evidence `it()` with `Does`, `Shows`, `Artifact`, and `Why`.
+- Save fresh evidence under `tests/artifacts/current/<module>/`; do not treat baselines as the output target.
+- Redesign or delete evidence whose artifact is not clearly legible to a reviewer.
 - Run golden comparison and evidence contract audit when the workflow also updates or depends on stored golden baselines. Use the canonical scripts so the shared Lua artifact lock serializes reseed/audit access to `tests/artifacts/baselines/`.
-- Rerun `python tools/audit/lua_nonunit_test_coverage.py --category evidence`.
+- Rerun `tools/python.cmd tools/audit/lua_nonunit_test_coverage.py --category evidence`.
 - Iterate until missing contracts close or the blocker is explicit.
 - Finish by reporting changed files and validation evidence.
 
 ## Success Criteria
 - The target artifact was created or modified in the narrowest owning location.
 - Existing content was preserved and updated when it already owned the behavior.
+- The artifact clearly demonstrates the owned behavior instead of existing as opaque output.
 - Listed validation tools complete successfully, or any remaining failure is reported with exact output and next owner.
 
 ## Stop Conditions

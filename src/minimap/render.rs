@@ -45,7 +45,6 @@ impl Minimap {
 
         let gw = self.grid_width() as f32;
         let gh = self.grid_height() as f32;
-        let zoom = self.zoom();
         let cx = self.center_x();
         let cy = self.center_y();
         let start_gx = ((cx - cells_vis_x / 2.0).floor() as i64).max(0) as u32;
@@ -56,12 +55,12 @@ impl Minimap {
         let [fcr, fcg, fcb, fca] = self.fog_color();
         let owner_colors = self.owner_colors_by_cell();
 
-        let mut flush_run = |run_start: u32,
-                             run_end: u32,
-                             gy: u32,
-                             color: [f32; 4],
-                             cmds: &mut Vec<RenderCommand>,
-                             stats: &mut MinimapRenderStats| {
+        let flush_run = |run_start: u32,
+                         run_end: u32,
+                         gy: u32,
+                         color: [f32; 4],
+                         cmds: &mut Vec<RenderCommand>,
+                         stats: &mut MinimapRenderStats| {
             if run_end <= run_start {
                 return;
             }

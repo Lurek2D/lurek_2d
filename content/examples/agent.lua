@@ -396,6 +396,15 @@ do
     lurek.log.info("pending prompts after poll=" .. tostring(afterUpdate))
 end
 
+--@api: LAgent:getDiagnostics
+do
+    local agent = lurek.agent.new({})
+    local diagnostics = agent:getDiagnostics()
+    lurek.log.info("agent in_flight=" .. tostring(diagnostics.in_flight))
+    lurek.log.info("agent queued=" .. tostring(diagnostics.queued))
+    lurek.log.info("agent backend_failures=" .. tostring(diagnostics.backend_failures))
+end
+
 -- ─── LAgent:update ───────────────────────────────────────────────────────────
 
 --@api: LAgent:update
@@ -656,6 +665,19 @@ do
     example_print_log("Context preview:\n", ctx)
 end
 
+--@api: LAISystem:buildContextReport
+do
+    local system = lurek.agent.newSystem({ system_prompt = "base context" })
+    system:addInstruction("safety", "be safe")
+    system:addSkill("math", { "matrix" }, "help with math")
+    local report = system:buildContextReport("solve matrix problem", {
+        instructions = { "safety" },
+    })
+    lurek.log.info("context report text length=" .. tostring(#report.text))
+    lurek.log.info("context provenance count=" .. tostring(#report.provenance))
+    lurek.log.info("first provenance kind=" .. tostring(report.provenance[1] and report.provenance[1].kind))
+end
+
 -- ─── LAISystem:prompt ────────────────────────────────────────────────────────
 
 --@api: LAISystem:prompt
@@ -729,6 +751,15 @@ do
     lurek.log.info("system update polled background requests")
     lurek.log.info("system instructions=" .. tostring(instruction_count))
     lurek.log.info("system skills=" .. tostring(skill_count))
+end
+
+--@api: LAISystem:getDiagnostics
+do
+    local system = lurek.agent.newSystem({})
+    local diagnostics = system:getDiagnostics()
+    lurek.log.info("system in_flight=" .. tostring(diagnostics.in_flight))
+    lurek.log.info("system queued=" .. tostring(diagnostics.queued))
+    lurek.log.info("system network_failures=" .. tostring(diagnostics.network_failures))
 end
 
 -- ─── lurek.agent.newOllama ───────────────────────────────────────────────────
@@ -873,6 +904,17 @@ do
     example_print_log("Pull started, callback id =", id)
 end
 
+--@api: LOllamaManager:cancelPull
+do
+    local ollama = lurek.agent.newOllama()
+    local id = ollama:pullModel("llama3", function(success, err_msg)
+        example_print_log("cancelPull callback", tostring(success), tostring(err_msg))
+    end)
+    local ok = ollama:cancelPull(id)
+    lurek.log.info("cancel pull id=" .. tostring(id))
+    lurek.log.info("cancel pull accepted=" .. tostring(ok))
+end
+
 -- ─── LOllamaManager:deleteModel ──────────────────────────────────────────────
 
 --@api: LOllamaManager:deleteModel
@@ -898,6 +940,15 @@ do
     lurek.log.info("in-flight pulls=" .. tostring(pending))
     lurek.log.info("ollama running=" .. tostring(running))
     lurek.log.info("ollama version probe=" .. tostring(version))
+end
+
+--@api: LOllamaManager:getDiagnostics
+do
+    local ollama = lurek.agent.newOllama()
+    local diagnostics = ollama:getDiagnostics()
+    lurek.log.info("ollama in_flight_pulls=" .. tostring(diagnostics.in_flight_pulls))
+    lurek.log.info("ollama queued_pulls=" .. tostring(diagnostics.queued_pulls))
+    lurek.log.info("ollama last_error=" .. tostring(diagnostics.last_error))
 end
 
 -- ─── LOllamaManager:update ───────────────────────────────────────────────────
@@ -974,6 +1025,15 @@ do
     lurek.log.info("module pending count=" .. tostring(pending))
     lurek.log.info("pending after poll=" .. tostring(pending_after_update))
     lurek.log.info("queue idle=" .. tostring(pending_after_update == 0))
+end
+
+--@api: lurek.agent.getDiagnostics
+do
+    local diagnostics = lurek.agent.getDiagnostics()
+    lurek.log.info("module in_flight=" .. tostring(diagnostics.in_flight))
+    lurek.log.info("module queued=" .. tostring(diagnostics.queued))
+    lurek.log.info("module timeout_failures=" .. tostring(diagnostics.timeout_failures))
+    lurek.log.info("module backend_failures=" .. tostring(diagnostics.backend_failures))
 end
 
 --@api: lurek.agent.cancel
@@ -1470,4 +1530,13 @@ do
     lurek.log.info("memory loaded=" .. tostring(loaded))
     lurek.log.info("loaded checkpoint=" .. tostring(checkpoint))
     lurek.log.info("loaded semantic facts=" .. tostring(mem:semantic():len()))
+end
+
+--@api: LAgentMemory:getDiagnostics
+do
+    local mem = lurek.agent.newAgentMemory({ working_capacity = 6 })
+    local diagnostics = mem:getDiagnostics()
+    lurek.log.info("memory working_entries=" .. tostring(diagnostics.working_entries))
+    lurek.log.info("memory max_bytes=" .. tostring(diagnostics.max_bytes))
+    lurek.log.info("memory sandbox_root=" .. tostring(diagnostics.sandbox_root))
 end
