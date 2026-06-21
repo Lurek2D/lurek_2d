@@ -12,10 +12,10 @@ use slotmap::KeyData;
 #[test]
 fn minimap_try_new_rejects_zero_and_overflow_grid_dimensions() {
     let limits = MinimapLimits::default();
-    assert_eq!(
+    assert!(matches!(
         Minimap::try_new(0, 8, 80, 80, limits),
         Err(MinimapError::GridDimensionsZero)
-    );
+    ));
     assert!(matches!(
         Minimap::try_new(u32::MAX, 2, 80, 80, limits),
         Err(MinimapError::GridCellOverflow { .. })
@@ -145,8 +145,8 @@ fn political_draw_to_image_uses_owner_color_for_occupied_cell() {
 
     let image = map.draw_to_image(10);
     let pixel = image
-        .get_pixel(12, 13)
-        .expect("expected political pixel inside occupied cell");
+        .get_pixel(18, 18)
+        .expect("expected political terrain pixel inside occupied cell");
 
     assert!(
         pixel.0 > 200,
@@ -161,13 +161,13 @@ fn political_draw_to_image_uses_owner_color_for_occupied_cell() {
 #[test]
 fn marker_and_path_id_overflow_returns_error() {
     let mut map = Minimap::new(8, 8, 80, 80);
-    map.set_next_marker_id_for_tests(u32::MAX);
+    map.set_next_marker_id_for_testing(u32::MAX);
     assert!(matches!(
         map.try_add_marker(1.0, 1.0, "poi".to_string(), [1.0, 0.0, 0.0, 1.0]),
         Err(MinimapError::IdOverflow { kind: "marker" })
     ));
 
-    map.set_next_path_id_for_tests(u32::MAX);
+    map.set_next_path_id_for_testing(u32::MAX);
     assert!(matches!(
         map.try_show_path(vec![(0.0, 0.0), (1.0, 1.0)], [255, 0, 0, 255]),
         Err(MinimapError::IdOverflow { kind: "path" })

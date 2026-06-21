@@ -131,7 +131,7 @@ screen, preview GIF, validation, and smoke evidence.
 
 ## Workflow
 - Validate moved Lua with `python tools/validate/validate_game.py <showcase-dir>` when APIs change.
-- Use `python tools/demos/smoke_sweep.py --kind game --games-root content/showcase --only <name>` for runnable smoke checks when needed.
+- Use `python tools/demos/smoke_sweep.py --kind game --only <name>` for runnable smoke checks when needed.
 """
     showcase_root.mkdir(parents=True, exist_ok=True)
     if not readme.exists():

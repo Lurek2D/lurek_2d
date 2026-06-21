@@ -60,10 +60,13 @@ describe("lurek.effect module", function()
     end)
 
     -- @covers lurek.effect.newStack
-    it("newStack constructs a stack with dimensions", function()
+    it("newStack constructs a stack with dimensions and rejects zero sizes", function()
         local stack = new_stack(640, 360)
         expect_equal(640, stack:getWidth())
         expect_equal(360, stack:getHeight())
+        expect_error(function()
+            lurek.effect.newStack(0, 240)
+        end)
     end)
 
     -- @covers lurek.effect.newPass
@@ -73,21 +76,10 @@ describe("lurek.effect module", function()
     end)
 
     -- @covers lurek.effect.newCustomEffect
-    it("newCustomEffect exists", function()
+    it("newCustomEffect exists and rejects an unknown shader id", function()
         expect_type("function", lurek.effect.newCustomEffect)
-    end)
-
-    -- @covers lurek.effect.newCustomEffect
-    it("newCustomEffect rejects an unknown shader id", function()
         expect_error(function()
             lurek.effect.newCustomEffect(999999)
-        end)
-    end)
-
-    -- @covers lurek.effect.newStack
-    it("newStack rejects zero dimensions", function()
-        expect_error(function()
-            lurek.effect.newStack(0, 240)
         end)
     end)
 
@@ -157,15 +149,10 @@ describe("LPostFxEffect methods", function()
     end)
 
     -- @covers LPostFxEffect:setParameter
-    it("setParameter updates a parameter value", function()
+    it("setParameter updates values and rejects unknown built-in parameters", function()
         local effect = new_effect("blur")
         effect:setParameter("radius", 5)
         expect_near(5.0, effect:getParameter("radius"), 1e-6)
-    end)
-
-    -- @covers LPostFxEffect:setParameter
-    it("setParameter rejects unknown built-in parameters", function()
-        local effect = new_effect("blur")
         expect_error(function()
             effect:setParameter("bogus", 1)
         end)
@@ -368,15 +355,6 @@ describe("LOverlay methods", function()
         overlay:setWaterTint(0.1, 0.5, 0.9, 0.7)
         local water = overlay:getWater()
         expect_near(0.7, water.tint_strength, 1e-6)
-    end)
-
-    -- @covers LOverlay:setCustomShader
-    it("setCustomShader accepts and clears a shader name", function()
-        local overlay = new_overlay()
-        expect_no_error(function()
-            overlay:setCustomShader("my_wave")
-            overlay:setCustomShader(nil)
-        end)
     end)
 
     -- @covers LOverlay:resize

@@ -617,5 +617,5 @@ do
     local is_object = seq:typeOf("LObject")
     local is_ai = seq:typeOf("LDialogueAI")
     lurek.log.info("is sequencer = " .. tostring(is_seq))
-    lurek.log.info("topic count = " .. ai:getTopicCount() .. ", ai=" .. tostring(is_ai))
+    lurek.log.info("is object = " .. tostring(is_object) .. ", ai=" .. tostring(is_ai))
 end

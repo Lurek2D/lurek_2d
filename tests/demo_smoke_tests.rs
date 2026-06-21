@@ -20,7 +20,7 @@
 //! cargo test --test demo_smoke_tests -- --include-ignored
 //!
 //! # Run a single demo:
-//! cargo test --test demo_smoke_tests demo_smoke_globe_demo -- --include-ignored
+//! cargo test --test demo_smoke_tests demo_smoke_pong -- --include-ignored
 //! ```
 //!
 //! All tests are `#[ignore]` by default so they do not run in `cargo test`
@@ -152,22 +152,6 @@ macro_rules! demo_smoke_test {
 
 // ─── showcase demos ───────────────────────────────────────────────────────────
 
-demo_smoke_test!(demo_smoke_globe_demo, "content/games/showcase/globe_demo");
-demo_smoke_test!(demo_smoke_hello_world, "content/games/showcase/hello_world");
-demo_smoke_test!(demo_smoke_sprites, "content/games/showcase/sprites");
-demo_smoke_test!(
-    demo_smoke_particles_demo,
-    "content/games/showcase/particles_demo"
-);
-demo_smoke_test!(demo_smoke_tween_demo, "content/games/showcase/tween_demo");
-demo_smoke_test!(demo_smoke_scene_demo, "content/games/showcase/scene_demo");
-demo_smoke_test!(demo_smoke_postfx_demo, "content/games/showcase/postfx_demo");
-demo_smoke_test!(
-    demo_smoke_minimap_demo,
-    "content/games/showcase/minimap_demo"
-);
-demo_smoke_test!(demo_smoke_light_demo, "content/games/showcase/light_demo");
-demo_smoke_test!(demo_smoke_demo_game, "content/games/showcase/demo_game");
 
 // ─── arcade demos ─────────────────────────────────────────────────────────────
 
@@ -209,22 +193,4 @@ demo_smoke_test!(
 demo_smoke_test!(
     demo_smoke_mapblock_labyrinth,
     "content/games/puzzle/mapblock_labyrinth"
-);
-demo_smoke_test!(demo_smoke_html_hud, "content/games/showcase/html-hud");
-demo_smoke_test!(
-    demo_smoke_html_inventory,
-    "content/games/showcase/html-inventory"
-);
-demo_smoke_test!(demo_smoke_html_dialog, "content/games/showcase/html-dialog");
-demo_smoke_test!(
-    demo_smoke_html_load_document,
-    "content/games/showcase/html-load-document"
-);
-demo_smoke_test!(
-    demo_smoke_html_settings,
-    "content/games/showcase/html-settings"
-);
-demo_smoke_test!(
-    demo_smoke_html_scoreboard,
-    "content/games/showcase/html-scoreboard"
 );

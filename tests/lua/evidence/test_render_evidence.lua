@@ -55,39 +55,63 @@ end
 
 -- @describe Evidence: lurek.render drawing API + PNG output
 describe("Evidence: lurek.render drawing API + PNG output", function()
-    -- Does: Draws a gallery of primitive shapes directly into image data for visual inspection.
-    -- Shows: The PNG should expose filled and outlined primitives, line work, and point placement in one view.
-    -- Artifact: tests/artifacts/current/render/graphic_primitives.png
-    -- Why: This is meaningful because the artifact gives a compact, durable proof of primitive rendering behavior.
+    -- Does: Draws standalone primitive shapes directly into image data for visual inspection.
+    -- Shows: Each PNG should expose one primitive concern instead of packing filled shapes, outlines, lines, and points into one gallery.
+    -- Artifact: tests/artifacts/current/render/graphic_*.png
+    -- Why: This is meaningful because each artifact gives durable proof of one primitive rendering behavior.
 
-    it("PNG: all graphic primitives rendered to image", function()
+    it("PNG: standalone graphic primitives rendered to image", function()
         local W, H = 256, 256
-        local img = lurek.image.newImageData(W, H)
-        img:fill(15, 15, 25, 255)
+        local function new_primitive_canvas()
+            local img = lurek.image.newImageData(W, H)
+            img:fill(15, 15, 25, 255)
+            return img
+        end
 
-        img:drawRect(10, 10, 60, 40, 220, 50, 50, 255)
-        draw_rect_line_native(img, 10, 60, 60, 40, 50, 220, 50, 255)
-        img:drawCircle(150, 40, 30, 50, 50, 220, 255)
+        local filled_rect = new_primitive_canvas()
+        filled_rect:drawRect(10, 10, 60, 40, 220, 50, 50, 255)
+        save_png(filled_rect, "graphic_filled_rectangle.png")
+
+        local outlined_rect = new_primitive_canvas()
+        draw_rect_line_native(outlined_rect, 10, 60, 60, 40, 50, 220, 50, 255)
+        save_png(outlined_rect, "graphic_outlined_rectangle.png")
+
+        local filled_circle = new_primitive_canvas()
+        filled_circle:drawCircle(128, 96, 30, 50, 50, 220, 255)
+        save_png(filled_circle, "graphic_filled_circle.png")
+
+        local circle_outline = new_primitive_canvas()
         for angle = 0, 360 do
             local rad = math.rad(angle)
-            local px = math.floor(150 + 30 * math.cos(rad))
-            local py = math.floor(120 + 30 * math.sin(rad))
+            local px = math.floor(128 + 30 * math.cos(rad))
+            local py = math.floor(128 + 30 * math.sin(rad))
             if px >= 0 and px < W and py >= 0 and py < H then
-                img:setPixel(px, py, 50, 220, 220, 255)
+                circle_outline:setPixel(px, py, 50, 220, 220, 255)
             end
         end
-        img:drawLine(10, 170, 240, 200, 220, 220, 50, 255)
-        img:drawLine(10, 220, 240, 220, 255, 255, 255, 255)
-        img:drawLine(200, 10, 200, 240, 220, 50, 220, 255)
+        save_png(circle_outline, "graphic_circle_outline_points.png")
+
+        local diagonal_line = new_primitive_canvas()
+        diagonal_line:drawLine(10, 170, 240, 200, 220, 220, 50, 255)
+        save_png(diagonal_line, "graphic_diagonal_line.png")
+
+        local horizontal_line = new_primitive_canvas()
+        horizontal_line:drawLine(10, 220, 240, 220, 255, 255, 255, 255)
+        save_png(horizontal_line, "graphic_horizontal_line.png")
+
+        local vertical_line = new_primitive_canvas()
+        vertical_line:drawLine(200, 10, 200, 240, 220, 50, 220, 255)
+        save_png(vertical_line, "graphic_vertical_line.png")
+
+        local point_strip = new_primitive_canvas()
         for i = 0, 19 do
             local px = 120 + i * 6
             local py = 180
             if px < W then
-                img:setPixel(px, py, 255, 255, 255, 255)
+                point_strip:setPixel(px, py, 255, 255, 255, 255)
             end
         end
-
-        save_png(img, "graphic_primitives.png")
+        save_png(point_strip, "graphic_point_strip.png")
     end)
     -- Does: Runs "color grid - setColor evidence across hue range" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by lurek.render.setColor and lurek.render.getColor without needing a special evidence-only renderer.
@@ -289,36 +313,42 @@ describe("Evidence: lurek.render shape and state API", function()
         lurek.render.rectangle("line", 170, 24, 120, 70)
         capture_png("render_rectangles.png")
     end)
-    -- Does: Runs "render_circle_ellipse.png -- circle and ellipse primitives" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by lurek.render.circle, lurek.render.ellipse, and related owner calls without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/render/<artifact>
-    -- Why: This is meaningful only if the visible/text output comes from lurek.render.circle, lurek.render.ellipse, and related owner calls; export helpers are just the container.
+    -- Does: Runs "circle and ellipse primitives" and turns the owner-module result into inspectable artifacts.
+    -- Shows: Each PNG should expose one shape primitive instead of combining circle and ellipse into one file.
+    -- Artifact: tests/artifacts/current/render/render_circle.png, tests/artifacts/current/render/render_ellipse.png
+    -- Why: This is meaningful only if each visible/text output comes from one lurek.render shape call; export helpers are just the container.
 
-    it("PNG: render_circle_ellipse.png -- circle and ellipse primitives", function()
+    it("PNG: circle and ellipse primitives", function()
         lurek.render.setColor(0.9, 0.8, 0.3, 1.0)
         lurek.render.circle("fill", 90, 90, 50)
-        lurek.render.setColor(0.3, 0.9, 0.5, 1.0)
-        lurek.render.ellipse("line", 230, 90, 70, 35)
-        capture_png("render_circle_ellipse.png")
-    end)
-    -- Does: Runs "render_triangle_polygon.png -- triangle and polygon primitives" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by lurek.render.triangle, lurek.render.polygon, and related owner calls without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/render/<artifact>
-    -- Why: This is meaningful only if the visible/text output comes from lurek.render.triangle, lurek.render.polygon, and related owner calls; export helpers are just the container.
+        capture_png("render_circle.png")
 
-    it("PNG: render_triangle_polygon.png -- triangle and polygon primitives", function()
+        lurek.render.clear(0.08, 0.08, 0.12)
+        lurek.render.setColor(0.3, 0.9, 0.5, 1.0)
+        lurek.render.ellipse("line", 160, 90, 70, 35)
+        capture_png("render_ellipse.png")
+    end)
+    -- Does: Runs "triangle and polygon primitives" and turns the owner-module result into inspectable artifacts.
+    -- Shows: Each PNG should expose one shape primitive instead of combining triangle and polygon into one file.
+    -- Artifact: tests/artifacts/current/render/render_triangle.png, tests/artifacts/current/render/render_polygon.png
+    -- Why: This is meaningful only if each visible/text output comes from one lurek.render shape call; export helpers are just the container.
+
+    it("PNG: triangle and polygon primitives", function()
         lurek.render.setColor(0.9, 0.4, 0.4, 1.0)
         lurek.render.triangle("fill", 40, 150, 130, 50, 180, 150)
-        lurek.render.setColor(0.4, 0.7, 0.95, 1.0)
-        lurek.render.polygon("line", 220, 150, 260, 95, 315, 110, 300, 165, 240, 175)
-        capture_png("render_triangle_polygon.png")
-    end)
-    -- Does: Runs "render_line_arc.png -- lines, polyline, and arc" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by lurek.render.line, lurek.render.setLineWidth, and related owner calls without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/render/<artifact>
-    -- Why: This is meaningful only if the visible/text output comes from lurek.render.line, lurek.render.setLineWidth, and related owner calls; export helpers are just the container.
+        capture_png("render_triangle.png")
 
-    it("PNG: render_line_arc.png -- lines, polyline, and arc", function()
+        lurek.render.clear(0.08, 0.08, 0.12)
+        lurek.render.setColor(0.4, 0.7, 0.95, 1.0)
+        lurek.render.polygon("line", 120, 150, 160, 95, 215, 110, 200, 165, 140, 175)
+        capture_png("render_polygon.png")
+    end)
+    -- Does: Runs "line and arc primitives" and turns the owner-module result into inspectable artifacts.
+    -- Shows: Each PNG should expose one line-family concern instead of combining straight lines and arc output into one file.
+    -- Artifact: tests/artifacts/current/render/render_lines.png, tests/artifacts/current/render/render_arc.png
+    -- Why: This is meaningful only if each visible/text output comes from one lurek.render primitive family; export helpers are just the container.
+
+    it("PNG: line and arc primitives", function()
         lurek.render.setColor(0.9, 0.9, 0.9, 1.0)
         lurek.render.setLineWidth(2)
         lurek.render.line(20, 30, 300, 30)
@@ -326,9 +356,12 @@ describe("Evidence: lurek.render shape and state API", function()
         lurek.render.line(80, 85, 140, 70)
         lurek.render.line(140, 70, 200, 110)
         lurek.render.line(200, 110, 280, 90)
+        capture_png("render_lines.png")
+
+        lurek.render.clear(0.08, 0.08, 0.12)
         lurek.render.setColor(0.95, 0.7, 0.3, 1.0)
         lurek.render.arc("line", 170, 150, 55, 0.0, math.pi * 1.35)
-        capture_png("render_line_arc.png")
+        capture_png("render_arc.png")
     end)
     -- Does: Runs "render_transform_stack.png -- transformed rectangle stack" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by lurek.render.push, lurek.render.translate, and related owner calls without needing a special evidence-only renderer.
@@ -418,12 +451,12 @@ describe("Evidence: lurek.render shape and state API", function()
         lurek.render.setColorMask(true, true, true, true)
         capture_png("render_color_mask.png")
     end)
-    -- Does: Runs "text and advanced shape gallery" and turns the owner-module result into an inspectable artifact.
+    -- Does: Runs "text and advanced shape scene" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by lurek.render.setBackgroundColor, lurek.render.getBackgroundColor, and related owner calls without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/render/<artifact>
+    -- Artifact: tests/artifacts/current/render/render_text_advanced_shapes_scene.png
     -- Why: This is meaningful only if the visible/text output comes from lurek.render.setBackgroundColor, lurek.render.getBackgroundColor, and related owner calls; export helpers are just the container.
 
-    it("PNG: text and advanced shape gallery", function()
+    it("PNG: text and advanced shape scene", function()
         lurek.render.setBackgroundColor(0.06, 0.07, 0.10, 1.0)
         local br, bg, bb, _ = lurek.render.getBackgroundColor()
         lurek.render.clear(br, bg, bb)
@@ -479,7 +512,7 @@ describe("Evidence: lurek.render shape and state API", function()
         })
         lurek.render.setPointSize(1)
 
-        capture_png("render_text_advanced_shapes_gallery.png")
+        capture_png("render_text_advanced_shapes_scene.png")
     end)
 end)
 
@@ -530,70 +563,4 @@ describe("Evidence: lurek.render state and resource trace", function()
     end)
 end)
 
--- @describe evidence: render summary dashboard
-describe("evidence: render summary dashboard", function()
-    before_each(function()
-        ensure_evidence_dir("render")
-    end)
-    -- Does: Builds a compact dashboard with grid, primitive summaries, and layout cards.
-    -- Shows: The PNG should summarize the overall render evidence surface in one small board.
-    -- Artifact: tests/artifacts/current/render/render_summary_dashboard.png
-    -- Why: This is meaningful because it gives a fast visual checkpoint for the render evidence family.
-
-    it("writes render_summary_dashboard.png", function()
-        local W, H = 320, 180
-        local img = lurek.image.newImageData(W, H)
-        img:fill(14, 16, 22, 255)
-
-        for x = 0, W - 1, 16 do
-            img:drawLine(x, 0, x, H - 1, 28, 32, 44, 255)
-        end
-        for y = 0, H - 1, 16 do
-            img:drawLine(0, y, W - 1, y, 28, 32, 44, 255)
-        end
-
-        img:drawRect(16, 16, 88, 48, 180, 70, 70, 255)
-        draw_rect_line_native(img, 16, 16, 88, 48, 236, 240, 246, 255)
-        img:drawCircle(160, 42, 22, 70, 170, 230, 255)
-        img:drawLine(224, 16, 300, 64, 255, 230, 80, 255)
-        img:drawRect(16, 96, 288, 64, 40, 45, 60, 255)
-        draw_rect_line_native(img, 16, 96, 288, 64, 236, 240, 246, 255)
-        img:drawRect(30, 110, 72, 36, 62, 98, 220, 255)
-        img:drawCircle(146, 128, 18, 232, 128, 84, 255)
-        img:drawLine(204, 148, 282, 110, 132, 224, 164, 255)
-
-        save_png(img, "render_summary_dashboard.png")
-    end)
-    -- Does: Collects a subset of render artifacts into a 2x2 contact sheet for quick review.
-    -- Shows: The PNG should let the reader compare primitive, canvas, dashboard, and layer evidence side by side.
-    -- Artifact: tests/artifacts/current/render/render_contact_sheet.png
-    -- Why: This is meaningful because it compresses several render outputs into one durable review artifact.
-
-    it("writes render_contact_sheet.png", function()
-        local files = {
-            "graphic_primitives.png",
-            "render_canvas_lifecycle.png",
-            "render_summary_dashboard.png",
-            "render_draw_layer_management.png",
-        }
-        local thumbs = {}
-        for i, name in ipairs(files) do
-            local src = lurek.image.newImageData(OUT .. name)
-            thumbs[i] = src:resize(248, 140, "bilinear")
-        end
-
-        local canvas = lurek.image.newImageData(540, 320)
-        canvas:fill(12, 14, 20, 255)
-        local positions = {
-            { 18, 18 }, { 274, 18 }, { 18, 162 }, { 274, 162 },
-        }
-        for i, thumb in ipairs(thumbs) do
-            local x, y = positions[i][1], positions[i][2]
-            canvas:paste(thumb, x, y)
-            draw_rect_line_native(canvas, x, y, 248, 140, 232, 236, 244, 255)
-        end
-
-        save_png(canvas, "render_contact_sheet.png")
-    end)
-end)
 test_summary()

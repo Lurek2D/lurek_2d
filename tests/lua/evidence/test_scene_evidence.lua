@@ -193,17 +193,15 @@ describe("Evidence: lurek.scene runtime flow", function()
         local path = OUT .. "scene_transition_queue_trace.txt"
         write_text(path, table.concat(lines, "\n") .. "\n")
     end)
-    -- Does: Runs "scene transition progress dashboard" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by lurek.scene.queueTransition, lurek.scene.getQueuedTransitionCount, and related owner calls without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/scene/<artifact>
+    -- Does: Runs "scene transition progress snapshots" and turns the owner-module result into inspectable step images.
+    -- Shows: Each PNG should expose one sampled transition state instead of folding the whole sequence into one dashboard.
+    -- Artifact: tests/artifacts/current/scene/scene_transition_progress_stepNN.png
     -- Why: This is meaningful only if the visible/text output comes from lurek.scene.queueTransition, lurek.scene.getQueuedTransitionCount, and related owner calls; export helpers are just the container.
 
-    it("PNG: scene transition progress dashboard", function()
+    it("PNG: scene transition progress snapshots", function()
         lurek.scene.push({})
         lurek.scene.queueTransition("fade", 0.5, "linear")
 
-        local img = lurek.image.newImageData(340, 140)
-        img:fill(14, 16, 22, 255)
         local samples = {}
         for i = 1, 4 do
             samples[i] = {
@@ -214,8 +212,10 @@ describe("Evidence: lurek.scene runtime flow", function()
         end
 
         for i, sample in ipairs(samples) do
-            local x = 18 + (i - 1) * 80
-            local y = 24
+            local img = lurek.image.newImageData(96, 124)
+            img:fill(14, 16, 22, 255)
+            local x = 15
+            local y = 18
             img:drawRect(x, y, 66, 84, 28, 32, 42, 255)
             draw_outline(img, x, y, 66, 84, 226, 232, 244, 255)
             local fill_w = math.floor((sample.progress or 0) * 50 + 0.5)
@@ -228,9 +228,9 @@ describe("Evidence: lurek.scene runtime flow", function()
             end
             img:drawLine(x + 8, y + 72, x + 58, y + 72, 70, 76, 92, 255)
             img:drawLine(x + 8, y + 78, x + 8 + fill_w, y + 78, 110, 220, 154, 255)
+            save_png(img, OUT .. string.format("scene_transition_progress_step%02d.png", i))
         end
 
-        save_png(img, OUT .. "scene_transition_progress_dashboard.png")
         lurek.scene.clearQueuedTransitions()
         lurek.scene.clear()
     end)

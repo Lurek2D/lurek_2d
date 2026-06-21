@@ -317,5 +317,5 @@ do
     local is_object = fov:typeOf("LObject")
     local is_grid = fov:typeOf("LVisibilityGrid")
     lurek.log.info("typeOf LFov = " .. tostring(is_fov))
-    lurek.log.info("cell size = " .. tostring(grid:getCellSize()) .. " grid=" .. tostring(is_grid))
+    lurek.log.info("is object = " .. tostring(is_object) .. " grid=" .. tostring(is_grid))
 end

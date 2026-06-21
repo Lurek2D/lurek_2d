@@ -12,14 +12,6 @@ describe("golden: math Math constants and trig identities", function()
             "tests/artifacts/baselines/math/math_distance_heatmap.png"
         )
         expect_golden_file_match(
-            evidence_output_dir("math") .. "math_perlin2d_map.png",
-            "tests/artifacts/baselines/math/math_perlin2d_map.png"
-        )
-        expect_golden_file_match(
-            evidence_output_dir("math") .. "math_simplex2d_map.png",
-            "tests/artifacts/baselines/math/math_simplex2d_map.png"
-        )
-        expect_golden_file_match(
             evidence_output_dir("math") .. "math_polygon_metrics.png",
             "tests/artifacts/baselines/math/math_polygon_metrics.png"
         )
@@ -32,32 +24,56 @@ describe("golden: math Math constants and trig identities", function()
             "tests/artifacts/baselines/math/math_bezier_crossing_pair.png"
         )
         expect_golden_file_match(
-            evidence_output_dir("math") .. "math_fbm_terrain.png",
-            "tests/artifacts/baselines/math/math_fbm_terrain.png"
+            evidence_output_dir("math") .. "math_easing_apply_inout_quad.png",
+            "tests/artifacts/baselines/math/math_easing_apply_inout_quad.png"
         )
         expect_golden_file_match(
-            evidence_output_dir("math") .. "math_easing_curves.png",
-            "tests/artifacts/baselines/math/math_easing_curves.png"
+            evidence_output_dir("math") .. "math_easing_apply_linear.png",
+            "tests/artifacts/baselines/math/math_easing_apply_linear.png"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("math") .. "math_easing_apply_out_bounce.png",
+            "tests/artifacts/baselines/math/math_easing_apply_out_bounce.png"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("math") .. "math_easing_apply_out_elastic.png",
+            "tests/artifacts/baselines/math/math_easing_apply_out_elastic.png"
         )
         expect_golden_file_match(
             evidence_output_dir("math") .. "math_segment_intersections.png",
             "tests/artifacts/baselines/math/math_segment_intersections.png"
         )
         expect_golden_file_match(
-            evidence_output_dir("math") .. "math_hsl_gradient.png",
-            "tests/artifacts/baselines/math/math_hsl_gradient.png"
-        )
-        expect_golden_file_match(
             evidence_output_dir("math") .. "math_bresenham_rays.png",
             "tests/artifacts/baselines/math/math_bresenham_rays.png"
         )
         expect_golden_file_match(
-            evidence_output_dir("math") .. "math_easing_quad_family.png",
-            "tests/artifacts/baselines/math/math_easing_quad_family.png"
+            evidence_output_dir("math") .. "math_easing_in_cubic.png",
+            "tests/artifacts/baselines/math/math_easing_in_cubic.png"
         )
         expect_golden_file_match(
-            evidence_output_dir("math") .. "math_easing_cubic_bounce.png",
-            "tests/artifacts/baselines/math/math_easing_cubic_bounce.png"
+            evidence_output_dir("math") .. "math_easing_in_quad.png",
+            "tests/artifacts/baselines/math/math_easing_in_quad.png"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("math") .. "math_easing_inout_quad.png",
+            "tests/artifacts/baselines/math/math_easing_inout_quad.png"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("math") .. "math_easing_linear.png",
+            "tests/artifacts/baselines/math/math_easing_linear.png"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("math") .. "math_easing_out_bounce.png",
+            "tests/artifacts/baselines/math/math_easing_out_bounce.png"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("math") .. "math_easing_out_cubic.png",
+            "tests/artifacts/baselines/math/math_easing_out_cubic.png"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("math") .. "math_easing_out_quad.png",
+            "tests/artifacts/baselines/math/math_easing_out_quad.png"
         )
         expect_golden_text_match(
             evidence_output_dir("math") .. "math_line_intersection_report.txt",

@@ -26,7 +26,7 @@ Aplikacja uruchamia się w natywnej, nieprzeskalowanej czcionce bitmapowej (`sca
 Uruchom aplikację na silniku Lurek za pomocą poniższego polecenia:
 
 ```powershell
-cargo run -- content/games/apps/household_finance_lab
+cargo run -- content/games/finance_app
 ```
 
 ## 🕹️ Obsługa i Interfejs (Controls & Interface)

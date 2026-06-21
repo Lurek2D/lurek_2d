@@ -77,26 +77,11 @@ describe("validation: savegame edge cases", function()
     end)
 
     -- @security LSaveManager:enableAutoSave
-    it("enableAutoSave configures an auto-save timer", function()
+    it("enableAutoSave configures an auto-save timer and rejects invalid parameters", function()
         local mgr = new_manager()
         mgr:enableAutoSave(30.0, "auto")
         local triggered = mgr:update(1.0)
         expect_false(triggered, "not ready after 1 second")
-    end)
-
-    -- @security LSaveManager:save
-    it("save rejects invalid slot names before writing files", function()
-        local mgr = new_manager()
-        mgr:register("player", function() return { hp = 100 } end, function(_) end)
-        expect_error(function()
-            mgr:save("../evil")
-        end)
-        expect_false(mgr:exists("../evil"), "invalid slot should not be treated as persisted")
-    end)
-
-    -- @security LSaveManager:enableAutoSave
-    it("enableAutoSave rejects invalid interval values and slot names", function()
-        local mgr = new_manager()
         expect_error(function()
             mgr:enableAutoSave(0, "auto")
         end)
@@ -109,6 +94,16 @@ describe("validation: savegame edge cases", function()
         expect_error(function()
             mgr:enableAutoSave(1, "../evil")
         end)
+    end)
+
+    -- @security LSaveManager:save
+    it("save rejects invalid slot names before writing files", function()
+        local mgr = new_manager()
+        mgr:register("player", function() return { hp = 100 } end, function(_) end)
+        expect_error(function()
+            mgr:save("../evil")
+        end)
+        expect_false(mgr:exists("../evil"), "invalid slot should not be treated as persisted")
     end)
 
     -- @security LSaveManager:update

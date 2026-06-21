@@ -2360,7 +2360,7 @@ do
     local second = dm:addDoor(6, 5, "vertical", 0.25)
     ray_log("count=" .. dm:count())
     ray_log("first state=" .. dm:getDoor(first).state)
-    ray_log("second direction=" .. dm:getDoor(second).direction)
+    ray_log("second openAmount=" .. tostring(dm:getDoor(second).openAmount))
     ray_log("ids differ=" .. tostring(first ~= second))
 end
 

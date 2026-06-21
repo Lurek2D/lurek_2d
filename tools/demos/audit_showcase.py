@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Inventory and classify content/showcase entries."""
+"""Inventory and classify legacy showcase-style entries."""
 
 from __future__ import annotations
 
@@ -74,8 +74,13 @@ def classify_entry(path: Path) -> ShowcaseEntry:
     else:
         classification = "showcase"
 
+    try:
+        display_path = path.relative_to(ROOT).as_posix()
+    except ValueError:
+        display_path = path.as_posix()
+
     return ShowcaseEntry(
-        path=path.relative_to(ROOT).as_posix(),
+        path=display_path,
         has_main=main.exists(),
         has_conf=conf,
         has_readme=readme.exists(),

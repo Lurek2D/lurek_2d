@@ -1171,7 +1171,7 @@ def start_page(context: Context) -> Page:
         "",
         "```bash",
         "cargo run -- content/examples/render.lua",
-        "cargo run -- content/games/showcase/hello_world",
+        "cargo run -- content/games/music_composer",
         "```",
     ]
     return Page("Getting-Started.md", page("Getting Started", body))

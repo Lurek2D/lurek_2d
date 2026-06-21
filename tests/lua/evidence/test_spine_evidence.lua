@@ -103,30 +103,6 @@ local function render_walk_frame(sk, bones)
     return img
 end
 
-local function render_pose_sheet()
-    local sk, bones = build_walk_skeleton()
-    local frame_w, frame_h = 192, 192
-    local canvas = lurek.image.newImageData(frame_w * 3, frame_h * 2)
-    canvas:fill(18, 20, 28, 255)
-
-    for frame_index = 1, 6 do
-        sk:updateAnimation(0.2)
-        sk:updateWorldTransforms()
-        local frame = render_walk_frame(sk, bones):resize(frame_w, frame_h, "bilinear")
-        local col = (frame_index - 1) % 3
-        local row = math.floor((frame_index - 1) / 3)
-        local ox = col * frame_w
-        local oy = row * frame_h
-        canvas:paste(frame, ox, oy)
-        canvas:drawLine(ox, oy, ox + frame_w - 1, oy, 235, 238, 246, 255)
-        canvas:drawLine(ox + frame_w - 1, oy, ox + frame_w - 1, oy + frame_h - 1, 235, 238, 246, 255)
-        canvas:drawLine(ox + frame_w - 1, oy + frame_h - 1, ox, oy + frame_h - 1, 235, 238, 246, 255)
-        canvas:drawLine(ox, oy + frame_h - 1, ox, oy, 235, 238, 246, 255)
-    end
-
-    return canvas
-end
-
 local function build_ik_demo()
     local sk = lurek.spine.newSkeleton("ik_reach")
     local root = sk:addBone("root", { length = 16 })
@@ -139,34 +115,6 @@ local function build_ik_demo()
     sk:setPosition(72, 112)
     sk:addIKConstraint("arm_ik", { shoulder, elbow }, true)
     return sk, { shoulder = shoulder, elbow = elbow, hand = hand }
-end
-
-local function render_ik_targets()
-    local sk, bones = build_ik_demo()
-    local targets = {
-        { 96, 24 },
-        { 122, -10 },
-        { 100, 54 },
-    }
-    local panel_w, panel_h = 176, 176
-    local canvas = lurek.image.newImageData(panel_w * #targets, panel_h)
-    canvas:fill(16, 19, 25, 255)
-
-    for i, target in ipairs(targets) do
-        sk:setIKTarget("arm_ik", target[1], target[2])
-        sk:updateWorldTransforms()
-        local frame = sk:drawToImage(panel_w, panel_h)
-        local ox = (i - 1) * panel_w
-        canvas:drawRect(ox, 0, panel_w, panel_h, 32, 36, 46, 255)
-        canvas:paste(frame, ox, 0)
-        canvas:drawCircle(ox + target[1], 112 + target[2], 6, 255, 126, 126, 255)
-        canvas:drawLine(ox, 0, ox + panel_w - 1, 0, 226, 230, 238, 255)
-        canvas:drawLine(ox + panel_w - 1, 0, ox + panel_w - 1, panel_h - 1, 226, 230, 238, 255)
-        canvas:drawLine(ox + panel_w - 1, panel_h - 1, ox, panel_h - 1, 226, 230, 238, 255)
-        canvas:drawLine(ox, panel_h - 1, ox, 0, 226, 230, 238, 255)
-    end
-
-    return canvas
 end
 
 -- @describe Evidence: lurek.spine API
@@ -186,14 +134,20 @@ describe("Evidence: lurek.spine API", function()
         local path = OUT .. "skeleton_stick_figure.png"
         save_png(img, path)
     end)
-    -- Does: Runs "walk cycle pose sheet" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by LSkeleton:updateAnimation and LSkeleton:drawToImage without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/spine/spine_walk_cycle_pose_sheet.png
+    -- Does: Runs "walk cycle pose snapshots" and turns the owner-module result into inspectable frame images.
+    -- Shows: Each PNG should expose one sampled pose produced by LSkeleton:updateAnimation and LSkeleton:drawToImage.
+    -- Artifact: tests/artifacts/current/spine/spine_walk_cycle_pose_0N.png
     -- Why: This is meaningful only if the visible/text output comes from LSkeleton:updateAnimation and LSkeleton:drawToImage; export helpers are just the container.
 
-    it("PNG: walk cycle pose sheet", function()
-        local path = OUT .. "spine_walk_cycle_pose_sheet.png"
-        save_png(render_pose_sheet(), path)
+    it("PNG: walk cycle pose snapshots", function()
+        local sk, bones = build_walk_skeleton()
+        for frame_index = 1, 6 do
+            sk:updateAnimation(0.2)
+            sk:updateWorldTransforms()
+            local frame = render_walk_frame(sk, bones):resize(192, 192, "bilinear")
+            local path = OUT .. string.format("spine_walk_cycle_pose_%02d.png", frame_index)
+            save_png(frame, path)
+        end
     end)
     -- Does: Runs "bone world-transform query" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by lurek.spine.newSkeleton, LSkeleton:getBoneWorld, and related owner calls without needing a special evidence-only renderer.
@@ -242,14 +196,26 @@ describe("Evidence: lurek.spine API", function()
         lurek.image.saveGIF(frames, path, { delayMs = 400, speed = 10 })
         expect_evidence_created(path)
     end)
-    -- Does: Runs "IK target reach panels" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by LSkeleton:addIKConstraint, LSkeleton:setIKTarget, and related owner calls without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/spine/spine_ik_target_panels.png
+    -- Does: Runs "IK target reach captures" and turns the owner-module result into one file per target.
+    -- Shows: Each PNG should expose one IK target state produced by LSkeleton:addIKConstraint and LSkeleton:setIKTarget.
+    -- Artifact: tests/artifacts/current/spine/spine_ik_target_0N.png
     -- Why: This is meaningful only if the visible/text output comes from LSkeleton:addIKConstraint, LSkeleton:setIKTarget, and related owner calls; export helpers are just the container.
 
-    it("PNG: IK target reach panels", function()
-        local path = OUT .. "spine_ik_target_panels.png"
-        save_png(render_ik_targets(), path)
+    it("PNG: IK target reach captures", function()
+        local sk = build_ik_demo()
+        local targets = {
+            { 96, 24 },
+            { 122, -10 },
+            { 100, 54 },
+        }
+
+        for i, target in ipairs(targets) do
+            sk:setIKTarget("arm_ik", target[1], target[2])
+            sk:updateWorldTransforms()
+            local frame = sk:drawToImage(176, 176)
+            frame:drawCircle(target[1], 112 + target[2], 6, 255, 126, 126, 255)
+            save_png(frame, OUT .. string.format("spine_ik_target_%02d.png", i))
+        end
     end)
     -- Does: Runs "skin, event and pose trace" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by LSkeleton:addSkin, LSkeleton:getSkin, and related owner calls without needing a special evidence-only renderer.
@@ -286,12 +252,12 @@ describe("Evidence: lurek.spine API", function()
         write_file(path, table.concat(lines, "\n") .. "\n")
         expect_evidence_created(path)
     end)
-    -- Does: Runs "imported skeleton animation contact sheet" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by lurek.spine.animationFromJson, lurek.spine.skeletonFromJson, and related owner calls without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/spine/<artifact>
+    -- Does: Runs "imported skeleton animation snapshots" and turns the owner-module result into one file per sampled frame.
+    -- Shows: Each PNG should expose one state produced by lurek.spine.animationFromJson, lurek.spine.skeletonFromJson, and related owner calls.
+    -- Artifact: tests/artifacts/current/spine/spine_imported_animation_0N.png
     -- Why: This is meaningful only if the visible/text output comes from lurek.spine.animationFromJson, lurek.spine.skeletonFromJson, and related owner calls; export helpers are just the container.
 
-    it("PNG: imported skeleton animation contact sheet", function()
+    it("PNG: imported skeleton animation snapshots", function()
         local importer = rawget(lurek.spine, "skeletonFromJson")
         expect_true(importer ~= nil)
 
@@ -342,24 +308,12 @@ describe("Evidence: lurek.spine API", function()
         sk:addAnimation(anim)
         expect_true(sk:playAnimation("import_wave", true))
 
-        local panel_w, panel_h = 160, 160
-        local canvas = lurek.image.newImageData(panel_w * 4, panel_h)
-        canvas:fill(18, 20, 28, 255)
-
         for i = 1, 4 do
             sk:updateAnimation(0.3)
             sk:updateWorldTransforms()
-            local frame = sk:drawToImage(panel_w, panel_h)
-            local ox = (i - 1) * panel_w
-            canvas:paste(frame, ox, 0)
-            canvas:drawLine(ox, 0, ox + panel_w - 1, 0, 236, 240, 246, 255)
-            canvas:drawLine(ox + panel_w - 1, 0, ox + panel_w - 1, panel_h - 1, 236, 240, 246, 255)
-            canvas:drawLine(ox + panel_w - 1, panel_h - 1, ox, panel_h - 1, 236, 240, 246, 255)
-            canvas:drawLine(ox, panel_h - 1, ox, 0, 236, 240, 246, 255)
+            local frame = sk:drawToImage(160, 160)
+            save_png(frame, OUT .. string.format("spine_imported_animation_%02d.png", i))
         end
-
-        local path = OUT .. "spine_imported_animation_contact_sheet.png"
-        save_png(canvas, path)
     end)
 end)
 test_summary()

@@ -76,21 +76,43 @@ fn agent_client_rejects_queue_overflow() {
         transport,
     );
 
-    for callback_id in 1..=2 {
-        client
-            .send_prompt(AgentRequest {
-                url: "http://127.0.0.1:11434/api/generate".to_string(),
-                model: "llama3".to_string(),
-                prompt: format!("prompt {}", callback_id),
-                system: String::new(),
-                format: AgentResponseFormat::Text,
-                options: serde_json::Value::Null,
-                callback_id,
-                max_retries: 0,
-                timeout_secs: 1,
-            })
-            .expect("first two requests should fit in bounded transport");
+    client
+        .send_prompt(AgentRequest {
+            url: "http://127.0.0.1:11434/api/generate".to_string(),
+            model: "llama3".to_string(),
+            prompt: "prompt 1".to_string(),
+            system: String::new(),
+            format: AgentResponseFormat::Text,
+            options: serde_json::Value::Null,
+            callback_id: 1,
+            max_retries: 0,
+            timeout_secs: 1,
+        })
+        .expect("first request should start");
+
+    let deadline = std::time::Instant::now() + Duration::from_millis(100);
+    while client.in_flight_count() == 0 && std::time::Instant::now() < deadline {
+        std::thread::sleep(Duration::from_millis(5));
     }
+    assert_eq!(
+        1,
+        client.in_flight_count(),
+        "first request should move into the single worker before we fill the queue"
+    );
+
+    client
+        .send_prompt(AgentRequest {
+            url: "http://127.0.0.1:11434/api/generate".to_string(),
+            model: "llama3".to_string(),
+            prompt: "prompt 2".to_string(),
+            system: String::new(),
+            format: AgentResponseFormat::Text,
+            options: serde_json::Value::Null,
+            callback_id: 2,
+            max_retries: 0,
+            timeout_secs: 1,
+        })
+        .expect("second request should occupy the single queued slot");
 
     let error = client
         .send_prompt(AgentRequest {

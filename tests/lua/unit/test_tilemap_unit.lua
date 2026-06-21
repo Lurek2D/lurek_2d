@@ -778,24 +778,14 @@ describe("LTileMap methods", function()
     end)
 
     -- @covers LTileMap:findTilesByGid
-    it("findTilesByGid returns every matching tile position", function()
+    it("findTilesByGid returns every matching tile position and lazily rebuilds the reverse index", function()
         local tm = new_ready_tilemap()
         tm:fill(1, 7)
-        local positions = tm:findTilesByGid(1, 7)
-        expect_equal(100, #positions)
-        expect_equal(0, positions[1].x)
-    end)
-
-    -- @covers LTileMap:findTilesByGid
-    it("findTilesByGid lazily rebuilds the reverse index after fill", function()
-        local tm = new_ready_tilemap()
-        tm:fill(1, 7)
-
         local before = tm:getDiagnostics()
         local positions = tm:findTilesByGid(1, 7)
         local after = tm:getDiagnostics()
-
         expect_equal(100, #positions)
+        expect_equal(0, positions[1].x)
         expect_true(after.lazyIndexRebuilds >= before.lazyIndexRebuilds + 1)
     end)
 

@@ -2,7 +2,7 @@
 -- Artifacts are generated via lurek.particle APIs (toImage/drawToImage).
 -- This file intentionally avoids file-level @covers markers; evidence ownership is described per artifact block.
 
-
+local Fixture = lurek.filesystem.load("tests/fixtures/particle_evidence_fixture.lua")()
 local OUT = evidence_output_dir("particle")
 
 local function save_png(img, path)
@@ -17,24 +17,117 @@ local function chart_to_image(chart, width, height)
     return img
 end
 
-local function draw_outline(img, x, y, w, h, r, g, b, a)
-    img:drawLine(x, y, x + w - 1, y, r, g, b, a or 255)
-    img:drawLine(x + w - 1, y, x + w - 1, y + h - 1, r, g, b, a or 255)
-    img:drawLine(x + w - 1, y + h - 1, x, y + h - 1, r, g, b, a or 255)
-    img:drawLine(x, y + h - 1, x, y, r, g, b, a or 255)
+local function sample_runtime_charts()
+    local ps = lurek.particle.newSystem({
+        seed = 1301,
+        maxParticles = 220,
+        emissionRate = 140,
+        shape = "circle",
+        lifetimeMin = 0.7,
+        lifetimeMax = 1.6,
+        sizeMin = 2,
+        sizeMax = 5,
+        speedMin = 28,
+        speedMax = 95,
+    })
+    ps:setPosition(96, 96)
+    ps:addAttractor(96, 96, 180, 84)
+    ps:start()
+    ps:warmUp(0.25)
+
+    local rows = {}
+    local live_samples = {}
+    local occupancy = {
+        { 0, 0, 0 },
+        { 0, 0, 0 },
+        { 0, 0, 0 },
+    }
+    local peak = { live = 0, total = 0, rate = 0, age = 0 }
+    local sum = { live = 0, total = 0, rate = 0, age = 0 }
+
+    for frame = 1, 54 do
+        if frame == 20 then
+            ps:setEmissionRate(80)
+        end
+        if frame == 38 then
+            ps:stop()
+        end
+
+        ps:update(1 / 30)
+        local stats = ps:getStats()
+        rows[#rows + 1] = {
+            frame,
+            stats.live_particles,
+            stats.total_live_particles,
+            stats.emission_rate,
+            stats.emitter_age,
+        }
+        live_samples[#live_samples + 1] = stats.live_particles
+
+        peak.live = math.max(peak.live, stats.live_particles)
+        peak.total = math.max(peak.total, stats.total_live_particles)
+        peak.rate = math.max(peak.rate, stats.emission_rate)
+        peak.age = math.max(peak.age, stats.emitter_age)
+        sum.live = sum.live + stats.live_particles
+        sum.total = sum.total + stats.total_live_particles
+        sum.rate = sum.rate + stats.emission_rate
+        sum.age = sum.age + stats.emitter_age
+
+        local phase = frame <= 18 and 1 or (frame <= 36 and 2 or 3)
+        local band = stats.live_particles < 60 and 1 or (stats.live_particles < 120 and 2 or 3)
+        occupancy[phase][band] = occupancy[phase][band] + 1
+    end
+
+    local df = lurek.dataframe.fromRows(
+        { "frame", "live_particles", "total_live_particles", "emission_rate", "emitter_age" },
+        rows
+    )
+
+    local line = lurek.charts.newLine({ width = 340, height = 180, title = "particle-population" })
+    line:addSeriesFromDataFrame("live", df, "frame", "live_particles")
+    line:addSeriesFromDataFrame("total", df, "frame", "total_live_particles")
+
+    local histogram = lurek.charts.newHistogram({ width = 180, height = 180, showLegend = true, title = "population-dist" })
+    histogram:setBinCount(8)
+    histogram:addSeries("live", live_samples)
+
+    local phases = lurek.charts.newHeatmap({ width = 180, height = 180, showLegend = true, title = "phase-occupancy" })
+    phases:setMatrix(occupancy, { "warmup", "burst", "decay" }, { "low", "mid", "high" })
+    phases:setValueRange(0, 18)
+    phases:setShowValues(true)
+
+    local summary = lurek.charts.newBar({ width = 180, height = 180, title = "particle-summary" })
+    summary:addSeries("peak", {})
+    summary:addSeries("mean", {})
+    summary:addCategory("live", { peak.live, sum.live / #rows })
+    summary:addCategory("total", { peak.total, sum.total / #rows })
+    summary:addCategory("rate", { peak.rate, sum.rate / #rows })
+    summary:addCategory("age", { peak.age, sum.age / #rows })
+
+    lurek.particle.release(ps)
+    return {
+        line = chart_to_image(line, 340, 180),
+        summary = chart_to_image(summary, 180, 180),
+        histogram = chart_to_image(histogram, 180, 180),
+        phases = chart_to_image(phases, 180, 180),
+    }
 end
 
 local function reset_particle_outputs()
     local names = {
-        "particle_attractor.png",
         "particle_attractor_contraction.png",
         "particle_burst_evolution.gif",
         "particle_emitter_burst.png",
         "particle_emitter_cluster_snapshot.png",
+        "particle_explosion_renderer.png",
+        "particle_heatmap_runtime_phase.png",
+        "particle_histogram_live_population.png",
         "particle_lifecycle_chart.png",
-        "particle_runtime_dashboard.png",
-        "particle_positions.png",
-        "particle_trail.png",
+        "particle_over_paint_renderer.png",
+        "particle_rain_renderer.png",
+        "particle_runtime_population_lines.png",
+        "particle_runtime_summary_bars.png",
+        "particle_spark_trail_renderer.png",
         "particle_trail_wave_ribbon.png",
     }
     for _, name in ipairs(names) do
@@ -62,35 +155,13 @@ describe("Evidence: lurek.particle API", function()
     -- Why: This is meaningful only if the visible/text output comes from lurek.particle.newSystem; export helpers are just the container.
 
     it("PNG: emitter cluster snapshot", function()
-        local ps = lurek.particle.newSystem({
-            seed = 1001,
-            maxParticles = 180,
-            emissionRate = 120,
-            shape = "circle",
-            lifetimeMin = 1.0,
-            lifetimeMax = 2.0,
-            sizeMin = 2,
-            sizeMax = 6,
-            speedMin = 20,
-            speedMax = 80,
-        })
+        local ps = lurek.particle.newSystem(Fixture.scenes.cluster)
         ps:setPosition(100, 100)
         ps:start()
         ps:emit(80)
         ps:update(0.35)
 
-        local raw = ps:toImage(200, 200)
-        local img = lurek.image.newImageData(240, 240)
-        img:fill(14, 16, 22, 255)
-        for x = 0, 239, 20 do
-            img:drawLine(x, 0, x, 239, 24, 28, 36, 255)
-        end
-        for y = 0, 239, 20 do
-            img:drawLine(0, y, 239, y, 24, 28, 36, 255)
-        end
-        img:paste(raw, 20, 20)
-        draw_outline(img, 20, 20, 200, 200, 232, 236, 244, 255)
-        img:drawCircle(120, 120, 5, 255, 208, 118, 255)
+        local img = ps:toImage(200, 200)
         local path = OUT .. "particle_emitter_cluster_snapshot.png"
         save_png(img, path)
 
@@ -137,19 +208,7 @@ describe("Evidence: lurek.particle API", function()
     -- Why: This is meaningful only if the output is driven by lurek.particle.newSystem and related owner calls rather than by helper-only drawing.
 
     it("PNG: burst emission", function()
-        local ps = lurek.particle.newSystem({
-            seed = 1003,
-            maxParticles = 220,
-            emissionRate = 0,
-            shape = "shrapnel",
-            lifetimeMin = 0.6,
-            lifetimeMax = 1.3,
-            sizeMin = 2,
-            sizeMax = 5,
-            speedMin = 70,
-            speedMax = 140,
-            spread = 360,
-        })
+        local ps = lurek.particle.newSystem(Fixture.scenes.burst)
         ps:setPosition(96, 96)
         ps:start()
         ps:emit(120)
@@ -167,18 +226,7 @@ describe("Evidence: lurek.particle API", function()
     -- Why: This is meaningful only if the output is driven by lurek.particle.newSystem and related owner calls rather than by helper-only drawing.
 
     it("PNG: attractor contraction", function()
-        local ps = lurek.particle.newSystem({
-            seed = 1004,
-            maxParticles = 240,
-            emissionRate = 220,
-            shape = "puff",
-            lifetimeMin = 2.0,
-            lifetimeMax = 2.0,
-            speedMin = 40,
-            speedMax = 90,
-            sizeMin = 3,
-            sizeMax = 7,
-        })
+        local ps = lurek.particle.newSystem(Fixture.scenes.attractor)
         ps:setPosition(128, 128)
         ps:addAttractor(128, 128, 500, 260)
         ps:start()
@@ -187,8 +235,7 @@ describe("Evidence: lurek.particle API", function()
 
         local img = ps:toImage(256, 256)
         local path = OUT .. "particle_attractor_contraction.png"
-        lurek.image.savePNG(img, path)
-        expect_evidence_created(path)
+        save_png(img, path)
 
         lurek.particle.release(ps)
     end)
@@ -203,17 +250,13 @@ describe("Evidence: lurek.particle API", function()
         trail:setHeadColor(0.95, 0.90, 0.35, 1.0)
         trail:setTailColor(0.30, 0.60, 1.0, 0.0)
 
-        for i = 1, 60 do
-            local t = i / 60
-            local x = 24 + t * 208
-            local y = 128 + math.sin(t * math.pi * 3) * 48
-            trail:pushPoint(x, y)
+        for _, point in ipairs(Fixture.trail_points(60, 256, 256)) do
+            trail:pushPoint(point.x, point.y)
         end
 
         local img = trail:drawToImage(256, 256)
         local path = OUT .. "particle_trail_wave_ribbon.png"
-        lurek.image.savePNG(img, path)
-        expect_evidence_created(path)
+        save_png(img, path)
     end)
     -- Does: Runs "lifecycle chart snapshot" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by lurek.particle.drawLifecycleToImage without needing a special evidence-only renderer.
@@ -234,196 +277,94 @@ describe("Evidence: lurek.particle API", function()
             { 9, 0 },
         }, 24, 256, 96)
 
-        local img = lurek.image.newImageData(320, 180)
-        img:fill(14, 16, 22, 255)
-        img:drawRect(18, 24, 284, 132, 24, 28, 36, 255)
-        img:paste(chart, 32, 42)
-        draw_outline(img, 32, 42, 256, 96, 232, 236, 244, 255)
-        img:drawLine(32, 152, 288, 152, 96, 110, 132, 255)
-
         local path = OUT .. "particle_lifecycle_chart.png"
-        lurek.image.savePNG(img, path)
+        lurek.image.savePNG(chart, path)
         expect_evidence_created(path)
     end)
-    -- Does: Runs "particle contact sheet" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by LParticleSystem:drawToImage and lurek.particle.drawLifecycleToImage without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/particle/particle_emitter_cluster_snapshot.png, tests/artifacts/current/particle/particle_emitter_burst.png, tests/artifacts/current/particle/particle_trail_wave_ribbon.png, tests/artifacts/current/particle/particle_lifecycle_chart.png
-    -- Why: This is meaningful only if the visible/text output comes from LParticleSystem:drawToImage and lurek.particle.drawLifecycleToImage; export helpers are just the container.
-
-    it("PNG: particle contact sheet", function()
-        local cluster = lurek.image.newImageData(OUT .. "particle_emitter_cluster_snapshot.png")
-        local burst = lurek.image.newImageData(OUT .. "particle_emitter_burst.png")
-        local trail = lurek.image.newImageData(OUT .. "particle_trail_wave_ribbon.png")
-        local lifecycle = lurek.image.newImageData(OUT .. "particle_lifecycle_chart.png")
-
-        local canvas = lurek.image.newImageData(540, 360)
-        canvas:fill(12, 14, 20, 255)
-        local cards = {
-            { cluster:resize(220, 220, "bilinear"), 24, 24, 220, 220 },
-            { burst:resize(220, 220, "bilinear"), 296, 24, 220, 220 },
-            { trail:resize(220, 88, "bilinear"), 24, 252, 220, 88 },
-            { lifecycle:resize(272, 88, "bilinear"), 244, 252, 272, 88 },
-        }
-        for _, card in ipairs(cards) do
-            canvas:paste(card[1], card[2], card[3])
-            draw_outline(canvas, card[2], card[3], card[4], card[5], 232, 236, 244, 255)
-        end
-
-        local path = OUT .. "particle_contact_sheet.png"
-        save_png(canvas, path)
-    end)
-    -- Does: Runs "specialized renderer strip" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by LParticleSystem:drawExplosionToImage, LParticleSystem:drawRainToImage, and related owner calls without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/particle/<artifact>
-    -- Why: This is meaningful only if the visible/text output comes from LParticleSystem:drawExplosionToImage, LParticleSystem:drawRainToImage, and related owner calls; export helpers are just the container.
-
-    it("PNG: specialized renderer strip", function()
+    -- Does: Runs "specialized explosion renderer" and turns the owner-module result into an inspectable artifact.
+    -- Shows: The artifact should expose the behavior produced by LParticleSystem:drawExplosionToImage directly, without bundling multiple renderers into one sheet.
+    -- Artifact: tests/artifacts/current/particle/particle_explosion_renderer.png
+    -- Why: This is meaningful only if the visible output comes from the specialized explosion renderer itself.
+    it("PNG: specialized explosion renderer", function()
         local explosion = lurek.particle.newSystem({ seed = 1201, maxParticles = 32 })
         explosion:setPosition(60, 60)
         local img_explosion = explosion:drawExplosionToImage(120, 120)
+        save_png(img_explosion, OUT .. "particle_explosion_renderer.png")
+        lurek.particle.release(explosion)
+    end)
 
+    -- Does: Runs "specialized rain renderer" and turns the owner-module result into an inspectable artifact.
+    -- Shows: The artifact should expose the behavior produced by LParticleSystem:drawRainToImage directly, without bundling multiple renderers into one sheet.
+    -- Artifact: tests/artifacts/current/particle/particle_rain_renderer.png
+    -- Why: This is meaningful only if the visible output comes from the specialized rain renderer itself.
+    it("PNG: specialized rain renderer", function()
         local rain = lurek.particle.newSystem({ seed = 1202, maxParticles = 64 })
         rain:setPosition(60, 60)
         local img_rain = rain:drawRainToImage(120, 120)
+        save_png(img_rain, OUT .. "particle_rain_renderer.png")
+        lurek.particle.release(rain)
+    end)
 
+    -- Does: Runs "specialized spark trail renderer" and turns the owner-module result into an inspectable artifact.
+    -- Shows: The artifact should expose the behavior produced by LParticleSystem:drawSparkTrailToImage directly, without bundling multiple renderers into one sheet.
+    -- Artifact: tests/artifacts/current/particle/particle_spark_trail_renderer.png
+    -- Why: This is meaningful only if the visible output comes from the specialized spark-trail renderer itself.
+    it("PNG: specialized spark trail renderer", function()
         local spark = lurek.particle.newSystem({ seed = 1203, maxParticles = 48 })
         spark:setPosition(60, 60)
         local img_spark = spark:drawSparkTrailToImage(120, 120)
+        save_png(img_spark, OUT .. "particle_spark_trail_renderer.png")
+        lurek.particle.release(spark)
+    end)
 
+    -- Does: Runs "over-image painter renderer" and turns the owner-module result into an inspectable artifact.
+    -- Shows: The artifact should expose the behavior produced by LParticleSystem:drawOverImage and LParticleSystem:paintOnto on one target image.
+    -- Artifact: tests/artifacts/current/particle/particle_over_paint_renderer.png
+    -- Why: This is meaningful only if the visible output comes from the over-image painter path itself.
+    it("PNG: over-image painter renderer", function()
         local over = lurek.particle.newSystem({ seed = 1204, maxParticles = 24 })
         over:setPosition(60, 60)
         local composite = lurek.image.newImageData(120, 120)
         composite:fill(20, 24, 30, 255)
         over:drawOverImage(composite)
         over:paintOnto(composite)
-
-        local canvas = lurek.image.newImageData(268, 268)
-        canvas:fill(12, 14, 20, 255)
-        local cards = {
-            { img_explosion, 16, 16 },
-            { img_rain, 132, 16 },
-            { img_spark, 16, 132 },
-            { composite, 132, 132 },
-        }
-        for _, card in ipairs(cards) do
-            canvas:paste(card[1], card[2], card[3])
-            draw_outline(canvas, card[2], card[3], 120, 120, 232, 236, 244, 255)
-        end
-
-        save_png(canvas, OUT .. "particle_specialized_renderer_strip.png")
-        lurek.particle.release(explosion)
-        lurek.particle.release(rain)
-        lurek.particle.release(spark)
+        save_png(composite, OUT .. "particle_over_paint_renderer.png")
         lurek.particle.release(over)
     end)
-    -- Does: Runs "particle telemetry dashboard" and turns the owner-module result into inspectable chart artifacts.
-    -- Shows: The artifact should expose the behavior produced by LParticleSystem:getStats, lurek.dataframe.fromRows, and lurek.charts dashboard renderers.
-    -- Artifact: tests/artifacts/current/particle/particle_runtime_dashboard.png
-    -- Why: This is meaningful only if the visible output comes from sampled particle-system runtime telemetry.
+    -- Does: Samples runtime telemetry and renders a line chart for live vs total particle counts.
+    -- Shows: The artifact should expose the behavior produced by LParticleSystem:getStats, lurek.dataframe.fromRows, and lurek.charts line rendering.
+    -- Artifact: tests/artifacts/current/particle/particle_runtime_population_lines.png
+    -- Why: This is meaningful only if the visible output comes from sampled particle-system telemetry rather than a hand-authored image.
+    it("PNG: runtime population lines", function()
+        local charts = sample_runtime_charts()
+        save_png(charts.line, OUT .. "particle_runtime_population_lines.png")
+    end)
 
-    it("PNG: particle telemetry dashboard", function()
-        local ps = lurek.particle.newSystem({
-            seed = 1301,
-            maxParticles = 220,
-            emissionRate = 140,
-            shape = "circle",
-            lifetimeMin = 0.7,
-            lifetimeMax = 1.6,
-            sizeMin = 2,
-            sizeMax = 5,
-            speedMin = 28,
-            speedMax = 95,
-        })
-        ps:setPosition(96, 96)
-        ps:addAttractor(96, 96, 180, 84)
-        ps:start()
-        ps:warmUp(0.25)
+    -- Does: Samples runtime telemetry and renders summary bars for peak vs mean particle metrics.
+    -- Shows: The artifact should expose the behavior produced by LParticleSystem:getStats and lurek.charts bar rendering without bundling several charts into one image.
+    -- Artifact: tests/artifacts/current/particle/particle_runtime_summary_bars.png
+    -- Why: This is meaningful only if the visible output comes from the summary bar chart itself.
+    it("PNG: runtime summary bars", function()
+        local charts = sample_runtime_charts()
+        save_png(charts.summary, OUT .. "particle_runtime_summary_bars.png")
+    end)
 
-        local rows = {}
-        local live_samples = {}
-        local occupancy = {
-            { 0, 0, 0 },
-            { 0, 0, 0 },
-            { 0, 0, 0 },
-        }
-        local peak = { live = 0, total = 0, rate = 0, age = 0 }
-        local sum = { live = 0, total = 0, rate = 0, age = 0 }
+    -- Does: Samples runtime telemetry and renders a histogram of live particle counts.
+    -- Shows: The artifact should expose the behavior produced by LParticleSystem:getStats sampling and lurek.charts histogram rendering without bundling several charts into one image.
+    -- Artifact: tests/artifacts/current/particle/particle_histogram_live_population.png
+    -- Why: This is meaningful only if the visible output comes from the histogram itself.
+    it("PNG: runtime live histogram", function()
+        local charts = sample_runtime_charts()
+        save_png(charts.histogram, OUT .. "particle_histogram_live_population.png")
+    end)
 
-        for frame = 1, 54 do
-            if frame == 20 then
-                ps:setEmissionRate(80)
-            end
-            if frame == 38 then
-                ps:stop()
-            end
-
-            ps:update(1 / 30)
-            local stats = ps:getStats()
-            rows[#rows + 1] = {
-                frame,
-                stats.live_particles,
-                stats.total_live_particles,
-                stats.emission_rate,
-                stats.emitter_age,
-            }
-            live_samples[#live_samples + 1] = stats.live_particles
-
-            peak.live = math.max(peak.live, stats.live_particles)
-            peak.total = math.max(peak.total, stats.total_live_particles)
-            peak.rate = math.max(peak.rate, stats.emission_rate)
-            peak.age = math.max(peak.age, stats.emitter_age)
-            sum.live = sum.live + stats.live_particles
-            sum.total = sum.total + stats.total_live_particles
-            sum.rate = sum.rate + stats.emission_rate
-            sum.age = sum.age + stats.emitter_age
-
-            local phase = frame <= 18 and 1 or (frame <= 36 and 2 or 3)
-            local band = stats.live_particles < 60 and 1 or (stats.live_particles < 120 and 2 or 3)
-            occupancy[phase][band] = occupancy[phase][band] + 1
-        end
-
-        local df = lurek.dataframe.fromRows(
-            { "frame", "live_particles", "total_live_particles", "emission_rate", "emitter_age" },
-            rows
-        )
-
-        local line = lurek.charts.newLine({ width = 340, height = 180, title = "particle-population" })
-        line:addSeriesFromDataFrame("live", df, "frame", "live_particles")
-        line:addSeriesFromDataFrame("total", df, "frame", "total_live_particles")
-
-        local histogram = lurek.charts.newHistogram({ width = 180, height = 180, showLegend = true, title = "population-dist" })
-        histogram:setBinCount(8)
-        histogram:addSeries("live", live_samples)
-
-        local phases = lurek.charts.newHeatmap({ width = 180, height = 180, showLegend = true, title = "phase-occupancy" })
-        phases:setMatrix(occupancy, { "warmup", "burst", "decay" }, { "low", "mid", "high" })
-        phases:setValueRange(0, 18)
-        phases:setShowValues(true)
-
-        local summary = lurek.charts.newBar({ width = 180, height = 180, title = "particle-summary" })
-        summary:addSeries("peak", {})
-        summary:addSeries("mean", {})
-        summary:addCategory("live", { peak.live, sum.live / #rows })
-        summary:addCategory("total", { peak.total, sum.total / #rows })
-        summary:addCategory("rate", { peak.rate, sum.rate / #rows })
-        summary:addCategory("age", { peak.age, sum.age / #rows })
-
-        local canvas = lurek.image.newImageData(560, 416)
-        canvas:fill(12, 14, 20, 255)
-        local cards = {
-            { chart_to_image(line, 340, 180), 16, 16, 340, 180 },
-            { chart_to_image(summary, 180, 180), 364, 16, 180, 180 },
-            { chart_to_image(histogram, 180, 180), 16, 220, 180, 180 },
-            { chart_to_image(phases, 180, 180), 204, 220, 180, 180 },
-        }
-        for _, card in ipairs(cards) do
-            canvas:drawRect(card[2] - 4, card[3] - 4, card[4] + 8, card[5] + 8, 24, 28, 36, 255)
-            canvas:paste(card[1], card[2], card[3])
-            draw_outline(canvas, card[2], card[3], card[4], card[5], 232, 236, 244, 255)
-        end
-
-        save_png(canvas, OUT .. "particle_runtime_dashboard.png")
-        lurek.particle.release(ps)
+    -- Does: Samples runtime telemetry and renders a heatmap of occupancy by phase and population band.
+    -- Shows: The artifact should expose the behavior produced by LParticleSystem:getStats sampling and lurek.charts heatmap rendering without bundling several charts into one image.
+    -- Artifact: tests/artifacts/current/particle/particle_heatmap_runtime_phase.png
+    -- Why: This is meaningful only if the visible output comes from the heatmap itself.
+    it("PNG: runtime phase heatmap", function()
+        local charts = sample_runtime_charts()
+        save_png(charts.phases, OUT .. "particle_heatmap_runtime_phase.png")
     end)
 end)
 test_summary()

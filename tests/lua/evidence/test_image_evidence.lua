@@ -97,38 +97,31 @@ describe("Evidence: image", function()
         local path = OUT .. "image_drawing_primitives_scene.png"
         save_png(img, path)
     end)
-    -- Does: Runs "effects strip" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by LImageData:grayscale, LImageData:invert, and related owner calls without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/image/image_effects_variant_strip.png
-    -- Why: This is meaningful only if the visible/text output comes from LImageData:grayscale, LImageData:invert, and related owner calls; export helpers are just the container.
+    -- Does: Runs "effect variants" and turns the owner-module result into separate inspectable artifacts.
+    -- Shows: Each PNG should expose one image effect instead of merging several distinct evidences into one strip.
+    -- Artifact: tests/artifacts/current/image/image_effect_base.png, tests/artifacts/current/image/image_effect_grayscale.png, tests/artifacts/current/image/image_effect_invert.png, tests/artifacts/current/image/image_effect_posterize.png
+    -- Why: This is meaningful only if each visible/text output comes from one concrete image effect path rather than a helper-built collage.
 
-    it("PNG: effects strip", function()
-        local cell = 96
-        local canvas = lurek.image.newImageData(cell * 4, cell)
-        canvas:fill(20, 20, 24, 255)
-
-        local a = make_base(cell, cell)
-        local b = make_base(cell, cell)
+    it("PNG: effect variants", function()
+        local a = make_base(96, 96)
+        local b = make_base(96, 96)
         b:grayscale()
-        local c = make_base(cell, cell)
+        local c = make_base(96, 96)
         c:invert()
-        local d = make_base(cell, cell)
+        local d = make_base(96, 96)
         d:posterize(4)
 
-        canvas:paste(a, 0, 0)
-        canvas:paste(b, cell, 0)
-        canvas:paste(c, cell * 2, 0)
-        canvas:paste(d, cell * 3, 0)
-
-        local path = OUT .. "image_effects_variant_strip.png"
-        save_png(canvas, path)
+        save_png(a, OUT .. "image_effect_base.png")
+        save_png(b, OUT .. "image_effect_grayscale.png")
+        save_png(c, OUT .. "image_effect_invert.png")
+        save_png(d, OUT .. "image_effect_posterize.png")
     end)
-    -- Does: Runs "blur and sharpen pair" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by LImageData:crop, LImageData:blur, and related owner calls without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/image/image_blur_sharpen_pair.png
-    -- Why: This is meaningful only if the visible/text output comes from LImageData:crop, LImageData:blur, and related owner calls; export helpers are just the container.
+    -- Does: Runs "blur and sharpen crops" and turns the owner-module result into separate inspectable artifacts.
+    -- Shows: Each PNG should expose one transform result instead of merging two distinct evidences into one image.
+    -- Artifact: tests/artifacts/current/image/image_blur_crop.png, tests/artifacts/current/image/image_sharpen_crop.png
+    -- Why: This is meaningful only if each visible/text output comes from one concrete crop transform path rather than a helper-built split panel.
 
-    it("PNG: blur and sharpen pair", function()
+    it("PNG: blur and sharpen crops", function()
         local base = make_base(256, 128)
         local left = base:crop(0, 0, 128, 128)
         local right = base:crop(128, 0, 128, 128)
@@ -136,59 +129,43 @@ describe("Evidence: image", function()
         left:blur(3)
         right:sharpen()
 
-        local out = lurek.image.newImageData(256, 128)
-        out:paste(left, 0, 0)
-        out:paste(right, 128, 0)
-
-        local path = OUT .. "image_blur_sharpen_pair.png"
-        save_png(out, path)
+        save_png(left, OUT .. "image_blur_crop.png")
+        save_png(right, OUT .. "image_sharpen_crop.png")
     end)
-    -- Does: Runs "transform atlas with flips and rotation" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by LImageData:flipHorizontal, LImageData:flipVertical, and related owner calls without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/image/transform_atlas.png
-    -- Why: This is meaningful only if the visible/text output comes from LImageData:flipHorizontal, LImageData:flipVertical, and related owner calls; export helpers are just the container.
+    -- Does: Runs "transform variants with flips and rotation" and turns the owner-module result into separate inspectable artifacts.
+    -- Shows: Each PNG should expose one transform result instead of merging several distinct evidences into one atlas.
+    -- Artifact: tests/artifacts/current/image/image_transform_original.png, tests/artifacts/current/image/image_transform_flip_horizontal.png, tests/artifacts/current/image/image_transform_flip_vertical.png, tests/artifacts/current/image/image_transform_rotate90.png
+    -- Why: This is meaningful only if each visible/text output comes from one concrete transform path rather than a helper-built collage.
 
-    it("PNG: transform atlas with flips and rotation", function()
-        local cell = 96
-        local canvas = lurek.image.newImageData(cell * 4, cell)
-        canvas:fill(20, 20, 24, 255)
-
-        local a = make_base(cell, cell)
-        local b = make_base(cell, cell)
+    it("PNG: transform variants with flips and rotation", function()
+        local a = make_base(96, 96)
+        local b = make_base(96, 96)
         b:flipHorizontal()
-        local c = make_base(cell, cell)
+        local c = make_base(96, 96)
         c:flipVertical()
-        local d = make_base(cell, cell):rotate90cw()
-        d = d:resizeNearest(cell, cell)
+        local d = make_base(96, 96):rotate90cw()
+        d = d:resizeNearest(96, 96)
 
-        canvas:paste(a, 0, 0)
-        canvas:paste(b, cell, 0)
-        canvas:paste(c, cell * 2, 0)
-        canvas:paste(d, cell * 3, 0)
-
-        local path = OUT .. "transform_atlas.png"
-        save_png(canvas, path)
+        save_png(a, OUT .. "image_transform_original.png")
+        save_png(b, OUT .. "image_transform_flip_horizontal.png")
+        save_png(c, OUT .. "image_transform_flip_vertical.png")
+        save_png(d, OUT .. "image_transform_rotate90.png")
     end)
-    -- Does: Runs "resize and threshold comparison atlas" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by LImageData:resize, LImageData:resizeNearest, and related owner calls without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/image/resize_threshold_atlas.png
-    -- Why: This is meaningful only if the visible/text output comes from LImageData:resize, LImageData:resizeNearest, and related owner calls; export helpers are just the container.
+    -- Does: Runs "resize and threshold variants" and turns the owner-module result into separate inspectable artifacts.
+    -- Shows: Each PNG should expose one resize/threshold result instead of merging several distinct evidences into one atlas.
+    -- Artifact: tests/artifacts/current/image/image_resize_smooth.png, tests/artifacts/current/image/image_resize_nearest.png, tests/artifacts/current/image/image_threshold_128.png
+    -- Why: This is meaningful only if each visible/text output comes from one concrete resize/threshold path rather than a helper-built collage.
 
-    it("PNG: resize and threshold comparison atlas", function()
+    it("PNG: resize and threshold variants", function()
         local base = make_base(128, 128)
         local smooth = base:resize(96, 96, "bilinear")
         local nearest = base:resizeNearest(96, 96)
         local thresholded = make_base(96, 96)
         thresholded:threshold(128)
 
-        local canvas = lurek.image.newImageData(96 * 3, 96)
-        canvas:fill(16, 18, 22, 255)
-        canvas:paste(smooth, 0, 0)
-        canvas:paste(nearest, 96, 0)
-        canvas:paste(thresholded, 192, 0)
-
-        local path = OUT .. "resize_threshold_atlas.png"
-        save_png(canvas, path)
+        save_png(smooth, OUT .. "image_resize_smooth.png")
+        save_png(nearest, OUT .. "image_resize_nearest.png")
+        save_png(thresholded, OUT .. "image_threshold_128.png")
     end)
 end)
 
@@ -235,10 +212,10 @@ describe("Evidence: lurek.image animated and low-level pipelines", function()
         lurek.image.saveGIF(frames, path, { delayMs = 120, speed = 10 })
         expect_evidence_created(path)
     end)
-    -- Does: Runs "region, convolution, diff, and raw-byte pipeline" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by LImageData:getRegion, LImageData:convolve, and related owner calls without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/image/image_low_level_pipeline_triptych.png, tests/artifacts/current/image/image_low_level_pipeline_trace.txt
-    -- Why: This is meaningful only if the visible/text output comes from LImageData:getRegion, LImageData:convolve, and related owner calls; export helpers are just the container.
+    -- Does: Runs "region, convolution, diff, and raw-byte pipeline" and turns the owner-module result into separate inspectable artifacts.
+    -- Shows: Each PNG should expose one low-level pipeline stage instead of merging several distinct evidences into one triptych.
+    -- Artifact: tests/artifacts/current/image/image_low_level_region.png, tests/artifacts/current/image/image_low_level_filtered.png, tests/artifacts/current/image/image_low_level_raw_clone.png, tests/artifacts/current/image/image_low_level_pipeline_trace.txt
+    -- Why: This is meaningful only if each visible/text output comes from one concrete low-level path rather than a helper-built collage.
 
     it("PNG+TXT: region, convolution, diff, and raw-byte pipeline", function()
         local base = build_base_image(128, 128)
@@ -254,16 +231,9 @@ describe("Evidence: lurek.image animated and low-level pipelines", function()
         local clone = lurek.image.newImageData(64, 64)
         clone:setRawData(raw)
 
-        local atlas = lurek.image.newImageData(64 * 3, 64)
-        atlas:fill(18, 20, 24, 255)
-        atlas:blit(region, 0, 0)
-        atlas:blit(filtered, 64, 0)
-        atlas:blit(clone, 128, 0)
-        draw_outline(atlas, 0, 0, 64, 64, 236, 240, 246, 255)
-        draw_outline(atlas, 64, 0, 64, 64, 236, 240, 246, 255)
-        draw_outline(atlas, 128, 0, 64, 64, 236, 240, 246, 255)
-
-        save_png(atlas, OUT .. "image_low_level_pipeline_triptych.png")
+        save_png(region, OUT .. "image_low_level_region.png")
+        save_png(filtered, OUT .. "image_low_level_filtered.png")
+        save_png(clone, OUT .. "image_low_level_raw_clone.png")
 
         local lines = {
             "region_size=64x64",
@@ -442,72 +412,6 @@ describe("Evidence: lurek.image fixture atlas outputs", function()
 
         local path = OUT .. "gradient_vertical.png"
         save_png(img, path)
-    end)
-    -- Does: Runs "all_effects_grid.png -- image effect gallery grid" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by LImageData:brightness, LImageData:contrast, and related owner calls without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/image/<artifact>
-    -- Why: This is meaningful only if the visible/text output comes from LImageData:brightness, LImageData:contrast, and related owner calls; export helpers are just the container.
-
-    it("PNG: all_effects_grid.png -- image effect gallery grid", function()
-        local tile = 64
-        local cols = 5
-        local rows = 4
-        local canvas = lurek.image.newImageData(tile * cols, tile * rows)
-        canvas:fill(30, 30, 30, 255)
-
-        local function make_effect_base()
-            local img = lurek.image.newImageData(tile, tile)
-            for y = 0, tile - 1 do
-                for x = 0, tile - 1 do
-                    img:setPixel(x, y, x * 4, y * 4, 128, 255)
-                end
-            end
-            return img
-        end
-
-        local effects = {
-            function(i) return i end,
-            function(i) i:brightness(0.3); return i end,
-            function(i) i:contrast(2.0); return i end,
-            function(i) i:grayscale(); return i end,
-            function(i) i:sepia(); return i end,
-            function(i) i:invert(); return i end,
-            function(i) i:threshold(128); return i end,
-            function(i) i:posterize(4); return i end,
-            function(i) i:tint(255, 0, 0, 127); return i end,
-            function(i) i:saturation(0.0); return i end,
-            function(i) i:gamma(0.5); return i end,
-            function(i) i:gamma(2.2); return i end,
-            function(i) i:noise(60); return i end,
-            function(i) i:alphaMask(0.5); return i end,
-            function(i) i:flipHorizontal(); return i end,
-            function(i) i:flipVertical(); return i end,
-            function(i)
-                local rotate = i.rotate90cw or i.rotate90Cw or i.rotate90CW
-                if type(rotate) == "function" then
-                    rotate(i)
-                end
-                return i
-            end,
-            function(i) i:blur(2); return i end,
-            function(i) i:sharpen(); return i end,
-            function(i)
-                local cropped = i:crop(8, 8, 48, 48)
-                cropped:resizeNearest(tile, tile)
-                return cropped
-            end,
-        }
-
-        for i, apply in ipairs(effects) do
-            local base = make_effect_base()
-            local result = apply(base)
-            local col = (i - 1) % cols
-            local row = math.floor((i - 1) / cols)
-            canvas:paste(result, col * tile, row * tile)
-        end
-
-        local path = OUT .. "all_effects_grid.png"
-        save_png(canvas, path)
     end)
 end)
 
@@ -747,37 +651,6 @@ describe("Evidence: lurek.image shape galleries", function()
         base:drawRect(38, 148, 12, 12, 92, 214, 255, 255)
         base:drawRect(188, 148, 12, 12, 255, 146, 118, 255)
         save_png(base, path)
-    end)
-    -- Does: Runs "PNG: image_fixture_contact_sheet.png -- enlarged sprite and gradient atlas" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by lurek.image.newImageData and related owner calls.
-    -- Artifact: tests/artifacts/current/image/<artifact>
-    -- Why: This is meaningful only if the output is driven by lurek.image.newImageData and related owner calls rather than by helper-only drawing.
-
-    it("PNG: image_fixture_contact_sheet.png -- enlarged sprite and gradient atlas", function()
-        local assets = {
-            { "sprite_8x8.png", 96, 96 },
-            { "sprite_16x16.png", 96, 96 },
-            { "sprite_32x32.png", 96, 96 },
-            { "gradient_horizontal.png", 192, 48 },
-            { "gradient_vertical.png", 48, 192 },
-        }
-
-        local canvas = lurek.image.newImageData(520, 320)
-        canvas:fill(14, 16, 22, 255)
-
-        local placements = {
-            { 24, 24 }, { 136, 24 }, { 248, 24 }, { 24, 164 }, { 250, 100 },
-        }
-        for i, asset in ipairs(assets) do
-            local src = lurek.image.newImageData(OUT .. asset[1])
-            local thumb = src:resize(asset[2], asset[3], "bilinear")
-            local x, y = placements[i][1], placements[i][2]
-            canvas:paste(thumb, x, y)
-            draw_outline(canvas, x, y, asset[2], asset[3], 232, 236, 244, 255)
-        end
-
-        local path = OUT .. "image_fixture_contact_sheet.png"
-        save_png(canvas, path)
     end)
 end)
 test_summary()

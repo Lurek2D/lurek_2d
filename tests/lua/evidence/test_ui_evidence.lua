@@ -3,6 +3,11 @@
 
 
 local OUT = evidence_output_dir("ui")
+local FIXTURE_LAYOUT_ROOT = "tests/fixtures/ui_layouts"
+
+local function fixture_layout(name)
+    return FIXTURE_LAYOUT_ROOT .. "/" .. name
+end
 
 local function write_text(path, text)
     if write_file then
@@ -19,7 +24,9 @@ local function save_png(img, path)
 end
 
 local function layout_output_name(layout_path)
-    local relative = layout_path:gsub("^content/layouts/", "")
+    local relative = layout_path
+        :gsub("^content/layouts/", "")
+        :gsub("^tests/fixtures/ui_layouts/", "")
     local segments = {}
     for segment in relative:gmatch("[^/\\]+") do
         segments[#segments + 1] = segment
@@ -44,15 +51,6 @@ local function layout_size(layout_path)
 
     local root = parsed.root or {}
     return math.max(1, math.floor(root.w or 1280)), math.max(1, math.floor(root.h or 720))
-end
-
-local function representative_layouts()
-    return {
-        "content/layouts/apps/dashboard.toml",
-        "content/layouts/apps/chat_app.toml",
-        "content/layouts/games/main_menu.toml",
-        "content/layouts/games/fps_hud.toml",
-    }
 end
 
 local function render_layout(layout_path, output_name, width, height)
@@ -120,7 +118,7 @@ describe("Evidence: lurek.ui layouts and widgets", function()
     -- Why: This is meaningful only if the visible/text output comes from lurek.ui.renderToImage and lurek.ui.loadLayoutFile; export helpers are just the container.
 
     it("UI01 PNG: dashboard layout 1280x720", function()
-        render_layout_output("content/layouts/apps/dashboard.toml", 1280, 720, "layout_dashboard_desktop_1280x720.png")
+        render_layout_output(fixture_layout("dashboard_fixture.toml"), 1280, 720, "layout_dashboard_desktop_1280x720.png")
     end)
     -- Does: Runs "settings layout 1366x768" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by lurek.ui.renderToImage without needing a special evidence-only renderer.
@@ -128,7 +126,7 @@ describe("Evidence: lurek.ui layouts and widgets", function()
     -- Why: This is meaningful only if the visible/text output comes from lurek.ui.renderToImage; export helpers are just the container.
 
     it("UI02 PNG: settings layout 1366x768", function()
-        render_layout_output("content/layouts/games/settings_menu.toml", 1366, 768, "layout_settings_desktop_1366x768.png")
+        render_layout_output(fixture_layout("settings_fixture.toml"), 1366, 768, "layout_settings_desktop_1366x768.png")
     end)
     -- Does: Runs "RPG inventory layout 1280x720" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by lurek.ui.renderToImage without needing a special evidence-only renderer.
@@ -136,7 +134,7 @@ describe("Evidence: lurek.ui layouts and widgets", function()
     -- Why: This is meaningful only if the visible/text output comes from lurek.ui.renderToImage; export helpers are just the container.
 
     it("UI03 PNG: RPG inventory layout 1280x720", function()
-        render_layout_output("content/layouts/games/rpg_inventory.toml", 1280, 720, "layout_rpg_inventory_1280x720.png")
+        render_layout_output(fixture_layout("inventory_fixture.toml"), 1280, 720, "layout_rpg_inventory_1280x720.png")
     end)
     -- Does: Runs "strategy diplomacy layout 1400x800" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by lurek.ui.renderToImage without needing a special evidence-only renderer.
@@ -144,7 +142,7 @@ describe("Evidence: lurek.ui layouts and widgets", function()
     -- Why: This is meaningful only if the visible/text output comes from lurek.ui.renderToImage; export helpers are just the container.
 
     it("UI04 PNG: strategy diplomacy layout 1400x800", function()
-        render_layout_output("content/layouts/games/strategy_world_diplomacy.toml", 1400, 800, "layout_strategy_diplomacy_1400x800.png")
+        render_layout_output(fixture_layout("diplomacy_fixture.toml"), 1400, 800, "layout_strategy_diplomacy_1400x800.png")
     end)
     -- Does: Runs "dashboard layout mobile-like 960x540" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by lurek.ui.renderToImage without needing a special evidence-only renderer.
@@ -152,7 +150,7 @@ describe("Evidence: lurek.ui layouts and widgets", function()
     -- Why: This is meaningful only if the visible/text output comes from lurek.ui.renderToImage; export helpers are just the container.
 
     it("UI05 PNG: dashboard layout mobile-like 960x540", function()
-        render_layout_output("content/layouts/apps/dashboard.toml", 960, 540, "layout_dashboard_compact_960x540.png")
+        render_layout_output(fixture_layout("dashboard_fixture.toml"), 960, 540, "layout_dashboard_compact_960x540.png")
     end)
     -- Does: Runs "settings layout ultrawide 1920x1080" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by lurek.ui.renderToImage without needing a special evidence-only renderer.
@@ -160,18 +158,17 @@ describe("Evidence: lurek.ui layouts and widgets", function()
     -- Why: This is meaningful only if the visible/text output comes from lurek.ui.renderToImage; export helpers are just the container.
 
     it("UI06 PNG: settings layout ultrawide 1920x1080", function()
-        render_layout_output("content/layouts/games/settings_menu.toml", 1920, 1080, "layout_settings_ultrawide_1920x1080.png")
+        render_layout_output(fixture_layout("settings_fixture.toml"), 1920, 1080, "layout_settings_ultrawide_1920x1080.png")
     end)
-    -- Does: Runs "form widgets account panel" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by lurek.ui.newButton, lurek.ui.newLabel, and related owner calls without needing a special evidence-only renderer.
+    -- Does: Runs "form widget scenes" and turns the owner-module result into inspectable artifacts.
+    -- Shows: The artifacts should expose the behavior produced by lurek.ui.newButton, lurek.ui.newLabel, and related owner calls without needing a special evidence-only renderer.
     -- Artifact: tests/artifacts/current/ui/<artifact>
     -- Why: This is meaningful only if the visible/text output comes from lurek.ui.newButton, lurek.ui.newLabel, and related owner calls; export helpers are just the container.
 
-    it("PNG: form widgets account panel", function()
-        save_scene("form_widgets_account_panel.png", 960, 540, function()
+    it("PNG: form widget scenes", function()
+        save_scene("form_widget_account_panel.png", 460, 280, function()
             local root = lurek.ui.getRoot()
-
-            local panel = attach(root, place(lurek.ui.newPanel(), 24, 24, 420, 220, 10))
+            local panel = attach(root, place(lurek.ui.newPanel(), 20, 20, 420, 220, 10))
             panel:setTitle("Account")
 
             local title = attach(panel, place(lurek.ui.newLabel("Profile Details"), 18, 34, 180, 24, 20))
@@ -185,23 +182,26 @@ describe("Evidence: lurek.ui layouts and widgets", function()
 
             local newsletter = attach(panel, place(lurek.ui.newCheckbox("Send weekly report"), 18, 116, 220, 24, 20))
             newsletter:setChecked(true)
+        end)
 
-            local plan_panel = attach(root, place(lurek.ui.newPanel(), 470, 24, 260, 160, 10))
+        save_scene("form_widget_plan_panel.png", 300, 220, function()
+            local root = lurek.ui.getRoot()
+            local plan_panel = attach(root, place(lurek.ui.newPanel(), 20, 20, 260, 160, 10))
             plan_panel:setTitle("Plan")
             local cash = attach(plan_panel, place(lurek.ui.newRadioButton("Starter", "plan"), 18, 50, 140, 24, 20))
             local pro = attach(plan_panel, place(lurek.ui.newRadioButton("Pro", "plan"), 18, 82, 140, 24, 20))
             pro:setSelected(true)
         end)
     end)
-    -- Does: Runs "selection and range widgets gallery" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by lurek.ui.newSlider, lurek.ui.newSpinBox, and related owner calls without needing a special evidence-only renderer.
+    -- Does: Runs "selection and range widget scenes" and turns the owner-module result into inspectable artifacts.
+    -- Shows: The artifacts should expose the behavior produced by lurek.ui.newSlider, lurek.ui.newSpinBox, and related owner calls without needing a special evidence-only renderer.
     -- Artifact: tests/artifacts/current/ui/<artifact>
     -- Why: This is meaningful only if the visible/text output comes from lurek.ui.newSlider, lurek.ui.newSpinBox, and related owner calls; export helpers are just the container.
 
-    it("PNG: selection and range widgets gallery", function()
-        save_scene("selection_widgets_controls_gallery.png", 960, 560, function()
+    it("PNG: selection and range widget scenes", function()
+        save_scene("range_widgets_panel.png", 340, 310, function()
             local root = lurek.ui.getRoot()
-            local range_panel = attach(root, place(lurek.ui.newPanel(), 24, 24, 300, 250, 10))
+            local range_panel = attach(root, place(lurek.ui.newPanel(), 20, 20, 300, 250, 10))
             range_panel:setTitle("Ranges")
 
             local slider = attach(range_panel, place(lurek.ui.newSlider(0, 100), 18, 42, 260, 24, 20))
@@ -217,8 +217,11 @@ describe("Evidence: lurek.ui layouts and widgets", function()
 
             local progress = attach(range_panel, place(lurek.ui.newProgressBar(0, 100), 18, 182, 260, 22, 20))
             progress:setValue(68)
+        end)
 
-            local select_panel = attach(root, place(lurek.ui.newPanel(), 350, 24, 280, 280, 10))
+        save_scene("selection_widgets_panel.png", 320, 340, function()
+            local root = lurek.ui.getRoot()
+            local select_panel = attach(root, place(lurek.ui.newPanel(), 20, 20, 280, 280, 10))
             select_panel:setTitle("Selections")
             local combo = attach(select_panel, place(lurek.ui.newComboBox(), 18, 42, 220, 30, 20))
             combo:addItem("Low")
@@ -235,13 +238,13 @@ describe("Evidence: lurek.ui layouts and widgets", function()
             list:setSelectedIndex(3)
         end)
     end)
-    -- Does: Runs "container and spacing widgets gallery" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by lurek.ui.newPanel, lurek.ui.newLayout, and related owner calls without needing a special evidence-only renderer.
+    -- Does: Runs "container and spacing widget scenes" and turns the owner-module result into inspectable artifacts.
+    -- Shows: The artifacts should expose the behavior produced by lurek.ui.newPanel, lurek.ui.newLayout, and related owner calls without needing a special evidence-only renderer.
     -- Artifact: tests/artifacts/current/ui/<artifact>
     -- Why: This is meaningful only if the visible/text output comes from lurek.ui.newPanel, lurek.ui.newLayout, and related owner calls; export helpers are just the container.
 
-    it("PNG: container and spacing widgets gallery", function()
-        save_scene("container_widgets_inspector_scroll_gallery.png", 760, 320, function()
+    it("PNG: container and spacing widget scenes", function()
+        save_scene("container_widget_inspector_panel.png", 320, 260, function()
             local root = lurek.ui.getRoot()
             local panel = attach(root, place(lurek.ui.newPanel(), 20, 20, 280, 210, 20))
             panel:setTitle("Inspector")
@@ -256,43 +259,55 @@ describe("Evidence: lurek.ui layouts and widgets", function()
             local separator = attach(panel, place(lurek.ui.newSeparator(false), 18, 96, 220, 3, 30))
             separator:setThickness(2)
             attach(panel, place(lurek.ui.newLabel("Reserved gap"), 18, 122, 120, 20, 30))
+        end)
 
-            local scroll = attach(root, place(lurek.ui.newScrollPanel(), 330, 20, 260, 210, 20))
+        save_scene("container_widget_scroll_panel.png", 300, 260, function()
+            local root = lurek.ui.getRoot()
+            local scroll = attach(root, place(lurek.ui.newScrollPanel(), 20, 20, 260, 210, 20))
             scroll:setContentSize(240, 520)
             scroll:setScrollPosition(0, 96)
             scroll:addChild(place(lurek.ui.newLabel("Log Entries"), 12, 12, 120, 20, 30))
             scroll:addChild(place(lurek.ui.newLabel("Renderer ready"), 12, 52, 180, 20, 30))
             scroll:addChild(place(lurek.ui.newLabel("Bindings synced"), 12, 120, 180, 20, 30))
             scroll:addChild(place(lurek.ui.newButton("Retry"), 12, 180, 120, 30, 30))
+        end)
 
-            local bar = attach(root, place(lurek.ui.newScrollBar(true), 610, 20, 18, 210, 20))
+        save_scene("container_widget_scroll_bar.png", 80, 260, function()
+            local root = lurek.ui.getRoot()
+            local bar = attach(root, place(lurek.ui.newScrollBar(true), 30, 20, 18, 210, 20))
             bar:setContentSize(520)
             bar:setViewSize(180)
             bar:setScrollPosition(140)
         end)
     end)
-    -- Does: Runs "navigation containers workspace shell" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by lurek.ui.newSplitPanel, lurek.ui.newDockPanel, and related owner calls without needing a special evidence-only renderer.
+    -- Does: Runs "navigation container scenes" and turns the owner-module result into inspectable artifacts.
+    -- Shows: The artifacts should expose the behavior produced by lurek.ui.newSplitPanel, lurek.ui.newDockPanel, and related owner calls without needing a special evidence-only renderer.
     -- Artifact: tests/artifacts/current/ui/<artifact>
     -- Why: This is meaningful only if the visible/text output comes from lurek.ui.newSplitPanel, lurek.ui.newDockPanel, and related owner calls; export helpers are just the container.
 
-    it("PNG: navigation containers workspace shell", function()
-        save_scene("navigation_widgets_workspace_shell.png", 920, 380, function()
+    it("PNG: navigation container scenes", function()
+        save_scene("navigation_widget_toolbar.png", 260, 100, function()
             local root = lurek.ui.getRoot()
             attach(root, place(lurek.ui.newLabel("Toolbar"), 20, 18, 120, 20, 30))
             local toolbar = attach(root, place(lurek.ui.newToolbar("horizontal"), 20, 42, 220, 34, 20))
             toolbar:addButton("save", "Save")
             toolbar:addSeparator()
             toolbar:addButton("run", "Run")
+        end)
 
-            attach(root, place(lurek.ui.newLabel("Tabs"), 270, 18, 120, 20, 30))
-            local tabs = attach(root, place(lurek.ui.newTabBar(), 270, 42, 280, 32, 20))
+        save_scene("navigation_widget_tabs.png", 320, 100, function()
+            local root = lurek.ui.getRoot()
+            attach(root, place(lurek.ui.newLabel("Tabs"), 20, 18, 120, 20, 30))
+            local tabs = attach(root, place(lurek.ui.newTabBar(), 20, 42, 280, 32, 20))
             tabs:addTab("Overview")
             tabs:addTab("Traffic")
             tabs:addTab("Exports")
             tabs:setActiveTab(2)
+        end)
 
-            attach(root, place(lurek.ui.newLabel("Split Panel"), 20, 96, 120, 20, 30))
+        save_scene("navigation_widget_split_panel.png", 420, 320, function()
+            local root = lurek.ui.getRoot()
+            attach(root, place(lurek.ui.newLabel("Split Panel"), 20, 20, 120, 20, 30))
             local split = attach(root, place(lurek.ui.newSplitPanel("horizontal"), 20, 120, 380, 160, 20))
             local left = place(lurek.ui.newPanel(), 32, 142, 145, 118, 0)
             local right = place(lurek.ui.newPanel(), 198, 142, 188, 118, 0)
@@ -308,11 +323,14 @@ describe("Evidence: lurek.ui layouts and widgets", function()
             attach(root, place(lurek.ui.newLabel("Preview"), 214, 144, 100, 20, 30))
             attach(root, place(lurek.ui.newButton("Play"), 214, 176, 112, 28, 30))
             attach(root, place(lurek.ui.newLabel("Frame 184"), 214, 214, 120, 20, 30))
+        end)
 
-            attach(root, place(lurek.ui.newLabel("Dock Panel"), 430, 96, 120, 20, 30))
-            local dock = attach(root, place(lurek.ui.newDockPanel(), 430, 120, 360, 160, 20))
-            local dock_left = place(lurek.ui.newPanel(), 444, 142, 96, 118, 0)
-            local dock_bottom = place(lurek.ui.newPanel(), 552, 222, 224, 38, 0)
+        save_scene("navigation_widget_dock_panel.png", 400, 320, function()
+            local root = lurek.ui.getRoot()
+            attach(root, place(lurek.ui.newLabel("Dock Panel"), 20, 20, 120, 20, 30))
+            local dock = attach(root, place(lurek.ui.newDockPanel(), 20, 60, 360, 160, 20))
+            local dock_left = place(lurek.ui.newPanel(), 34, 82, 96, 118, 0)
+            local dock_bottom = place(lurek.ui.newPanel(), 142, 162, 224, 38, 0)
             dock:addChild(dock_left)
             dock:addChild(dock_bottom)
             dock:dock(dock_left._idx, "left")
@@ -320,28 +338,31 @@ describe("Evidence: lurek.ui layouts and widgets", function()
             dock:setSplitSize("left", 110)
             dock:setSplitSize("bottom", 50)
 
-            attach(root, place(lurek.ui.newLabel("Scenes"), 452, 144, 100, 20, 30))
-            attach(root, place(lurek.ui.newLabel("Menu"), 452, 174, 70, 20, 30))
-            attach(root, place(lurek.ui.newLabel("HUD"), 452, 198, 70, 20, 30))
-            attach(root, place(lurek.ui.newLabel("Console"), 566, 224, 100, 20, 30))
-            attach(root, place(lurek.ui.newLabel("Build complete"), 566, 244, 140, 20, 30))
+            attach(root, place(lurek.ui.newLabel("Scenes"), 42, 84, 100, 20, 30))
+            attach(root, place(lurek.ui.newLabel("Menu"), 42, 114, 70, 20, 30))
+            attach(root, place(lurek.ui.newLabel("HUD"), 42, 138, 70, 20, 30))
+            attach(root, place(lurek.ui.newLabel("Console"), 156, 164, 100, 20, 30))
+            attach(root, place(lurek.ui.newLabel("Build complete"), 156, 184, 140, 20, 30))
+        end)
 
-            attach(root, place(lurek.ui.newLabel("Status"), 20, 300, 120, 20, 30))
-            local status = attach(root, place(lurek.ui.newStatusBar(), 20, 324, 770, 28, 20))
+        save_scene("navigation_widget_status_bar.png", 820, 80, function()
+            local root = lurek.ui.getRoot()
+            attach(root, place(lurek.ui.newLabel("Status"), 20, 12, 120, 20, 30))
+            local status = attach(root, place(lurek.ui.newStatusBar(), 20, 36, 770, 28, 20))
             status:setSectionCount(2)
             status:setSectionText(1, "Ready")
             status:setSectionText(2, "ui live")
         end)
     end)
-    -- Does: Runs "popup and menu widgets gallery" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by lurek.ui.newMenuBar, lurek.ui.newMenuItem, and related owner calls without needing a special evidence-only renderer.
+    -- Does: Runs "popup and menu widget scenes" and turns the owner-module result into inspectable artifacts.
+    -- Shows: The artifacts should expose the behavior produced by lurek.ui.newMenuBar, lurek.ui.newMenuItem, and related owner calls without needing a special evidence-only renderer.
     -- Artifact: tests/artifacts/current/ui/<artifact>
     -- Why: This is meaningful only if the visible/text output comes from lurek.ui.newMenuBar, lurek.ui.newMenuItem, and related owner calls; export helpers are just the container.
 
-    it("PNG: popup and menu widgets gallery", function()
-        save_scene("popup_widgets_window_dialog_toast.png", 940, 380, function()
+    it("PNG: popup and menu widget scenes", function()
+        save_scene("popup_widget_menu_bar.png", 200, 120, function()
             local root = lurek.ui.getRoot()
-            attach(root, place(lurek.ui.newLabel("Menu / badge"), 20, 36, 140, 20, 30))
+            attach(root, place(lurek.ui.newLabel("Menu"), 20, 20, 140, 20, 30))
             local bar = attach(root, place(lurek.ui.newMenuBar(), 20, 60, 140, 28, 20))
             local file_menu = lurek.ui.newMenuItem("File")
             local open_item = lurek.ui.newMenuItem("Open")
@@ -351,21 +372,30 @@ describe("Evidence: lurek.ui layouts and widgets", function()
             file_menu:addSubItem(open_item._idx)
             file_menu:addSubItem(export_item._idx)
             bar:addMenu(file_menu._idx)
+        end)
 
-            local badge = attach(root, place(lurek.ui.newBadge(12), 176, 62, 28, 22, 30))
+        save_scene("popup_widget_badge.png", 80, 80, function()
+            local root = lurek.ui.getRoot()
+            local badge = attach(root, place(lurek.ui.newBadge(12), 24, 28, 28, 22, 30))
             badge:setCount(12)
+        end)
 
-            attach(root, place(lurek.ui.newLabel("Window"), 20, 104, 120, 20, 30))
-            local window = attach(root, place(lurek.ui.newWindow("Inventory"), 20, 130, 250, 180, 20))
+        save_scene("popup_widget_window.png", 300, 340, function()
+            local root = lurek.ui.getRoot()
+            attach(root, place(lurek.ui.newLabel("Window"), 20, 20, 120, 20, 30))
+            local window = attach(root, place(lurek.ui.newWindow("Inventory"), 20, 50, 250, 180, 20))
             window:setDraggable(true)
             window:setResizable(true)
             window:addChild(place(lurek.ui.newLabel("4 items equipped"), 14, 34, 140, 20, 10))
             window:addChild(place(lurek.ui.newButton("Unequip"), 14, 64, 120, 28, 10))
+        end)
 
-            attach(root, place(lurek.ui.newLabel("Dialog"), 320, 104, 120, 20, 30))
+        save_scene("popup_widget_dialog.png", 320, 320, function()
+            local root = lurek.ui.getRoot()
+            attach(root, place(lurek.ui.newLabel("Dialog"), 20, 20, 120, 20, 30))
             local dialog = lurek.ui.newDialog("Confirm Purchase")
             dialog:setCenterOnOpen(false)
-            dialog:setPosition(320, 130)
+            dialog:setPosition(20, 50)
             dialog:setSize(260, 180)
             dialog:setModal(true)
             local body = lurek.ui.newPanel()
@@ -380,42 +410,54 @@ describe("Evidence: lurek.ui layouts and widgets", function()
             dialog:addButton("Cancel")
             attach(root, dialog)
             dialog:open()
+        end)
 
-            attach(root, place(lurek.ui.newLabel("Tooltip / toast"), 620, 104, 140, 20, 30))
-            local target = attach(root, place(lurek.ui.newButton("Hover target"), 620, 130, 160, 34, 20))
-            local tooltip = attach(root, place(lurek.ui.newTooltipPanel("Shows sales breakdown"), 620, 176, 220, 56, 20))
+        save_scene("popup_widget_tooltip.png", 300, 280, function()
+            local root = lurek.ui.getRoot()
+            attach(root, place(lurek.ui.newLabel("Tooltip"), 20, 20, 140, 20, 30))
+            local target = attach(root, place(lurek.ui.newButton("Hover target"), 20, 50, 160, 34, 20))
+            local tooltip = attach(root, place(lurek.ui.newTooltipPanel("Shows sales breakdown"), 20, 96, 220, 56, 20))
             tooltip:setTarget(target._idx)
             tooltip:setDelay(0.25)
+        end)
 
+        save_scene("popup_widget_toast.png", 280, 120, function()
+            local root = lurek.ui.getRoot()
             local toast = lurek.ui.newToast("Export finished", 3.5)
             toast:setMessage("Export finished")
-            place(toast, 620, 264, 220, 34, 20)
+            place(toast, 20, 50, 220, 34, 20)
             attach(root, toast)
             lurek.ui.addToast(toast)
         end)
     end)
-    -- Does: Runs "structured data widgets gallery" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by lurek.ui.newAccordion, lurek.ui.newTreeView, and related owner calls without needing a special evidence-only renderer.
+    -- Does: Runs "structured data widget scenes" and turns the owner-module result into inspectable artifacts.
+    -- Shows: The artifacts should expose the behavior produced by lurek.ui.newAccordion, lurek.ui.newTreeView, and related owner calls without needing a special evidence-only renderer.
     -- Artifact: tests/artifacts/current/ui/<artifact>
     -- Why: This is meaningful only if the visible/text output comes from lurek.ui.newAccordion, lurek.ui.newTreeView, and related owner calls; export helpers are just the container.
 
-    it("PNG: structured data widgets gallery", function()
-        save_scene("structured_widgets_table_tree_picker.png", 920, 460, function()
+    it("PNG: structured data widget scenes", function()
+        save_scene("structured_widget_accordion.png", 260, 220, function()
             local root = lurek.ui.getRoot()
             local accordion = attach(root, place(lurek.ui.newAccordion(), 20, 20, 220, 160, 20))
             accordion:addSection("General")
             accordion:addSection("Display")
             accordion:addSection("Automation")
             accordion:toggleSection(2)
+        end)
 
-            local tree = attach(root, place(lurek.ui.newTreeView(), 260, 20, 220, 180, 20))
+        save_scene("structured_widget_tree_view.png", 260, 240, function()
+            local root = lurek.ui.getRoot()
+            local tree = attach(root, place(lurek.ui.newTreeView(), 20, 20, 220, 180, 20))
             local tree_root = tree:addNode("Project")
             local src = tree:addNode("src", tree_root)
             tree:addNode("ui_api.rs", src)
             tree:addNode("render.rs", src)
             tree:expandAll()
+        end)
 
-            local tbl = attach(root, place(lurek.ui.newTable(), 20, 218, 500, 124, 20))
+        save_scene("structured_widget_table.png", 540, 180, function()
+            local root = lurek.ui.getRoot()
+            local tbl = attach(root, place(lurek.ui.newTable(), 20, 20, 500, 124, 20))
             tbl:addColumn("Widget")
             tbl:addColumn("State")
             tbl:addColumn("Owner")
@@ -423,35 +465,44 @@ describe("Evidence: lurek.ui layouts and widgets", function()
             tbl:addRow({ "Dialog", "modal", "ui-core" })
             tbl:addRow({ "Table", "selected", "analytics" })
             tbl:setSelectedRow(2)
+        end)
 
-            local picker = attach(root, place(lurek.ui.newColorPicker(), 500, 20, 220, 180, 20))
+        save_scene("structured_widget_color_picker.png", 260, 240, function()
+            local root = lurek.ui.getRoot()
+            local picker = attach(root, place(lurek.ui.newColorPicker(), 20, 20, 220, 180, 20))
             picker:setColor(0.20, 0.65, 0.95, 1.0)
             picker:setColorMode("hsv")
+        end)
 
-            local custom = attach(root, place(lurek.ui.newCustomWidget({ width = 220, height = 110 }), 560, 228, 220, 110, 20))
+        save_scene("structured_widget_custom_surface.png", 260, 160, function()
+            local root = lurek.ui.getRoot()
+            local custom = attach(root, place(lurek.ui.newCustomWidget({ width = 220, height = 110 }), 20, 20, 220, 110, 20))
             custom:setStyleClass("primary")
             custom:addChild(place(lurek.ui.newLabel("Custom KPI Surface"), 12, 16, 160, 20, 10))
             custom:addChild(place(lurek.ui.newButton("Refresh"), 12, 50, 100, 28, 10))
         end)
     end)
-    -- Does: Runs "visual utility widgets gallery" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by lurek.ui.newImageWidget and lurek.ui.newNinePatch without needing a special evidence-only renderer.
+    -- Does: Runs "visual utility widget scenes" and turns the owner-module result into inspectable artifacts.
+    -- Shows: The artifacts should expose the behavior produced by lurek.ui.newImageWidget and lurek.ui.newNinePatch without needing a special evidence-only renderer.
     -- Artifact: tests/artifacts/current/ui/<artifact>
     -- Why: This is meaningful only if the visible/text output comes from lurek.ui.newImageWidget and lurek.ui.newNinePatch; export helpers are just the container.
 
-    it("PNG: visual utility widgets gallery", function()
-        save_scene("visual_widgets_image_nine_patch.png", 660, 260, function()
+    it("PNG: visual utility widget scenes", function()
+        save_scene("visual_widget_image.png", 300, 240, function()
             local root = lurek.ui.getRoot()
             attach(root, place(lurek.ui.newLabel("Image Widget"), 40, 16, 120, 20, 30))
             local image_widget = attach(root, place(lurek.ui.newImageWidget(), 40, 40, 220, 160, 20))
             image_widget:setScaleMode("stretch")
             image_widget:setTint(1.0, 0.75, 0.35, 1.0)
+        end)
 
-            attach(root, place(lurek.ui.newLabel("Nine Patch"), 320, 16, 120, 20, 30))
-            local frame = attach(root, place(lurek.ui.newNinePatch(), 320, 40, 260, 180, 20))
+        save_scene("visual_widget_nine_patch.png", 320, 260, function()
+            local root = lurek.ui.getRoot()
+            attach(root, place(lurek.ui.newLabel("Nine Patch"), 20, 16, 120, 20, 30))
+            local frame = attach(root, place(lurek.ui.newNinePatch(), 20, 40, 260, 180, 20))
             frame:setImageDimensions(128, 128)
             frame:setInsets(18, 18, 18, 18)
-            attach(root, place(lurek.ui.newLabel("Framed utility panel"), 378, 118, 160, 20, 30))
+            attach(root, place(lurek.ui.newLabel("Framed utility panel"), 78, 118, 160, 20, 30))
         end)
     end)
 end)
@@ -505,7 +556,7 @@ describe("Evidence: lurek.ui runtime input, drag, and binding flow", function()
         expect_nil(lurek.ui.getActiveDrag())
 
         expect_no_error(function()
-            lurek.ui.loadLayoutGameFile("content/examples/assets/layouts/sample_main_menu.toml")
+            lurek.ui.loadLayoutGameFile(fixture_layout("main_menu_fixture.toml"))
         end)
 
         local spacing = lurek.ui.getStyleToken("spacing_md")
@@ -516,7 +567,7 @@ describe("Evidence: lurek.ui runtime input, drag, and binding flow", function()
             "bound_update_count=" .. tostring(bound_update_count),
             "camel_update_count=" .. tostring(camel_update_count),
             "style_token_type=" .. style_type,
-            "layout_loaded=content/examples/assets/layouts/sample_main_menu.toml",
+            "layout_loaded=" .. fixture_layout("main_menu_fixture.toml"),
             "drag_cleared=" .. tostring(lurek.ui.getActiveDrag() == nil),
         }
 
@@ -535,47 +586,20 @@ describe("Evidence: lurek.ui layout batch rendering", function()
     -- Artifact: tests/artifacts/current/ui/<artifact>
     -- Why: This is meaningful only if the visible/text output comes from lurek.ui.clear, lurek.ui.loadLayoutFile, and related owner calls; export helpers are just the container.
 
-    it("renders all TOML layouts from content/layouts", function()
-        local layout_paths = lurek.filesystem.listRecursive("content/layouts")
+    it("renders all TOML layouts from tests fixtures", function()
+        local layout_paths = lurek.filesystem.listRecursive(FIXTURE_LAYOUT_ROOT)
         local rendered = 0
 
         for _, rel_path in ipairs(layout_paths) do
             if rel_path:match("%.toml$") then
-                local layout_path = "content/layouts/" .. rel_path
+                local layout_path = FIXTURE_LAYOUT_ROOT .. "/" .. rel_path
                 local width, height = layout_size(layout_path)
                 render_layout(layout_path, layout_output_name(layout_path), width, height)
                 rendered = rendered + 1
             end
         end
 
-        expect_true(rendered > 0, "should render at least one TOML layout from content/layouts")
-    end)
-    -- Does: Runs "builds a representative layout contact sheet" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by lurek.ui.loadLayoutFile and lurek.ui.renderToImage without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/ui/<artifact>
-    -- Why: This is meaningful only if the visible/text output comes from lurek.ui.loadLayoutFile and lurek.ui.renderToImage; export helpers are just the container.
-
-    it("builds a representative layout contact sheet", function()
-        local thumb_w, thumb_h = 240, 135
-        local canvas = lurek.image.newImageData(thumb_w * 2, thumb_h * 2)
-        canvas:fill(12, 14, 18, 255)
-
-        local layouts = representative_layouts()
-        for i, layout_path in ipairs(layouts) do
-            local output_name = layout_output_name(layout_path)
-            local width, height = layout_size(layout_path)
-            render_layout(layout_path, output_name, width, height)
-
-            local img = lurek.image.newImageData(OUT .. output_name)
-            local thumb = img:resize(thumb_w, thumb_h, "bilinear")
-            local col = (i - 1) % 2
-            local row = math.floor((i - 1) / 2)
-            canvas:paste(thumb, col * thumb_w, row * thumb_h)
-            draw_outline(canvas, col * thumb_w, row * thumb_h, thumb_w, thumb_h, 220, 220, 230, 255)
-        end
-
-        local contact_path = OUT .. "layout_gallery_contact_sheet.png"
-        save_png(canvas, contact_path)
+        expect_true(rendered > 0, "should render at least one TOML fixture layout")
     end)
     -- Does: Runs "writes a layout render manifest" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by lurek.ui.loadLayoutFile and lurek.ui.renderToImage without needing a special evidence-only renderer.
@@ -583,12 +607,12 @@ describe("Evidence: lurek.ui layout batch rendering", function()
     -- Why: This is meaningful only if the visible/text output comes from lurek.ui.loadLayoutFile and lurek.ui.renderToImage; export helpers are just the container.
 
     it("writes a layout render manifest", function()
-        local layout_paths = lurek.filesystem.listRecursive("content/layouts")
+        local layout_paths = lurek.filesystem.listRecursive(FIXTURE_LAYOUT_ROOT)
         local lines = {}
 
         for _, rel_path in ipairs(layout_paths) do
             if rel_path:match("%.toml$") then
-                local layout_path = "content/layouts/" .. rel_path
+                local layout_path = FIXTURE_LAYOUT_ROOT .. "/" .. rel_path
                 local width, height = layout_size(layout_path)
                 local output_name = layout_output_name(layout_path)
                 render_layout(layout_path, output_name, width, height)

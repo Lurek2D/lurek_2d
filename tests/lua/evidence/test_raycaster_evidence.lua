@@ -356,12 +356,12 @@ describe("Evidence: lurek.raycaster visual scenarios", function()
         local path = OUT .. "raycaster_mirrors.png"
         save_png(img, path)
     end)
-    -- Does: Compares solid-wall, window, closed-door, and open-door visibility using actual raycaster LOS images.
-    -- Shows: The contact sheet should make the transition from blocked sight to pass-through sight obvious without a fake renderer.
-    -- Artifact: tests/artifacts/current/raycaster/raycaster_feature_visibility_sheet.png
-    -- Why: This is meaningful because each panel is produced by LRaycaster:drawLineOfSight over real wall-feature semantics.
+    -- Does: Captures solid-wall, window, closed-door, and open-door visibility as separate artifacts using actual raycaster LOS images.
+    -- Shows: Each PNG should expose one visibility state instead of merging several evidences into one sheet.
+    -- Artifact: tests/artifacts/current/raycaster/raycaster_visibility_solid.png, tests/artifacts/current/raycaster/raycaster_visibility_window.png, tests/artifacts/current/raycaster/raycaster_visibility_closed_door.png, tests/artifacts/current/raycaster/raycaster_visibility_open_door.png
+    -- Why: This is meaningful because each artifact is produced by LRaycaster:drawLineOfSight over real wall-feature semantics without helper-built collage output.
 
-    it("PNG: feature visibility contact sheet", function()
+    it("PNG: feature visibility states", function()
         ensure_evidence_dir("raycaster")
 
         local scale = 16
@@ -381,35 +381,16 @@ describe("Evidence: lurek.raycaster visual scenarios", function()
         open_door:setDoorCell(7, 7, "vertical", 1.0)
 
         local panels = {
-            { image = solid:drawLineOfSight(2.5, 7.5, 12.5, 7.5, scale), accent = { 224, 92, 92 } },
-            { image = window_map:drawLineOfSight(2.5, 7.5, 12.5, 7.5, scale), accent = { 88, 208, 240 } },
-            { image = closed_door:drawLineOfSight(2.5, 7.5, 12.5, 7.5, scale), accent = { 224, 176, 96 } },
-            { image = open_door:drawLineOfSight(2.5, 7.5, 12.5, 7.5, scale), accent = { 96, 220, 144 } },
+            { image = solid:drawLineOfSight(2.5, 7.5, 12.5, 7.5, scale), accent = { 224, 92, 92 }, name = "raycaster_visibility_solid.png" },
+            { image = window_map:drawLineOfSight(2.5, 7.5, 12.5, 7.5, scale), accent = { 88, 208, 240 }, name = "raycaster_visibility_window.png" },
+            { image = closed_door:drawLineOfSight(2.5, 7.5, 12.5, 7.5, scale), accent = { 224, 176, 96 }, name = "raycaster_visibility_closed_door.png" },
+            { image = open_door:drawLineOfSight(2.5, 7.5, 12.5, 7.5, scale), accent = { 96, 220, 144 }, name = "raycaster_visibility_open_door.png" },
         }
 
         for _, panel in ipairs(panels) do
             mark_cell(panel.image, 7, 7, scale, panel.accent[1], panel.accent[2], panel.accent[3])
+            save_png(panel.image, OUT .. panel.name)
         end
-
-        local panel_w = panels[1].image:getWidth()
-        local panel_h = panels[1].image:getHeight()
-        local canvas = lurek.image.newImageData(panel_w * 2 + 36, panel_h * 2 + 36)
-        canvas:fill(16, 18, 24, 255)
-
-        local positions = {
-            { 12, 12 },
-            { panel_w + 24, 12 },
-            { 12, panel_h + 24 },
-            { panel_w + 24, panel_h + 24 },
-        }
-        for i, panel in ipairs(panels) do
-            local pos = positions[i]
-            canvas:paste(panel.image, pos[1], pos[2])
-            draw_frame(canvas, pos[1] - 2, pos[2] - 2, panel_w + 4, panel_h + 4, panel.accent[1], panel.accent[2], panel.accent[3])
-        end
-
-        local path = OUT .. "raycaster_feature_visibility_sheet.png"
-        save_png(canvas, path)
     end)
     -- Does: Paints a ceiling and floor with different procedural textures in one first-person frame.
     -- Shows: The PNG should make the contrast between ceiling patterning and floor patterning visually clear.
@@ -481,12 +462,12 @@ describe("Evidence: lurek.raycaster visual scenarios", function()
         local path = OUT .. "raycaster_animated_walls.png"
         save_png(img, path)
     end)
-    -- Does: Runs "native raycaster render contact sheet" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by LRaycaster:drawView, LRaycaster:drawTopDown, and related owner calls without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/raycaster/raycaster_native_render_contact_sheet.png
-    -- Why: This is meaningful only if the visible/text output comes from LRaycaster:drawView, LRaycaster:drawTopDown, and related owner calls; export helpers are just the container.
+    -- Does: Runs "native raycaster render surfaces" and turns the owner-module result into separate inspectable artifacts.
+    -- Shows: Each PNG should expose one native render surface instead of merging several evidences into one sheet.
+    -- Artifact: tests/artifacts/current/raycaster/raycaster_native_view.png, tests/artifacts/current/raycaster/raycaster_native_topdown.png, tests/artifacts/current/raycaster/raycaster_native_minimap.png, tests/artifacts/current/raycaster/raycaster_native_sweep.png
+    -- Why: This is meaningful only if each visible/text output comes from one concrete native render path rather than a helper-built collage.
 
-    it("PNG: native raycaster render contact sheet", function()
+    it("PNG: native raycaster render surfaces", function()
         ensure_evidence_dir("raycaster")
 
         local world = build_world()
@@ -494,36 +475,10 @@ describe("Evidence: lurek.raycaster visual scenarios", function()
         local top_down = world:drawTopDown(7.5, 8.5, 0.12, 12)
         local minimap = world:extractMinimap(7.5, 8.5, 0.12, 6, 10)
         local sweep = world:drawCameraSweep(7.5, 8.5, math.pi / 2, 18.0, 6, 96, 64)
-
-        local canvas = lurek.image.newImageData(640, 360)
-        canvas:fill(16, 18, 24, 255)
-        canvas:drawRect(0, 0, 640, 182, 20, 24, 34, 255)
-        canvas:paste(view, 20, 18)
-        canvas:drawLine(20, 18, 275, 18, 230, 234, 242, 255)
-        canvas:drawLine(275, 18, 275, 177, 230, 234, 242, 255)
-        canvas:drawLine(275, 177, 20, 177, 230, 234, 242, 255)
-        canvas:drawLine(20, 177, 20, 18, 230, 234, 242, 255)
-
-        canvas:paste(top_down:resize(168, 168, "bilinear"), 300, 18)
-        canvas:drawLine(300, 18, 467, 18, 230, 234, 242, 255)
-        canvas:drawLine(467, 18, 467, 185, 230, 234, 242, 255)
-        canvas:drawLine(467, 185, 300, 185, 230, 234, 242, 255)
-        canvas:drawLine(300, 185, 300, 18, 230, 234, 242, 255)
-
-        canvas:paste(minimap:resize(132, 132, "bilinear"), 488, 18)
-        canvas:drawLine(488, 18, 619, 18, 230, 234, 242, 255)
-        canvas:drawLine(619, 18, 619, 149, 230, 234, 242, 255)
-        canvas:drawLine(619, 149, 488, 149, 230, 234, 242, 255)
-        canvas:drawLine(488, 149, 488, 18, 230, 234, 242, 255)
-
-        canvas:paste(sweep:resize(600, 132, "bilinear"), 20, 206)
-        canvas:drawLine(20, 206, 619, 206, 230, 234, 242, 255)
-        canvas:drawLine(619, 206, 619, 337, 230, 234, 242, 255)
-        canvas:drawLine(619, 337, 20, 337, 230, 234, 242, 255)
-        canvas:drawLine(20, 337, 20, 206, 230, 234, 242, 255)
-
-        local path = OUT .. "raycaster_native_render_contact_sheet.png"
-        save_png(canvas, path)
+        save_png(view, OUT .. "raycaster_native_view.png")
+        save_png(top_down:resize(168, 168, "bilinear"), OUT .. "raycaster_native_topdown.png")
+        save_png(minimap:resize(132, 132, "bilinear"), OUT .. "raycaster_native_minimap.png")
+        save_png(sweep:resize(600, 132, "bilinear"), OUT .. "raycaster_native_sweep.png")
     end)
     -- Does: Runs "textured first-person corridor view" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by LRaycaster:castRays, LRaycaster:castFloorRow, and related owner calls without needing a special evidence-only renderer.
@@ -699,12 +654,12 @@ describe("Evidence: lurek.raycaster visual scenarios", function()
         local path = OUT .. "raycaster_door_light_minimap_study.png"
         save_png(img, path)
     end)
-    -- Does: Compares wall, half-wall, sprite, and model picks on one atlas of real raycaster top-down captures.
-    -- Shows: The contact sheet should make the resolved cell and exact world hit point easy to inspect across geometry and entity picks.
-    -- Artifact: tests/artifacts/current/raycaster/raycaster_pick_contact_sheet.png
-    -- Why: This is meaningful because each panel starts from LRaycaster:drawTopDown and overlays coordinates returned by LRaycaster:pickScreen.
+    -- Does: Captures wall, half-wall, sprite, and model picks as separate raycaster top-down artifacts.
+    -- Shows: Each PNG should expose one pick case instead of merging several evidences into one sheet.
+    -- Artifact: tests/artifacts/current/raycaster/raycaster_pick_wall.png, tests/artifacts/current/raycaster/raycaster_pick_half_wall.png, tests/artifacts/current/raycaster/raycaster_pick_sprite.png, tests/artifacts/current/raycaster/raycaster_pick_model.png
+    -- Why: This is meaningful because each panel starts from LRaycaster:drawTopDown and overlays coordinates returned by LRaycaster:pickScreen without helper-built collage output.
 
-    it("PNG: pick contact sheet", function()
+    it("PNG: pick cases", function()
         ensure_evidence_dir("raycaster")
 
         local scale = 12
@@ -774,23 +729,27 @@ describe("Evidence: lurek.raycaster visual scenarios", function()
                 image = wall_map:drawTopDown(wall_params.px, wall_params.py, wall_params.angle, scale),
                 hit = wall_hit,
                 accent = { 232, 120, 96 },
+                name = "raycaster_pick_wall.png",
             },
             {
                 image = half_map:drawTopDown(half_params.px, half_params.py, half_params.angle, scale),
                 hit = half_hit,
                 accent = { 224, 200, 104 },
+                name = "raycaster_pick_half_wall.png",
             },
             {
                 image = sprite_map:drawTopDown(pick_params.px, pick_params.py, pick_params.angle, scale),
                 hit = sprite_hit,
                 accent = { 104, 216, 160 },
                 entity = { 10.5, 8.0 },
+                name = "raycaster_pick_sprite.png",
             },
             {
                 image = model_map:drawTopDown(pick_params.px, pick_params.py, pick_params.angle, scale),
                 hit = model_hit,
                 accent = { 104, 168, 255 },
                 entity = { 10.5, 8.0 },
+                name = "raycaster_pick_model.png",
             },
         }
 
@@ -800,27 +759,8 @@ describe("Evidence: lurek.raycaster visual scenarios", function()
             if panel.entity then
                 mark_world_point(panel.image, panel.entity[1], panel.entity[2], scale, 220, 236, 255)
             end
+            save_png(panel.image, OUT .. panel.name)
         end
-
-        local panel_w = panels[1].image:getWidth()
-        local panel_h = panels[1].image:getHeight()
-        local canvas = lurek.image.newImageData(panel_w * 2 + 36, panel_h * 2 + 36)
-        canvas:fill(16, 18, 24, 255)
-
-        local positions = {
-            { 12, 12 },
-            { panel_w + 24, 12 },
-            { 12, panel_h + 24 },
-            { panel_w + 24, panel_h + 24 },
-        }
-        for i, panel in ipairs(panels) do
-            local pos = positions[i]
-            canvas:paste(panel.image, pos[1], pos[2])
-            draw_frame(canvas, pos[1] - 2, pos[2] - 2, panel_w + 4, panel_h + 4, panel.accent[1], panel.accent[2], panel.accent[3])
-        end
-
-        local path = OUT .. "raycaster_pick_contact_sheet.png"
-        save_png(canvas, path)
     end)
     -- Does: Runs "scene build and layered hit trace" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by lurek.raycaster.newHeightMap, LHeightMap:setFloor, and related owner calls without needing a special evidence-only renderer.

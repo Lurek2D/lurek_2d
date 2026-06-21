@@ -1077,7 +1077,7 @@ end
 do
     local tr = lurek.overlay.newTransition("fade", 1.0, { 0.0, 0.0, 0.0, 1.0 })
     overlay_log("typeOf LScreenTransition=" .. tostring(tr:typeOf("LScreenTransition")))
-    overlay_log("tooltip text=" .. tostring(tr:getText()))
+    overlay_log("typeOf LObject=" .. tostring(tr:typeOf("LObject")))
     overlay_log("typeOf LOverlay=" .. tostring(tr:typeOf("LOverlay")))
     overlay_log("kind=" .. tr:kind())
 end

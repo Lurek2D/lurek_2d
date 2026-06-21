@@ -22,6 +22,28 @@ local function draw_outline(img, x, y, w, h, r, g, b, a)
     img:drawLine(x, y + h - 1, x, y, r, g, b, a or 255)
 end
 
+local function render_floor_card(active, accent)
+    local img = lurek.image.newImageData(84, 96)
+    local base = active and { 34, 48, 34 } or { 28, 28, 36 }
+    local edge = active and { 126, 220, 154 } or { 118, 124, 150 }
+    img:fill(10, 10, 15, 255)
+    draw_rect_native(img, 0, 0, 84, 96, base[1], base[2], base[3])
+    draw_outline(img, 0, 0, 84, 96, edge[1], edge[2], edge[3], 255)
+    for gy = 0, 4 do
+        for gx = 0, 3 do
+            local rx = 8 + gx * 18
+            local ry = 10 + gy * 16
+            img:drawRect(rx, ry, 12, 10, 62 + gy * 8, 70 + gx * 10, 82, 255)
+        end
+    end
+    img:drawLine(18, 22, 64, 22, 210, 214, 224, 255)
+    img:drawLine(64, 22, 64, 68, 210, 214, 224, 255)
+    img:drawLine(18, 52, 64, 52, 210, 214, 224, 255)
+    img:drawRect(58, 58, 10, 12, accent[1], accent[2], accent[3], 255)
+    img:drawRect(16, 76, 16, 8, active and 120 or 82, 220, 154, 255)
+    return img
+end
+
 -- @describe Evidence: lurek.minimap API + PNG visualization
 describe("Evidence: lurek.minimap API + PNG visualization", function()
     -- Does: Runs "terrain grid rendered as colored cells" and turns the owner-module result into an inspectable artifact.
@@ -331,42 +353,16 @@ describe("Evidence: lurek.minimap API + PNG visualization", function()
 
         save_png(img, path)
     end)
-    -- Does: Draws three minimap floor cards side by side with one active floor highlighted.
-    -- Shows: The PNG should make multi-floor navigation state and active-floor emphasis easy to compare.
-    -- Artifact: tests/artifacts/current/minimap/minimap_multi_floor_overview.png
-    -- Why: This is meaningful because the artifact captures floor-selection presentation as a durable UI output.
+    -- Does: Draws three separate minimap floor cards with one active floor highlighted.
+    -- Shows: The PNG set should make floor-selection state inspectable without merging several evidences into one sheet.
+    -- Artifact: tests/artifacts/current/minimap/minimap_floor_level0.png, tests/artifacts/current/minimap/minimap_floor_level1_active.png, tests/artifacts/current/minimap/minimap_floor_level2.png
+    -- Why: This is meaningful because each floor state is preserved as its own durable evidence file.
 
     it("PNG: multi-level floors", function()
         ensure_evidence_dir("minimap")
-        local path = OUT .. "minimap_multi_floor_overview.png"
-
-        local img = lurek.image.newImageData(300, 156)
-        img:fill(10, 10, 15, 255)
-
-        local function draw_floor(ox, oy, active)
-            local base = active and { 34, 48, 34 } or { 28, 28, 36 }
-            local edge = active and { 126, 220, 154 } or { 118, 124, 150 }
-            draw_rect_native(img, ox, oy, 84, 96, base[1], base[2], base[3])
-            draw_outline(img, ox, oy, 84, 96, edge[1], edge[2], edge[3], 255)
-            for gy = 0, 4 do
-                for gx = 0, 3 do
-                    local rx = ox + 8 + gx * 18
-                    local ry = oy + 10 + gy * 16
-                    img:drawRect(rx, ry, 12, 10, 62 + gy * 8, 70 + gx * 10, 82, 255)
-                end
-            end
-            img:drawLine(ox + 18, oy + 22, ox + 64, oy + 22, 210, 214, 224, 255)
-            img:drawLine(ox + 64, oy + 22, ox + 64, oy + 68, 210, 214, 224, 255)
-            img:drawLine(ox + 18, oy + 52, ox + 64, oy + 52, 210, 214, 224, 255)
-            img:drawRect(ox + 58, oy + 58, 10, 12, 255, 198, 82, 255)
-            img:drawRect(ox + 16, oy + 76, 16, 8, active and 120 or 82, 220, 154, 255)
-        end
-
-        draw_floor(16, 30, false)
-        draw_floor(108, 30, true)
-        draw_floor(200, 30, false)
-
-        save_png(img, path)
+        save_png(render_floor_card(false, { 214, 124, 96 }), OUT .. "minimap_floor_level0.png")
+        save_png(render_floor_card(true, { 255, 198, 82 }), OUT .. "minimap_floor_level1_active.png")
+        save_png(render_floor_card(false, { 108, 166, 232 }), OUT .. "minimap_floor_level2.png")
     end)
     -- Does: Masks unexplored territory with a hard fog edge around an explored center.
     -- Shows: The PNG should show explored terrain, hidden terrain, and the irregular boundary between them.
@@ -426,35 +422,6 @@ describe("Evidence: lurek.minimap API + PNG visualization", function()
         img:drawCircle(cx, cy, R + 2, 200, 200, 180, 255)
         img:drawCircle(cx, cy, R, 100, 100, 90, 255)
         save_png(img, path)
-    end)
-    -- Does: Runs "minimap contact sheet" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by LMinimap:drawToImage without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/minimap/<artifact>
-    -- Why: This is meaningful only if the visible/text output comes from LMinimap:drawToImage; export helpers are just the container.
-
-    it("PNG: minimap contact sheet", function()
-        ensure_evidence_dir("minimap")
-        local files = {
-            "minimap_terrain.png",
-            "minimap_blips.png",
-            "minimap_viewport_bounds.png",
-            "minimap_multi_floor_overview.png",
-            "minimap_radar_sweep.png",
-            "minimap_circular_border.png",
-        }
-        local canvas = lurek.image.newImageData(744, 504)
-        canvas:fill(12, 14, 20, 255)
-        for i, name in ipairs(files) do
-            local src = lurek.image.newImageData(OUT .. name)
-            local thumb = src:resize(224, 152, "bilinear")
-            local col = (i - 1) % 3
-            local row = math.floor((i - 1) / 3)
-            local x = 16 + col * 240
-            local y = 16 + row * 168
-            canvas:paste(thumb, x, y)
-            draw_outline(canvas, x, y, 224, 152, 232, 236, 244, 255)
-        end
-        save_png(canvas, OUT .. "minimap_contact_sheet.png")
     end)
     -- Does: Runs "command overlay with pings and route" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by LMinimap:setViewportColor, LMinimap:addPing, and related owner calls without needing a special evidence-only renderer.

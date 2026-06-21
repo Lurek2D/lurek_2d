@@ -166,27 +166,6 @@ describe("Evidence: svg", function()
 
         save_png(img, OUT .. "svg_transform_visibility.png")
     end)
-    -- Does: Runs "svg contact sheet" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by LSvgImage:getElementPoints, LSvgImage:getElementBounds, and related owner calls without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/svg/<artifact>
-    -- Why: This is meaningful only if the visible/text output comes from LSvgImage:getElementPoints, LSvgImage:getElementBounds, and related owner calls; export helpers are just the container.
-
-    it("PNG: svg contact sheet", function()
-        local files = {
-            "svg_geometry_debug.png",
-            "svg_transform_visibility.png",
-        }
-        local canvas = lurek.image.newImageData(520, 220)
-        canvas:fill(12, 14, 20, 255)
-        for i, name in ipairs(files) do
-            local src = lurek.image.newImageData(OUT .. name)
-            local thumb = src:resize(236, 160, "bilinear")
-            local x = 16 + (i - 1) * 252
-            canvas:paste(thumb, x, 16)
-            draw_outline(canvas, x, 16, 236, 160, 232, 236, 244, 255)
-        end
-        save_png(canvas, OUT .. "svg_contact_sheet.png")
-    end)
     -- Does: Runs "svg hierarchy and reset trace" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by LSvgImage:getDimensions, LSvgImage:getElementCount, and related owner calls without needing a special evidence-only renderer.
     -- Artifact: tests/artifacts/current/svg/svg_hierarchy_reset_trace.txt

@@ -24,12 +24,24 @@ describe("golden: tilemap evidence comparison", function()
             "tests/artifacts/baselines/tilemap/tilemap_autotile.png"
         )
         expect_golden_file_match(
-            evidence_output_dir("tilemap") .. "tilemap_draw_to_image_composite.png",
-            "tests/artifacts/baselines/tilemap/tilemap_draw_to_image_composite.png"
+            evidence_output_dir("tilemap") .. "tilemap_draw_to_image_ground.png",
+            "tests/artifacts/baselines/tilemap/tilemap_draw_to_image_ground.png"
         )
         expect_golden_file_match(
-            evidence_output_dir("tilemap") .. "tilemap_hex_biomes_route.png",
-            "tests/artifacts/baselines/tilemap/tilemap_hex_biomes_route.png"
+            evidence_output_dir("tilemap") .. "tilemap_draw_to_image_objects.png",
+            "tests/artifacts/baselines/tilemap/tilemap_draw_to_image_objects.png"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("tilemap") .. "tilemap_hex_biomes_area.png",
+            "tests/artifacts/baselines/tilemap/tilemap_hex_biomes_area.png"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("tilemap") .. "tilemap_hex_route.png",
+            "tests/artifacts/baselines/tilemap/tilemap_hex_route.png"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("tilemap") .. "tilemap_hex_neighbors.png",
+            "tests/artifacts/baselines/tilemap/tilemap_hex_neighbors.png"
         )
     end)
 end)

@@ -5,7 +5,6 @@ local function add_result(results, name, ok, detail)
 end
 
 local function ensure_dirs(C)
-    lurek.filesystem.createDirectory("save")
     lurek.filesystem.createDirectory(C.SAVE_DIR)
     lurek.filesystem.createDirectory(C.CACHE_DIR)
 end

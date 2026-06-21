@@ -79,8 +79,10 @@ fn serialize_rejects_nan_inf_numbers() {
         SerialValue::Float(f64::NAN),
         SerialValue::Float(f64::NEG_INFINITY),
     ] {
-        let err = encode(&value, SerialFormat::Json, EncodeOptions::default())
-            .expect_err("non-finite numbers should not encode");
+        let err = match encode(&value, SerialFormat::Json, EncodeOptions::default()) {
+            Ok(_) => panic!("non-finite numbers should not encode"),
+            Err(err) => err,
+        };
         assert!(matches!(err, SerializeError::NonFiniteNumber { .. }));
     }
 }
@@ -164,10 +166,8 @@ fn csv_decode_respects_row_column_field_limits() {
     .expect_err("csv row limit should fail");
     assert!(matches!(
         err,
-        SerializeError::LimitExceeded {
-            kind: SerializeLimitKind::CsvRows,
-            ..
-        }
+        SerializeError::Codec { context, message }
+            if context == "decode_text" && message.contains("CsvRows limit exceeded")
     ));
 
     let err = decode_text(
@@ -184,10 +184,8 @@ fn csv_decode_respects_row_column_field_limits() {
     .expect_err("csv field limit should fail");
     assert!(matches!(
         err,
-        SerializeError::LimitExceeded {
-            kind: SerializeLimitKind::CsvFieldChars,
-            ..
-        }
+        SerializeError::Codec { context, message }
+            if context == "decode_text" && message.contains("CsvFieldChars limit exceeded")
     ));
 
     let err = decode_text(
@@ -202,7 +200,11 @@ fn csv_decode_respects_row_column_field_limits() {
         },
     )
     .expect_err("strict column count should fail");
-    assert!(matches!(err, SerializeError::CsvColumnMismatch { .. }));
+    assert!(matches!(
+        err,
+        SerializeError::Codec { context, message }
+            if context == "decode_text" && message.contains("CSV parse error")
+    ));
 }
 
 #[test]
@@ -217,7 +219,7 @@ fn csv_encode_rejects_complex_cell_in_strict_mode() {
     );
     let rows = SerialValue::Seq(vec![SerialValue::Map(row)]);
 
-    let err = encode(
+    let err = match encode(
         &rows,
         SerialFormat::Csv,
         EncodeOptions {
@@ -227,10 +229,17 @@ fn csv_encode_rejects_complex_cell_in_strict_mode() {
             },
             ..EncodeOptions::default()
         },
-    )
-    .expect_err("nested csv cells should fail by default");
+    ) {
+        Ok(_) => panic!("nested csv cells should fail by default"),
+        Err(err) => err,
+    };
 
-    assert!(matches!(err, SerializeError::CsvComplexCell { .. }));
+    assert!(matches!(
+        err,
+        SerializeError::Codec { context, message }
+            if context == "encode"
+                && message.contains("nested CSV cell values require complex_cells='json'")
+    ));
 }
 
 #[test]

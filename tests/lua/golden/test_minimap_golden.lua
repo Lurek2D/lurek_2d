@@ -36,8 +36,16 @@ describe("golden: minimap evidence comparison", function()
             "tests/artifacts/baselines/minimap/minimap_circular_border.png"
         )
         expect_golden_file_match(
-            evidence_output_dir("minimap") .. "minimap_multi_floor_overview.png",
-            "tests/artifacts/baselines/minimap/minimap_multi_floor_overview.png"
+            evidence_output_dir("minimap") .. "minimap_floor_level0.png",
+            "tests/artifacts/baselines/minimap/minimap_floor_level0.png"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("minimap") .. "minimap_floor_level1_active.png",
+            "tests/artifacts/baselines/minimap/minimap_floor_level1_active.png"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("minimap") .. "minimap_floor_level2.png",
+            "tests/artifacts/baselines/minimap/minimap_floor_level2.png"
         )
         expect_golden_file_match(
             evidence_output_dir("minimap") .. "minimap_unexplored_mask.png",

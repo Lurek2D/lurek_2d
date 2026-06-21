@@ -382,7 +382,7 @@ end
 do
     local h = lurek.asset.load(PATH_TEXT, "text")
     example_print_log("typeOf LAssetHandle=" .. tostring(h:typeOf("LAssetHandle")))
-    example_print_log("atlas slice count=" .. tostring(h:getSliceCount()))
+    example_print_log("handle type name=" .. tostring(h:type()))
     example_print_log("typeOf other="        .. tostring(h:typeOf("other")))
     lurek.asset.unload(h)
 end

@@ -1,12 +1,11 @@
 # Content Contract
 
 ## Mission & Scope
-- Own Lua examples, showcase artifacts, games, layouts, snippets, registries, and config templates.
+- Own Lua examples, games, layouts, snippets, registries, and config templates.
 - Keep content runnable, validator-safe, and aligned with the public Lua API lifecycle.
 
 ## Files
 - `examples/`: Single-file, per-API reference examples.
-- `showcase/`: Runnable feature labs and app-like showcases that are not complete games.
 - `games/`: Finished playable games and mini games only.
 - `layouts/`: TOML UI layouts.
 - `snippets/`: Sources for VS Code snippets.
@@ -14,7 +13,7 @@
 ## Rules
 - Use real `lurek.*` calls, not stubs or placeholder tables.
 - Keep the ownership chain clear: public API docs feed `content/examples/`, examples feed Lua unit tests, evidence/golden prove selected behavior, and only complete products belong in `content/games/`.
-- Put API showcases, mechanic labs, and feature demonstrations in `content/showcase/` or `tests/lua/evidence/`, not in `content/games/`.
+- Put API showcases, mechanic labs, and feature demonstrations in `content/examples/` or `tests/lua/evidence/`, not in `content/games/`.
 - Scale movement, fades, and tweens by `dt`.
 - Keep state in locals, modules, or context tables; avoid globals.
 - Use forward slashes in asset paths.

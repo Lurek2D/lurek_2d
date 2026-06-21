@@ -1,7 +1,7 @@
 local Controls = {}
 
 local LAYOUT_PATH = "layouts/household_finance_lab_ui.toml"
-local LAYOUT_PATH_FALLBACK = "content/games/apps/household_finance_lab/layouts/household_finance_lab_ui.toml"
+local LAYOUT_PATH_FALLBACK = "content/games/finance_app/layouts/household_finance_lab_ui.toml"
 
 local function clamp(value, min_value, max_value)
     value = tonumber(value) or min_value

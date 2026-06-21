@@ -1,0 +1,16 @@
+month=1
+  North March pop=200 food=80.0 gold=70.0 happy=10.0 tax=20 growth=0 deaths=0 consumed=20.0
+  Green Hollow pop=80 food=22.0 gold=13.0 happy=10.0 tax=8 growth=0 deaths=0 consumed=8.0
+  Sun Keep pop=500 food=150.0 gold=150.0 happy=10.0 tax=50 growth=0 deaths=0 consumed=50.0
+month=2
+  North March pop=200 food=60.0 gold=90.0 happy=10.0 tax=20 growth=0 deaths=0 consumed=20.0
+  Green Hollow pop=80 food=14.0 gold=21.0 happy=10.0 tax=8 growth=0 deaths=0 consumed=8.0
+  Sun Keep pop=500 food=100.0 gold=200.0 happy=10.0 tax=50 growth=0 deaths=0 consumed=50.0
+month=3
+  North March pop=200 food=40.0 gold=110.0 happy=10.0 tax=20 growth=0 deaths=0 consumed=20.0
+  Green Hollow pop=80 food=6.0 gold=29.0 happy=10.0 tax=8 growth=0 deaths=0 consumed=8.0
+  Sun Keep pop=500 food=50.0 gold=250.0 happy=10.0 tax=50 growth=0 deaths=0 consumed=50.0
+month=4
+  North March pop=200 food=20.0 gold=130.0 happy=10.0 tax=20 growth=0 deaths=0 consumed=20.0
+  Green Hollow pop=78 food=0.0 gold=36.0 happy=8.0 tax=7 growth=0 deaths=2 consumed=6.0
+  Sun Keep pop=500 food=0.0 gold=300.0 happy=10.0 tax=50 growth=0 deaths=0 consumed=50.0

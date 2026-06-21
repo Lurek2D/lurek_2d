@@ -41,16 +41,19 @@ local function plot_sound_waveform(img, sound, x, y, w, h, color)
     end
 end
 
-local function save_waveform_compare(before_sound, after_sound, path, before_color, after_color)
-    local img = lurek.image.newImageData(960, 280)
-    img:fill(12, 14, 20, 255)
-    img:drawRect(24, 24, 432, 216, 24, 28, 36, 255)
-    img:drawRect(504, 24, 432, 216, 24, 28, 36, 255)
-    draw_outline(img, 24, 24, 432, 216, 232, 236, 244, 255)
-    draw_outline(img, 504, 24, 432, 216, 232, 236, 244, 255)
-    plot_sound_waveform(img, before_sound, 40, 40, 400, 184, before_color)
-    plot_sound_waveform(img, after_sound, 520, 40, 400, 184, after_color)
+local function save_waveform_preview(sound, path, color)
+    local img = lurek.image.newImageData(960, 260)
+    img:fill(14, 16, 22, 255)
+    img:drawRect(24, 28, 912, 188, 24, 28, 36, 255)
+    draw_outline(img, 24, 28, 912, 188, 232, 236, 244, 255)
+    plot_sound_waveform(img, sound, 40, 44, 880, 156, color)
+    img:drawRect(24, 224, 912, 12, color[1], color[2], color[3], 255)
     save_png(img, path)
+end
+
+local function save_waveform_pair(before_sound, before_path, before_color, after_sound, after_path, after_color)
+    save_waveform_preview(before_sound, before_path, before_color)
+    save_waveform_preview(after_sound, after_path, after_color)
 end
 
 -- @describe Evidence: lurek.dsp waveform, filter, and export flows
@@ -59,66 +62,83 @@ describe("Evidence: lurek.dsp waveform, filter, and export flows", function()
         ensure_evidence_dir("dsp")
     end)
 
-    -- Does: Generates several synthetic waveforms and plots them by sampling the returned sound buffers into one atlas image.
-    -- Shows: The atlas should make the differences between sine, square, saw, triangle, and deterministic noise visually obvious.
-    -- Artifact: tests/artifacts/current/dsp/dsp_waveform_generator_atlas.png
-    -- Why: This is meaningful because the image is derived from samples produced by lurek.dsp generators, not from a bespoke waveform renderer in the API.
+    -- Does: Generates several synthetic waveforms and plots each returned sound buffer into its own PNG.
+    -- Shows: Each PNG should expose one generator output instead of folding multiple evidences into one atlas.
+    -- Artifact: tests/artifacts/current/dsp/dsp_waveform_<name>.png
+    -- Why: This is meaningful because each image is derived from samples produced by one lurek.dsp generator, not from a bespoke waveform renderer in the API.
 
-    it("PNG: generator waveform comparison atlas", function()
+    it("PNG: generator waveform previews", function()
         local waves = {
-            { lurek.dsp.newSineWave(440, 0.05, 22050, 0.8), { 80, 180, 240 } },
-            { lurek.dsp.newSquareWave(440, 0.05, 22050, 0.8), { 220, 100, 100 } },
-            { lurek.dsp.newSawtoothWave(440, 0.05, 22050, 0.8), { 80, 220, 100 } },
-            { lurek.dsp.newTriangleWave(440, 0.05, 22050, 0.8), { 240, 200, 50 } },
-            { lurek.dsp.newWhiteNoise(0.05, 22050, 0.8, 42), { 180, 120, 220 } },
+            { "sine", lurek.dsp.newSineWave(440, 0.05, 22050, 0.8), { 80, 180, 240 } },
+            { "square", lurek.dsp.newSquareWave(440, 0.05, 22050, 0.8), { 220, 100, 100 } },
+            { "sawtooth", lurek.dsp.newSawtoothWave(440, 0.05, 22050, 0.8), { 80, 220, 100 } },
+            { "triangle", lurek.dsp.newTriangleWave(440, 0.05, 22050, 0.8), { 240, 200, 50 } },
+            { "white_noise", lurek.dsp.newWhiteNoise(0.05, 22050, 0.8, 42), { 180, 120, 220 } },
         }
 
-        local img = lurek.image.newImageData(960, 420)
-        img:fill(12, 14, 20, 255)
         for i, entry in ipairs(waves) do
-            local lane_y = 24 + (i - 1) * 76
-            img:drawRect(24, lane_y, 912, 60, 24, 28, 36, 255)
-            draw_outline(img, 24, lane_y, 912, 60, 232, 236, 244, 255)
-            plot_sound_waveform(img, entry[1], 40, lane_y + 8, 880, 44, entry[2])
+            local name = entry[1]
+            local sound = entry[2]
+            local color = entry[3]
+            save_waveform_preview(sound, OUT .. "dsp_waveform_" .. name .. ".png", color)
         end
-
-        save_png(img, OUT .. "dsp_waveform_generator_atlas.png")
     end)
 
-    -- Does: Applies a low-pass filter to one generated tone and plots before/after sample views side by side.
-    -- Shows: The comparison should reveal the smoothing effect of the low-pass operation on the same source tone.
-    -- Artifact: tests/artifacts/current/dsp/dsp_lowpass_compare.png
-    -- Why: This is meaningful because both panels come from actual DSP output buffers and not from hand-made art.
+    -- Does: Applies a low-pass filter to one generated tone and writes separate source/filtered sample previews.
+    -- Shows: The PNG pair should reveal the smoothing effect of the low-pass operation without collapsing both evidences into one file.
+    -- Artifact: tests/artifacts/current/dsp/dsp_lowpass_source.png, tests/artifacts/current/dsp/dsp_lowpass_filtered.png
+    -- Why: This is meaningful because both files come from actual DSP output buffers and not from hand-made art.
 
     it("PNG: low-pass before-after comparison", function()
         local before = lurek.dsp.newSineWave(4000, 0.05, 22050, 0.8)
         local after = lurek.dsp.newSineWave(4000, 0.05, 22050, 0.8)
         lurek.dsp.applyLowpass(after, 300)
-        save_waveform_compare(before, after, OUT .. "dsp_lowpass_compare.png", { 90, 180, 240 }, { 255, 160, 80 })
+        save_waveform_pair(
+            before,
+            OUT .. "dsp_lowpass_source.png",
+            { 90, 180, 240 },
+            after,
+            OUT .. "dsp_lowpass_filtered.png",
+            { 255, 160, 80 }
+        )
     end)
 
-    -- Does: Applies a high-pass filter to one low-frequency tone and plots the result against the source.
-    -- Shows: The after panel should collapse much of the original low-frequency energy.
-    -- Artifact: tests/artifacts/current/dsp/dsp_highpass_compare.png
+    -- Does: Applies a high-pass filter to one low-frequency tone and writes separate source/filtered previews.
+    -- Shows: The filtered PNG should collapse much of the original low-frequency energy without sharing a board with the source.
+    -- Artifact: tests/artifacts/current/dsp/dsp_highpass_source.png, tests/artifacts/current/dsp/dsp_highpass_filtered.png
     -- Why: This is meaningful because the effect is produced by lurek.dsp.applyHighpass on the sampled sound buffer.
 
     it("PNG: high-pass before-after comparison", function()
         local before = lurek.dsp.newSineWave(300, 0.05, 22050, 0.8)
         local after = lurek.dsp.newSineWave(300, 0.05, 22050, 0.8)
         lurek.dsp.applyHighpass(after, 2000)
-        save_waveform_compare(before, after, OUT .. "dsp_highpass_compare.png", { 90, 180, 240 }, { 255, 160, 80 })
+        save_waveform_pair(
+            before,
+            OUT .. "dsp_highpass_source.png",
+            { 90, 180, 240 },
+            after,
+            OUT .. "dsp_highpass_filtered.png",
+            { 255, 160, 80 }
+        )
     end)
 
-    -- Does: Applies a band-pass filter to deterministic noise and plots the filtered result against the source.
-    -- Shows: The evidence should show a visibly narrower waveform texture after band-pass filtering.
-    -- Artifact: tests/artifacts/current/dsp/dsp_bandpass_compare.png
+    -- Does: Applies a band-pass filter to deterministic noise and writes separate source/filtered previews.
+    -- Shows: The filtered PNG should show a visibly narrower waveform texture without sharing a composite compare board.
+    -- Artifact: tests/artifacts/current/dsp/dsp_bandpass_source.png, tests/artifacts/current/dsp/dsp_bandpass_filtered.png
     -- Why: This is meaningful because the output is created by lurek.dsp.applyBandpass on one real noise buffer.
 
     it("PNG: band-pass filtered noise comparison", function()
         local before = lurek.dsp.newWhiteNoise(0.05, 22050, 0.8, 42)
         local after = lurek.dsp.newWhiteNoise(0.05, 22050, 0.8, 42)
         lurek.dsp.applyBandpass(after, 800, 3000)
-        save_waveform_compare(before, after, OUT .. "dsp_bandpass_compare.png", { 120, 200, 255 }, { 255, 180, 100 })
+        save_waveform_pair(
+            before,
+            OUT .. "dsp_bandpass_source.png",
+            { 120, 200, 255 },
+            after,
+            OUT .. "dsp_bandpass_filtered.png",
+            { 255, 180, 100 }
+        )
     end)
 
     -- Does: Processes a fixture WAV offline with one low-pass step and exports the resulting audio.

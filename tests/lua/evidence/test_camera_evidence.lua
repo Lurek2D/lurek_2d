@@ -115,9 +115,9 @@ describe("evidence: camera", function()
         end
         write_text(path, "[" .. table.concat(out, ",") .. "]")
     end)
-    -- Does: Runs "camera transform grid and visible area" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by LCamera:toScreen and LCamera:getVisibleArea without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/camera/<artifact>
+    -- Does: Runs "camera transform grid and visible area" and turns the owner-module result into separate inspectable artifacts.
+    -- Shows: One PNG should expose visible-area bounds and another should expose world-to-screen transforms instead of packing both into one board.
+    -- Artifact: tests/artifacts/current/camera/camera_visible_area_panel.png, tests/artifacts/current/camera/camera_transform_screen_panel.png
     -- Why: This is meaningful only if the visible/text output comes from LCamera:toScreen and LCamera:getVisibleArea; export helpers are just the container.
 
     it("PNG: camera transform grid and visible area", function()
@@ -127,45 +127,54 @@ describe("evidence: camera", function()
         cam:setZoom(1.35)
         cam:setRotation(math.pi / 10)
 
-        local img = lurek.image.newImageData(520, 280)
-        img:fill(12, 14, 20, 255)
-        img:drawRect(20, 20, 220, 220, 22, 26, 34, 255)
-        img:drawRect(280, 20, 220, 220, 22, 26, 34, 255)
-        draw_outline(img, 20, 20, 220, 220, 232, 236, 244, 255)
-        draw_outline(img, 280, 20, 220, 220, 232, 236, 244, 255)
+        local function world_to_panel(wx, wy)
+            return 28 + math.floor((wx / 320) * 204 + 0.5), 28 + math.floor((wy / 240) * 204 + 0.5)
+        end
 
+        local world_img = lurek.image.newImageData(260, 260)
+        world_img:fill(12, 14, 20, 255)
+        world_img:drawRect(20, 20, 220, 220, 22, 26, 34, 255)
+        draw_outline(world_img, 20, 20, 220, 220, 232, 236, 244, 255)
         for gx = 0, 10 do
             local x = 28 + gx * 20
-            img:drawLine(x, 28, x, 232, 34, 40, 54, 255)
-            img:drawLine(288 + gx * 20, 28, 288 + gx * 20, 232, 34, 40, 54, 255)
+            world_img:drawLine(x, 28, x, 232, 34, 40, 54, 255)
         end
         for gy = 0, 10 do
             local y = 28 + gy * 20
-            img:drawLine(28, y, 232, y, 34, 40, 54, 255)
-            img:drawLine(288, y, 492, y, 34, 40, 54, 255)
-        end
-
-        local function world_to_panel(wx, wy)
-            return 28 + math.floor((wx / 320) * 204 + 0.5), 28 + math.floor((wy / 240) * 204 + 0.5)
+            world_img:drawLine(28, y, 232, y, 34, 40, 54, 255)
         end
 
         local vx, vy, vw, vh = cam:getVisibleArea()
         local wvx, wvy = world_to_panel(vx, vy)
         local wbrx, wbry = world_to_panel(vx + vw, vy + vh)
-        draw_outline(img, wvx, wvy, math.max(1, wbrx - wvx), math.max(1, wbry - wvy), 84, 170, 255, 255)
+        draw_outline(world_img, wvx, wvy, math.max(1, wbrx - wvx), math.max(1, wbry - wvy), 84, 170, 255, 255)
+
+        local screen_img = lurek.image.newImageData(260, 260)
+        screen_img:fill(12, 14, 20, 255)
+        screen_img:drawRect(20, 20, 220, 220, 22, 26, 34, 255)
+        draw_outline(screen_img, 20, 20, 220, 220, 232, 236, 244, 255)
+        for gx = 0, 10 do
+            local x = 28 + gx * 20
+            screen_img:drawLine(x, 28, x, 232, 34, 40, 54, 255)
+        end
+        for gy = 0, 10 do
+            local y = 28 + gy * 20
+            screen_img:drawLine(28, y, 232, y, 34, 40, 54, 255)
+        end
 
         for wy = 40, 200, 20 do
             for wx = 40, 280, 20 do
                 local sx, sy = cam:toScreen(wx, wy)
                 local px, py = world_to_panel(wx, wy)
-                local spx = 288 + math.floor((sx / 320) * 204 + 0.5)
+                local spx = 28 + math.floor((sx / 320) * 204 + 0.5)
                 local spy = 28 + math.floor((sy / 240) * 204 + 0.5)
-                draw_marker(img, px, py, 110, 214, 154)
-                draw_marker(img, spx, spy, 240, 220, 90)
+                draw_marker(world_img, px, py, 110, 214, 154)
+                draw_marker(screen_img, spx, spy, 240, 220, 90)
             end
         end
 
-        save_png(img, OUT .. "camera_visible_area_transform_grid.png")
+        save_png(world_img, OUT .. "camera_visible_area_panel.png")
+        save_png(screen_img, OUT .. "camera_transform_screen_panel.png")
     end)
     -- Does: Runs "camera path-follow trace" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by LCamera:followPath, LCamera:updatePath, and related owner calls without needing a special evidence-only renderer.
@@ -210,28 +219,6 @@ describe("evidence: camera", function()
 
         expect_true(cam:pathProgress() > 0.9)
         save_png(img, OUT .. "camera_follow_path_trace.png")
-    end)
-    -- Does: Runs "camera contact sheet" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by LCamera:toScreen, LCamera:getVisibleArea, and related owner calls without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/camera/camera_visible_area_transform_grid.png, tests/artifacts/current/camera/camera_follow_path_trace.png
-    -- Why: This is meaningful only if the visible/text output comes from LCamera:toScreen, LCamera:getVisibleArea, and related owner calls; export helpers are just the container.
-
-    it("PNG: camera contact sheet", function()
-        local grid = lurek.image.newImageData(OUT .. "camera_visible_area_transform_grid.png")
-        local path_trace = lurek.image.newImageData(OUT .. "camera_follow_path_trace.png")
-        local canvas = lurek.image.newImageData(540, 304)
-        canvas:fill(12, 14, 20, 255)
-        local positions = {
-            { 16, 16, grid:resize(248, 134, "bilinear"), 248, 134 },
-            { 276, 16, path_trace:resize(248, 178, "bilinear"), 248, 178 },
-            { 16, 156, path_trace:resize(248, 132, "bilinear"), 248, 132 },
-            { 276, 206, grid:resize(248, 82, "bilinear"), 248, 82 },
-        }
-        for _, item in ipairs(positions) do
-            canvas:paste(item[3], item[1], item[2])
-            draw_outline(canvas, item[1], item[2], item[4], item[5], 232, 236, 244, 255)
-        end
-        save_png(canvas, OUT .. "camera_contact_sheet.png")
     end)
     -- Does: Runs "camera follow effects and bounds trace" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by LCamera:setBounds, LCamera:getBounds, and related owner calls without needing a special evidence-only renderer.

@@ -1,0 +1,138 @@
+[root]
+widget_type = "panel"
+id = "diplomacy_fixture_root"
+x = 0.0
+y = 0.0
+w = 1280.0
+h = 720.0
+
+[[root.children]]
+widget_type = "panel"
+id = "header"
+x = 0.0
+y = 0.0
+w = 1280.0
+h = 48.0
+
+[[root.children.children]]
+widget_type = "label"
+id = "title"
+text = "Diplomacy Overview"
+x = 20.0
+y = 14.0
+w = 260.0
+h = 24.0
+
+[[root.children.children]]
+widget_type = "button"
+id = "close"
+text = "Close"
+x = 1188.0
+y = 8.0
+w = 72.0
+h = 32.0
+
+[[root.children]]
+widget_type = "scrollpanel"
+id = "map_panel"
+x = 20.0
+y = 72.0
+w = 700.0
+h = 392.0
+
+[[root.children]]
+widget_type = "panel"
+id = "nation_panel"
+x = 748.0
+y = 72.0
+w = 512.0
+h = 392.0
+
+[[root.children.children]]
+widget_type = "label"
+text = "North March"
+x = 16.0
+y = 16.0
+w = 220.0
+h = 28.0
+
+[[root.children.children]]
+widget_type = "label"
+text = "Alliance score"
+x = 16.0
+y = 72.0
+w = 160.0
+h = 22.0
+
+[[root.children.children]]
+widget_type = "progressbar"
+id = "alliance_score"
+x = 16.0
+y = 100.0
+w = 460.0
+h = 20.0
+min = -100.0
+max = 100.0
+value = 36.0
+
+[[root.children.children]]
+widget_type = "label"
+text = "Trade route"
+x = 16.0
+y = 148.0
+w = 160.0
+h = 22.0
+
+[[root.children.children]]
+widget_type = "progressbar"
+id = "trade_route"
+x = 16.0
+y = 176.0
+w = 460.0
+h = 18.0
+min = 0.0
+max = 100.0
+value = 58.0
+
+[[root.children.children]]
+widget_type = "button"
+id = "offer_trade"
+text = "Offer Trade"
+x = 16.0
+y = 248.0
+w = 144.0
+h = 34.0
+
+[[root.children.children]]
+widget_type = "button"
+id = "send_envoy"
+text = "Send Envoy"
+x = 176.0
+y = 248.0
+w = 144.0
+h = 34.0
+
+[[root.children]]
+widget_type = "panel"
+id = "timeline_panel"
+x = 20.0
+y = 496.0
+w = 1240.0
+h = 184.0
+
+[[root.children.children]]
+widget_type = "label"
+text = "Recent Events"
+x = 16.0
+y = 16.0
+w = 220.0
+h = 24.0
+
+[[root.children.children]]
+widget_type = "button"
+id = "advance_turn"
+text = "Advance Turn"
+x = 1088.0
+y = 16.0
+w = 136.0
+h = 32.0

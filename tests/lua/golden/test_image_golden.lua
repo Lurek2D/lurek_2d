@@ -8,12 +8,28 @@ describe("golden: image evidence comparison", function()
             "tests/artifacts/baselines/image/image_drawing_primitives_scene.png"
         )
         expect_golden_file_match(
-            evidence_output_dir("image") .. "image_effects_variant_strip.png",
-            "tests/artifacts/baselines/image/image_effects_variant_strip.png"
+            evidence_output_dir("image") .. "image_effect_base.png",
+            "tests/artifacts/baselines/image/image_effect_base.png"
         )
         expect_golden_file_match(
-            evidence_output_dir("image") .. "image_blur_sharpen_pair.png",
-            "tests/artifacts/baselines/image/image_blur_sharpen_pair.png"
+            evidence_output_dir("image") .. "image_effect_grayscale.png",
+            "tests/artifacts/baselines/image/image_effect_grayscale.png"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("image") .. "image_effect_invert.png",
+            "tests/artifacts/baselines/image/image_effect_invert.png"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("image") .. "image_effect_posterize.png",
+            "tests/artifacts/baselines/image/image_effect_posterize.png"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("image") .. "image_blur_crop.png",
+            "tests/artifacts/baselines/image/image_blur_crop.png"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("image") .. "image_sharpen_crop.png",
+            "tests/artifacts/baselines/image/image_sharpen_crop.png"
         )
         expect_golden_file_match(
             evidence_output_dir("image") .. "sprite_8x8.png",
@@ -44,16 +60,32 @@ describe("golden: image evidence comparison", function()
             "tests/artifacts/baselines/image/gradient_vertical.png"
         )
         expect_golden_file_match(
-            evidence_output_dir("image") .. "all_effects_grid.png",
-            "tests/artifacts/baselines/image/all_effects_grid.png"
+            evidence_output_dir("image") .. "image_transform_original.png",
+            "tests/artifacts/baselines/image/image_transform_original.png"
         )
         expect_golden_file_match(
-            evidence_output_dir("image") .. "transform_atlas.png",
-            "tests/artifacts/baselines/image/transform_atlas.png"
+            evidence_output_dir("image") .. "image_transform_flip_horizontal.png",
+            "tests/artifacts/baselines/image/image_transform_flip_horizontal.png"
         )
         expect_golden_file_match(
-            evidence_output_dir("image") .. "resize_threshold_atlas.png",
-            "tests/artifacts/baselines/image/resize_threshold_atlas.png"
+            evidence_output_dir("image") .. "image_transform_flip_vertical.png",
+            "tests/artifacts/baselines/image/image_transform_flip_vertical.png"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("image") .. "image_transform_rotate90.png",
+            "tests/artifacts/baselines/image/image_transform_rotate90.png"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("image") .. "image_resize_smooth.png",
+            "tests/artifacts/baselines/image/image_resize_smooth.png"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("image") .. "image_resize_nearest.png",
+            "tests/artifacts/baselines/image/image_resize_nearest.png"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("image") .. "image_threshold_128.png",
+            "tests/artifacts/baselines/image/image_threshold_128.png"
         )
         expect_golden_file_match(
             evidence_output_dir("image") .. "image_pixel_grid.png",
@@ -62,6 +94,18 @@ describe("golden: image evidence comparison", function()
         expect_golden_file_match(
             evidence_output_dir("image") .. "image_cropped_grayscale.png",
             "tests/artifacts/baselines/image/image_cropped_grayscale.png"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("image") .. "image_low_level_region.png",
+            "tests/artifacts/baselines/image/image_low_level_region.png"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("image") .. "image_low_level_filtered.png",
+            "tests/artifacts/baselines/image/image_low_level_filtered.png"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("image") .. "image_low_level_raw_clone.png",
+            "tests/artifacts/baselines/image/image_low_level_raw_clone.png"
         )
         expect_golden_file_match(
             evidence_output_dir("image") .. "image_layered_merge_scene.png",

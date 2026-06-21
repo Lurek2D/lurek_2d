@@ -1,0 +1,4 @@
+before_pause value=43.7500 progress=0.2500
+held value=43.7500 progress=0.2500
+resumed value=75.0000 progress=0.5000 active_count=1
+replay value=19.0000 progress=0.1000 active=true

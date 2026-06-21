@@ -2148,8 +2148,8 @@ do
     lurek.ui.addToast({ message = "File saved successfully", duration = 3.0, type = "info" })
     example_print_log("toast added")
     local layout = lurek.ui.loadLayout({ type = "panel", children = {} })
-    example_print_log("layout=" .. tostring(layout ~= nil))
-    example_print_log("rect x = " .. select(1, layout:getRect()))
+    example_print_log("layout id=" .. tostring(layout))
+    example_print_log("layout loaded=" .. tostring(type(layout) == "number"))
 end
 
 --@api: lurek.ui.loadLayout
@@ -2762,7 +2762,7 @@ do
     local tbl = lurek.ui.newTable()
     local count = tbl:setDataFrame(df, { columns = { "category", "amount" }, maxRows = 2 })
     example_print_log("setDataFrame=" .. count .. ", cols=" .. tbl:getColumnCount())
-    example_print_log("rect x = " .. select(1, df:getRect()))
+    example_print_log("rect x = " .. select(1, tbl:getRect()))
 end
 
 --@api: LGuiTable:getCell

@@ -61,10 +61,10 @@ describe("Evidence: lurek.color conversions and blends", function()
         save_png(img, OUT .. "color_hsl_hue_band.png")
     end)
 
-    -- Does: Builds one swatch matrix from public blend helpers and pairs it with a numeric conversion trace.
-    -- Shows: The PNG should compare blend families visually, while the TXT file records exact conversion and roundtrip values.
-    -- Artifact: tests/artifacts/current/color/color_blend_matrix.png, tests/artifacts/current/color/color_conversion_trace.txt
-    -- Why: This is meaningful because both artifacts are computed from lurek.color math and conversion APIs instead of hard-coded expected colors.
+    -- Does: Builds standalone swatch artifacts from public blend helpers and pairs them with a numeric conversion trace.
+    -- Shows: Each PNG should expose one blend-family result instead of collapsing several blend evidences into one matrix, while the TXT file records exact conversion and roundtrip values.
+    -- Artifact: tests/artifacts/current/color/color_base_a.png, color_base_b.png, color_blend_<mode>.png, color_conversion_trace.txt
+    -- Why: This is meaningful because all artifacts are computed from lurek.color math and conversion APIs instead of hard-coded expected colors.
 
     it("PNG+TXT: blend matrix and conversion trace", function()
         local a = { 0.92, 0.35, 0.30, 1.0 }
@@ -78,14 +78,18 @@ describe("Evidence: lurek.color conversions and blends", function()
             { "invert_a", lurek.color.invert(a[1], a[2], a[3], a[4]) },
         }
 
-        local img = lurek.image.newImageData(420, 180)
-        img:fill(18, 20, 28, 255)
-        draw_swatch(img, 20, 20, 120, 48, a)
-        draw_swatch(img, 160, 20, 120, 48, b)
-        for i, entry in ipairs(variants) do
-            draw_swatch(img, 20 + (i - 1) * 64, 104, 48, 48, entry[2])
+        local function swatch_image(name, rgba)
+            local img = lurek.image.newImageData(120, 120)
+            img:fill(18, 20, 28, 255)
+            draw_swatch(img, 20, 20, 80, 80, rgba)
+            save_png(img, OUT .. name)
         end
-        save_png(img, OUT .. "color_blend_matrix.png")
+
+        swatch_image("color_base_a.png", a)
+        swatch_image("color_base_b.png", b)
+        for i, entry in ipairs(variants) do
+            swatch_image("color_blend_" .. entry[1] .. ".png", entry[2])
+        end
 
         local from_hex = lurek.color.fromHex("#3366CCFF")
         local from_hsv = lurek.color.fromHsv(210, 0.75, 0.80)

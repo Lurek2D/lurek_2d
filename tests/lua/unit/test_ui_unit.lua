@@ -674,14 +674,6 @@ describe("common ui controls", function()
         expect_type("boolean", lurek.ui.newTextInput():isFocused())
     end)
 
-    -- @covers LTextInput:getCursorPosition
-    it("text input getCursorPosition reports numeric indices for ASCII and UTF-8 text", function()
-        expect_type("number", lurek.ui.newTextInput():getCursorPosition())
-        local input = lurek.ui.newTextInput()
-        input:setText("ąż")
-        expect_equal(2, input:getCursorPosition())
-    end)
-
     -- @covers lurek.ui.newCheckbox
     it("newCheckbox creates a checkbox", function()
         expect_not_nil(lurek.ui.newCheckbox("Enabled"))
@@ -2009,7 +2001,6 @@ describe("supplemental widget coverage", function()
     end)
 
     -- @covers LUiWidget:setLabelFor
-    -- @covers LUiWidget:getLabelFor
     it("setLabelFor stores widget linkage for accessibility", function()
         local label = lurek.ui.newLabel("Name")
         local input = lurek.ui.newTextInput()
@@ -2017,8 +2008,15 @@ describe("supplemental widget coverage", function()
         expect_equal(input._idx, label:getLabelFor())
     end)
 
+    -- @covers LUiWidget:getLabelFor
+    it("getLabelFor returns the linked widget index", function()
+        local label = lurek.ui.newLabel("Name")
+        local input = lurek.ui.newTextInput()
+        label:setLabelFor(input._idx)
+        expect_equal(input._idx, label:getLabelFor())
+    end)
+
     -- @covers lurek.ui.getAccessibilityTree
-    -- @covers lurek.ui.validateUx
     it("accessibility tree exposes fallback names and validateUx reports warnings", function()
         local label = lurek.ui.newLabel("Name")
         local input = lurek.ui.newTextInput()

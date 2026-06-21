@@ -7,7 +7,7 @@ do
 -- Canonical unit coverage for lurek.image and related userdata APIs.
 
 local DDS_FIXTURE = "tests/fixtures/test_dxt1.dds"
-local PROVINCE_FIXTURE = "content/games/strategy/eu2/map.png"
+local PROVINCE_FIXTURE = "content/games/eu2/map.png"
 local ROUNDTRIP_IMAGE_PATH = "save/test_image_core_roundtrip.limg"
 local ROUNDTRIP_PNG_PATH = "save/test_image_core_roundtrip.png"
 local ROUNDTRIP_GIF_PATH = "save/test_image_core_roundtrip.gif"

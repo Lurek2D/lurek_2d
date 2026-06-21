@@ -1,4 +1,4 @@
-local ROOT = "content/games/apps/household_finance_lab/"
+local ROOT = "content/games/finance_app/"
 
 local function load_app_module(path)
     local chunk = lurek.filesystem.load(ROOT .. path)

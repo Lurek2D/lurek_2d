@@ -1,7 +1,7 @@
 -- Canonical unit coverage for lurek.validator.
 
 local VALIDATOR_ROOT = "content/examples"
-local VALIDATOR_FILE = "content/examples/math.lua"
+local VALIDATOR_FILE = "tests/fixtures/validator_subject.lua"
 local TOML_RULES = "tests/fixtures/validator_rules_unit.toml"
 
 local function new_engine()
@@ -108,7 +108,7 @@ describe("validator engine methods", function()
         local report = engine:runFile(VALIDATOR_FILE)
         expect_equal(1, report.files_checked)
         expect_true(#report.violations > 0)
-        expect_contains(report.violations[1].file, "content/examples/math.lua")
+        expect_contains(report.violations[1].file, "tests/fixtures/validator_subject.lua")
     end)
 
     -- @covers LValidationEngine:ruleCount

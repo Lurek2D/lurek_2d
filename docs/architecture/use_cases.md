@@ -884,7 +884,7 @@ The `library/dialog` and `library/narrative` Lureksome modules provide pre-built
 
 - `library/dialog` provides conversation graph, branching choices, and state tracking out of the box.
 - `library/narrative` handles story flags, chapter progression, and conditional scenes.
-- `lurek.html.*` renders rich HTML+CSS dialogue boxes and UI screens (demonstrated in `showcase/html-dialog`, `showcase/html-settings`, `showcase/html-inventory`).
+- `lurek.html.*` renders rich HTML+CSS dialogue boxes and UI screens (see `tests/lua/evidence/test_html_evidence.lua` for durable artifact coverage).
 - `agent` module enables dynamic LLM dialogue — characters respond to player history.
 - `tween` handles smooth sprite slide-in, text fade, and background transitions.
 - `i18n` supports localisation of all dialogue text from a single string table.
@@ -948,7 +948,7 @@ The `rapier2d` physics backend handles rigid bodies, joints, and collision detec
 
 ### Description
 
-An interactive creative application built with Lurek2D: a piano roll sequencer, a step sequencer, a generative music tool, or a music visualiser. The repo includes `content/games/showcase/music_composer/` as a working reference (32-beat × 24-note grid with BPM control, preset patterns, and per-track mute).
+An interactive creative application built with Lurek2D: a piano roll sequencer, a step sequencer, a generative music tool, or a music visualiser. The repo includes `content/games/music_composer/` as a working reference (32-beat × 24-note grid with BPM control, preset patterns, and per-track mute).
 
 ### Build Variant
 
@@ -983,7 +983,7 @@ An interactive creative application built with Lurek2D: a piano roll sequencer, 
 
 ### Description
 
-A CLI-aesthetic game rendered as a text terminal inside the Lurek2D window: hacking simulators, command-line puzzles, retro-terminal adventures, or cyberpunk narrative games. The repo includes `content/games/showcase/hacking_game/` — a full hacking game with CRT aesthetics, matrix-rain title screen, animated boot sequence, password cracking, and file download missions.
+A CLI-aesthetic game rendered as a text terminal inside the Lurek2D window: hacking simulators, command-line puzzles, retro-terminal adventures, or cyberpunk narrative games. Current durable terminal proof lives in `tests/lua/evidence/test_terminal_evidence.lua`, including rendered terminal artifacts and interaction traces.
 
 ### Build Variant
 
@@ -1438,7 +1438,7 @@ The `automation` module (`lurek.automation.*`) records and replays input sequenc
 
 `automation` · `serial` · `filesystem` · `timer` · `log` · `dataframe` (test result aggregation) + all modules under test
 
-### Key `automation` Capabilities (from `showcase/automation_demo`)
+### Key `automation` Capabilities
 
 - Full input recording: keystrokes, mouse clicks, mouse movement with timestamps.
 - Faithful playback with adjustable speed (0.5×, 1×, 2×).

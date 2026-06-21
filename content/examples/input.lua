@@ -832,7 +832,7 @@ end
 
 --@api: lurek.input.gamepad.setGamepadMapping
 do
-    local guid = "000000000000000000000000504944564d"
+    local guid = "030000005e0400008e02000014010000"
     local mapping = guid .. ",TestPad,a:b0,b:b1"
     lurek.input.gamepad.setGamepadMapping(guid, mapping)
     local stored = lurek.input.gamepad.getGamepadMappingString(guid)

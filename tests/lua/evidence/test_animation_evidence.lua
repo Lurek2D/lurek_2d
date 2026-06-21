@@ -109,23 +109,20 @@ describe("Evidence: lurek.animation API", function()
         local path = OUT .. "animation_walk_cycle_preview.gif"
         save_gif(frames, path, { delayMs = 100, speed = 10 })
     end)
-    -- Does: Runs "preview grid from clip frames" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by LAnimation:drawPreviewGrid without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/animation/animation_clip_preview_grid.png
-    -- Why: This is meaningful only if the visible/text output comes from LAnimation:drawPreviewGrid; export helpers are just the container.
+    -- Does: Runs "preview frames from clip frames" and turns the owner-module result into separate inspectable artifacts.
+    -- Shows: Each PNG should expose one clip frame instead of a merged preview grid.
+    -- Artifact: tests/artifacts/current/animation/animation_clip_preview_frame_0N.png
+    -- Why: This is meaningful only if each visible/text output comes from one clip frame rather than a helper-built collage.
 
-    it("PNG: preview grid from clip frames", function()
+    it("PNG: preview frames from clip frames", function()
         local anim = build_demo_animation()
         anim:play("walk")
-
-        local grid = anim:drawPreviewGrid(4, 48)
-        local canvas = lurek.image.newImageData(grid:getWidth() + 48, grid:getHeight() + 48)
-        canvas:fill(16, 18, 24, 255)
-        canvas:drawRect(12, 12, grid:getWidth() + 24, grid:getHeight() + 24, 26, 30, 40, 255)
-        canvas:paste(grid, 24, 24)
-        draw_outline(canvas, 24, 24, grid:getWidth(), grid:getHeight(), 232, 236, 244, 255)
-        local path = OUT .. "animation_clip_preview_grid.png"
-        save_png(canvas, path)
+        for i = 0, anim:getFrameCount() - 1 do
+            anim:setFrame(i)
+            local frame = framed_animation_image(anim, 96, 96, { 232, 236, 244 })
+            local path = OUT .. string.format("animation_clip_preview_frame_%02d.png", i + 1)
+            save_png(frame, path)
+        end
     end)
     -- Does: Runs "blend/crossfade state evidence" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by lurek.animation.new without needing a special evidence-only renderer.
@@ -153,10 +150,10 @@ describe("Evidence: lurek.animation API", function()
         local path = OUT .. "animation_blend_crossfade_state.txt"
         write_text(path, table.concat(info, "\n") .. "\n")
     end)
-    -- Does: Runs "animation curves sampled as line plots" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by lurek.animation.newCurve, LAnimCurve:addKeyframe, and related owner calls without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/animation/animation_curve_comparison.png
-    -- Why: This is meaningful only if the visible/text output comes from lurek.animation.newCurve, LAnimCurve:addKeyframe, and related owner calls; export helpers are just the container.
+    -- Does: Runs "animation curves sampled as line plots" and turns the owner-module result into separate inspectable artifacts.
+    -- Shows: Each PNG should expose one curve instead of combining multiple curves into one comparison image.
+    -- Artifact: tests/artifacts/current/animation/animation_curve_linear.png, tests/artifacts/current/animation/animation_curve_eased.png
+    -- Why: This is meaningful only if each visible/text output comes from one curve rather than a helper-built comparison.
 
     it("PNG: animation curves sampled as line plots", function()
         local linear = lurek.animation.newCurve()
@@ -168,14 +165,16 @@ describe("Evidence: lurek.animation API", function()
         eased:addKeyframe(1.0, 1.0)
         eased:setEasing("ease_in_out")
 
-        local img = lurek.image.newImageData(256, 160)
-        img:fill(14, 16, 20, 255)
-        img:drawRect(20, 20, 216, 120, 70, 78, 92, 255)
-        draw_curve(img, linear, 20, 20, 216, 120, 120, 210, 255)
-        draw_curve(img, eased, 20, 20, 216, 120, 255, 180, 90)
+        local function curve_image(curve, color, path)
+            local img = lurek.image.newImageData(256, 160)
+            img:fill(14, 16, 20, 255)
+            img:drawRect(20, 20, 216, 120, 70, 78, 92, 255)
+            draw_curve(img, curve, 20, 20, 216, 120, color[1], color[2], color[3])
+            save_png(img, path)
+        end
 
-        local path = OUT .. "animation_curve_comparison.png"
-        save_png(img, path)
+        curve_image(linear, { 120, 210, 255 }, OUT .. "animation_curve_linear.png")
+        curve_image(eased, { 255, 180, 90 }, OUT .. "animation_curve_eased.png")
     end)
     -- Does: Runs "animation state-machine transition trace" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by lurek.animation.newStateMachine, LAnimStateMachine:addState, and related owner calls without needing a special evidence-only renderer.
@@ -201,36 +200,6 @@ describe("Evidence: lurek.animation API", function()
 
         local path = OUT .. "animation_state_machine_transition_trace.txt"
         write_text(path, table.concat(lines, "\n") .. "\n")
-    end)
-    -- Does: Runs "animation contact sheet" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by LAnimation:drawPreviewGrid and LAnimation:drawToImage without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/animation/animation_contact_sheet.png
-    -- Why: This is meaningful only if the visible/text output comes from LAnimation:drawPreviewGrid and LAnimation:drawToImage; export helpers are just the container.
-
-    it("PNG: animation contact sheet", function()
-        local anim = build_demo_animation()
-        anim:play("walk")
-        anim:update(0.2)
-
-        local current = framed_animation_image(anim, 192, 96, { 122, 214, 255 })
-        local preview = anim:drawPreviewGrid(4, 40)
-        local canvas = lurek.image.newImageData(560, 320)
-        canvas:fill(14, 16, 22, 255)
-        canvas:paste(current, 24, 24)
-        canvas:paste(preview, 280, 36)
-        draw_outline(canvas, 280, 36, preview:getWidth(), preview:getHeight(), 232, 236, 244, 255)
-
-        local curve = lurek.animation.newCurve()
-        curve:addKeyframe(0.0, 0.0)
-        curve:addKeyframe(0.4, 0.8)
-        curve:addKeyframe(1.0, 0.2)
-        curve:setEasing("ease_in_out")
-        canvas:drawRect(24, 180, 512, 112, 24, 28, 38, 255)
-        draw_outline(canvas, 24, 180, 512, 112, 232, 236, 244, 255)
-        draw_curve(canvas, curve, 40, 196, 476, 80, 255, 188, 96)
-
-        local path = OUT .. "animation_contact_sheet.png"
-        save_png(canvas, path)
     end)
     -- Does: Runs "animation clip control trace" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by LAnimation:addClip, LAnimation:addClipFromGrid, and related owner calls without needing a special evidence-only renderer.

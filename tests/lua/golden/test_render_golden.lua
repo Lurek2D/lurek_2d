@@ -4,8 +4,36 @@
 describe("golden: render evidence comparison", function()
     it("matches render baselines", function()
         expect_golden_file_match(
-            evidence_output_dir("render") .. "graphic_primitives.png",
-            "tests/artifacts/baselines/render/graphic_primitives.png"
+            evidence_output_dir("render") .. "graphic_circle_outline_points.png",
+            "tests/artifacts/baselines/render/graphic_circle_outline_points.png"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("render") .. "graphic_diagonal_line.png",
+            "tests/artifacts/baselines/render/graphic_diagonal_line.png"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("render") .. "graphic_filled_circle.png",
+            "tests/artifacts/baselines/render/graphic_filled_circle.png"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("render") .. "graphic_filled_rectangle.png",
+            "tests/artifacts/baselines/render/graphic_filled_rectangle.png"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("render") .. "graphic_horizontal_line.png",
+            "tests/artifacts/baselines/render/graphic_horizontal_line.png"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("render") .. "graphic_outlined_rectangle.png",
+            "tests/artifacts/baselines/render/graphic_outlined_rectangle.png"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("render") .. "graphic_point_strip.png",
+            "tests/artifacts/baselines/render/graphic_point_strip.png"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("render") .. "graphic_vertical_line.png",
+            "tests/artifacts/baselines/render/graphic_vertical_line.png"
         )
         expect_golden_file_match(
             evidence_output_dir("render") .. "graphic_color_grid.png",
@@ -16,8 +44,16 @@ describe("golden: render evidence comparison", function()
             "tests/artifacts/baselines/render/render_rectangles.png"
         )
         expect_golden_file_match(
-            evidence_output_dir("render") .. "render_circle_ellipse.png",
-            "tests/artifacts/baselines/render/render_circle_ellipse.png"
+            evidence_output_dir("render") .. "render_arc.png",
+            "tests/artifacts/baselines/render/render_arc.png"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("render") .. "render_circle.png",
+            "tests/artifacts/baselines/render/render_circle.png"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("render") .. "render_ellipse.png",
+            "tests/artifacts/baselines/render/render_ellipse.png"
         )
         expect_golden_file_match(
             evidence_output_dir("render") .. "render_transform_stack.png",
@@ -36,12 +72,16 @@ describe("golden: render evidence comparison", function()
             "tests/artifacts/baselines/render/render_canvas_sizes.png"
         )
         expect_golden_file_match(
-            evidence_output_dir("render") .. "render_line_arc.png",
-            "tests/artifacts/baselines/render/render_line_arc.png"
+            evidence_output_dir("render") .. "render_lines.png",
+            "tests/artifacts/baselines/render/render_lines.png"
         )
         expect_golden_file_match(
-            evidence_output_dir("render") .. "render_triangle_polygon.png",
-            "tests/artifacts/baselines/render/render_triangle_polygon.png"
+            evidence_output_dir("render") .. "render_polygon.png",
+            "tests/artifacts/baselines/render/render_polygon.png"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("render") .. "render_triangle.png",
+            "tests/artifacts/baselines/render/render_triangle.png"
         )
         expect_golden_file_match(
             evidence_output_dir("render") .. "render_color_mask.png",
@@ -70,10 +110,6 @@ describe("golden: render evidence comparison", function()
         expect_golden_file_match(
             evidence_output_dir("render") .. "render_stencil_setup.png",
             "tests/artifacts/baselines/render/render_stencil_setup.png"
-        )
-        expect_golden_file_match(
-            evidence_output_dir("render") .. "render_summary_dashboard.png",
-            "tests/artifacts/baselines/render/render_summary_dashboard.png"
         )
     end)
 end)

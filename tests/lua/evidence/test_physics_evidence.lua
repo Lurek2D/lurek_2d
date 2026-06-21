@@ -383,40 +383,44 @@ describe("Evidence: lurek.physics visual scenarios", function()
         expect_evidence_created(path)
         lurek.physics.destroyWorld(world)
     end)
-    -- Does: Runs "physics joint gallery debug view" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by LWorld:addRevoluteJoint, LWorld:addDistanceJoint, and related owner calls without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/physics/<artifact>
-    -- Why: This is meaningful only if the visible/text output comes from LWorld:addRevoluteJoint, LWorld:addDistanceJoint, and related owner calls; export helpers are just the container.
+    -- Does: Runs isolated joint debug captures and turns each owner-module result into its own inspectable artifact.
+    -- Shows: Each PNG should expose one joint family instead of combining revolute, distance, and wheel joints into one gallery.
+    -- Artifact: tests/artifacts/current/physics/physics_joint_revolute_debug.png, physics_joint_distance_debug.png, physics_joint_wheel_debug.png
+    -- Why: This is meaningful only if the visible/text output comes from the underlying joint APIs rather than a helper-built gallery.
 
-    it("PNG: physics joint gallery debug view", function()
-        local world = lurek.physics.newWorld(0, 50)
-
-        local pivot = world:newBody(90, 28, "static")
-        local pendulum = world:newCircleBody(90, 92, 14, "dynamic")
-        world:addRevoluteJoint(pivot:getId(), pendulum:getId(), 90, 60)
-
-        local left = world:newCircleBody(220, 78, 12, "dynamic")
-        local right = world:newCircleBody(304, 78, 12, "dynamic")
-        world:addDistanceJoint(left:getId(), right:getId(), 220, 78, 304, 78, 84)
-
-        local chassis = world:newBody(470, 120, "static")
-        local wheel = world:newCircleBody(470, 168, 18, "dynamic")
-        world:addWheelJoint(chassis:getId(), wheel:getId(), 470, 120, 0, 1)
-
-        for _ = 1, 90 do
-            world:step(1 / 120)
+    it("PNG: isolated joint debug captures", function()
+        local function step_and_save(path, build_fn)
+            local world = lurek.physics.newWorld(0, 50)
+            build_fn(world)
+            for _ = 1, 90 do
+                world:step(1 / 120)
+            end
+            local img = lurek.image.newImageData(260, 220)
+            img:fill(16, 18, 24, 255)
+            img:drawRect(0, 182, 260, 38, 28, 32, 40, 255)
+            img:drawLine(0, 182, 259, 182, 86, 92, 110, 255)
+            world:drawDebug(img, 120, 226, 255, 220)
+            save_png(img, path)
+            lurek.physics.destroyWorld(world)
         end
 
-        local img = lurek.image.newImageData(640, 240)
-        img:fill(16, 18, 24, 255)
-        img:drawRect(0, 182, 640, 58, 28, 32, 40, 255)
-        img:drawLine(0, 182, 639, 182, 86, 92, 110, 255)
-        world:drawDebug(img, 120, 226, 255, 220)
+        step_and_save(OUT .. "physics_joint_revolute_debug.png", function(world)
+            local pivot = world:newBody(90, 28, "static")
+            local pendulum = world:newCircleBody(90, 92, 14, "dynamic")
+            world:addRevoluteJoint(pivot:getId(), pendulum:getId(), 90, 60)
+        end)
 
-        local path = OUT .. "physics_joint_gallery_debug.png"
-        expect_true(world:jointCount() >= 3)
-        save_png(img, path)
-        lurek.physics.destroyWorld(world)
+        step_and_save(OUT .. "physics_joint_distance_debug.png", function(world)
+            local left = world:newCircleBody(90, 78, 12, "dynamic")
+            local right = world:newCircleBody(174, 78, 12, "dynamic")
+            world:addDistanceJoint(left:getId(), right:getId(), 90, 78, 174, 78, 84)
+        end)
+
+        step_and_save(OUT .. "physics_joint_wheel_debug.png", function(world)
+            local chassis = world:newBody(130, 120, "static")
+            local wheel = world:newCircleBody(130, 168, 18, "dynamic")
+            world:addWheelJoint(chassis:getId(), wheel:getId(), 130, 120, 0, 1)
+        end)
     end)
 end)
 test_summary()

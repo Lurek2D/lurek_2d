@@ -193,8 +193,31 @@ impl LuaSaveManager {
             Ok(payload) => payload,
             Err(e) => return Ok((false, Some(format!("lurek.save:load: {}", e)))),
         };
-        let data: LuaTable = match parse_save_content(lua, &content, &self.manager) {
-            Ok(t) => t,
+        let (data, used_backup) = match parse_save_content(lua, &content, &self.manager) {
+            Ok(t) => (t, used_backup),
+            Err(primary_error) if !used_backup && self.manager.load_policy().allow_backup_fallback => {
+                let backup_content = match self.read_backup_slot_payload(slot) {
+                    Ok(content) => content,
+                    Err(_) => {
+                        return Ok((
+                            false,
+                            Some(format!("lurek.save:load: corrupt save: {}", primary_error)),
+                        ))
+                    }
+                };
+                match parse_save_content(lua, &backup_content, &self.manager) {
+                    Ok(t) => (t, true),
+                    Err(backup_error) => {
+                        return Ok((
+                            false,
+                            Some(format!(
+                                "lurek.save:load: corrupt save: primary payload failed ({}) and backup payload failed ({})",
+                                primary_error, backup_error
+                            )),
+                        ))
+                    }
+                }
+            }
             Err(e) => return Ok((false, Some(format!("lurek.save:load: corrupt save: {}", e)))),
         };
         self.restore_from_table(lua, data)?;
@@ -332,6 +355,23 @@ impl LuaSaveManager {
                 }
             }
         }
+    }
+
+    fn read_backup_slot_payload(&self, slot: &str) -> Result<String, String> {
+        let backup_path = self
+            .manager
+            .backup_slot_path(slot)
+            .map_err(|e| e.to_string())?;
+        let state_ref = self.state.borrow();
+        let game_fs = &state_ref.fs;
+        if !game_fs.exists(&backup_path) {
+            return Err(format!("backup slot '{}' does not exist", slot));
+        }
+        let raw = game_fs
+            .read_string(&backup_path)
+            .map_err(|e| format!("{}", e))?;
+        decompress_save_content_with_limits(&raw, &self.manager.limits().compression)
+            .map_err(|e| e.to_string())
     }
 }
 impl LuaUserData for LuaSaveManager {

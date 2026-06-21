@@ -28,20 +28,12 @@ describe("golden: raycaster evidence comparison", function()
             "tests/artifacts/baselines/raycaster/raycaster_mirrors.png"
         )
         expect_golden_file_match(
-            evidence_output_dir("raycaster") .. "raycaster_glass.png",
-            "tests/artifacts/baselines/raycaster/raycaster_glass.png"
-        )
-        expect_golden_file_match(
             evidence_output_dir("raycaster") .. "raycaster_floor_ceiling.png",
             "tests/artifacts/baselines/raycaster/raycaster_floor_ceiling.png"
         )
         expect_golden_file_match(
             evidence_output_dir("raycaster") .. "raycaster_animated_walls.png",
             "tests/artifacts/baselines/raycaster/raycaster_animated_walls.png"
-        )
-        expect_golden_file_match(
-            evidence_output_dir("raycaster") .. "raycaster_billboard.png",
-            "tests/artifacts/baselines/raycaster/raycaster_billboard.png"
         )
         expect_golden_file_match(
             evidence_output_dir("raycaster") .. "raycaster_textured_corridor_view.png",

@@ -77,16 +77,9 @@ local function save_waveform_preview(sound, path, color, title_band)
     save_png(img, path)
 end
 
-local function save_waveform_compare(before_sound, after_sound, path, before_color, after_color)
-    local img = lurek.image.newImageData(960, 280)
-    img:fill(12, 14, 20, 255)
-    img:drawRect(24, 24, 432, 216, 24, 28, 36, 255)
-    img:drawRect(504, 24, 432, 216, 24, 28, 36, 255)
-    draw_outline(img, 24, 24, 432, 216, 232, 236, 244, 255)
-    draw_outline(img, 504, 24, 432, 216, 232, 236, 244, 255)
-    plot_sound_waveform(img, before_sound, 40, 40, 400, 184, before_color)
-    plot_sound_waveform(img, after_sound, 520, 40, 400, 184, after_color)
-    save_png(img, path)
+local function save_waveform_pair(before_sound, before_path, before_color, after_sound, after_path, after_color)
+    save_waveform_preview(before_sound, before_path, before_color, before_color)
+    save_waveform_preview(after_sound, after_path, after_color, after_color)
 end
 
 -- @describe Evidence: lurek.audio synthesized fixtures and timing traces
@@ -152,9 +145,9 @@ describe("Evidence: lurek.audio synthesized fixtures and timing traces", functio
         save_waveform_preview(sound, OUT .. "audio_waveform_frequency_sweep.png", { 150, 110, 255 }, { 150, 110, 255 })
     end)
 
-    -- Does: Mixes a base tone with an overtone using lurek.audio.mixInto and exports before/after previews.
-    -- Shows: The comparison PNG should show a visibly richer waveform after mixing, while the WAV stores the mixed result.
-    -- Artifact: tests/artifacts/current/audio/audio_mix_into_harmonic_layer.wav, tests/artifacts/current/audio/audio_mix_into_compare.png
+    -- Does: Mixes a base tone with an overtone using lurek.audio.mixInto and exports separate before/after previews.
+    -- Shows: The PNG pair should show the base waveform and the richer mixed waveform as separate evidence files, while the WAV stores the mixed result.
+    -- Artifact: tests/artifacts/current/audio/audio_mix_into_harmonic_layer.wav, tests/artifacts/current/audio/audio_mix_into_base.png, tests/artifacts/current/audio/audio_mix_into_mixed.png
     -- Why: This is meaningful because the changed shape comes from lurek.audio.mixInto on sound data, not from hand-authored pixels.
 
     it("WAV+PNG: mixed harmonic layer via mixInto", function()
@@ -164,7 +157,14 @@ describe("Evidence: lurek.audio synthesized fixtures and timing traces", functio
         lurek.audio.mixInto(mixed, overlay)
 
         save_wav(mixed, OUT .. "audio_mix_into_harmonic_layer.wav")
-        save_waveform_compare(base, mixed, OUT .. "audio_mix_into_compare.png", { 90, 180, 240 }, { 240, 160, 100 })
+        save_waveform_pair(
+            base,
+            OUT .. "audio_mix_into_base.png",
+            { 90, 180, 240 },
+            mixed,
+            OUT .. "audio_mix_into_mixed.png",
+            { 240, 160, 100 }
+        )
     end)
 
     -- Does: Creates a stereo ping-pong tone by writing alternating left/right samples into one buffer.

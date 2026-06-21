@@ -31,5 +31,5 @@ This page leads from an empty game folder to the rest of the wiki.
 
 ```bash
 cargo run -- content/examples/render.lua
-cargo run -- content/games/showcase/hello_world
+cargo run -- content/games/music_composer
 ```

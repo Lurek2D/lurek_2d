@@ -1453,13 +1453,15 @@ impl Minimap {
         }
     }
 
-    /// Test seam for id-overflow coverage. The value must be either a valid next id or `u32::MAX`.
-    pub(crate) fn set_next_marker_id_for_tests(&mut self, next_id: u32) {
+    /// Set the next marker id to a caller-provided value for Rust-side overflow tests.
+    #[doc(hidden)]
+    pub fn set_next_marker_id_for_testing(&mut self, next_id: u32) {
         self.next_marker_id = next_id;
     }
 
-    /// Test seam for id-overflow coverage. The value must be either a valid next id or `u32::MAX`.
-    pub(crate) fn set_next_path_id_for_tests(&mut self, next_id: u32) {
+    /// Set the next path id to a caller-provided value for Rust-side overflow tests.
+    #[doc(hidden)]
+    pub fn set_next_path_id_for_testing(&mut self, next_id: u32) {
         self.next_path_id = next_id;
     }
 }

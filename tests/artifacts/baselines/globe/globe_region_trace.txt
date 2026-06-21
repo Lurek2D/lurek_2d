@@ -1,0 +1,3 @@
+region_added=true
+region_id=7
+centroid=45.0,10.0

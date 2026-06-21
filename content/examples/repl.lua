@@ -91,6 +91,6 @@ do
     local is_session = sess:typeOf("LReplSession")
     local is_object = sess:typeOf("LObject")
     lurek.log.info("is session = " .. tostring(is_session))
-    lurek.log.info("history entries = " .. tostring(repl:historyLen()))
+    lurek.log.info("history entries = " .. tostring(sess:len()))
     assert(is_session and is_object, "REPL session exposes expected type hierarchy")
 end

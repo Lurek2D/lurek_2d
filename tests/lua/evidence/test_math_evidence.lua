@@ -50,6 +50,26 @@ local function plot_curve(img, fn, r, g, b)
     end
 end
 
+local function save_easing_curve(file_name, fn, r, g, b)
+    local img = lurek.image.newImageData(220, 220)
+    img:fill(245, 245, 245, 255)
+    draw_outline(img, 18, 18, 184, 184, 218, 222, 230, 255)
+    for gx = 0, 4 do
+        local x = 30 + gx * 40
+        img:drawLine(x, 30, x, 190, 230, 232, 238, 255)
+    end
+    for gy = 0, 4 do
+        local y = 30 + gy * 40
+        img:drawLine(30, y, 190, y, 230, 232, 238, 255)
+    end
+
+    local plot = lurek.image.newImageData(161, 161)
+    plot_curve(plot, fn, r, g, b)
+    img:paste(plot, 30, 30)
+
+    save_png(img, OUT .. file_name)
+end
+
 local function draw_control_points(img, coords)
     for i = 1, #coords, 2 do
         img:drawCircle(coords[i], coords[i + 1], 3, 255, 110, 110, 255)
@@ -113,50 +133,22 @@ describe("Evidence: lurek.math visual scenarios", function()
         local path = OUT .. "math_distance_heatmap.png"
         save_png(img, path)
     end)
-    -- Does: Runs "math_easing_curves.png -- multiple easing function curves" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by lurek.math.applyEasing without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/math/<artifact>
+    -- Does: Runs "applyEasing curve samples" and turns the owner-module result into inspectable artifacts.
+    -- Shows: Each PNG should expose one easing mode instead of combining several named modes into one comparison image.
+    -- Artifact: tests/artifacts/current/math/math_easing_apply_*.png
     -- Why: This is meaningful only if the visible/text output comes from lurek.math.applyEasing; export helpers are just the container.
 
-    it("PNG: math_easing_curves.png -- multiple easing function curves", function()
-        local w, h = 300, 200
-        local img = lurek.image.newImageData(w, h)
-        img:fill(242, 244, 248, 255)
-        img:drawRect(20, 20, 260, 160, 228, 232, 240, 255)
-        draw_outline(img, 20, 20, 260, 160, 210, 214, 224, 255)
-        for gx = 0, 5 do
-            local x = 30 + gx * 44
-            img:drawLine(x, 30, x, 170, 214, 218, 228, 255)
-        end
-        for gy = 0, 4 do
-            local y = 30 + gy * 35
-            img:drawLine(30, y, 250, y, 214, 218, 228, 255)
-        end
-
+    it("PNG: applyEasing curve samples", function()
         local easings = {
-            { "linear", 230, 80, 80 },
-            { "inOutQuad", 90, 170, 230 },
-            { "outBounce", 70, 190, 120 },
-            { "outElastic", 180, 120, 240 },
+            { "math_easing_apply_linear.png", function(t) return lurek.math.applyEasing("linear", t) end, 230, 80, 80 },
+            { "math_easing_apply_inout_quad.png", function(t) return lurek.math.applyEasing("inOutQuad", t) end, 90, 170, 230 },
+            { "math_easing_apply_out_bounce.png", function(t) return lurek.math.applyEasing("outBounce", t) end, 70, 190, 120 },
+            { "math_easing_apply_out_elastic.png", function(t) return lurek.math.applyEasing("outElastic", t) end, 180, 120, 240 },
         }
 
-        for _, e in ipairs(easings) do
-            local name, r, g, b = e[1], e[2], e[3], e[4]
-            local px, py = nil, nil
-            for i = 0, 220 do
-                local t = i / 220
-                local v = lurek.math.applyEasing(name, t)
-                local x = 30 + i
-                local y = 170 - math.floor(v * 140)
-                if px ~= nil and py ~= nil then
-                    img:drawLine(px, py, x, y, r, g, b, 255)
-                end
-                px, py = x, y
-            end
+        for _, easing in ipairs(easings) do
+            save_easing_curve(easing[1], easing[2], easing[3], easing[4], easing[5])
         end
-
-        local path = OUT .. "math_easing_curves.png"
-        save_png(img, path)
     end)
     -- Does: Runs "math_segment_intersections.png -- segment intersection grid" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by lurek.math.segmentIntersectsSegment without needing a special evidence-only renderer.
@@ -333,39 +325,26 @@ describe("Evidence: lurek.math curves and geometry reports", function()
         local path = OUT .. "math_bezier_crossing_pair.png"
         save_png(img, path)
     end)
-    -- Does: Runs "math_easing_quad_family.png -- linear and quadratic easing curves" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by lurek.math.linear, lurek.math.inQuad, and related owner calls without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/math/math_easing_quad_family.png
-    -- Why: This is meaningful only if the visible/text output comes from lurek.math.linear, lurek.math.inQuad, and related owner calls; export helpers are just the container.
+    -- Does: Runs "quadratic easing curves" and turns the owner-module result into inspectable artifacts.
+    -- Shows: Each PNG should expose one direct easing function instead of combining a whole family into one file.
+    -- Artifact: tests/artifacts/current/math/math_easing_*.png
+    -- Why: This is meaningful only if the visible/text output comes from direct lurek.math easing calls; export helpers are just the container.
 
-    it("PNG: math_easing_quad_family.png -- linear and quadratic easing curves", function()
-        local img = lurek.image.newImageData(420, 220)
-        img:fill(245, 245, 245, 255)
-
-        plot_curve(img, lurek.math.linear, 100, 100, 100)
-        plot_curve(img, lurek.math.inQuad, 220, 60, 60)
-        plot_curve(img, lurek.math.outQuad, 60, 160, 60)
-        plot_curve(img, lurek.math.inOutQuad, 60, 60, 220)
-
-        local path = OUT .. "math_easing_quad_family.png"
-        save_png(img, path)
+    it("PNG: quadratic easing curves", function()
+        save_easing_curve("math_easing_linear.png", lurek.math.linear, 100, 100, 100)
+        save_easing_curve("math_easing_in_quad.png", lurek.math.inQuad, 220, 60, 60)
+        save_easing_curve("math_easing_out_quad.png", lurek.math.outQuad, 60, 160, 60)
+        save_easing_curve("math_easing_inout_quad.png", lurek.math.inOutQuad, 60, 60, 220)
     end)
-    -- Does: Runs "math_easing_cubic_bounce.png -- cubic and bounce comparison" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by lurek.math.inCubic, lurek.math.outCubic, and related owner calls without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/math/math_easing_cubic_bounce.png
-    -- Why: This is meaningful only if the visible/text output comes from lurek.math.inCubic, lurek.math.outCubic, and related owner calls; export helpers are just the container.
+    -- Does: Runs "cubic and bounce easing curves" and turns the owner-module result into inspectable artifacts.
+    -- Shows: Each PNG should expose one direct easing function instead of combining cubic and bounce curves into one comparison file.
+    -- Artifact: tests/artifacts/current/math/math_easing_*.png
+    -- Why: This is meaningful only if the visible/text output comes from direct lurek.math easing calls; export helpers are just the container.
 
-    it("PNG: math_easing_cubic_bounce.png -- cubic and bounce comparison", function()
-        local img = lurek.image.newImageData(420, 220)
-        img:fill(250, 250, 250, 255)
-        draw_outline(img, 18, 18, 384, 184, 218, 222, 230, 255)
-
-        plot_curve(img, lurek.math.inCubic, 200, 80, 80)
-        plot_curve(img, lurek.math.outCubic, 80, 180, 80)
-        plot_curve(img, lurek.math.outBounce, 80, 80, 200)
-
-        local path = OUT .. "math_easing_cubic_bounce.png"
-        save_png(img, path)
+    it("PNG: cubic and bounce easing curves", function()
+        save_easing_curve("math_easing_in_cubic.png", lurek.math.inCubic, 200, 80, 80)
+        save_easing_curve("math_easing_out_cubic.png", lurek.math.outCubic, 80, 180, 80)
+        save_easing_curve("math_easing_out_bounce.png", lurek.math.outBounce, 80, 80, 200)
     end)
     -- Does: Runs "math_line_intersection_report.txt -- line intersection coordinates" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by lurek.math.lineIntersect without needing a special evidence-only renderer.

@@ -317,36 +317,6 @@ describe("Evidence: lurek.light scenarios", function()
         for _, lo in ipairs(l_objects) do lo:remove() end
         lurek.light.clear()
     end)
-    -- Does: Runs "light contact sheet" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by lurek.light.drawToImage without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/light/<artifact>
-    -- Why: This is meaningful only if the visible/text output comes from lurek.light.drawToImage; export helpers are just the container.
-
-    it("PNG: light contact sheet", function()
-        ensure_evidence_dir("light")
-        local files = {
-            "light_falloff.png",
-            "light_shadow_occlusion.png",
-            "light_color_mix.png",
-            "light_normal_map.png",
-        }
-
-        local canvas = lurek.image.newImageData(456, 456)
-        canvas:fill(12, 14, 20, 255)
-        local positions = {
-            { 16, 16 }, { 232, 16 }, { 16, 232 }, { 232, 232 },
-        }
-        for i, name in ipairs(files) do
-            local src = lurek.image.newImageData(OUT .. name)
-            local x, y = positions[i][1], positions[i][2]
-            canvas:paste(src, x, y)
-            draw_outline(canvas, x, y, 200, 200, 232, 236, 244, 255)
-        end
-
-        local path = OUT .. "light_contact_sheet.png"
-        lurek.image.savePNG(canvas, path)
-        expect_evidence_created(path)
-    end)
     -- Does: Runs "light grouping, flicker, and transition trace" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by lurek.light.getAmbient, lurek.light.setGroupEnabled, and related owner calls without needing a special evidence-only renderer.
     -- Artifact: tests/artifacts/current/light/light_group_transition_flicker_trace.txt
@@ -395,29 +365,25 @@ describe("Evidence: lurek.light scenarios", function()
         lurek.light.clear()
     end)
 
-    -- Does: Rebuilds the old single-occluder light showcase as a fixed two-panel capture with the light on opposite sides of the same wall.
-    -- Shows: The PNG should let a reviewer compare how one occluder changes the lit region as the light source moves from left to right.
-    -- Artifact: tests/artifacts/current/light/light_occluder_side_comparison.png
-    -- Why: This is meaningful because it preserves the useful proof from the old showcase while converting it into a deterministic artifact.
-    it("PNG: occluder side comparison", function()
+    -- Does: Rebuilds the old single-occluder light showcase as two standalone captures with the light on opposite sides of the same wall.
+    -- Shows: The PNG pair should let a reviewer inspect each occluder state without merging both evidences into one file.
+    -- Artifact: tests/artifacts/current/light/light_occluder_left.png, tests/artifacts/current/light/light_occluder_right.png
+    -- Why: This is meaningful because it preserves the useful proof from the old showcase while keeping each state as its own artifact.
+    it("PNG: occluder side captures", function()
         ensure_evidence_dir("light")
-        local W, H = 800, 260
         local panel_w, panel_h = 360, 220
         local wall = { x = 170, y = 40, w = 20, h = 140 }
         local positions = {
-            { 110, 110 },
-            { 250, 110 },
+            { "left", 110, 110 },
+            { "right", 250, 110 },
         }
 
-        local canvas = lurek.image.newImageData(W, H)
-        canvas:fill(12, 14, 20, 255)
-
-        for i, pos in ipairs(positions) do
+        for _, pos in ipairs(positions) do
             lurek.light.clear()
             lurek.light.setEnabled(true)
             lurek.light.setAmbient(0.06, 0.06, 0.08, 1.0)
 
-            local light = lurek.light.newLight(pos[1], pos[2], 180, {
+            local light = lurek.light.newLight(pos[2], pos[3], 180, {
                 intensity = 1.6,
                 blend = "add",
                 falloff = "smooth",
@@ -436,20 +402,18 @@ describe("Evidence: lurek.light scenarios", function()
             panel:fill(70, 65, 58, 255)
             compose_light_layer(panel, layer)
             panel:drawRect(wall.x, wall.y, wall.w, wall.h, 120, 100, 70, 255)
-            panel:drawCircle(pos[1], pos[2], 5, 255, 245, 180, 255)
-
-            local x = 24 + (i - 1) * 388
-            canvas:drawRect(x - 6, 20, panel_w + 12, panel_h + 12, 24, 28, 36, 255)
-            canvas:paste(panel, x, 26)
-            draw_outline(canvas, x, 26, panel_w, panel_h, 232, 236, 244, 255)
+            panel:drawCircle(pos[2], pos[3], 5, 255, 245, 180, 255)
+            local path = OUT .. "light_occluder_" .. pos[1] .. ".png"
+            lurek.image.savePNG(panel, path)
+            expect_evidence_created(path)
+            layer = nil
+            panel = nil
+            collectgarbage("collect")
 
             occ:remove()
             light:remove()
             lurek.light.clear()
         end
-
-        lurek.image.savePNG(canvas, OUT .. "light_occluder_side_comparison.png")
-        expect_evidence_created(OUT .. "light_occluder_side_comparison.png")
     end)
 
     -- Does: Rebuilds the vending-machine lighting scene as one deterministic capture with four colored lights and matching occluders.

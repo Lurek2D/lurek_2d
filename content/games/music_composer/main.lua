@@ -1,9 +1,9 @@
 -- ============================================================================
 -- Music Composer — Lurek2D
 -- ============================================================================
--- Category : showcase
--- Source   : content/games/showcase/music_composer/main.lua
--- Run with : cargo run -- content/games/showcase/music_composer
+-- Category : game
+-- Source   : content/games/music_composer/main.lua
+-- Run with : cargo run -- content/games/music_composer
 -- ============================================================================
 -- Visual piano roll music sequencer. Place notes on a 32×24 grid across
 -- three colored tracks with looping playback, smooth cursor, and particles.

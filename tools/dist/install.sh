@@ -114,5 +114,5 @@ if ! command -v lurek2d &>/dev/null; then
     echo ""
 fi
 
-ok "Lurek2D installed. Run:  lurek2d content/games/showcase/hello_world"
+ok "Lurek2D installed. Run:  lurek2d content/games/music_composer"
 ok "Or use games from:   $EXAMPLES_DEST"

@@ -1,4 +1,4 @@
-local DEMO_PATH = "content/games/strategy/hex_logistics/main.lua"
+local DEMO_PATH = "content/games/hex_logistics/main.lua"
 
 local function load_demo(seed)
     assert(type(dofile) == "function", "dofile helper must be available in the Lua test VM")

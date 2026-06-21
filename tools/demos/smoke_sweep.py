@@ -125,7 +125,7 @@ class Target:
     """One runnable unit (game project or single-file example)."""
 
     kind: str  # 'game' | 'example'
-    label: str  # short id used in report, e.g. 'games/showcase/hello_world'
+    label: str  # short id used in report, e.g. 'games/music_composer'
     path: Path  # arg passed to the engine (dir for games, .lua file for examples)
     screenshot: Path  # where the engine should write the PNG
 

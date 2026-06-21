@@ -2,7 +2,7 @@ describe("eu2 playable slice", function()
     local function load_demo_module(name)
         local candidates = {
             "scripts/" .. name,
-            "content/games/strategy/eu2/scripts/" .. name,
+            "content/games/eu2/scripts/" .. name,
         }
         for _, path in ipairs(candidates) do
             local ok, chunk = pcall(lurek.filesystem.load, path)

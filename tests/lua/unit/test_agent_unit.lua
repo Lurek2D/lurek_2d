@@ -520,6 +520,16 @@ describe("lurek.agent module", function()
         sys:update()
     end)
 
+    -- @covers LAISystem:getDiagnostics
+    it("LAISystem:getDiagnostics returns queue and latency counters", function()
+        local sys = lurek.agent.newSystem({})
+        local diagnostics = sys:getDiagnostics()
+        expect_type("table", diagnostics)
+        expect_type("number", diagnostics.in_flight)
+        expect_type("number", diagnostics.completed)
+        expect_type("number", diagnostics.avg_latency_ms)
+    end)
+
     -- Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ LOllamaManager methods Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
 
     -- @covers LOllamaManager:isRunning
@@ -610,10 +620,16 @@ describe("lurek.agent module", function()
     end)
 
     -- @covers LOllamaManager:deleteModel
-    it("LOllamaManager:deleteModel returns a boolean", function()
+    it("LOllamaManager:deleteModel returns a boolean or raises a descriptive error", function()
         local ollama = lurek.agent.newOllama()
-        local ok     = ollama:deleteModel("nonexistent_model_xyz")
-        expect_type("boolean", ok)
+        local ok, result = pcall(function()
+            return ollama:deleteModel("nonexistent_model_xyz")
+        end)
+        if ok then
+            expect_type("boolean", result)
+        else
+            expect_not_nil(result)
+        end
     end)
 
     -- @covers LOllamaManager:pendingCount

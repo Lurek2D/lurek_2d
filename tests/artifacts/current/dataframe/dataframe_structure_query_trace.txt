@@ -1,6 +1,6 @@
 empty_rows=0
 columns=name,score
-schema=table: 0x01310636b860
+schema=table: 0x018ce0d16a50
 count_score_15=4
 head_first=A
 tail_last=D

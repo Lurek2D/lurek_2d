@@ -120,83 +120,84 @@ describe("Evidence: lurek.procgen visual and sampled outputs", function()
 
         save_png(img, OUT .. "procgen_poisson_voronoi.png")
     end)
-    -- Does: Runs "noise map vs parallel noise with perlin/simplex strips" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by lurek.procgen.simplex3d, lurek.procgen.simplex2d, and related owner calls without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/procgen/<artifact>
-    -- Why: This is meaningful only if the visible/text output comes from lurek.procgen.simplex3d, lurek.procgen.simplex2d, and related owner calls; export helpers are just the container.
+    -- Does: Runs "noise map and direct procedural strip outputs" and turns the owner-module result into separate inspectable artifacts.
+    -- Shows: Each PNG should expose one procgen output instead of merging unrelated evidences into a suite image.
+    -- Artifact: tests/artifacts/current/procgen/procgen_noise_map.png, tests/artifacts/current/procgen/procgen_noise_map_parallel.png, tests/artifacts/current/procgen/procgen_perlin_strip.png, tests/artifacts/current/procgen/procgen_simplex2d_strip.png, tests/artifacts/current/procgen/procgen_simplex3d_strip.png
+    -- Why: This is meaningful only if each visible/text output comes from one concrete lurek.procgen path rather than a helper-built collage.
 
-    it("PNG: noise map vs parallel noise with perlin/simplex strips", function()
-        local W, H = 256, 192
-        local img = lurek.image.newImageData(W, H)
-
+    it("PNG: noise map and procedural strips", function()
         local w2, h2 = 64, 48
         local a = lurek.procgen.noiseMap(w2, h2, { seed = 77, scale_x = 0.08, scale_y = 0.08, octaves = 4 })
         local b = lurek.procgen.noiseMapParallel(w2, h2, { seed = 77, scale_x = 0.08, scale_y = 0.08, octaves = 4 })
 
-        -- left: noiseMap
+        local noise_map = lurek.image.newImageData(w2 * 2, h2 * 2)
+        local noise_parallel = lurek.image.newImageData(w2 * 2, h2 * 2)
         for y = 0, h2 - 1 do
             for x = 0, w2 - 1 do
                 local idx = y * w2 + x + 1
-                local v = a[idx] or 0
-                local c = clamp255((v * 0.5 + 0.5) * 255)
-                img:drawRect(x * 2, y * 2, 2, 2, c, c, c, 255)
+                local av = a[idx] or 0
+                local bv = b[idx] or 0
+                local ac = clamp255((av * 0.5 + 0.5) * 255)
+                local bc = clamp255((bv * 0.5 + 0.5) * 255)
+                noise_map:drawRect(x * 2, y * 2, 2, 2, ac, ac, ac, 255)
+                noise_parallel:drawRect(x * 2, y * 2, 2, 2, bc, bc, bc, 255)
             end
         end
+        save_png(noise_map, OUT .. "procgen_noise_map.png")
+        save_png(noise_parallel, OUT .. "procgen_noise_map_parallel.png")
 
-        -- right: noiseMapParallel
-        for y = 0, h2 - 1 do
-            for x = 0, w2 - 1 do
-                local idx = y * w2 + x + 1
-                local v = b[idx] or 0
+        local function save_strip(path, sample_fn, base_r, base_g, base_b)
+            local W = 256
+            local img = lurek.image.newImageData(W, 32)
+            img:fill(14, 16, 20, 255)
+            for x = 0, W - 1 do
+                local v = sample_fn(x)
                 local c = clamp255((v * 0.5 + 0.5) * 255)
-                img:drawRect(128 + x * 2, y * 2, 2, 2, c, c, c, 255)
+                img:drawRect(x, 6, 1, 20, base_r == "sample" and c or base_r, base_g == "sample" and c or base_g, base_b == "sample" and c or base_b, 255)
             end
+            save_png(img, path)
         end
 
-        -- bottom strips: perlin + simplex2d + simplex3d samples
-        for x = 0, W - 1 do
-            local p = lurek.procgen.perlinNoise(x * 0.03, 0.42, 7.0, 7.0)
-            local s2 = lurek.procgen.simplex2d(x * 0.03, 0.25)
-            local s3 = lurek.procgen.simplex3d(x * 0.03, 0.25, 0.75)
-            img:drawRect(x, 110, 1, 18, clamp255((p * 0.5 + 0.5) * 255), 80, 100, 255)
-            img:drawRect(x, 132, 1, 18, 80, clamp255((s2 * 0.5 + 0.5) * 255), 120, 255)
-            img:drawRect(x, 154, 1, 18, 100, 120, clamp255((s3 * 0.5 + 0.5) * 255), 255)
-        end
-
-        save_png(img, OUT .. "procgen_noise_suite.png")
+        save_strip(OUT .. "procgen_perlin_strip.png", function(x)
+            return lurek.procgen.perlinNoise(x * 0.03, 0.42, 7.0, 7.0)
+        end, "sample", 80, 100)
+        save_strip(OUT .. "procgen_simplex2d_strip.png", function(x)
+            return lurek.procgen.simplex2d(x * 0.03, 0.25)
+        end, 80, "sample", 120)
+        save_strip(OUT .. "procgen_simplex3d_strip.png", function(x)
+            return lurek.procgen.simplex3d(x * 0.03, 0.25, 0.75)
+        end, 100, 120, "sample")
     end)
-    -- Does: Runs "BSP and rooms dungeons side by side" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by lurek.procgen.roomsDungeon and lurek.procgen.bspDungeon without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/procgen/<artifact>
-    -- Why: This is meaningful only if the visible/text output comes from lurek.procgen.roomsDungeon and lurek.procgen.bspDungeon; export helpers are just the container.
+    -- Does: Runs "BSP and rooms dungeons" and turns the owner-module result into separate inspectable artifacts.
+    -- Shows: Each PNG should expose one dungeon generator output instead of merging two independent evidences into one sheet.
+    -- Artifact: tests/artifacts/current/procgen/procgen_bsp_dungeon.png, tests/artifacts/current/procgen/procgen_rooms_dungeon.png
+    -- Why: This is meaningful only if each visible output comes from one concrete generator path rather than a side-by-side comparison board.
 
-    it("PNG: BSP and rooms dungeons side by side", function()
-        local W, H = 360, 200
-        local img = lurek.image.newImageData(W, H)
-        img:drawRect(0, 0, W, H, 24, 25, 32, 255)
-
+    it("PNG: BSP and rooms dungeons", function()
         local bsp = lurek.procgen.bspDungeon({ width = 40, height = 28, seed = 9 })
         local rooms = lurek.procgen.roomsDungeon({ width = 40, height = 28, max_rooms = 12, seed = 19 })
 
-        -- BSP rooms (left)
+        local bsp_img = lurek.image.newImageData(160, 120)
+        bsp_img:drawRect(0, 0, 160, 120, 24, 25, 32, 255)
         for _, r in ipairs(bsp.rooms) do
-            img:drawRect(8 + r.x * 3, 8 + r.y * 3, math.max(1, r.w * 3), math.max(1, r.h * 3), 120, 190, 145, 255)
+            bsp_img:drawRect(8 + r.x * 3, 8 + r.y * 3, math.max(1, r.w * 3), math.max(1, r.h * 3), 120, 190, 145, 255)
         end
+        save_png(bsp_img, OUT .. "procgen_bsp_dungeon.png")
 
-        -- roomsDungeon grid (right)
+        local rooms_img = lurek.image.newImageData(160, 120)
+        rooms_img:drawRect(0, 0, 160, 120, 24, 25, 32, 255)
         for y = 0, rooms.height - 1 do
             for x = 0, rooms.width - 1 do
                 local idx = y * rooms.width + x + 1
                 local v = rooms.grid[idx] or 0
                 if v == 1 then
-                    img:drawRect(184 + x * 3, 8 + y * 3, 3, 3, 180, 165, 110, 255)
+                    rooms_img:drawRect(8 + x * 3, 8 + y * 3, 3, 3, 180, 165, 110, 255)
                 else
-                    img:drawRect(184 + x * 3, 8 + y * 3, 3, 3, 52, 50, 58, 255)
+                    rooms_img:drawRect(8 + x * 3, 8 + y * 3, 3, 3, 52, 50, 58, 255)
                 end
             end
         end
-
-        save_png(img, OUT .. "procgen_dungeons.png")
+        save_png(rooms_img, OUT .. "procgen_rooms_dungeon.png")
     end)
     -- Does: Runs "heightmap + world graph overlay" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by lurek.procgen.worldGraph and lurek.procgen.heightmap without needing a special evidence-only renderer.
@@ -488,32 +489,6 @@ describe("Evidence: lurek.procgen sampled data exports", function()
 
         local path = OUT .. "procgen_noise_heightmap_colored.png"
         save_png(img, path)
-    end)
-    -- Does: Assembles previously generated procgen artifacts into one sheet for fast visual review.
-    -- Shows: The contact sheet should let the reader compare the main procgen visual outputs without opening each file separately.
-    -- Artifact: tests/artifacts/current/procgen/procgen_contact_sheet.png
-    -- Why: This is meaningful because it summarizes multiple procgen artifact types in one durable review surface.
-
-    it("PNG: procgen contact sheet", function()
-        local files = {
-            "procgen_cellular_flood.png",
-            "procgen_poisson_voronoi.png",
-            "procgen_height_worldgraph.png",
-            "procgen_wfc_lsystem_names.png",
-        }
-        local canvas = lurek.image.newImageData(620, 452)
-        canvas:fill(12, 14, 20, 255)
-        local positions = {
-            { 16, 16 }, { 318, 16 }, { 16, 234 }, { 318, 234 },
-        }
-        for i, name in ipairs(files) do
-            local src = lurek.image.newImageData(OUT .. name)
-            local thumb = src:resize(286, 202, "bilinear")
-            local x, y = positions[i][1], positions[i][2]
-            canvas:paste(thumb, x, y)
-            draw_outline(canvas, x, y, 286, 202, 232, 236, 244, 255)
-        end
-        save_png(canvas, OUT .. "procgen_contact_sheet.png")
     end)
     -- Does: Runs "procgen extended API trace" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by lurek.procgen.lsystem, lurek.procgen.generateName, and related owner calls without needing a special evidence-only renderer.

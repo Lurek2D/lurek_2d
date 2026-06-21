@@ -328,12 +328,12 @@ describe("Evidence: lurek.tilemap scenarios", function()
 
         save_png(img, path)
     end)
-    -- Does: Runs "tilemap drawToImage multi-layer composite" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by lurek.tilemap.newTileMap, LTileMap:addLayer, and related owner calls without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/tilemap/tilemap_draw_to_image_composite.png
+    -- Does: Runs "tilemap drawToImage standalone layers" and turns the owner-module result into separate inspectable artifacts.
+    -- Shows: Each PNG should expose one layer state instead of collapsing ground and object layers into one composite image.
+    -- Artifact: tests/artifacts/current/tilemap/tilemap_draw_to_image_ground.png, tilemap_draw_to_image_objects.png
     -- Why: This is meaningful only if the visible/text output comes from lurek.tilemap.newTileMap, LTileMap:addLayer, and related owner calls; export helpers are just the container.
 
-    it("PNG: tilemap drawToImage multi-layer composite", function()
+    it("PNG: tilemap drawToImage standalone layers", function()
         ensure_evidence_dir("tilemap")
         local tm = lurek.tilemap.newTileMap(16, 16, 8)
         local ground = tm:addLayer("ground", 10, 10)
@@ -344,21 +344,25 @@ describe("Evidence: lurek.tilemap scenarios", function()
         tm:setTile(objects, 5, 5, 11)
         tm:setTile(objects, 7, 2, 12)
 
-        local img = tm:drawToImage(16)
-        local path = OUT .. "tilemap_draw_to_image_composite.png"
-        save_png(img, path)
+        local ground_only = lurek.tilemap.newTileMap(16, 16, 8)
+        local ground_layer = ground_only:addLayer("ground", 10, 10)
+        ground_only:fill(ground_layer, 1)
+        save_png(ground_only:drawToImage(16), OUT .. "tilemap_draw_to_image_ground.png")
+
+        local object_only = lurek.tilemap.newTileMap(16, 16, 8)
+        local object_layer = object_only:addLayer("objects", 10, 10)
+        object_only:setTile(object_layer, 3, 3, 10)
+        object_only:setTile(object_layer, 5, 5, 11)
+        object_only:setTile(object_layer, 7, 2, 12)
+        save_png(object_only:drawToImage(16), OUT .. "tilemap_draw_to_image_objects.png")
     end)
-    -- Does: Runs "tilemap hex biome route atlas" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by lurek.tilemap.toScreenHex, lurek.tilemap.hexArea, and related owner calls without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/tilemap/tilemap_hex_biomes_route.png
+    -- Does: Runs "tilemap hex biome and route views" and turns the owner-module result into separate inspectable artifacts.
+    -- Shows: Each PNG should expose one hex concern instead of combining area, ring, route, and neighbors into one atlas.
+    -- Artifact: tests/artifacts/current/tilemap/tilemap_hex_biomes_area.png, tilemap_hex_route.png, tilemap_hex_neighbors.png
     -- Why: This is meaningful only if the visible/text output comes from lurek.tilemap.toScreenHex, lurek.tilemap.hexArea, and related owner calls; export helpers are just the container.
 
-    it("PNG: tilemap hex biome route atlas", function()
+    it("PNG: tilemap hex biome and route views", function()
         ensure_evidence_dir("tilemap")
-        local path = OUT .. "tilemap_hex_biomes_route.png"
-        local img = lurek.image.newImageData(420, 320)
-        img:fill(16, 18, 24, 255)
-
         local hex_size = 22
         local origin_x, origin_y = 210, 160
         local area = lurek.tilemap.hexArea(0, 0, 3)
@@ -377,6 +381,16 @@ describe("Evidence: lurek.tilemap scenarios", function()
             neighbor_cells[cell.q .. ":" .. cell.r] = true
         end
 
+        local function new_hex_canvas()
+            local img = lurek.image.newImageData(420, 320)
+            img:fill(16, 18, 24, 255)
+            return img
+        end
+
+        local area_img = new_hex_canvas()
+        local route_img = new_hex_canvas()
+        local neighbor_img = new_hex_canvas()
+
         for _, cell in ipairs(area) do
             local key = cell.q .. ":" .. cell.r
             local sx, sy = lurek.tilemap.toScreenHex(cell.q, cell.r, hex_size)
@@ -384,7 +398,6 @@ describe("Evidence: lurek.tilemap scenarios", function()
             local cy = origin_y + sy
             local dist = math.max(math.abs(cell.q), math.abs(cell.r), math.abs(-cell.q - cell.r))
             local rr, gg, bb = 70, 110, 78
-
             if dist <= 1 then
                 rr, gg, bb = 58, 132, 86
             elseif dist == 2 then
@@ -392,18 +405,19 @@ describe("Evidence: lurek.tilemap scenarios", function()
             elseif dist == 3 then
                 rr, gg, bb = 96, 118, 148
             end
-            if ring_cells[key] then
-                rr, gg, bb = 112, 92, 146
-            end
-            if neighbor_cells[key] then
-                rr, gg, bb = 164, 116, 74
-            end
-            if route_cells[key] then
-                rr, gg, bb = 226, 186, 88
-            end
+            draw_hex_fill(area_img, cx, cy, hex_size - 3, rr, gg, bb)
+            draw_hex_outline(area_img, cx, cy, hex_size - 2, 228, 232, 240)
 
-            draw_hex_fill(img, cx, cy, hex_size - 3, rr, gg, bb)
-            draw_hex_outline(img, cx, cy, hex_size - 2, 228, 232, 240)
+            local route_rr, route_gg, route_bb = route_cells[key] and 226 or 70, route_cells[key] and 186 or 110, route_cells[key] and 88 or 78
+            draw_hex_fill(route_img, cx, cy, hex_size - 3, route_rr, route_gg, route_bb)
+            draw_hex_outline(route_img, cx, cy, hex_size - 2, 228, 232, 240)
+
+            local neigh_rr, neigh_gg, neigh_bb = neighbor_cells[key] and 164 or 70, neighbor_cells[key] and 116 or 110, neighbor_cells[key] and 74 or 78
+            if ring_cells[key] then
+                neigh_rr, neigh_gg, neigh_bb = 112, 92, 146
+            end
+            draw_hex_fill(neighbor_img, cx, cy, hex_size - 3, neigh_rr, neigh_gg, neigh_bb)
+            draw_hex_outline(neighbor_img, cx, cy, hex_size - 2, 228, 232, 240)
         end
 
         for i = 2, #route do
@@ -411,15 +425,17 @@ describe("Evidence: lurek.tilemap scenarios", function()
             local b = route[i]
             local ax, ay = lurek.tilemap.toScreenHex(a.q, a.r, hex_size)
             local bx, by = lurek.tilemap.toScreenHex(b.q, b.r, hex_size)
-            img:drawLine(origin_x + ax, origin_y + ay, origin_x + bx, origin_y + by, 255, 242, 164, 255)
+            route_img:drawLine(origin_x + ax, origin_y + ay, origin_x + bx, origin_y + by, 255, 242, 164, 255)
         end
 
         local start_x, start_y = lurek.tilemap.toScreenHex(route[1].q, route[1].r, hex_size)
         local goal_x, goal_y = lurek.tilemap.toScreenHex(route[#route].q, route[#route].r, hex_size)
-        img:drawCircle(origin_x + start_x, origin_y + start_y, 6, 120, 240, 150, 255)
-        img:drawCircle(origin_x + goal_x, origin_y + goal_y, 6, 255, 120, 120, 255)
+        route_img:drawCircle(origin_x + start_x, origin_y + start_y, 6, 120, 240, 150, 255)
+        route_img:drawCircle(origin_x + goal_x, origin_y + goal_y, 6, 255, 120, 120, 255)
 
-        save_png(img, path)
+        save_png(area_img, OUT .. "tilemap_hex_biomes_area.png")
+        save_png(route_img, OUT .. "tilemap_hex_route.png")
+        save_png(neighbor_img, OUT .. "tilemap_hex_neighbors.png")
     end)
     -- Does: Runs "tilemap hex operations frontier map" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by lurek.tilemap.hexSpiral, lurek.tilemap.hexDistance, and related owner calls without needing a special evidence-only renderer.

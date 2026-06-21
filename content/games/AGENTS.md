@@ -16,7 +16,7 @@
 - Every entry must be a complete playable product. Small is fine; incomplete is not.
 - `game` and `minigame` differ by scope only. Both still need rules, gameplay loop, menu/UI where needed, scoring/progression where needed, and AI/systems where the design calls for them.
 - `content/games/` is not the home for API showcases, single-mechanic labs, or examples of 2-3 features.
-- If a folder mainly demonstrates one API or produces a useful artifact, move that value to `content/showcase/` or `tests/lua/evidence/` before keeping or deleting the game folder.
+- If a folder mainly demonstrates one API or produces a useful artifact, move that value to `content/examples/` or `tests/lua/evidence/` before keeping or deleting the game folder.
 - Never call low-level presentation swaps such as `lurek.window.present`.
 - Keep game state in local tables or module scope.
 - Keep custom assets inside the game folder and load them by relative path.

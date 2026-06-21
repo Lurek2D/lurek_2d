@@ -2905,7 +2905,7 @@ do
 -- Returns the Lua-visible type name for this database handle.
   local db = lurek.dataframe.newDatabase()
   lurek.log.info("db type " .. tostring(db:type()))
-  lurek.log.info("db rows: " .. tostring(db:nrows()))
+  lurek.log.info("table count " .. tostring(db:tableCount()))
   lurek.log.info("table count " .. tostring(db:tableCount()))
   lurek.log.info("is database " .. tostring(db:typeOf("LDatabase")))
 end
@@ -2913,7 +2913,7 @@ end
 do
   local db = lurek.dataframe.newDatabase()
   lurek.log.info("db type again " .. tostring(db:type()))
-  lurek.log.info("db cols: " .. tostring(db:ncols()))
+  lurek.log.info("table count again " .. tostring(db:tableCount()))
   lurek.log.info("is database " .. tostring(db:typeOf("LDatabase")))
   lurek.log.info("table count again " .. tostring(db:tableCount()))
 end
@@ -2930,7 +2930,7 @@ end
 do
   local db = lurek.dataframe.newDatabase()
   lurek.log.info("database guard " .. tostring(db:typeOf("LDatabase")))
-  lurek.log.info("db cols: " .. tostring(db:ncols()))
+  lurek.log.info("table count " .. tostring(db:tableCount()))
   lurek.log.info("object guard " .. tostring(db:typeOf("LObject")))
   lurek.log.info("table count " .. tostring(db:tableCount()))
 end

@@ -339,7 +339,9 @@ describe("lurek.serial unified codec helpers", function()
         }, "csv", {
             complex_cells = "json",
         })
-        expect_true(string.find(csv_nested, '{"nested":true}', 1, true) ~= nil)
+        local decoded_rows = lurek.serial.fromCsv(csv_nested)
+        local payload = lurek.serial.fromJson(decoded_rows[1].payload)
+        expect_equal(true, payload.nested)
     end)
 
     -- @covers lurek.serial.applyDefaults

@@ -90,16 +90,12 @@ describe("lurek.mapblock module", function()
     end)
 
     -- @covers lurek.mapblock.newBlock
-    it("newBlock creates a block with the requested dimensions", function()
+    it("newBlock creates a block with the requested dimensions and rejects zero dimensions", function()
         local block = new_block()
         expect_equal("userdata", type(block))
         expect_equal(4, block:getWidth())
         expect_equal(3, block:getHeight())
         expect_equal(2, block:getLayerCount())
-    end)
-
-    -- @covers lurek.mapblock.newBlock
-    it("newBlock rejects zero dimensions", function()
         expect_error(function()
             lurek.mapblock.newBlock(0, 2, 1, new_config())
         end)
@@ -212,7 +208,7 @@ describe("mapblock block methods", function()
     end)
 
     -- @covers LMapBlock:setEdge
-    it("setEdge accepts valid names and rejects unknown ones", function()
+    it("setEdge accepts valid names and rejects unknown names or segment indices", function()
         local block = new_block()
         expect_no_error(function()
             block:setEdge("north", 0, 2)
@@ -220,11 +216,6 @@ describe("mapblock block methods", function()
         expect_error(function()
             block:setEdge("upward", 0, 2)
         end)
-    end)
-
-    -- @covers LMapBlock:setEdge
-    it("setEdge rejects segment indices outside the footprint span", function()
-        local block = new_block()
         expect_error(function()
             block:setEdge("north", 1, 2)
         end)
@@ -321,16 +312,11 @@ describe("mapblock block methods", function()
     end)
 
     -- @covers LMapBlock:setLevelSpan
-    it("setLevelSpan accepts a multi-level span", function()
+    it("setLevelSpan accepts a multi-level span and rejects zero", function()
         local block = new_block(new_config(), 4, 3, 2)
         expect_no_error(function()
             block:setLevelSpan(2)
         end)
-    end)
-
-    -- @covers LMapBlock:setLevelSpan
-    it("setLevelSpan rejects zero", function()
-        local block = new_block(new_config(), 4, 3, 2)
         expect_error(function()
             block:setLevelSpan(0)
         end)
@@ -585,7 +571,7 @@ describe("mapblock generator and result methods", function()
     end)
 
     -- @covers LMapBlockGenerator:generateWithReport
-    it("generateWithReport returns result and diagnostics report", function()
+    it("generateWithReport returns diagnostics and reports solve-budget failures", function()
         local gen = new_generator()
         gen:setRectShape(1, 1)
         local script = new_script("missing_group")
@@ -593,6 +579,25 @@ describe("mapblock generator and result methods", function()
         local result, report = gen:generateWithReport(script)
         expect_equal("userdata", type(result))
         expect_equal("userdata", type(report))
+        gen = new_generator()
+        gen:setRectShape(2, 2)
+        gen:setSolverBudget({ max_nodes = 1, max_depth = 16, max_ms = 1000, max_candidates_per_cell = 8 })
+
+        local group = new_group("terrain")
+        group:addBlock(new_block())
+        gen:addGroup(group)
+
+        local script = new_script("budget")
+        script:addStep("solve_shape", { group = "terrain" })
+        script:addStep("fill_rect", { x = -1, y = 0, width = 2, height = 1, layer = 0, level = 0, slot = 0 })
+
+        local _, report = gen:generateWithReport(script)
+        local tbl = report:toTable()
+        expect_equal("budget_exceeded", tbl.solve_failure_reason)
+        expect_equal(1, tbl.diagnostics.solve_failures)
+        expect_equal(1, tbl.diagnostics.clipped_paint_ops)
+        expect_true(tbl.transform_cache_hits >= 0)
+        expect_true(tbl.transform_cache_misses >= 1)
     end)
 
     -- @covers LMapBlockGenerator:getLastPlacedCount
@@ -612,29 +617,6 @@ describe("mapblock generator and result methods", function()
         gen:generateWithReport(script)
         local report = gen:getLastReport()
         expect_equal("userdata", type(report))
-    end)
-
-    -- @covers LMapBlockGenerator:generateWithReport
-    it("generateWithReport exposes solve budget failures and paint diagnostics", function()
-        local gen = new_generator()
-        gen:setRectShape(2, 2)
-        gen:setSolverBudget({ max_nodes = 1, max_depth = 16, max_ms = 1000, max_candidates_per_cell = 8 })
-
-        local group = new_group("terrain")
-        group:addBlock(new_block())
-        gen:addGroup(group)
-
-        local script = new_script("budget")
-        script:addStep("solve_shape", { group = "terrain" })
-        script:addStep("fill_rect", { x = -1, y = 0, width = 2, height = 1, layer = 0, level = 0, slot = 0 })
-
-        local _, report = gen:generateWithReport(script)
-        local tbl = report:toTable()
-        expect_equal("budget_exceeded", tbl.solve_failure_reason)
-        expect_equal(1, tbl.diagnostics.solve_failures)
-        expect_equal(1, tbl.diagnostics.clipped_paint_ops)
-        expect_true(tbl.transform_cache_hits >= 0)
-        expect_true(tbl.transform_cache_misses >= 1)
     end)
 
     -- @covers LMapBlockResult:getWidth

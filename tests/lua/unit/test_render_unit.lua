@@ -1552,8 +1552,8 @@ describe("render strict: batch text and OBJ APIs", function()
 
     -- @covers lurek.render.loadObj
     it("loads OBJ model and exposes mesh projection methods", function()
-        local obj = lurek.render.loadObj("content/games/retro/dungeon_crawler/assets/models/tank.obj")
-        local mdl = lurek.render.loadModel("content/games/retro/dungeon_crawler/assets/models/tank.obj")
+        local obj = lurek.render.loadObj("content/games/dungeon_crawler/assets/models/tank.obj")
+        local mdl = lurek.render.loadModel("content/games/dungeon_crawler/assets/models/tank.obj")
 
         expect_type("userdata", obj)
         expect_type("userdata", mdl)
@@ -1573,7 +1573,7 @@ describe("render strict: batch text and OBJ APIs", function()
 
     -- @covers lurek.render.loadModel
     it("loadModel returns an OBJ model userdata", function()
-        local mdl = lurek.render.loadModel("content/games/retro/dungeon_crawler/assets/models/tank.obj")
+        local mdl = lurek.render.loadModel("content/games/dungeon_crawler/assets/models/tank.obj")
         expect_type("userdata", mdl)
     end)
 
@@ -1591,7 +1591,7 @@ end)
 -- @describe render strict: LObjModel methods
 describe("render strict: LObjModel methods", function()
     local function load_obj_model()
-        return lurek.render.loadObj("content/games/retro/dungeon_crawler/assets/models/tank.obj")
+        return lurek.render.loadObj("content/games/dungeon_crawler/assets/models/tank.obj")
     end
 
     -- @covers LObjModel:getVertexCount

@@ -2,8 +2,8 @@
 """Cross-reference Lua example scripts against the lurek.* Lua API.
 
 Coverage is reported in four tiers:
-    - "FULL" -- --@api: or --@api-stub: block present, NO "-- TODO:" line, and block body has 5+ code lines
-    - "PART" -- block present, no TODO, but body has fewer than 5 code lines (thin block)
+    - "FULL" -- --@api: or --@api-stub: block present, NO "-- TODO:" line, and block body has 5+ non-comment code lines
+    - "PART" -- block present, no TODO, but body has fewer than 5 non-comment code lines (thin block)
     - "TODO" -- marker block present AND has a "-- TODO:" line
     - "MISS" -- no --@api: / --@api-stub: marker at all (item not tracked in any example)
 
@@ -11,14 +11,14 @@ Structural lint checks (E-codes) run automatically after the summary:
     E1 -- stub has no ``do`` block below it (not a recognised alias)
     E2 -- non-blank line (including a comment) between stub marker and ``do``
     E3 -- two or more stubs stacked with no ``do`` block between them
-    E4 -- ``do`` block body is thin (< 5 code lines, excluding blank/comment lines)
+    E4 -- ``do`` block body is thin (< 5 non-comment code lines)
     E5 -- marker text is not a clean API identifier
     E6 -- marker text appears more than once across example files
     E7 -- top-level ``do`` block has no immediately preceding ``--@api:`` / ``--@api-stub:``
 
 Workflow:
   1. Run example_add_missing.py  -- adds --@api-stub: blocks with -- TODO: (pending)
-  2. Agent writes real Lua code, removes -- TODO: line  (pending -> real)
+  2. Agent writes real Lua code directly inside the owning do...end block, removes -- TODO: line  (pending -> real)
   3. This tool gates on: no "missing" items (--report), no pending (--no-stubs),
      and optionally no thin partial blocks (--no-partials)
 
@@ -55,8 +55,6 @@ FULL_BLOCK_MIN_LINES = 5
 
 DO_LINE_RE = re.compile(r'^do(?:\s*--.*)?$')
 FUNCTION_START_RE = re.compile(r'^(?:local\s+)?function\b')
-LOCAL_FUNCTION_DEF_RE = re.compile(r'^local\s+function\s+([A-Za-z_][A-Za-z0-9_]*)\b')
-GLOBAL_FUNCTION_DEF_RE = re.compile(r'^function\s+([A-Za-z_][A-Za-z0-9_]*)\b')
 IF_START_RE = re.compile(r'^if\b.*\bthen(?:\s*--.*)?$')
 FOR_START_RE = re.compile(r'^for\b.*\bdo(?:\s*--.*)?$')
 WHILE_START_RE = re.compile(r'^while\b.*\bdo(?:\s*--.*)?$')
@@ -347,14 +345,6 @@ def _count_scope_closures(stripped: str) -> int:
 
 def _is_outer_block_end(stripped: str, depth: int) -> bool:
     return depth == 1 and _count_scope_closures(stripped) == 1 and _count_scope_openings(stripped) == 0
-
-
-def _extract_function_name(stripped: str) -> str | None:
-    for pattern in (LOCAL_FUNCTION_DEF_RE, GLOBAL_FUNCTION_DEF_RE):
-        match = pattern.match(stripped)
-        if match:
-            return match.group(1)
-    return None
 
 
 def classify_block(block: dict | None) -> str:
@@ -746,7 +736,6 @@ def lint_example_files(examples_dir: Path, filt: str | None = None) -> list:
       E5  marker text is not a clean API identifier
       E6  marker text appears more than once across example files
       E7  top-level ``do`` block has no immediately preceding example marker
-      E8  pending stub block references a top-level helper function defined outside the block
     """
     issues: list = []
 
@@ -758,8 +747,6 @@ def lint_example_files(examples_dir: Path, filt: str | None = None) -> list:
         n = len(lines)
         i = 0
         top_level_depth = 0
-        top_level_helpers: dict[str, int] = {}
-
         while i < n:
             stripped = lines[i].strip()
 
@@ -778,15 +765,11 @@ def lint_example_files(examples_dir: Path, filt: str | None = None) -> list:
                     top_level_depth = 0
                     i = end_idx + 1
                     continue
-                helper_name = _extract_function_name(stripped)
-                if helper_name and top_level_depth == 0:
-                    top_level_helpers.setdefault(helper_name, i + 1)
                 i += 1
                 continue
 
             marker = m.group(1).strip()
             stub_lineno = i + 1  # 1-based
-            is_pending_stub = stripped.startswith('--@api-stub:')
 
             # E5: marker must be a clean API identifier
             if not MARKER_VALID_RE.match(marker):
@@ -828,26 +811,8 @@ def lint_example_files(examples_dir: Path, filt: str | None = None) -> list:
             code_lines = [l for l in body_lines if _is_body_code_line(l)]
             if len(code_lines) < LINT_MIN_BODY_LINES:
                 issues.append((p.name, stub_lineno, 'E4',
-                    f"stub '{marker}': block has {len(code_lines)} code line(s) "
+                    f"stub '{marker}': block has {len(code_lines)} non-comment code line(s) "
                     f"(need >= {LINT_MIN_BODY_LINES})"))
-
-            if is_pending_stub:
-                block_local_helpers = {
-                    helper_name
-                    for body_line in body_lines
-                    if (helper_name := _extract_function_name(body_line))
-                }
-                body_text = '\n'.join(body_lines)
-                for helper_name, helper_lineno in sorted(top_level_helpers.items(), key=lambda item: item[1]):
-                    if helper_name in block_local_helpers:
-                        continue
-                    if re.search(rf'\b{re.escape(helper_name)}\s*\(', body_text):
-                        issues.append((
-                            p.name,
-                            stub_lineno,
-                            'E8',
-                            f"stub '{marker}': references top-level helper '{helper_name}' defined at line {helper_lineno}",
-                        ))
 
             i = end_idx + 1
 

@@ -222,13 +222,18 @@ describe("SaveManager.disableAutoSave / update", function()
     end)
 
     -- @covers LSaveManager:update
-    it("update handles single and repeated delta time updates without error", function()
+    it("update handles repeated delta time updates and ignores invalid values", function()
         local sm = lurek.save.newSaveManager()
         expect_no_error(function() sm:update(0.016) end)
         for _ = 1, 100 do
             sm:update(0.016)
         end
         expect_true(true, "update loop completed without error")
+        sm:enableAutoSave(0.5, "autosave_slot")
+        sm:markDirty()
+        expect_equal(nil, sm:update(0 / 0))
+        expect_equal(nil, sm:update(-1.0))
+        expect_equal("autosave_slot", sm:update(0.5))
     end)
 end)
 
@@ -311,17 +316,6 @@ describe("SaveManager regression coverage", function()
         expect_equal(nil, sm:update(1.0))
     end)
 
-    -- @covers LSaveManager:update
-    it("update ignores non-finite and negative delta time values", function()
-        local sm = lurek.save.newSaveManager()
-
-        sm:enableAutoSave(0.5, "autosave_slot")
-        sm:markDirty()
-
-        expect_equal(nil, sm:update(0 / 0))
-        expect_equal(nil, sm:update(-1.0))
-        expect_equal("autosave_slot", sm:update(0.5))
-    end)
 end)
 
 -- @describe save strict: LSaveManager addMigration/type/typeOf

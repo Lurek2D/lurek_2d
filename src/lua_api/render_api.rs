@@ -1154,6 +1154,10 @@ pub struct LuaShader {
 }
 impl LuaUserData for LuaShader {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- getId --
+        /// Returns the internal numeric handle ID for this shader.
+        /// @return | number | Opaque shader handle identifier.
+        methods.add_method("getId", |_, this, ()| Ok(this.key.data().as_ffi()));
         // -- send --
         /// Sends a uniform value to this shader by name. Supported types: number, boolean, or table (vec2/vec3/vec4).
         /// @param | name | string | Uniform variable name declared in the shader.

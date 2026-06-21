@@ -20,8 +20,12 @@ describe("golden: camera evidence comparison", function()
             "tests/artifacts/baselines/camera/camera_transform_samples.json"
         )
         expect_golden_file_match(
-            evidence_output_dir("camera") .. "camera_visible_area_transform_grid.png",
-            "tests/artifacts/baselines/camera/camera_visible_area_transform_grid.png"
+            evidence_output_dir("camera") .. "camera_visible_area_panel.png",
+            "tests/artifacts/baselines/camera/camera_visible_area_panel.png"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("camera") .. "camera_transform_screen_panel.png",
+            "tests/artifacts/baselines/camera/camera_transform_screen_panel.png"
         )
     end)
 end)

@@ -20,12 +20,32 @@ describe("golden: procgen evidence comparison", function()
             "tests/artifacts/baselines/procgen/procgen_poisson_voronoi.png"
         )
         expect_golden_file_match(
-            evidence_output_dir("procgen") .. "procgen_noise_suite.png",
-            "tests/artifacts/baselines/procgen/procgen_noise_suite.png"
+            evidence_output_dir("procgen") .. "procgen_noise_map.png",
+            "tests/artifacts/baselines/procgen/procgen_noise_map.png"
         )
         expect_golden_file_match(
-            evidence_output_dir("procgen") .. "procgen_dungeons.png",
-            "tests/artifacts/baselines/procgen/procgen_dungeons.png"
+            evidence_output_dir("procgen") .. "procgen_noise_map_parallel.png",
+            "tests/artifacts/baselines/procgen/procgen_noise_map_parallel.png"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("procgen") .. "procgen_perlin_strip.png",
+            "tests/artifacts/baselines/procgen/procgen_perlin_strip.png"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("procgen") .. "procgen_simplex2d_strip.png",
+            "tests/artifacts/baselines/procgen/procgen_simplex2d_strip.png"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("procgen") .. "procgen_simplex3d_strip.png",
+            "tests/artifacts/baselines/procgen/procgen_simplex3d_strip.png"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("procgen") .. "procgen_bsp_dungeon.png",
+            "tests/artifacts/baselines/procgen/procgen_bsp_dungeon.png"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("procgen") .. "procgen_rooms_dungeon.png",
+            "tests/artifacts/baselines/procgen/procgen_rooms_dungeon.png"
         )
         expect_golden_file_match(
             evidence_output_dir("procgen") .. "procgen_height_worldgraph.png",

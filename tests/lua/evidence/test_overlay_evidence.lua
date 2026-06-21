@@ -26,13 +26,6 @@ local function chart_to_image(chart, width, height)
     return img
 end
 
-local function draw_outline(img, x, y, w, h, r, g, b, a)
-    img:drawLine(x, y, x + w - 1, y, r, g, b, a or 255)
-    img:drawLine(x + w - 1, y, x + w - 1, y + h - 1, r, g, b, a or 255)
-    img:drawLine(x + w - 1, y + h - 1, x, y + h - 1, r, g, b, a or 255)
-    img:drawLine(x, y + h - 1, x, y, r, g, b, a or 255)
-end
-
 -- @describe evidence: overlay
 describe("evidence: overlay", function()
     before_each(function()
@@ -76,116 +69,119 @@ describe("evidence: overlay", function()
         local json = string.format('{"lua_type":"%s","engine_type":"%s"}', type(img), tostring(img and img:type() or "nil"))
         write_text(path, json)
     end)
-    -- Does: Runs "exports overlay state preview panels" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by LOverlay:triggerFlash, LOverlay:triggerFade, and related owner calls without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/overlay/overlay_state_panels.png, tests/artifacts/current/overlay/overlay_weather_daynight_panels.png
-    -- Why: This is meaningful only if the visible/text output comes from LOverlay:triggerFlash, LOverlay:triggerFade, and related owner calls; export helpers are just the container.
+    -- Does: Exports separate overlay state previews for flash, fade, and lightning.
+    -- Shows: Each PNG should expose one owner-driven overlay state without merging several evidences into one sheet.
+    -- Artifact: tests/artifacts/current/overlay/overlay_flash_preview.png, tests/artifacts/current/overlay/overlay_fade_preview.png, tests/artifacts/current/overlay/overlay_lightning_preview.png
+    -- Why: This is meaningful only if each visible output comes from LOverlay state changes rather than from a helper-built panel collage.
 
     it("exports overlay state preview panels", function()
-        local path = OUT .. "overlay_state_panels.png"
-        local canvas = lurek.image.newImageData(540, 160)
-        canvas:fill(12, 14, 20, 255)
-
         local configs = {
-            function(ov)
-                ov:triggerFlash(1.0, 0.35, 0.10, 0.9, 0.5)
-                ov:update(0.05)
-            end,
-            function(ov)
-                ov:triggerFade(0.05, 0.08, 0.12, 0.85, 0.9)
-                ov:update(0.45)
-            end,
-            function(ov)
-                ov:triggerLightning()
-                ov:update(0.02)
-            end,
+            {
+                name = "overlay_flash_preview.png",
+                configure = function(ov)
+                    ov:triggerFlash(1.0, 0.35, 0.10, 0.9, 0.5)
+                    ov:update(0.05)
+                end,
+            },
+            {
+                name = "overlay_fade_preview.png",
+                configure = function(ov)
+                    ov:triggerFade(0.05, 0.08, 0.12, 0.85, 0.9)
+                    ov:update(0.45)
+                end,
+            },
+            {
+                name = "overlay_lightning_preview.png",
+                configure = function(ov)
+                    ov:triggerLightning()
+                    ov:update(0.02)
+                end,
+            },
         }
 
-        for i, configure in ipairs(configs) do
+        for _, item in ipairs(configs) do
             local ov = lurek.overlay.new(160, 96)
-            configure(ov)
+            item.configure(ov)
             local frame = ov:drawToImage(160, 96)
-            local x = 16 + (i - 1) * 172
-            canvas:drawRect(x - 4, 18, 168, 104, 24, 28, 36, 255)
-            canvas:paste(frame, x, 22)
-            draw_outline(canvas, x, 22, 160, 96, 232, 236, 244, 255)
+            save_png(frame, OUT .. item.name)
         end
-
-        save_png(canvas, path)
     end)
-    -- Does: Runs "exports weather and day-night overlay panels" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by LOverlay:setAmbientColor, LOverlay:setTimeOfDay, and related owner calls without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/overlay/overlay_weather_daynight_panels.png
-    -- Why: This is meaningful only if the visible/text output comes from LOverlay:setAmbientColor, LOverlay:setTimeOfDay, and related owner calls; export helpers are just the container.
+    -- Does: Exports separate weather and day-night overlay states as standalone PNGs.
+    -- Shows: Each PNG should expose one owner-driven environment state instead of a merged comparison panel.
+    -- Artifact: tests/artifacts/current/overlay/overlay_dawn_fog_preview.png, tests/artifacts/current/overlay/overlay_noon_rain_preview.png, tests/artifacts/current/overlay/overlay_dusk_heat_preview.png, tests/artifacts/current/overlay/overlay_night_snow_preview.png
+    -- Why: This is meaningful only if each visible output comes from LOverlay environment controls rather than from a helper-built mosaic.
 
     it("exports weather and day-night overlay panels", function()
-        local path = OUT .. "overlay_weather_daynight_panels.png"
-        local canvas = lurek.image.newImageData(696, 196)
-        canvas:fill(12, 14, 20, 255)
-
         local configs = {
-            function(ov)
-                ov:setAmbientColor(0.90, 0.62, 0.38, 0.35)
-                ov:setTimeOfDay(6.5)
-                ov:setFogEnabled(true)
-                ov:setFogDensity(0.18)
-                ov:setVignetteEnabled(true)
-                ov:setVignetteStrength(0.22)
-            end,
-            function(ov)
-                ov:setAmbientColor(0.28, 0.38, 0.55, 0.25)
-                ov:setTimeOfDay(12.0)
-                ov:setCloudShadows(true)
-                ov:setCloudCount(6)
-                ov:setCloudSpeed(0.75)
-                ov:setCloudScale(1.3)
-                ov:setCloudOpacity(0.42)
-                ov:setWeatherEnabled(true)
-                ov:setWeather("rain")
-                ov:setWeatherIntensity(0.55)
-                ov:setWindDirection(35.0)
-                ov:setWindSpeed(1.4)
-            end,
-            function(ov)
-                ov:setAmbientColor(0.98, 0.74, 0.42, 0.30)
-                ov:setTimeOfDay(17.75)
-                ov:setHeatHazeEnabled(true)
-                ov:setHeatHazeIntensity(0.48)
-                ov:setFilmGrainEnabled(true)
-                ov:setFilmGrainIntensity(0.18)
-                ov:setVignetteEnabled(true)
-                ov:setVignetteStrength(0.32)
-            end,
-            function(ov)
-                ov:setAmbientColor(0.14, 0.18, 0.32, 0.42)
-                ov:setTimeOfDay(22.0)
-                ov:setFogEnabled(true)
-                ov:setFogDensity(0.28)
-                ov:setWeatherEnabled(true)
-                ov:setWeather("snow")
-                ov:setWeatherIntensity(0.42)
-                ov:setLightningColor(0.70, 0.86, 1.0, 0.90)
-                ov:triggerLightning()
-                ov:update(0.03)
-            end,
+            {
+                name = "overlay_dawn_fog_preview.png",
+                configure = function(ov)
+                    ov:setAmbientColor(0.90, 0.62, 0.38, 0.35)
+                    ov:setTimeOfDay(6.5)
+                    ov:setFogEnabled(true)
+                    ov:setFogDensity(0.18)
+                    ov:setVignetteEnabled(true)
+                    ov:setVignetteStrength(0.22)
+                end,
+            },
+            {
+                name = "overlay_noon_rain_preview.png",
+                configure = function(ov)
+                    ov:setAmbientColor(0.28, 0.38, 0.55, 0.25)
+                    ov:setTimeOfDay(12.0)
+                    ov:setCloudShadows(true)
+                    ov:setCloudCount(6)
+                    ov:setCloudSpeed(0.75)
+                    ov:setCloudScale(1.3)
+                    ov:setCloudOpacity(0.42)
+                    ov:setWeatherEnabled(true)
+                    ov:setWeather("rain")
+                    ov:setWeatherIntensity(0.55)
+                    ov:setWindDirection(35.0)
+                    ov:setWindSpeed(1.4)
+                end,
+            },
+            {
+                name = "overlay_dusk_heat_preview.png",
+                configure = function(ov)
+                    ov:setAmbientColor(0.98, 0.74, 0.42, 0.30)
+                    ov:setTimeOfDay(17.75)
+                    ov:setHeatHazeEnabled(true)
+                    ov:setHeatHazeIntensity(0.48)
+                    ov:setFilmGrainEnabled(true)
+                    ov:setFilmGrainIntensity(0.18)
+                    ov:setVignetteEnabled(true)
+                    ov:setVignetteStrength(0.32)
+                end,
+            },
+            {
+                name = "overlay_night_snow_preview.png",
+                configure = function(ov)
+                    ov:setAmbientColor(0.14, 0.18, 0.32, 0.42)
+                    ov:setTimeOfDay(22.0)
+                    ov:setFogEnabled(true)
+                    ov:setFogDensity(0.28)
+                    ov:setWeatherEnabled(true)
+                    ov:setWeather("snow")
+                    ov:setWeatherIntensity(0.42)
+                    ov:setLightningColor(0.70, 0.86, 1.0, 0.90)
+                    ov:triggerLightning()
+                    ov:update(0.03)
+                end,
+            },
         }
 
-        for i, configure in ipairs(configs) do
+        for _, item in ipairs(configs) do
             local ov = lurek.overlay.new(160, 96)
-            configure(ov)
+            item.configure(ov)
             local frame = ov:drawToImage(160, 96)
-            local x = 16 + (i - 1) * 168
-            canvas:drawRect(x - 4, 26, 168, 104, 24, 28, 36, 255)
-            canvas:paste(frame, x, 30)
-            draw_outline(canvas, x, 30, 160, 96, 232, 236, 244, 255)
+            save_png(frame, OUT .. item.name)
         end
-
-        save_png(canvas, path)
     end)
-    -- Does: Runs "exports overlay telemetry dashboard" and turns the owner-module result into inspectable dashboard charts.
-    -- Shows: The artifact should expose the behavior produced by LOverlay:getStats, lurek.dataframe.fromRows, and lurek.charts chart renderers.
-    -- Artifact: tests/artifacts/current/overlay/overlay_runtime_dashboard.png
-    -- Why: This is meaningful only if the visible output comes from runtime overlay telemetry sampled over time.
+    -- Does: Exports overlay telemetry charts as separate evidence files.
+    -- Shows: Each PNG should expose one runtime telemetry slice instead of merging several charts into one dashboard.
+    -- Artifact: tests/artifacts/current/overlay/overlay_runtime_signal.png, tests/artifacts/current/overlay/overlay_runtime_summary.png, tests/artifacts/current/overlay/overlay_runtime_phase_heatmap.png
+    -- Why: This is meaningful only if each visible output comes from runtime overlay telemetry sampled over time.
 
     it("exports overlay telemetry dashboard", function()
         local ov = lurek.overlay.new(320, 180)
@@ -290,20 +286,9 @@ describe("evidence: overlay", function()
         phases:setValueRange(0, 100)
         phases:setShowValues(true)
 
-        local canvas = lurek.image.newImageData(784, 220)
-        canvas:fill(12, 14, 20, 255)
-        local cards = {
-            { chart_to_image(signal, 360, 180), 16, 20, 360, 180 },
-            { chart_to_image(summary, 180, 180), 392, 20, 180, 180 },
-            { chart_to_image(phases, 180, 180), 588, 20, 180, 180 },
-        }
-        for _, card in ipairs(cards) do
-            canvas:drawRect(card[2] - 4, card[3] - 4, card[4] + 8, card[5] + 8, 24, 28, 36, 255)
-            canvas:paste(card[1], card[2], card[3])
-            draw_outline(canvas, card[2], card[3], card[4], card[5], 232, 236, 244, 255)
-        end
-
-        save_png(canvas, OUT .. "overlay_runtime_dashboard.png")
+        save_png(chart_to_image(signal, 360, 180), OUT .. "overlay_runtime_signal.png")
+        save_png(chart_to_image(summary, 180, 180), OUT .. "overlay_runtime_summary.png")
+        save_png(chart_to_image(phases, 180, 180), OUT .. "overlay_runtime_phase_heatmap.png")
     end)
 end)
 test_summary()

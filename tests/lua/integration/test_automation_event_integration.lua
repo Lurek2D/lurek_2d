@@ -121,6 +121,7 @@ describe("automation + event integration", function()
     -- @integration lurek.automation.stop
     -- @integration lurek.automation.unload
     -- @integration lurek.automation.update
+    -- @integration lurek.input.clearBindings
     -- @integration lurek.input.bind
     -- @integration lurek.input.wasActionPressed
     -- @integration lurek.input.keyboard.isDown

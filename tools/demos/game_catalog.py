@@ -36,7 +36,7 @@ DECISION_DESCRIPTIONS = {
     "KEEP": "Catalog candidate after metadata, preview, validation, and smoke evidence are current.",
     "REWRITE_API": "Keep the concept, but rewrite around current idiomatic lurek.* APIs.",
     "TRIM": "Keep only a small playable vertical slice.",
-    "MOVE_EXAMPLE": "Move to content/examples or a showcase/example shelf.",
+    "MOVE_EXAMPLE": "Move to content/examples or tests/lua/evidence.",
     "MOVE_INCUBATOR": "Move to an incubator until it is implemented and smoke-testable.",
     "MERGE_OR_DROP": "Resolve duplicate ownership, then keep one clear public demo or drop the duplicate.",
     "DROP_OR_IDEA": "Move to ideas or drop from maintained demo content.",
@@ -69,7 +69,7 @@ GAME_DECISIONS: dict[str, tuple[str, str]] = {
     # apps
     "apps/audio_composer": ("MOVE_INCUBATOR", "Skeleton pending real audio/dsp/midi API demo."),
     "apps/household_finance_lab": ("TRIM", "Trim to a dashboard app demo or move to an apps lab."),
-    "apps/html_ui_suite": ("MOVE_INCUBATOR", "Skeleton; HTML examples belong in showcase/examples until complete."),
+    "apps/html_ui_suite": ("MOVE_INCUBATOR", "Skeleton; HTML examples belong in content/examples or evidence until complete."),
     "apps/image_workbench": ("MOVE_INCUBATOR", "Skeleton pending real compute/image workflow."),
     "apps/learning_lab": ("MOVE_INCUBATOR", "Skeleton; not a complete app demo."),
     "apps/learning_route_attention_lab": ("KEEP", "Small data app demo."),

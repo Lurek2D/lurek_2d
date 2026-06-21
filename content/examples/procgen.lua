@@ -828,6 +828,6 @@ do
     local ca = lurek.procgen.newCellular(8, 8)
     ca:setCell(1, 1, lurek.procgen.CELL_GAS)
     procgen_log("typeOf LCellular = " .. tostring(ca:typeOf("LCellular")))
-    procgen_log("cells width = " .. tostring(ca:getWidth()))
+    procgen_log("typeOf LObject = " .. tostring(ca:typeOf("LObject")))
     procgen_log("gas count = " .. ca:countCells(lurek.procgen.CELL_GAS))
 end

@@ -259,28 +259,6 @@ describe("evidence: pathfind", function()
         end
         write_text(path, "[" .. table.concat(out, ",") .. "]")
     end)
-    -- Does: Runs "pathfind contact sheet" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by LUnitPathfinder:findPath and LFlowField:getDirection without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/pathfind/<artifact>
-    -- Why: This is meaningful only if the visible/text output comes from LUnitPathfinder:findPath and LFlowField:getDirection; export helpers are just the container.
-
-    it("PNG: pathfind contact sheet", function()
-        local files = {
-            "astar_basic.png",
-            "weighted_route.png",
-            "pathfind_api_surface.png",
-        }
-        local canvas = lurek.image.newImageData(732, 256)
-        canvas:fill(12, 14, 20, 255)
-        for i, name in ipairs(files) do
-            local src = lurek.image.newImageData(OUT .. name)
-            local thumb = src:resize(220, 220, "bilinear")
-            local x = 16 + (i - 1) * 236
-            canvas:paste(thumb, x, 18)
-            draw_outline(canvas, x, 18, 220, 220, 232, 236, 244, 255)
-        end
-        save_png(canvas, OUT .. "pathfind_contact_sheet.png")
-    end)
     -- Does: Runs "exports pathfind advanced API trace" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by lurek.pathfind.newPathGrid, lurek.pathfind.newPathFlowField, and related owner calls without needing a special evidence-only renderer.
     -- Artifact: tests/artifacts/current/pathfind/pathfind_advanced_api_trace.txt

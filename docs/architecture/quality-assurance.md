@@ -72,7 +72,7 @@ Each layer has a different job:
 - Only finished playable `game` or `minigame` entries belong here.
 - Both are complete products. `minigame` only means smaller scope.
 - A folder that mainly showcases 1-3 APIs, one mechanic, or one renderer trick does not belong here.
-- Showcase-like entries should move to `content/showcase/` or become evidence coverage when the main value is the generated artifact.
+- Showcase-like entries should become `content/examples/` material or evidence coverage when the main value is the generated artifact.
 
 ## Placement Rules
 
@@ -84,7 +84,7 @@ Use this decision order:
 4. Is the goal to generate a screenshot, audio file, text dump, waveform, or other proof artifact? Put it in `tests/lua/evidence/`.
 5. Is the goal to compare a newly generated artifact with a baseline? Put it in `tests/lua/golden/`.
 6. Is the goal to ship a finished playable experience? Put it in `content/games/`.
-7. Is it interactive but not a complete game? Put it in `content/showcase/`.
+7. Is it interactive but not a complete game? Split the durable API slice into `content/examples/` and the reviewable proof into `tests/lua/evidence/`.
 
 ## Quality Gates
 

@@ -210,6 +210,11 @@ fn lua_evidence_animation_evidence() {
 }
 
 #[test]
+fn lua_evidence_agent_evidence() {
+    run_lua_test("evidence/test_agent_evidence.lua");
+}
+
+#[test]
 fn lua_evidence_automation_evidence() {
     run_lua_test("evidence/test_automation_evidence.lua");
 }
@@ -300,6 +305,11 @@ fn lua_evidence_overlay_evidence() {
 }
 
 #[test]
+fn lua_evidence_province_evidence() {
+    run_lua_test("evidence/test_province_evidence.lua");
+}
+
+#[test]
 fn lua_evidence_pathfind_evidence() {
     run_lua_test("evidence/test_pathfind_evidence.lua");
 }
@@ -347,6 +357,11 @@ fn lua_evidence_tilemap_evidence() {
 #[test]
 fn lua_evidence_terminal_evidence() {
     run_lua_test("evidence/test_terminal_evidence.lua");
+}
+
+#[test]
+fn lua_evidence_tween_evidence() {
+    run_lua_test("evidence/test_tween_evidence.lua");
 }
 
 #[test]

@@ -120,7 +120,9 @@ end
 
 --@api: LMod:setSandbox
 do
-    local root = "save/example-mods/sandbox/"
+    ensure_dir("save")
+    ensure_dir("save/example-mods")
+    local root = "save/_mods_sandbox_unit/"
     ensure_dir(root)
     local mod = lurek.mods.newMod({ id = "sandbox_guard", name = "Sandbox Guard" })
     mod:setSandbox({
@@ -141,7 +143,8 @@ end
 
 --@api: LMod:getSandbox
 do
-    local root = "save/example-mods/sandbox-read/"
+    ensure_dir("save")
+    local root = "save/_mods_sandbox_readback/"
     ensure_dir(root)
     local mod = lurek.mods.newMod({ id = "sandbox_readback", name = "Sandbox Readback" })
     mod:setSandbox({

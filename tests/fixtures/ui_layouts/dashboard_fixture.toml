@@ -1,0 +1,163 @@
+[root]
+widget_type = "panel"
+id = "dashboard_fixture_root"
+x = 0.0
+y = 0.0
+w = 1200.0
+h = 720.0
+
+[[root.children]]
+widget_type = "panel"
+id = "header"
+x = 0.0
+y = 0.0
+w = 1200.0
+h = 60.0
+
+[[root.children.children]]
+widget_type = "label"
+id = "header_title"
+text = "Evidence Dashboard"
+x = 24.0
+y = 16.0
+w = 280.0
+h = 28.0
+
+[[root.children.children]]
+widget_type = "button"
+id = "header_refresh"
+text = "Refresh"
+x = 1040.0
+y = 14.0
+w = 112.0
+h = 32.0
+
+[[root.children]]
+widget_type = "panel"
+id = "kpi_a"
+x = 24.0
+y = 84.0
+w = 268.0
+h = 112.0
+
+[[root.children.children]]
+widget_type = "label"
+text = "Throughput"
+x = 16.0
+y = 16.0
+w = 180.0
+h = 24.0
+
+[[root.children.children]]
+widget_type = "label"
+text = "182 req/s"
+x = 16.0
+y = 48.0
+w = 180.0
+h = 32.0
+
+[[root.children]]
+widget_type = "panel"
+id = "kpi_b"
+x = 308.0
+y = 84.0
+w = 268.0
+h = 112.0
+
+[[root.children.children]]
+widget_type = "label"
+text = "Latency"
+x = 16.0
+y = 16.0
+w = 180.0
+h = 24.0
+
+[[root.children.children]]
+widget_type = "label"
+text = "42 ms"
+x = 16.0
+y = 48.0
+w = 180.0
+h = 32.0
+
+[[root.children]]
+widget_type = "panel"
+id = "chart_panel"
+x = 24.0
+y = 220.0
+w = 720.0
+h = 260.0
+
+[[root.children.children]]
+widget_type = "label"
+text = "Traffic Mix"
+x = 16.0
+y = 16.0
+w = 200.0
+h = 24.0
+
+[[root.children.children]]
+widget_type = "progressbar"
+id = "traffic_web"
+x = 16.0
+y = 72.0
+w = 320.0
+h = 18.0
+min = 0.0
+max = 100.0
+value = 62.0
+
+[[root.children.children]]
+widget_type = "progressbar"
+id = "traffic_api"
+x = 16.0
+y = 108.0
+w = 320.0
+h = 18.0
+min = 0.0
+max = 100.0
+value = 28.0
+
+[[root.children.children]]
+widget_type = "progressbar"
+id = "traffic_jobs"
+x = 16.0
+y = 144.0
+w = 320.0
+h = 18.0
+min = 0.0
+max = 100.0
+value = 10.0
+
+[[root.children]]
+widget_type = "scrollpanel"
+id = "events"
+x = 772.0
+y = 220.0
+w = 404.0
+h = 260.0
+
+[[root.children]]
+widget_type = "panel"
+id = "footer_panel"
+x = 24.0
+y = 508.0
+w = 1152.0
+h = 180.0
+
+[[root.children.children]]
+widget_type = "label"
+text = "Recent Events"
+x = 16.0
+y = 16.0
+w = 220.0
+h = 24.0
+
+[[root.children.children]]
+widget_type = "button"
+id = "ack_all"
+text = "Acknowledge"
+x = 992.0
+y = 16.0
+w = 136.0
+h = 32.0

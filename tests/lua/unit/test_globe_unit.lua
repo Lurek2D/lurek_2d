@@ -525,58 +525,6 @@ describe("Globe math helpers", function()
     end)
 end)
 
-
-
-
--- ================================================================
--- Merged from: test_globe_demo.lua
--- ================================================================
-
--- tests/lua/unit/test_globe_demo.lua
--- Smoke test for content/games/showcase/globe_demo/main.lua
---
--- This test catches the class of bugs that caused three consecutive silent
--- failures in the globe demo (wrong callback names, wrong input API, wrong
--- render API, broken gfx alias).  It works by:
---   1. Loading the demo module file directly (dofile).
---   2. Calling lurek.init() (the init callback) in the test VM.
---   3. Asserting all post-init invariants hold (globe exists, 200 provinces,
---      layers present, markers present, camera set).
---   4. Calling lurek.process(1/60) once to verify the update path runs.
---
--- The test does NOT call lurek.render() because that requires a live GPU
--- surface; render-side panics are caught at runtime in the dev loop.
--- All render-namespace calls in main.lua guard against nil via pcall below.
-
-local DEMO_PATH = "content/games/showcase/globe_demo/main.lua"
-local HAS_DOFILE = type(dofile) == "function"
-
--- =========================================================================
--- Helper: reset the global demo state so the file can be re-loaded cleanly
--- =========================================================================
-local function load_demo()
-    if not HAS_DOFILE then
-        return false
-    end
-    -- Reset the province-ID counter that main.lua keeps as a module-level
-    -- upvalue; dofile creates a fresh closure so this is automatic.
-    -- in headless test VMs.
-    lurek.render = lurek.render or {}
-    lurek.render.setBackgroundColor = lurek.render.setBackgroundColor or function() end
-
-    lurek.input = lurek.input or {}
-    lurek.input.bind             = lurek.input.bind             or function() end
-    lurek.input.getMousePosition = lurek.input.getMousePosition or function() return 640, 360 end
-    lurek.input.isActionDown     = lurek.input.isActionDown     or function() return false end
-    lurek.input.getWheelDelta    = lurek.input.getWheelDelta    or function() return 0, 0 end
-    lurek.input.wasActionPressed = lurek.input.wasActionPressed or function() return false end
-
-    dofile(DEMO_PATH)
-end
-
--- =========================================================================
--- =========================================================================
-
 -- @describe Missing API Coverage
 describe("Missing API Coverage", function()
 end)

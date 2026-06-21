@@ -5,7 +5,7 @@ Visual piano roll music sequencer. Place and remove notes on a 32-beat × 24-not
 ## Run
 
 ```
-cargo run -- content/games/showcase/music_composer
+cargo run -- content/games/music_composer
 ```
 
 ## Controls
