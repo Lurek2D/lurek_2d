@@ -1,0 +1,38 @@
+enriched_cols=region,channel,revenue,cost,margin,revenue_norm,margin_z
+margin_sum=360.000000
+margin_mean=60.000000
+high_margin_rows=3
+[margin_by_region]
++--------+------------+
+| region | margin_sum |
++--------+------------+
+| north  | 140        |
+| south  | 105        |
+| west   | 115        |
++--------+------------+
+
+[revenue_by_channel]
++---------+--------------------+
+| channel | revenue_mean       |
++---------+--------------------+
+| ads     | 103.33333333333333 |
+| organic | 130                |
++---------+--------------------+
+
+[grouped_custom_avg_margin]
++-----------+--------+
+| group_key | margin |
++-----------+--------+
+| north     | 70     |
+| south     | 52.5   |
+| west      | 57.5   |
++-----------+--------+
+
+[channel_value_counts]
++---------+-------+---------+
+| value   | count | percent |
++---------+-------+---------+
+| ads     | 3     | 50      |
+| organic | 3     | 50      |
++---------+-------+---------+
+

@@ -4,6 +4,14 @@
 describe("golden: procgen evidence comparison", function()
     it("matches current procgen baselines", function()
         expect_golden_file_match(
+            evidence_output_dir("procgen") .. "procgen_cellular_material_sandbox.gif",
+            "tests/artifacts/baselines/procgen/procgen_cellular_material_sandbox.gif"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("procgen") .. "procgen_climate_biome_world.png",
+            "tests/artifacts/baselines/procgen/procgen_climate_biome_world.png"
+        )
+        expect_golden_file_match(
             evidence_output_dir("procgen") .. "procgen_cellular_flood.png",
             "tests/artifacts/baselines/procgen/procgen_cellular_flood.png"
         )
@@ -50,6 +58,18 @@ describe("golden: procgen evidence comparison", function()
         expect_golden_file_match(
             evidence_output_dir("procgen") .. "procgen_height_worldgraph.png",
             "tests/artifacts/baselines/procgen/procgen_height_worldgraph.png"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("procgen") .. "procgen_lsystem_river_settlement.png",
+            "tests/artifacts/baselines/procgen/procgen_lsystem_river_settlement.png"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("procgen") .. "procgen_prefab_dungeon_stamps.png",
+            "tests/artifacts/baselines/procgen/procgen_prefab_dungeon_stamps.png"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("procgen") .. "procgen_wfc_constraint_world.png",
+            "tests/artifacts/baselines/procgen/procgen_wfc_constraint_world.png"
         )
         expect_golden_file_match(
             evidence_output_dir("procgen") .. "procgen_wfc_lsystem_names.png",

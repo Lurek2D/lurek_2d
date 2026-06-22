@@ -1,0 +1,36 @@
+-- Canonical golden file for lurek.tween evidence comparisons.
+
+-- @describe golden: tween evidence comparison
+describe("golden: tween evidence comparison", function()
+    it("matches tween easing evidence baselines", function()
+        expect_golden_file_match(evidence_output_dir("tween") .. "tween_easing_linear.png", "tests/artifacts/baselines/tween/tween_easing_linear.png")
+        expect_golden_text_match(evidence_output_dir("tween") .. "tween_easing_linear.txt", "tests/artifacts/baselines/tween/tween_easing_linear.txt")
+        expect_golden_file_match(evidence_output_dir("tween") .. "tween_easing_inQuad.png", "tests/artifacts/baselines/tween/tween_easing_inQuad.png")
+        expect_golden_text_match(evidence_output_dir("tween") .. "tween_easing_inQuad.txt", "tests/artifacts/baselines/tween/tween_easing_inQuad.txt")
+        expect_golden_file_match(evidence_output_dir("tween") .. "tween_easing_outQuad.png", "tests/artifacts/baselines/tween/tween_easing_outQuad.png")
+        expect_golden_text_match(evidence_output_dir("tween") .. "tween_easing_outQuad.txt", "tests/artifacts/baselines/tween/tween_easing_outQuad.txt")
+        expect_golden_file_match(evidence_output_dir("tween") .. "tween_easing_inOutQuad.png", "tests/artifacts/baselines/tween/tween_easing_inOutQuad.png")
+        expect_golden_text_match(evidence_output_dir("tween") .. "tween_easing_inOutQuad.txt", "tests/artifacts/baselines/tween/tween_easing_inOutQuad.txt")
+        expect_golden_file_match(evidence_output_dir("tween") .. "tween_easing_inCubic.png", "tests/artifacts/baselines/tween/tween_easing_inCubic.png")
+        expect_golden_text_match(evidence_output_dir("tween") .. "tween_easing_inCubic.txt", "tests/artifacts/baselines/tween/tween_easing_inCubic.txt")
+        expect_golden_file_match(evidence_output_dir("tween") .. "tween_easing_outCubic.png", "tests/artifacts/baselines/tween/tween_easing_outCubic.png")
+        expect_golden_text_match(evidence_output_dir("tween") .. "tween_easing_outCubic.txt", "tests/artifacts/baselines/tween/tween_easing_outCubic.txt")
+        expect_golden_file_match(evidence_output_dir("tween") .. "tween_easing_inOutCubic.png", "tests/artifacts/baselines/tween/tween_easing_inOutCubic.png")
+        expect_golden_text_match(evidence_output_dir("tween") .. "tween_easing_inOutCubic.txt", "tests/artifacts/baselines/tween/tween_easing_inOutCubic.txt")
+        expect_golden_file_match(evidence_output_dir("tween") .. "tween_easing_inSine.png", "tests/artifacts/baselines/tween/tween_easing_inSine.png")
+        expect_golden_text_match(evidence_output_dir("tween") .. "tween_easing_inSine.txt", "tests/artifacts/baselines/tween/tween_easing_inSine.txt")
+        expect_golden_file_match(evidence_output_dir("tween") .. "tween_easing_outSine.png", "tests/artifacts/baselines/tween/tween_easing_outSine.png")
+        expect_golden_text_match(evidence_output_dir("tween") .. "tween_easing_outSine.txt", "tests/artifacts/baselines/tween/tween_easing_outSine.txt")
+        expect_golden_file_match(evidence_output_dir("tween") .. "tween_easing_inOutSine.png", "tests/artifacts/baselines/tween/tween_easing_inOutSine.png")
+        expect_golden_text_match(evidence_output_dir("tween") .. "tween_easing_inOutSine.txt", "tests/artifacts/baselines/tween/tween_easing_inOutSine.txt")
+        expect_golden_file_match(evidence_output_dir("tween") .. "tween_easing_inExpo.png", "tests/artifacts/baselines/tween/tween_easing_inExpo.png")
+        expect_golden_text_match(evidence_output_dir("tween") .. "tween_easing_inExpo.txt", "tests/artifacts/baselines/tween/tween_easing_inExpo.txt")
+        expect_golden_file_match(evidence_output_dir("tween") .. "tween_easing_outExpo.png", "tests/artifacts/baselines/tween/tween_easing_outExpo.png")
+        expect_golden_text_match(evidence_output_dir("tween") .. "tween_easing_outExpo.txt", "tests/artifacts/baselines/tween/tween_easing_outExpo.txt")
+        expect_golden_text_match(
+            evidence_output_dir("tween") .. "tween_pause_resume_scrub_trace.txt",
+            "tests/artifacts/baselines/tween/tween_pause_resume_scrub_trace.txt"
+        )
+    end)
+end)
+test_summary()

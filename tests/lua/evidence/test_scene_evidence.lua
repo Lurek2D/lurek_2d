@@ -31,7 +31,7 @@ describe("Evidence: lurek.scene DepthSorter", function()
     end)
     -- Does: Runs "depth order ascending" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by lurek.scene.newDepthSorter, LDepthSorter:add, and related owner calls without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/scene/<artifact>
+    -- Artifact: tests/artifacts/current/scene/scene_depth_sort_ascending.txt
     -- Why: This is meaningful only if the visible/text output comes from lurek.scene.newDepthSorter, LDepthSorter:add, and related owner calls; export helpers are just the container.
 
     it("TXT: depth order ascending", function()
@@ -115,7 +115,7 @@ describe("Evidence: lurek.scene runtime flow", function()
     end)
     -- Does: Runs "depth sorter order bands" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by LDepthSorter:add and LDepthSorter:flush without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/scene/<artifact>
+    -- Artifact: tests/artifacts/current/scene/scene_depth_sort_bands.png
     -- Why: This is meaningful only if the visible/text output comes from LDepthSorter:add and LDepthSorter:flush; export helpers are just the container.
 
     it("PNG: depth sorter order bands", function()
@@ -245,7 +245,7 @@ describe("Evidence: lurek.scene state registry and serialization", function()
     end)
     -- Does: Runs "scene state, preload, and overlay trace" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by lurek.scene.clear, lurek.scene.setData, and related owner calls without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/scene/<artifact>
+    -- Artifact: tests/artifacts/current/scene/scene_state_preload_overlay_trace.txt
     -- Why: This is meaningful only if the visible/text output comes from lurek.scene.clear, lurek.scene.setData, and related owner calls; export helpers are just the container.
 
     it("TXT: scene state, preload, and overlay trace", function()
@@ -295,7 +295,7 @@ describe("Evidence: lurek.scene object container flow", function()
     end)
     -- Does: Runs "object container layer trace" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by lurek.scene.newObjectContainer, LSceneObjectContainer:add, and related owner calls without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/scene/<artifact>
+    -- Artifact: tests/artifacts/current/scene/scene_object_container_layer_trace.txt
     -- Why: This is meaningful only if the visible/text output comes from lurek.scene.newObjectContainer, LSceneObjectContainer:add, and related owner calls; export helpers are just the container.
 
     it("TXT: object container layer trace", function()

@@ -1,0 +1,27 @@
+template=[TASK] Prepare prompt sequence | [OWNER] system
+system_counts agents=1 instructions=2 skills=2
+context_len=610 provenance=4
+working_recent=3 episodic=2 semantic_demo=1
+bundle_bytes=96
+memory_diag working_entries=0 episodic_entries=0 semantic_entries=0 sandbox_root=\\?\C:\Users\tombl\Documents\lurek_2D
+system_diag in_flight=0 completed=0 avg_latency_ms=0
+agent_diag in_flight=0 completed=0 avg_latency_ms=0
+working_recent_keys=phase,model,role
+semantic_demo_goal=show full agent pipeline
+episodic_last=dispatch
+context_preview_begin
+  ## System Context
+  <<<BEGIN>>>
+  You are a multi-agent game content coordinator.
+  <<<END>>>
+  ## Instruction output_shape
+  <<<BEGIN>>>
+  Return concise structured JSON where possible.
+  <<<END>>>
+context_preview_end
+provenance_begin
+  01 kind=instruction key=nil name=nil
+  02 kind=instruction key=nil name=nil
+  03 kind=system_skill key=nil name=nil
+  04 kind=system_skill key=nil name=nil
+provenance_end

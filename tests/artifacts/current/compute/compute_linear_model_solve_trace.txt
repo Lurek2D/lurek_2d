@@ -1,0 +1,8 @@
+matrix_shape=2x2
+solution=2.800000,1.800000
+predicted_rhs=13.000000,11.000000
+residual_abs_sum=0.000000
+lu_n=2
+lu_det_sign=1
+lu_perm=1,2
+dominant_eigenvalue=5.000000

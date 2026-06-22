@@ -195,7 +195,9 @@ impl LuaSaveManager {
         };
         let (data, used_backup) = match parse_save_content(lua, &content, &self.manager) {
             Ok(t) => (t, used_backup),
-            Err(primary_error) if !used_backup && self.manager.load_policy().allow_backup_fallback => {
+            Err(primary_error)
+                if !used_backup && self.manager.load_policy().allow_backup_fallback =>
+            {
                 let backup_content = match self.read_backup_slot_payload(slot) {
                     Ok(content) => content,
                     Err(_) => {

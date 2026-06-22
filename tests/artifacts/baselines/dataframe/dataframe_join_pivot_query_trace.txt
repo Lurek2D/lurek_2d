@@ -1,0 +1,21 @@
+joined_rows=6
+joined_cols=player,stat,value,class,cohort
+first_joined_class=mage
+[pivot]
++--------+--------+---------+
+| player | damage | healing |
++--------+--------+---------+
+| ada    | 34     | 12      |
+| bo     | 22     | 18      |
+| cy     | 44     | 4       |
++--------+--------+---------+
+
+[sql_value_gt_20]
++--------+-------+
+| player | value |
++--------+-------+
+| ada    | 34    |
+| bo     | 22    |
+| cy     | 44    |
++--------+-------+
+

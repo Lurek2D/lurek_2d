@@ -65,7 +65,7 @@ describe("evidence: pathfind", function()
     end)
     -- Does: Runs "astar path through an obstacle gap" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by lurek.pathfind.newNavGrid, LNavGrid:setBlocked, and related owner calls without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/pathfind/<artifact>
+    -- Artifact: tests/artifacts/current/pathfind/astar_basic.png
     -- Why: This is meaningful only if the visible/text output comes from lurek.pathfind.newNavGrid, LNavGrid:setBlocked, and related owner calls; export helpers are just the container.
 
     it("PNG: astar path through an obstacle gap", function()
@@ -101,7 +101,7 @@ describe("evidence: pathfind", function()
     end)
     -- Does: Runs "weighted terrain route across a cost field" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by lurek.pathfind.newNavGrid, LNavGrid:setCost, and related owner calls without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/pathfind/<artifact>
+    -- Artifact: tests/artifacts/current/pathfind/weighted_route.png
     -- Why: This is meaningful only if the visible/text output comes from lurek.pathfind.newNavGrid, LNavGrid:setCost, and related owner calls; export helpers are just the container.
 
     it("PNG: weighted terrain route across a cost field", function()
@@ -143,7 +143,7 @@ describe("evidence: pathfind", function()
     end)
     -- Does: Runs "pathfind API surface with flow-field arrows" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by lurek.pathfind.newFlowField, LFlowField:calculate, and related owner calls without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/pathfind/<artifact>
+    -- Artifact: tests/artifacts/current/pathfind/pathfind_api_surface.png
     -- Why: This is meaningful only if the visible/text output comes from lurek.pathfind.newFlowField, LFlowField:calculate, and related owner calls; export helpers are just the container.
 
     it("PNG: pathfind API surface with flow-field arrows", function()

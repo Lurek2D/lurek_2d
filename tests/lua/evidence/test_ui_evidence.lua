@@ -114,7 +114,7 @@ describe("Evidence: lurek.ui layouts and widgets", function()
     end)
     -- Does: Runs "dashboard layout 1280x720" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by lurek.ui.renderToImage and lurek.ui.loadLayoutFile without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/ui/<artifact>
+    -- Artifact: tests/artifacts/current/ui/layout_dashboard_desktop_1280x720.png
     -- Why: This is meaningful only if the visible/text output comes from lurek.ui.renderToImage and lurek.ui.loadLayoutFile; export helpers are just the container.
 
     it("UI01 PNG: dashboard layout 1280x720", function()
@@ -122,7 +122,7 @@ describe("Evidence: lurek.ui layouts and widgets", function()
     end)
     -- Does: Runs "settings layout 1366x768" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by lurek.ui.renderToImage without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/ui/<artifact>
+    -- Artifact: tests/artifacts/current/ui/layout_settings_desktop_1366x768.png
     -- Why: This is meaningful only if the visible/text output comes from lurek.ui.renderToImage; export helpers are just the container.
 
     it("UI02 PNG: settings layout 1366x768", function()
@@ -130,7 +130,7 @@ describe("Evidence: lurek.ui layouts and widgets", function()
     end)
     -- Does: Runs "RPG inventory layout 1280x720" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by lurek.ui.renderToImage without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/ui/<artifact>
+    -- Artifact: tests/artifacts/current/ui/layout_rpg_inventory_1280x720.png
     -- Why: This is meaningful only if the visible/text output comes from lurek.ui.renderToImage; export helpers are just the container.
 
     it("UI03 PNG: RPG inventory layout 1280x720", function()
@@ -138,7 +138,7 @@ describe("Evidence: lurek.ui layouts and widgets", function()
     end)
     -- Does: Runs "strategy diplomacy layout 1400x800" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by lurek.ui.renderToImage without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/ui/<artifact>
+    -- Artifact: tests/artifacts/current/ui/layout_strategy_diplomacy_1400x800.png
     -- Why: This is meaningful only if the visible/text output comes from lurek.ui.renderToImage; export helpers are just the container.
 
     it("UI04 PNG: strategy diplomacy layout 1400x800", function()
@@ -146,7 +146,7 @@ describe("Evidence: lurek.ui layouts and widgets", function()
     end)
     -- Does: Runs "dashboard layout mobile-like 960x540" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by lurek.ui.renderToImage without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/ui/<artifact>
+    -- Artifact: tests/artifacts/current/ui/layout_dashboard_compact_960x540.png
     -- Why: This is meaningful only if the visible/text output comes from lurek.ui.renderToImage; export helpers are just the container.
 
     it("UI05 PNG: dashboard layout mobile-like 960x540", function()
@@ -154,7 +154,7 @@ describe("Evidence: lurek.ui layouts and widgets", function()
     end)
     -- Does: Runs "settings layout ultrawide 1920x1080" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by lurek.ui.renderToImage without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/ui/<artifact>
+    -- Artifact: tests/artifacts/current/ui/layout_settings_ultrawide_1920x1080.png
     -- Why: This is meaningful only if the visible/text output comes from lurek.ui.renderToImage; export helpers are just the container.
 
     it("UI06 PNG: settings layout ultrawide 1920x1080", function()
@@ -162,7 +162,7 @@ describe("Evidence: lurek.ui layouts and widgets", function()
     end)
     -- Does: Runs "form widget scenes" and turns the owner-module result into inspectable artifacts.
     -- Shows: The artifacts should expose the behavior produced by lurek.ui.newButton, lurek.ui.newLabel, and related owner calls without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/ui/<artifact>
+    -- Artifact: tests/artifacts/current/ui/form_widget_account_panel.png, tests/artifacts/current/ui/form_widget_plan_panel.png
     -- Why: This is meaningful only if the visible/text output comes from lurek.ui.newButton, lurek.ui.newLabel, and related owner calls; export helpers are just the container.
 
     it("PNG: form widget scenes", function()
@@ -195,7 +195,7 @@ describe("Evidence: lurek.ui layouts and widgets", function()
     end)
     -- Does: Runs "selection and range widget scenes" and turns the owner-module result into inspectable artifacts.
     -- Shows: The artifacts should expose the behavior produced by lurek.ui.newSlider, lurek.ui.newSpinBox, and related owner calls without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/ui/<artifact>
+    -- Artifact: tests/artifacts/current/ui/range_widgets_panel.png, tests/artifacts/current/ui/selection_widgets_panel.png
     -- Why: This is meaningful only if the visible/text output comes from lurek.ui.newSlider, lurek.ui.newSpinBox, and related owner calls; export helpers are just the container.
 
     it("PNG: selection and range widget scenes", function()
@@ -240,7 +240,7 @@ describe("Evidence: lurek.ui layouts and widgets", function()
     end)
     -- Does: Runs "container and spacing widget scenes" and turns the owner-module result into inspectable artifacts.
     -- Shows: The artifacts should expose the behavior produced by lurek.ui.newPanel, lurek.ui.newLayout, and related owner calls without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/ui/<artifact>
+    -- Artifact: tests/artifacts/current/ui/container_widget_inspector_panel.png, tests/artifacts/current/ui/container_widget_scroll_bar.png, tests/artifacts/current/ui/container_widget_scroll_panel.png
     -- Why: This is meaningful only if the visible/text output comes from lurek.ui.newPanel, lurek.ui.newLayout, and related owner calls; export helpers are just the container.
 
     it("PNG: container and spacing widget scenes", function()
@@ -282,7 +282,7 @@ describe("Evidence: lurek.ui layouts and widgets", function()
     end)
     -- Does: Runs "navigation container scenes" and turns the owner-module result into inspectable artifacts.
     -- Shows: The artifacts should expose the behavior produced by lurek.ui.newSplitPanel, lurek.ui.newDockPanel, and related owner calls without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/ui/<artifact>
+    -- Artifact: tests/artifacts/current/ui/navigation_widget_dock_panel.png, tests/artifacts/current/ui/navigation_widget_split_panel.png, tests/artifacts/current/ui/navigation_widget_status_bar.png, tests/artifacts/current/ui/navigation_widget_tabs.png, tests/artifacts/current/ui/navigation_widget_toolbar.png
     -- Why: This is meaningful only if the visible/text output comes from lurek.ui.newSplitPanel, lurek.ui.newDockPanel, and related owner calls; export helpers are just the container.
 
     it("PNG: navigation container scenes", function()
@@ -356,7 +356,7 @@ describe("Evidence: lurek.ui layouts and widgets", function()
     end)
     -- Does: Runs "popup and menu widget scenes" and turns the owner-module result into inspectable artifacts.
     -- Shows: The artifacts should expose the behavior produced by lurek.ui.newMenuBar, lurek.ui.newMenuItem, and related owner calls without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/ui/<artifact>
+    -- Artifact: tests/artifacts/current/ui/popup_widget_badge.png, tests/artifacts/current/ui/popup_widget_dialog.png, tests/artifacts/current/ui/popup_widget_menu_bar.png, tests/artifacts/current/ui/popup_widget_toast.png, tests/artifacts/current/ui/popup_widget_tooltip.png, tests/artifacts/current/ui/popup_widget_window.png
     -- Why: This is meaningful only if the visible/text output comes from lurek.ui.newMenuBar, lurek.ui.newMenuItem, and related owner calls; export helpers are just the container.
 
     it("PNG: popup and menu widget scenes", function()
@@ -432,7 +432,7 @@ describe("Evidence: lurek.ui layouts and widgets", function()
     end)
     -- Does: Runs "structured data widget scenes" and turns the owner-module result into inspectable artifacts.
     -- Shows: The artifacts should expose the behavior produced by lurek.ui.newAccordion, lurek.ui.newTreeView, and related owner calls without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/ui/<artifact>
+    -- Artifact: tests/artifacts/current/ui/structured_widget_accordion.png, tests/artifacts/current/ui/structured_widget_color_picker.png, tests/artifacts/current/ui/structured_widget_custom_surface.png, tests/artifacts/current/ui/structured_widget_table.png, tests/artifacts/current/ui/structured_widget_tree_view.png
     -- Why: This is meaningful only if the visible/text output comes from lurek.ui.newAccordion, lurek.ui.newTreeView, and related owner calls; export helpers are just the container.
 
     it("PNG: structured data widget scenes", function()
@@ -484,7 +484,7 @@ describe("Evidence: lurek.ui layouts and widgets", function()
     end)
     -- Does: Runs "visual utility widget scenes" and turns the owner-module result into inspectable artifacts.
     -- Shows: The artifacts should expose the behavior produced by lurek.ui.newImageWidget and lurek.ui.newNinePatch without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/ui/<artifact>
+    -- Artifact: tests/artifacts/current/ui/visual_widget_image.png, tests/artifacts/current/ui/visual_widget_nine_patch.png
     -- Why: This is meaningful only if the visible/text output comes from lurek.ui.newImageWidget and lurek.ui.newNinePatch; export helpers are just the container.
 
     it("PNG: visual utility widget scenes", function()
@@ -515,7 +515,7 @@ describe("Evidence: lurek.ui runtime input, drag, and binding flow", function()
     end)
     -- Does: Runs "runtime input, drag, binding, and layout trace" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by lurek.ui.mousepressed, lurek.ui.mousereleased, and related owner calls without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/ui/<artifact>
+    -- Artifact: tests/artifacts/current/ui/runtime_input_binding_layout_trace.txt
     -- Why: This is meaningful only if the visible/text output comes from lurek.ui.mousepressed, lurek.ui.mousereleased, and related owner calls; export helpers are just the container.
 
     it("TXT: runtime input, drag, binding, and layout trace", function()
@@ -583,7 +583,7 @@ describe("Evidence: lurek.ui layout batch rendering", function()
     end)
     -- Does: Runs "renders all TOML layouts from content/layouts" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by lurek.ui.clear, lurek.ui.loadLayoutFile, and related owner calls without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/ui/<artifact>
+    -- Artifact: tests/artifacts/current/ui/layout_dashboard_fixture.png, tests/artifacts/current/ui/layout_diplomacy_fixture.png, tests/artifacts/current/ui/layout_inventory_fixture.png, tests/artifacts/current/ui/layout_main_menu_fixture.png, tests/artifacts/current/ui/layout_settings_fixture.png
     -- Why: This is meaningful only if the visible/text output comes from lurek.ui.clear, lurek.ui.loadLayoutFile, and related owner calls; export helpers are just the container.
 
     it("renders all TOML layouts from tests fixtures", function()
@@ -603,7 +603,7 @@ describe("Evidence: lurek.ui layout batch rendering", function()
     end)
     -- Does: Runs "writes a layout render manifest" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by lurek.ui.loadLayoutFile and lurek.ui.renderToImage without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/ui/<artifact>
+    -- Artifact: tests/artifacts/current/ui/layout_gallery_manifest.txt
     -- Why: This is meaningful only if the visible/text output comes from lurek.ui.loadLayoutFile and lurek.ui.renderToImage; export helpers are just the container.
 
     it("writes a layout render manifest", function()

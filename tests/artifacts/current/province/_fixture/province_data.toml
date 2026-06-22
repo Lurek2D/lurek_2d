@@ -1,0 +1,27 @@
+[11]
+name = "North March"
+terrain = "plains"
+
+[12]
+name = "Green Hollow"
+terrain = "forest"
+
+[13]
+name = "Sun Keep"
+terrain = "farmland"
+
+[14]
+name = "Azure Reach"
+terrain = "hills"
+
+[15]
+name = "Copper Gate"
+terrain = "mountain"
+
+[16]
+name = "Delta Port"
+terrain = "marsh"
+
+[90]
+name = "Outer Sea"
+terrain = "sea"

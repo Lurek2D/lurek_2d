@@ -130,7 +130,7 @@ describe("Evidence: svg", function()
     end)
     -- Does: Runs "SVG transformed visibility state view" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by LSvgImage:setElementVisible, LSvgImage:getElementVisible, and related owner calls without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/svg/<artifact>
+    -- Artifact: tests/artifacts/current/svg/svg_transform_visibility.png
     -- Why: This is meaningful only if the visible/text output comes from LSvgImage:setElementVisible, LSvgImage:getElementVisible, and related owner calls; export helpers are just the container.
 
     it("PNG: SVG transformed visibility state view", function()

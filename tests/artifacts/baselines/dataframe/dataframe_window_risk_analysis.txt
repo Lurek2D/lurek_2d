@@ -1,0 +1,13 @@
+rows=6
+cols=day,loss,latency,loss_ma3,loss_sum3,latency_floor3,latency_peak3,loss_pct,loss_total,latency_rank
+last_loss_ma3=23.666667
+last_loss_total=114.000000
+worst_latency_rank_row4=1.000000
+spike_rows=1
+[window_rows]
+row1:day=2026-06-01,loss=12,loss_ma3=nil,loss_pct=nil,latency_peak3=nil,latency_rank=6
+row2:day=2026-06-02,loss=14,loss_ma3=nil,loss_pct=0.16666666666667,latency_peak3=nil,latency_rank=5
+row3:day=2026-06-03,loss=17,loss_ma3=14.333333333333,loss_pct=0.21428571428571,latency_peak3=47,latency_rank=4
+row4:day=2026-06-04,loss=30,loss_ma3=20.333333333333,loss_pct=0.76470588235294,latency_peak3=90,latency_rank=1
+row5:day=2026-06-05,loss=19,loss_ma3=22,loss_pct=-0.36666666666667,latency_peak3=90,latency_rank=3
+row6:day=2026-06-06,loss=22,loss_ma3=23.666666666667,loss_pct=0.15789473684211,latency_peak3=90,latency_rank=2

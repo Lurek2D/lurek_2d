@@ -15,6 +15,18 @@ describe("golden: spine evidence comparison", function()
             evidence_output_dir("spine") .. "spine_walk_cycle_5s.gif",
             "tests/artifacts/baselines/spine/spine_walk_cycle_5s.gif"
         )
+        expect_golden_file_match(
+            evidence_output_dir("spine") .. "spine_walk_cycle_pose_snapshots.gif",
+            "tests/artifacts/baselines/spine/spine_walk_cycle_pose_snapshots.gif"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("spine") .. "spine_ik_target_reach.gif",
+            "tests/artifacts/baselines/spine/spine_ik_target_reach.gif"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("spine") .. "spine_imported_animation.gif",
+            "tests/artifacts/baselines/spine/spine_imported_animation.gif"
+        )
     end)
 end)
 test_summary()

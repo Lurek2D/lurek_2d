@@ -240,6 +240,16 @@ fn lua_evidence_camera_evidence() {
 }
 
 #[test]
+fn lua_evidence_charts_evidence() {
+    run_lua_test("evidence/test_charts_evidence.lua");
+}
+
+#[test]
+fn lua_evidence_cinematic_evidence() {
+    run_lua_test("evidence/test_cinematic_evidence.lua");
+}
+
+#[test]
 fn lua_evidence_compute_evidence() {
     run_lua_test("evidence/test_compute_evidence.lua");
 }
@@ -260,6 +270,11 @@ fn lua_evidence_ecs_evidence() {
 }
 
 #[test]
+fn lua_evidence_effect_evidence() {
+    run_lua_test("evidence/test_effect_evidence.lua");
+}
+
+#[test]
 fn lua_evidence_globe_evidence() {
     run_lua_test("evidence/test_globe_evidence.lua");
 }
@@ -272,6 +287,16 @@ fn lua_evidence_html_evidence() {
 #[test]
 fn lua_evidence_image_evidence() {
     run_lua_test("evidence/test_image_evidence.lua");
+}
+
+#[test]
+fn lua_evidence_flownet_evidence() {
+    run_lua_test("evidence/test_flownet_evidence.lua");
+}
+
+#[test]
+fn lua_evidence_layout_evidence() {
+    run_lua_test("evidence/test_layout_evidence.lua");
 }
 
 #[test]
@@ -297,6 +322,11 @@ fn lua_evidence_minimap_evidence() {
 #[test]
 fn lua_evidence_particle_evidence() {
     run_lua_test("evidence/test_particle_evidence.lua");
+}
+
+#[test]
+fn lua_evidence_parallax_evidence() {
+    run_lua_test("evidence/test_parallax_evidence.lua");
 }
 
 #[test]
@@ -330,6 +360,11 @@ fn lua_evidence_raycaster_evidence() {
 }
 
 #[test]
+fn lua_evidence_repl_evidence() {
+    run_lua_test("evidence/test_repl_evidence.lua");
+}
+
+#[test]
 fn lua_evidence_render_evidence() {
     run_lua_test("evidence/test_render_evidence.lua");
 }
@@ -342,6 +377,11 @@ fn lua_evidence_scene_evidence() {
 #[test]
 fn lua_evidence_spine_evidence() {
     run_lua_test("evidence/test_spine_evidence.lua");
+}
+
+#[test]
+fn lua_evidence_sprite_evidence() {
+    run_lua_test("evidence/test_sprite_evidence.lua");
 }
 
 #[test]
@@ -386,6 +426,22 @@ fn lua_golden_animation_golden() {
 }
 
 #[test]
+fn lua_golden_agent_golden() {
+    run_lua_golden_test(
+        "golden/test_agent_golden.lua",
+        &["evidence/test_agent_evidence.lua"],
+    );
+}
+
+#[test]
+fn lua_golden_automation_golden() {
+    run_lua_golden_test(
+        "golden/test_automation_golden.lua",
+        &["evidence/test_automation_evidence.lua"],
+    );
+}
+
+#[test]
 fn lua_golden_audio_golden() {
     run_lua_golden_test(
         "golden/test_audio_golden.lua",
@@ -406,6 +462,30 @@ fn lua_golden_camera_golden() {
     run_lua_golden_test(
         "golden/test_camera_golden.lua",
         &["evidence/test_camera_evidence.lua"],
+    );
+}
+
+#[test]
+fn lua_golden_charts_golden() {
+    run_lua_golden_test(
+        "golden/test_charts_golden.lua",
+        &["evidence/test_charts_evidence.lua"],
+    );
+}
+
+#[test]
+fn lua_golden_cinematic_golden() {
+    run_lua_golden_test(
+        "golden/test_cinematic_golden.lua",
+        &["evidence/test_cinematic_evidence.lua"],
+    );
+}
+
+#[test]
+fn lua_golden_color_golden() {
+    run_lua_golden_test(
+        "golden/test_color_golden.lua",
+        &["evidence/test_color_evidence.lua"],
     );
 }
 
@@ -434,6 +514,22 @@ fn lua_golden_ecs_golden() {
 }
 
 #[test]
+fn lua_golden_dsp_golden() {
+    run_lua_golden_test(
+        "golden/test_dsp_golden.lua",
+        &["evidence/test_dsp_evidence.lua"],
+    );
+}
+
+#[test]
+fn lua_golden_effect_golden() {
+    run_lua_golden_test(
+        "golden/test_effect_golden.lua",
+        &["evidence/test_effect_evidence.lua"],
+    );
+}
+
+#[test]
 fn lua_golden_html_golden() {
     run_lua_golden_test(
         "golden/test_html_golden.lua",
@@ -458,6 +554,22 @@ fn lua_golden_image_golden() {
 }
 
 #[test]
+fn lua_golden_flownet_golden() {
+    run_lua_golden_test(
+        "golden/test_flownet_golden.lua",
+        &["evidence/test_flownet_evidence.lua"],
+    );
+}
+
+#[test]
+fn lua_golden_layout_golden() {
+    run_lua_golden_test(
+        "golden/test_layout_golden.lua",
+        &["evidence/test_layout_evidence.lua"],
+    );
+}
+
+#[test]
 fn lua_golden_light_golden() {
     run_lua_golden_test(
         "golden/test_light_golden.lua",
@@ -470,6 +582,14 @@ fn lua_golden_math_golden() {
     run_lua_golden_test(
         "golden/test_math_golden.lua",
         &["evidence/test_math_evidence.lua"],
+    );
+}
+
+#[test]
+fn lua_golden_mapblock_golden() {
+    run_lua_golden_test(
+        "golden/test_mapblock_golden.lua",
+        &["evidence/test_mapblock_evidence.lua"],
     );
 }
 
@@ -498,6 +618,14 @@ fn lua_golden_particle_golden() {
 }
 
 #[test]
+fn lua_golden_parallax_golden() {
+    run_lua_golden_test(
+        "golden/test_parallax_golden.lua",
+        &["evidence/test_parallax_evidence.lua"],
+    );
+}
+
+#[test]
 fn lua_golden_pathfind_golden() {
     run_lua_golden_test(
         "golden/test_pathfind_golden.lua",
@@ -522,10 +650,26 @@ fn lua_golden_procgen_golden() {
 }
 
 #[test]
+fn lua_golden_province_golden() {
+    run_lua_golden_test(
+        "golden/test_province_golden.lua",
+        &["evidence/test_province_evidence.lua"],
+    );
+}
+
+#[test]
 fn lua_golden_raycaster_golden() {
     run_lua_golden_test(
         "golden/test_raycaster_golden.lua",
         &["evidence/test_raycaster_evidence.lua"],
+    );
+}
+
+#[test]
+fn lua_golden_repl_golden() {
+    run_lua_golden_test(
+        "golden/test_repl_golden.lua",
+        &["evidence/test_repl_evidence.lua"],
     );
 }
 
@@ -562,6 +706,14 @@ fn lua_golden_spine_golden() {
 }
 
 #[test]
+fn lua_golden_sprite_golden() {
+    run_lua_golden_test(
+        "golden/test_sprite_golden.lua",
+        &["evidence/test_sprite_evidence.lua"],
+    );
+}
+
+#[test]
 fn lua_golden_svg_golden() {
     run_lua_golden_test(
         "golden/test_svg_golden.lua",
@@ -574,6 +726,22 @@ fn lua_golden_tilemap_golden() {
     run_lua_golden_test(
         "golden/test_tilemap_golden.lua",
         &["evidence/test_tilemap_evidence.lua"],
+    );
+}
+
+#[test]
+fn lua_golden_terminal_golden() {
+    run_lua_golden_test(
+        "golden/test_terminal_golden.lua",
+        &["evidence/test_terminal_evidence.lua"],
+    );
+}
+
+#[test]
+fn lua_golden_tween_golden() {
+    run_lua_golden_test(
+        "golden/test_tween_golden.lua",
+        &["evidence/test_tween_evidence.lua"],
     );
 }
 

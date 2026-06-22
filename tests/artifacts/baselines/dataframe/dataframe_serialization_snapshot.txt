@@ -1,0 +1,5 @@
+csv_len=27
+json_len=55
+binary_len=66
+restored_rows=2
+restored_name_1=Alice

@@ -40,6 +40,7 @@ local function build_demo_animation()
     anim:addFramesFromGrid(64, 32, 16, 16, 0, 8)
     anim:addClip("idle", { 0, 1, 2, 3 }, 4, true)
     anim:addClip("walk", { 0, 1, 2, 3, 4, 5, 6, 7 }, 10, true)
+    anim:addClip("run", { 4, 5, 6, 7 }, 12, true)
     anim:setImage(load_image())
     return anim
 end
@@ -76,7 +77,7 @@ describe("Evidence: lurek.animation API", function()
     end)
     -- Does: Runs "animator current frame render" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by lurek.animation.new and LAnimation:drawToImage without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/animation/<artifact>
+    -- Artifact: tests/artifacts/current/animation/animation_current_frame_walk.png
     -- Why: This is meaningful only if the visible/text output comes from lurek.animation.new and LAnimation:drawToImage; export helpers are just the container.
 
     it("PNG: animator current frame render", function()
@@ -93,7 +94,7 @@ describe("Evidence: lurek.animation API", function()
     end)
     -- Does: Runs "walk clip progression over one second" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by lurek.animation.new, LAnimation:update, and related owner calls without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/animation/<artifact>
+    -- Artifact: tests/artifacts/current/animation/animation_walk_cycle_preview.gif
     -- Why: This is meaningful only if the visible/text output comes from lurek.animation.new, LAnimation:update, and related owner calls; export helpers are just the container.
 
     it("GIF: walk clip progression over one second", function()
@@ -109,46 +110,42 @@ describe("Evidence: lurek.animation API", function()
         local path = OUT .. "animation_walk_cycle_preview.gif"
         save_gif(frames, path, { delayMs = 100, speed = 10 })
     end)
-    -- Does: Runs "preview frames from clip frames" and turns the owner-module result into separate inspectable artifacts.
-    -- Shows: Each PNG should expose one clip frame instead of a merged preview grid.
-    -- Artifact: tests/artifacts/current/animation/animation_clip_preview_frame_0N.png
-    -- Why: This is meaningful only if each visible/text output comes from one clip frame rather than a helper-built collage.
+    -- Does: Steps through the walk clip frame-by-frame and stores the sampled LAnimation:drawToImage output as one animated artifact.
+    -- Shows: The GIF exposes clip frame order, frame rectangles, and manual frame selection without scattering animation across still PNG files.
+    -- Artifact: tests/artifacts/current/animation/animation_clip_preview_frames.gif
+    -- Why: This is animation-owned evidence because the visible frames come from LAnimation:setFrame and LAnimation:drawToImage; GIF encoding is only the container.
 
-    it("PNG: preview frames from clip frames", function()
+    it("GIF: preview frames from clip frames", function()
         local anim = build_demo_animation()
         anim:play("walk")
+        local frames = {}
         for i = 0, anim:getFrameCount() - 1 do
             anim:setFrame(i)
-            local frame = framed_animation_image(anim, 96, 96, { 232, 236, 244 })
-            local path = OUT .. string.format("animation_clip_preview_frame_%02d.png", i + 1)
-            save_png(frame, path)
+            frames[#frames + 1] = framed_animation_image(anim, 96, 96, { 232, 236, 244 })
         end
+        save_gif(frames, OUT .. "animation_clip_preview_frames.gif", { delayMs = 90, speed = 20 })
     end)
-    -- Does: Runs "blend/crossfade state evidence" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by lurek.animation.new without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/animation/animation_blend_crossfade_state.txt
-    -- Why: This is meaningful only if the visible/text output comes from lurek.animation.new; export helpers are just the container.
+    -- Does: Starts a crossfade from idle to run and records blend factor, source quad, target quad, and rendered frame across updates.
+    -- Shows: The GIF makes the transition state inspectable as blend increases and the target frame becomes active.
+    -- Artifact: tests/artifacts/current/animation/animation_crossfade_transition.gif
+    -- Why: Crossfade is a core animation feature; this artifact proves LAnimation:crossfade, LAnimation:update, LAnimation:getBlendState, and LAnimation:drawToImage move together.
 
-    it("TXT: blend/crossfade state evidence", function()
+    it("GIF: crossfade transition state", function()
         local anim = build_demo_animation()
-
         anim:play("idle")
         anim:update(0.2)
-        local ok = anim:crossfade("run", 0.4)
-        expect_type("boolean", ok)
-
-        anim:update(0.1)
-        local blend = anim:getBlendState()
-        local info = {
-            "crossfade_started=" .. tostring(ok),
-            "frame_count=" .. tostring(anim:getFrameCount()),
-            "clip_count=" .. tostring(anim:getClipCount()),
-            "current_frame=" .. tostring(anim:getCurrentFrame()),
-            "blend_active=" .. tostring(blend ~= nil),
-        }
-
-        local path = OUT .. "animation_blend_crossfade_state.txt"
-        write_text(path, table.concat(info, "\n") .. "\n")
+        expect_true(anim:crossfade("run", 0.6))
+        local frames = {}
+        for i = 1, 8 do
+            anim:update(0.09)
+            local blend = anim:getBlendState()
+            local img = framed_animation_image(anim, 128, 96, { 255, 160, 100 })
+            local amount = blend and blend.blend or 1.0
+            img:drawRect(20, 132, 152, 8, 44, 50, 64, 255)
+            img:drawRect(22, 134, math.floor(148 * math.max(0, math.min(1, amount))), 4, 255, 196, 94, 255)
+            frames[i] = img
+        end
+        save_gif(frames, OUT .. "animation_crossfade_transition.gif", { delayMs = 90, speed = 20 })
     end)
     -- Does: Runs "animation curves sampled as line plots" and turns the owner-module result into separate inspectable artifacts.
     -- Shows: Each PNG should expose one curve instead of combining multiple curves into one comparison image.
@@ -178,7 +175,7 @@ describe("Evidence: lurek.animation API", function()
     end)
     -- Does: Runs "animation state-machine transition trace" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by lurek.animation.newStateMachine, LAnimStateMachine:addState, and related owner calls without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/animation/<artifact>
+    -- Artifact: tests/artifacts/current/animation/animation_state_machine_transition_trace.txt
     -- Why: This is meaningful only if the visible/text output comes from lurek.animation.newStateMachine, LAnimStateMachine:addState, and related owner calls; export helpers are just the container.
 
     it("TXT: animation state-machine transition trace", function()

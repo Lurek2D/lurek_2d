@@ -1,0 +1,8 @@
+source_rows=5
+enriched_rows=5
+collected_rows=3
+source_cols_after_lazy=name,team,score,age
+[collected]
+row1:name=Dio,team=blue,eff=83
+row2:name=Alice,team=red,eff=78.6
+row3:name=Cara,team=red,eff=75.8

@@ -176,7 +176,7 @@ describe("Evidence: lurek.image animated and low-level pipelines", function()
     end)
     -- Does: Runs "animated pulse sequence" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by LImageData:mapPixel and LImageData:mapPixels without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/image/<artifact>
+    -- Artifact: tests/artifacts/current/image/image_animated_pulse_sequence.gif
     -- Why: This is meaningful only if the visible/text output comes from LImageData:mapPixel and LImageData:mapPixels; export helpers are just the container.
 
     it("GIF: animated pulse sequence", function()
@@ -302,7 +302,7 @@ describe("Evidence: lurek.image fixture atlas outputs", function()
     end)
     -- Does: Runs "sprite_16x16.png -- orthogonal cross sprite fixture" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by LImageData:setPixel without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/image/<artifact>
+    -- Artifact: tests/artifacts/current/image/sprite_16x16.png
     -- Why: This is meaningful only if the visible/text output comes from LImageData:setPixel; export helpers are just the container.
 
     it("PNG: sprite_16x16.png -- orthogonal cross sprite fixture", function()
@@ -319,7 +319,7 @@ describe("Evidence: lurek.image fixture atlas outputs", function()
     end)
     -- Does: Runs "sprite_32x32.png -- radial alpha sprite fixture" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by LImageData:setPixel without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/image/<artifact>
+    -- Artifact: tests/artifacts/current/image/sprite_32x32.png
     -- Why: This is meaningful only if the visible/text output comes from LImageData:setPixel; export helpers are just the container.
 
     it("PNG: sprite_32x32.png -- radial alpha sprite fixture", function()
@@ -339,7 +339,7 @@ describe("Evidence: lurek.image fixture atlas outputs", function()
     end)
     -- Does: Runs "sprite_64x64.png -- checkerboard sprite fixture" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by LImageData:setPixel without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/image/<artifact>
+    -- Artifact: tests/artifacts/current/image/sprite_64x64.png
     -- Why: This is meaningful only if the visible/text output comes from LImageData:setPixel; export helpers are just the container.
 
     it("PNG: sprite_64x64.png -- checkerboard sprite fixture", function()
@@ -360,7 +360,7 @@ describe("Evidence: lurek.image fixture atlas outputs", function()
     end)
     -- Does: Runs "tileset_128x128.png -- tileset color swatch sheet" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by LImageData:setPixel without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/image/<artifact>
+    -- Artifact: tests/artifacts/current/image/tileset_128x128.png
     -- Why: This is meaningful only if the visible/text output comes from LImageData:setPixel; export helpers are just the container.
 
     it("PNG: tileset_128x128.png -- tileset color swatch sheet", function()
@@ -383,7 +383,7 @@ describe("Evidence: lurek.image fixture atlas outputs", function()
     end)
     -- Does: Runs "gradient_horizontal.png -- horizontal RGB gradient strip" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by LImageData:setPixel without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/image/<artifact>
+    -- Artifact: tests/artifacts/current/image/gradient_horizontal.png
     -- Why: This is meaningful only if the visible/text output comes from LImageData:setPixel; export helpers are just the container.
 
     it("PNG: gradient_horizontal.png -- horizontal RGB gradient strip", function()
@@ -399,7 +399,7 @@ describe("Evidence: lurek.image fixture atlas outputs", function()
     end)
     -- Does: Runs "gradient_vertical.png -- vertical RGB gradient strip" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by LImageData:setPixel without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/image/<artifact>
+    -- Artifact: tests/artifacts/current/image/gradient_vertical.png
     -- Why: This is meaningful only if the visible/text output comes from LImageData:setPixel; export helpers are just the container.
 
     it("PNG: gradient_vertical.png -- vertical RGB gradient strip", function()
@@ -422,7 +422,7 @@ describe("Evidence: lurek.image low-level pixel operations", function()
     end)
     -- Does: Runs "image_pixel_grid.png -- pixel grid from setPixel" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by LImageData:setPixel and LImageData:getPixel without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/image/<artifact>
+    -- Artifact: tests/artifacts/current/image/image_pixel_grid.png
     -- Why: This is meaningful only if the visible/text output comes from LImageData:setPixel and LImageData:getPixel; export helpers are just the container.
 
     it("PNG: image_pixel_grid.png -- pixel grid from setPixel", function()
@@ -527,7 +527,7 @@ describe("Evidence: lurek.image layered composition", function()
     end)
     -- Does: Runs "image_layered_swapped.limg -- swapped layer ordering persisted" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by LLayeredImage:swapLayers and LLayeredImage:save without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/image/<artifact>
+    -- Artifact: tests/artifacts/current/image/image_layered_swapped.limg
     -- Why: This is meaningful only if the visible/text output comes from LLayeredImage:swapLayers and LLayeredImage:save; export helpers are just the container.
 
     it("LIMG: image_layered_swapped.limg -- swapped layer ordering persisted", function()

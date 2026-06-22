@@ -743,6 +743,22 @@ impl LuaUserData for LuaTerminal {
             }
             Ok(())
         });
+        // -- renderImage --
+        /// Rasterizes the composed terminal grid and widgets into an `ImageData` preview.
+        /// @param | width | integer | Output image width in pixels.
+        /// @param | height | integer | Output image height in pixels.
+        /// @return | LImageData | Image data containing the terminal cells as colored blocks.
+        methods.add_method("renderImage", |lua, this, (width, height): (u32, u32)| {
+            if width == 0 || height == 0 {
+                return Err(runtime_error(
+                    "LTerminal:renderImage",
+                    "width and height must be greater than zero",
+                ));
+            }
+            let terminal = this.binding.terminal.borrow();
+            let image = terminal.draw_to_image(width, height);
+            lua.create_userdata(image)
+        });
         // -- setFont --
         /// Selects the nearest built-in bitmap font by pixel height and refits the window to the terminal grid.
         /// @param | height | integer | Desired font height in pixels.

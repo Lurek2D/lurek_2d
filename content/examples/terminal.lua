@@ -140,6 +140,16 @@ do
     terminal_log("render submitted terminal at " .. cols .. "x" .. rows)
 end
 
+--@api: LTerminal:renderImage
+do
+    local term = make_console(32, 8)
+    term:print(1, 7, "image diagnostics")
+    local img = term:renderImage(256, 128)
+    local width = img:getWidth()
+    local height = img:getHeight()
+    terminal_log("renderImage produced " .. width .. "x" .. height .. " image")
+end
+
 --@api: LTerminal:getRenderStats
 do
     local term = make_console(32, 8)

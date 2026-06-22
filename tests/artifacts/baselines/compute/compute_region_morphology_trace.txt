@@ -1,0 +1,9 @@
+region_2_2_3x3=1.000000,1.000000,0.000000,1.000000,1.000000,0.000000,0.000000,0.000000,2.000000
+edited_nonzero=10
+mask_nonzero=10
+dilated_nonzero=24
+eroded_nonzero=10
+floodfill_corner=9.000000
+floodfill_nonzero=36
+any_mask=true
+all_mask=false

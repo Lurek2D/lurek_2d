@@ -63,7 +63,7 @@ describe("Evidence: lurek.color conversions and blends", function()
 
     -- Does: Builds standalone swatch artifacts from public blend helpers and pairs them with a numeric conversion trace.
     -- Shows: Each PNG should expose one blend-family result instead of collapsing several blend evidences into one matrix, while the TXT file records exact conversion and roundtrip values.
-    -- Artifact: tests/artifacts/current/color/color_base_a.png, color_base_b.png, color_blend_<mode>.png, color_conversion_trace.txt
+    -- Artifact: tests/artifacts/current/color/color_base_a.png, tests/artifacts/current/color/color_base_b.png, tests/artifacts/current/color/color_blend_additive.png, tests/artifacts/current/color/color_blend_alpha_blend.png, tests/artifacts/current/color/color_blend_invert_a.png, tests/artifacts/current/color/color_blend_multiply.png, tests/artifacts/current/color/color_blend_overlay.png, tests/artifacts/current/color/color_blend_screen.png, tests/artifacts/current/color/color_conversion_trace.txt
     -- Why: This is meaningful because all artifacts are computed from lurek.color math and conversion APIs instead of hard-coded expected colors.
 
     it("PNG+TXT: blend matrix and conversion trace", function()

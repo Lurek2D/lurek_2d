@@ -1027,7 +1027,7 @@ impl Terminal {
     }
 
     /// Strictly append `widget` and return its index.
-    pub fn try_add_widget(&mut self, mut widget: Widget) -> Result<usize, TerminalError> {
+    pub fn try_add_widget(&mut self, widget: Widget) -> Result<usize, TerminalError> {
         if self.widgets.len() >= self.limits.max_widgets {
             return Err(TerminalError::WidgetLimitReached {
                 limit: self.limits.max_widgets,
@@ -1185,17 +1185,6 @@ impl Terminal {
             .ok_or(TerminalError::InvalidWidgetIndex { index })?
             .try_set_title_with_limit(title, self.limits.max_widget_text_chars)
     }
-    /// Append `child_index` to the Panel widget at `panel_index`; returns `false` on bad indices or wrong widget kind.
-    pub(crate) fn add_panel_child(&mut self, panel_index: usize, child_index: usize) -> bool {
-        match self.try_add_panel_child(panel_index, child_index) {
-            Ok(()) => true,
-            Err(_) => {
-                self.diagnostics.rejected_widget_children += 1;
-                false
-            }
-        }
-    }
-
     /// Strictly attach `child_index` to the panel at `panel_index`.
     pub(crate) fn try_add_panel_child(
         &mut self,
@@ -1808,17 +1797,6 @@ impl Terminal {
                     title,
                     color,
                 } => {
-                    clear_render_rect(
-                        cells,
-                        self.cols,
-                        self.rows,
-                        widget.base.x,
-                        widget.base.y,
-                        widget.base.width,
-                        widget.base.height,
-                        *color,
-                        PANEL_BG,
-                    );
                     self.render_border(cells, widget, *style, title, *color);
                 }
                 WidgetKind::Panel { .. } => {

@@ -1,77 +1,11 @@
--- test_evidence_raycaster.lua
 -- Canonical evidence file for lurek.raycaster visual outputs.
-
--- The raycaster casts rays through a 2D grid and returns hit data.
--- Tests verify correctness of ray geometry and render results to a PNG
--- "depth buffer" image so the output can be visually inspected.
-
 
 local OUT = evidence_output_dir("raycaster")
 
-local function save_png(img, path)
+local function save_png(img, name)
+    local path = OUT .. name
     lurek.image.savePNG(img, path)
     expect_evidence_created(path)
-end
-
-local SAMPLE_TEXTURE = "content/examples/assets/images/sample_texture.png"
-
-local function clamp(v, lo, hi)
-    if v < lo then return lo end
-    if v > hi then return hi end
-    return v
-end
-
-local function load_texture()
-    return lurek.image.newImageData(SAMPLE_TEXTURE)
-end
-
-local function sample_wrapped(texture, u, v, tint)
-    local tw = texture:getWidth()
-    local th = texture:getHeight()
-    local tx = math.floor((u - math.floor(u)) * tw) % tw
-    local ty = math.floor((v - math.floor(v)) * th) % th
-    local r, g, b, a = texture:getPixel(tx, ty)
-    local tr = tint and tint[1] or 1.0
-    local tg = tint and tint[2] or 1.0
-    local tb = tint and tint[3] or 1.0
-    return clamp(math.floor(r * tr + 0.5), 0, 255),
-        clamp(math.floor(g * tg + 0.5), 0, 255),
-        clamp(math.floor(b * tb + 0.5), 0, 255),
-        a or 255
-end
-
-local function apply_shade(r, g, b, shade)
-    return clamp(math.floor(r * shade + 0.5), 0, 255),
-        clamp(math.floor(g * shade + 0.5), 0, 255),
-        clamp(math.floor(b * shade + 0.5), 0, 255)
-end
-
-local function build_world()
-    local rc = lurek.raycaster.new(16, 16)
-    for x = 0, 15 do
-        rc:setCell(x, 0, 1)
-        rc:setCell(x, 15, 1)
-    end
-    for y = 0, 15 do
-        rc:setCell(0, y, 1)
-        rc:setCell(15, y, 1)
-    end
-
-    for y = 2, 13 do
-        rc:setCell(4, y, 2)
-        rc:setCell(11, y, 3)
-    end
-    for x = 4, 11 do
-        rc:setCell(x, 2, 2)
-        rc:setCell(x, 13, 3)
-    end
-
-    rc:setCell(7, 6, 1)
-    rc:setCell(7, 7, 1)
-    rc:setCell(8, 7, 1)
-    rc:setCell(9, 9, 2)
-    rc:setCell(10, 9, 3)
-    return rc
 end
 
 local function make_room(w, h)
@@ -87,1346 +21,401 @@ local function make_room(w, h)
     return rc
 end
 
-local function draw_frame(img, x, y, w, h, r, g, b)
-    img:drawLine(x, y, x + w - 1, y, r, g, b, 255)
-    img:drawLine(x + w - 1, y, x + w - 1, y + h - 1, r, g, b, 255)
-    img:drawLine(x + w - 1, y + h - 1, x, y + h - 1, r, g, b, 255)
-    img:drawLine(x, y + h - 1, x, y, r, g, b, 255)
-end
-
-local function mark_cell(img, cell_x, cell_y, scale, r, g, b)
-    local left = cell_x * scale + math.floor(scale * 0.25)
-    local top = cell_y * scale + math.floor(scale * 0.25)
-    local size = math.max(2, math.floor(scale * 0.5))
-    img:drawRect(left, top, size, size, r, g, b, 255)
-end
-
-local function mark_world_point(img, world_x, world_y, scale, r, g, b)
-    local px = math.floor(world_x * scale + 0.5)
-    local py = math.floor(world_y * scale + 0.5)
-    img:drawLine(px - 3, py, px + 3, py, r, g, b, 255)
-    img:drawLine(px, py - 3, px, py + 3, r, g, b, 255)
-end
-
-local function describe_pick(hit)
-    if not hit then
-        return "nil"
+local function make_corridor()
+    local rc = make_room(18, 18)
+    for y = 2, 15 do
+        rc:setCell(5, y, 2)
+        rc:setCell(12, y, 3)
     end
-    return table.concat({
-        tostring(hit.surface),
-        tostring(hit.x),
-        tostring(hit.y),
-        string.format("%.3f", hit.distance or 0.0),
-        string.format("%.3f", hit.hit_x or 0.0),
-        string.format("%.3f", hit.hit_y or 0.0),
-        string.format("%.3f", hit.u or 0.0),
-        string.format("%.3f", hit.v or 0.0),
-        tostring(hit.level or 0),
-    }, "@")
+    for x = 5, 12 do
+        rc:setCell(x, 3, 2)
+        rc:setCell(x, 14, 3)
+    end
+    rc:setCell(8, 7, 1)
+    rc:setCell(9, 8, 2)
+    rc:setCell(10, 10, 3)
+    rc:setCell(11, 6, 2)
+    return rc
 end
 
--- @describe Evidence: lurek.raycaster visual scenarios
-describe("Evidence: lurek.raycaster visual scenarios", function()
-    -- Does: Runs "saves raycaster depth-buffer as PNG evidence" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by lurek.raycaster.projectColumn, lurek.raycaster.new, and related owner calls without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/raycaster/<artifact>
-    -- Why: This is meaningful only if the visible/text output comes from lurek.raycaster.projectColumn, lurek.raycaster.new, and related owner calls; export helpers are just the container.
+local function make_feature_map(kind, amount)
+    local rc = make_room(14, 11)
+    rc:setCell(8, 5, 2)
+    rc:setCell(12, 5, 3)
+    if kind == "half" then
+        rc:setHalfWallCell(8, 5, 0.48)
+    elseif kind == "window" then
+        rc:setWindowCell(8, 5, 0.25, 0.78, 0.35)
+    elseif kind == "door" then
+        rc:setDoorCell(8, 5, "vertical", amount or 0.0, 0.82)
+    end
+    return rc
+end
 
-    it("saves raycaster depth-buffer as PNG evidence", function()
-        local W, H = 128, 64
-        local FOV = math.pi / 2
+local function params(px, py, angle, w, h)
+    return {
+        px = px or 8.5,
+        py = py or 8.5,
+        angle = angle or 0.0,
+        fov = math.pi / 3,
+        rays = 96,
+        max_dist = 18.0,
+        screen_w = w or 320,
+        screen_h = h or 180,
+    }
+end
 
-        local rc = lurek.raycaster.new(20, 20)
-        -- Outer walls
-        for x = 0, 19 do
-            rc:setCell(x, 0, 1)
-            rc:setCell(x, 19, 1)
+local function draw_cell(img, x, y, scale, val)
+    local r, g, b = 26, 30, 40
+    if val == 1 then
+        r, g, b = 198, 207, 218
+    elseif val == 2 then
+        r, g, b = 54, 154, 225
+    elseif val == 3 then
+        r, g, b = 230, 142, 64
+    elseif val == 4 then
+        r, g, b = 150, 88, 220
+    end
+    img:drawRect(x * scale, y * scale, scale - 1, scale - 1, r, g, b, 255)
+end
+
+local function draw_grid(img, rc, scale, ox, oy)
+    ox = ox or 0
+    oy = oy or 0
+    for y = 0, rc:height() - 1 do
+        for x = 0, rc:width() - 1 do
+            local before = lurek.image.newImageData(scale, scale)
+            before:fill(0, 0, 0, 0)
+            draw_cell(before, 0, 0, scale, rc:getCell(x, y))
+            img:blit(before, ox + x * scale, oy + y * scale)
         end
-        for y = 0, 19 do
-            rc:setCell(0, y, 1)
-            rc:setCell(19, y, 1)
+    end
+end
+
+local function mark(img, x, y, scale, r, g, b, ox, oy)
+    ox = ox or 0
+    oy = oy or 0
+    local px = ox + math.floor(x * scale)
+    local py = oy + math.floor(y * scale)
+    img:drawCircle(px, py, 4, r, g, b, 255)
+    img:drawLine(px - 8, py, px + 8, py, r, g, b, 255)
+    img:drawLine(px, py - 8, px, py + 8, r, g, b, 255)
+end
+
+local function ray(img, x, y, angle, distance, scale, r, g, b, ox, oy)
+    ox = ox or 0
+    oy = oy or 0
+    img:drawLine(
+        ox + math.floor(x * scale),
+        oy + math.floor(y * scale),
+        ox + math.floor((x + math.cos(angle) * distance) * scale),
+        oy + math.floor((y + math.sin(angle) * distance) * scale),
+        r,
+        g,
+        b,
+        230
+    )
+end
+
+local function draw_fov_rays(img, rc, px, py, angle, fov, count, max_dist, scale, ox, oy)
+    local rays = rc:castRays(px, py, angle, fov, count, max_dist)
+    for i, hit in ipairs(rays) do
+        local t = (i - 1) / math.max(1, count - 1)
+        local a = angle - fov * 0.5 + fov * t
+        ray(img, px, py, a, hit.distance or max_dist, scale, 60, 210, 255, ox, oy)
+        if hit.hit then
+            mark(img, hit.hit_x, hit.hit_y, scale, 255, 230, 90, ox, oy)
         end
+    end
+    mark(img, px, py, scale, 255, 255, 255, ox, oy)
+end
 
-        local img = lurek.image.newImageData(W, H)
-        local rays = rc:castRaysFlat(10.0, 10.0, 0.0, FOV, W, 40)
-        for col = 0, W - 1 do
-            local base = col * 5
-            local dist    = rays[base + 1] or 0
-            local shade   = lurek.raycaster.distanceShade(dist, 40)
-            local _, top, bottom = lurek.raycaster.projectColumn(dist, FOV, H)
-            local brightness = math.floor(shade * 200 + 0.5)
-            local t = math.max(0, math.min(H - 1, math.floor(top or 0)))
-            local b = math.max(0, math.min(H - 1, math.floor(bottom or (H - 1))))
+local function screen_marker(img, sx, sy, r, g, b)
+    img:drawCircle(sx, sy, 6, r, g, b, 255)
+    img:drawLine(sx - 12, sy, sx + 12, sy, r, g, b, 255)
+    img:drawLine(sx, sy - 12, sx, sy + 12, r, g, b, 255)
+end
 
-            if t > 0 then
-                img:drawLine(col, 0, col, t - 1, 40, 40, 40, 255)
-            end
-            if t <= b then
-                img:drawLine(col, t, col, b, brightness, brightness, brightness, 255)
-            end
-            if b < H - 1 then
-                img:drawLine(col, b + 1, col, H - 1, 20, 20, 20, 255)
-            end
-        end
+local function draw_pick_world(img, pick, scale, r, g, b, ox, oy)
+    if pick then
+        mark(img, pick.hit_x or (pick.x + 0.5), pick.hit_y or (pick.y + 0.5), scale, r, g, b, ox, oy)
+    end
+end
 
-        save_png(img, OUT .. "raycaster_depth.png")
-    end)
-    -- Does: Runs "saves top-down occupancy map as PNG evidence" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by lurek.raycaster.new and related owner calls.
-    -- Artifact: tests/artifacts/current/raycaster/<artifact>
-    -- Why: This is meaningful only if the output is driven by lurek.raycaster.new and related owner calls rather than by helper-only drawing.
-
-    it("saves top-down occupancy map as PNG evidence", function()
-        local W, H = 128, 128
-        local rc = lurek.raycaster.new(16, 16)
-
-        for x = 0, 15 do
-            rc:setCell(x, 0, 1)
-            rc:setCell(x, 15, 1)
-        end
-        for y = 0, 15 do
-            rc:setCell(0, y, 1)
-            rc:setCell(15, y, 1)
-        end
-        for i = 3, 12 do
-            rc:setCell(i, 8, 1)
-        end
-
-        local img = lurek.image.newImageData(W, H)
-        img:fill(22, 24, 30, 255)
-        local cell = 8
-        for y = 0, 15 do
-            for x = 0, 15 do
-                local v = rc:getCell(x, y)
-                local r, g, b = 30, 34, 44
-                if v ~= 0 then
-                    r, g, b = 220, 220, 230
-                end
-                img:drawRect(x * cell, y * cell, cell - 1, cell - 1, r, g, b, 255)
-            end
-        end
-
-        local path = OUT .. "raycaster_topdown.png"
-        save_png(img, path)
-    end)
-    -- Does: Runs "saves raycaster FOV rays projection as PNG evidence" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by lurek.raycaster.new and related owner calls.
-    -- Artifact: tests/artifacts/current/raycaster/<artifact>
-    -- Why: This is meaningful only if the output is driven by lurek.raycaster.new and related owner calls rather than by helper-only drawing.
-
-    it("saves raycaster FOV rays projection as PNG evidence", function()
-        local W, H = 128, 128
-        local rc = lurek.raycaster.new(16, 16)
-        
-        -- Outline map boundary
-        for i = 0, 15 do
-            rc:setCell(i, 0, 1)
-            rc:setCell(i, 15, 1)
-            rc:setCell(0, i, 1)
-            rc:setCell(15, i, 1)
-        end
-        rc:setCell(6, 6, 1)
-        rc:setCell(10, 8, 1)
-
-        local img = lurek.image.newImageData(W, H)
-        img:fill(15, 15, 20, 255)
-
-        local px, py = 8.0, 8.0
-        local fov = math.pi / 3 -- 60 degree sweep
-        local angle = 0.0
-        local scale = 8
-
-        -- Draw occupancy cells natively
-        for y = 0, 15 do
-            for x = 0, 15 do
-                if rc:getCell(x, y) ~= 0 then
-                    img:drawRect(x * scale, y * scale, scale - 1, scale - 1, 80, 80, 100, 255)
-                end
-            end
-        end
-
-        -- Cast FOV rays and draw lines to hits natively
-        local NUM_RAYS = 30
-        for i = 0, NUM_RAYS - 1 do
-            local ra = angle - (fov / 2) + (i / (NUM_RAYS - 1)) * fov
-            local cast = rc:castRay(px, py, ra, 20.0)
-            local dist = cast and cast.distance or 20.0
-            local hx = px + math.cos(ra) * dist
-            local hy = py + math.sin(ra) * dist
-            img:drawLine(px * scale, py * scale, hx * scale, hy * scale, 255, 150, 50, 180)
-        end
-
-        -- Draw player camera position natively
-        img:drawCircle(px * scale, py * scale, 4, 255, 255, 255, 255)
-
-        local path = OUT .. "raycaster_fov.png"
-        save_png(img, path)
-    end)
-    -- Does: Runs "saves raycaster minimap overlay as PNG evidence" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by lurek.raycaster.new and related owner calls.
-    -- Artifact: tests/artifacts/current/raycaster/<artifact>
-    -- Why: This is meaningful only if the output is driven by lurek.raycaster.new and related owner calls rather than by helper-only drawing.
-
-    it("saves raycaster minimap overlay as PNG evidence", function()
-        local W, H = 128, 128
-        local rc = lurek.raycaster.new(16, 16)
-        rc:setCell(5, 5, 1)
-        rc:setCell(5, 10, 1)
-        rc:setCell(10, 5, 1)
-        rc:setCell(10, 10, 1)
-
-        local img = lurek.image.newImageData(W, H)
-        img:fill(10, 12, 16, 255)
-        
-        local scale = 8
-        -- Native draw empty grids
-        for y = 0, 15 do
-            for x = 0, 15 do
-                img:drawRect(x * scale, y * scale, scale, scale, 25, 28, 35, 255)
-                if rc:getCell(x, y) > 0 then
-                    img:drawRect(x * scale, y * scale, scale, scale, 220, 100, 100, 255)
-                end
-            end
-        end
-
-        -- Draw interactive radar blip sweep
-        img:drawCircle(64, 64, 32, 50, 200, 50, 100)
-        img:drawCircle(64, 64, 16, 50, 200, 50, 150)
-        img:drawLine(64, 64, 64 + 24, 64 - 24, 100, 255, 100, 255)
-
-        local path = OUT .. "raycaster_minimap.png"
-        save_png(img, path)
-    end)
-    -- Does: Draws a pseudo-3D wall slice set with depth-based brightness variance.
-    -- Shows: The PNG should make distance shading across wall columns visually obvious.
-    -- Artifact: tests/artifacts/current/raycaster/raycaster_shaded_walls.png
-    -- Why: This is meaningful because it preserves a stable rendering of depth-to-brightness behavior.
-
-    it("saves raycaster shaded walls with height variance as PNG evidence", function()
-        local W, H = 128, 64
-        local img = lurek.image.newImageData(W, H)
-        img:fill(18, 18, 22, 255)
-        img:drawRect(0, 0, W, H / 2, 30, 35, 45, 255)
-        img:drawRect(0, H / 2, W, H / 2, 20, 25, 30, 255)
-
-        for col = 0, W - 1 do
-            local dist = 4.0 + 8.0 * math.sin((col / (W - 1)) * math.pi)
-            local wall_h = math.floor((H / dist) * 2.0)
-            local top = math.max(0, math.floor((H - wall_h) / 2))
-            local bottom = math.min(H - 1, top + wall_h)
-            local brightness = math.floor((1.0 - (dist / 12.0)) * 200)
-            brightness = math.max(20, math.min(255, brightness))
-            img:drawLine(col, top, col, bottom, brightness, math.floor(brightness * 0.8), math.floor(brightness * 0.6), 255)
-        end
-
-        local path = OUT .. "raycaster_shaded_walls.png"
-        save_png(img, path)
-    end)
-    -- Does: Splits the wall view into stone and mirrored halves to visualize reflective styling.
-    -- Shows: The PNG should contrast a regular wall surface with a tinted mirrored surface.
-    -- Artifact: tests/artifacts/current/raycaster/raycaster_mirrors.png
-    -- Why: This is meaningful because it preserves a concrete reflective-wall presentation sample.
-
-    it("PNG: raycaster mirrors/reflections", function()
+-- @describe Evidence: lurek.raycaster
+describe("Evidence: lurek.raycaster", function()
+    before_each(function()
         ensure_evidence_dir("raycaster")
-        local W, H = 128, 64
-        local img = lurek.image.newImageData(W, H)
-        img:fill(10, 10, 15, 255)
-
-        for col = 0, W - 1 do
-            local dist = 6.0
-            local wall_h = math.floor((H / dist) * 1.5)
-            local top = math.max(0, math.floor((H - wall_h) / 2))
-            local bottom = math.min(H - 1, top + wall_h)
-
-            if col < W / 2 then
-                img:drawLine(col, top, col, bottom, 100, 100, 100, 255)
-            else
-                local tint_r, tint_g, tint_b = 200, 220, 255
-                for y = top, bottom do
-                    local factor = (y - top) / (bottom - top)
-                    local ref_r = math.floor(tint_r * factor)
-                    local ref_g = math.floor(tint_g * factor)
-                    local ref_b = math.floor(tint_b * (1 - factor))
-                    img:setPixel(col, y, ref_r, ref_g, ref_b, 255)
-                end
-            end
-        end
-
-        local path = OUT .. "raycaster_mirrors.png"
-        save_png(img, path)
     end)
-    -- Does: Captures solid-wall, window, closed-door, and open-door visibility as separate artifacts using actual raycaster LOS images.
-    -- Shows: Each PNG should expose one visibility state instead of merging several evidences into one sheet.
-    -- Artifact: tests/artifacts/current/raycaster/raycaster_visibility_solid.png, tests/artifacts/current/raycaster/raycaster_visibility_window.png, tests/artifacts/current/raycaster/raycaster_visibility_closed_door.png, tests/artifacts/current/raycaster/raycaster_visibility_open_door.png
-    -- Why: This is meaningful because each artifact is produced by LRaycaster:drawLineOfSight over real wall-feature semantics without helper-built collage output.
 
-    it("PNG: feature visibility states", function()
-        ensure_evidence_dir("raycaster")
+    -- Does: Renders a first-person corridor and pairs it with the exact top-down FOV rays that produced the columns.
+    -- Shows: A real wall-column raycaster view plus the same camera footprint in grid space.
+    -- Artifact: tests/artifacts/current/raycaster/raycaster_corridor_view_with_fov.png
+    -- Why: This demonstrates drawView and castRays as one coherent pseudo-3D projection.
+    it("PNG: corridor view with FOV rays", function()
+        local rc = make_corridor()
+        local angle = math.pi / 2
+        local view = rc:drawView(8.5, 8.5, angle, math.pi / 3, 320, 180, 18.0)
+        local img = lurek.image.newImageData(520, 220)
+        img:fill(8, 10, 16, 255)
+        img:blit(view, 0, 0)
+        draw_grid(img, rc, 10, 334, 18)
+        draw_fov_rays(img, rc, 8.5, 8.5, angle, math.pi / 3, 17, 18.0, 10, 334, 18)
+        save_png(img, "raycaster_corridor_view_with_fov.png")
+    end)
 
-        local scale = 16
+    -- Does: Renders the same camera as flat columns and as a depth-column buffer.
+    -- Shows: The top row is the view; the bottom row is the per-column distance field used by the projection.
+    -- Artifact: tests/artifacts/current/raycaster/raycaster_depth_columns_vs_view.png
+    -- Why: This demonstrates drawDepthMap as raycaster depth output, not a generic chart.
+    it("PNG: depth columns versus view", function()
+        local rc = make_corridor()
+        local angle = math.pi / 2 + 0.18
+        local view = rc:drawView(8.5, 8.5, angle, math.pi / 3, 320, 140, 18.0)
+        local depth = rc:drawDepthMap(8.5, 8.5, angle, math.pi / 3, 192, 320, 80, 18.0)
+        local img = lurek.image.newImageData(320, 230)
+        img:fill(6, 8, 14, 255)
+        img:blit(view, 0, 0)
+        img:blit(depth, 0, 148)
+        save_png(img, "raycaster_depth_columns_vs_view.png")
+    end)
+
+    -- Does: Renders a multi-frame camera rotation sweep from one tile.
+    -- Shows: Adjacent first-person frames should rotate through different corridor walls.
+    -- Artifact: tests/artifacts/current/raycaster/raycaster_camera_sweep_atlas.png
+    -- Why: This demonstrates drawCameraSweep as a raycaster preview generator for rotating views.
+    it("PNG: camera sweep atlas", function()
+        local rc = make_corridor()
+        local img = rc:drawCameraSweep(8.5, 8.5, math.pi / 3, 18.0, 8, 120, 80)
+        save_png(img, "raycaster_camera_sweep_atlas.png")
+    end)
+
+    -- Does: Draws a top-down raycaster debug map and overlays the revealed fog-of-war cells.
+    -- Shows: The player FOV rays and the returned visible cell set in the same grid space.
+    -- Artifact: tests/artifacts/current/raycaster/raycaster_topdown_reveal_fov.png
+    -- Why: This demonstrates drawTopDown and revealCellsFromRays as visibility tooling tied to the DDA model.
+    it("PNG: top-down reveal FOV", function()
+        local rc = make_corridor()
+        local angle = math.pi / 2
+        local img = rc:drawTopDown(8.5, 8.5, angle, 14)
+        local cells = rc:revealCellsFromRays(8.5, 8.5, angle, math.pi / 3, 31, 10.0, 0.25)
+        for _, cell in ipairs(cells) do
+            img:drawRect(cell.x * 14 + 3, cell.y * 14 + 3, 8, 8, 70, 210, 255, 190)
+        end
+        draw_fov_rays(img, rc, 8.5, 8.5, angle, math.pi / 3, 11, 10.0, 14, 0, 0)
+        save_png(img, "raycaster_topdown_reveal_fov.png")
+    end)
+
+    -- Does: Compares blocked wall, window opening, closed door, and open door line-of-sight.
+    -- Shows: The LOS renderer should visibly change when a feature cell allows or blocks visibility.
+    -- Artifact: tests/artifacts/current/raycaster/raycaster_los_wall_window_door.png
+    -- Why: This demonstrates drawLineOfSight with setWindowCell and setDoorCell feature semantics.
+    it("PNG: LOS wall/window/door comparison", function()
+        local sheet = lurek.image.newImageData(640, 160)
+        sheet:fill(8, 10, 16, 255)
+
         local solid = make_room(16, 16)
         solid:setCell(7, 7, 1)
+        sheet:blit(solid:drawLineOfSight(2.5, 7.5, 13.5, 7.5, 10), 0, 0)
 
-        local window_map = make_room(16, 16)
-        window_map:setCell(7, 7, 1)
-        window_map:setWindowCell(7, 7, 0.25, 0.78, 0.35)
+        local window = make_room(16, 16)
+        window:setCell(7, 7, 1)
+        window:setWindowCell(7, 7, 0.25, 0.78, 0.35)
+        sheet:blit(window:drawLineOfSight(2.5, 7.5, 13.5, 7.5, 10), 160, 0)
 
-        local closed_door = make_room(16, 16)
-        closed_door:setCell(7, 7, 1)
-        closed_door:setDoorCell(7, 7, "vertical", 0.0)
+        local closed = make_room(16, 16)
+        closed:setCell(7, 7, 1)
+        closed:setDoorCell(7, 7, "vertical", 0.0, 0.8)
+        sheet:blit(closed:drawLineOfSight(2.5, 7.5, 13.5, 7.5, 10), 320, 0)
 
-        local open_door = make_room(16, 16)
-        open_door:setCell(7, 7, 1)
-        open_door:setDoorCell(7, 7, "vertical", 1.0)
+        local open = make_room(16, 16)
+        open:setCell(7, 7, 1)
+        open:setDoorCell(7, 7, "vertical", 1.0, 0.8)
+        sheet:blit(open:drawLineOfSight(2.5, 7.5, 13.5, 7.5, 10), 480, 0)
 
-        local panels = {
-            { image = solid:drawLineOfSight(2.5, 7.5, 12.5, 7.5, scale), accent = { 224, 92, 92 }, name = "raycaster_visibility_solid.png" },
-            { image = window_map:drawLineOfSight(2.5, 7.5, 12.5, 7.5, scale), accent = { 88, 208, 240 }, name = "raycaster_visibility_window.png" },
-            { image = closed_door:drawLineOfSight(2.5, 7.5, 12.5, 7.5, scale), accent = { 224, 176, 96 }, name = "raycaster_visibility_closed_door.png" },
-            { image = open_door:drawLineOfSight(2.5, 7.5, 12.5, 7.5, scale), accent = { 96, 220, 144 }, name = "raycaster_visibility_open_door.png" },
-        }
-
-        for _, panel in ipairs(panels) do
-            mark_cell(panel.image, 7, 7, scale, panel.accent[1], panel.accent[2], panel.accent[3])
-            save_png(panel.image, OUT .. panel.name)
-        end
+        save_png(sheet, "raycaster_los_wall_window_door.png")
     end)
-    -- Does: Paints a ceiling and floor with different procedural textures in one first-person frame.
-    -- Shows: The PNG should make the contrast between ceiling patterning and floor patterning visually clear.
-    -- Artifact: tests/artifacts/current/raycaster/raycaster_floor_ceiling.png
-    -- Why: This is meaningful because it preserves a durable sample of floor and ceiling styling behavior.
 
-    it("PNG: varied floor/ceiling textures", function()
-        ensure_evidence_dir("raycaster")
-        local W, H = 128, 64
-        local img = lurek.image.newImageData(W, H)
+    -- Does: Casts one ray through two transparent wall layers before the final opaque wall.
+    -- Shows: Multiple hit points appear on the same ray, proving layered transparent traversal.
+    -- Artifact: tests/artifacts/current/raycaster/raycaster_transparent_layered_hits.png
+    -- Why: This demonstrates setWallAlpha and castRayMulti as a ray traversal feature.
+    it("PNG: transparent layered hits", function()
+        local rc = make_room(18, 10)
+        rc:setCell(5, 5, 2)
+        rc:setCell(9, 5, 3)
+        rc:setCell(14, 5, 1)
+        rc:setWallAlpha(2, 0.35)
+        rc:setWallAlpha(3, 0.55)
 
-        for y = 0, H - 1 do
-            for x = 0, W - 1 do
-                if y < H / 2 then
-                    local cx = math.floor(x + (y * 2)) % 20
-                    if cx < 2 then
-                        img:setPixel(x, y, 50, 30, 20, 255)
-                    else
-                        img:setPixel(x, y, 100, 70, 50, 255)
-                    end
-                else
-                    local px = x - W / 2
-                    local py = y - H / 2
-                    local pz = py + 1.0
-                    local tx = math.floor(px / pz * 10)
-                    local ty = math.floor(200 / pz)
-                    if (tx + ty) % 2 == 0 then
-                        img:setPixel(x, y, 200, 200, 200, 255)
-                    else
-                        img:setPixel(x, y, 40, 40, 40, 255)
-                    end
-                end
+        local img = lurek.image.newImageData(360, 180)
+        img:fill(8, 10, 16, 255)
+        draw_grid(img, rc, 16, 0, 0)
+        local hits = rc:castRayMulti(2.5, 5.5, 0.0, 20.0, 5)
+        for i, hit in ipairs(hits) do
+            ray(img, 2.5, 5.5, 0.0, hit.distance, 16, 255, 220 - i * 30, 70 + i * 35, 0, 0)
+            mark(img, hit.hit_x, hit.hit_y, 16, 255, 235 - i * 25, 90 + i * 35, 0, 0)
+        end
+        img:blit(rc:drawView(2.5, 5.5, 0.0, math.pi / 4, 160, 90, 20.0), 192, 24)
+        save_png(img, "raycaster_transparent_layered_hits.png")
+    end)
+
+    -- Does: Renders half-wall, window, closed door, and open door cases from the same camera.
+    -- Shows: Four first-person panels with pick markers showing which screen band hits the feature or passes through.
+    -- Artifact: tests/artifacts/current/raycaster/raycaster_feature_walls_view_pick.png
+    -- Why: This demonstrates feature cells as first-person wall/picker behavior, not just stored metadata.
+    it("PNG: feature wall view and pick", function()
+        local sheet = lurek.image.newImageData(640, 240)
+        sheet:fill(8, 10, 16, 255)
+        local kinds = {
+            { "half", nil, 255, 210, 80 },
+            { "window", nil, 90, 210, 255 },
+            { "door", 0.0, 255, 90, 90 },
+            { "door", 0.75, 120, 240, 150 },
+        }
+        for i, item in ipairs(kinds) do
+            local rc = make_feature_map(item[1], item[2])
+            local p = params(4.5, 5.5, 0.0, 160, 120)
+            local view = rc:drawView(p.px, p.py, p.angle, p.fov, 160, 120, p.max_dist)
+            local x0 = (i - 1) * 160
+            sheet:blit(view, x0, 0)
+            local center = rc:pickScreen(80, 60, p)
+            local upper = rc:pickScreen(80, 38, p)
+            local lower = rc:pickScreen(80, 82, p)
+            screen_marker(sheet, x0 + 80, 60, item[3], item[4], item[5])
+            screen_marker(sheet, x0 + 80, 38, 230, 230, 235)
+            screen_marker(sheet, x0 + 80, 82, 230, 230, 235)
+            draw_grid(sheet, rc, 7, x0 + 18, 136)
+            draw_pick_world(sheet, center, 7, item[3], item[4], item[5], x0 + 18, 136)
+            draw_pick_world(sheet, upper, 7, 230, 230, 235, x0 + 18, 136)
+            draw_pick_world(sheet, lower, 7, 230, 230, 235, x0 + 18, 136)
+        end
+        save_png(sheet, "raycaster_feature_walls_view_pick.png")
+    end)
+
+    -- Does: Extracts a player-centered minimap and pairs it with lit minimap samples around the same point.
+    -- Shows: The left side is pixel minimap extraction; the right side is visible/lit tile sampling.
+    -- Artifact: tests/artifacts/current/raycaster/raycaster_minimap_reveal_lighting.png
+    -- Why: This demonstrates extractMinimap and buildMinimapWindow as map-space raycaster inspection APIs.
+    it("PNG: minimap reveal and lighting", function()
+        local rc = make_corridor()
+        local mini = rc:extractMinimap(8.5, 8.5, 0.0, 6, 14)
+        local light = lurek.raycaster.newPointLight(8.5, 8.5, 1.0, 0.72, 0.38, 7.0, 1.7)
+        local samples = rc:buildMinimapWindow(8.5, 8.5, 4, 0.10, { light })
+        local img = lurek.image.newImageData(360, 180)
+        img:fill(8, 10, 16, 255)
+        img:blit(mini, 0, 0)
+        for _, s in ipairs(samples) do
+            local x = 200 + (s.x - 4) * 16
+            local y = 18 + (s.y - 4) * 16
+            local r = math.floor((s.r or 0.1) * 255)
+            local g = math.floor((s.g or 0.1) * 255)
+            local b = math.floor((s.b or 0.1) * 255)
+            if s.blocked then
+                img:drawRect(x, y, 14, 14, math.max(r, 95), math.max(g, 60), math.max(b, 45), 255)
+            elseif s.visible then
+                img:drawRect(x, y, 14, 14, r, g, b, 255)
+            else
+                img:drawRect(x, y, 14, 14, 22, 25, 34, 255)
             end
         end
-
-        local path = OUT .. "raycaster_floor_ceiling.png"
-        save_png(img, path)
+        mark(img, 8.5, 8.5, 14, 255, 255, 255, 0, 0)
+        save_png(img, "raycaster_minimap_reveal_lighting.png")
     end)
-    -- Does: Fills wall columns with a procedural lava-like texture to capture animated-wall styling.
-    -- Shows: The PNG should show bright, warm veins against darker cooled regions across the wall.
-    -- Artifact: tests/artifacts/current/raycaster/raycaster_animated_walls.png
-    -- Why: This is meaningful because it preserves a concrete texture-style output for review.
 
-    it("PNG: animated wall textures", function()
-        ensure_evidence_dir("raycaster")
-        local W, H = 128, 64
-        local img = lurek.image.newImageData(W, H)
-        img:fill(0, 0, 0, 255)
-
-        for col = 0, W - 1 do
-            local dist = 5.0
-            local wall_h = math.floor((H / dist) * 1.5)
-            local top = math.max(0, math.floor((H - wall_h) / 2))
-            local bottom = math.min(H - 1, top + wall_h)
-            for y = top, bottom do
-                local tex_y = math.floor(((y - top) / wall_h) * 64)
-                local tex_x = col % 64
-                local heat = math.sin(tex_x * 0.2 + tex_y * 0.1) + math.cos(tex_y * 0.3)
-                if heat > 0.5 then
-                    img:setPixel(col, y, 255, 200, 50, 255)
-                elseif heat > 0.0 then
-                    img:setPixel(col, y, 200, 80, 20, 255)
-                else
-                    img:setPixel(col, y, 60, 20, 20, 255)
-                end
+    -- Does: Uses screen picking and floor-row UV casting on the same first-person camera.
+    -- Shows: Crosshairs hit wall/floor/ceiling while the UV strip shows floor projection changing across a scanline.
+    -- Artifact: tests/artifacts/current/raycaster/raycaster_floor_ceiling_pick_uv.png
+    -- Why: This demonstrates pickScreen and castFloorRow as floor/ceiling projection APIs.
+    it("PNG: floor and ceiling pick UV", function()
+        local rc = make_corridor()
+        rc:setFloorTextureCell(9, 10, 4)
+        rc:setCeilingTextureCell(9, 5, 7)
+        local p = params(8.5, 8.5, math.pi / 2, 320, 180)
+        local img = lurek.image.newImageData(360, 250)
+        img:fill(8, 10, 16, 255)
+        img:blit(rc:drawView(p.px, p.py, p.angle, p.fov, 320, 180, p.max_dist), 0, 0)
+        local floor_hit = rc:pickScreen(160, 150, p)
+        local ceil_hit = rc:pickScreen(160, 24, p)
+        local wall_hit = rc:pickScreen(160, 90, p)
+        screen_marker(img, 160, 150, 120, 240, 150)
+        screen_marker(img, 160, 24, 90, 170, 255)
+        screen_marker(img, 160, 90, 255, 210, 80)
+        local uvs = rc:castFloorRow(p.px, p.py, 0.0, 1.0, -0.66, 0.0, 150)
+        for i, uv in ipairs(uvs) do
+            if i <= 320 then
+                local r = math.floor((uv.u % 1.0) * 255)
+                local g = math.floor((uv.v % 1.0) * 255)
+                img:drawRect(i - 1, 202, 1, 28, r, g, 180, 255)
             end
         end
-
-        local path = OUT .. "raycaster_animated_walls.png"
-        save_png(img, path)
-    end)
-    -- Does: Runs "native raycaster render surfaces" and turns the owner-module result into separate inspectable artifacts.
-    -- Shows: Each PNG should expose one native render surface instead of merging several evidences into one sheet.
-    -- Artifact: tests/artifacts/current/raycaster/raycaster_native_view.png, tests/artifacts/current/raycaster/raycaster_native_topdown.png, tests/artifacts/current/raycaster/raycaster_native_minimap.png, tests/artifacts/current/raycaster/raycaster_native_sweep.png
-    -- Why: This is meaningful only if each visible/text output comes from one concrete native render path rather than a helper-built collage.
-
-    it("PNG: native raycaster render surfaces", function()
-        ensure_evidence_dir("raycaster")
-
-        local world = build_world()
-        local view = world:drawView(7.5, 8.5, 0.12, math.pi / 3, 256, 160, 24.0)
-        local top_down = world:drawTopDown(7.5, 8.5, 0.12, 12)
-        local minimap = world:extractMinimap(7.5, 8.5, 0.12, 6, 10)
-        local sweep = world:drawCameraSweep(7.5, 8.5, math.pi / 2, 18.0, 6, 96, 64)
-        save_png(view, OUT .. "raycaster_native_view.png")
-        save_png(top_down:resize(168, 168, "bilinear"), OUT .. "raycaster_native_topdown.png")
-        save_png(minimap:resize(132, 132, "bilinear"), OUT .. "raycaster_native_minimap.png")
-        save_png(sweep:resize(600, 132, "bilinear"), OUT .. "raycaster_native_sweep.png")
-    end)
-    -- Does: Runs "textured first-person corridor view" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by LRaycaster:castRays, LRaycaster:castFloorRow, and related owner calls without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/raycaster/<artifact>
-    -- Why: This is meaningful only if the visible/text output comes from LRaycaster:castRays, LRaycaster:castFloorRow, and related owner calls; export helpers are just the container.
-
-    it("PNG: textured first-person corridor view", function()
-        ensure_evidence_dir("raycaster")
-
-        local W, H = 320, 200
-        local FOV = math.pi / 3
-        local px, py, angle = 7.5, 8.5, 0.15
-        local dir_x = math.cos(angle)
-        local dir_y = math.sin(angle)
-        local plane_scale = math.tan(FOV / 2)
-        local plane_x = -dir_y * plane_scale
-        local plane_y = dir_x * plane_scale
-
-        local world = build_world()
-        local uv_map = lurek.raycaster.new(W, H)
-        local img = lurek.image.newImageData(W, H)
-        local base = load_texture()
-        local wall_tints = {
-            [1] = { 0.95, 0.95, 0.95 },
-            [2] = { 0.92, 0.72, 0.62 },
-            [3] = { 0.62, 0.80, 0.98 },
-        }
-        local floor_tint = { 0.58, 0.56, 0.52 }
-        local ceiling_tint = { 0.46, 0.52, 0.70 }
-        local sprite_tint = { 1.00, 0.68, 0.46 }
-
-        for y = 0, H - 1 do
-            local sample_row = y < math.floor(H / 2) and (H - y - 1) or y
-            local uvs = uv_map:castFloorRow(px, py, dir_x, dir_y, plane_x, plane_y, sample_row)
-            for x = 1, W do
-                local uv = uvs[x]
-                local tint = y < math.floor(H / 2) and ceiling_tint or floor_tint
-                local r, g, b = sample_wrapped(base, uv.u * 1.75, uv.v * 1.75, tint)
-                if y < math.floor(H / 2) then
-                    r, g, b = apply_shade(r, g, b, 0.88)
-                else
-                    local falloff = 0.92 - ((y - H / 2) / (H / 2)) * 0.35
-                    r, g, b = apply_shade(r, g, b, falloff)
-                end
-                img:setPixel(x - 1, y, r, g, b, 255)
-            end
-        end
-
-        local hits = world:castRays(px, py, angle, FOV, W, 24.0)
-        for x = 1, W do
-            local hit = hits[x]
-            if hit and hit.hit then
-                local dist = math.max(0.001, hit.distance)
-                local wall_height = math.max(1, math.floor(H / dist))
-                local top = math.max(0, math.floor((H - wall_height) / 2))
-                local bottom = math.min(H - 1, top + wall_height)
-                local shade = lurek.raycaster.distanceShade(dist, 20.0)
-                if hit.side == 1 then
-                    shade = shade * 0.78
-                end
-                local tint = wall_tints[hit.cell_value] or wall_tints[1]
-                local span = math.max(1, bottom - top)
-                for row = top, bottom do
-                    local v = (row - top) / span
-                    local r, g, b = sample_wrapped(base, hit.tex_u * 2.0, v * 2.0, tint)
-                    r, g, b = apply_shade(r, g, b, 0.28 + shade * 0.92)
-                    img:setPixel(x - 1, row, r, g, b, 255)
-                end
-            end
-        end
-
-        local sprite = world:projectSprite(10.5, 8.5, px, py, angle, FOV, W)
-        if sprite and sprite.visible then
-            local sprite_size = math.max(18, math.floor(H * sprite.scale * 0.95))
-            local left = math.floor(sprite.screen_x - sprite_size / 2)
-            local top = math.floor(H / 2 - sprite_size / 2)
-            for sx = 0, sprite_size - 1 do
-                local screen_x = left + sx
-                if screen_x >= 0 and screen_x < W then
-                    local col_hit = hits[screen_x + 1]
-                    if not col_hit or sprite.distance < col_hit.distance then
-                        for sy = 0, sprite_size - 1 do
-                            local screen_y = top + sy
-                            if screen_y >= 0 and screen_y < H then
-                                local u = sx / math.max(1, sprite_size - 1)
-                                local v = sy / math.max(1, sprite_size - 1)
-                                local r, g, b, a = sample_wrapped(base, u, v, sprite_tint)
-                                if a > 16 and (u - 0.5) * (u - 0.5) + (v - 0.5) * (v - 0.5) < 0.23 then
-                                    local shade = 0.45 + lurek.raycaster.distanceShade(sprite.distance, 18.0) * 0.75
-                                    r, g, b = apply_shade(r, g, b, shade)
-                                    img:setPixel(screen_x, screen_y, r, g, b, 255)
-                                end
-                            end
-                        end
-                    end
-                end
-            end
-        end
-
-        local path = OUT .. "raycaster_textured_corridor_view.png"
-        save_png(img, path)
-    end)
-    -- Does: Runs "door and light minimap study" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by lurek.raycaster.newDoorManager, LDoorManager:addDoor, and related owner calls without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/raycaster/<artifact>
-    -- Why: This is meaningful only if the visible/text output comes from lurek.raycaster.newDoorManager, LDoorManager:addDoor, and related owner calls; export helpers are just the container.
-
-    it("PNG: door and light minimap study", function()
-        ensure_evidence_dir("raycaster")
-
-        local W, H = 320, 220
-        local img = lurek.image.newImageData(W, H)
-        img:fill(18, 20, 28, 255)
-
-        local map = build_world()
-        local doors = lurek.raycaster.newDoorManager()
-        local door_id = doors:addDoor(7, 8, "vertical", 1.0)
-        doors:openDoor(door_id)
-        doors:update(0.45)
-        map:setCell(7, 8, 2)
-        map:applyDoorManager(doors, 0.85)
-
-        local torch = lurek.raycaster.newPointLight(7.5, 8.5, 1.0, 0.82, 0.52, 5.0, 2.0)
-        torch:set(7.5, 8.5, 1.0, 0.82, 0.52, 5.0, 2.0)
-        local cold = lurek.raycaster.newPointLight(11.0, 10.5, 0.45, 0.68, 1.0, 4.0, 1.3)
-        local lights = {
-            {
-                x = torch:x(),
-                y = torch:y(),
-                radius = torch:radius(),
-                intensity = torch:intensity(),
-                color = { torch:color() },
-            },
-            {
-                x = cold:x(),
-                y = cold:y(),
-                radius = cold:radius(),
-                intensity = cold:intensity(),
-                color = { cold:color() },
-            },
-        }
-
-        local cell = 16
-        for y = 0, 15 do
-            for x = 0, 15 do
-                local v = map:getCell(x, y)
-                local base_r, base_g, base_b = 34, 38, 50
-                if v ~= 0 then
-                    base_r, base_g, base_b = 84, 92, 118
-                end
-                local lr, lg, lb = map:computeTileLight(x, y, 0.0, lights)
-                local rr = math.min(255, math.floor(base_r + lr * 150))
-                local gg = math.min(255, math.floor(base_g + lg * 150))
-                local bb = math.min(255, math.floor(base_b + lb * 150))
-                img:drawRect(20 + x * cell, 18 + y * cell, cell - 1, cell - 1, rr, gg, bb, 255)
-            end
-        end
-
-        local door = doors:getDoor(door_id)
-        expect_true(door ~= nil)
-        img:drawRect(20 + 7 * cell + 5, 18 + 8 * cell, 6, cell - 1, 255, 224, 116, 255)
-        img:drawCircle(20 + torch:x() * cell, 18 + torch:y() * cell, 6, 255, 210, 120, 255)
-        img:drawCircle(20 + cold:x() * cell, 18 + cold:y() * cell, 5, 120, 180, 255, 255)
-
-        local window = map:buildMinimapWindow(7.5, 8.5, 4, 0.15, lights)
-        for _, sample in ipairs(window) do
-            local px = 20 + sample.x * cell + cell / 2
-            local py = 18 + sample.y * cell + cell / 2
-            local alpha = math.max(60, math.floor(sample.luma * 255))
-            img:drawCircle(px, py, 1, 255, 255, 255, alpha)
-        end
-
-        local path = OUT .. "raycaster_door_light_minimap_study.png"
-        save_png(img, path)
-    end)
-    -- Does: Captures wall, half-wall, sprite, and model picks as separate raycaster top-down artifacts.
-    -- Shows: Each PNG should expose one pick case instead of merging several evidences into one sheet.
-    -- Artifact: tests/artifacts/current/raycaster/raycaster_pick_wall.png, tests/artifacts/current/raycaster/raycaster_pick_half_wall.png, tests/artifacts/current/raycaster/raycaster_pick_sprite.png, tests/artifacts/current/raycaster/raycaster_pick_model.png
-    -- Why: This is meaningful because each panel starts from LRaycaster:drawTopDown and overlays coordinates returned by LRaycaster:pickScreen without helper-built collage output.
-
-    it("PNG: pick cases", function()
-        ensure_evidence_dir("raycaster")
-
-        local scale = 12
-        local wall_params = {
-            px = 8.0,
-            py = 8.0,
-            angle = 0.0,
-            fov = math.pi / 3,
-            rays = 64,
-            max_dist = 16.0,
-            screen_w = 320,
-            screen_h = 200,
-        }
-        local pick_params = {
-            px = 8.0,
-            py = 8.0,
-            angle = 0.0,
-            fov = math.pi / 3,
-            rays = 32,
-            max_dist = 16.0,
-            screen_w = 160,
-            screen_h = 100,
-        }
-        local half_params = {
-            px = 2.5,
-            py = 5.5,
-            angle = 0.0,
-            fov = math.pi / 3,
-            rays = 64,
-            max_dist = 20.0,
-            screen_w = 320,
-            screen_h = 200,
-        }
-
-        local model = lurek.render.loadModel("content/examples/assets/models/sample_tank.obj")
-        local wall = lurek.render.newImage(SAMPLE_TEXTURE)
-
-        local wall_map = make_room(16, 16)
-        local wall_hit = wall_map:pickScreen(160, 100, wall_params)
-        expect_true(wall_hit ~= nil)
-        expect_equal("wall", wall_hit.surface)
-
-        local half_map = make_room(12, 10)
-        half_map:setCell(7, 5, 1)
-        half_map:setHalfWallCell(7, 5, 0.5)
-        local half_hit = half_map:pickScreen(160, 100, half_params)
-        expect_true(half_hit ~= nil)
-        expect_equal(7, half_hit.x)
-        expect_equal(5, half_hit.y)
-
-        local sprite_map = make_room(16, 16)
-        local sprite_hit = sprite_map:pickScreen(80, 50, pick_params, {
-            { id = 901, x = 10.5, y = 8.0, texture = wall, size = 1.0 },
-        })
-        expect_true(sprite_hit ~= nil)
-        expect_equal("sprite", sprite_hit.surface)
-
-        local model_map = make_room(16, 16)
-        local model_hit = model_map:pickScreen(80, 60, pick_params, nil, {
-            { id = 902, model = model, x = 10.5, y = 8.0, yaw = math.pi / 4, z = 0.15, scale = 0.22 },
-        })
-        expect_true(model_hit ~= nil)
-        expect_equal("model", model_hit.surface)
-
-        local panels = {
-            {
-                image = wall_map:drawTopDown(wall_params.px, wall_params.py, wall_params.angle, scale),
-                hit = wall_hit,
-                accent = { 232, 120, 96 },
-                name = "raycaster_pick_wall.png",
-            },
-            {
-                image = half_map:drawTopDown(half_params.px, half_params.py, half_params.angle, scale),
-                hit = half_hit,
-                accent = { 224, 200, 104 },
-                name = "raycaster_pick_half_wall.png",
-            },
-            {
-                image = sprite_map:drawTopDown(pick_params.px, pick_params.py, pick_params.angle, scale),
-                hit = sprite_hit,
-                accent = { 104, 216, 160 },
-                entity = { 10.5, 8.0 },
-                name = "raycaster_pick_sprite.png",
-            },
-            {
-                image = model_map:drawTopDown(pick_params.px, pick_params.py, pick_params.angle, scale),
-                hit = model_hit,
-                accent = { 104, 168, 255 },
-                entity = { 10.5, 8.0 },
-                name = "raycaster_pick_model.png",
-            },
-        }
-
-        for _, panel in ipairs(panels) do
-            mark_cell(panel.image, panel.hit.x, panel.hit.y, scale, panel.accent[1], panel.accent[2], panel.accent[3])
-            mark_world_point(panel.image, panel.hit.hit_x, panel.hit.hit_y, scale, panel.accent[1], panel.accent[2], panel.accent[3])
-            if panel.entity then
-                mark_world_point(panel.image, panel.entity[1], panel.entity[2], scale, 220, 236, 255)
-            end
-            save_png(panel.image, OUT .. panel.name)
-        end
-    end)
-    -- Does: Runs "scene build and layered hit trace" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by lurek.raycaster.newHeightMap, LHeightMap:setFloor, and related owner calls without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/raycaster/raycaster_scene_build_trace.txt
-    -- Why: This is meaningful only if the visible/text output comes from lurek.raycaster.newHeightMap, LHeightMap:setFloor, and related owner calls; export helpers are just the container.
-
-    it("TXT: scene build and layered hit trace", function()
-        ensure_evidence_dir("raycaster")
-
-        local map = build_world()
-        map:setCell(6, 8, 2)
-        map:setCell(9, 8, 3)
-        map:setWallAlpha(2, 0.45)
-        map:setCell(7, 7, 1)
-        map:setWindowCell(7, 7, 0.25, 0.78, 0.35)
-        map:setCell(7, 9, 1)
-        map:setDoorCell(7, 9, "vertical", 0.0)
-        local half_pick_map = make_room(12, 10)
-        half_pick_map:setCell(7, 5, 1)
-        half_pick_map:setHalfWallCell(7, 5, 0.5)
-
-        local hm = lurek.raycaster.newHeightMap(16, 16)
-        hm:setFloor(8, 8, -0.25)
-        hm:setCeiling(8, 8, 1.35)
-
-        local scene_params = {
-            px = 7.5,
-            py = 8.5,
-            angle = 0.12,
-            fov = math.pi / 3,
-            rays = 64,
-            max_dist = 18,
-            screen_w = 320,
-            screen_h = 180,
-        }
-        local wall = lurek.render.newImage(SAMPLE_TEXTURE)
-        local quad_count = map:buildScene(scene_params, {}, {}, { [1] = wall, [2] = wall, [3] = wall })
-        local model = lurek.render.loadModel("content/examples/assets/models/sample_tank.obj")
-        local model_count = map:buildSceneWithModels(scene_params, nil, nil, nil, {
-            { model = model, x = 10.5, y = 8.0, yaw = math.pi / 4, z = 0.15, scale = 0.22 },
-        })
-        local layered = map:castRayMulti(2, 8.5, 0, 20, 4)
-        local revealed = map:revealCellsFromRays(7.5, 8.5, 0.12, math.pi / 2, 16, 12.0, 0.2)
-        local managed_doors = lurek.raycaster.newDoorManager()
-        local managed_id = managed_doors:addDoor(7, 9, "vertical", 1.0)
-        local half_pick_center = half_pick_map:pickScreen(160, 100, {
-            px = 2.5,
-            py = 5.5,
-            angle = 0.0,
-            fov = math.pi / 3,
-            rays = 64,
-            max_dist = 20.0,
-            screen_w = 320,
-            screen_h = 200,
-        })
-        local half_pick_upper = half_pick_map:pickScreen(160, 84, {
-            px = 2.5,
-            py = 5.5,
-            angle = 0.0,
-            fov = math.pi / 3,
-            rays = 64,
-            max_dist = 20.0,
-            screen_w = 320,
-            screen_h = 200,
-        })
-        local window_pick_map = make_room(12, 10)
-        window_pick_map:setCell(7, 5, 1)
-        window_pick_map:setWindowCell(7, 5, 0.3, 0.75, 0.35)
-        local window_pick_open = window_pick_map:pickScreen(160, 100, {
-            px = 2.5,
-            py = 5.5,
-            angle = 0.0,
-            fov = math.pi / 3,
-            rays = 64,
-            max_dist = 20.0,
-            screen_w = 320,
-            screen_h = 200,
-        })
-        local window_pick_lower = window_pick_map:pickScreen(160, 114, {
-            px = 2.5,
-            py = 5.5,
-            angle = 0.0,
-            fov = math.pi / 3,
-            rays = 64,
-            max_dist = 20.0,
-            screen_w = 320,
-            screen_h = 200,
-        })
-        local door_pick_map = make_room(12, 10)
-        door_pick_map:setCell(7, 5, 1)
-        door_pick_map:setDoorCell(7, 5, "vertical", 0.25, 0.9)
-        local door_pick_panel = door_pick_map:pickScreen(160, 100, {
-            px = 2.5,
-            py = 5.5,
-            angle = 0.0,
-            fov = math.pi / 3,
-            rays = 64,
-            max_dist = 20.0,
-            screen_w = 320,
-            screen_h = 200,
-        })
-        local open_door_pick_map = make_room(12, 10)
-        open_door_pick_map:setCell(7, 5, 1)
-        open_door_pick_map:setDoorCell(7, 5, "vertical", 0.6, 0.9)
-        local door_pick_gap = open_door_pick_map:pickScreen(160, 100, {
-            px = 2.5,
-            py = 5.5,
-            angle = 0.0,
-            fov = math.pi / 3,
-            rays = 64,
-            max_dist = 20.0,
-            screen_w = 320,
-            screen_h = 200,
-        })
-        local pick_map = make_room(16, 16)
-        local pick_params = {
-            px = 8.0,
-            py = 8.0,
-            angle = 0.0,
-            fov = math.pi / 3,
-            rays = 32,
-            max_dist = 16.0,
-            screen_w = 160,
-            screen_h = 100,
-        }
-        local sprite_pick = pick_map:pickScreen(80, 50, pick_params, {
-            { id = 901, x = 10.5, y = 8.0, texture = wall, size = 1.0 },
-        })
-        local model_pick = pick_map:pickScreen(80, 60, pick_params, nil, {
-            { id = 902, model = model, x = 10.5, y = 8.0, yaw = math.pi / 4, z = 0.15, scale = 0.22 },
-        })
-        local solid_los_map = lurek.raycaster.new(10, 10)
-        solid_los_map:setCell(5, 5, 1)
-        local solid_los = solid_los_map:lineOfSight(1.0, 5.5, 9.0, 5.5)
-        local window_los_map = lurek.raycaster.new(10, 10)
-        window_los_map:setCell(5, 5, 1)
-        window_los_map:setWindowCell(5, 5, 0.25, 0.8, 0.35)
-        local window_los = window_los_map:lineOfSight(1.0, 5.5, 9.0, 5.5)
-        local door_closed_map = lurek.raycaster.new(12, 6)
-        door_closed_map:setCell(5, 2, 2)
-        door_closed_map:setDoorCell(5, 2, "vertical", 0.0, 0.25)
-        door_closed_map:setCell(9, 2, 1)
-        local door_closed_hit = door_closed_map:castRay(1.5, 2.5, 0.0, 20.0)
-        local door_open_map = lurek.raycaster.new(12, 6)
-        door_open_map:setCell(5, 2, 2)
-        door_open_map:setDoorCell(5, 2, "vertical", 1.0, 0.25)
-        door_open_map:setCell(9, 2, 1)
-        local door_open_hit = door_open_map:castRay(1.5, 2.5, 0.0, 20.0)
-        local feature_light = {
-            { x = 12.5, y = 7.5, radius = 10.0, intensity = 8.0, color = { 1.0, 0.8, 0.6 } },
-        }
-        local solid_light_map = lurek.raycaster.new(16, 16)
-        solid_light_map:setCell(7, 7, 1)
-        local solid_light_r = select(1, solid_light_map:computeTileLight(4, 7, 0.0, feature_light))
-        local window_light_map = lurek.raycaster.new(16, 16)
-        window_light_map:setCell(7, 7, 1)
-        window_light_map:setWindowCell(7, 7, 0.25, 0.78, 0.35)
-        local window_light_r = select(1, window_light_map:computeTileLight(4, 7, 0.0, feature_light))
-        local closed_door_light_map = lurek.raycaster.new(16, 16)
-        closed_door_light_map:setCell(7, 7, 1)
-        closed_door_light_map:setDoorCell(7, 7, "vertical", 0.0, 0.25)
-        local closed_door_light_r = select(1, closed_door_light_map:computeTileLight(4, 7, 0.0, feature_light))
-        local open_door_light_map = lurek.raycaster.new(16, 16)
-        open_door_light_map:setCell(7, 7, 1)
-        open_door_light_map:setDoorCell(7, 7, "vertical", 1.0, 0.25)
-        local open_door_light_r = select(1, open_door_light_map:computeTileLight(4, 7, 0.0, feature_light))
-        expect_equal("half", half_pick_center.feature.kind)
-        expect_equal("body", half_pick_center.feature.section)
-        expect_equal(11, half_pick_upper.x)
-        expect_equal(5, half_pick_upper.y)
-        expect_equal(11, window_pick_open.x)
-        expect_equal(5, window_pick_open.y)
-        expect_equal("window", window_pick_lower.feature.kind)
-        expect_equal("lower", window_pick_lower.feature.section)
-        expect_equal("door", door_pick_panel.feature.kind)
-        expect_equal("panel", door_pick_panel.feature.section)
-        expect_equal(11, door_pick_gap.x)
-        expect_equal(5, door_pick_gap.y)
-        expect_true(window_light_r > solid_light_r)
-        expect_true(open_door_light_r > closed_door_light_r)
-        local multilevel_count = lurek.raycaster.buildMultiLevelScene(
-            {
-                px = 0.5,
-                py = 1.5,
-                angle = 0.0,
-                fov = math.pi / 3,
-                rays = 32,
-                max_dist = 8.0,
-                screen_w = 160,
-                screen_h = 100,
-                active_level = 1,
-            },
-            {
-                {
-                    width = 4,
-                    height = 4,
-                    cells = {
-                        0, 0, 0, 0,
-                        0, 0, 0, 0,
-                        0, 0, 0, 0,
-                        0, 0, 0, 0,
-                    },
-                    floor_offset = 0.0,
-                    ceiling_height = 1.0,
-                    ceiling_holes = {
-                        false, false, false, false,
-                        false, false, false, false,
-                        false, false, false, false,
-                        false, false, false, false,
-                    },
-                    ceiling_texture = wall,
-                },
-                {
-                    width = 4,
-                    height = 4,
-                    cells = {
-                        0, 0, 0, 0,
-                        0, 0, 0, 0,
-                        0, 0, 0, 0,
-                        0, 0, 0, 0,
-                    },
-                    floor_offset = 1.0,
-                    ceiling_height = 2.0,
-                    floor_holes = {
-                        false, false, false, false,
-                        false, false, false, false,
-                        false, false, false, false,
-                        false, false, false, false,
-                    },
-                    floor_texture = wall,
-                },
-            },
-            {},
-            {},
-            {},
-            {
-                { model = model, x = 2.5, y = 1.5, level = 1, yaw = math.pi / 6, z = 0.2, scale = 0.22 },
-            }
-        )
-        local cull_closed_count = lurek.raycaster.buildMultiLevelScene(
-            {
-                px = 1.5,
-                py = 2.5,
-                angle = 0.0,
-                fov = math.pi / 3,
-                rays = 32,
-                max_dist = 20.0,
-                screen_w = 160,
-                screen_h = 100,
-                active_level = 0,
-            },
-            {
-                {
-                    width = 8,
-                    height = 8,
-                    cells = {
-                        0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0,
-                    },
-                    floor_offset = 0.0,
-                    ceiling_height = 1.0,
-                },
-                {
-                    width = 8,
-                    height = 8,
-                    cells = {
-                        0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 1, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0,
-                    },
-                    floor_offset = 1.0,
-                    ceiling_height = 2.0,
-                },
-            },
-            {},
-            {},
-            { [1] = wall }
-        )
-        local cull_open_count = lurek.raycaster.buildMultiLevelScene(
-            {
-                px = 1.5,
-                py = 2.5,
-                angle = 0.0,
-                fov = math.pi / 3,
-                rays = 32,
-                max_dist = 20.0,
-                screen_w = 160,
-                screen_h = 100,
-                active_level = 0,
-            },
-            {
-                {
-                    width = 8,
-                    height = 8,
-                    cells = {
-                        0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0,
-                    },
-                    floor_offset = 0.0,
-                    ceiling_height = 1.0,
-                    ceiling_holes = {
-                        false, false, false, false, false, false, false, false,
-                        false, false, false, false, false, false, false, false,
-                        false, false, false, false, true, false, false, false,
-                        false, false, false, false, false, false, false, false,
-                        false, false, false, false, false, false, false, false,
-                        false, false, false, false, false, false, false, false,
-                        false, false, false, false, false, false, false, false,
-                        false, false, false, false, false, false, false, false,
-                    },
-                },
-                {
-                    width = 8,
-                    height = 8,
-                    cells = {
-                        0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 1, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 0, 0,
-                    },
-                    floor_offset = 1.0,
-                    ceiling_height = 2.0,
-                },
-            },
-            {},
-            {},
-            { [1] = wall }
-        )
-        expect_true(cull_open_count > cull_closed_count)
-        local stats_map = make_room(8, 8)
-        for y = 1, 6 do
-            for x = 1, 6 do
-                stats_map:setCeilingTextureCell(x, y, wall)
-            end
-        end
-        stats_map:buildScene({
-            px = 4.0,
-            py = 4.0,
-            angle = 0.0,
-            fov = math.pi / 3,
-            rays = 48,
-            max_dist = 10.0,
-            screen_w = 160,
-            screen_h = 100,
-        }, {
-            lurek.raycaster.newPointLight(4.0, 4.0, 1.0, 0.9, 0.8, 4.0, 1.25),
-        }, {}, {
-            [1] = wall,
-        })
-        local build_stats = lurek.raycaster.getLastBuildStats()
-        local path = OUT .. "raycaster_scene_build_trace.txt"
-        local lines = {
-            "floor_8_8=" .. tostring(hm:floorAt(8, 8)),
-            "ceiling_8_8=" .. tostring(hm:ceilingAt(8, 8)),
-            "buildScene_quads=" .. tostring(quad_count),
-            "buildSceneWithModels_quads=" .. tostring(model_count),
-            "buildMultiLevelScene_quads=" .. tostring(multilevel_count),
-            "castRayMulti_hits=" .. tostring(#layered),
-            "revealCells_hits=" .. tostring(#revealed),
-            "first_layered_cell=" .. tostring(layered[1] and layered[1].cell_value or "nil"),
-            "half_feature=" .. tostring(half_pick_map:getWallFeatureCell(7, 5).kind),
-            "half_pick_center=" .. describe_pick(half_pick_center),
-            "half_pick_upper=" .. describe_pick(half_pick_upper),
-            "half_pick_section=" .. tostring(half_pick_center.feature and half_pick_center.feature.section or "nil"),
-            "window_pick_open=" .. describe_pick(window_pick_open),
-            "window_pick_lower=" .. describe_pick(window_pick_lower),
-            "window_pick_section=" .. tostring(window_pick_lower.feature and window_pick_lower.feature.section or "nil"),
-            "door_pick_panel=" .. describe_pick(door_pick_panel),
-            "door_pick_gap=" .. describe_pick(door_pick_gap),
-            "door_pick_section=" .. tostring(door_pick_panel.feature and door_pick_panel.feature.section or "nil"),
-            "sprite_pick=" .. describe_pick(sprite_pick),
-            "sprite_pick_id=" .. tostring(sprite_pick and sprite_pick.id or "nil"),
-            "sprite_pick_hit=" .. tostring(sprite_pick and string.format("%.3f,%.3f", sprite_pick.hit_x, sprite_pick.hit_y) or "nil"),
-            "model_pick=" .. describe_pick(model_pick),
-            "model_pick_id=" .. tostring(model_pick and model_pick.id or "nil"),
-            "model_pick_hit=" .. tostring(model_pick and string.format("%.3f,%.3f", model_pick.hit_x, model_pick.hit_y) or "nil"),
-            "model_pick_level=" .. tostring(model_pick and model_pick.level or "nil"),
-            "solid_los=" .. tostring(solid_los),
-            "window_los=" .. tostring(window_los),
-            "door_closed_hit=" .. tostring(door_closed_hit and door_closed_hit.cell_value or "nil"),
-            "door_open_hit=" .. tostring(door_open_hit and door_open_hit.cell_value or "nil"),
-            "managed_door_kind=" .. tostring(map:getWallFeatureCell(7, 9).kind),
-            "solid_light_r=" .. string.format("%.3f", solid_light_r),
-            "window_light_r=" .. string.format("%.3f", window_light_r),
-            "closed_door_light_r=" .. string.format("%.3f", closed_door_light_r),
-            "open_door_light_r=" .. string.format("%.3f", open_door_light_r),
-            "cull_closed_quads=" .. tostring(cull_closed_count),
-            "cull_open_quads=" .. tostring(cull_open_count),
-            "lighting_samples=" .. tostring(build_stats and build_stats.lightingSamples or "nil"),
-            "lighting_cache_hits=" .. tostring(build_stats and build_stats.lightingCacheHits or "nil"),
-            "lighting_cache_misses=" .. tostring(build_stats and build_stats.lightingCacheMisses or "nil"),
-        }
-
-        write_file(path, table.concat(lines, "\n") .. "\n")
-        expect_evidence_created(path)
+        draw_grid(img, rc, 8, 320, 96)
+        draw_pick_world(img, floor_hit, 8, 120, 240, 150, 320, 96)
+        draw_pick_world(img, ceil_hit, 8, 90, 170, 255, 320, 96)
+        draw_pick_world(img, wall_hit, 8, 255, 210, 80, 320, 96)
+        save_png(img, "raycaster_floor_ceiling_pick_uv.png")
     end)
 
-    -- Does: Runs "scene adapter physics bridge trace" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by lurek.raycaster.newSceneAdapter, LRaycaster:buildSceneFromAdapter, and LRaycaster:pickScreenFromAdapter while a bound physics body moves.
-    -- Artifact: tests/artifacts/current/raycaster/raycaster_scene_adapter_trace.txt
-    -- Why: This is meaningful only if the trace changes come from the physics-backed adapter bridge rather than manual sprite/model table rebuilding.
-
-    it("TXT: scene adapter physics bridge trace", function()
-        ensure_evidence_dir("raycaster")
-
-        local map = make_room(16, 16)
-        local world = lurek.physics.newWorld(0, 0)
-        local body = world:newBody(10.5, 8.0, "dynamic")
-        local wall = lurek.render.newImage(SAMPLE_TEXTURE)
-        local model = lurek.render.loadModel("content/examples/assets/models/sample_tank.obj")
-        local adapter = lurek.raycaster.newSceneAdapter()
-        adapter:bindBodySprite(body, wall, {
-            id = 771,
-            size = 1.0,
-        })
-        adapter:bindBodyLight(body, 4.0, {
-            intensity = 1.2,
-            color = { 1.0, 0.85, 0.5 },
-        })
-        adapter:bindBodyModel(body, model, {
-            id = 772,
-            yaw_offset = math.pi / 4,
-            z = 0.15,
-            scale = 0.22,
-        })
-
-        local params = {
-            px = 8.0,
-            py = 8.0,
-            angle = 0.0,
-            fov = math.pi / 3,
-            rays = 32,
-            max_dist = 16.0,
-            screen_w = 160,
-            screen_h = 100,
-        }
-        local before_inputs = adapter:sceneInputs()
-        local before_quads = map:buildSceneFromAdapter(params, adapter, {})
-        local before_pick = map:pickScreenFromAdapter(80, 50, params, adapter)
-
-        body:setPosition(11.5, 8.0)
-
-        local after_inputs = adapter:sceneInputs()
-        local after_quads = map:buildSceneFromAdapter(params, adapter, {})
-        local after_pick = map:pickScreenFromAdapter(80, 50, params, adapter)
-
-        local path = OUT .. "raycaster_scene_adapter_trace.txt"
-        local lines = {
-            "before_sprite=" .. string.format("%.3f,%.3f", before_inputs.sprites[1].x, before_inputs.sprites[1].y),
-            "before_light=" .. string.format("%.3f,%.3f", before_inputs.lights[1].x, before_inputs.lights[1].y),
-            "before_quads=" .. tostring(before_quads),
-            "before_pick=" .. describe_pick(before_pick),
-            "after_sprite=" .. string.format("%.3f,%.3f", after_inputs.sprites[1].x, after_inputs.sprites[1].y),
-            "after_light=" .. string.format("%.3f,%.3f", after_inputs.lights[1].x, after_inputs.lights[1].y),
-            "after_quads=" .. tostring(after_quads),
-            "after_pick=" .. describe_pick(after_pick),
-            "after_pick_id=" .. tostring(after_pick and after_pick.id or "nil"),
-        }
-        write_file(path, table.concat(lines, "\n") .. "\n")
-        expect_evidence_created(path)
-    end)
-
-    -- Does: Runs "multilevel scene adapter level trace" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by lurek.raycaster.buildMultiLevelSceneFromAdapter and lurek.raycaster.pickScreenMultiLevelFromAdapter for physics-backed entities placed on an upper level.
-    -- Artifact: tests/artifacts/current/raycaster/raycaster_multilevel_scene_adapter_trace.txt
-    -- Why: This is meaningful only if the same 2D body movement changes both the projected multilevel scene and the picked owning level without rebuilding manual sprite tables.
-
-    it("TXT: multilevel scene adapter level trace", function()
-        ensure_evidence_dir("raycaster")
-
-        local world = lurek.physics.newWorld(0, 0)
-        local body = world:newBody(2.5, 1.5, "dynamic")
-        local wall = lurek.render.newImage(SAMPLE_TEXTURE)
-        local adapter = lurek.raycaster.newSceneAdapter()
-        adapter:bindBodySprite(body, wall, {
-            id = 881,
-            level = 1,
-            size = 1.0,
-        })
-        adapter:bindBodyLight(body, 4.0, {
-            level = 1,
-            intensity = 1.0,
-            color = { 1.0, 0.85, 0.6 },
-        })
-
-        local params = {
-            px = 0.5,
-            py = 1.5,
-            angle = 0.0,
-            fov = math.pi / 3,
-            rays = 32,
-            max_dist = 8.0,
-            screen_w = 160,
-            screen_h = 100,
-            active_level = 1,
-        }
-        local levels = {
-            {
-                width = 4,
-                height = 4,
-                cells = {
-                    0, 0, 0, 0,
-                    0, 0, 0, 0,
-                    0, 0, 0, 0,
-                    0, 0, 0, 0,
-                },
-                floor_offset = 0.0,
-                ceiling_height = 1.0,
-            },
-            {
-                width = 4,
-                height = 4,
-                cells = {
-                    0, 0, 0, 0,
-                    0, 0, 0, 0,
-                    0, 0, 0, 0,
-                    0, 0, 0, 0,
-                },
-                floor_offset = 1.0,
-                ceiling_height = 2.0,
-            },
-        }
-
-        local before_inputs = adapter:sceneInputs()
-        local before_quads = lurek.raycaster.buildMultiLevelSceneFromAdapter(params, levels, adapter, {})
-        local before_pick = lurek.raycaster.pickScreenMultiLevelFromAdapter(80, 50, params, levels, {}, adapter)
-
-        body:setPosition(3.0, 1.5)
-
-        local after_inputs = adapter:sceneInputs()
-        local after_quads = lurek.raycaster.buildMultiLevelSceneFromAdapter(params, levels, adapter, {})
-        local after_pick = lurek.raycaster.pickScreenMultiLevelFromAdapter(80, 50, params, levels, {}, adapter)
-
-        local path = OUT .. "raycaster_multilevel_scene_adapter_trace.txt"
-        local lines = {
-            "before_sprite=" .. string.format("%.3f,%.3f@L%d", before_inputs.sprites[1].x, before_inputs.sprites[1].y, before_inputs.sprites[1].level or -1),
-            "before_light=" .. string.format("%.3f,%.3f@L%d", before_inputs.lights[1].x, before_inputs.lights[1].y, before_inputs.lights[1].level or -1),
-            "before_quads=" .. tostring(before_quads),
-            "before_pick=" .. describe_pick(before_pick),
-            "before_pick_id=" .. tostring(before_pick and before_pick.id or "nil"),
-            "after_sprite=" .. string.format("%.3f,%.3f@L%d", after_inputs.sprites[1].x, after_inputs.sprites[1].y, after_inputs.sprites[1].level or -1),
-            "after_light=" .. string.format("%.3f,%.3f@L%d", after_inputs.lights[1].x, after_inputs.lights[1].y, after_inputs.lights[1].level or -1),
-            "after_quads=" .. tostring(after_quads),
-            "after_pick=" .. describe_pick(after_pick),
-            "after_pick_id=" .. tostring(after_pick and after_pick.id or "nil"),
-        }
-        write_file(path, table.concat(lines, "\n") .. "\n")
-        expect_evidence_created(path)
-    end)
-
-    -- Does: Runs "persistent multilevel runtime authoring trace" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by LMultiLevelGrid:setFloorTexture, LMultiLevelGrid:setCeilingTexture, LMultiLevelGrid:setLoweredFloorCell, and LMultiLevelGrid:buildScene when a stacked world is authored incrementally at runtime.
-    -- Artifact: tests/artifacts/current/raycaster/raycaster_persistent_multilevel_authoring_trace.txt
-    -- Why: This is meaningful only if the same persistent grid handle can be shaped into a lit pseudo-3D level without rebuilding level tables from scratch.
-
-    it("TXT: persistent multilevel runtime authoring trace", function()
-        ensure_evidence_dir("raycaster")
-
-        local wall = lurek.render.newImage(SAMPLE_TEXTURE)
+    -- Does: Builds a two-level raycaster grid with holes and a lowered floor, then visualizes the picked level.
+    -- Shows: Two stacked maps, a cross-level opening, active camera ray, and the screen pick target.
+    -- Artifact: tests/artifacts/current/raycaster/raycaster_multilevel_hole_pick.png
+    -- Why: This demonstrates MultiLevelGrid authoring plus buildScene/pickScreen as stacked raycaster space.
+    it("PNG: multilevel hole pick", function()
         local grid = lurek.raycaster.newMultiLevelGrid({
             {
                 width = 6,
-                height = 4,
+                height = 6,
                 cells = {
-                    0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0,
+                    1, 1, 1, 1, 1, 1,
+                    1, 0, 0, 0, 0, 1,
+                    1, 0, 0, 0, 0, 1,
+                    1, 0, 0, 0, 0, 1,
+                    1, 0, 0, 0, 0, 1,
+                    1, 1, 1, 1, 1, 1,
                 },
                 floor_offset = 0.0,
                 ceiling_height = 1.0,
             },
             {
                 width = 6,
-                height = 4,
+                height = 6,
                 cells = {
-                    0, 0, 0, 0, 0, 1,
-                    0, 0, 0, 0, 0, 1,
-                    0, 0, 0, 0, 0, 1,
-                    0, 0, 0, 0, 0, 1,
+                    1, 1, 1, 1, 1, 1,
+                    1, 0, 0, 0, 0, 1,
+                    1, 0, 0, 1, 0, 1,
+                    1, 0, 0, 0, 0, 1,
+                    1, 0, 0, 0, 0, 1,
+                    1, 1, 1, 1, 1, 1,
                 },
                 floor_offset = 1.0,
                 ceiling_height = 2.0,
             },
         })
         grid:setActiveLevel(1)
-        grid:setFloorOffset(1.2)
-        grid:setCeilingHeight(2.4)
-        grid:setFloorTexture(wall)
-        grid:setCeilingTexture(wall)
-        grid:setFloorTextureCell(2, 1, wall)
-        grid:setCeilingTextureCell(2, 1, wall)
-        grid:setLoweredFloorCell(2, 1, {
-            texture = wall,
-            depth = 0.35,
-            r = 0.8,
-            g = 0.7,
-            b = 0.6,
-            blocked = false,
-        })
-        grid:setFloorHole(2, 1, false)
-        grid:setCeilingHole(2, 1, false)
+        grid:setFloorHole(2, 2, true)
+        grid:setCeilingHole(2, 2, true)
+        grid:setLoweredFloorCell(3, 3, { texture = 1, depth = 0.35, blocked = false, r = 0.45, g = 0.65, b = 1.0 })
+        local p = params(2.5, 2.5, 0.0, 180, 110)
+        p.active_level = 1
+        grid:buildScene(p, { lurek.raycaster.newPointLight(2.5, 2.5, 1.0, 0.9, 0.7, 5.0, 1.2, 1) }, {}, {})
+        local pick = grid:pickScreen(90, 55, p, {})
 
-        local params = {
-            px = 1.5,
-            py = 1.5,
-            angle = 0.0,
-            fov = math.pi / 3,
-            rays = 48,
-            max_dist = 10.0,
-            screen_w = 160,
-            screen_h = 100,
-            camera_height = 0.5,
-        }
-        local quad_count = grid:buildScene(params, {
-            lurek.raycaster.newPointLight(2.5, 1.5, 1.0, 0.9, 0.8, 4.0, 1.25, 1),
-        }, {}, {
-            [1] = wall,
-        })
-        local wall_pick = grid:pickScreen(80, 50, params, { [1] = wall })
-        local floor_pick = grid:pickScreen(80, 92, params, { [1] = wall })
-        local pit = grid:getLoweredFloorCell(2, 1)
-        local stats = lurek.raycaster.getLastBuildStats()
-
-        local path = OUT .. "raycaster_persistent_multilevel_authoring_trace.txt"
-        local lines = {
-            "active_level=" .. tostring(grid:activeLevel()),
-            "floor_offset=" .. tostring(grid:getFloorOffset()),
-            "ceiling_height=" .. tostring(grid:getCeilingHeight()),
-            "floor_texture=" .. tostring(grid:getFloorTexture()),
-            "ceiling_texture=" .. tostring(grid:getCeilingTexture()),
-            "floor_cell_texture=" .. tostring(grid:getFloorTextureCell(2, 1)),
-            "ceiling_cell_texture=" .. tostring(grid:getCeilingTextureCell(2, 1)),
-            "pit_depth=" .. tostring(pit and pit.depth or "nil"),
-            "pit_blocked=" .. (pit == nil and "nil" or tostring(pit.blocked)),
-            "quad_count=" .. tostring(quad_count),
-            "wall_pick=" .. describe_pick(wall_pick),
-            "floor_pick=" .. describe_pick(floor_pick),
-            "lighting_samples=" .. tostring(stats and stats.lightingSamples or "nil"),
-            "lighting_cache_hits=" .. tostring(stats and stats.lightingCacheHits or "nil"),
-            "lighting_cache_misses=" .. tostring(stats and stats.lightingCacheMisses or "nil"),
-        }
-        write_file(path, table.concat(lines, "\n") .. "\n")
-        expect_evidence_created(path)
+        local img = lurek.image.newImageData(300, 180)
+        img:fill(8, 10, 16, 255)
+        local lower = make_room(6, 6)
+        local upper = make_room(6, 6)
+        upper:setCell(3, 2, 3)
+        draw_grid(img, lower, 20, 18, 24)
+        draw_grid(img, upper, 20, 160, 24)
+        img:drawRect(18 + 2 * 20 + 4, 24 + 2 * 20 + 4, 12, 12, 90, 210, 255, 255)
+        img:drawRect(160 + 2 * 20 + 4, 24 + 2 * 20 + 4, 12, 12, 255, 210, 90, 255)
+        img:drawRect(160 + 3 * 20 + 4, 24 + 3 * 20 + 4, 12, 12, 80, 140, 255, 255)
+        ray(img, 2.5, 2.5, 0.0, 3.0, 20, 255, 255, 255, 160, 24)
+        if pick then
+            mark(img, (pick.x or 0) + 0.5, (pick.y or 0) + 0.5, 20, 255, 90, 90, 160, 24)
+        end
+        save_png(img, "raycaster_multilevel_hole_pick.png")
     end)
-
 end)
+
 test_summary()

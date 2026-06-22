@@ -64,7 +64,7 @@ describe("Evidence: lurek.dsp waveform, filter, and export flows", function()
 
     -- Does: Generates several synthetic waveforms and plots each returned sound buffer into its own PNG.
     -- Shows: Each PNG should expose one generator output instead of folding multiple evidences into one atlas.
-    -- Artifact: tests/artifacts/current/dsp/dsp_waveform_<name>.png
+    -- Artifact: tests/artifacts/current/dsp/dsp_waveform_sine.png, tests/artifacts/current/dsp/dsp_waveform_square.png, tests/artifacts/current/dsp/dsp_waveform_sawtooth.png, tests/artifacts/current/dsp/dsp_waveform_triangle.png, tests/artifacts/current/dsp/dsp_waveform_white_noise.png
     -- Why: This is meaningful because each image is derived from samples produced by one lurek.dsp generator, not from a bespoke waveform renderer in the API.
 
     it("PNG: generator waveform previews", function()

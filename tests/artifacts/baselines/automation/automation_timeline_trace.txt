@@ -1,0 +1,9 @@
+current_script=timeline_trace
+step_count=3
+running_initial=true
+tick_1 dt=0.00 step=1 elapsed=0.000 running=true complete=false
+paused_before_update=true
+tick_2 dt=0.08 step=1 elapsed=0.000 running=false complete=false
+paused_after_resume=false
+tick_3 dt=0.10 step=2 elapsed=0.100 running=true complete=false
+tick_4 dt=0.12 step=3 elapsed=0.220 running=false complete=true

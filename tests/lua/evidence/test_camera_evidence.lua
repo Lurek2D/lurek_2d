@@ -178,7 +178,7 @@ describe("evidence: camera", function()
     end)
     -- Does: Runs "camera path-follow trace" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by LCamera:followPath, LCamera:updatePath, and related owner calls without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/camera/<artifact>
+    -- Artifact: tests/artifacts/current/camera/camera_follow_path_trace.png
     -- Why: This is meaningful only if the visible/text output comes from LCamera:followPath, LCamera:updatePath, and related owner calls; export helpers are just the container.
 
     it("PNG: camera path-follow trace", function()

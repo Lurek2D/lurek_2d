@@ -119,7 +119,7 @@ describe("Evidence: lurek.ai data outputs", function()
     end)
     -- Does: Runs "writes ai_goap_plan_trace.json" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by lurek.ai.newGOAPPlanner, LGOAPPlanner:addAction, and related owner calls without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/ai/<artifact>
+    -- Artifact: tests/artifacts/current/ai/ai_goap_plan_trace.json
     -- Why: This is meaningful only if the visible/text output comes from lurek.ai.newGOAPPlanner, LGOAPPlanner:addAction, and related owner calls; export helpers are just the container.
 
     it("writes ai_goap_plan_trace.json", function()

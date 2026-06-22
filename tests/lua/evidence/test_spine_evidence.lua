@@ -8,6 +8,11 @@ local function save_png(img, path)
     expect_evidence_created(path)
 end
 
+local function save_gif(frames, path, options)
+    lurek.image.saveGIF(frames, path, options or { delayMs = 100, speed = 20 })
+    expect_evidence_created(path)
+end
+
 local function build_walk_skeleton()
     local sk = lurek.spine.newSkeleton("walk_cycle")
 
@@ -103,6 +108,24 @@ local function render_walk_frame(sk, bones)
     return img
 end
 
+local function draw_label_bar(img, text, color)
+    img:drawRect(0, 0, 260, 20, 32, 38, 54, 255)
+    img:drawRect(0, 20, 260, 2, color[1], color[2], color[3], 255)
+    img:drawRect(10, 7, 42, 6, color[1], color[2], color[3], 255)
+    img:drawRect(58, 7, 22, 6, 92, 102, 128, 255)
+    img:drawRect(86, 7, 22, 6, 92, 102, 128, 255)
+end
+
+local function compose_spine_frame(source, title, color)
+    local img = lurek.image.newImageData(260, 180)
+    img:fill(16, 18, 25, 255)
+    draw_label_bar(img, title, color)
+    img:drawRect(12, 32, 176, 136, 24, 28, 38, 255)
+    img:paste(source, 12, 20)
+    img:drawLine(12, 156, 188, 156, 64, 72, 92, 255)
+    return img
+end
+
 local function build_ik_demo()
     local sk = lurek.spine.newSkeleton("ik_reach")
     local root = sk:addBone("root", { length = 16 })
@@ -134,20 +157,20 @@ describe("Evidence: lurek.spine API", function()
         local path = OUT .. "skeleton_stick_figure.png"
         save_png(img, path)
     end)
-    -- Does: Runs "walk cycle pose snapshots" and turns the owner-module result into inspectable frame images.
-    -- Shows: Each PNG should expose one sampled pose produced by LSkeleton:updateAnimation and LSkeleton:drawToImage.
-    -- Artifact: tests/artifacts/current/spine/spine_walk_cycle_pose_0N.png
-    -- Why: This is meaningful only if the visible/text output comes from LSkeleton:updateAnimation and LSkeleton:drawToImage; export helpers are just the container.
+    -- Does: Runs "walk cycle pose playback" and stores sampled LSkeleton:updateAnimation output as one animated artifact.
+    -- Shows: The GIF exposes bone hierarchy motion, slot rendering, and world-transform recomputation over the cycle without scattering motion across still PNG files.
+    -- Artifact: tests/artifacts/current/spine/spine_walk_cycle_pose_snapshots.gif
+    -- Why: This is spine-owned evidence because every frame comes from LSkeleton:updateAnimation, LSkeleton:updateWorldTransforms, and LSkeleton:drawToImage.
 
-    it("PNG: walk cycle pose snapshots", function()
+    it("GIF: walk cycle pose playback", function()
         local sk, bones = build_walk_skeleton()
+        local frames = {}
         for frame_index = 1, 6 do
             sk:updateAnimation(0.2)
             sk:updateWorldTransforms()
-            local frame = render_walk_frame(sk, bones):resize(192, 192, "bilinear")
-            local path = OUT .. string.format("spine_walk_cycle_pose_%02d.png", frame_index)
-            save_png(frame, path)
+            frames[frame_index] = render_walk_frame(sk, bones):resize(192, 192, "bilinear")
         end
+        save_gif(frames, OUT .. "spine_walk_cycle_pose_snapshots.gif", { delayMs = 120, speed = 20 })
     end)
     -- Does: Runs "bone world-transform query" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by lurek.spine.newSkeleton, LSkeleton:getBoneWorld, and related owner calls without needing a special evidence-only renderer.
@@ -179,7 +202,7 @@ describe("Evidence: lurek.spine API", function()
     end)
     -- Does: Runs "walk cycle over five seconds" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by lurek.spine.newSkeletonAnimation, LSkeleton:addAnimation, and related owner calls without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/spine/<artifact>
+    -- Artifact: tests/artifacts/current/spine/spine_walk_cycle_5s.gif
     -- Why: This is meaningful only if the visible/text output comes from lurek.spine.newSkeletonAnimation, LSkeleton:addAnimation, and related owner calls; export helpers are just the container.
 
     it("GIF: walk cycle over five seconds", function()
@@ -193,29 +216,41 @@ describe("Evidence: lurek.spine API", function()
         end
 
         local path = OUT .. "spine_walk_cycle_5s.gif"
-        lurek.image.saveGIF(frames, path, { delayMs = 400, speed = 10 })
-        expect_evidence_created(path)
+        save_gif(frames, path, { delayMs = 400, speed = 10 })
     end)
-    -- Does: Runs "IK target reach captures" and turns the owner-module result into one file per target.
-    -- Shows: Each PNG should expose one IK target state produced by LSkeleton:addIKConstraint and LSkeleton:setIKTarget.
-    -- Artifact: tests/artifacts/current/spine/spine_ik_target_0N.png
-    -- Why: This is meaningful only if the visible/text output comes from LSkeleton:addIKConstraint, LSkeleton:setIKTarget, and related owner calls; export helpers are just the container.
+    -- Does: Moves an IK target across several positions and records the solved arm chain as an animated artifact.
+    -- Shows: The GIF makes the constraint solver legible: the same shoulder/elbow/hand hierarchy reaches different targets over time.
+    -- Artifact: tests/artifacts/current/spine/spine_ik_target_reach.gif
+    -- Why: This is spine-specific evidence for LSkeleton:addIKConstraint, LSkeleton:setIKTarget, and LSkeleton:updateWorldTransforms rather than generic sprite animation.
 
-    it("PNG: IK target reach captures", function()
+    it("GIF: IK target reach captures", function()
         local sk = build_ik_demo()
         local targets = {
             { 96, 24 },
             { 122, -10 },
             { 100, 54 },
+            { 64, 8 },
+            { 118, 38 },
         }
 
+        local frames = {}
         for i, target in ipairs(targets) do
             sk:setIKTarget("arm_ik", target[1], target[2])
             sk:updateWorldTransforms()
-            local frame = sk:drawToImage(176, 176)
-            frame:drawCircle(target[1], 112 + target[2], 6, 255, 126, 126, 255)
-            save_png(frame, OUT .. string.format("spine_ik_target_%02d.png", i))
+            local source = sk:drawToImage(176, 176)
+            source:drawCircle(target[1], 112 + target[2], 7, 255, 126, 126, 255)
+            source:drawLine(72, 112, target[1], 112 + target[2], 255, 210, 120, 255)
+            local frame = compose_spine_frame(source, "IK TARGET", { 255, 126, 126 })
+            frame:drawRect(204, 48, 34, 86, 34, 40, 54, 255)
+            for j = 1, #targets do
+                local ty = 52 + j * 14
+                local active = j == i
+                frame:drawCircle(221, ty, active and 6 or 3, active and 255 or 104, active and 126 or 116, active and 126 or 138, 255)
+            end
+            frame:drawRect(204, 146, math.floor(34 * i / #targets), 8, 255, 126, 126, 255)
+            frames[i] = frame
         end
+        save_gif(frames, OUT .. "spine_ik_target_reach.gif", { delayMs = 160, speed = 20 })
     end)
     -- Does: Runs "skin, event and pose trace" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by LSkeleton:addSkin, LSkeleton:getSkin, and related owner calls without needing a special evidence-only renderer.
@@ -252,12 +287,12 @@ describe("Evidence: lurek.spine API", function()
         write_file(path, table.concat(lines, "\n") .. "\n")
         expect_evidence_created(path)
     end)
-    -- Does: Runs "imported skeleton animation snapshots" and turns the owner-module result into one file per sampled frame.
-    -- Shows: Each PNG should expose one state produced by lurek.spine.animationFromJson, lurek.spine.skeletonFromJson, and related owner calls.
-    -- Artifact: tests/artifacts/current/spine/spine_imported_animation_0N.png
-    -- Why: This is meaningful only if the visible/text output comes from lurek.spine.animationFromJson, lurek.spine.skeletonFromJson, and related owner calls; export helpers are just the container.
+    -- Does: Imports a skeleton and animation from JSON, plays the imported clip, and records the resulting pose playback as a GIF.
+    -- Shows: The artifact proves imported bone and slot data are not just parsed; the animation timeline drives visible runtime skeleton poses.
+    -- Artifact: tests/artifacts/current/spine/spine_imported_animation.gif
+    -- Why: Imported skeletal animation is a spine responsibility, so moving evidence belongs in one GIF generated from skeletonFromJson, animationFromJson, and LSkeleton:updateAnimation.
 
-    it("PNG: imported skeleton animation snapshots", function()
+    it("GIF: imported skeleton animation playback", function()
         local importer = rawget(lurek.spine, "skeletonFromJson")
         expect_true(importer ~= nil)
 
@@ -308,12 +343,19 @@ describe("Evidence: lurek.spine API", function()
         sk:addAnimation(anim)
         expect_true(sk:playAnimation("import_wave", true))
 
-        for i = 1, 4 do
+        local frames = {}
+        for i = 1, 6 do
             sk:updateAnimation(0.3)
             sk:updateWorldTransforms()
-            local frame = sk:drawToImage(160, 160)
-            save_png(frame, OUT .. string.format("spine_imported_animation_%02d.png", i))
+            local source = sk:drawToImage(160, 160)
+            local frame = compose_spine_frame(source, "JSON IMPORT", { 120, 210, 255 })
+            frame:drawRect(204, 50, 40, 10, 120, 210, 255, 255)
+            frame:drawRect(204, 76, 40, 10, 255, 210, 120, 255)
+            frame:drawRect(204, 102, 40, 10, 120, 255, 170, 255)
+            frame:drawRect(204, 142, math.floor(40 * i / 6), 8, 120, 210, 255, 255)
+            frames[i] = frame
         end
+        save_gif(frames, OUT .. "spine_imported_animation.gif", { delayMs = 120, speed = 20 })
     end)
 end)
 test_summary()

@@ -43,6 +43,18 @@ describe("golden: tilemap evidence comparison", function()
             evidence_output_dir("tilemap") .. "tilemap_hex_neighbors.png",
             "tests/artifacts/baselines/tilemap/tilemap_hex_neighbors.png"
         )
+        expect_golden_file_match(
+            evidence_output_dir("tilemap") .. "tilemap_hex_operations_frontier.png",
+            "tests/artifacts/baselines/tilemap/tilemap_hex_operations_frontier.png"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("tilemap") .. "tilemap_chunk_streaming_window.png",
+            "tests/artifacts/baselines/tilemap/tilemap_chunk_streaming_window.png"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("tilemap") .. "tilemap_isometric_stacked_settlement.png",
+            "tests/artifacts/baselines/tilemap/tilemap_isometric_stacked_settlement.png"
+        )
     end)
 end)
 test_summary()

@@ -1,44 +1,28 @@
 -- Golden test: raycaster
 
+local FILES = {
+    "raycaster_corridor_view_with_fov.png",
+    "raycaster_depth_columns_vs_view.png",
+    "raycaster_camera_sweep_atlas.png",
+    "raycaster_topdown_reveal_fov.png",
+    "raycaster_los_wall_window_door.png",
+    "raycaster_transparent_layered_hits.png",
+    "raycaster_feature_walls_view_pick.png",
+    "raycaster_minimap_reveal_lighting.png",
+    "raycaster_floor_ceiling_pick_uv.png",
+    "raycaster_multilevel_hole_pick.png",
+}
+
 -- @describe golden: raycaster evidence comparison
 describe("golden: raycaster evidence comparison", function()
-    it("matches golden samples", function()
-        expect_golden_file_match(
-            evidence_output_dir("raycaster") .. "raycaster_topdown.png",
-            "tests/artifacts/baselines/raycaster/raycaster_topdown.png"
-        )
-        expect_golden_file_match(
-            evidence_output_dir("raycaster") .. "raycaster_depth.png",
-            "tests/artifacts/baselines/raycaster/raycaster_depth.png"
-        )
-        expect_golden_file_match(
-            evidence_output_dir("raycaster") .. "raycaster_fov.png",
-            "tests/artifacts/baselines/raycaster/raycaster_fov.png"
-        )
-        expect_golden_file_match(
-            evidence_output_dir("raycaster") .. "raycaster_minimap.png",
-            "tests/artifacts/baselines/raycaster/raycaster_minimap.png"
-        )
-        expect_golden_file_match(
-            evidence_output_dir("raycaster") .. "raycaster_shaded_walls.png",
-            "tests/artifacts/baselines/raycaster/raycaster_shaded_walls.png"
-        )
-        expect_golden_file_match(
-            evidence_output_dir("raycaster") .. "raycaster_mirrors.png",
-            "tests/artifacts/baselines/raycaster/raycaster_mirrors.png"
-        )
-        expect_golden_file_match(
-            evidence_output_dir("raycaster") .. "raycaster_floor_ceiling.png",
-            "tests/artifacts/baselines/raycaster/raycaster_floor_ceiling.png"
-        )
-        expect_golden_file_match(
-            evidence_output_dir("raycaster") .. "raycaster_animated_walls.png",
-            "tests/artifacts/baselines/raycaster/raycaster_animated_walls.png"
-        )
-        expect_golden_file_match(
-            evidence_output_dir("raycaster") .. "raycaster_textured_corridor_view.png",
-            "tests/artifacts/baselines/raycaster/raycaster_textured_corridor_view.png"
-        )
+    it("matches raycaster baselines", function()
+        for _, name in ipairs(FILES) do
+            expect_golden_file_match(
+                evidence_output_dir("raycaster") .. name,
+                "tests/artifacts/baselines/raycaster/" .. name
+            )
+        end
     end)
 end)
+
 test_summary()

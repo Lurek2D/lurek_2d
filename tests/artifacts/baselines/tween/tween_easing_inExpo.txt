@@ -1,0 +1,3 @@
+duration=1.0
+steps=64
+11 inExpo q25=0.0055 q50=0.0313 q75=0.1768 q100=1.0000 peak_active=1 final_active=0 tween_active=false

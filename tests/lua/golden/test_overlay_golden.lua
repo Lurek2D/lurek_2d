@@ -4,53 +4,42 @@
 describe("golden: overlay evidence comparison", function()
     it("matches overlay baselines", function()
         expect_golden_file_match(
-            evidence_output_dir("overlay") .. "overlay_dawn_fog_preview.png",
-            "tests/artifacts/baselines/overlay/overlay_dawn_fog_preview.png"
+            evidence_output_dir("overlay") .. "overlay_screen_effects_timeline.gif",
+            "tests/artifacts/baselines/overlay/overlay_screen_effects_timeline.gif"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("overlay") .. "overlay_environment_layers.gif",
+            "tests/artifacts/baselines/overlay/overlay_environment_layers.gif"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("overlay") .. "overlay_transition_modes.gif",
+            "tests/artifacts/baselines/overlay/overlay_transition_modes.gif"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("overlay") .. "overlay_weather_wind_field.png",
+            "tests/artifacts/baselines/overlay/overlay_weather_wind_field.png"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("overlay") .. "overlay_transition_mask_atlas.png",
+            "tests/artifacts/baselines/overlay/overlay_transition_mask_atlas.png"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("overlay") .. "overlay_atmosphere_compositor.png",
+            "tests/artifacts/baselines/overlay/overlay_atmosphere_compositor.png"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("overlay") .. "overlay_storm_front_wind_sweep.gif",
+            "tests/artifacts/baselines/overlay/overlay_storm_front_wind_sweep.gif"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("overlay") .. "overlay_flash_shake_fade_composite.gif",
+            "tests/artifacts/baselines/overlay/overlay_flash_shake_fade_composite.gif"
         )
         expect_golden_text_match(
-            evidence_output_dir("overlay") .. "overlay_draw_to_image.json",
-            "tests/artifacts/baselines/overlay/overlay_draw_to_image.json"
-        )
-        expect_golden_file_match(
-            evidence_output_dir("overlay") .. "overlay_dusk_heat_preview.png",
-            "tests/artifacts/baselines/overlay/overlay_dusk_heat_preview.png"
-        )
-        expect_golden_file_match(
-            evidence_output_dir("overlay") .. "overlay_fade_preview.png",
-            "tests/artifacts/baselines/overlay/overlay_fade_preview.png"
-        )
-        expect_golden_file_match(
-            evidence_output_dir("overlay") .. "overlay_flash_preview.png",
-            "tests/artifacts/baselines/overlay/overlay_flash_preview.png"
-        )
-        expect_golden_file_match(
-            evidence_output_dir("overlay") .. "overlay_lightning_preview.png",
-            "tests/artifacts/baselines/overlay/overlay_lightning_preview.png"
-        )
-        expect_golden_file_match(
-            evidence_output_dir("overlay") .. "overlay_night_snow_preview.png",
-            "tests/artifacts/baselines/overlay/overlay_night_snow_preview.png"
-        )
-        expect_golden_file_match(
-            evidence_output_dir("overlay") .. "overlay_noon_rain_preview.png",
-            "tests/artifacts/baselines/overlay/overlay_noon_rain_preview.png"
-        )
-        expect_golden_file_match(
-            evidence_output_dir("overlay") .. "overlay_runtime_phase_heatmap.png",
-            "tests/artifacts/baselines/overlay/overlay_runtime_phase_heatmap.png"
-        )
-        expect_golden_file_match(
-            evidence_output_dir("overlay") .. "overlay_runtime_signal.png",
-            "tests/artifacts/baselines/overlay/overlay_runtime_signal.png"
-        )
-        expect_golden_file_match(
-            evidence_output_dir("overlay") .. "overlay_runtime_summary.png",
-            "tests/artifacts/baselines/overlay/overlay_runtime_summary.png"
-        )
-        expect_golden_text_match(
-            evidence_output_dir("overlay") .. "overlay_timeline.json",
-            "tests/artifacts/baselines/overlay/overlay_timeline.json"
+            evidence_output_dir("overlay") .. "overlay_weather_state_trace.json",
+            "tests/artifacts/baselines/overlay/overlay_weather_state_trace.json"
         )
     end)
 end)
+
 test_summary()

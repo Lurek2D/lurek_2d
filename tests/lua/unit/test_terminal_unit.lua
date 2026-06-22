@@ -862,6 +862,18 @@ describe("terminal strict: LTerminal render / setFont / type / typeOf", function
         expect_type("number", stats.widgets_drawn)
         expect_type("number", stats.clipped_chars)
     end)
+    -- @covers LTerminal:renderImage
+    it("LTerminal renderImage returns rasterized image data", function()
+        local t = lurek.terminal.newTerminal(16, 8)
+        lurek.terminal.applyTheme(t, "nord")
+        t:print(1, 1, "status")
+        t:addWidget(lurek.terminal.newLabel(2, 3, "READY"))
+
+        local img = t:renderImage(160, 80)
+        expect_equal("userdata", type(img))
+        expect_equal(160, img:getWidth())
+        expect_equal(80, img:getHeight())
+    end)
     -- @covers LTerminal:setFont
     it("LTerminal setFont is callable", function()
         local t = lurek.terminal.newTerminal(40, 20)

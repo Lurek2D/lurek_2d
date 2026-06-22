@@ -4,61 +4,50 @@
 describe("golden: particle evidence comparison", function()
     it("matches stable particle baselines", function()
         expect_golden_file_match(
-            evidence_output_dir("particle") .. "particle_attractor_contraction.png",
-            "tests/artifacts/baselines/particle/particle_attractor_contraction.png"
+            evidence_output_dir("particle") .. "particle_archetype_showcase.png",
+            "tests/artifacts/baselines/particle/particle_archetype_showcase.png"
         )
         expect_golden_file_match(
-            evidence_output_dir("particle") .. "particle_burst_evolution.gif",
-            "tests/artifacts/baselines/particle/particle_burst_evolution.gif"
+            evidence_output_dir("particle") .. "particle_velocity_burst.gif",
+            "tests/artifacts/baselines/particle/particle_velocity_burst.gif"
         )
         expect_golden_file_match(
-            evidence_output_dir("particle") .. "particle_emitter_burst.png",
-            "tests/artifacts/baselines/particle/particle_emitter_burst.png"
+            evidence_output_dir("particle") .. "particle_attractor_field.gif",
+            "tests/artifacts/baselines/particle/particle_attractor_field.gif"
         )
         expect_golden_file_match(
-            evidence_output_dir("particle") .. "particle_emitter_cluster_snapshot.png",
-            "tests/artifacts/baselines/particle/particle_emitter_cluster_snapshot.png"
+            evidence_output_dir("particle") .. "particle_trail_ribbon_decay.gif",
+            "tests/artifacts/baselines/particle/particle_trail_ribbon_decay.gif"
         )
         expect_golden_file_match(
-            evidence_output_dir("particle") .. "particle_trail_wave_ribbon.png",
-            "tests/artifacts/baselines/particle/particle_trail_wave_ribbon.png"
-        )
-        expect_golden_file_match(
-            evidence_output_dir("particle") .. "particle_explosion_renderer.png",
-            "tests/artifacts/baselines/particle/particle_explosion_renderer.png"
-        )
-        expect_golden_file_match(
-            evidence_output_dir("particle") .. "particle_rain_renderer.png",
-            "tests/artifacts/baselines/particle/particle_rain_renderer.png"
-        )
-        expect_golden_file_match(
-            evidence_output_dir("particle") .. "particle_spark_trail_renderer.png",
-            "tests/artifacts/baselines/particle/particle_spark_trail_renderer.png"
-        )
-        expect_golden_file_match(
-            evidence_output_dir("particle") .. "particle_over_paint_renderer.png",
-            "tests/artifacts/baselines/particle/particle_over_paint_renderer.png"
+            evidence_output_dir("particle") .. "particle_paint_composite.png",
+            "tests/artifacts/baselines/particle/particle_paint_composite.png"
         )
         expect_golden_file_match(
             evidence_output_dir("particle") .. "particle_lifecycle_chart.png",
             "tests/artifacts/baselines/particle/particle_lifecycle_chart.png"
         )
         expect_golden_file_match(
-            evidence_output_dir("particle") .. "particle_runtime_population_lines.png",
-            "tests/artifacts/baselines/particle/particle_runtime_population_lines.png"
+            evidence_output_dir("particle") .. "particle_emission_area_shapes.png",
+            "tests/artifacts/baselines/particle/particle_emission_area_shapes.png"
         )
         expect_golden_file_match(
-            evidence_output_dir("particle") .. "particle_runtime_summary_bars.png",
-            "tests/artifacts/baselines/particle/particle_runtime_summary_bars.png"
+            evidence_output_dir("particle") .. "particle_bounds_bounce_box.gif",
+            "tests/artifacts/baselines/particle/particle_bounds_bounce_box.gif"
         )
         expect_golden_file_match(
-            evidence_output_dir("particle") .. "particle_histogram_live_population.png",
-            "tests/artifacts/baselines/particle/particle_histogram_live_population.png"
+            evidence_output_dir("particle") .. "particle_subemitter_death_burst.gif",
+            "tests/artifacts/baselines/particle/particle_subemitter_death_burst.gif"
         )
         expect_golden_file_match(
-            evidence_output_dir("particle") .. "particle_heatmap_runtime_phase.png",
-            "tests/artifacts/baselines/particle/particle_heatmap_runtime_phase.png"
+            evidence_output_dir("particle") .. "particle_shape_size_keyframes.png",
+            "tests/artifacts/baselines/particle/particle_shape_size_keyframes.png"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("particle") .. "particle_control_state_timeline.gif",
+            "tests/artifacts/baselines/particle/particle_control_state_timeline.gif"
         )
     end)
 end)
+
 test_summary()

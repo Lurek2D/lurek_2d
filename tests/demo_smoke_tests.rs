@@ -152,7 +152,6 @@ macro_rules! demo_smoke_test {
 
 // ─── showcase demos ───────────────────────────────────────────────────────────
 
-
 // ─── arcade demos ─────────────────────────────────────────────────────────────
 
 demo_smoke_test!(demo_smoke_pong, "content/games/arcade/pong");

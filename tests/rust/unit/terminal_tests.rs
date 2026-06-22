@@ -341,6 +341,26 @@ mod render_tests {
         FontKey::from(KeyData::from_ffi(1))
     }
 
+    fn has_pixel_matching(
+        img: &lurek2d::image::ImageData,
+        matches: impl Fn(u8, u8, u8, u8) -> bool,
+    ) -> bool {
+        for y in 0..img.height() {
+            for x in 0..img.width() {
+                if let Some((r, g, b, a)) = img.get_pixel(x, y) {
+                    if matches(r, g, b, a) {
+                        return true;
+                    }
+                }
+            }
+        }
+        false
+    }
+
+    fn is_cyan_pixel(pixel: Option<(u8, u8, u8, u8)>) -> bool {
+        matches!(pixel, Some((r, g, b, _)) if r < 40 && g > 180 && b > 180)
+    }
+
     #[test]
     fn generate_render_commands_empty_terminal_returns_empty() {
         let t = Terminal::new(4, 2);
@@ -424,9 +444,10 @@ mod render_tests {
             [0.0, 0.0, 0.0, 0.0],
         );
         let img = t.draw_to_image(64, 32);
-        if let Some((r, g, b, _)) = img.get_pixel(0, 0) {
-            assert!(r > 100 && g < 50 && b < 50, "expected red cell pixel");
-        }
+        assert!(
+            has_pixel_matching(&img, |r, g, b, _| r > 100 && g < 50 && b < 50),
+            "expected red glyph pixels"
+        );
     }
 
     #[test]
@@ -436,12 +457,86 @@ mod render_tests {
 
         let img = terminal.draw_to_image(40, 20);
 
-        if let Some((r, g, b, _)) = img.get_pixel(5, 5) {
+        assert!(
+            has_pixel_matching(&img, |r, g, b, _| r > 20 || g > 20 || b > 35),
+            "button widget should tint the output image"
+        );
+    }
+
+    #[test]
+    fn draw_to_image_rasterizes_box_drawing_as_continuous_strokes() {
+        let mut terminal = Terminal::new(4, 3);
+        let fg = [0.0, 1.0, 1.0, 1.0];
+        let bg = [0.0, 0.0, 0.0, 0.0];
+        for (col, ch) in ['┌', '─', '─', '┐'].into_iter().enumerate() {
+            terminal.set(col + 1, 1, ch as u32, fg, bg);
+        }
+        terminal.set(1, 2, '│' as u32, fg, bg);
+        terminal.set(4, 2, '│' as u32, fg, bg);
+        for (col, ch) in ['└', '─', '─', '┘'].into_iter().enumerate() {
+            terminal.set(col + 1, 3, ch as u32, fg, bg);
+        }
+
+        let img = terminal.draw_to_image(80, 60);
+
+        for x in [10, 20, 39, 59, 69] {
             assert!(
-                r > 20 || g > 20 || b > 35,
-                "button background should tint the output image"
+                is_cyan_pixel(img.get_pixel(x, 10)),
+                "expected continuous top stroke at x={x}"
             );
         }
+        for y in [10, 20, 39, 49] {
+            assert!(
+                is_cyan_pixel(img.get_pixel(10, y)),
+                "expected continuous left stroke at y={y}"
+            );
+        }
+    }
+
+    #[test]
+    fn draw_to_image_rasterizes_ascii_frames_when_cells_form_a_frame() {
+        let mut terminal = Terminal::new(4, 3);
+        let fg = [0.0, 1.0, 1.0, 1.0];
+        let bg = [0.0, 0.0, 0.0, 0.0];
+        for (col, ch) in ['+', '-', '-', '+'].into_iter().enumerate() {
+            terminal.set(col + 1, 1, ch as u32, fg, bg);
+        }
+        terminal.set(1, 2, '|' as u32, fg, bg);
+        terminal.set(4, 2, '|' as u32, fg, bg);
+        for (col, ch) in ['+', '-', '-', '+'].into_iter().enumerate() {
+            terminal.set(col + 1, 3, ch as u32, fg, bg);
+        }
+
+        let img = terminal.draw_to_image(80, 60);
+
+        assert!(is_cyan_pixel(img.get_pixel(20, 10)));
+        assert!(is_cyan_pixel(img.get_pixel(39, 10)));
+        assert!(is_cyan_pixel(img.get_pixel(10, 39)));
+    }
+
+    #[test]
+    fn draw_to_image_rasterizes_chart_markers_as_shapes() {
+        let mut terminal = Terminal::new(3, 1);
+        let fg = [0.0, 1.0, 1.0, 1.0];
+        let bg = [0.0, 0.0, 0.0, 0.0];
+        terminal.set(1, 1, '█' as u32, fg, bg);
+        terminal.set(2, 1, '•' as u32, fg, bg);
+        terminal.set(3, 1, '⣿' as u32, fg, bg);
+
+        let img = terminal.draw_to_image(60, 20);
+
+        assert!(
+            is_cyan_pixel(img.get_pixel(10, 10)),
+            "block marker should fill its cell"
+        );
+        assert!(
+            is_cyan_pixel(img.get_pixel(30, 10)),
+            "dot marker should fill the cell center"
+        );
+        assert!(
+            is_cyan_pixel(img.get_pixel(46, 4)),
+            "braille marker should draw dot geometry"
+        );
     }
 
     #[test]

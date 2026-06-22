@@ -43,6 +43,26 @@ describe("golden: physics evidence comparison", function()
             evidence_output_dir("physics") .. "physics_joint_wheel_debug.png",
             "tests/artifacts/baselines/physics/physics_joint_wheel_debug.png"
         )
+        expect_golden_file_match(
+            evidence_output_dir("physics") .. "physics_zone_priority_fields.png",
+            "tests/artifacts/baselines/physics/physics_zone_priority_fields.png"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("physics") .. "physics_raycast_filter_lanes.png",
+            "tests/artifacts/baselines/physics/physics_raycast_filter_lanes.png"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("physics") .. "physics_terrain_debris_crater.png",
+            "tests/artifacts/baselines/physics/physics_terrain_debris_crater.png"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("physics") .. "physics_one_way_sensor_timeline.gif",
+            "tests/artifacts/baselines/physics/physics_one_way_sensor_timeline.gif"
+        )
+        expect_golden_file_match(
+            evidence_output_dir("physics") .. "physics_constraint_mouse_slider.gif",
+            "tests/artifacts/baselines/physics/physics_constraint_mouse_slider.gif"
+        )
     end)
 end)
 test_summary()

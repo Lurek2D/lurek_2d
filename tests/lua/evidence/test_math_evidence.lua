@@ -92,7 +92,7 @@ describe("Evidence: lurek.math visual scenarios", function()
     end)
     -- Does: Runs "math_vec2_unit_circle.png -- normalized vectors on unit circle" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by lurek.math.vec2 without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/math/<artifact>
+    -- Artifact: tests/artifacts/current/math/math_vec2_unit_circle.png
     -- Why: This is meaningful only if the visible/text output comes from lurek.math.vec2; export helpers are just the container.
 
     it("PNG: math_vec2_unit_circle.png -- normalized vectors on unit circle", function()
@@ -114,7 +114,7 @@ describe("Evidence: lurek.math visual scenarios", function()
     end)
     -- Does: Runs "math_distance_heatmap.png -- radial distance map" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by lurek.math.distance and lurek.math.clamp without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/math/<artifact>
+    -- Artifact: tests/artifacts/current/math/math_distance_heatmap.png
     -- Why: This is meaningful only if the visible/text output comes from lurek.math.distance and lurek.math.clamp; export helpers are just the container.
 
     it("PNG: math_distance_heatmap.png -- radial distance map", function()
@@ -152,7 +152,7 @@ describe("Evidence: lurek.math visual scenarios", function()
     end)
     -- Does: Runs "math_segment_intersections.png -- segment intersection grid" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by lurek.math.segmentIntersectsSegment without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/math/<artifact>
+    -- Artifact: tests/artifacts/current/math/math_segment_intersections.png
     -- Why: This is meaningful only if the visible/text output comes from lurek.math.segmentIntersectsSegment; export helpers are just the container.
 
     it("PNG: math_segment_intersections.png -- segment intersection grid", function()
@@ -184,7 +184,7 @@ describe("Evidence: lurek.math visual scenarios", function()
     end)
     -- Does: Runs "math_polygon_metrics.png -- area, centroid and inside test map" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by lurek.math.polygonCentroid, lurek.math.polygonArea, and related owner calls without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/math/<artifact>
+    -- Artifact: tests/artifacts/current/math/math_polygon_metrics.png
     -- Why: This is meaningful only if the visible/text output comes from lurek.math.polygonCentroid, lurek.math.polygonArea, and related owner calls; export helpers are just the container.
 
     it("PNG: math_polygon_metrics.png -- area, centroid and inside test map", function()
@@ -219,7 +219,7 @@ describe("Evidence: lurek.math visual scenarios", function()
     end)
     -- Does: Runs "math_bresenham_rays.png -- raster rays from center" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by lurek.math.bresenham without needing a special evidence-only renderer.
-    -- Artifact: tests/artifacts/current/math/<artifact>
+    -- Artifact: tests/artifacts/current/math/math_bresenham_rays.png
     -- Why: This is meaningful only if the visible/text output comes from lurek.math.bresenham; export helpers are just the container.
 
     it("PNG: math_bresenham_rays.png -- raster rays from center", function()

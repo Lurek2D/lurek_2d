@@ -1,0 +1,8 @@
+macro_count=1
+has_macro_probe=true
+current_script=macro_source
+step_limit=12
+playback_speed=1.75
+highlight_mode=true
+running=false
+current_step=2

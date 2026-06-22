@@ -518,6 +518,12 @@ describe("Evidence: lurek.tilemap scenarios", function()
 
         local visible = cm:getChunksInView(6 * 16, 4 * 16, 12 * 16, 10 * 16, 16, 16)
         local loaded = cm:getLoadedChunks()
+        table.sort(loaded, function(a, b)
+            if a.cy == b.cy then
+                return a.cx < b.cx
+            end
+            return a.cy < b.cy
+        end)
         local visible_lookup = {}
         for _, chunk in ipairs(visible) do
             visible_lookup[chunk.cx .. ":" .. chunk.cy] = true
