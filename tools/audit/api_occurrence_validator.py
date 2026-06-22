@@ -143,7 +143,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         "missing_apis": missing,
         "duplicate": len(duplicates),
         "duplicate_apis": duplicates,
-        "stub_counts": {api: len(files) for api, files in stubs.items()},
+        "stub_counts": {api: len(stubs[api]) for api in sorted(stubs)},
     }
 
     # Write JSON
