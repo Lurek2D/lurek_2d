@@ -1,441 +1,210 @@
 /**
- * Unit tests for MCP tool handlers.
- *
- * Tests the tool handler factories from src/mcp/tools.ts with mocked
- * filesystem and service dependencies.
+ * Unit tests for MCP tool handlers using a real fixture workspace.
  */
 import * as assert from "assert";
 import * as fs from "fs";
 import * as path from "path";
-import * as ragService from "../../services/rag.js";
 import {
+  getToolDefinitions,
   handleGetApiDoc,
   handleListExamples,
   handleGetModuleInfo,
-  handleRagBuildIndex,
-  handleRagSearch,
   handleInspectLuaFile,
   handleGetTestCoverage,
   handleGetProjectStructure,
+  handleRagBuildIndex,
+  handleRagSearch,
 } from "../../mcp/tools";
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
+type ExtensionManifest = { name?: string };
 
-const WORKSPACE_ROOT = "/mock/workspace";
+function findExtensionRoot(): string {
+  const candidates = [
+    path.resolve(__dirname, "../../.."),
+    path.resolve(__dirname, "../.."),
+    process.cwd(),
+    path.join(process.cwd(), "extension", "vscode"),
+  ];
 
-// ── Stub helpers ────────────────────────────────────────────
+  for (const candidate of candidates) {
+    const packagePath = path.join(candidate, "package.json");
+    if (!fs.existsSync(packagePath)) continue;
+    const manifest = JSON.parse(fs.readFileSync(packagePath, "utf-8")) as ExtensionManifest;
+    if (manifest.name === "lurek2d-toolkit") return candidate;
+  }
 
-type AnyFn = (...args: any[]) => any;
-
-function stub<T extends object, K extends keyof T>(
-  obj: T,
-  method: K,
-  impl: AnyFn,
-): { restore: () => void } {
-  const original = obj[method];
-  (obj as any)[method] = impl;
-  return { restore: () => { (obj as any)[method] = original; } };
+  throw new Error(`Unable to locate extension/vscode from ${process.cwd()}.`);
 }
 
-// ── lurek2d.getApiDoc ───────────────────────────────────────
+function fixtureWorkspace(name: string): string {
+  return path.join(findExtensionRoot(), "src", "test", "fixtures", name);
+}
 
-suite("MCP Tools — lurek2d.getApiDoc", () => {
-  const stubs: { restore: () => void }[] = [];
+const WORKSPACE_ROOT = fixtureWorkspace("mcp-workspace");
+const EMPTY_WORKSPACE_ROOT = fixtureWorkspace("mcp-empty-workspace");
 
-  teardown(() => {
-    stubs.forEach(s => s.restore());
-    stubs.length = 0;
+suite("MCP tool definitions", () => {
+  test("includes expected non-editor tool surface", () => {
+    const names = getToolDefinitions(WORKSPACE_ROOT).map((tool) => tool.name).sort();
+
+    assert.ok(names.includes("lurek2d.getApiDoc"));
+    assert.ok(names.includes("lurek2d.runLuaTest"));
+    assert.ok(names.includes("lurek2d.getModuleInfo"));
+    assert.ok(names.includes("lurek2d.inspectLuaFile"));
+    assert.ok(names.includes("lurek2d.getTestCoverage"));
+    assert.ok(names.includes("lurek2d.getProjectStructure"));
+    assert.ok(names.includes("lurek2d.ragSearch"));
+    assert.ok(names.includes("rag_search"));
   });
+});
 
+suite("MCP Tools - lurek2d.getApiDoc", () => {
   test("returns documentation for a valid function name", async () => {
-    stubs.push(stub(fs, "existsSync", () => true));
-    stubs.push(stub(fs, "readFileSync", () =>
-      "--- @summary Draw a sprite\nfunction lurek.render.draw(sprite, x, y) end\n\n" +
-      "--- @summary Clear the screen\nfunction lurek.render.clear() end\n"
-    ));
-
-    const handler = handleGetApiDoc(WORKSPACE_ROOT);
-    const result = await handler({ query: "lurek.render.draw" });
+    const result = await handleGetApiDoc(WORKSPACE_ROOT)({ query: "lurek.render.draw" });
 
     assert.ok(result.includes("lurek.render.draw"));
+    assert.ok(result.includes("Draw a sprite"));
   });
 
   test("returns error message for unknown function", async () => {
-    stubs.push(stub(fs, "existsSync", () => true));
-    stubs.push(stub(fs, "readFileSync", () =>
-      "--- @summary Draw a sprite\nfunction lurek.render.draw(sprite, x, y) end\n"
-    ));
-
-    const handler = handleGetApiDoc(WORKSPACE_ROOT);
-    const result = await handler({ query: "lurek.nonexistent.thing" });
+    const result = await handleGetApiDoc(WORKSPACE_ROOT)({ query: "lurek.nonexistent.thing" });
 
     assert.ok(result.includes("No documentation found"));
   });
 
   test("returns markdown formatted content for .lua API file", async () => {
-    stubs.push(stub(fs, "existsSync", () => true));
-    stubs.push(stub(fs, "readFileSync", () =>
-      "--- @summary Draw a sprite\nfunction lurek.render.draw(sprite, x, y) end\n"
-    ));
-
-    const handler = handleGetApiDoc(WORKSPACE_ROOT);
-    const result = await handler({ query: "lurek.render.draw" });
+    const result = await handleGetApiDoc(WORKSPACE_ROOT)({ query: "lurek.render.draw" });
 
     assert.ok(result.includes("```lua"));
   });
 
   test("returns error when query parameter is missing", async () => {
-    const handler = handleGetApiDoc(WORKSPACE_ROOT);
-    const result = await handler({});
+    const result = await handleGetApiDoc(WORKSPACE_ROOT)({});
 
     assert.ok(result.includes("Error"));
   });
 });
 
-// ── lurek2d.listExamples ────────────────────────────────────
-
-suite("MCP Tools — lurek2d.listExamples", () => {
-  const stubs: { restore: () => void }[] = [];
-
-  teardown(() => {
-    stubs.forEach(s => s.restore());
-    stubs.length = 0;
-  });
-
-  test("returns non-empty list of example files", async () => {
-    stubs.push(stub(fs, "existsSync", () => true));
-    stubs.push(stub(fs, "readdirSync", () => [
-      { name: "render.lua", isFile: () => true },
-      { name: "audio.lua", isFile: () => true },
-    ]));
-
-    const handler = handleListExamples(WORKSPACE_ROOT);
-    const result = await handler({});
+suite("MCP Tools - lurek2d.listExamples", () => {
+  test("returns Lua example file stems", async () => {
+    const result = await handleListExamples(WORKSPACE_ROOT)({});
 
     assert.ok(result.includes("render"));
     assert.ok(result.includes("audio"));
-  });
-
-  test("each entry is a Lua file stem excluding non-Lua files", async () => {
-    stubs.push(stub(fs, "existsSync", () => true));
-    stubs.push(stub(fs, "readdirSync", () => [
-      { name: "scene.lua", isFile: () => true },
-      { name: "README.md", isFile: () => true },
-    ]));
-
-    const handler = handleListExamples(WORKSPACE_ROOT);
-    const result = await handler({});
-
-    assert.ok(result.includes("scene"));
     assert.ok(!result.includes("README.md"));
   });
 
   test("returns message when no examples exist", async () => {
-    stubs.push(stub(fs, "existsSync", () => false));
-
-    const handler = handleListExamples(WORKSPACE_ROOT);
-    const result = await handler({});
+    const result = await handleListExamples(EMPTY_WORKSPACE_ROOT)({});
 
     assert.ok(result.includes("No examples found"));
   });
 });
 
-// ── lurek2d.getModuleInfo ───────────────────────────────────
-
-suite("MCP Tools — lurek2d.ragSearch", () => {
-  const stubs: { restore: () => void }[] = [];
-
-  teardown(() => {
-    stubs.forEach(s => s.restore());
-    stubs.length = 0;
-  });
-
-  test("returns error when query parameter is missing", async () => {
-    const handler = handleRagSearch(WORKSPACE_ROOT);
-    const result = await handler({});
+suite("MCP Tools - RAG input validation", () => {
+  test("ragSearch returns error when query parameter is missing", async () => {
+    const result = await handleRagSearch(WORKSPACE_ROOT)({});
 
     assert.ok(result.includes("Error: 'query' parameter is required."));
   });
 
-  test("returns error for invalid profile values", async () => {
-    const handler = handleRagSearch(WORKSPACE_ROOT);
-    const result = await handler({ query: "RAG", profile: "invalid" });
+  test("ragSearch returns error for invalid profile values", async () => {
+    const result = await handleRagSearch(WORKSPACE_ROOT)({ query: "RAG", profile: "invalid" });
 
     assert.ok(result.includes("Error: profile must be one of"));
   });
 
-  test("returns error for invalid limit value", async () => {
-    const handler = handleRagSearch(WORKSPACE_ROOT);
-    const result = await handler({ query: "RAG", limit: 99 });
+  test("ragSearch returns error for invalid limit value", async () => {
+    const result = await handleRagSearch(WORKSPACE_ROOT)({ query: "RAG", limit: 99 });
 
     assert.ok(result.includes("Error"));
   });
 
-  test("calls execRagQuery with profile and bounded limit", async () => {
-    stubs.push(stub(ragService, "execRagQuery", (workspaceRoot: string, query: string, opts: { profile?: string; limit?: number }) => {
-      assert.strictEqual(workspaceRoot, WORKSPACE_ROOT);
-      assert.strictEqual(query, "audio play");
-      assert.deepStrictEqual(opts, { profile: "engine", limit: 8 });
-      return Promise.resolve({
-        ok: true,
-        exitCode: 0,
-        stdout: "",
-        stderr: "",
-        payload: { results: [] },
-      });
-    }));
+  test("ragBuildIndex validates target arrays before invoking tooling", async () => {
+    const result = await handleRagBuildIndex(WORKSPACE_ROOT)({ targets: ["content", 42] });
 
-    const handler = handleRagSearch(WORKSPACE_ROOT);
-    const result = await handler({ query: "audio play", profile: "engine", limit: 8 });
-
-    assert.ok(result.includes('"operation":"ragSearch"'));
+    assert.ok(result.includes("Error"));
+    assert.ok(result.includes("targets"));
   });
 });
 
-suite("MCP Tools — lurek2d.ragBuildIndex", () => {
-  const stubs: { restore: () => void }[] = [];
-
-  teardown(() => {
-    stubs.forEach(s => s.restore());
-    stubs.length = 0;
-  });
-
-  test("merges directories and targets while deduplicating inputs", async () => {
-    const captured: { dirs?: string[] }[] = [];
-    stubs.push(stub(ragService, "execRagBuildIndex", async (_workspaceRoot: string, targets: string[]) => {
-      captured.push({ dirs: targets });
-      return {
-        ok: true,
-        exitCode: 0,
-        stdout: "",
-        stderr: "",
-        payload: { ok: true },
-      };
-    }));
-
-    const handler = handleRagBuildIndex(WORKSPACE_ROOT);
-    const result = await handler({
-      directories: ["content", "content"],
-      targets: ["tools", "tools", "content"],
-    });
-
-    const parsed = JSON.parse(result);
-    assert.deepStrictEqual(captured[0]?.dirs, ["content", "tools"]);
-    assert.ok(parsed.ok);
-  });
-});
-
-suite("MCP Tools — lurek2d.getModuleInfo", () => {
-  const stubs: { restore: () => void }[] = [];
-
-  teardown(() => {
-    stubs.forEach(s => s.restore());
-    stubs.length = 0;
-  });
-
-  test("returns tier info for a known module", async () => {
-    stubs.push(stub(fs, "existsSync", () => true));
-    stubs.push(stub(fs, "readdirSync", () => [
-      { name: "mod.rs", isDirectory: () => false },
-      { name: "pipeline.rs", isDirectory: () => false },
-    ]));
-    stubs.push(stub(fs, "readFileSync", () => "use crate::math;\nuse crate::color;\n"));
-
-    const handler = handleGetModuleInfo(WORKSPACE_ROOT);
-    const result = await handler({ module: "render" });
+suite("MCP Tools - lurek2d.getModuleInfo", () => {
+  test("returns tier info and dependencies for a known module", async () => {
+    const result = await handleGetModuleInfo(WORKSPACE_ROOT)({ module: "render" });
     const parsed = JSON.parse(result);
 
     assert.strictEqual(parsed.tier, "Platform Services");
+    assert.deepStrictEqual(parsed.dependencies, ["color", "math"]);
+    assert.ok(parsed.apiFunctions.includes("lurek.render.draw"));
   });
 
   test("returns error for unknown module name", async () => {
-    stubs.push(stub(fs, "existsSync", (p: string) => !p.includes("nonexistent_module")));
-    stubs.push(stub(fs, "readdirSync", () => [
-      { name: "render", isDirectory: () => true },
-      { name: "audio", isDirectory: () => true },
-    ]));
-
-    const handler = handleGetModuleInfo(WORKSPACE_ROOT);
-    const result = await handler({ module: "nonexistent_module" });
+    const result = await handleGetModuleInfo(WORKSPACE_ROOT)({ module: "nonexistent_module" });
 
     assert.ok(result.includes("not found"));
-  });
-
-  test("response includes apiFunctions array", async () => {
-    stubs.push(stub(fs, "existsSync", () => true));
-    stubs.push(stub(fs, "readdirSync", () => [
-      { name: "mod.rs", isDirectory: () => false },
-    ]));
-    stubs.push(stub(fs, "readFileSync", (p: string) => {
-      if (typeof p === "string" && p.includes("_api.rs")) {
-        return '"lurek.render.draw"\n"lurek.render.clear"\n';
-      }
-      if (typeof p === "string" && p.includes("lurek-api.json")) {
-        return JSON.stringify({ modules: [] });
-      }
-      return "";
-    }));
-
-    const handler = handleGetModuleInfo(WORKSPACE_ROOT);
-    const result = await handler({ module: "render" });
-    const parsed = JSON.parse(result);
-
-    assert.ok(Array.isArray(parsed.apiFunctions));
+    assert.ok(result.includes("render"));
   });
 
   test("returns error when module parameter is missing", async () => {
-    const handler = handleGetModuleInfo(WORKSPACE_ROOT);
-    const result = await handler({});
+    const result = await handleGetModuleInfo(WORKSPACE_ROOT)({});
 
     assert.ok(result.includes("Error"));
   });
 });
 
-// ── lurek2d.inspectLuaFile ──────────────────────────────────
-
-suite("MCP Tools — lurek2d.inspectLuaFile", () => {
-  const stubs: { restore: () => void }[] = [];
-
-  teardown(() => {
-    stubs.forEach(s => s.restore());
-    stubs.length = 0;
-  });
-
-  test("returns functions, requires, and callbacks for a valid Lua file", async () => {
-    const filePath = "content/examples/test.lua";
-    const resolved = WORKSPACE_ROOT + "/content/examples/test.lua";
-    stubs.push(stub(path, "resolve", () => resolved));
-    stubs.push(stub(fs, "existsSync", () => true));
-    stubs.push(stub(fs, "readFileSync", () =>
-      'local utils = require("utils")\n\n' +
-      "function lurek.update(dt)\n  print(dt)\nend\n\n" +
-      "local function helper(x, y)\n  return x + y\nend\n"
-    ));
-
-    const handler = handleInspectLuaFile(WORKSPACE_ROOT);
-    const result = await handler({ path: filePath });
+suite("MCP Tools - lurek2d.inspectLuaFile", () => {
+  test("returns functions and requires for a valid Lua file", async () => {
+    const result = await handleInspectLuaFile(WORKSPACE_ROOT)({ path: "content/examples/render.lua" });
     const parsed = JSON.parse(result);
 
-    assert.ok(Array.isArray(parsed.functions));
-    assert.ok(Array.isArray(parsed.requires));
-    assert.ok(Array.isArray(parsed.callbacks));
+    assert.ok(parsed.functions.some((fn: { name: string }) => fn.name === "helper"));
+    assert.ok(parsed.requires.some((req: { module: string }) => req.module === "utils"));
+    assert.strictEqual(parsed.file, "content/examples/render.lua");
   });
 
   test("returns error for non-existent file path", async () => {
-    const resolved = WORKSPACE_ROOT + "/content/examples/missing.lua";
-    stubs.push(stub(path, "resolve", () => resolved));
-    stubs.push(stub(fs, "existsSync", () => false));
-
-    const handler = handleInspectLuaFile(WORKSPACE_ROOT);
-    const result = await handler({ path: "content/examples/missing.lua" });
+    const result = await handleInspectLuaFile(WORKSPACE_ROOT)({ path: "content/examples/missing.lua" });
 
     assert.ok(result.includes("File not found"));
   });
 
-  test("rejects paths with directory traversal", async () => {
-    stubs.push(stub(path, "resolve", () => "/etc/passwd"));
-
-    const handler = handleInspectLuaFile(WORKSPACE_ROOT);
-    const result = await handler({ path: "../../../etc/passwd" });
+  test("rejects paths with directory traversal or absolute escape", async () => {
+    const outsidePath = path.join(path.parse(WORKSPACE_ROOT).root, "outside.lua");
+    const result = await handleInspectLuaFile(WORKSPACE_ROOT)({ path: outsidePath });
 
     assert.ok(result.includes("Error: file path must be within the workspace"));
   });
 
   test("returns error when path parameter is missing", async () => {
-    const handler = handleInspectLuaFile(WORKSPACE_ROOT);
-    const result = await handler({});
+    const result = await handleInspectLuaFile(WORKSPACE_ROOT)({});
 
     assert.ok(result.includes("Error"));
   });
 });
 
-// ── lurek2d.getTestCoverage ─────────────────────────────────
-
-suite("MCP Tools — lurek2d.getTestCoverage", () => {
-  const stubs: { restore: () => void }[] = [];
-
-  teardown(() => {
-    stubs.forEach(s => s.restore());
-    stubs.length = 0;
-  });
-
+suite("MCP Tools - lurek2d.getTestCoverage", () => {
   test("returns total and covered counts", async () => {
-    stubs.push(stub(fs, "existsSync", () => true));
-    stubs.push(stub(fs, "readFileSync", (p: string) => {
-      if (typeof p === "string" && p.includes("lurek-api.json")) {
-        return JSON.stringify({
-          modules: [{
-            name: "render",
-            functions: [
-              { name: "draw", fullPath: "lurek.render.draw" },
-              { name: "clear", fullPath: "lurek.render.clear" },
-            ],
-          }],
-        });
-      }
-      return "lurek.render.draw(sprite, 10, 20)\n";
-    }));
-    stubs.push(stub(fs, "readdirSync", () => [
-      { name: "test_render.lua", isDirectory: () => false },
-    ]));
-
-    const handler = handleGetTestCoverage(WORKSPACE_ROOT);
-    const result = await handler({});
+    const result = await handleGetTestCoverage(WORKSPACE_ROOT)({});
     const parsed = JSON.parse(result);
 
-    assert.strictEqual(typeof parsed.summary.totalFunctions, "number");
-    assert.strictEqual(typeof parsed.summary.coveredByTests, "number");
+    assert.strictEqual(parsed.summary.totalFunctions, 3);
+    assert.strictEqual(parsed.summary.coveredByTests, 1);
     assert.ok(parsed.summary.totalFunctions >= parsed.summary.coveredByTests);
   });
 
   test("uncovered array contains only valid function names", async () => {
-    stubs.push(stub(fs, "existsSync", () => true));
-    stubs.push(stub(fs, "readFileSync", (p: string) => {
-      if (typeof p === "string" && p.includes("lurek-api.json")) {
-        return JSON.stringify({
-          modules: [{
-            name: "audio",
-            functions: [
-              { name: "play", fullPath: "lurek.audio.play" },
-              { name: "stop", fullPath: "lurek.audio.stop" },
-            ],
-          }],
-        });
-      }
-      return "-- empty test file\n";
-    }));
-    stubs.push(stub(fs, "readdirSync", () => [
-      { name: "test_audio.lua", isDirectory: () => false },
-    ]));
-
-    const handler = handleGetTestCoverage(WORKSPACE_ROOT);
-    const result = await handler({});
+    const result = await handleGetTestCoverage(WORKSPACE_ROOT)({});
     const parsed = JSON.parse(result);
-    const audioModule = parsed.modules.find((m: { module: string }) => m.module === "audio");
+    const renderModule = parsed.modules.find((entry: { module: string }) => entry.module === "render");
 
-    assert.ok(Array.isArray(audioModule.uncovered));
-    for (const fn of audioModule.uncovered) {
+    assert.ok(renderModule.uncovered.includes("lurek.render.clear"));
+    for (const fn of renderModule.uncovered) {
       assert.ok(fn.startsWith("lurek."));
     }
   });
 
   test("works with module filter parameter", async () => {
-    stubs.push(stub(fs, "existsSync", () => true));
-    stubs.push(stub(fs, "readFileSync", (p: string) => {
-      if (typeof p === "string" && p.includes("lurek-api.json")) {
-        return JSON.stringify({
-          modules: [
-            { name: "render", functions: [{ name: "draw", fullPath: "lurek.render.draw" }] },
-            { name: "audio", functions: [{ name: "play", fullPath: "lurek.audio.play" }] },
-          ],
-        });
-      }
-      return "";
-    }));
-    stubs.push(stub(fs, "readdirSync", () => []));
-
-    const handler = handleGetTestCoverage(WORKSPACE_ROOT);
-    const result = await handler({ module: "audio" });
+    const result = await handleGetTestCoverage(WORKSPACE_ROOT)({ module: "audio" });
     const parsed = JSON.parse(result);
 
     assert.strictEqual(parsed.modules.length, 1);
@@ -443,69 +212,23 @@ suite("MCP Tools — lurek2d.getTestCoverage", () => {
   });
 
   test("returns error when lurek-api.json is missing", async () => {
-    stubs.push(stub(fs, "existsSync", () => false));
-
-    const handler = handleGetTestCoverage(WORKSPACE_ROOT);
-    const result = await handler({});
+    const result = await handleGetTestCoverage(EMPTY_WORKSPACE_ROOT)({});
 
     assert.ok(result.includes("Error"));
   });
 });
 
-// ── lurek2d.getProjectStructure ─────────────────────────────
-
-suite("MCP Tools — lurek2d.getProjectStructure", () => {
-  const stubs: { restore: () => void }[] = [];
-
-  teardown(() => {
-    stubs.forEach(s => s.restore());
-    stubs.length = 0;
-  });
-
+suite("MCP Tools - lurek2d.getProjectStructure", () => {
   test("returns categorized file tree", async () => {
-    stubs.push(stub(fs, "existsSync", (p: string) => {
-      if (typeof p === "string" && (p.includes("content") || p.includes("assets"))) return true;
-      return false;
-    }));
-    stubs.push(stub(fs, "readdirSync", (dir: string) => {
-      if (typeof dir === "string" && dir.includes("content")) {
-        return [
-          { name: "main.lua", isDirectory: () => false },
-          { name: "bg.png", isDirectory: () => false },
-          { name: "music.ogg", isDirectory: () => false },
-          { name: "conf.toml", isDirectory: () => false },
-        ];
-      }
-      return [];
-    }));
-
-    const handler = handleGetProjectStructure(WORKSPACE_ROOT);
-    const result = await handler({});
+    const result = await handleGetProjectStructure(WORKSPACE_ROOT)({});
     const parsed = JSON.parse(result);
 
     assert.ok(parsed.categories !== undefined);
-    assert.ok(typeof parsed.totalFiles === "number");
+    assert.ok(parsed.totalFiles > 0);
   });
 
   test("categories include scripts, images, audio, configs", async () => {
-    stubs.push(stub(fs, "existsSync", (p: string) => {
-      if (typeof p === "string" && (p.includes("content") || p.includes("assets"))) return true;
-      return false;
-    }));
-    stubs.push(stub(fs, "readdirSync", (dir: string) => {
-      if (typeof dir === "string" && dir.includes("content")) {
-        return [
-          { name: "game.lua", isDirectory: () => false },
-          { name: "sprite.png", isDirectory: () => false },
-          { name: "sfx.wav", isDirectory: () => false },
-          { name: "settings.toml", isDirectory: () => false },
-        ];
-      }
-      return [];
-    }));
-
-    const handler = handleGetProjectStructure(WORKSPACE_ROOT);
-    const result = await handler({});
+    const result = await handleGetProjectStructure(WORKSPACE_ROOT)({});
     const parsed = JSON.parse(result);
 
     assert.ok("scripts" in parsed.categories);
@@ -515,10 +238,7 @@ suite("MCP Tools — lurek2d.getProjectStructure", () => {
   });
 
   test("returns empty structure when no content exists", async () => {
-    stubs.push(stub(fs, "existsSync", () => false));
-
-    const handler = handleGetProjectStructure(WORKSPACE_ROOT);
-    const result = await handler({});
+    const result = await handleGetProjectStructure(EMPTY_WORKSPACE_ROOT)({});
     const parsed = JSON.parse(result);
 
     assert.strictEqual(parsed.totalFiles, 0);

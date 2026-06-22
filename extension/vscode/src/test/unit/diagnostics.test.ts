@@ -239,20 +239,38 @@ suite("Diagnostics — wrong enum value", () => {
   });
 
   test("fuzzy match suggests closest valid value", () => {
-    // Simple edit-distance-1 check from the provider
-    function fuzzyMatch(word: string, candidates: string[]): string | undefined {
-      for (const c of candidates) {
-        if (c === word) return undefined;
-        if (Math.abs(c.length - word.length) <= 2) {
-          let diff = 0;
-          const len = Math.max(c.length, word.length);
-          for (let i = 0; i < len; i++) {
-            if ((c[i] ?? "") !== (word[i] ?? "")) diff++;
-          }
-          if (diff <= 2) return c;
+    function editDistance(left: string, right: string): number {
+      const rows = left.length + 1;
+      const cols = right.length + 1;
+      const dp: number[][] = Array.from({ length: rows }, () => Array(cols).fill(0));
+
+      for (let i = 0; i < rows; i++) dp[i][0] = i;
+      for (let j = 0; j < cols; j++) dp[0][j] = j;
+
+      for (let i = 1; i < rows; i++) {
+        for (let j = 1; j < cols; j++) {
+          const cost = left[i - 1] === right[j - 1] ? 0 : 1;
+          dp[i][j] = Math.min(
+            dp[i - 1][j] + 1,
+            dp[i][j - 1] + 1,
+            dp[i - 1][j - 1] + cost,
+          );
         }
       }
-      return undefined;
+
+      return dp[left.length][right.length];
+    }
+
+    function fuzzyMatch(word: string, candidates: string[]): string | undefined {
+      let best: { value: string; distance: number } | undefined;
+      for (const candidate of candidates) {
+        if (candidate === word) return undefined;
+        const distance = editDistance(word, candidate);
+        if (distance <= 2 && (!best || distance < best.distance)) {
+          best = { value: candidate, distance };
+        }
+      }
+      return best?.value;
     }
 
     assert.strictEqual(fuzzyMatch("fll", ["fill", "line"]), "fill");

@@ -703,7 +703,7 @@ export function handleGetModuleInfo(
     }
 
     // Also try loading from ApiDataService data
-    const apiDataPath = path.join(workspaceRoot, "extensions", "vscode", "data", "lurek-api.json");
+    const apiDataPath = resolveExtensionApiDataPath(workspaceRoot);
     if (fs.existsSync(apiDataPath) && apiFunctions.length === 0) {
       try {
         const raw = JSON.parse(fs.readFileSync(apiDataPath, "utf-8"));
@@ -814,7 +814,7 @@ export function handleGetTestCoverage(
     const filterModule = args.module as string | undefined;
 
     // Load API data
-    const apiDataPath = path.join(workspaceRoot, "extensions", "vscode", "data", "lurek-api.json");
+    const apiDataPath = resolveExtensionApiDataPath(workspaceRoot);
     if (!fs.existsSync(apiDataPath)) {
       return "Error: lurek-api.json not found. Run 'python tools/docs/gen_extension_api.py' first.";
     }
@@ -1011,4 +1011,12 @@ function collectFiles(dir: string, baseDir: string, maxDepth = 5): string[] {
 
   walk(dir, 0);
   return results;
+}
+
+function resolveExtensionApiDataPath(workspaceRoot: string): string {
+  const candidates = [
+    path.join(workspaceRoot, "extension", "vscode", "data", "lurek-api.json"),
+    path.join(workspaceRoot, "extensions", "vscode", "data", "lurek-api.json"),
+  ];
+  return candidates.find((candidate) => fs.existsSync(candidate)) ?? candidates[0];
 }

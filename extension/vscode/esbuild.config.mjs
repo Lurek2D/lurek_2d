@@ -1,10 +1,16 @@
 import * as esbuild from "esbuild";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { globSync } from "glob";
 
 const production = process.argv.includes("--production");
 const watch = process.argv.includes("--watch");
 const rootDir = path.dirname(fileURLToPath(import.meta.url));
+const unitTestEntryPoints = globSync("src/test/unit/*.test.ts", {
+  cwd: rootDir,
+  absolute: true,
+  windowsPathsNoEscape: true,
+});
 
 /** @type {esbuild.BuildOptions} */
 const buildOptions = {
@@ -27,10 +33,7 @@ const testOptions = {
   entryPoints: [
     path.join(rootDir, "src", "test", "runTest.ts"),
     path.join(rootDir, "src", "test", "suite", "index.ts"),
-    path.join(rootDir, "src", "test", "unit", "commandRegistration.test.ts"),
-    path.join(rootDir, "src", "test", "unit", "editorCatalog.test.ts"),
-    path.join(rootDir, "src", "test", "unit", "typeInference.test.ts"),
-    path.join(rootDir, "src", "test", "unit", "luaParser.test.ts"),
+    ...unitTestEntryPoints,
   ],
   bundle: true,
   absWorkingDir: rootDir,

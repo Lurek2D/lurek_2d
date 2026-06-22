@@ -378,6 +378,40 @@ function fuzzyMatch(word: string, candidates: string[]): string | undefined {
     return undefined;
 }
 
+function enumSuggestion(word: string, candidates: string[]): string | undefined {
+    let best: { value: string; distance: number } | undefined;
+    for (const candidate of candidates) {
+        if (candidate === word) return undefined;
+        const distance = editDistance(word, candidate);
+        if (distance <= 2 && (!best || distance < best.distance)) {
+            best = { value: candidate, distance };
+        }
+    }
+    return best?.value;
+}
+
+function editDistance(left: string, right: string): number {
+    const rows = left.length + 1;
+    const cols = right.length + 1;
+    const dp: number[][] = Array.from({ length: rows }, () => Array(cols).fill(0));
+
+    for (let i = 0; i < rows; i++) dp[i][0] = i;
+    for (let j = 0; j < cols; j++) dp[0][j] = j;
+
+    for (let i = 1; i < rows; i++) {
+        for (let j = 1; j < cols; j++) {
+            const cost = left[i - 1] === right[j - 1] ? 0 : 1;
+            dp[i][j] = Math.min(
+                dp[i - 1][j] + 1,
+                dp[i][j - 1] + 1,
+                dp[i - 1][j - 1] + cost,
+            );
+        }
+    }
+
+    return dp[left.length][right.length];
+}
+
 function checkWrongEnumValue(text: string, _apiData: ApiDataService): vscode.Diagnostic[] {
     const diagnostics: vscode.Diagnostic[] = [];
     const lines = text.split('\n');
@@ -391,7 +425,7 @@ function checkWrongEnumValue(text: string, _apiData: ApiDataService): vscode.Dia
             while ((m = rule.pattern.exec(line)) !== null) {
                 const value = m[1];
                 if (rule.valid.includes(value)) continue;
-                const suggestion = fuzzyMatch(value, rule.valid);
+                const suggestion = enumSuggestion(value, rule.valid);
                 const valueStart = line.indexOf(`"${value}"`, m.index) !== -1
                     ? line.indexOf(`"${value}"`, m.index) + 1
                     : line.indexOf(`'${value}'`, m.index) + 1;
