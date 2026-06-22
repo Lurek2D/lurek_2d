@@ -6,6 +6,7 @@ from __future__ import annotations
 import subprocess
 import sys
 import argparse
+import re
 from pathlib import Path
 
 
@@ -31,6 +32,31 @@ def is_generated_output(path: str) -> bool:
     return False
 
 
+def is_ignorable_docs_data_line(line: str) -> bool:
+    return re.fullmatch(r'\s*"(generated|generated_at)"\s*:\s*"[^"]+",?', line) is not None
+
+
+def has_only_ignored_diff(path: str) -> bool:
+    if not path.startswith("build/docs-data/") or not path.endswith(".json"):
+        return False
+    result = subprocess.run(
+        ["git", "diff", "--unified=0", "--", path],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+    )
+    changed_lines = []
+    for line in result.stdout.splitlines():
+        if not line or line.startswith(("diff --git", "index ", "--- ", "+++ ", "@@ ")):
+            continue
+        if line.startswith(("+", "-")):
+            changed_lines.append(line[1:])
+    return bool(result.stdout.strip()) and (
+        not changed_lines or all(is_ignorable_docs_data_line(line) for line in changed_lines)
+    )
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Regenerate docs and fail if generated outputs are stale")
     parser.parse_args()
@@ -47,6 +73,7 @@ def main() -> int:
         line
         for line in result.stdout.splitlines()
         if is_generated_output(line)
+        and not has_only_ignored_diff(line)
     ]
     if changed:
         print("Generated docs are stale:")

@@ -14,99 +14,99 @@
 - [Feature Systems](#feature-systems)
 - [Other](#other)
 
-Modules are grouped by runtime layer. Each module page includes its spec Purpose, spec Summary, examples, API overview, and related modules.
+Modules are grouped by runtime layer. Links open the canonical GitHub Pages module guides.
 
 ## Foundations
 
 | Module | Namespace | Purpose |
 |---|---|---|
-| [binary](Module-binary) | `lurek.binary` | The binary module is the byte-oriented data surface for users who need exact control over compact formats, protocol payloads, and structured runtime interchange. |
-| [color](Module-color) | `lurek.color` | The color module is the shared toolbox for defining, converting, and reusing runtime color values across the engine. |
-| [compute](Module-compute) | `lurek.compute` | The compute module is the dense numeric workspace for users who want array-heavy processing, analysis, and transformation logic inside the engine. |
-| [dataframe](Module-dataframe) | `lurek.dataframe` | The dataframe module is the engine's tabular-data workspace for users who want table-shaped information to be loaded, queried, transformed, summarized, and exported without leaving the runtime. |
-| [graph](Module-flownet) | `lurek.graph` | The flownet module is the logistics-graph simulation surface for users who want resources, items, queues, routes, and transformation rules to behave as one explicit networked system. |
-| [globe](Module-globe) | `lurek.globe` | The globe module is the planetary-map surface for users who want a world-scale spherical view to behave as a full gameplay and tooling system instead of a decorative background. |
-| [layout](Module-layout) | `lurek.layout` | The layout module is the automatic placement layer for users who need graph-like structures to become readable 2D diagrams without hand-positioning every node. |
-| [log](Module-log) | `lurek.log` | The log module is the common script-facing path for runtime diagnostics, so users can emit messages through one consistent logging surface instead of mixing ad hoc print styles. |
-| [math](Module-math) | `lurek.math` | The math module is the engine's shared numerical and geometric foundation for users who need consistent rules for coordinates, shapes, transforms, interpolation, sampling, and spatial reasoning across many feature areas. |
-| [patterns](Module-patterns) | `lurek.patterns` | The patterns module is the engine's reusable architectural toolkit for users who want common coordination, control-flow, storage, and utility structures implemented once and then reused across gameplay, tools, UI, AI, and automation features. |
-| [procgen](Module-procgen) | `lurek.procgen` | The procgen module is the engine's procedural-content creation toolkit for users who want maps, regions, structures, names, distributions, and generated support data to be produced inside the engine from reusable algorithms. |
-| [serial](Module-serialize) | `lurek.serial` | The serialize module is the format-translation surface for users who want several external data formats to map into one shared runtime value model. |
-| [svg](Module-vector) | `lurek.svg` | The vector module is the engine surface for scalable vector artwork, aimed at users who want SVG-style content to stay editable and resolution-independent for as long as possible. |
+| [binary](https://lurek2d.github.io/lurek_2d/modules/binary.html) | `lurek.binary` | The binary module is the byte-oriented data surface for users who need exact control over compact formats, protocol payloads, and structured runtime interchange. |
+| [color](https://lurek2d.github.io/lurek_2d/modules/color.html) | `lurek.color` | The color module is the shared toolbox for defining, converting, and reusing runtime color values across the engine. |
+| [compute](https://lurek2d.github.io/lurek_2d/modules/compute.html) | `lurek.compute` | The compute module is the dense numeric workspace for users who want array-heavy processing, analysis, and transformation logic inside the engine. |
+| [dataframe](https://lurek2d.github.io/lurek_2d/modules/dataframe.html) | `lurek.dataframe` | The dataframe module is the engine's tabular-data workspace for users who want table-shaped information to be loaded, queried, transformed, summarized, and exported without leaving the runtime. |
+| [graph](https://lurek2d.github.io/lurek_2d/modules/flownet.html) | `lurek.graph` | The flownet module is the logistics-graph simulation surface for users who want resources, items, queues, routes, and transformation rules to behave as one explicit networked system. |
+| [globe](https://lurek2d.github.io/lurek_2d/modules/globe.html) | `lurek.globe` | The globe module is the planetary-map surface for users who want a world-scale spherical view to behave as a full gameplay and tooling system instead of a decorative background. |
+| [layout](https://lurek2d.github.io/lurek_2d/modules/layout.html) | `lurek.layout` | The layout module is the automatic placement layer for users who need graph-like structures to become readable 2D diagrams without hand-positioning every node. |
+| [log](https://lurek2d.github.io/lurek_2d/modules/log.html) | `lurek.log` | The log module is the common script-facing path for runtime diagnostics, so users can emit messages through one consistent logging surface instead of mixing ad hoc print styles. |
+| [math](https://lurek2d.github.io/lurek_2d/modules/math.html) | `lurek.math` | The math module is the engine's shared numerical and geometric foundation for users who need consistent rules for coordinates, shapes, transforms, interpolation, sampling, and spatial reasoning across many feature areas. |
+| [patterns](https://lurek2d.github.io/lurek_2d/modules/patterns.html) | `lurek.patterns` | The patterns module is the engine's reusable architectural toolkit for users who want common coordination, control-flow, storage, and utility structures implemented once and then reused across gameplay, tools, UI, AI, and automation features. |
+| [procgen](https://lurek2d.github.io/lurek_2d/modules/procgen.html) | `lurek.procgen` | The procgen module is the engine's procedural-content creation toolkit for users who want maps, regions, structures, names, distributions, and generated support data to be produced inside the engine from reusable algorithms. |
+| [serial](https://lurek2d.github.io/lurek_2d/modules/serialize.html) | `lurek.serial` | The serialize module is the format-translation surface for users who want several external data formats to map into one shared runtime value model. |
+| [svg](https://lurek2d.github.io/lurek_2d/modules/vector.html) | `lurek.svg` | The vector module is the engine surface for scalable vector artwork, aimed at users who want SVG-style content to stay editable and resolution-independent for as long as possible. |
 
 ## Core Runtime
 
 | Module | Namespace | Purpose |
 |---|---|---|
-| [event](Module-event) | `lurek.event` | The event module is the central message-routing layer for users who want runtime systems to communicate without hardwiring direct dependencies. |
-| [filesystem](Module-filesystem) | `lurek.filesystem` | The filesystem module is the sandboxed storage surface for users who need file access without giving every script raw platform path power. |
-| [network](Module-network) | `lurek.network` | The network module is the engine's communication and session surface for users who need game state, tool messages, service calls, telemetry, or multiplayer traffic to move between processes or machines. |
-| [repl](Module-repl) | `lurek.repl` | The repl module is the interactive evaluation surface for users who want to inspect or execute Lua code live inside a running engine context. |
-| [runtime](Module-runtime) | `lurek.runtime` | The runtime module is the shared engine-state surface that many other modules depend on before they expose their own user-facing features. |
-| [thread](Module-thread) | `lurek.thread` | The thread module is the isolated-concurrency surface for projects that want background Lua work without violating the engine's VM and runtime-safety rules. |
-| [timer](Module-timer) | `lurek.timer` | The timer module is the shared time-management surface for users who need clocks, delayed callbacks, repeating work, and timing queries to behave consistently. |
+| [event](https://lurek2d.github.io/lurek_2d/modules/event.html) | `lurek.event` | The event module is the central message-routing layer for users who want runtime systems to communicate without hardwiring direct dependencies. |
+| [filesystem](https://lurek2d.github.io/lurek_2d/modules/filesystem.html) | `lurek.filesystem` | The filesystem module is the sandboxed storage surface for users who need file access without giving every script raw platform path power. |
+| [network](https://lurek2d.github.io/lurek_2d/modules/network.html) | `lurek.network` | The network module is the engine's communication and session surface for users who need game state, tool messages, service calls, telemetry, or multiplayer traffic to move between processes or machines. |
+| [repl](https://lurek2d.github.io/lurek_2d/modules/repl.html) | `lurek.repl` | The repl module is the interactive evaluation surface for users who want to inspect or execute Lua code live inside a running engine context. |
+| [runtime](https://lurek2d.github.io/lurek_2d/modules/runtime.html) | `lurek.runtime` | The runtime module is the shared engine-state surface that many other modules depend on before they expose their own user-facing features. |
+| [thread](https://lurek2d.github.io/lurek_2d/modules/thread.html) | `lurek.thread` | The thread module is the isolated-concurrency surface for projects that want background Lua work without violating the engine's VM and runtime-safety rules. |
+| [timer](https://lurek2d.github.io/lurek_2d/modules/timer.html) | `lurek.timer` | The timer module is the shared time-management surface for users who need clocks, delayed callbacks, repeating work, and timing queries to behave consistently. |
 
 ## Platform Services
 
 | Module | Namespace | Purpose |
 |---|---|---|
-| [audio](Module-audio) | `lurek.audio` | The audio module is the engine's main runtime sound system for users who need playback, routing, source state, timing, and mix control to live under one API. |
-| [camera](Module-camera) | `lurek.camera` | The camera module is the engine's shared view-control surface for users who need world motion to become readable player-facing framing. |
-| [dsp](Module-dsp) | `lurek.dsp` | The dsp module is the programmable signal-processing layer for users who need audio to be transformed, analyzed, or synthesized at runtime. |
-| [effect](Module-effect) | `lurek.effect` | The effect module is the post-processing surface for users who want final-frame styling to be configurable at runtime instead of buried in renderer internals. |
-| [font](Module-font) | `lurek.font` | The font module is the typography layer for users who need predictable text behavior in UI, HUDs, overlays, or retro-style screens. |
-| [image](Module-image) | `lurek.image` | The image module is the engine's CPU-side image workbench for users who need pixel data to be loaded, transformed, composed, inspected, compared, and exported under one coherent API. |
-| [input](Module-input) | `lurek.input` | The input module is the engine's unified control surface for users who need keyboard, mouse, gamepad, and touch state to behave as one coherent runtime system. |
-| [light](Module-light) | `lurek.light` | The light module is the engine's shared 2D lighting-data surface for users who need lights, occluders, shadows, and illumination behavior to remain structured before rendering. |
-| [midi](Module-midi) | `lurek.midi` | The midi module is the playback surface for projects that want symbolic music control instead of treating every cue as rendered audio. |
-| [physics](Module-physics) | `lurek.physics` | The physics module is the engine's 2D simulation authority for users who want motion, contact, shapes, joints, and collision queries to live inside one consistent world model. |
-| [render](Module-render) | `lurek.render` | The render module is the engine's central visual execution layer, responsible for turning high-level drawing intent from many other systems into concrete frame output on GPU-backed and software-backed paths. |
-| [visibility](Module-visibility) | `lurek.visibility` | The visibility module is the shared answer to fog-of-war, line-of-sight, and remembered exploration for users building map-aware gameplay. |
-| [window](Module-window) | `lurek.window` | The window module is the desktop-window control surface for users who need display selection, viewport scaling, mode changes, and OS-facing window behavior under one runtime API. |
+| [audio](https://lurek2d.github.io/lurek_2d/modules/audio.html) | `lurek.audio` | The audio module is the engine's main runtime sound system for users who need playback, routing, source state, timing, and mix control to live under one API. |
+| [camera](https://lurek2d.github.io/lurek_2d/modules/camera.html) | `lurek.camera` | The camera module is the engine's shared view-control surface for users who need world motion to become readable player-facing framing. |
+| [dsp](https://lurek2d.github.io/lurek_2d/modules/dsp.html) | `lurek.dsp` | The dsp module is the programmable signal-processing layer for users who need audio to be transformed, analyzed, or synthesized at runtime. |
+| [effect](https://lurek2d.github.io/lurek_2d/modules/effect.html) | `lurek.effect` | The effect module is the post-processing surface for users who want final-frame styling to be configurable at runtime instead of buried in renderer internals. |
+| [font](https://lurek2d.github.io/lurek_2d/modules/font.html) | `lurek.font` | The font module is the typography layer for users who need predictable text behavior in UI, HUDs, overlays, or retro-style screens. |
+| [image](https://lurek2d.github.io/lurek_2d/modules/image.html) | `lurek.image` | The image module is the engine's CPU-side image workbench for users who need pixel data to be loaded, transformed, composed, inspected, compared, and exported under one coherent API. |
+| [input](https://lurek2d.github.io/lurek_2d/modules/input.html) | `lurek.input` | The input module is the engine's unified control surface for users who need keyboard, mouse, gamepad, and touch state to behave as one coherent runtime system. |
+| [light](https://lurek2d.github.io/lurek_2d/modules/light.html) | `lurek.light` | The light module is the engine's shared 2D lighting-data surface for users who need lights, occluders, shadows, and illumination behavior to remain structured before rendering. |
+| [midi](https://lurek2d.github.io/lurek_2d/modules/midi.html) | `lurek.midi` | The midi module is the playback surface for projects that want symbolic music control instead of treating every cue as rendered audio. |
+| [physics](https://lurek2d.github.io/lurek_2d/modules/physics.html) | `lurek.physics` | The physics module is the engine's 2D simulation authority for users who want motion, contact, shapes, joints, and collision queries to live inside one consistent world model. |
+| [render](https://lurek2d.github.io/lurek_2d/modules/render.html) | `lurek.render` | The render module is the engine's central visual execution layer, responsible for turning high-level drawing intent from many other systems into concrete frame output on GPU-backed and software-backed paths. |
+| [visibility](https://lurek2d.github.io/lurek_2d/modules/visibility.html) | `lurek.visibility` | The visibility module is the shared answer to fog-of-war, line-of-sight, and remembered exploration for users building map-aware gameplay. |
+| [window](https://lurek2d.github.io/lurek_2d/modules/window.html) | `lurek.window` | The window module is the desktop-window control surface for users who need display selection, viewport scaling, mode changes, and OS-facing window behavior under one runtime API. |
 
 ## Feature Systems
 
 | Module | Namespace | Purpose |
 |---|---|---|
-| [agent](Module-agent) | `lurek.agent` | The agent module is the engine's AI-assistant surface for users who want LLM-backed behavior inside the runtime without building transport, memory, and orchestration infrastructure from scratch. |
-| [ai](Module-ai) | `lurek.ai` | The ai module is the engine's gameplay-intelligence surface for users who need actors to perceive, decide, coordinate, and adapt in ways that go far beyond hard-coded if-then behavior. |
-| [animation](Module-animation) | `lurek.animation` | The animation module is the engine's time-based motion system for users who need sprites, poses, and related visual states to advance through structured runtime playback. |
-| [asset](Module-asset) | `lurek.asset` | The asset module is the shared runtime catalog for loaded resources, so users can work with stable handles instead of repeatedly reopening raw file paths. |
-| [automation](Module-automation) | `lurek.automation` | The automation module is the scripted replay layer for users who want deterministic QA, repeatable demos, or regression-oriented gameplay checks. |
-| [charts](Module-charts) | `lurek.charts` | The charts module is the engine's in-runtime data-visualization surface for users who want tables, counters, time series, and distributions to become readable graphics. |
-| [cinematic](Module-cinematic) | `lurek.cinematic` | The cinematic module is the timeline authoring surface for cutscenes, scripted reveals, and other multi-system sequences. |
-| [cursor](Module-cursor) | `lurek.cursor` | The cursor module is the pointer-behavior surface for users who want the cursor to feel like part of the game UX rather than a fixed OS artifact. |
-| [dialog](Module-dialog) | `lurek.dialog` | The dialog module is the conversation-runtime surface for users building branching narrative, tutorial flows, reactive chatter, or choice-driven exchanges. |
-| [ecs](Module-ecs) | `lurek.ecs` | The ecs module is the engine's entity-component world model for users who want gameplay state to scale through entities, components, queries, and scheduled systems. |
-| [grep](Module-grep) | `lurek.grep` | The grep module is the scriptable text-search surface for users who want to scan project files, logs, or structured content from inside the engine environment. |
-| [html](Module-html) | `lurek.html` | The html module is the in-engine document-style UI surface for users who want markup, styles, and DOM-like interaction inside the runtime. |
-| [i18n](Module-i18n) | `lurek.i18n` | The i18n module is the localization surface for projects that want translated text, locale-aware formatting, and language switching to behave as one system. |
-| [learning](Module-learning) | `lurek.learning` | The learning module is the engine's machine-learning and adaptive-policy surface for users who want experimentation, inference, and lightweight training loops to live inside the same runtime as gameplay and tooling code. |
-| [mapblock](Module-mapblock) | `lurek.mapblock` | The mapblock module is the engine's modular map-assembly surface for users who want larger spaces built from reusable authored blocks instead of from one monolithic generator. |
-| [minimap](Module-minimap) | `lurek.minimap` | The minimap module is the HUD-scale map surface for users who want world state, fog, markers, and view tracking to become a compact readable overlay. |
-| [mods](Module-mods) | `lurek.mods` | The mods module is the governed extension surface for projects that want external content packs to behave like controlled runtime extensions instead of unrestricted code drops. |
-| [overlay](Module-overlay) | `lurek.overlay` | The overlay module is the engine's screen-layer presentation surface for users who want weather, atmosphere, transitions, and other scene-wide visual treatments to behave as one coherent system. |
-| [parallax](Module-parallax) | `lurek.parallax` | The parallax module is the layered-background surface for projects that want depth and atmospheric motion without full 3D simulation. |
-| [particle](Module-particle) | `lurek.particle` | The particle module is the pooled visual-effects system for users who want smoke, sparks, rain, trails, bursts, and other transient visuals to behave like one reusable runtime feature. |
-| [pathfind](Module-pathfind) | `lurek.pathfind` | The pathfind module is the engine's navigation and movement-analysis surface for users who need more than one hard-coded shortest-path helper. |
-| [pipeline](Module-pipeline) | `lurek.pipeline` | The pipeline module is the engine's workflow-orchestration surface for users who want multi-step processing to behave like explicit directed workflows instead of loosely nested call sequences. |
-| [province](Module-province) | `lurek.province` | The province module is the engine's territory-region system for users who want named areas, borders, ownership, routing, and province-like gameplay state to behave as one native feature. |
-| [raycaster](Module-raycaster) | `lurek.raycaster` | The raycaster module is the engine's pseudo-3D first-person view system for users who want corridor shooters, dungeon crawlers, exploration views, or tactical previews built from structured 2D world data instead of from a full freeform 3D engine stack. |
-| [save](Module-save) | `lurek.save` | The save module is the persistence-lifecycle surface for users who want game state to be stored, versioned, and restored as a managed workflow instead of a raw file dump. |
-| [scene](Module-scene) | `lurek.scene` | The scene module is the high-level flow coordinator for users who want menus, gameplay states, overlays, pause layers, and transitions to behave like one ordered stack instead of a collection of unrelated toggles. |
-| [spine](Module-spine) | `lurek.spine` | The spine module is the skeletal-animation surface for users who want bone-based rigs, slots, skins, and timeline-driven pose changes inside the engine. |
-| [sprite](Module-sprite) | `lurek.sprite` | The sprite module is the engine's textured-2D surface for users who want single sprites, sheets, atlases, scalable panels, and batched instances to share one coherent runtime model. |
-| [terminal](Module-terminal) | `lurek.terminal` | The terminal module is the engine's character-grid interface surface for users who want text-mode displays, debug consoles, command panels, or roguelike-style presentation. |
-| [tilemap](Module-tilemap) | `lurek.tilemap` | The tilemap module is the engine's full grid-world framework for users who want tile-based spaces to be authored, generated, rendered, queried, and traversed through one reusable system rather than through several disconnected helpers. |
-| [tween](Module-tween) | `lurek.tween` | The tween module is the engine's interpolation and motion-sequencing surface for users who want values to change over time without hand-writing frame-by-frame update loops. |
-| [ui](Module-ui) | `lurek.ui` | The ui module is the engine's retained-interface system for users who want menus, HUDs, editors, overlays, and tool panels to behave like one persistent application layer instead of a loose pile of draw calls and ad hoc click tests. |
-| [validator](Module-validator) | `lurek.validator` | The validator module is the content-checking surface for users who want assets, imports, and API usage to be verified as a structured workflow instead of informal manual review. |
+| [agent](https://lurek2d.github.io/lurek_2d/modules/agent.html) | `lurek.agent` | The agent module is the engine's AI-assistant surface for users who want LLM-backed behavior inside the runtime without building transport, memory, and orchestration infrastructure from scratch. |
+| [ai](https://lurek2d.github.io/lurek_2d/modules/ai.html) | `lurek.ai` | The ai module is the engine's gameplay-intelligence surface for users who need actors to perceive, decide, coordinate, and adapt in ways that go far beyond hard-coded if-then behavior. |
+| [animation](https://lurek2d.github.io/lurek_2d/modules/animation.html) | `lurek.animation` | The animation module is the engine's time-based motion system for users who need sprites, poses, and related visual states to advance through structured runtime playback. |
+| [asset](https://lurek2d.github.io/lurek_2d/modules/asset.html) | `lurek.asset` | The asset module is the shared runtime catalog for loaded resources, so users can work with stable handles instead of repeatedly reopening raw file paths. |
+| [automation](https://lurek2d.github.io/lurek_2d/modules/automation.html) | `lurek.automation` | The automation module is the scripted replay layer for users who want deterministic QA, repeatable demos, or regression-oriented gameplay checks. |
+| [charts](https://lurek2d.github.io/lurek_2d/modules/charts.html) | `lurek.charts` | The charts module is the engine's in-runtime data-visualization surface for users who want tables, counters, time series, and distributions to become readable graphics. |
+| [cinematic](https://lurek2d.github.io/lurek_2d/modules/cinematic.html) | `lurek.cinematic` | The cinematic module is the timeline authoring surface for cutscenes, scripted reveals, and other multi-system sequences. |
+| [cursor](https://lurek2d.github.io/lurek_2d/modules/cursor.html) | `lurek.cursor` | The cursor module is the pointer-behavior surface for users who want the cursor to feel like part of the game UX rather than a fixed OS artifact. |
+| [dialog](https://lurek2d.github.io/lurek_2d/modules/dialog.html) | `lurek.dialog` | The dialog module is the conversation-runtime surface for users building branching narrative, tutorial flows, reactive chatter, or choice-driven exchanges. |
+| [ecs](https://lurek2d.github.io/lurek_2d/modules/ecs.html) | `lurek.ecs` | The ecs module is the engine's entity-component world model for users who want gameplay state to scale through entities, components, queries, and scheduled systems. |
+| [grep](https://lurek2d.github.io/lurek_2d/modules/grep.html) | `lurek.grep` | The grep module is the scriptable text-search surface for users who want to scan project files, logs, or structured content from inside the engine environment. |
+| [html](https://lurek2d.github.io/lurek_2d/modules/html.html) | `lurek.html` | The html module is the in-engine document-style UI surface for users who want markup, styles, and DOM-like interaction inside the runtime. |
+| [i18n](https://lurek2d.github.io/lurek_2d/modules/i18n.html) | `lurek.i18n` | The i18n module is the localization surface for projects that want translated text, locale-aware formatting, and language switching to behave as one system. |
+| [learning](https://lurek2d.github.io/lurek_2d/modules/learning.html) | `lurek.learning` | The learning module is the engine's machine-learning and adaptive-policy surface for users who want experimentation, inference, and lightweight training loops to live inside the same runtime as gameplay and tooling code. |
+| [mapblock](https://lurek2d.github.io/lurek_2d/modules/mapblock.html) | `lurek.mapblock` | The mapblock module is the engine's modular map-assembly surface for users who want larger spaces built from reusable authored blocks instead of from one monolithic generator. |
+| [minimap](https://lurek2d.github.io/lurek_2d/modules/minimap.html) | `lurek.minimap` | The minimap module is the HUD-scale map surface for users who want world state, fog, markers, and view tracking to become a compact readable overlay. |
+| [mods](https://lurek2d.github.io/lurek_2d/modules/mods.html) | `lurek.mods` | The mods module is the governed extension surface for projects that want external content packs to behave like controlled runtime extensions instead of unrestricted code drops. |
+| [overlay](https://lurek2d.github.io/lurek_2d/modules/overlay.html) | `lurek.overlay` | The overlay module is the engine's screen-layer presentation surface for users who want weather, atmosphere, transitions, and other scene-wide visual treatments to behave as one coherent system. |
+| [parallax](https://lurek2d.github.io/lurek_2d/modules/parallax.html) | `lurek.parallax` | The parallax module is the layered-background surface for projects that want depth and atmospheric motion without full 3D simulation. |
+| [particle](https://lurek2d.github.io/lurek_2d/modules/particle.html) | `lurek.particle` | The particle module is the pooled visual-effects system for users who want smoke, sparks, rain, trails, bursts, and other transient visuals to behave like one reusable runtime feature. |
+| [pathfind](https://lurek2d.github.io/lurek_2d/modules/pathfind.html) | `lurek.pathfind` | The pathfind module is the engine's navigation and movement-analysis surface for users who need more than one hard-coded shortest-path helper. |
+| [pipeline](https://lurek2d.github.io/lurek_2d/modules/pipeline.html) | `lurek.pipeline` | The pipeline module is the engine's workflow-orchestration surface for users who want multi-step processing to behave like explicit directed workflows instead of loosely nested call sequences. |
+| [province](https://lurek2d.github.io/lurek_2d/modules/province.html) | `lurek.province` | The province module is the engine's territory-region system for users who want named areas, borders, ownership, routing, and province-like gameplay state to behave as one native feature. |
+| [raycaster](https://lurek2d.github.io/lurek_2d/modules/raycaster.html) | `lurek.raycaster` | The raycaster module is the engine's pseudo-3D first-person view system for users who want corridor shooters, dungeon crawlers, exploration views, or tactical previews built from structured 2D world data instead of from a full freeform 3D engine stack. |
+| [save](https://lurek2d.github.io/lurek_2d/modules/save.html) | `lurek.save` | The save module is the persistence-lifecycle surface for users who want game state to be stored, versioned, and restored as a managed workflow instead of a raw file dump. |
+| [scene](https://lurek2d.github.io/lurek_2d/modules/scene.html) | `lurek.scene` | The scene module is the high-level flow coordinator for users who want menus, gameplay states, overlays, pause layers, and transitions to behave like one ordered stack instead of a collection of unrelated toggles. |
+| [spine](https://lurek2d.github.io/lurek_2d/modules/spine.html) | `lurek.spine` | The spine module is the skeletal-animation surface for users who want bone-based rigs, slots, skins, and timeline-driven pose changes inside the engine. |
+| [sprite](https://lurek2d.github.io/lurek_2d/modules/sprite.html) | `lurek.sprite` | The sprite module is the engine's textured-2D surface for users who want single sprites, sheets, atlases, scalable panels, and batched instances to share one coherent runtime model. |
+| [terminal](https://lurek2d.github.io/lurek_2d/modules/terminal.html) | `lurek.terminal` | The terminal module is the engine's character-grid interface surface for users who want text-mode displays, debug consoles, command panels, or roguelike-style presentation. |
+| [tilemap](https://lurek2d.github.io/lurek_2d/modules/tilemap.html) | `lurek.tilemap` | The tilemap module is the engine's full grid-world framework for users who want tile-based spaces to be authored, generated, rendered, queried, and traversed through one reusable system rather than through several disconnected helpers. |
+| [tween](https://lurek2d.github.io/lurek_2d/modules/tween.html) | `lurek.tween` | The tween module is the engine's interpolation and motion-sequencing surface for users who want values to change over time without hand-writing frame-by-frame update loops. |
+| [ui](https://lurek2d.github.io/lurek_2d/modules/ui.html) | `lurek.ui` | The ui module is the engine's retained-interface system for users who want menus, HUDs, editors, overlays, and tool panels to behave like one persistent application layer instead of a loose pile of draw calls and ad hoc click tests. |
+| [validator](https://lurek2d.github.io/lurek_2d/modules/validator.html) | `lurek.validator` | The validator module is the content-checking surface for users who want assets, imports, and API usage to be verified as a structured workflow instead of informal manual review. |
 
 ## Other
 
 | Module | Namespace | Purpose |
 |---|---|---|
-| [AGENTS](Module-AGENTS) | `lurek.AGENTS` | Lurek2D runtime module. |
-| [engine](Module-engine) | `lurek.engine` | Registers the lurek.engine Lua API for engine timing, profiling, memory inspection, and runtime metrics. |
-| [svg](Module-svg) | `lurek.svg` | Registers the lurek.svg Lua API for vector SVG graphics, userdata wrappers, and script-side SVG control. |
-| [runtime](Module-system) | `lurek.runtime` | Registers the lurek.system Lua API for host utilities, process helpers, and runtime environment queries. |
+| [AGENTS](https://lurek2d.github.io/lurek_2d/modules/AGENTS.html) | `lurek.AGENTS` | Lurek2D runtime module. |
+| [engine](https://lurek2d.github.io/lurek_2d/modules/engine.html) | `lurek.engine` | Registers the lurek.engine Lua API for engine timing, profiling, memory inspection, and runtime metrics. |
+| [svg](https://lurek2d.github.io/lurek_2d/modules/svg.html) | `lurek.svg` | Registers the lurek.svg Lua API for vector SVG graphics, userdata wrappers, and script-side SVG control. |
+| [runtime](https://lurek2d.github.io/lurek_2d/modules/system.html) | `lurek.runtime` | Registers the lurek.system Lua API for host utilities, process helpers, and runtime environment queries. |

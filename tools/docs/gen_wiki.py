@@ -163,6 +163,7 @@ class Context:
     api_stub_lines: int
     callable_stubs: dict[str, str]
     class_stubs: dict[str, str]
+    module_pages_enabled: bool = True
 
 
 def read(path: Path) -> str:
@@ -230,6 +231,13 @@ def wiki(slug: str, label: str | None = None) -> str:
 
 def page_link(slug: str, label: str | None = None) -> str:
     return wiki(slug, label)
+
+
+def module_link(context: Context, module: str, label: str | None = None) -> str:
+    display = label if label is not None else module_label(context, module)
+    if context.module_pages_enabled:
+        return page_link("Module-" + module, display)
+    return f"[{display}](https://lurek2d.github.io/lurek_2d/modules/{module}.html)"
 
 
 def sec(name: str) -> str:
@@ -1212,7 +1220,7 @@ def first_game_page(context: Context) -> Page:
         "## Next Steps",
         "",
         f"- {wiki('Project-Structure', 'Project Structure')}",
-        f"- {wiki('Module-input', 'input')}, {wiki('Module-render', 'render')}, {wiki('Module-audio', 'audio')}",
+        f"- {module_link(context, 'input', 'input')}, {module_link(context, 'render', 'render')}, {module_link(context, 'audio', 'audio')}",
     ]
     return Page("First-Game.md", page("First Game", body))
 
@@ -1272,14 +1280,18 @@ def runtime_page(context: Context) -> Page:
 
 
 def modules_page(context: Context) -> Page:
-    body = ["Modules are grouped by runtime layer. Each module page includes its spec Purpose, spec Summary, examples, API overview, and related modules.", ""]
+    if context.module_pages_enabled:
+        intro = "Modules are grouped by runtime layer. Each module page includes its spec Purpose, spec Summary, examples, API overview, and related modules."
+    else:
+        intro = "Modules are grouped by runtime layer. Links open the canonical GitHub Pages module guides."
+    body = [intro, ""]
     for group in GROUPS + ["Other"]:
         group_modules = [module for module in context.modules if module_group(context, module) == group]
         if not group_modules:
             continue
         body += [f"## {group}", "", "| Module | Namespace | Purpose |", "|---|---|---|"]
         for module in group_modules:
-            body.append(f"| {page_link('Module-' + module, module_label(context, module))} | `{namespace(context, module) or '-'}` | {table_cell(module_description(context, module))} |")
+            body.append(f"| {module_link(context, module, module_label(context, module))} | `{namespace(context, module) or '-'}` | {table_cell(module_description(context, module))} |")
         body.append("")
     return Page("Modules.md", page("Modules", body))
 
@@ -1305,13 +1317,13 @@ def api_page(context: Context) -> Page:
         "",
         "## Module Map",
         "",
-        "Use module pages for cookbook-level orientation, then open the full API reference for exact signatures.",
+        "Use the module guides for cookbook-level orientation, then open the full API reference for exact signatures.",
         "",
         "| API | Purpose |",
         "|---|---|",
     ]
     for module in sorted(context.api_modules):
-        body.append(f"| {page_link('Module-' + module, namespace(context, module) or ('lurek.' + module))} | {table_cell(module_description(context, module))} |")
+        body.append(f"| {module_link(context, module, namespace(context, module) or ('lurek.' + module))} | {table_cell(module_description(context, module))} |")
     return Page("API.md", page("API", body))
 
 
@@ -1344,7 +1356,7 @@ def games_page(context: Context) -> Page:
     for category in sorted(set(game.category for game in context.games), key=str.lower):
         body += [f"## {category}", ""]
         for game in [item for item in context.games if item.category == category]:
-            module_links = ", ".join(page_link("Module-" + module, module) for module in game.modules[:8])
+            module_links = ", ".join(module_link(context, module, module) for module in game.modules[:8])
             if len(game.modules) > 8:
                 module_links += f", +{len(game.modules) - 8}"
             desc = table_cell(game.description or "No description available.")
@@ -1387,7 +1399,7 @@ def glossary_page(context: Context) -> Page:
         for class_name, class_data in classes(api_module):
             class_rows.append((class_name, module, clean_text(str(class_data.get("description", "") or ""))))
     for class_name, module, description in sorted(class_rows, key=lambda item: item[0].lower())[:120]:
-        body.append(f"- `{class_name}` ({wiki('Module-' + module, 'lurek.' + module)}){' - ' + description if description else ''}")
+        body.append(f"- `{class_name}` ({module_link(context, module, 'lurek.' + module)}){' - ' + description if description else ''}")
     return Page("Glossary.md", page("Glossary", body))
 
 
@@ -1405,6 +1417,7 @@ def footer_page(context: Context) -> Page:
 
 
 def build_pages(context: Context, skip_module_pages: bool = False) -> list[Page]:
+    context.module_pages_enabled = not skip_module_pages
     pages = [home_page(context), start_page(context), first_game_page(context), project_page(context), callbacks_page(context), runtime_page(context), modules_page(context), api_page(context), examples_page(context), games_page(context), lureksome_page(context), glossary_page(context)]
     if not skip_module_pages:
         pages += [module_page(context, module) for module in context.modules]

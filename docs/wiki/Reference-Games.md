@@ -30,7 +30,7 @@ Catalog source: [content/games/README.md](../blob/main/content/games/README.md)
 
 _Dowodź oddziałem żołnierzy w niebezpiecznej dżungli — kieruj ruchem, prowadź ogień zaporowy i rzucaj granatami taktycznymi, pamiętając, że każda strata w ludziach jest bezpowrotna._
 
-**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [ui](Module-ui), [window](Module-window)
+**Modules:** [automation](https://lurek2d.github.io/lurek_2d/modules/automation.html), [event](https://lurek2d.github.io/lurek_2d/modules/event.html), [input](https://lurek2d.github.io/lurek_2d/modules/input.html), [render](https://lurek2d.github.io/lurek_2d/modules/render.html), [timer](https://lurek2d.github.io/lurek_2d/modules/timer.html), [ui](https://lurek2d.github.io/lurek_2d/modules/ui.html), [window](https://lurek2d.github.io/lurek_2d/modules/window.html)
 
 ### [Dungeon Crawler](../tree/main/content/games/dungeon_crawler)
 
@@ -38,7 +38,7 @@ _Dowodź oddziałem żołnierzy w niebezpiecznej dżungli — kieruj ruchem, pro
 
 _Eksploruj trójwymiarowe korytarze lochów z perspektywy pierwszej osoby (FPP) — przemierzaj labirynt przy świetle pochodni, odkrywaj mgłę wojny na minimapie i zbieraj mistyczne kule._
 
-**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [raycaster](Module-raycaster), [render](Module-render), [timer](Module-timer), [ui](Module-ui), [window](Module-window)
+**Modules:** [automation](https://lurek2d.github.io/lurek_2d/modules/automation.html), [event](https://lurek2d.github.io/lurek_2d/modules/event.html), [input](https://lurek2d.github.io/lurek_2d/modules/input.html), [raycaster](https://lurek2d.github.io/lurek_2d/modules/raycaster.html), [render](https://lurek2d.github.io/lurek_2d/modules/render.html), [timer](https://lurek2d.github.io/lurek_2d/modules/timer.html), [ui](https://lurek2d.github.io/lurek_2d/modules/ui.html), [window](https://lurek2d.github.io/lurek_2d/modules/window.html)
 
 ### [Europa Universalis 2 Lite](../tree/main/content/games/eu2)
 
@@ -46,7 +46,7 @@ _Eksploruj trójwymiarowe korytarze lochów z perspektywy pierwszej osoby (FPP) 
 
 **Engine:** Lurek2D
 
-**Modules:** [automation](Module-automation), [event](Module-event), [filesystem](Module-filesystem), [input](Module-input), [log](Module-log), [province](Module-province), [render](Module-render), [ui](Module-ui), +1
+**Modules:** [automation](https://lurek2d.github.io/lurek_2d/modules/automation.html), [event](https://lurek2d.github.io/lurek_2d/modules/event.html), [filesystem](https://lurek2d.github.io/lurek_2d/modules/filesystem.html), [input](https://lurek2d.github.io/lurek_2d/modules/input.html), [log](https://lurek2d.github.io/lurek_2d/modules/log.html), [province](https://lurek2d.github.io/lurek_2d/modules/province.html), [render](https://lurek2d.github.io/lurek_2d/modules/render.html), [ui](https://lurek2d.github.io/lurek_2d/modules/ui.html), +1
 
 ### [Hex Logistics](../tree/main/content/games/hex_logistics)
 
@@ -54,7 +54,7 @@ _Eksploruj trójwymiarowe korytarze lochów z perspektywy pierwszej osoby (FPP) 
 
 Hex Logistics is a Lurek2D port of a Gemini React canvas prototype. Fly a construction ship over a procedural hex sector, pay metal to construct buildings, queue drones from factories, and tune building priorities while
 
-**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [math](Module-math), [render](Module-render), [tilemap](Module-tilemap), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](https://lurek2d.github.io/lurek_2d/modules/automation.html), [event](https://lurek2d.github.io/lurek_2d/modules/event.html), [input](https://lurek2d.github.io/lurek_2d/modules/input.html), [math](https://lurek2d.github.io/lurek_2d/modules/math.html), [render](https://lurek2d.github.io/lurek_2d/modules/render.html), [tilemap](https://lurek2d.github.io/lurek_2d/modules/tilemap.html), [timer](https://lurek2d.github.io/lurek_2d/modules/timer.html), [window](https://lurek2d.github.io/lurek_2d/modules/window.html)
 
 ### [Household Finance Lab](../tree/main/content/games/finance_app)
 
@@ -62,7 +62,7 @@ Hex Logistics is a Lurek2D port of a Gemini React canvas prototype. Fly a constr
 
 _Kompleksowe laboratorium finansów domowych — analityczny dashboard oparty o bazy danych SQL, biblioteki Dataframe, zaawansowane wykresy statystyczne oraz interaktywne widżety UI._
 
-**Modules:** [filesystem](Module-filesystem), [render](Module-render), [save](Module-save), [ui](Module-ui), [window](Module-window)
+**Modules:** [filesystem](https://lurek2d.github.io/lurek_2d/modules/filesystem.html), [render](https://lurek2d.github.io/lurek_2d/modules/render.html), [save](https://lurek2d.github.io/lurek_2d/modules/save.html), [ui](https://lurek2d.github.io/lurek_2d/modules/ui.html), [window](https://lurek2d.github.io/lurek_2d/modules/window.html)
 
 ### [Music Composer](../tree/main/content/games/music_composer)
 
@@ -70,7 +70,7 @@ _Kompleksowe laboratorium finansów domowych — analityczny dashboard oparty o 
 
 Visual piano roll music sequencer. Place and remove notes on a 32-beat × 24-note grid across three colored tracks, then play back in a looping sweep with smooth cursor animation and particle effects.
 
-**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](https://lurek2d.github.io/lurek_2d/modules/automation.html), [camera](https://lurek2d.github.io/lurek_2d/modules/camera.html), [event](https://lurek2d.github.io/lurek_2d/modules/event.html), [input](https://lurek2d.github.io/lurek_2d/modules/input.html), [particle](https://lurek2d.github.io/lurek_2d/modules/particle.html), [render](https://lurek2d.github.io/lurek_2d/modules/render.html), [timer](https://lurek2d.github.io/lurek_2d/modules/timer.html), [window](https://lurek2d.github.io/lurek_2d/modules/window.html)
 
 ### [Sensible Soccer](../tree/main/content/games/sensible_soccer)
 
@@ -78,4 +78,4 @@ Visual piano roll music sequencer. Place and remove notes on a 32-beat × 24-not
 
 _Niezwykle szybka, dynamiczna retro-gra piłkarska — przejmij kontrolę nad 5-osobową drużyną, stosuj podania i wślizgi taktyczne, i pokonaj komputer w emocjonującym meczu z fizyką piłki._
 
-**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [ui](Module-ui), [window](Module-window)
+**Modules:** [automation](https://lurek2d.github.io/lurek_2d/modules/automation.html), [event](https://lurek2d.github.io/lurek_2d/modules/event.html), [input](https://lurek2d.github.io/lurek_2d/modules/input.html), [render](https://lurek2d.github.io/lurek_2d/modules/render.html), [timer](https://lurek2d.github.io/lurek_2d/modules/timer.html), [ui](https://lurek2d.github.io/lurek_2d/modules/ui.html), [window](https://lurek2d.github.io/lurek_2d/modules/window.html)

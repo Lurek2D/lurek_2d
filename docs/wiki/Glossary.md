@@ -24,123 +24,123 @@ The glossary collects terms that appear across module and API pages.
 
 ## Lua API Types
 
-- `LAabbTree` ([lurek.math](Module-math)) - Lua-side wrapper for an AABB tree spatial index.
-- `LAccordion` ([lurek.ui](Module-ui)) - Adds accordion-specific methods to an accordion widget table.
-- `LAdsrEnvelope` ([lurek.dsp](Module-dsp)) - Lua-visible ADSR envelope object for sample stepping and buffer shaping.
-- `LAgent` ([lurek.agent](Module-agent)) - Lua-side handle for a single LLM Agent.
-- `LAgentChat` ([lurek.agent](Module-agent)) - Lua-side handle for a stateful LLM chat session.
-- `LAgentManager` ([lurek.agent](Module-agent)) - Lua-side handle for managing multiple LLM Agents in parallel.
-- `LAgentMemory` ([lurek.agent](Module-agent)) - Lua-side handle for a bundled working+episodic+semantic memory with optional persistence.
-- `LAgentTemplate` ([lurek.agent](Module-agent)) - Lua-side handle for a `{key}` placeholder prompt template.
-- `LAIBlackboard` ([lurek.ai](Module-ai)) - Lua handle for a typed AI blackboard storing local key-value facts.
-- `LAIDirector` ([lurek.ai](Module-ai)) - Lua handle for an AI director that tracks encounter tension and pacing factors.
-- `LAIFlowField` ([lurek.pathfind](Module-pathfind)) - Lua-side wrapper for an AI flow field over a path grid.
-- `LAILod` ([lurek.ai](Module-ai)) - Lua handle for distance-based AI level-of-detail tier selection.
-- `LAISystem` ([lurek.agent](Module-agent)) - Lua-side handle for an AISystem multi-agent orchestrator.
-- `LAIWorld` ([lurek.ai](Module-ai)) - Lua handle for an AI world that owns named agents, global blackboard data, and custom callback registrations.
-- `LAnimatedCursor` ([lurek.cursor](Module-cursor)) - Lua userdata representing an animated cursor that cycles through image frames.
-- `LAnimation` ([lurek.animation](Module-animation)) - Lua-side animation object containing frame rectangles, named clips, playback state, and blend state.
-- `LAnimCurve` ([lurek.animation](Module-animation)) - Lua-side animation curve with keyframes and optional custom easing callback.
-- `LAnimStateMachine` ([lurek.animation](Module-animation)) - Lua-side animation state machine that switches clips from named states and parameters.
-- `LAnimSyncGroup` ([lurek.animation](Module-animation)) - Lua-side animation synchronization group for coordinating multiple animation handles.
-- `LApiCatalog` ([lurek.docs](Module-docs)) - Provides Lua methods for querying, merging, filtering, and exporting catalog data.
-- `LAreaChart` ([lurek.charts](Module-charts)) - Lua handle for an area chart with stacked layers or named series.
-- `LArray` ([lurek.compute](Module-compute)) - Lua-side multidimensional numeric array handle.
-- `LAssetHandle` ([lurek.asset](Module-asset)) - Lua-side handle for a single cached asset entry.
-- `LAtlasPacker` ([lurek.sprite](Module-sprite)) - Lua-visible wrapper around an in-memory atlas packer for dynamic sprite region allocation.
-- `LAutoTileSheet` ([lurek.tilemap](Module-tilemap)) - Lua-side handle wrapping an `AutoTileSheet` that maps bitmasks to tile quads for auto-tiling.
-- `LBadge` ([lurek.ui](Module-ui)) - Adds badge-specific methods to a notification badge widget table.
-- `LBandit` ([lurek.learning](Module-learning)) - Lua handle for multi-armed bandit action selection.
-- `LBarChart` ([lurek.charts](Module-charts)) - Lua handle for a grouped bar chart with named series and category labels.
-- `LBeatClock` ([lurek.audio](Module-audio)) - Lua-side wrapper for a musical beat clock.
-- `LBehaviorTree` ([lurek.ai](Module-ai)) - Lua handle for a behavior tree root and its most recent execution status.
-- `LBehaviorTree` ([lurek.patterns](Module-patterns)) - Lua-facing behavior tree for AI decision-making with sequences, selectors, parallels, inverters, repeaters, and leaf actions.
-- `LBezierCurve` ([lurek.math](Module-math)) - Lua-side wrapper for a Bezier curve.
-- `LBiomeClassifier` ([lurek.procgen](Module-procgen)) - Lua-visible wrapper around the biome classification engine, used to assign biome types based on height, moisture, and temperature.
-- `LBlackboard` ([lurek.patterns](Module-patterns)) - Lua-facing shared key-value blackboard supporting bool/number/string values with watchers for reactive game logic.
-- `LBlendLayerSet` ([lurek.animation](Module-animation)) - Lua-side blend layer set used to combine animation clips with weights and bone masks.
-- `LBody` ([lurek.physics](Module-physics)) - A handle to a single physics body in the world, providing per-body manipulation methods.
-- `LBot` ([lurek.ai](Module-ai)) - Lua handle for a named agent stored inside an AI world.
-- `LBTNode` ([lurek.ai](Module-ai)) - Lua handle for a behavior tree node that can be assembled into composites and decorators.
-- `LBus` ([lurek.audio](Module-audio)) - Lua-side wrapper around an audio mixing bus for grouped volume and effect control.
-- `LButton` ([lurek.ui](Module-ui)) - Adds button-specific methods (setText, getText) to a button widget table.
-- `LByteData` ([lurek.binary](Module-binary)) - Exposes byte-buffer inspection and bit editing methods to Lua.
-- `LCamera` ([lurek.camera](Module-camera)) - Lua-side 2D camera handle with transforms, effects, bounds, and render command access.
-- `LCameraRig` ([lurek.camera](Module-camera)) - Lua-side camera rig that manages named cameras and viewport layouts.
-- `LCameraWalker` ([lurek.camera](Module-camera)) - Lua-side walker combining tile-grid movement with camera following.
-- `LCanvas` ([lurek.render](Module-render)) - Off-screen render target that can be drawn to and then composited onto the screen.
-- `LCatmullRom` ([lurek.math](Module-math)) - Lua-side wrapper for a Catmull-Rom spline.
-- `LCellular` ([lurek.procgen](Module-procgen)) - A cellular automaton simulation grid (sand, water, fire, gas, rock) for per-cell falling-sand style simulation.
-- `LChannel` ([lurek.thread](Module-thread)) - Creates a new unbounded channel for sending typed values between threads.
-- `LCheckbox` ([lurek.ui](Module-ui)) - Adds checkbox-specific methods to a checkbox widget table.
-- `LChunkMap` ([lurek.tilemap](Module-tilemap)) - Lua-side handle wrapping a `ChunkMap` for infinite or very large tile grids stored in dynamically loaded chunks.
-- `LCinematic` ([lurek.cinematic](Module-cinematic)) - Lua userdata handle wrapping a [`Cinematic`] timeline.
-- `LCinematicTimeline` ([lurek.cinematic](Module-cinematic)) - Lua userdata handle wrapping a [`CinematicTimeline`] for multi-track playback.
-- `LCircle` ([lurek.math](Module-math)) - Lua-side wrapper for a circle primitive.
-- `LColorPicker` ([lurek.ui](Module-ui)) - Adds color-picker-specific methods to a color picker widget table.
-- `LCombo` ([lurek.input](Module-input)) - Lua-side combo detector handle tracking ordered key sequences.
-- `LComboBox` ([lurek.ui](Module-ui)) - Adds combo-box-specific methods to a combo box widget table.
-- `LCommandQueue` ([lurek.ai](Module-ai)) - Lua handle for a command queue that stores ordered callback-backed commands.
-- `LCommandStack` ([lurek.patterns](Module-patterns)) - Lua-facing undo/redo command stack. Records executed actions with optional undo functions for full history navigation.
-- `LCompressedImageData` ([lurek.image](Module-image)) - Lua-side handle for compressed DDS image metadata and mipmap data.
-- `LContentRegistry` ([lurek.mods](Module-mods)) - Lua-side content registry for storing typed Lua values by id.
-- `LContextSteering` ([lurek.ai](Module-ai)) - Lua handle for slot-based context steering direction selection.
-- `LConv2D` ([lurek.learning](Module-learning)) - Lua wrapper over `Conv2D` for deterministic spatial inference and weight roundtrips.
-- `LCursor` ([lurek.input](Module-input)) - Lua-side cursor handle for system and custom cursor requests.
-- `LCursorManager` ([lurek.cursor](Module-cursor)) - Lua userdata that controls cursor appearance and system cursor selection.
-- `LCustomCursor` ([lurek.cursor](Module-cursor)) - Lua userdata representing a custom-drawn cursor image with a configurable hot-spot.
-- `LDatabase` ([lurek.dataframe](Module-dataframe)) - Lua-side in-memory database containing named dataframes.
-- `LDataFrame` ([lurek.dataframe](Module-dataframe)) - Lua-side dataframe handle for tabular data with named columns and typed cells.
-- `LDataFrameTask` ([lurek.dataframe](Module-dataframe)) - Lua-side handle for a threaded dataframe job.
-- `LDataView` ([lurek.binary](Module-binary)) - Creates a DataView over a binary string slice.
-- `LDataWriter` ([lurek.binary](Module-binary)) - Lua-side binary writer for sequential byte construction.
-- `LDebounce` ([lurek.patterns](Module-patterns)) - Lua-facing debounce that delays firing until input stops for a specified wait period.
-- `LDecoder` ([lurek.audio](Module-audio)) - Lua-side wrapper around a streaming audio decoder for incremental PCM extraction.
-- `LDepthSorter` ([lurek.scene](Module-scene)) - Depth sorter exposed to Lua as `LDepthSorter`. Collects draw callbacks or drawable objects with numeric depth values and flushes them in back-to-front order for correct painter's-algorithm rendering. Ideal for sorting sprites, particles, and layered game objects within a single scene.
-- `LDialog` ([lurek.ui](Module-ui)) - Adds dialog-specific methods to a dialog widget table.
-- `LDialogSequencer` ([lurek.dialog](Module-dialog)) - Lua handle for a dialog sequencer with typewriter-reveal playback.
-- `LDialogueAI` ([lurek.dialog](Module-dialog)) - Lua handle for topic and branch selection driven by dialogue AI state.
-- `LDialogueState` ([lurek.dialog](Module-dialog)) - Lua handle for dialog conversation state tracking.
-- `LDocEntry` ([lurek.docs](Module-docs)) - Provides Lua accessors for documentation entry metadata.
-- `LDockPanel` ([lurek.ui](Module-ui)) - Adds dock-panel-specific methods to a dock panel widget table.
-- `LDoorManager` ([lurek.raycaster](Module-raycaster)) - Lua-visible door manager that controls sliding doors within a raycaster map.
-- `LDrawLayer` ([lurek.render](Module-render)) - Z-ordered draw callback layer for sorting draw calls by depth before flushing.
-- `LDspGraph` ([lurek.dsp](Module-dsp)) - Lua-visible DSP graph that stores nodes, edges, and offline processing order.
-- `LDspNode` ([lurek.dsp](Module-dsp)) - Lua-visible DSP graph node carrying type and simple numeric parameters.
-- `LEmotionModel` ([lurek.ai](Module-ai)) - Lua handle for decaying named emotion intensities.
-- `LEnv` ([lurek.learning](Module-learning)) - Flat RL environment handle. Stores Lua callbacks and optional wrapping layers.
-- `LEpisodicMemory` ([lurek.agent](Module-agent)) - Lua-side handle for append-only episodic memory.
-- `LEventBus` ([lurek.patterns](Module-patterns)) - Lua-facing publish/subscribe event bus allowing decoupled communication between game systems.
-- `LFactory` ([lurek.patterns](Module-patterns)) - Lua-facing factory pattern for creating typed game objects from registered constructor functions.
-- `LFileData` ([lurek.filesystem](Module-filesystem))
-- `LFileFilter` ([lurek.grep](Module-grep)) - Lua userdata that controls which files are scanned by a `LuaGrepEngine`.
-- `LFileHandle` ([lurek.filesystem](Module-filesystem)) - Lua-side handle for a mutable file stream opened through GameFS.
-- `LFileWatcher` ([lurek.devtools](Module-devtools)) - Lua-side file watcher with an optional change callback.
-- `LFlowField` ([lurek.pathfind](Module-pathfind)) - Lua-side wrapper for a flow field over a navigation grid.
-- `LFont` ([lurek.font](Module-font)) - Lua-visible font handle storing the slot key and cached metadata.
-- `LFont` ([lurek.render](Module-render)) - Bitmap font handle for measuring and rendering text.
-- `LFov` ([lurek.visibility](Module-visibility)) - Lua-side wrapper for a tile-grid recursive-shadowcasting FOV.
-- `LFrameStack` ([lurek.learning](Module-learning)) - Lua handle wrapping a frame-stacking ring buffer.
-- `LFunnel` ([lurek.patterns](Module-patterns)) - Lua-facing batching funnel that collects events over a time window and flushes them together.
-- `LGeneticAlgorithm` ([lurek.learning](Module-learning)) - Lua handle for a floating-point genetic algorithm population.
-- `LGlobe` ([lurek.globe](Module-globe)) - Lua-side handle for a named globe stored inside a shared registry.
-- `LGlobeRegistry` ([lurek.globe](Module-globe)) - Lua-side handle for creating and locating named globes in one registry.
-- `LGoalMap` ([lurek.pathfind](Module-pathfind)) - Lua-side wrapper for a multi-source Dijkstra distance-field (goal map).
-- `LGOAPPlanner` ([lurek.ai](Module-ai)) - Lua handle for a GOAP planner with boolean preconditions, effects, and goals.
-- `LGraph` ([lurek.flownet](Module-flownet)) - Lua-side graph handle storing graph state and registered event callbacks.
-- `LGraphEdge` ([lurek.flownet](Module-flownet)) - Lua-side edge handle referencing one edge id inside a graph.
-- `LGraphItem` ([lurek.flownet](Module-flownet)) - Lua-side item handle referencing one item id inside a graph.
-- `LGraphNode` ([lurek.flownet](Module-flownet)) - Lua-side node handle referencing one node id inside a graph.
-- `LGrepEngine` ([lurek.grep](Module-grep)) - Lua userdata that performs search operations across game content files.
-- `LGroupedFrame` ([lurek.dataframe](Module-dataframe)) - Lua-side grouped dataframe object containing group keys and subframes.
-- `LGRU` ([lurek.learning](Module-learning)) - Stateful Lua wrapper over `GruLayer` with a mutable recurrent hidden-state buffer.
-- `LGuiTable` ([lurek.ui](Module-ui)) - Adds GUI-table-specific methods to a table widget.
-- `LGuiWindow` ([lurek.ui](Module-ui)) - Adds GUI-window-specific methods to a window widget table.
-- `LHeatmapChart` ([lurek.charts](Module-charts)) - Lua handle for a heatmap chart backed by a numeric matrix.
-- `LHeightMap` ([lurek.raycaster](Module-raycaster)) - Lua-visible height map that stores per-cell floor and ceiling offsets for variable-height raycaster levels.
-- `LHermite` ([lurek.math](Module-math)) - Lua-side wrapper for a Hermite spline.
-- `LHexGrid` ([lurek.pathfind](Module-pathfind)) - Lua-side wrapper for a hexagonal grid.
-- `LHistogramChart` ([lurek.charts](Module-charts)) - Lua handle for a histogram chart that bins named numeric samples.
-- `LHtmlDocument` ([lurek.html](Module-html)) - Lua-side HTML document handle with DOM state, callbacks, and render command access.
-- `LHtmlElement` ([lurek.html](Module-html)) - Lua-side DOM element handle with stale-generation detection.
-- `LHTNDomain` ([lurek.ai](Module-ai)) - Lua handle for a hierarchical task network domain.
+- `LAabbTree` ([lurek.math](https://lurek2d.github.io/lurek_2d/modules/math.html)) - Lua-side wrapper for an AABB tree spatial index.
+- `LAccordion` ([lurek.ui](https://lurek2d.github.io/lurek_2d/modules/ui.html)) - Adds accordion-specific methods to an accordion widget table.
+- `LAdsrEnvelope` ([lurek.dsp](https://lurek2d.github.io/lurek_2d/modules/dsp.html)) - Lua-visible ADSR envelope object for sample stepping and buffer shaping.
+- `LAgent` ([lurek.agent](https://lurek2d.github.io/lurek_2d/modules/agent.html)) - Lua-side handle for a single LLM Agent.
+- `LAgentChat` ([lurek.agent](https://lurek2d.github.io/lurek_2d/modules/agent.html)) - Lua-side handle for a stateful LLM chat session.
+- `LAgentManager` ([lurek.agent](https://lurek2d.github.io/lurek_2d/modules/agent.html)) - Lua-side handle for managing multiple LLM Agents in parallel.
+- `LAgentMemory` ([lurek.agent](https://lurek2d.github.io/lurek_2d/modules/agent.html)) - Lua-side handle for a bundled working+episodic+semantic memory with optional persistence.
+- `LAgentTemplate` ([lurek.agent](https://lurek2d.github.io/lurek_2d/modules/agent.html)) - Lua-side handle for a `{key}` placeholder prompt template.
+- `LAIBlackboard` ([lurek.ai](https://lurek2d.github.io/lurek_2d/modules/ai.html)) - Lua handle for a typed AI blackboard storing local key-value facts.
+- `LAIDirector` ([lurek.ai](https://lurek2d.github.io/lurek_2d/modules/ai.html)) - Lua handle for an AI director that tracks encounter tension and pacing factors.
+- `LAIFlowField` ([lurek.pathfind](https://lurek2d.github.io/lurek_2d/modules/pathfind.html)) - Lua-side wrapper for an AI flow field over a path grid.
+- `LAILod` ([lurek.ai](https://lurek2d.github.io/lurek_2d/modules/ai.html)) - Lua handle for distance-based AI level-of-detail tier selection.
+- `LAISystem` ([lurek.agent](https://lurek2d.github.io/lurek_2d/modules/agent.html)) - Lua-side handle for an AISystem multi-agent orchestrator.
+- `LAIWorld` ([lurek.ai](https://lurek2d.github.io/lurek_2d/modules/ai.html)) - Lua handle for an AI world that owns named agents, global blackboard data, and custom callback registrations.
+- `LAnimatedCursor` ([lurek.cursor](https://lurek2d.github.io/lurek_2d/modules/cursor.html)) - Lua userdata representing an animated cursor that cycles through image frames.
+- `LAnimation` ([lurek.animation](https://lurek2d.github.io/lurek_2d/modules/animation.html)) - Lua-side animation object containing frame rectangles, named clips, playback state, and blend state.
+- `LAnimCurve` ([lurek.animation](https://lurek2d.github.io/lurek_2d/modules/animation.html)) - Lua-side animation curve with keyframes and optional custom easing callback.
+- `LAnimStateMachine` ([lurek.animation](https://lurek2d.github.io/lurek_2d/modules/animation.html)) - Lua-side animation state machine that switches clips from named states and parameters.
+- `LAnimSyncGroup` ([lurek.animation](https://lurek2d.github.io/lurek_2d/modules/animation.html)) - Lua-side animation synchronization group for coordinating multiple animation handles.
+- `LApiCatalog` ([lurek.docs](https://lurek2d.github.io/lurek_2d/modules/docs.html)) - Provides Lua methods for querying, merging, filtering, and exporting catalog data.
+- `LAreaChart` ([lurek.charts](https://lurek2d.github.io/lurek_2d/modules/charts.html)) - Lua handle for an area chart with stacked layers or named series.
+- `LArray` ([lurek.compute](https://lurek2d.github.io/lurek_2d/modules/compute.html)) - Lua-side multidimensional numeric array handle.
+- `LAssetHandle` ([lurek.asset](https://lurek2d.github.io/lurek_2d/modules/asset.html)) - Lua-side handle for a single cached asset entry.
+- `LAtlasPacker` ([lurek.sprite](https://lurek2d.github.io/lurek_2d/modules/sprite.html)) - Lua-visible wrapper around an in-memory atlas packer for dynamic sprite region allocation.
+- `LAutoTileSheet` ([lurek.tilemap](https://lurek2d.github.io/lurek_2d/modules/tilemap.html)) - Lua-side handle wrapping an `AutoTileSheet` that maps bitmasks to tile quads for auto-tiling.
+- `LBadge` ([lurek.ui](https://lurek2d.github.io/lurek_2d/modules/ui.html)) - Adds badge-specific methods to a notification badge widget table.
+- `LBandit` ([lurek.learning](https://lurek2d.github.io/lurek_2d/modules/learning.html)) - Lua handle for multi-armed bandit action selection.
+- `LBarChart` ([lurek.charts](https://lurek2d.github.io/lurek_2d/modules/charts.html)) - Lua handle for a grouped bar chart with named series and category labels.
+- `LBeatClock` ([lurek.audio](https://lurek2d.github.io/lurek_2d/modules/audio.html)) - Lua-side wrapper for a musical beat clock.
+- `LBehaviorTree` ([lurek.ai](https://lurek2d.github.io/lurek_2d/modules/ai.html)) - Lua handle for a behavior tree root and its most recent execution status.
+- `LBehaviorTree` ([lurek.patterns](https://lurek2d.github.io/lurek_2d/modules/patterns.html)) - Lua-facing behavior tree for AI decision-making with sequences, selectors, parallels, inverters, repeaters, and leaf actions.
+- `LBezierCurve` ([lurek.math](https://lurek2d.github.io/lurek_2d/modules/math.html)) - Lua-side wrapper for a Bezier curve.
+- `LBiomeClassifier` ([lurek.procgen](https://lurek2d.github.io/lurek_2d/modules/procgen.html)) - Lua-visible wrapper around the biome classification engine, used to assign biome types based on height, moisture, and temperature.
+- `LBlackboard` ([lurek.patterns](https://lurek2d.github.io/lurek_2d/modules/patterns.html)) - Lua-facing shared key-value blackboard supporting bool/number/string values with watchers for reactive game logic.
+- `LBlendLayerSet` ([lurek.animation](https://lurek2d.github.io/lurek_2d/modules/animation.html)) - Lua-side blend layer set used to combine animation clips with weights and bone masks.
+- `LBody` ([lurek.physics](https://lurek2d.github.io/lurek_2d/modules/physics.html)) - A handle to a single physics body in the world, providing per-body manipulation methods.
+- `LBot` ([lurek.ai](https://lurek2d.github.io/lurek_2d/modules/ai.html)) - Lua handle for a named agent stored inside an AI world.
+- `LBTNode` ([lurek.ai](https://lurek2d.github.io/lurek_2d/modules/ai.html)) - Lua handle for a behavior tree node that can be assembled into composites and decorators.
+- `LBus` ([lurek.audio](https://lurek2d.github.io/lurek_2d/modules/audio.html)) - Lua-side wrapper around an audio mixing bus for grouped volume and effect control.
+- `LButton` ([lurek.ui](https://lurek2d.github.io/lurek_2d/modules/ui.html)) - Adds button-specific methods (setText, getText) to a button widget table.
+- `LByteData` ([lurek.binary](https://lurek2d.github.io/lurek_2d/modules/binary.html)) - Exposes byte-buffer inspection and bit editing methods to Lua.
+- `LCamera` ([lurek.camera](https://lurek2d.github.io/lurek_2d/modules/camera.html)) - Lua-side 2D camera handle with transforms, effects, bounds, and render command access.
+- `LCameraRig` ([lurek.camera](https://lurek2d.github.io/lurek_2d/modules/camera.html)) - Lua-side camera rig that manages named cameras and viewport layouts.
+- `LCameraWalker` ([lurek.camera](https://lurek2d.github.io/lurek_2d/modules/camera.html)) - Lua-side walker combining tile-grid movement with camera following.
+- `LCanvas` ([lurek.render](https://lurek2d.github.io/lurek_2d/modules/render.html)) - Off-screen render target that can be drawn to and then composited onto the screen.
+- `LCatmullRom` ([lurek.math](https://lurek2d.github.io/lurek_2d/modules/math.html)) - Lua-side wrapper for a Catmull-Rom spline.
+- `LCellular` ([lurek.procgen](https://lurek2d.github.io/lurek_2d/modules/procgen.html)) - A cellular automaton simulation grid (sand, water, fire, gas, rock) for per-cell falling-sand style simulation.
+- `LChannel` ([lurek.thread](https://lurek2d.github.io/lurek_2d/modules/thread.html)) - Creates a new unbounded channel for sending typed values between threads.
+- `LCheckbox` ([lurek.ui](https://lurek2d.github.io/lurek_2d/modules/ui.html)) - Adds checkbox-specific methods to a checkbox widget table.
+- `LChunkMap` ([lurek.tilemap](https://lurek2d.github.io/lurek_2d/modules/tilemap.html)) - Lua-side handle wrapping a `ChunkMap` for infinite or very large tile grids stored in dynamically loaded chunks.
+- `LCinematic` ([lurek.cinematic](https://lurek2d.github.io/lurek_2d/modules/cinematic.html)) - Lua userdata handle wrapping a [`Cinematic`] timeline.
+- `LCinematicTimeline` ([lurek.cinematic](https://lurek2d.github.io/lurek_2d/modules/cinematic.html)) - Lua userdata handle wrapping a [`CinematicTimeline`] for multi-track playback.
+- `LCircle` ([lurek.math](https://lurek2d.github.io/lurek_2d/modules/math.html)) - Lua-side wrapper for a circle primitive.
+- `LColorPicker` ([lurek.ui](https://lurek2d.github.io/lurek_2d/modules/ui.html)) - Adds color-picker-specific methods to a color picker widget table.
+- `LCombo` ([lurek.input](https://lurek2d.github.io/lurek_2d/modules/input.html)) - Lua-side combo detector handle tracking ordered key sequences.
+- `LComboBox` ([lurek.ui](https://lurek2d.github.io/lurek_2d/modules/ui.html)) - Adds combo-box-specific methods to a combo box widget table.
+- `LCommandQueue` ([lurek.ai](https://lurek2d.github.io/lurek_2d/modules/ai.html)) - Lua handle for a command queue that stores ordered callback-backed commands.
+- `LCommandStack` ([lurek.patterns](https://lurek2d.github.io/lurek_2d/modules/patterns.html)) - Lua-facing undo/redo command stack. Records executed actions with optional undo functions for full history navigation.
+- `LCompressedImageData` ([lurek.image](https://lurek2d.github.io/lurek_2d/modules/image.html)) - Lua-side handle for compressed DDS image metadata and mipmap data.
+- `LContentRegistry` ([lurek.mods](https://lurek2d.github.io/lurek_2d/modules/mods.html)) - Lua-side content registry for storing typed Lua values by id.
+- `LContextSteering` ([lurek.ai](https://lurek2d.github.io/lurek_2d/modules/ai.html)) - Lua handle for slot-based context steering direction selection.
+- `LConv2D` ([lurek.learning](https://lurek2d.github.io/lurek_2d/modules/learning.html)) - Lua wrapper over `Conv2D` for deterministic spatial inference and weight roundtrips.
+- `LCursor` ([lurek.input](https://lurek2d.github.io/lurek_2d/modules/input.html)) - Lua-side cursor handle for system and custom cursor requests.
+- `LCursorManager` ([lurek.cursor](https://lurek2d.github.io/lurek_2d/modules/cursor.html)) - Lua userdata that controls cursor appearance and system cursor selection.
+- `LCustomCursor` ([lurek.cursor](https://lurek2d.github.io/lurek_2d/modules/cursor.html)) - Lua userdata representing a custom-drawn cursor image with a configurable hot-spot.
+- `LDatabase` ([lurek.dataframe](https://lurek2d.github.io/lurek_2d/modules/dataframe.html)) - Lua-side in-memory database containing named dataframes.
+- `LDataFrame` ([lurek.dataframe](https://lurek2d.github.io/lurek_2d/modules/dataframe.html)) - Lua-side dataframe handle for tabular data with named columns and typed cells.
+- `LDataFrameTask` ([lurek.dataframe](https://lurek2d.github.io/lurek_2d/modules/dataframe.html)) - Lua-side handle for a threaded dataframe job.
+- `LDataView` ([lurek.binary](https://lurek2d.github.io/lurek_2d/modules/binary.html)) - Creates a DataView over a binary string slice.
+- `LDataWriter` ([lurek.binary](https://lurek2d.github.io/lurek_2d/modules/binary.html)) - Lua-side binary writer for sequential byte construction.
+- `LDebounce` ([lurek.patterns](https://lurek2d.github.io/lurek_2d/modules/patterns.html)) - Lua-facing debounce that delays firing until input stops for a specified wait period.
+- `LDecoder` ([lurek.audio](https://lurek2d.github.io/lurek_2d/modules/audio.html)) - Lua-side wrapper around a streaming audio decoder for incremental PCM extraction.
+- `LDepthSorter` ([lurek.scene](https://lurek2d.github.io/lurek_2d/modules/scene.html)) - Depth sorter exposed to Lua as `LDepthSorter`. Collects draw callbacks or drawable objects with numeric depth values and flushes them in back-to-front order for correct painter's-algorithm rendering. Ideal for sorting sprites, particles, and layered game objects within a single scene.
+- `LDialog` ([lurek.ui](https://lurek2d.github.io/lurek_2d/modules/ui.html)) - Adds dialog-specific methods to a dialog widget table.
+- `LDialogSequencer` ([lurek.dialog](https://lurek2d.github.io/lurek_2d/modules/dialog.html)) - Lua handle for a dialog sequencer with typewriter-reveal playback.
+- `LDialogueAI` ([lurek.dialog](https://lurek2d.github.io/lurek_2d/modules/dialog.html)) - Lua handle for topic and branch selection driven by dialogue AI state.
+- `LDialogueState` ([lurek.dialog](https://lurek2d.github.io/lurek_2d/modules/dialog.html)) - Lua handle for dialog conversation state tracking.
+- `LDocEntry` ([lurek.docs](https://lurek2d.github.io/lurek_2d/modules/docs.html)) - Provides Lua accessors for documentation entry metadata.
+- `LDockPanel` ([lurek.ui](https://lurek2d.github.io/lurek_2d/modules/ui.html)) - Adds dock-panel-specific methods to a dock panel widget table.
+- `LDoorManager` ([lurek.raycaster](https://lurek2d.github.io/lurek_2d/modules/raycaster.html)) - Lua-visible door manager that controls sliding doors within a raycaster map.
+- `LDrawLayer` ([lurek.render](https://lurek2d.github.io/lurek_2d/modules/render.html)) - Z-ordered draw callback layer for sorting draw calls by depth before flushing.
+- `LDspGraph` ([lurek.dsp](https://lurek2d.github.io/lurek_2d/modules/dsp.html)) - Lua-visible DSP graph that stores nodes, edges, and offline processing order.
+- `LDspNode` ([lurek.dsp](https://lurek2d.github.io/lurek_2d/modules/dsp.html)) - Lua-visible DSP graph node carrying type and simple numeric parameters.
+- `LEmotionModel` ([lurek.ai](https://lurek2d.github.io/lurek_2d/modules/ai.html)) - Lua handle for decaying named emotion intensities.
+- `LEnv` ([lurek.learning](https://lurek2d.github.io/lurek_2d/modules/learning.html)) - Flat RL environment handle. Stores Lua callbacks and optional wrapping layers.
+- `LEpisodicMemory` ([lurek.agent](https://lurek2d.github.io/lurek_2d/modules/agent.html)) - Lua-side handle for append-only episodic memory.
+- `LEventBus` ([lurek.patterns](https://lurek2d.github.io/lurek_2d/modules/patterns.html)) - Lua-facing publish/subscribe event bus allowing decoupled communication between game systems.
+- `LFactory` ([lurek.patterns](https://lurek2d.github.io/lurek_2d/modules/patterns.html)) - Lua-facing factory pattern for creating typed game objects from registered constructor functions.
+- `LFileData` ([lurek.filesystem](https://lurek2d.github.io/lurek_2d/modules/filesystem.html))
+- `LFileFilter` ([lurek.grep](https://lurek2d.github.io/lurek_2d/modules/grep.html)) - Lua userdata that controls which files are scanned by a `LuaGrepEngine`.
+- `LFileHandle` ([lurek.filesystem](https://lurek2d.github.io/lurek_2d/modules/filesystem.html)) - Lua-side handle for a mutable file stream opened through GameFS.
+- `LFileWatcher` ([lurek.devtools](https://lurek2d.github.io/lurek_2d/modules/devtools.html)) - Lua-side file watcher with an optional change callback.
+- `LFlowField` ([lurek.pathfind](https://lurek2d.github.io/lurek_2d/modules/pathfind.html)) - Lua-side wrapper for a flow field over a navigation grid.
+- `LFont` ([lurek.font](https://lurek2d.github.io/lurek_2d/modules/font.html)) - Lua-visible font handle storing the slot key and cached metadata.
+- `LFont` ([lurek.render](https://lurek2d.github.io/lurek_2d/modules/render.html)) - Bitmap font handle for measuring and rendering text.
+- `LFov` ([lurek.visibility](https://lurek2d.github.io/lurek_2d/modules/visibility.html)) - Lua-side wrapper for a tile-grid recursive-shadowcasting FOV.
+- `LFrameStack` ([lurek.learning](https://lurek2d.github.io/lurek_2d/modules/learning.html)) - Lua handle wrapping a frame-stacking ring buffer.
+- `LFunnel` ([lurek.patterns](https://lurek2d.github.io/lurek_2d/modules/patterns.html)) - Lua-facing batching funnel that collects events over a time window and flushes them together.
+- `LGeneticAlgorithm` ([lurek.learning](https://lurek2d.github.io/lurek_2d/modules/learning.html)) - Lua handle for a floating-point genetic algorithm population.
+- `LGlobe` ([lurek.globe](https://lurek2d.github.io/lurek_2d/modules/globe.html)) - Lua-side handle for a named globe stored inside a shared registry.
+- `LGlobeRegistry` ([lurek.globe](https://lurek2d.github.io/lurek_2d/modules/globe.html)) - Lua-side handle for creating and locating named globes in one registry.
+- `LGoalMap` ([lurek.pathfind](https://lurek2d.github.io/lurek_2d/modules/pathfind.html)) - Lua-side wrapper for a multi-source Dijkstra distance-field (goal map).
+- `LGOAPPlanner` ([lurek.ai](https://lurek2d.github.io/lurek_2d/modules/ai.html)) - Lua handle for a GOAP planner with boolean preconditions, effects, and goals.
+- `LGraph` ([lurek.flownet](https://lurek2d.github.io/lurek_2d/modules/flownet.html)) - Lua-side graph handle storing graph state and registered event callbacks.
+- `LGraphEdge` ([lurek.flownet](https://lurek2d.github.io/lurek_2d/modules/flownet.html)) - Lua-side edge handle referencing one edge id inside a graph.
+- `LGraphItem` ([lurek.flownet](https://lurek2d.github.io/lurek_2d/modules/flownet.html)) - Lua-side item handle referencing one item id inside a graph.
+- `LGraphNode` ([lurek.flownet](https://lurek2d.github.io/lurek_2d/modules/flownet.html)) - Lua-side node handle referencing one node id inside a graph.
+- `LGrepEngine` ([lurek.grep](https://lurek2d.github.io/lurek_2d/modules/grep.html)) - Lua userdata that performs search operations across game content files.
+- `LGroupedFrame` ([lurek.dataframe](https://lurek2d.github.io/lurek_2d/modules/dataframe.html)) - Lua-side grouped dataframe object containing group keys and subframes.
+- `LGRU` ([lurek.learning](https://lurek2d.github.io/lurek_2d/modules/learning.html)) - Stateful Lua wrapper over `GruLayer` with a mutable recurrent hidden-state buffer.
+- `LGuiTable` ([lurek.ui](https://lurek2d.github.io/lurek_2d/modules/ui.html)) - Adds GUI-table-specific methods to a table widget.
+- `LGuiWindow` ([lurek.ui](https://lurek2d.github.io/lurek_2d/modules/ui.html)) - Adds GUI-window-specific methods to a window widget table.
+- `LHeatmapChart` ([lurek.charts](https://lurek2d.github.io/lurek_2d/modules/charts.html)) - Lua handle for a heatmap chart backed by a numeric matrix.
+- `LHeightMap` ([lurek.raycaster](https://lurek2d.github.io/lurek_2d/modules/raycaster.html)) - Lua-visible height map that stores per-cell floor and ceiling offsets for variable-height raycaster levels.
+- `LHermite` ([lurek.math](https://lurek2d.github.io/lurek_2d/modules/math.html)) - Lua-side wrapper for a Hermite spline.
+- `LHexGrid` ([lurek.pathfind](https://lurek2d.github.io/lurek_2d/modules/pathfind.html)) - Lua-side wrapper for a hexagonal grid.
+- `LHistogramChart` ([lurek.charts](https://lurek2d.github.io/lurek_2d/modules/charts.html)) - Lua handle for a histogram chart that bins named numeric samples.
+- `LHtmlDocument` ([lurek.html](https://lurek2d.github.io/lurek_2d/modules/html.html)) - Lua-side HTML document handle with DOM state, callbacks, and render command access.
+- `LHtmlElement` ([lurek.html](https://lurek2d.github.io/lurek_2d/modules/html.html)) - Lua-side DOM element handle with stale-generation detection.
+- `LHTNDomain` ([lurek.ai](https://lurek2d.github.io/lurek_2d/modules/ai.html)) - Lua handle for a hierarchical task network domain.
