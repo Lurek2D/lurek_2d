@@ -12,7 +12,7 @@ Orchestrates multi-agent AI completions and stateful conversations.
 
 ## Minimal Example
 
-From the `lurek.agent.new` example block:
+Example block: `lurek.agent.new`
 
 ```lua
 do
@@ -46,7 +46,6 @@ end
 ## API Reference
 
 - This page is the generated API reference for this module.
-- Runnable example owner: `content/examples/agent.lua`
 
 ## Summary
 
@@ -777,7 +776,7 @@ end
 
 *No module-level fields documented.*
 
-## Callbacks
+## Callback Parameters
 
 - `lurek.agent.completeAsync` param `callback` (`function`): Called with `(text, err)` on completion (`err` is `nil` on success).
 

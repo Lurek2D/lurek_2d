@@ -12,7 +12,7 @@ Manages stack-based scenes, overlays, and metatable factories.
 
 ## Minimal Example
 
-From the `lurek.scene.new` example block:
+Example block: `lurek.scene.new`
 
 ```lua
 do
@@ -38,7 +38,6 @@ end
 ## API Reference
 
 - This page is the generated API reference for this module.
-- Runnable example owner: `content/examples/scene.lua`
 
 ## Summary
 
@@ -1181,7 +1180,7 @@ end
 
 ### `lurek.scene.preload`
 
-Register a deferred-loading function for a scene. The loader function is NOT called immediately â€” it runs the first time `pushPreloaded` is called with this name. Use this to spread scene initialization (asset loading, table setup) across loading screens or lazy-load heavy scenes on demand.
+Register a deferred-loading function for a scene. The loader function is NOT called immediately - it runs the first time `pushPreloaded` is called with this name. Use this to spread scene initialization (asset loading, table setup) across loading screens or lazy-load heavy scenes on demand.
 
 ```lua
 lurek.scene.preload(name, loader)
@@ -1361,7 +1360,7 @@ end
 
 ### `lurek.scene.pushOverlay`
 
-Push a scene as an overlay on top of the current scene. Unlike `push`, the underlying scene is NOT paused â€” it can continue to receive `process` callbacks unless frozen. Rendering remains single-scene (top scene only) at engine level.
+Push a scene as an overlay on top of the current scene. Unlike `push`, the underlying scene is NOT paused - it can continue to receive `process` callbacks unless frozen. Rendering remains single-scene (top scene only) at engine level.
 
 ```lua
 lurek.scene.pushOverlay(scene, transition, duration, easing, params)
@@ -1647,7 +1646,7 @@ end
 
 ### `lurek.scene.setData`
 
-Store an arbitrary Lua value in the scene module's shared data map, keyed by a string name. Scenes can use this to pass information between each other without direct references â€” for example, passing a selected level index from a menu scene to a gameplay scene.
+Store an arbitrary Lua value in the scene module's shared data map, keyed by a string name. Scenes can use this to pass information between each other without direct references - for example, passing a selected level index from a menu scene to a gameplay scene.
 
 ```lua
 lurek.scene.setData(key, value)
@@ -1827,7 +1826,7 @@ end
 
 ### `lurek.scene.switchTo`
 
-Replace the current top scene with a different one without changing stack depth. The old scene receives `leave()` and the new scene receives `enter(self, params)`. Unlike `push`, no scene is added to the stack â€” the old scene is removed and the new one takes its slot. Ideal for transitioning between peer-level game states (e.g. level 1 â†’ level 2).
+Replace the current top scene with a different one without changing stack depth. The old scene receives `leave()` and the new scene receives `enter(self, params)`. Unlike `push`, no scene is added to the stack - the old scene is removed and the new one takes its slot. Ideal for transitioning between peer-level game states (e.g. level 1 -> level 2).
 
 ```lua
 lurek.scene.switchTo(scene, transition, duration, easing, params)
@@ -1878,7 +1877,7 @@ end
 
 ### `lurek.scene.unregisterScene`
 
-Remove a scene registration by name. Does not pop the scene if it is currently active on the stack â€” it only removes the name mapping.
+Remove a scene registration by name. Does not pop the scene if it is currently active on the stack - it only removes the name mapping.
 
 ```lua
 lurek.scene.unregisterScene(name)
@@ -1938,7 +1937,7 @@ end
 
 *No module-level fields documented.*
 
-## Callbacks
+## Callback Parameters
 
 - `lurek.scene.preload` param `loader` (`function`): A zero-argument function that creates and registers the scene via `registerScene` when called.
 
@@ -1972,7 +1971,7 @@ LDepthSorter:add(callback, depth)
 | Name | Type | Description |
 |------|------|-------------|
 | `callback` | function | A zero-argument draw function invoked during flush. |
-| `depth` | number | Numeric z-depth controlling draw order â€” lower values are drawn behind higher values. |
+| `depth` | number | Numeric z-depth controlling draw order - lower values are drawn behind higher values. |
 
 **Example**
 
@@ -2049,7 +2048,7 @@ end
 
 #### `LDepthSorter:flush`
 
-Sort all entries by depth, execute every callback or object's `drawSorted` method in back-to-front order, then clear the sorter for the next frame. This is the standard one-call render path â€” call it once per frame inside your scene's `draw` or `render` callback.
+Sort all entries by depth, execute every callback or object's `drawSorted` method in back-to-front order, then clear the sorter for the next frame. This is the standard one-call render path - call it once per frame inside your scene's `draw` or `render` callback.
 
 ```lua
 LDepthSorter:flush()

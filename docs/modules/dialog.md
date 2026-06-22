@@ -12,7 +12,7 @@ Orchestrates branching narrative graphs using conditional gates.
 
 ## Minimal Example
 
-From the `lurek.dialog.newAI` example block:
+Example block: `lurek.dialog.newAI`
 
 ```lua
 do
@@ -37,7 +37,6 @@ end
 ## API Reference
 
 - This page is the generated API reference for this module.
-- Runnable example owner: `content/examples/dialog.lua`
 
 ## Summary
 
@@ -394,10 +393,6 @@ end
 ## Module Fields
 
 *No module-level fields documented.*
-
-## Callbacks
-
-*No callback parameters documented in this module.*
 
 ## Enums
 

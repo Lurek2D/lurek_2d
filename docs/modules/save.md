@@ -12,7 +12,7 @@ Manages game saves with compression, auto-save timers, and schema migrations.
 
 ## Minimal Example
 
-From the `lurek.save.newSaveManager` example block:
+Example block: `lurek.save.newSaveManager`
 
 ```lua
 do
@@ -33,7 +33,6 @@ end
 ## API Reference
 
 - This page is the generated API reference for this module.
-- Runnable example owner: `content/examples/save.lua`
 
 ## Summary
 
@@ -80,10 +79,6 @@ end
 ## Module Fields
 
 *No module-level fields documented.*
-
-## Callbacks
-
-*No callback parameters documented in this module.*
 
 ## Enums
 
@@ -793,7 +788,7 @@ end
 
 #### `LSaveManager:setSummary`
 
-Set a human-readable summary string stored alongside save metadata (e.g. "Level 5 â€“ Forest").
+Set a human-readable summary string stored alongside save metadata (e.g. "Level 5 - Forest").
 
 ```lua
 LSaveManager:setSummary(summary)

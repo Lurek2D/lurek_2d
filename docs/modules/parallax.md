@@ -12,7 +12,7 @@ Manages layered scroll depth, autoscrolling, and tiling.
 
 ## Minimal Example
 
-From the `lurek.parallax.newLayer` example block:
+Example block: `lurek.parallax.newLayer`
 
 ```lua
 do
@@ -41,7 +41,6 @@ end
 ## API Reference
 
 - This page is the generated API reference for this module.
-- Runnable example owner: `content/examples/parallax.lua`
 
 ## Summary
 
@@ -174,10 +173,6 @@ end
 ## Module Fields
 
 *No module-level fields documented.*
-
-## Callbacks
-
-*No callback parameters documented in this module.*
 
 ## Enums
 
@@ -1255,10 +1250,10 @@ LParallaxLayer:setTint(r, g, b, a)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `r` | number | Red channel (0â€“1). |
-| `g` | number | Green channel (0â€“1). |
-| `b` | number | Blue channel (0â€“1). |
-| `a` | number | Alpha channel (0â€“1). |
+| `r` | number | Red channel (0-1). |
+| `g` | number | Green channel (0-1). |
+| `b` | number | Blue channel (0-1). |
+| `a` | number | Alpha channel (0-1). |
 
 **Example**
 

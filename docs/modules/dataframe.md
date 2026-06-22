@@ -12,7 +12,7 @@ Manages DataFrames, databases, SQL query execution, and lazy pipelines.
 
 ## Minimal Example
 
-From the `lurek.dataframe.newDataFrame` example block:
+Example block: `lurek.dataframe.newDataFrame`
 
 ```lua
 do
@@ -38,7 +38,6 @@ end
 ## API Reference
 
 - This page is the generated API reference for this module.
-- Runnable example owner: `content/examples/dataframe.lua`
 
 ## Summary
 
@@ -614,10 +613,6 @@ end
 ## Module Fields
 
 *No module-level fields documented.*
-
-## Callbacks
-
-*No callback parameters documented in this module.*
 
 ## Enums
 
@@ -1993,7 +1988,7 @@ end
 
 #### `LDataFrame:parFilter`
 
-Parallel filter â€” automatically parallelizes when frame has 10,000+ rows.
+Parallel filter - automatically parallelizes when frame has 10,000+ rows.
 
 ```lua
 LDataFrame:parFilter(col, op, val)
@@ -2029,7 +2024,7 @@ end
 
 #### `LDataFrame:parGroupAgg`
 
-Parallel group-by aggregation â€” partitions and aggregates in parallel.
+Parallel group-by aggregation - partitions and aggregates in parallel.
 
 ```lua
 LDataFrame:parGroupAgg(group_col, agg_col, fn_name)

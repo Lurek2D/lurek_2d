@@ -84,7 +84,37 @@
 
 All callbacks are optional. Define any in `main.lua` and the engine calls them automatically.
 
-_No documented engine callbacks._
+```lua
+function lurek.draw()  -- Called every frame to queue world render commands.
+function lurek.draw_ui()  -- Called every frame after world drawing to queue UI and HUD render commands.
+function lurek.exit()  -- Called before the runtime exits after an explicit close path.
+function lurek.fixedUpdate(dt)  -- Deprecated fixed-step update callback; use `lurek.process_physics(dt)`.
+function lurek.focus(focused)  -- Called when the application window gains or loses focus.
+function lurek.gamepadaxis(id, axis, value)  -- Called when a connected gamepad axis changes.
+function lurek.gamepadconnected(id)  -- Called when a gamepad connects.
+function lurek.gamepaddisconnected(id)  -- Called when a gamepad disconnects.
+function lurek.gamepadpressed(id, button)  -- Called when a gamepad button is pressed.
+function lurek.gamepadreleased(id, button)  -- Called when a gamepad button is released.
+function lurek.init()  -- Called once after the Lua VM, shared state, and `lurek.*` modules are ready.
+function lurek.joystickadded(id)  -- Compatibility callback called when a gamepad connects.
+function lurek.joystickremoved(id)  -- Compatibility callback called when a gamepad disconnects.
+function lurek.keypressed(key, scancode, isrepeat)  -- Called when a keyboard key is pressed and UI did not consume it.
+function lurek.keyreleased(key, scancode)  -- Called when a keyboard key is released.
+function lurek.mousemoved(x, y, dx, dy)  -- Called when the pointer moves in game coordinates and UI did not consume it.
+function lurek.mousepressed(x, y, button)  -- Called when a mouse button is pressed and UI did not consume it.
+function lurek.mousereleased(x, y, button)  -- Called when a mouse button is released and UI did not consume it.
+function lurek.process(dt)  -- Called every frame for game logic.
+function lurek.process_late(dt)  -- Called every frame after `process` and fixed-step physics callbacks.
+function lurek.process_physics(dt)  -- Called at the fixed timestep zero or more times per rendered frame.
+function lurek.ready()  -- Called once after startup when the first frame resources are ready.
+function lurek.resize(width, height)  -- Called after the renderer and viewport are resized.
+function lurek.textinput(text)  -- Called when committed text input arrives and UI did not consume it.
+function lurek.touchmoved(id, x, y, dx, dy, pressure)  -- Called when a touch point moves.
+function lurek.touchpressed(id, x, y, dx, dy, pressure)  -- Called when a touch point starts.
+function lurek.touchreleased(id, x, y, dx, dy, pressure)  -- Called when a touch point ends or is cancelled.
+function lurek.visible(visible)  -- Called when the window occlusion/visibility state changes.
+function lurek.wheelmoved(dx, dy)  -- Called when mouse-wheel input arrives and UI did not consume it.
+```
 
 ---
 

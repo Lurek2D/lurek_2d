@@ -12,7 +12,7 @@ Parallel Lua workers via isolated threads, safe channels, and promises.
 
 ## Minimal Example
 
-From the `lurek.thread.newChannel` example block:
+Example block: `lurek.thread.newChannel`
 
 ```lua
 do
@@ -35,7 +35,6 @@ end
 ## API Reference
 
 - This page is the generated API reference for this module.
-- Runnable example owner: `content/examples/thread.lua`
 
 ## Summary
 
@@ -286,7 +285,7 @@ end
 
 *No module-level fields documented.*
 
-## Callbacks
+## Callback Parameters
 
 - `lurek.thread.async` param `codeOrFunc` (`string|function`): Lua source code or a dumpable Lua function to execute.
 

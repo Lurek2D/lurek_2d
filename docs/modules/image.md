@@ -12,7 +12,7 @@ Manages CPU image buffers, compressed textures, layered stacks, palette remappin
 
 ## Minimal Example
 
-From the `lurek.image.newImageData` example block:
+Example block: `lurek.image.newImageData`
 
 ```lua
 do
@@ -35,7 +35,6 @@ end
 ## API Reference
 
 - This page is the generated API reference for this module.
-- Runnable example owner: `content/examples/image.lua`
 
 ## Summary
 
@@ -499,10 +498,6 @@ end
 ## Module Fields
 
 *No module-level fields documented.*
-
-## Callbacks
-
-*No callback parameters documented in this module.*
 
 ## Enums
 

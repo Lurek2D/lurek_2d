@@ -12,7 +12,7 @@ Timed interpolation engine supporting easing curves, spring dynamics, and sequen
 
 ## Minimal Example
 
-From the `lurek.tween.tween` example block:
+Example block: `lurek.tween.tween`
 
 ```lua
 do
@@ -35,7 +35,6 @@ end
 ## API Reference
 
 - This page is the generated API reference for this module.
-- Runnable example owner: `content/examples/tween.lua`
 
 ## Summary
 
@@ -599,7 +598,7 @@ end
 
 *No module-level fields documented.*
 
-## Callbacks
+## Callback Parameters
 
 - `lurek.tween.delay` param `cb?` (`function`): Optional callback fired when the delay completes.
 - `lurek.tween.registerEasing` param `f` (`function`): Easing function `f(t) -> number` where t is 0..1.

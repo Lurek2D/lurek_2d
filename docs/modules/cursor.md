@@ -12,7 +12,7 @@ Manages contextual custom cursors, motion trails, and magnifiers.
 
 ## Minimal Example
 
-From the `lurek.cursor.newManager` example block:
+Example block: `lurek.cursor.newManager`
 
 ```lua
 do
@@ -34,7 +34,6 @@ end
 ## API Reference
 
 - This page is the generated API reference for this module.
-- Runnable example owner: `content/examples/cursor.lua`
 
 ## Summary
 
@@ -178,10 +177,6 @@ end
 ## Module Fields
 
 *No module-level fields documented.*
-
-## Callbacks
-
-*No callback parameters documented in this module.*
 
 ## Enums
 
@@ -1036,7 +1031,7 @@ end
 
 #### `LCustomCursor:setPixel`
 
-Set a pixel color â€” Lua userdata object exposed by the engine.
+Set a pixel color - Lua userdata object exposed by the engine.
 
 ```lua
 LCustomCursor:setPixel(x, y, r, g, b, a)

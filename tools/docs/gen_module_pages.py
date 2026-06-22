@@ -24,6 +24,66 @@ LUA_API_JSON = module_registry.lua_api_json_path()
 EXAMPLES_DIR = ROOT / "content" / "examples"
 OUT_DIR = ROOT / "docs" / "modules"  # MkDocs input - Lua API module markdown documentation
 CALLBACKS_MD = ROOT / "docs" / "api" / "callbacks.md"
+MODULE_GUIDES_MD = ROOT / "docs" / "module-guides.md"
+
+
+def api_module_name(module: str) -> str:
+    """Return the public `lurek.<name>` module name for Pages output."""
+    namespace = module_registry.module_namespace(module)
+    if namespace.startswith("lurek."):
+        return namespace.split(".", 1)[1]
+    return module
+
+
+def module_page_name(module: str) -> str:
+    return api_module_name(module)
+
+
+def module_example_name(module: str) -> str:
+    example_file = module_registry.module_example_file(module)
+    if example_file:
+        return Path(example_file).stem
+    return module
+
+
+def api_module_label(api_module: str) -> str:
+    acronyms = {"ai", "dsp", "ecs", "svg", "ui"}
+    if api_module in acronyms:
+        return api_module.upper()
+    if api_module == "i18n":
+        return "I18n"
+    return api_module.title()
+
+
+def publicize_module_text(text: str, module: str) -> str:
+    api_module = api_module_name(module)
+    if api_module == module or not text:
+        return text
+    replacements = {
+        f"The {module} module": f"The {api_module} module",
+        f"the {module} module": f"the {api_module} module",
+        f"{module} module": f"{api_module} module",
+        f"`{module}`": f"`{api_module}`",
+        f"lurek.{module}": f"lurek.{api_module}",
+    }
+    for old, new in replacements.items():
+        text = text.replace(old, new)
+    return text
+
+
+def sanitize_page_text(text: str) -> str:
+    replacements = {
+        "â€”": "-",
+        "â€“": "-",
+        "â†’": "->",
+        "â†": "<-",
+        "â†‘": "^",
+        "â†“": "v",
+        "�": "-",
+    }
+    for old, new in replacements.items():
+        text = text.replace(old, new)
+    return text
 
 # ---------------------------------------------------------------------------
 # Spec description extraction
@@ -262,7 +322,7 @@ def format_returns(returns: list[str], *, current_module: str, class_owner: dict
 
 def load_examples(module: str) -> dict[str, str]:
     """Return {full_name: code_body} from content/examples/<module>.lua."""
-    lua_file = EXAMPLES_DIR / f"{module}.lua"
+    lua_file = EXAMPLES_DIR / f"{module_example_name(module)}.lua"
     if not lua_file.exists():
         return {}
     text = lua_file.read_text(encoding="utf-8")
@@ -440,9 +500,10 @@ def build_page(
     module_classes: dict[str, list[str]],
     class_owner: dict[str, str],
 ) -> str:
+    api_module = api_module_name(module)
     spec_path = SPECS_DIR / f"{module}.md"
     spec = extract_spec_sections(spec_path)
-    summary_text = spec.get("summary", "")
+    summary_text = publicize_module_text(spec.get("summary", ""), module)
     # Rust file descriptions are intentionally kept out of Lua module docs.
     examples = load_examples(module)
 
@@ -455,14 +516,14 @@ def build_page(
         if m:
             relevant_classes.add(m.group(1))
 
-    for f in module_fns.get(module, []):
+    for f in module_fns.get(api_module, []):
         entry_desc, params, returns = doc_to_parts(f.get("doc_lines", []))
         for text in [entry_desc] + params + returns:
             for token in re.findall(r"\bL[A-Z][A-Za-z0-9_]*\b", text or ""):
                 if token in class_methods:
                     relevant_classes.add(token)
 
-    for cls in module_classes.get(module, []):
+    for cls in module_classes.get(api_module, []):
         relevant_classes.add(cls)
 
     # Keep only documented userdata types that actually expose fields or methods.
@@ -471,7 +532,7 @@ def build_page(
         if class_methods.get(cls) or class_fields.get(cls)
     }
 
-    fns = module_fns.get(module, [])
+    fns = module_fns.get(api_module, [])
     # Deduplicate by full_name (lurek.lua sometimes has duplicates)
     seen = set()
     unique_fns = []
@@ -481,7 +542,7 @@ def build_page(
             unique_fns.append(f)
 
     out = []
-    out.append(f"# {module.title()}")
+    out.append(f"# {api_module.title()}")
     out.append("")
 
     purpose_text = ""
@@ -494,7 +555,7 @@ def build_page(
 
     out.append("## Purpose")
     out.append("")
-    out.append(purpose_text or f"`lurek.{module}` exposes the public Lua API for the {module} module.")
+    out.append(publicize_module_text(purpose_text, module) or f"`lurek.{api_module}` exposes the public Lua API for the {api_module} module.")
     out.append("")
 
     out.append("## When To Use")
@@ -502,9 +563,9 @@ def build_page(
     when_bullets = summary_bullets[1:4] if len(summary_bullets) > 1 else summary_bullets
     if when_bullets:
         for bullet in when_bullets:
-            out.append(f"- {bullet}")
+            out.append(f"- {publicize_module_text(bullet, module)}")
     else:
-        out.append(f"- Use this module when a script needs the `{module}` runtime capability through `lurek.*`.")
+        out.append(f"- Use this module when a script needs the `{api_module}` runtime capability through `lurek.*`.")
     out.append("")
 
     out.append("## Minimal Example")
@@ -512,18 +573,18 @@ def build_page(
     example = first_example_block(examples)
     if example:
         key, code = example
-        out.append(f"From the `{key}` example block:")
+        out.append(f"Example block: `{key}`")
         out.append("")
         out.append("```lua")
         out.append(code)
         out.append("```")
     else:
-        out.append(f"See `content/examples/{module}.lua` for runnable examples when this module has public examples.")
+        out.append("*No minimal example is documented for this module yet.*")
     out.append("")
 
     out.append("## Common Patterns")
     out.append("")
-    pattern_names = [entry["full_name"] for entry in sorted(module_fns.get(module, []), key=lambda e: e["name"])[:5]]
+    pattern_names = [entry["full_name"] for entry in sorted(module_fns.get(api_module, []), key=lambda e: e["name"])[:5]]
     if pattern_names:
         for name in pattern_names:
             out.append(f"- Start with `{name}` when exploring this module.")
@@ -534,7 +595,6 @@ def build_page(
     out.append("## API Reference")
     out.append("")
     out.append("- This page is the generated API reference for this module.")
-    out.append(f"- Runnable example owner: `content/examples/{module}.lua`")
     out.append("")
 
     if summary_text:
@@ -543,9 +603,9 @@ def build_page(
         out.append(summary_text)
         out.append("")
 
-    if not unique_fns and not relevant_classes and not module_enums.get(module):
+    if not unique_fns and not relevant_classes and not module_enums.get(api_module):
         out.append("*No public API documented yet.*")
-        return "\n".join(out)
+        return sanitize_page_text("\n".join(out))
 
     local_types = set(relevant_classes)
 
@@ -553,21 +613,21 @@ def build_page(
     out.append("")
     if unique_fns:
         for entry in sorted(unique_fns, key=lambda e: e["name"]):
-            out.extend(render_entry(entry, examples, current_module=module, class_owner=class_owner, local_types=local_types))
+            out.extend(render_entry(entry, examples, current_module=api_module, class_owner=class_owner, local_types=local_types))
     else:
         out.append("*No standalone module functions documented.*")
         out.append("")
 
     out.append("## Module Fields")
     out.append("")
-    module_field_entries = module_fields.get(module, [])
+    module_field_entries = module_fields.get(api_module, [])
     if module_field_entries:
         for entry in sorted(module_field_entries, key=lambda e: e["name"]):
             desc, _, _ = doc_to_parts(entry.get("doc_lines", []))
             out.append(f"### `{entry['full_name']}`")
             out.append("")
             if desc:
-                out.append(_link_lurek_types(desc, current_module=module, class_owner=class_owner, local_types=local_types))
+                out.append(_link_lurek_types(desc, current_module=api_module, class_owner=class_owner, local_types=local_types))
                 out.append("")
             out.append("```lua")
             out.append(f"{entry['full_name']} = {entry.get('value', '')}")
@@ -579,20 +639,18 @@ def build_page(
         out.append("*No module-level fields documented.*")
         out.append("")
 
-    out.append("## Callbacks")
-    out.append("")
     callback_lines = []
     for entry in sorted(unique_fns, key=lambda e: e["name"]):
         callback_lines.extend(callback_rows(entry))
     if callback_lines:
+        out.append("## Callback Parameters")
+        out.append("")
         out.extend(callback_lines)
-    else:
-        out.append("*No callback parameters documented in this module.*")
-    out.append("")
+        out.append("")
 
     out.append("## Enums")
     out.append("")
-    enums = module_enums.get(module, [])
+    enums = module_enums.get(api_module, [])
     if enums:
         for enum in sorted(enums, key=lambda e: e.get("name", "")):
             e_name = enum.get("name", "<enum>")
@@ -600,7 +658,7 @@ def build_page(
             out.append(f"### `{e_name}`")
             if e_desc:
                 out.append("")
-                out.append(_link_lurek_types(e_desc, current_module=module, class_owner=class_owner, local_types=local_types))
+                out.append(_link_lurek_types(e_desc, current_module=api_module, class_owner=class_owner, local_types=local_types))
             values = enum.get("values") or []
             if values:
                 out.append("")
@@ -632,8 +690,8 @@ def build_page(
             out.append("|------|------|-------------|")
             for field in fields:
                 f_name = field.get("name", "")
-                f_type = _link_lurek_types(field.get("type", "any"), current_module=module, class_owner=class_owner, local_types=local_types)
-                f_desc = _link_lurek_types(field.get("description", ""), current_module=module, class_owner=class_owner, local_types=local_types)
+                f_type = _link_lurek_types(field.get("type", "any"), current_module=api_module, class_owner=class_owner, local_types=local_types)
+                f_desc = _link_lurek_types(field.get("description", ""), current_module=api_module, class_owner=class_owner, local_types=local_types)
                 out.append(f"| `{f_name}` | {f_type} | {f_desc} |")
             out.append("")
         else:
@@ -649,12 +707,12 @@ def build_page(
                 if entry["full_name"] in seen_m:
                     continue
                 seen_m.add(entry["full_name"])
-                out.extend(render_entry(entry, examples, current_module=module, class_owner=class_owner, local_types=local_types, heading_level="####"))
+                out.extend(render_entry(entry, examples, current_module=api_module, class_owner=class_owner, local_types=local_types, heading_level="####"))
         else:
             out.append("*No documented methods for this handle.*")
             out.append("")
 
-    return "\n".join(out)
+    return sanitize_page_text("\n".join(out))
 
 
 def build_callbacks_page() -> str:
@@ -699,7 +757,7 @@ def build_callbacks_page() -> str:
             name = cb.get("name", "")
             sig = cb.get("signature", "")
             desc = cb.get("description", "")
-            out.append(f"- `lurek.{name}` — `{sig}`")
+            out.append(f"- `lurek.{name}` - `{sig}`")
             if desc:
                 out.append(f"  - {desc}")
     else:
@@ -754,7 +812,35 @@ def build_callbacks_page() -> str:
     out.append("- [Spec callbacks](https://github.com/Lurek2D/lurek_2d/blob/main/docs/specs/callbacks.md)")
     out.append("")
 
-    return "\n".join(out)
+    return sanitize_page_text("\n".join(out))
+
+
+def build_module_guides_page(targets: list[str]) -> str:
+    rows: list[tuple[str, str, str, str]] = []
+    for module in targets:
+        api_module = api_module_name(module)
+        spec = extract_spec_sections(SPECS_DIR / f"{module}.md")
+        summary_bullets = first_bullets(spec.get("summary", ""), 1)
+        tldr_bullets = first_bullets(spec.get("tldr", ""), 1)
+        purpose = summary_bullets[0] if summary_bullets else (tldr_bullets[0] if tldr_bullets else f"`lurek.{api_module}` public API.")
+        purpose = publicize_module_text(purpose, module)
+        label = api_module_label(api_module)
+        rows.append((label, api_module, f"modules/{module_page_name(module)}.md", purpose))
+
+    out = [
+        "# Module API Specs",
+        "",
+        "This GitHub Pages site contains only generated API module specs and runtime callbacks.",
+        "",
+        "Callbacks: [Runtime callbacks](api/callbacks.md)",
+        "",
+        "| Module | Namespace | Purpose |",
+        "|---|---|---|",
+    ]
+    for label, api_module, page_ref, purpose in sorted(rows, key=lambda row: row[0].casefold()):
+        out.append(f"| [{label}]({page_ref}) | `lurek.{api_module}` | {purpose} |")
+    out.append("")
+    return sanitize_page_text("\n".join(out))
 
 
 # ---------------------------------------------------------------------------
@@ -775,11 +861,17 @@ def main():
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
 
+    expected_pages = {f"{module_page_name(module)}.md" for module in targets}
+    for stale_page in OUT_DIR.glob("*.md"):
+        if stale_page.name not in expected_pages:
+            stale_page.unlink()
+
     generated = []
     for module in targets:
-        if module not in module_fns:
+        api_module = api_module_name(module)
+        if api_module not in module_fns:
             # Still generate if spec or examples exist
-            if not (SPECS_DIR / f"{module}.md").exists() and not (EXAMPLES_DIR / f"{module}.lua").exists():
+            if not (SPECS_DIR / f"{module}.md").exists() and not (EXAMPLES_DIR / f"{module_example_name(module)}.lua").exists():
                 continue
 
         page = build_page(
@@ -792,10 +884,10 @@ def main():
             module_classes,
             class_owner,
         )
-        out_file = OUT_DIR / f"{module}.md"
+        out_file = OUT_DIR / f"{module_page_name(module)}.md"
         out_file.write_text(page, encoding="utf-8")
-        fn_count = len(module_fns.get(module, []))
-        print(f"  {module}.md  ({fn_count} functions)")
+        fn_count = len(module_fns.get(api_module, []))
+        print(f"  {module_page_name(module)}.md  ({fn_count} functions)")
         generated.append(module)
 
     print(f"\nDone — {len(generated)} Lua module pages in {OUT_DIR}")
@@ -803,6 +895,9 @@ def main():
     callbacks_md = build_callbacks_page()
     CALLBACKS_MD.write_text(callbacks_md, encoding="utf-8")
     print("Updated docs/api/callbacks.md from callbacks spec/json")
+
+    MODULE_GUIDES_MD.write_text(build_module_guides_page(targets), encoding="utf-8")
+    print("Updated docs/module-guides.md from public API modules")
 
     return generated
 

@@ -12,7 +12,7 @@ Simulates region maps decoded from color-coded PNG cartographic assets.
 
 ## Minimal Example
 
-From the `lurek.province.newFromPng` example block:
+Example block: `lurek.province.newFromPng`
 
 ```lua
 do
@@ -37,7 +37,6 @@ end
 ## API Reference
 
 - This page is the generated API reference for this module.
-- Runnable example owner: `content/examples/province.lua`
 
 ## Summary
 
@@ -286,7 +285,7 @@ lurek.province.hasFlag(id, bit)
 | Name | Type | Description |
 |------|------|-------------|
 | `id` | number | Province ID. |
-| `bit` | number | Flag bit index (0â€“63). |
+| `bit` | number | Flag bit index (0-63). |
 
 **Returns**
 
@@ -500,7 +499,7 @@ end
 
 ### `lurek.province.setFlag`
 
-Sets a single flag bit (0â€“63) on a province.
+Sets a single flag bit (0-63) on a province.
 
 ```lua
 lurek.province.setFlag(id, bit, value)
@@ -511,7 +510,7 @@ lurek.province.setFlag(id, bit, value)
 | Name | Type | Description |
 |------|------|-------------|
 | `id` | number | Province ID. |
-| `bit` | number | Flag bit index (0â€“63). |
+| `bit` | number | Flag bit index (0-63). |
 | `value` | boolean | True to set, false to clear. |
 
 **Example**
@@ -612,10 +611,6 @@ end
 ## Module Fields
 
 *No module-level fields documented.*
-
-## Callbacks
-
-*No callback parameters documented in this module.*
 
 ## Enums
 
@@ -2111,9 +2106,9 @@ LProvinceRegistry:setPoliticalColor(id, r, g, b, a)
 | Name | Type | Description |
 |------|------|-------------|
 | `id` | number | Province ID. |
-| `r` | number | Red component (0.0â€“1.0). |
-| `g` | number | Green component (0.0â€“1.0). |
-| `b` | number | Blue component (0.0â€“1.0). |
+| `r` | number | Red component (0.0-1.0). |
+| `g` | number | Green component (0.0-1.0). |
+| `b` | number | Blue component (0.0-1.0). |
 | `a?` | number | Alpha component (default 1.0). |
 
 **Returns**

@@ -12,7 +12,7 @@ Manages 2D sprites, JSON atlases, animation sheets, nine-slice panels, and lit-s
 
 ## Minimal Example
 
-From the `lurek.sprite.newSheet` example block:
+Example block: `lurek.sprite.newSheet`
 
 ```lua
 do
@@ -35,7 +35,6 @@ end
 ## API Reference
 
 - This page is the generated API reference for this module.
-- Runnable example owner: `content/examples/sprite.lua`
 
 ## Summary
 
@@ -338,10 +337,6 @@ end
 ## Module Fields
 
 *No module-level fields documented.*
-
-## Callbacks
-
-*No callback parameters documented in this module.*
 
 ## Enums
 

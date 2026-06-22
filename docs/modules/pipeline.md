@@ -12,7 +12,7 @@ Orchestrates steps using validated dependency graphs.
 
 ## Minimal Example
 
-From the `lurek.pipeline.newPipeline` example block:
+Example block: `lurek.pipeline.newPipeline`
 
 ```lua
 do
@@ -35,7 +35,6 @@ end
 ## API Reference
 
 - This page is the generated API reference for this module.
-- Runnable example owner: `content/examples/pipeline.lua`
 
 ## Summary
 
@@ -182,7 +181,7 @@ end
 
 *No module-level fields documented.*
 
-## Callbacks
+## Callback Parameters
 
 - `lurek.pipeline.newStep` param `callback?` (`function`): Optional callback executed when this step runs.
 

@@ -12,7 +12,7 @@ Manages dynamic neural nets, attention blocks, transformers, and flat tensor buf
 
 ## Minimal Example
 
-From the `lurek.learning.newNeuralNet` example block:
+Example block: `lurek.learning.newNeuralNet`
 
 ```lua
 do
@@ -39,7 +39,6 @@ end
 ## API Reference
 
 - This page is the generated API reference for this module.
-- Runnable example owner: `content/examples/learning.lua`
 
 ## Summary
 
@@ -839,10 +838,6 @@ end
 ## Module Fields
 
 *No module-level fields documented.*
-
-## Callbacks
-
-*No callback parameters documented in this module.*
 
 ## Enums
 

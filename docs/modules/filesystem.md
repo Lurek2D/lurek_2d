@@ -12,7 +12,7 @@ Sandboxes path resolution, mount overlays, and ZIP archives.
 
 ## Minimal Example
 
-From the `lurek.filesystem.getSource` example block:
+Example block: `lurek.filesystem.getSource`
 
 ```lua
 do
@@ -35,7 +35,6 @@ end
 ## API Reference
 
 - This page is the generated API reference for this module.
-- Runnable example owner: `content/examples/filesystem.lua`
 
 ## Summary
 
@@ -1495,10 +1494,6 @@ end
 ## Module Fields
 
 *No module-level fields documented.*
-
-## Callbacks
-
-*No callback parameters documented in this module.*
 
 ## Enums
 

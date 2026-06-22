@@ -12,7 +12,7 @@ Clock system with smoothed deltas, FPS telemetry, and schedulers for timed callb
 
 ## Minimal Example
 
-From the `lurek.timer.getDelta` example block:
+Example block: `lurek.timer.getDelta`
 
 ```lua
 do
@@ -36,7 +36,6 @@ end
 ## API Reference
 
 - This page is the generated API reference for this module.
-- Runnable example owner: `content/examples/timer.lua`
 
 ## Summary
 
@@ -502,7 +501,7 @@ end
 
 ### `lurek.timer.sleep`
 
-Blocks the current thread for the given number of seconds. Use sparingly â€” this halts the entire game loop. Intended for loading screens or synchronization.
+Blocks the current thread for the given number of seconds. Use sparingly - this halts the entire game loop. Intended for loading screens or synchronization.
 
 ```lua
 lurek.timer.sleep(seconds)
@@ -680,7 +679,7 @@ end
 
 *No module-level fields documented.*
 
-## Callbacks
+## Callback Parameters
 
 - `lurek.timer.afterReal` param `func` (`function`): Callback to invoke when the real-time deadline is reached.
 

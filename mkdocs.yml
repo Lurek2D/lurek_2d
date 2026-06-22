@@ -10,7 +10,6 @@ site_dir: pages
 use_directory_urls: false
 
 exclude_docs: |
-  index.md
   getting-started.md
   first-game.md
   project-structure.md
@@ -101,7 +100,6 @@ nav:
     - Agent: modules/agent.md
     - AI: modules/ai.md
     - Animation: modules/animation.md
-    - App: modules/app.md
     - Asset: modules/asset.md
     - Audio: modules/audio.md
     - Automation: modules/automation.md
@@ -120,11 +118,12 @@ nav:
     - DSP: modules/dsp.md
     - ECS: modules/ecs.md
     - Effect: modules/effect.md
+    - Engine: modules/engine.md
     - Event: modules/event.md
     - Filesystem: modules/filesystem.md
     - Font: modules/font.md
     - Globe: modules/globe.md
-    - Graph: modules/flownet.md
+    - Graph: modules/graph.md
     - Grep: modules/grep.md
     - Html: modules/html.md
     - I18n: modules/i18n.md
@@ -155,10 +154,10 @@ nav:
     - Runtime: modules/runtime.md
     - Save: modules/save.md
     - Scene: modules/scene.md
-    - Serial: modules/serialize.md
+    - Serial: modules/serial.md
     - Spine: modules/spine.md
     - Sprite: modules/sprite.md
-    - SVG: modules/vector.md
+    - SVG: modules/svg.md
     - Terminal: modules/terminal.md
     - Thread: modules/thread.md
     - Tilemap: modules/tilemap.md

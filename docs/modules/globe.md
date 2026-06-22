@@ -12,7 +12,7 @@ Manages spherical map registries, orbit projections, picking hit tests, and spli
 
 ## Minimal Example
 
-From the `lurek.globe.MAX_PROVINCES` example block:
+Example block: `lurek.globe.MAX_PROVINCES`
 
 ```lua
 do
@@ -35,7 +35,6 @@ end
 ## API Reference
 
 - This page is the generated API reference for this module.
-- Runnable example owner: `content/examples/globe.lua`
 
 ## Summary
 
@@ -487,10 +486,6 @@ end
 ## Module Fields
 
 *No module-level fields documented.*
-
-## Callbacks
-
-*No callback parameters documented in this module.*
 
 ## Enums
 

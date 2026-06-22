@@ -12,7 +12,7 @@ Centralized retained-mode UI context with arena storage, automatic layouts, and 
 
 ## Minimal Example
 
-From the `lurek.ui.newButton` example block:
+Example block: `lurek.ui.newButton`
 
 ```lua
 do
@@ -36,7 +36,6 @@ end
 ## API Reference
 
 - This page is the generated API reference for this module.
-- Runnable example owner: `content/examples/ui.lua`
 
 ## Summary
 
@@ -3112,10 +3111,6 @@ end
 ## Module Fields
 
 *No module-level fields documented.*
-
-## Callbacks
-
-*No callback parameters documented in this module.*
 
 ## Enums
 
@@ -10045,7 +10040,7 @@ do
     local thick = sep:getThickness()
     sep:setThickness(4)
     local t2 = sep:getThickness()
-    example_print_log("isVertical:", vert, "thickness:", thick, "â†’", t2)
+    example_print_log("isVertical:", vert, "thickness:", thick, "->", t2)
 end
 ```
 
@@ -10074,7 +10069,7 @@ do
     local thick = sep:getThickness()
     sep:setThickness(4)
     local t2 = sep:getThickness()
-    example_print_log("isVertical:", vert, "thickness:", thick, "â†’", t2)
+    example_print_log("isVertical:", vert, "thickness:", thick, "->", t2)
 end
 ```
 
@@ -10103,7 +10098,7 @@ do
     local thick = sep:getThickness()
     sep:setThickness(4)
     local t2 = sep:getThickness()
-    example_print_log("isVertical:", vert, "thickness:", thick, "â†’", t2)
+    example_print_log("isVertical:", vert, "thickness:", thick, "->", t2)
 end
 ```
 

@@ -12,7 +12,7 @@ Orchestrates sprite animation playback and processes Aseprite JSON imports.
 
 ## Minimal Example
 
-From the `lurek.animation.new` example block:
+Example block: `lurek.animation.new`
 
 ```lua
 do
@@ -37,7 +37,6 @@ end
 ## API Reference
 
 - This page is the generated API reference for this module.
-- Runnable example owner: `content/examples/animation.lua`
 
 ## Summary
 
@@ -294,10 +293,6 @@ end
 ## Module Fields
 
 *No module-level fields documented.*
-
-## Callbacks
-
-*No callback parameters documented in this module.*
 
 ## Enums
 

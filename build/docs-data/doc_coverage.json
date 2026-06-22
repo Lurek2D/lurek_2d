@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-22T13:45:15.552850+00:00",
+  "generated_at": "2026-06-22T19:50:46.016494+00:00",
   "summary": {
     "rust": {
       "total": 8609,
@@ -5336,7 +5336,7 @@
       "source": "rust",
       "module": "app",
       "file": "src/app/app.rs",
-      "line": 70,
+      "line": 154,
       "kind": "fn",
       "name": "recompute_viewport",
       "has_doc": true
@@ -5345,7 +5345,7 @@
       "source": "rust",
       "module": "app",
       "file": "src/app/app.rs",
-      "line": 146,
+      "line": 230,
       "kind": "enum",
       "name": "RunState",
       "has_doc": true
@@ -5354,7 +5354,7 @@
       "source": "rust",
       "module": "app",
       "file": "src/app/app.rs",
-      "line": 155,
+      "line": 239,
       "kind": "fn",
       "name": "splash_window_title",
       "has_doc": true
@@ -5363,7 +5363,7 @@
       "source": "rust",
       "module": "app",
       "file": "src/app/app.rs",
-      "line": 159,
+      "line": 243,
       "kind": "fn",
       "name": "fit_contain_size",
       "has_doc": true
@@ -5372,7 +5372,7 @@
       "source": "rust",
       "module": "app",
       "file": "src/app/app.rs",
-      "line": 168,
+      "line": 252,
       "kind": "enum",
       "name": "DropStartupTarget",
       "has_doc": true
@@ -5381,7 +5381,7 @@
       "source": "rust",
       "module": "app",
       "file": "src/app/app.rs",
-      "line": 183,
+      "line": 267,
       "kind": "enum",
       "name": "AppStartupStage",
       "has_doc": true
@@ -5390,7 +5390,7 @@
       "source": "rust",
       "module": "app",
       "file": "src/app/app.rs",
-      "line": 194,
+      "line": 278,
       "kind": "struct",
       "name": "AppStartupError",
       "has_doc": true
@@ -5399,7 +5399,7 @@
       "source": "rust",
       "module": "app",
       "file": "src/app/app.rs",
-      "line": 220,
+      "line": 304,
       "kind": "fn",
       "name": "map_startup_error_to_run_state",
       "has_doc": true
@@ -5408,7 +5408,7 @@
       "source": "rust",
       "module": "app",
       "file": "src/app/app.rs",
-      "line": 226,
+      "line": 310,
       "kind": "struct",
       "name": "StartupTargetPolicy",
       "has_doc": true
@@ -5417,7 +5417,7 @@
       "source": "rust",
       "module": "app",
       "file": "src/app/app.rs",
-      "line": 244,
+      "line": 328,
       "kind": "enum",
       "name": "StartupTargetDiagnostic",
       "has_doc": true
@@ -5426,7 +5426,7 @@
       "source": "rust",
       "module": "app",
       "file": "src/app/app.rs",
-      "line": 264,
+      "line": 348,
       "kind": "struct",
       "name": "StartupTargetReport",
       "has_doc": true
@@ -5435,7 +5435,7 @@
       "source": "rust",
       "module": "app",
       "file": "src/app/app.rs",
-      "line": 273,
+      "line": 357,
       "kind": "enum",
       "name": "CallbackFailurePolicy",
       "has_doc": true
@@ -5444,7 +5444,7 @@
       "source": "rust",
       "module": "app",
       "file": "src/app/app.rs",
-      "line": 282,
+      "line": 366,
       "kind": "struct",
       "name": "CallbackErrorRecord",
       "has_doc": true
@@ -5453,7 +5453,7 @@
       "source": "rust",
       "module": "app",
       "file": "src/app/app.rs",
-      "line": 295,
+      "line": 379,
       "kind": "struct",
       "name": "WindowRuntimeReport",
       "has_doc": true
@@ -5462,7 +5462,7 @@
       "source": "rust",
       "module": "app",
       "file": "src/app/app.rs",
-      "line": 324,
+      "line": 408,
       "kind": "enum",
       "name": "InputDispatchTarget",
       "has_doc": true
@@ -5471,7 +5471,7 @@
       "source": "rust",
       "module": "app",
       "file": "src/app/app.rs",
-      "line": 335,
+      "line": 419,
       "kind": "struct",
       "name": "InputDispatchReport",
       "has_doc": true
@@ -5480,7 +5480,7 @@
       "source": "rust",
       "module": "app",
       "file": "src/app/app.rs",
-      "line": 350,
+      "line": 434,
       "kind": "struct",
       "name": "ReloadReport",
       "has_doc": true
@@ -5489,7 +5489,7 @@
       "source": "rust",
       "module": "app",
       "file": "src/app/app.rs",
-      "line": 367,
+      "line": 451,
       "kind": "struct",
       "name": "HotReloadReport",
       "has_doc": true
@@ -5498,7 +5498,7 @@
       "source": "rust",
       "module": "app",
       "file": "src/app/app.rs",
-      "line": 395,
+      "line": 479,
       "kind": "fn",
       "name": "classify_drop_startup_target",
       "has_doc": true
@@ -5507,7 +5507,7 @@
       "source": "rust",
       "module": "app",
       "file": "src/app/app.rs",
-      "line": 400,
+      "line": 484,
       "kind": "fn",
       "name": "classify_drop_startup_target_with_policy",
       "has_doc": true
@@ -5516,7 +5516,7 @@
       "source": "rust",
       "module": "app",
       "file": "src/app/app.rs",
-      "line": 492,
+      "line": 576,
       "kind": "fn",
       "name": "should_open_startup_picker_on_key",
       "has_doc": true
@@ -5525,7 +5525,7 @@
       "source": "rust",
       "module": "app",
       "file": "src/app/app.rs",
-      "line": 496,
+      "line": 580,
       "kind": "struct",
       "name": "LurekApp",
       "has_doc": true
@@ -5534,7 +5534,7 @@
       "source": "rust",
       "module": "app",
       "file": "src/app/app.rs",
-      "line": 637,
+      "line": 721,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -5543,7 +5543,7 @@
       "source": "rust",
       "module": "app",
       "file": "src/app/app.rs",
-      "line": 737,
+      "line": 821,
       "kind": "fn",
       "name": "set_callback_failure_policy_for_testing",
       "has_doc": true
@@ -5552,7 +5552,7 @@
       "source": "rust",
       "module": "app",
       "file": "src/app/app.rs",
-      "line": 1151,
+      "line": 1235,
       "kind": "fn",
       "name": "resolve_present_mode",
       "has_doc": true
@@ -5561,7 +5561,7 @@
       "source": "rust",
       "module": "app",
       "file": "src/app/app.rs",
-      "line": 1361,
+      "line": 1445,
       "kind": "fn",
       "name": "init_lua",
       "has_doc": true
@@ -5570,7 +5570,7 @@
       "source": "rust",
       "module": "app",
       "file": "src/app/app.rs",
-      "line": 1433,
+      "line": 1517,
       "kind": "fn",
       "name": "inspect_window_runtime_request_for_testing",
       "has_doc": true
@@ -5579,7 +5579,7 @@
       "source": "rust",
       "module": "app",
       "file": "src/app/app.rs",
-      "line": 2482,
+      "line": 2566,
       "kind": "fn",
       "name": "extract_lurek_archive_with_policy",
       "has_doc": true
@@ -5588,7 +5588,7 @@
       "source": "rust",
       "module": "app",
       "file": "src/app/app.rs",
-      "line": 3990,
+      "line": 4074,
       "kind": "struct",
       "name": "App",
       "has_doc": true
@@ -5597,7 +5597,7 @@
       "source": "rust",
       "module": "app",
       "file": "src/app/app.rs",
-      "line": 3998,
+      "line": 4082,
       "kind": "struct",
       "name": "AppRunOptions",
       "has_doc": true
@@ -5606,7 +5606,7 @@
       "source": "rust",
       "module": "app",
       "file": "src/app/app.rs",
-      "line": 4021,
+      "line": 4105,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -5615,7 +5615,7 @@
       "source": "rust",
       "module": "app",
       "file": "src/app/app.rs",
-      "line": 4025,
+      "line": 4109,
       "kind": "fn",
       "name": "run",
       "has_doc": true

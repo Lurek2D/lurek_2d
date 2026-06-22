@@ -12,7 +12,7 @@ Manages dense array math, linear algebra, and FFT transforms.
 
 ## Minimal Example
 
-From the `lurek.compute.newArray` example block:
+Example block: `lurek.compute.newArray`
 
 ```lua
 do
@@ -35,7 +35,6 @@ end
 ## API Reference
 
 - This page is the generated API reference for this module.
-- Runnable example owner: `content/examples/compute.lua`
 
 ## Summary
 
@@ -506,10 +505,6 @@ end
 ## Module Fields
 
 *No module-level fields documented.*
-
-## Callbacks
-
-*No callback parameters documented in this module.*
 
 ## Enums
 

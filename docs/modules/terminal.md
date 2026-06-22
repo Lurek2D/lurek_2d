@@ -12,7 +12,7 @@ Grid terminal supporting ANSI formats, syntax highlighting, and cycling tab-comp
 
 ## Minimal Example
 
-From the `lurek.terminal.newTerminal` example block:
+Example block: `lurek.terminal.newTerminal`
 
 ```lua
 do
@@ -35,7 +35,6 @@ end
 ## API Reference
 
 - This page is the generated API reference for this module.
-- Runnable example owner: `content/examples/terminal.lua`
 
 ## Summary
 
@@ -1081,10 +1080,6 @@ end
 ## Module Fields
 
 *No module-level fields documented.*
-
-## Callbacks
-
-*No callback parameters documented in this module.*
 
 ## Enums
 

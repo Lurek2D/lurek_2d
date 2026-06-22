@@ -1569,73 +1569,73 @@
         "module": "app",
         "name": "recompute_viewport",
         "file": "src/app/app.rs",
-        "line": 70
+        "line": 154
       },
       {
         "module": "app",
         "name": "fit_contain_size",
         "file": "src/app/app.rs",
-        "line": 159
+        "line": 243
       },
       {
         "module": "app",
         "name": "map_startup_error_to_run_state",
         "file": "src/app/app.rs",
-        "line": 220
+        "line": 304
       },
       {
         "module": "app",
         "name": "classify_drop_startup_target",
         "file": "src/app/app.rs",
-        "line": 395
+        "line": 479
       },
       {
         "module": "app",
         "name": "classify_drop_startup_target_with_policy",
         "file": "src/app/app.rs",
-        "line": 400
+        "line": 484
       },
       {
         "module": "app",
         "name": "should_open_startup_picker_on_key",
         "file": "src/app/app.rs",
-        "line": 492
+        "line": 576
       },
       {
         "module": "app",
         "name": "LurekApp::new",
         "file": "src/app/app.rs",
-        "line": 637
+        "line": 721
       },
       {
         "module": "app",
         "name": "LurekApp::resolve_present_mode",
         "file": "src/app/app.rs",
-        "line": 1151
+        "line": 1235
       },
       {
         "module": "app",
         "name": "LurekApp::inspect_window_runtime_request_for_testing",
         "file": "src/app/app.rs",
-        "line": 1433
+        "line": 1517
       },
       {
         "module": "app",
         "name": "LurekApp::extract_lurek_archive_with_policy",
         "file": "src/app/app.rs",
-        "line": 2482
+        "line": 2566
       },
       {
         "module": "app",
         "name": "App::new",
         "file": "src/app/app.rs",
-        "line": 4021
+        "line": 4105
       },
       {
         "module": "app",
         "name": "App::run",
         "file": "src/app/app.rs",
-        "line": 4025
+        "line": 4109
       },
       {
         "module": "app",
@@ -24119,19 +24119,19 @@
         "module": "app",
         "name": "splash_window_title",
         "file": "src/app/app.rs",
-        "line": 155
+        "line": 239
       },
       {
         "module": "app",
         "name": "LurekApp::set_callback_failure_policy_for_testing",
         "file": "src/app/app.rs",
-        "line": 737
+        "line": 821
       },
       {
         "module": "app",
         "name": "LurekApp::init_lua",
         "file": "src/app/app.rs",
-        "line": 1361
+        "line": 1445
       },
       {
         "module": "app",

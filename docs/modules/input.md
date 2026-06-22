@@ -12,7 +12,7 @@ Unifies keyboard, mouse, gamepad slotting, and touch events into stable inputs.
 
 ## Minimal Example
 
-From the `lurek.input.keyboard.isDown` example block:
+Example block: `lurek.input.keyboard.isDown`
 
 ```lua
 do
@@ -36,7 +36,6 @@ end
 ## API Reference
 
 - This page is the generated API reference for this module.
-- Runnable example owner: `content/examples/input.lua`
 
 ## Summary
 
@@ -1030,7 +1029,7 @@ end
 
 *No module-level fields documented.*
 
-## Callbacks
+## Callback Parameters
 
 - `lurek.input.onRebind` param `callback` (`function`): function(action_name, new_keys) called on any change.
 

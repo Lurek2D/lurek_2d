@@ -12,7 +12,7 @@ Orchestrates the engine's visual backend using a device-facing wgpu renderer.
 
 ## Minimal Example
 
-From the `lurek.render.print` example block:
+Example block: `lurek.render.print`
 
 ```lua
 do
@@ -35,7 +35,6 @@ end
 ## API Reference
 
 - This page is the generated API reference for this module.
-- Runnable example owner: `content/examples/render.lua`
 
 ## Summary
 
@@ -853,10 +852,10 @@ lurek.render.getBackgroundColor()
 
 | Type | Description |
 |------|-------------|
-| number | Red; green; blue; alpha channels (0â€“1). (value 1). |
-| number | Red; green; blue; alpha channels (0â€“1). (value 2). |
-| number | Red; green; blue; alpha channels (0â€“1). (value 3). |
-| number | Red; green; blue; alpha channels (0â€“1). (value 4). |
+| number | Red; green; blue; alpha channels (0-1). (value 1). |
+| number | Red; green; blue; alpha channels (0-1). (value 2). |
+| number | Red; green; blue; alpha channels (0-1). (value 3). |
+| number | Red; green; blue; alpha channels (0-1). (value 4). |
 
 **Example**
 
@@ -1007,10 +1006,10 @@ lurek.render.getColor()
 
 | Type | Description |
 |------|-------------|
-| number | Red; green; blue; alpha channels (0â€“1). (value 1). |
-| number | Red; green; blue; alpha channels (0â€“1). (value 2). |
-| number | Red; green; blue; alpha channels (0â€“1). (value 3). |
-| number | Red; green; blue; alpha channels (0â€“1). (value 4). |
+| number | Red; green; blue; alpha channels (0-1). (value 1). |
+| number | Red; green; blue; alpha channels (0-1). (value 2). |
+| number | Red; green; blue; alpha channels (0-1). (value 3). |
+| number | Red; green; blue; alpha channels (0-1). (value 4). |
 
 **Example**
 
@@ -2825,7 +2824,7 @@ lurek.render.pushLayer(id, alpha, blendMode)
 | Name | Type | Description |
 |------|------|-------------|
 | `id` | number | Layer identifier (must match the popLayer call). |
-| `alpha?` | number | Layer opacity (0â€“1, default 1). |
+| `alpha?` | number | Layer opacity (0-1, default 1). |
 | `blendMode?` | string | Blend mode: "alpha" (default), "add", "multiply", "replace", "screen". |
 
 **Example**
@@ -3040,9 +3039,9 @@ lurek.render.setBackgroundColor(r, g, b)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `r` | number | Red channel (0â€“1). |
-| `g` | number | Green channel (0â€“1). |
-| `b` | number | Blue channel (0â€“1). |
+| `r` | number | Red channel (0-1). |
+| `g` | number | Green channel (0-1). |
+| `b` | number | Blue channel (0-1). |
 
 **Example**
 
@@ -3160,10 +3159,10 @@ lurek.render.setColor(r, g, b, a)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `r` | number | Red channel (0â€“1). |
-| `g` | number | Green channel (0â€“1). |
-| `b` | number | Blue channel (0â€“1). |
-| `a?` | number | Alpha channel (0â€“1, default 1). |
+| `r` | number | Red channel (0-1). |
+| `g` | number | Green channel (0-1). |
+| `b` | number | Blue channel (0-1). |
+| `a?` | number | Alpha channel (0-1, default 1). |
 
 **Example**
 
@@ -3790,7 +3789,7 @@ end
 
 *No module-level fields documented.*
 
-## Callbacks
+## Callback Parameters
 
 - `lurek.render.captureScreenshot` param `callback` (`function`): Called with an LImageData argument.
 
@@ -4022,7 +4021,7 @@ LDepthSorter:add(callback, depth)
 | Name | Type | Description |
 |------|------|-------------|
 | `callback` | function | A zero-argument draw function invoked during flush. |
-| `depth` | number | Numeric z-depth controlling draw order â€” lower values are drawn behind higher values. |
+| `depth` | number | Numeric z-depth controlling draw order - lower values are drawn behind higher values. |
 
 ---
 
@@ -4054,7 +4053,7 @@ LDepthSorter:clear()
 
 #### `LDepthSorter:flush`
 
-Sort all entries by depth, execute every callback or object's `drawSorted` method in back-to-front order, then clear the sorter for the next frame. This is the standard one-call render path â€” call it once per frame inside your scene's `draw` or `render` callback.
+Sort all entries by depth, execute every callback or object's `drawSorted` method in back-to-front order, then clear the sorter for the next frame. This is the standard one-call render path - call it once per frame inside your scene's `draw` or `render` callback.
 
 ```lua
 LDepthSorter:flush()
@@ -6367,7 +6366,7 @@ LObjModel:renderToImage(width, height, rotation)
 |------|------|-------------|
 | `width` | number | Output image width in pixels. |
 | `height` | number | Output image height in pixels. |
-| `rotation?` | number | Rotation step (0â€“3, each step = 90 degrees, default 0). |
+| `rotation?` | number | Rotation step (0-3, each step = 90 degrees, default 0). |
 
 **Returns**
 
@@ -7105,10 +7104,10 @@ LShape:setColor(r, g, b, a)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `r` | number | Red channel (0â€“1). |
-| `g` | number | Green channel (0â€“1). |
-| `b` | number | Blue channel (0â€“1). |
-| `a?` | number | Alpha channel (0â€“1, default 1). |
+| `r` | number | Red channel (0-1). |
+| `g` | number | Green channel (0-1). |
+| `b` | number | Blue channel (0-1). |
+| `a?` | number | Alpha channel (0-1, default 1). |
 
 **Example**
 

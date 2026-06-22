@@ -12,7 +12,7 @@ Replays input steps and runs visual test assertions.
 
 ## Minimal Example
 
-From the `lurek.automation.load` example block:
+Example block: `lurek.automation.load`
 
 ```lua
 do
@@ -36,7 +36,6 @@ end
 ## API Reference
 
 - This page is the generated API reference for this module.
-- Runnable example owner: `content/examples/automation.lua`
 
 ## Summary
 
@@ -1033,7 +1032,7 @@ end
 
 *No module-level fields documented.*
 
-## Callbacks
+## Callback Parameters
 
 - `lurek.automation.waitUntil` param `predicate` (`function`): Function called each update; true resolves the wait.
 

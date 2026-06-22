@@ -12,7 +12,7 @@ Supports orthogonal, isometric, and hex grids with sparse culling, LOD, and stan
 
 ## Minimal Example
 
-From the `lurek.tilemap.newTileMap` example block:
+Example block: `lurek.tilemap.newTileMap`
 
 ```lua
 do
@@ -37,7 +37,6 @@ end
 ## API Reference
 
 - This page is the generated API reference for this module.
-- Runnable example owner: `content/examples/tilemap.lua`
 
 ## Summary
 
@@ -1214,10 +1213,6 @@ end
 ## Module Fields
 
 *No module-level fields documented.*
-
-## Callbacks
-
-*No callback parameters documented in this module.*
 
 ## Enums
 
@@ -3690,7 +3685,7 @@ LMapBlock:setSocket(x, y, edge, edge_type)
 
 #### `LMapBlock:setTile`
 
-Set a tile slot value â€” Lua userdata object exposed by the engine.
+Set a tile slot value - Lua userdata object exposed by the engine.
 
 ```lua
 LMapBlock:setTile(layer, x, y, slot, tileset_id, gid)
@@ -4021,7 +4016,7 @@ LMapGroup:typeOf(name)
 
 #### `LMapScript:addStep`
 
-Add a generation step â€” Lua userdata object exposed by the engine.
+Add a generation step - Lua userdata object exposed by the engine.
 
 ```lua
 LMapScript:addStep(step_type, opts)

@@ -12,7 +12,7 @@ Gathers hardware frame stats and runs a hierarchical zone profiler.
 
 ## Minimal Example
 
-From the `lurek.devtools.log` example block:
+Example block: `lurek.devtools.log`
 
 ```lua
 do
@@ -36,7 +36,6 @@ end
 ## API Reference
 
 - This page is the generated API reference for this module.
-- Runnable example owner: `content/examples/devtools.lua`
 
 ## Summary
 
@@ -1556,7 +1555,7 @@ end
 
 *No module-level fields documented.*
 
-## Callbacks
+## Callback Parameters
 
 - `lurek.devtools.exposeWatch` param `getter` (`function`): Callback invoked with no arguments when watch values are collected.
 

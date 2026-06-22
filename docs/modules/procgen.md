@@ -12,7 +12,7 @@ Orchestrates deterministic generation of terrain heightmaps, biomes, dungeons, a
 
 ## Minimal Example
 
-From the `lurek.procgen.simplex2d` example block:
+Example block: `lurek.procgen.simplex2d`
 
 ```lua
 do
@@ -36,7 +36,6 @@ end
 ## API Reference
 
 - This page is the generated API reference for this module.
-- Runnable example owner: `content/examples/procgen.lua`
 
 ## Summary
 
@@ -78,10 +77,10 @@ lurek.procgen.biomeColor(name)
 
 | Type | Description |
 |------|-------------|
-| number | Red component (0â€“255). |
-| number | Green component (0â€“255). |
-| number | Blue component (0â€“255). |
-| number | Alpha component (0â€“255). |
+| number | Red component (0-255). |
+| number | Green component (0-255). |
+| number | Blue component (0-255). |
+| number | Alpha component (0-255). |
 
 **Example**
 
@@ -195,7 +194,7 @@ lurek.procgen.cellularAutomata(width, height, opts)
 |------|------|-------------|
 | `width` | number | Grid width in cells. |
 | `height` | number | Grid height in cells. |
-| `opts?` | table | Options: fill (0.0â€“1.0 initial fill ratio), iterations, birth threshold, survive threshold, seed. |
+| `opts?` | table | Options: fill (0.0-1.0 initial fill ratio), iterations, birth threshold, survive threshold, seed. |
 
 **Returns**
 
@@ -402,7 +401,7 @@ lurek.procgen.heightmap(opts)
 
 | Type | Description |
 |------|-------------|
-| LProcgenHeightmapResult | Table with .cells (flat f32 array 0.0â€“1.0), .width, .height. |
+| LProcgenHeightmapResult | Table with .cells (flat f32 array 0.0-1.0), .width, .height. |
 
 **Example**
 
@@ -1364,10 +1363,6 @@ end
 
 *No module-level fields documented.*
 
-## Callbacks
-
-*No callback parameters documented in this module.*
-
 ## Enums
 
 *No module-specific enums documented.*
@@ -1398,9 +1393,9 @@ LBiomeClassifier:classify(height, moisture, temperature)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `height` | number | Elevation value (0.0â€“1.0) of the terrain point. |
-| `moisture` | number | Moisture level (0.0â€“1.0) at the point. |
-| `temperature` | number | Temperature value (0.0â€“1.0) at the point. |
+| `height` | number | Elevation value (0.0-1.0) of the terrain point. |
+| `moisture` | number | Moisture level (0.0-1.0) at the point. |
+| `temperature` | number | Temperature value (0.0-1.0) at the point. |
 
 **Returns**
 

@@ -5,6 +5,151 @@ lurek = {}
 
 ---@alias LuaValue nil|boolean|number|string|table|function|userdata|thread
 
+--- Global engine callbacks invoked by the runtime when defined in `main.lua`.
+
+--- Called every frame to queue world render commands.
+function lurek.draw() end
+
+--- Called every frame after world drawing to queue UI and HUD render commands.
+function lurek.draw_ui() end
+
+--- Called before the runtime exits after an explicit close path.
+function lurek.exit() end
+
+--- Deprecated fixed-step update callback; use `lurek.process_physics(dt)`.
+---@deprecated Deprecated fixed-step update callback; use `lurek.process_physics(dt)`.
+---@param dt number Fixed timestep in seconds.
+function lurek.fixedUpdate(dt) end
+
+--- Called when the application window gains or loses focus.
+---@param focused boolean True when the window is focused.
+function lurek.focus(focused) end
+
+--- Called when a connected gamepad axis changes.
+---@param id number Gamepad slot id.
+---@param axis string Axis name.
+---@param value number Axis value reported by the backend.
+function lurek.gamepadaxis(id, axis, value) end
+
+--- Called when a gamepad connects.
+---@param id number Gamepad slot id.
+function lurek.gamepadconnected(id) end
+
+--- Called when a gamepad disconnects.
+---@param id number Gamepad slot id.
+function lurek.gamepaddisconnected(id) end
+
+--- Called when a gamepad button is pressed.
+---@param id number Gamepad slot id.
+---@param button string Button name.
+function lurek.gamepadpressed(id, button) end
+
+--- Called when a gamepad button is released.
+---@param id number Gamepad slot id.
+---@param button string Button name.
+function lurek.gamepadreleased(id, button) end
+
+--- Called once after the Lua VM, shared state, and `lurek.*` modules are ready.
+function lurek.init() end
+
+--- Compatibility callback called when a gamepad connects.
+---@param id number Gamepad slot id.
+function lurek.joystickadded(id) end
+
+--- Compatibility callback called when a gamepad disconnects.
+---@param id number Gamepad slot id.
+function lurek.joystickremoved(id) end
+
+--- Called when a keyboard key is pressed and UI did not consume it.
+---@param key string Normalized key name.
+---@param scancode string Normalized physical scancode, or an empty string when unavailable.
+---@param isrepeat boolean True when the key press is an OS repeat event.
+function lurek.keypressed(key, scancode, isrepeat) end
+
+--- Called when a keyboard key is released.
+---@param key string Normalized key name.
+---@param scancode string Normalized physical scancode, or an empty string when unavailable.
+function lurek.keyreleased(key, scancode) end
+
+--- Called when the pointer moves in game coordinates and UI did not consume it.
+---@param x number Pointer x coordinate in game space.
+---@param y number Pointer y coordinate in game space.
+---@param dx number Delta x since the previous pointer event.
+---@param dy number Delta y since the previous pointer event.
+function lurek.mousemoved(x, y, dx, dy) end
+
+--- Called when a mouse button is pressed and UI did not consume it.
+---@param x number Pointer x coordinate in game space.
+---@param y number Pointer y coordinate in game space.
+---@param button number One-based mouse button index.
+function lurek.mousepressed(x, y, button) end
+
+--- Called when a mouse button is released and UI did not consume it.
+---@param x number Pointer x coordinate in game space.
+---@param y number Pointer y coordinate in game space.
+---@param button number One-based mouse button index.
+function lurek.mousereleased(x, y, button) end
+
+--- Called every frame for game logic.
+---@param dt number Frame delta time in seconds.
+function lurek.process(dt) end
+
+--- Called every frame after `process` and fixed-step physics callbacks.
+---@param dt number Frame delta time in seconds.
+function lurek.process_late(dt) end
+
+--- Called at the fixed timestep zero or more times per rendered frame.
+---@param dt number Fixed timestep in seconds.
+function lurek.process_physics(dt) end
+
+--- Called once after startup when the first frame resources are ready.
+function lurek.ready() end
+
+--- Called after the renderer and viewport are resized.
+---@param width number Window width in pixels after clamping.
+---@param height number Window height in pixels after clamping.
+function lurek.resize(width, height) end
+
+--- Called when committed text input arrives and UI did not consume it.
+---@param text string Committed text.
+function lurek.textinput(text) end
+
+--- Called when a touch point moves.
+---@param id number Touch identifier.
+---@param x number Touch x coordinate in game space.
+---@param y number Touch y coordinate in game space.
+---@param dx number Delta x since the previous touch event.
+---@param dy number Delta y since the previous touch event.
+---@param pressure? number Normalized pressure when available.
+function lurek.touchmoved(id, x, y, dx, dy, pressure) end
+
+--- Called when a touch point starts.
+---@param id number Touch identifier.
+---@param x number Touch x coordinate in game space.
+---@param y number Touch y coordinate in game space.
+---@param dx number Initial delta x, normally `0`.
+---@param dy number Initial delta y, normally `0`.
+---@param pressure? number Normalized pressure when available.
+function lurek.touchpressed(id, x, y, dx, dy, pressure) end
+
+--- Called when a touch point ends or is cancelled.
+---@param id number Touch identifier.
+---@param x number Touch x coordinate in game space.
+---@param y number Touch y coordinate in game space.
+---@param dx number Delta x since the previous touch event.
+---@param dy number Delta y since the previous touch event.
+---@param pressure? number Normalized pressure when available.
+function lurek.touchreleased(id, x, y, dx, dy, pressure) end
+
+--- Called when the window occlusion/visibility state changes.
+---@param visible boolean True when the window is visible.
+function lurek.visible(visible) end
+
+--- Called when mouse-wheel input arrives and UI did not consume it.
+---@param dx number Horizontal wheel delta.
+---@param dy number Vertical wheel delta.
+function lurek.wheelmoved(dx, dy) end
+
 ---@class LNetworkRpc
 LNetworkRpc = {}
 

@@ -12,7 +12,7 @@ Provides literal-first file scanning, lightweight pattern helpers, and JSON/log 
 
 ## Minimal Example
 
-From the `lurek.grep.newEngine` example block:
+Example block: `lurek.grep.newEngine`
 
 ```lua
 do
@@ -36,7 +36,6 @@ end
 ## API Reference
 
 - This page is the generated API reference for this module.
-- Runnable example owner: `content/examples/grep.lua`
 
 ## Summary
 
@@ -287,10 +286,6 @@ end
 ## Module Fields
 
 *No module-level fields documented.*
-
-## Callbacks
-
-*No callback parameters documented in this module.*
 
 ## Enums
 

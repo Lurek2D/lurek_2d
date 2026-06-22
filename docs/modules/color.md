@@ -12,7 +12,7 @@ Manages color spaces, blends, and retro palettes.
 
 ## Minimal Example
 
-From the `lurek.color.new` example block:
+Example block: `lurek.color.new`
 
 ```lua
 do
@@ -35,7 +35,6 @@ end
 ## API Reference
 
 - This page is the generated API reference for this module.
-- Runnable example owner: `content/examples/color.lua`
 
 ## Summary
 
@@ -50,7 +49,7 @@ This module is mostly self-contained inside the `Foundations` group. Cross-modul
 
 ### `lurek.color.additive`
 
-Additive blend of two colors (clamped to 0â€“1 per channel).
+Additive blend of two colors (clamped to 0-1 per channel).
 
 ```lua
 lurek.color.additive(c1, c2)
@@ -130,15 +129,15 @@ lurek.color.brightness(r, g, b)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `r` | number | Red channel (0â€“1). |
-| `g` | number | Green channel (0â€“1). |
-| `b` | number | Blue channel (0â€“1). |
+| `r` | number | Red channel (0-1). |
+| `g` | number | Green channel (0-1). |
+| `b` | number | Blue channel (0-1). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| number | Perceived brightness (0â€“1). |
+| number | Perceived brightness (0-1). |
 
 **Example**
 
@@ -201,9 +200,9 @@ lurek.color.fromHsl(h, s, l)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `h` | number | Hue in degrees (0â€“360). |
-| `s` | number | Saturation (0â€“1). |
-| `l` | number | Lightness (0â€“1). |
+| `h` | number | Hue in degrees (0-360). |
+| `s` | number | Saturation (0-1). |
+| `l` | number | Lightness (0-1). |
 
 **Returns**
 
@@ -237,9 +236,9 @@ lurek.color.fromHsv(h, s, v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `h` | number | Hue in degrees (0â€“360). |
-| `s` | number | Saturation (0â€“1). |
-| `v` | number | Value/brightness (0â€“1). |
+| `h` | number | Hue in degrees (0-360). |
+| `s` | number | Saturation (0-1). |
+| `v` | number | Value/brightness (0-1). |
 
 **Returns**
 
@@ -263,7 +262,7 @@ end
 
 ### `lurek.color.fromU8`
 
-Creates a color from 0â€“255 integer components. Alpha defaults to 255.
+Creates a color from 0-255 integer components. Alpha defaults to 255.
 
 ```lua
 lurek.color.fromU8(r, g, b, a)
@@ -273,16 +272,16 @@ lurek.color.fromU8(r, g, b, a)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `r` | number | Red channel (0â€“255). |
-| `g` | number | Green channel (0â€“255). |
-| `b` | number | Blue channel (0â€“255). |
-| `a?` | number | Alpha channel (0â€“255); defaults to 255. |
+| `r` | number | Red channel (0-255). |
+| `g` | number | Green channel (0-255). |
+| `b` | number | Blue channel (0-255). |
+| `a?` | number | Alpha channel (0-255); defaults to 255. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| table | Color table {r, g, b, a} with values normalised to 0â€“1. |
+| table | Color table {r, g, b, a} with values normalised to 0-1. |
 
 **Example**
 
@@ -310,7 +309,7 @@ lurek.color.gammaToLinear(c)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `c` | number | Gamma-encoded value (0â€“1). |
+| `c` | number | Gamma-encoded value (0-1). |
 
 **Returns**
 
@@ -345,10 +344,10 @@ lurek.color.invert(r, g, b, a)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `r` | number | Red channel (0â€“1). |
-| `g` | number | Green channel (0â€“1). |
-| `b` | number | Blue channel (0â€“1). |
-| `a?` | number | Alpha channel (0â€“1); defaults to 1.0. |
+| `r` | number | Red channel (0-1). |
+| `g` | number | Green channel (0-1). |
+| `b` | number | Blue channel (0-1). |
+| `a?` | number | Alpha channel (0-1); defaults to 1.0. |
 
 **Returns**
 
@@ -372,7 +371,7 @@ end
 
 ### `lurek.color.lerp`
 
-Linearly interpolates between two color tables by factor t (clamped to 0â€“1).
+Linearly interpolates between two color tables by factor t (clamped to 0-1).
 
 ```lua
 lurek.color.lerp(c1, c2, t)
@@ -384,7 +383,7 @@ lurek.color.lerp(c1, c2, t)
 |------|------|-------------|
 | `c1` | table | Start color {r, g, b, a}. |
 | `c2` | table | End color {r, g, b, a}. |
-| `t` | number | Interpolation factor (0â€“1). |
+| `t` | number | Interpolation factor (0-1). |
 
 **Returns**
 
@@ -418,7 +417,7 @@ lurek.color.linearToGamma(c)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `c` | number | Linear value (0â€“1). |
+| `c` | number | Linear value (0-1). |
 
 **Returns**
 
@@ -478,7 +477,7 @@ end
 
 ### `lurek.color.new`
 
-Creates an RGBA color from 0â€“1 float components. Alpha defaults to 1.0.
+Creates an RGBA color from 0-1 float components. Alpha defaults to 1.0.
 
 ```lua
 lurek.color.new(r, g, b, a)
@@ -488,10 +487,10 @@ lurek.color.new(r, g, b, a)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `r` | number | Red channel (0â€“1). |
-| `g` | number | Green channel (0â€“1). |
-| `b` | number | Blue channel (0â€“1). |
-| `a?` | number | Alpha channel (0â€“1); defaults to 1.0. |
+| `r` | number | Red channel (0-1). |
+| `g` | number | Green channel (0-1). |
+| `b` | number | Blue channel (0-1). |
+| `a?` | number | Alpha channel (0-1); defaults to 1.0. |
 
 **Returns**
 
@@ -629,10 +628,10 @@ lurek.color.toHex(r, g, b, a)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `r` | number | Red channel (0â€“1). |
-| `g` | number | Green channel (0â€“1). |
-| `b` | number | Blue channel (0â€“1). |
-| `a?` | number | Alpha channel (0â€“1); defaults to 1.0. |
+| `r` | number | Red channel (0-1). |
+| `g` | number | Green channel (0-1). |
+| `b` | number | Blue channel (0-1). |
+| `a?` | number | Alpha channel (0-1); defaults to 1.0. |
 
 **Returns**
 
@@ -667,17 +666,17 @@ lurek.color.toHsl(r, g, b)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `r` | number | Red channel (0â€“1). |
-| `g` | number | Green channel (0â€“1). |
-| `b` | number | Blue channel (0â€“1). |
+| `r` | number | Red channel (0-1). |
+| `g` | number | Green channel (0-1). |
+| `b` | number | Blue channel (0-1). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| number | Hue (0â€“360); saturation (0â€“1); lightness (0â€“1). (value 1). |
-| number | Hue (0â€“360); saturation (0â€“1); lightness (0â€“1). (value 2). |
-| number | Hue (0â€“360); saturation (0â€“1); lightness (0â€“1). (value 3). |
+| number | Hue (0-360); saturation (0-1); lightness (0-1). (value 1). |
+| number | Hue (0-360); saturation (0-1); lightness (0-1). (value 2). |
+| number | Hue (0-360); saturation (0-1); lightness (0-1). (value 3). |
 
 **Example**
 
@@ -705,11 +704,11 @@ lurek.color.withAlpha(r, g, b, a, newAlpha)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `r` | number | Red channel (0â€“1). |
-| `g` | number | Green channel (0â€“1). |
-| `b` | number | Blue channel (0â€“1). |
+| `r` | number | Red channel (0-1). |
+| `g` | number | Green channel (0-1). |
+| `b` | number | Blue channel (0-1). |
 | `a` | number | Original alpha (ignored in output). |
-| `newAlpha` | number | New alpha channel value (0â€“1). |
+| `newAlpha` | number | New alpha channel value (0-1). |
 
 **Returns**
 
@@ -734,10 +733,6 @@ end
 ## Module Fields
 
 *No module-level fields documented.*
-
-## Callbacks
-
-*No callback parameters documented in this module.*
 
 ## Enums
 

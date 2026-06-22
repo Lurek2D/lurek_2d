@@ -12,7 +12,7 @@ Manages audio effect graphs, procedural synthesis, level detection, and visualiz
 
 ## Minimal Example
 
-From the `lurek.dsp.newEffectParams` example block:
+Example block: `lurek.dsp.newEffectParams`
 
 ```lua
 do
@@ -36,7 +36,6 @@ end
 ## API Reference
 
 - This page is the generated API reference for this module.
-- Runnable example owner: `content/examples/dsp.lua`
 
 ## Summary
 
@@ -1073,10 +1072,6 @@ end
 ## Module Fields
 
 *No module-level fields documented.*
-
-## Callbacks
-
-*No callback parameters documented in this module.*
 
 ## Enums
 

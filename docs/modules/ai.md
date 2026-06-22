@@ -12,7 +12,7 @@ Orchestrates agent choices via behavior trees, FSMs, GOAP, HTN, and utility AI.
 
 ## Minimal Example
 
-From the `lurek.ai.newWorld` example block:
+Example block: `lurek.ai.newWorld`
 
 ```lua
 do
@@ -36,7 +36,6 @@ end
 ## API Reference
 
 - This page is the generated API reference for this module.
-- Runnable example owner: `content/examples/ai.lua`
 
 ## Summary
 
@@ -1046,7 +1045,7 @@ end
 
 *No module-level fields documented.*
 
-## Callbacks
+## Callback Parameters
 
 - `lurek.ai.newAction` param `callback` (`function`): Callback invoked when the action node ticks.
 - `lurek.ai.newCondition` param `callback` (`function`): Callback invoked when the condition node ticks.

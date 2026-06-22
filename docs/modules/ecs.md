@@ -12,7 +12,7 @@ Manages an Entity-Component-System database with generational IDs.
 
 ## Minimal Example
 
-From the `lurek.ecs.newUniverse` example block:
+Example block: `lurek.ecs.newUniverse`
 
 ```lua
 do
@@ -33,7 +33,6 @@ end
 ## API Reference
 
 - This page is the generated API reference for this module.
-- Runnable example owner: `content/examples/ecs.lua`
 
 ## Summary
 
@@ -116,10 +115,6 @@ end
 ## Module Fields
 
 *No module-level fields documented.*
-
-## Callbacks
-
-*No callback parameters documented in this module.*
 
 ## Enums
 

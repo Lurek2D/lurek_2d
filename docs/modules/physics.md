@@ -12,7 +12,7 @@ Simulates 2D bodies under dynamic, static, kinematic, or sensor behaviors.
 
 ## Minimal Example
 
-From the `lurek.physics.newWorld` example block:
+Example block: `lurek.physics.newWorld`
 
 ```lua
 do
@@ -37,7 +37,6 @@ end
 ## API Reference
 
 - This page is the generated API reference for this module.
-- Runnable example owner: `content/examples/physics.lua`
 
 ## Summary
 
@@ -853,10 +852,6 @@ end
 ## Module Fields
 
 *No module-level fields documented.*
-
-## Callbacks
-
-*No callback parameters documented in this module.*
 
 ## Enums
 

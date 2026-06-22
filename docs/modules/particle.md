@@ -12,7 +12,7 @@ Simulates pooled particles with rich shapes, gravity forces, and collider bounce
 
 ## Minimal Example
 
-From the `lurek.particle.newSystem` example block:
+Example block: `lurek.particle.newSystem`
 
 ```lua
 do
@@ -40,7 +40,6 @@ end
 ## API Reference
 
 - This page is the generated API reference for this module.
-- Runnable example owner: `content/examples/particle.lua`
 
 ## Summary
 
@@ -250,10 +249,6 @@ end
 ## Module Fields
 
 *No module-level fields documented.*
-
-## Callbacks
-
-*No callback parameters documented in this module.*
 
 ## Enums
 

@@ -12,7 +12,7 @@ Manages OS window lifecycles, displays, VSync syncs, and viewport scaling with n
 
 ## Minimal Example
 
-From the `lurek.window.getDimensions` example block:
+Example block: `lurek.window.getDimensions`
 
 ```lua
 do
@@ -36,7 +36,6 @@ end
 ## API Reference
 
 - This page is the generated API reference for this module.
-- Runnable example owner: `content/examples/window.lua`
 
 ## Summary
 
@@ -1661,7 +1660,7 @@ end
 
 *No module-level fields documented.*
 
-## Callbacks
+## Callback Parameters
 
 - `lurek.window.onDpiChange` param `func` (`function`): Callback receiving the new DPI scale as a number.
 

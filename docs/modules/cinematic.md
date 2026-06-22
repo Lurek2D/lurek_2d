@@ -10,7 +10,7 @@ Multi-track timeline system for orchestrating game sequences.
 
 ## Minimal Example
 
-From the `lurek.cinematic.newTimeline` example block:
+Example block: `lurek.cinematic.newTimeline`
 
 ```lua
 do
@@ -30,7 +30,6 @@ end
 ## API Reference
 
 - This page is the generated API reference for this module.
-- Runnable example owner: `content/examples/cinematic.lua`
 
 ## Summary
 
@@ -99,10 +98,6 @@ end
 ## Module Fields
 
 *No module-level fields documented.*
-
-## Callbacks
-
-*No callback parameters documented in this module.*
 
 ## Enums
 

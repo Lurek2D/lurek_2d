@@ -12,7 +12,7 @@ Runs interactive HTML/CSS documents with input routing, selector queries, and el
 
 ## Minimal Example
 
-From the `lurek.html.newDocument` example block:
+Example block: `lurek.html.newDocument`
 
 ```lua
 do
@@ -36,7 +36,6 @@ end
 ## API Reference
 
 - This page is the generated API reference for this module.
-- Runnable example owner: `content/examples/html.lua`
 
 ## Summary
 
@@ -235,10 +234,6 @@ end
 ## Module Fields
 
 *No module-level fields documented.*
-
-## Callbacks
-
-*No callback parameters documented in this module.*
 
 ## Enums
 

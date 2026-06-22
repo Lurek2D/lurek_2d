@@ -12,7 +12,7 @@ Rasterizes line, bar, area, scatter, pie, histogram, and heatmap charts into RGB
 
 ## Minimal Example
 
-From the `lurek.charts.newLine` example block:
+Example block: `lurek.charts.newLine`
 
 ```lua
 do
@@ -36,7 +36,6 @@ end
 ## API Reference
 
 - This page is the generated API reference for this module.
-- Runnable example owner: `content/examples/charts.lua`
 
 ## Summary
 
@@ -371,10 +370,6 @@ end
 ## Module Fields
 
 *No module-level fields documented.*
-
-## Callbacks
-
-*No callback parameters documented in this module.*
 
 ## Enums
 

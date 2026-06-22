@@ -12,7 +12,7 @@ Navigates grids, hex layouts, isometric maps, navmeshes, and province graphs.
 
 ## Minimal Example
 
-From the `lurek.pathfind.newPathGrid` example block:
+Example block: `lurek.pathfind.newPathGrid`
 
 ```lua
 do
@@ -40,7 +40,6 @@ end
 ## API Reference
 
 - This page is the generated API reference for this module.
-- Runnable example owner: `content/examples/pathfind.lua`
 
 ## Summary
 
@@ -765,10 +764,6 @@ end
 ## Module Fields
 
 *No module-level fields documented.*
-
-## Callbacks
-
-*No callback parameters documented in this module.*
 
 ## Enums
 
@@ -2567,7 +2562,7 @@ LNavGrid:fill(cost)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `cost` | number | Movement cost (0â€“255). |
+| `cost` | number | Movement cost (0-255). |
 
 **Example**
 
@@ -2604,7 +2599,7 @@ LNavGrid:fillRect(x, y, w, h, cost)
 | `y` | number | One-based row of the top-left corner. |
 | `w` | number | Rectangle width in cells. |
 | `h` | number | Rectangle height in cells. |
-| `cost` | number | Movement cost (0â€“255). |
+| `cost` | number | Movement cost (0-255). |
 
 **Example**
 
@@ -3110,7 +3105,7 @@ LNavGrid:setCost(x, y, cost)
 |------|------|-------------|
 | `x` | number | One-based column. |
 | `y` | number | One-based row. |
-| `cost` | number | Movement cost (0â€“255). |
+| `cost` | number | Movement cost (0-255). |
 
 **Example**
 

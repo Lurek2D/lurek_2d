@@ -1,12 +1,12 @@
 {
   "meta": {
-    "generated": "2026-06-22T13:44:37.717230+00:00",
+    "generated": "2026-06-22T19:49:52.463283+00:00",
     "generator": "tools/gen_lua_api_data.py",
     "version": "1.1.0",
     "stats": {
       "lua_functions": 6090,
       "lua_modules": 70,
-      "engine_callbacks": 0
+      "engine_callbacks": 29
     }
   },
   "lua_api": {
@@ -146202,5 +146202,534 @@
       }
     }
   },
-  "engine_callbacks": []
+  "engine_callbacks": [
+    {
+      "name": "draw",
+      "signature": "function lurek.draw()",
+      "description": "Called every frame to queue world render commands.",
+      "parameters": []
+    },
+    {
+      "name": "draw_ui",
+      "signature": "function lurek.draw_ui()",
+      "description": "Called every frame after world drawing to queue UI and HUD render commands.",
+      "parameters": []
+    },
+    {
+      "name": "exit",
+      "signature": "function lurek.exit()",
+      "description": "Called before the runtime exits after an explicit close path.",
+      "parameters": []
+    },
+    {
+      "name": "fixedUpdate",
+      "signature": "function lurek.fixedUpdate(dt)",
+      "description": "Deprecated fixed-step update callback; use `lurek.process_physics(dt)`.",
+      "parameters": [
+        {
+          "name": "dt",
+          "type": "number",
+          "description": "Fixed timestep in seconds.",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "focus",
+      "signature": "function lurek.focus(focused)",
+      "description": "Called when the application window gains or loses focus.",
+      "parameters": [
+        {
+          "name": "focused",
+          "type": "boolean",
+          "description": "True when the window is focused.",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "gamepadaxis",
+      "signature": "function lurek.gamepadaxis(id, axis, value)",
+      "description": "Called when a connected gamepad axis changes.",
+      "parameters": [
+        {
+          "name": "id",
+          "type": "integer",
+          "description": "Gamepad slot id.",
+          "optional": false
+        },
+        {
+          "name": "axis",
+          "type": "string",
+          "description": "Axis name.",
+          "optional": false
+        },
+        {
+          "name": "value",
+          "type": "number",
+          "description": "Axis value reported by the backend.",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "gamepadconnected",
+      "signature": "function lurek.gamepadconnected(id)",
+      "description": "Called when a gamepad connects.",
+      "parameters": [
+        {
+          "name": "id",
+          "type": "integer",
+          "description": "Gamepad slot id.",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "gamepaddisconnected",
+      "signature": "function lurek.gamepaddisconnected(id)",
+      "description": "Called when a gamepad disconnects.",
+      "parameters": [
+        {
+          "name": "id",
+          "type": "integer",
+          "description": "Gamepad slot id.",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "gamepadpressed",
+      "signature": "function lurek.gamepadpressed(id, button)",
+      "description": "Called when a gamepad button is pressed.",
+      "parameters": [
+        {
+          "name": "id",
+          "type": "integer",
+          "description": "Gamepad slot id.",
+          "optional": false
+        },
+        {
+          "name": "button",
+          "type": "string",
+          "description": "Button name.",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "gamepadreleased",
+      "signature": "function lurek.gamepadreleased(id, button)",
+      "description": "Called when a gamepad button is released.",
+      "parameters": [
+        {
+          "name": "id",
+          "type": "integer",
+          "description": "Gamepad slot id.",
+          "optional": false
+        },
+        {
+          "name": "button",
+          "type": "string",
+          "description": "Button name.",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "init",
+      "signature": "function lurek.init()",
+      "description": "Called once after the Lua VM, shared state, and `lurek.*` modules are ready.",
+      "parameters": []
+    },
+    {
+      "name": "joystickadded",
+      "signature": "function lurek.joystickadded(id)",
+      "description": "Compatibility callback called when a gamepad connects.",
+      "parameters": [
+        {
+          "name": "id",
+          "type": "integer",
+          "description": "Gamepad slot id.",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "joystickremoved",
+      "signature": "function lurek.joystickremoved(id)",
+      "description": "Compatibility callback called when a gamepad disconnects.",
+      "parameters": [
+        {
+          "name": "id",
+          "type": "integer",
+          "description": "Gamepad slot id.",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "keypressed",
+      "signature": "function lurek.keypressed(key, scancode, isrepeat)",
+      "description": "Called when a keyboard key is pressed and UI did not consume it.",
+      "parameters": [
+        {
+          "name": "key",
+          "type": "string",
+          "description": "Normalized key name.",
+          "optional": false
+        },
+        {
+          "name": "scancode",
+          "type": "string",
+          "description": "Normalized physical scancode, or an empty string when unavailable.",
+          "optional": false
+        },
+        {
+          "name": "isrepeat",
+          "type": "boolean",
+          "description": "True when the key press is an OS repeat event.",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "keyreleased",
+      "signature": "function lurek.keyreleased(key, scancode)",
+      "description": "Called when a keyboard key is released.",
+      "parameters": [
+        {
+          "name": "key",
+          "type": "string",
+          "description": "Normalized key name.",
+          "optional": false
+        },
+        {
+          "name": "scancode",
+          "type": "string",
+          "description": "Normalized physical scancode, or an empty string when unavailable.",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "mousemoved",
+      "signature": "function lurek.mousemoved(x, y, dx, dy)",
+      "description": "Called when the pointer moves in game coordinates and UI did not consume it.",
+      "parameters": [
+        {
+          "name": "x",
+          "type": "number",
+          "description": "Pointer x coordinate in game space.",
+          "optional": false
+        },
+        {
+          "name": "y",
+          "type": "number",
+          "description": "Pointer y coordinate in game space.",
+          "optional": false
+        },
+        {
+          "name": "dx",
+          "type": "number",
+          "description": "Delta x since the previous pointer event.",
+          "optional": false
+        },
+        {
+          "name": "dy",
+          "type": "number",
+          "description": "Delta y since the previous pointer event.",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "mousepressed",
+      "signature": "function lurek.mousepressed(x, y, button)",
+      "description": "Called when a mouse button is pressed and UI did not consume it.",
+      "parameters": [
+        {
+          "name": "x",
+          "type": "number",
+          "description": "Pointer x coordinate in game space.",
+          "optional": false
+        },
+        {
+          "name": "y",
+          "type": "number",
+          "description": "Pointer y coordinate in game space.",
+          "optional": false
+        },
+        {
+          "name": "button",
+          "type": "integer",
+          "description": "One-based mouse button index.",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "mousereleased",
+      "signature": "function lurek.mousereleased(x, y, button)",
+      "description": "Called when a mouse button is released and UI did not consume it.",
+      "parameters": [
+        {
+          "name": "x",
+          "type": "number",
+          "description": "Pointer x coordinate in game space.",
+          "optional": false
+        },
+        {
+          "name": "y",
+          "type": "number",
+          "description": "Pointer y coordinate in game space.",
+          "optional": false
+        },
+        {
+          "name": "button",
+          "type": "integer",
+          "description": "One-based mouse button index.",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "process",
+      "signature": "function lurek.process(dt)",
+      "description": "Called every frame for game logic.",
+      "parameters": [
+        {
+          "name": "dt",
+          "type": "number",
+          "description": "Frame delta time in seconds.",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "process_late",
+      "signature": "function lurek.process_late(dt)",
+      "description": "Called every frame after `process` and fixed-step physics callbacks.",
+      "parameters": [
+        {
+          "name": "dt",
+          "type": "number",
+          "description": "Frame delta time in seconds.",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "process_physics",
+      "signature": "function lurek.process_physics(dt)",
+      "description": "Called at the fixed timestep zero or more times per rendered frame.",
+      "parameters": [
+        {
+          "name": "dt",
+          "type": "number",
+          "description": "Fixed timestep in seconds.",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "ready",
+      "signature": "function lurek.ready()",
+      "description": "Called once after startup when the first frame resources are ready.",
+      "parameters": []
+    },
+    {
+      "name": "resize",
+      "signature": "function lurek.resize(width, height)",
+      "description": "Called after the renderer and viewport are resized.",
+      "parameters": [
+        {
+          "name": "width",
+          "type": "integer",
+          "description": "Window width in pixels after clamping.",
+          "optional": false
+        },
+        {
+          "name": "height",
+          "type": "integer",
+          "description": "Window height in pixels after clamping.",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "textinput",
+      "signature": "function lurek.textinput(text)",
+      "description": "Called when committed text input arrives and UI did not consume it.",
+      "parameters": [
+        {
+          "name": "text",
+          "type": "string",
+          "description": "Committed text.",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "touchmoved",
+      "signature": "function lurek.touchmoved(id, x, y, dx, dy, pressure)",
+      "description": "Called when a touch point moves.",
+      "parameters": [
+        {
+          "name": "id",
+          "type": "integer",
+          "description": "Touch identifier.",
+          "optional": false
+        },
+        {
+          "name": "x",
+          "type": "number",
+          "description": "Touch x coordinate in game space.",
+          "optional": false
+        },
+        {
+          "name": "y",
+          "type": "number",
+          "description": "Touch y coordinate in game space.",
+          "optional": false
+        },
+        {
+          "name": "dx",
+          "type": "number",
+          "description": "Delta x since the previous touch event.",
+          "optional": false
+        },
+        {
+          "name": "dy",
+          "type": "number",
+          "description": "Delta y since the previous touch event.",
+          "optional": false
+        },
+        {
+          "name": "pressure",
+          "type": "number",
+          "description": "Normalized pressure when available.",
+          "optional": true
+        }
+      ]
+    },
+    {
+      "name": "touchpressed",
+      "signature": "function lurek.touchpressed(id, x, y, dx, dy, pressure)",
+      "description": "Called when a touch point starts.",
+      "parameters": [
+        {
+          "name": "id",
+          "type": "integer",
+          "description": "Touch identifier.",
+          "optional": false
+        },
+        {
+          "name": "x",
+          "type": "number",
+          "description": "Touch x coordinate in game space.",
+          "optional": false
+        },
+        {
+          "name": "y",
+          "type": "number",
+          "description": "Touch y coordinate in game space.",
+          "optional": false
+        },
+        {
+          "name": "dx",
+          "type": "number",
+          "description": "Initial delta x, normally `0`.",
+          "optional": false
+        },
+        {
+          "name": "dy",
+          "type": "number",
+          "description": "Initial delta y, normally `0`.",
+          "optional": false
+        },
+        {
+          "name": "pressure",
+          "type": "number",
+          "description": "Normalized pressure when available.",
+          "optional": true
+        }
+      ]
+    },
+    {
+      "name": "touchreleased",
+      "signature": "function lurek.touchreleased(id, x, y, dx, dy, pressure)",
+      "description": "Called when a touch point ends or is cancelled.",
+      "parameters": [
+        {
+          "name": "id",
+          "type": "integer",
+          "description": "Touch identifier.",
+          "optional": false
+        },
+        {
+          "name": "x",
+          "type": "number",
+          "description": "Touch x coordinate in game space.",
+          "optional": false
+        },
+        {
+          "name": "y",
+          "type": "number",
+          "description": "Touch y coordinate in game space.",
+          "optional": false
+        },
+        {
+          "name": "dx",
+          "type": "number",
+          "description": "Delta x since the previous touch event.",
+          "optional": false
+        },
+        {
+          "name": "dy",
+          "type": "number",
+          "description": "Delta y since the previous touch event.",
+          "optional": false
+        },
+        {
+          "name": "pressure",
+          "type": "number",
+          "description": "Normalized pressure when available.",
+          "optional": true
+        }
+      ]
+    },
+    {
+      "name": "visible",
+      "signature": "function lurek.visible(visible)",
+      "description": "Called when the window occlusion/visibility state changes.",
+      "parameters": [
+        {
+          "name": "visible",
+          "type": "boolean",
+          "description": "True when the window is visible.",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "wheelmoved",
+      "signature": "function lurek.wheelmoved(dx, dy)",
+      "description": "Called when mouse-wheel input arrives and UI did not consume it.",
+      "parameters": [
+        {
+          "name": "dx",
+          "type": "number",
+          "description": "Horizontal wheel delta.",
+          "optional": false
+        },
+        {
+          "name": "dy",
+          "type": "number",
+          "description": "Vertical wheel delta.",
+          "optional": false
+        }
+      ]
+    }
+  ]
 }

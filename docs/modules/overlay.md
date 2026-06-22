@@ -12,7 +12,7 @@ Manages screen-space weather, fog, camera shakes, and screen flashes.
 
 ## Minimal Example
 
-From the `lurek.overlay.new` example block:
+Example block: `lurek.overlay.new`
 
 ```lua
 do
@@ -33,7 +33,6 @@ end
 ## API Reference
 
 - This page is the generated API reference for this module.
-- Runnable example owner: `content/examples/overlay.lua`
 
 ## Summary
 
@@ -128,10 +127,6 @@ end
 ## Module Fields
 
 *No module-level fields documented.*
-
-## Callbacks
-
-*No callback parameters documented in this module.*
 
 ## Enums
 

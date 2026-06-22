@@ -12,7 +12,7 @@ Manages ENet UDP hosts, TCP/WebSocket pools, and ureq-backed HTTP/SSE channels.
 
 ## Minimal Example
 
-From the `lurek.network.newServer` example block:
+Example block: `lurek.network.newServer`
 
 ```lua
 do
@@ -37,7 +37,6 @@ end
 ## API Reference
 
 - This page is the generated API reference for this module.
-- Runnable example owner: `content/examples/network.lua`
 
 ## Summary
 
@@ -1216,7 +1215,7 @@ end
 
 *No module-level fields documented.*
 
-## Callbacks
+## Callback Parameters
 
 - `lurek.network.sseConnect` param `callback` (`function`): Called with each event table `{ id?, event?, data }`.
 

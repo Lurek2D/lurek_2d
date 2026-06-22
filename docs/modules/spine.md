@@ -12,7 +12,7 @@ Simulates skeletal rigs using bone hierarchies, slots, skin swaps, and target IK
 
 ## Minimal Example
 
-From the `lurek.spine.newSkeleton` example block:
+Example block: `lurek.spine.newSkeleton`
 
 ```lua
 do
@@ -34,7 +34,6 @@ end
 ## API Reference
 
 - This page is the generated API reference for this module.
-- Runnable example owner: `content/examples/spine.lua`
 
 ## Summary
 
@@ -218,10 +217,6 @@ end
 ## Module Fields
 
 *No module-level fields documented.*
-
-## Callbacks
-
-*No callback parameters documented in this module.*
 
 ## Enums
 
@@ -666,7 +661,7 @@ LSkeleton:getBoneWorld(idx)
 
 | Type | Description |
 |------|-------------|
-| LSkeletonGetBoneWorldResult | Table with keys x, y, rotation, scale_x, scale_y â€” or nil if the index is invalid. |
+| LSkeletonGetBoneWorldResult | Table with keys x, y, rotation, scale_x, scale_y - or nil if the index is invalid. |
 
 **Example**
 

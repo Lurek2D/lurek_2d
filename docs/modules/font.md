@@ -12,7 +12,7 @@ Manages font loading, metrics caching, and text wrapping.
 
 ## Minimal Example
 
-From the `lurek.font.getDefault` example block:
+Example block: `lurek.font.getDefault`
 
 ```lua
 do
@@ -36,7 +36,6 @@ end
 ## API Reference
 
 - This page is the generated API reference for this module.
-- Runnable example owner: `content/examples/font.lua`
 
 ## Summary
 
@@ -438,10 +437,6 @@ end
 ## Module Fields
 
 *No module-level fields documented.*
-
-## Callbacks
-
-*No callback parameters documented in this module.*
 
 ## Enums
 

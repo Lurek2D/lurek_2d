@@ -12,7 +12,7 @@ Simulates pseudo-3D first-person views from 2D maps using DDA marching.
 
 ## Minimal Example
 
-From the `lurek.raycaster.new` example block:
+Example block: `lurek.raycaster.new`
 
 ```lua
 do
@@ -36,7 +36,6 @@ end
 ## API Reference
 
 - This page is the generated API reference for this module.
-- Runnable example owner: `content/examples/raycaster.lua`
 
 ## Summary
 
@@ -987,10 +986,6 @@ end
 ## Module Fields
 
 *No module-level fields documented.*
-
-## Callbacks
-
-*No callback parameters documented in this module.*
 
 ## Enums
 

@@ -12,7 +12,7 @@ Manages mod lifecycles using dependency sorting, permission sandboxing, and hot 
 
 ## Minimal Example
 
-From the `lurek.mods.newMod` example block:
+Example block: `lurek.mods.newMod`
 
 ```lua
 do
@@ -39,7 +39,6 @@ end
 ## API Reference
 
 - This page is the generated API reference for this module.
-- Runnable example owner: `content/examples/mods.lua`
 
 ## Summary
 
@@ -198,10 +197,6 @@ end
 ## Module Fields
 
 *No module-level fields documented.*
-
-## Callbacks
-
-*No callback parameters documented in this module.*
 
 ## Enums
 

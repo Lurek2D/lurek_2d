@@ -12,7 +12,7 @@ Provides vectors, matrices, spatial indexes (AABB tree and spatial hash), and po
 
 ## Minimal Example
 
-From the `lurek.math.pi` example block:
+Example block: `lurek.math.pi`
 
 ```lua
 do
@@ -35,7 +35,6 @@ end
 ## API Reference
 
 - This page is the generated API reference for this module.
-- Runnable example owner: `content/examples/math.lua`
 
 ## Summary
 
@@ -3166,7 +3165,7 @@ lurek.math.remap(v, in_min, in_max, out_min, out_max)
 ```lua
 do
     local v = lurek.math.remap(5, 0, 10, 0, 100)
-    example_print_log("remap(5, 0-10 â†’ 0-100) = " .. v)
+    example_print_log("remap(5, 0-10 -> 0-100) = " .. v)
     example_print_log("thumbstick 0.25 -> percent = " .. lurek.math.remap(0.25, 0, 1, 0, 100))
     local volume_percent = lurek.math.remap(0.75, 0, 1, 0, 100)
     example_print_log("volume percent = " .. volume_percent)
@@ -3569,10 +3568,6 @@ end
 ## Module Fields
 
 *No module-level fields documented.*
-
-## Callbacks
-
-*No callback parameters documented in this module.*
 
 ## Enums
 

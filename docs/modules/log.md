@@ -12,7 +12,7 @@ Runs structured logs with level-filtered sinks.
 
 ## Minimal Example
 
-From the `lurek.log.debug` example block:
+Example block: `lurek.log.debug`
 
 ```lua
 do
@@ -37,7 +37,6 @@ end
 ## API Reference
 
 - This page is the generated API reference for this module.
-- Runnable example owner: `content/examples/log.lua`
 
 ## Summary
 
@@ -614,10 +613,6 @@ end
 ## Module Fields
 
 *No module-level fields documented.*
-
-## Callbacks
-
-*No callback parameters documented in this module.*
 
 ## Enums
 

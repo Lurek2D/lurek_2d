@@ -12,7 +12,7 @@ Assembles tilemaps from block pieces using socket rules, scripts, and multi-leve
 
 ## Minimal Example
 
-From the `lurek.mapblock.newConfig` example block:
+Example block: `lurek.mapblock.newConfig`
 
 ```lua
 do
@@ -36,7 +36,6 @@ end
 ## API Reference
 
 - This page is the generated API reference for this module.
-- Runnable example owner: `content/examples/mapblock.lua`
 
 ## Summary
 
@@ -400,10 +399,6 @@ end
 ## Module Fields
 
 *No module-level fields documented.*
-
-## Callbacks
-
-*No callback parameters documented in this module.*
 
 ## Enums
 
@@ -1107,7 +1102,7 @@ end
 
 #### `LMapBlock:setTile`
 
-Set a tile slot value â€” Lua userdata object exposed by the engine.
+Set a tile slot value - Lua userdata object exposed by the engine.
 
 ```lua
 LMapBlock:setTile(layer, x, y, slot, tileset_id, gid)
@@ -1240,7 +1235,7 @@ end
 
 #### `LMapBlockConfig:addSlot`
 
-Add a slot definition â€” Lua userdata object exposed by the engine.
+Add a slot definition - Lua userdata object exposed by the engine.
 
 ```lua
 LMapBlockConfig:addSlot(name, required, default_gid)
@@ -1663,7 +1658,7 @@ end
 
 #### `LMapBlockGenerator:setRectShape`
 
-Set rectangular map shape â€” Lua userdata object exposed by the engine.
+Set rectangular map shape - Lua userdata object exposed by the engine.
 
 ```lua
 LMapBlockGenerator:setRectShape(width, height)
@@ -1969,7 +1964,7 @@ end
 
 #### `LMapBlockResult:getHeight`
 
-Get total height in tiles â€” Lua userdata object exposed by the engine.
+Get total height in tiles - Lua userdata object exposed by the engine.
 
 ```lua
 LMapBlockResult:getHeight()
@@ -2407,7 +2402,7 @@ end
 
 #### `LMapScript:addStep`
 
-Add a generation step â€” Lua userdata object exposed by the engine.
+Add a generation step - Lua userdata object exposed by the engine.
 
 ```lua
 LMapScript:addStep(step_type, opts)
@@ -2718,7 +2713,7 @@ end
 
 #### `LPlacementGrid:addPosition`
 
-Add a position to the grid â€” Lua userdata object exposed by the engine.
+Add a position to the grid - Lua userdata object exposed by the engine.
 
 ```lua
 LPlacementGrid:addPosition(x, y)
@@ -2940,7 +2935,7 @@ end
 
 #### `LTilesetRef:getName`
 
-Get tileset name â€” Lua userdata object exposed by the engine.
+Get tileset name - Lua userdata object exposed by the engine.
 
 ```lua
 LTilesetRef:getName()
