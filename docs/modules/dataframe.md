@@ -4216,7 +4216,7 @@ do
 -- Returns the Lua-visible type name for this database handle.
   local db = lurek.dataframe.newDatabase()
   lurek.log.info("db type " .. tostring(db:type()))
-  lurek.log.info("db rows: " .. tostring(db:nrows()))
+  lurek.log.info("table count " .. tostring(db:tableCount()))
   lurek.log.info("table count " .. tostring(db:tableCount()))
   lurek.log.info("is database " .. tostring(db:typeOf("LDatabase")))
 end

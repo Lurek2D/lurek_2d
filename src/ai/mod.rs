@@ -109,8 +109,6 @@ pub mod debug {
     };
 }
 
-/// Tabular reinforcement learner (re-exported from learning module).
-pub use crate::learning::QLearner;
 /// Blackboard storage shared by AI systems, re-exported from `crate::patterns`.
 pub use crate::patterns::{Blackboard, BlackboardValue};
 /// Base agent type and decision-model enum.
@@ -132,14 +130,6 @@ pub use utility_ai::{Consideration, ResponseCurve, UAAction, UtilityAI};
 /// AI-facing world abstraction.
 pub use world::AIWorld;
 
-/// Neuroevolution entry point (re-exported from learning module).
-pub use crate::learning::Neuroevolution;
-/// Neural-network layer and activation types (re-exported from learning module).
-pub use crate::learning::{Activation, NeuralLayer, NeuralNet};
-/// Multi-armed bandit policies and arm stats (re-exported from learning module).
-pub use crate::learning::{Bandit, BanditArm, BanditStrategy};
-/// Genetic algorithm public types (re-exported from learning module).
-pub use crate::learning::{Chromosome, GeneticAlgorithm};
 /// Context-steering behaviors and runtime type.
 pub use context_steering::{ContextBehavior, ContextBehaviorKind, ContextSteering};
 /// Shared AI callback and decision traces.

@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- Manages byte buffers, format packing, and MsgPack/TOML serialization.
+- Manages byte buffers, format packing, compression, hashing, and byte-safe encodings.
 - Controls compression, cryptographic hashing, and element ring buffers.
 
 ## General Info
@@ -11,7 +11,7 @@
 - Source path: `src/binary/`
 - Binding: `src/lua_api/binary_api.rs`
 - Namespace: `lurek.binary`
-- Lua API surface: `22` functions, `4` types, `50` methods
+- Lua API surface: `18` functions, `4` types, `50` methods
 - Rust test path(s): tests/rust/unit/binary_tests.rs; tests/rust/stress/binary_stress_tests.rs; inline tests in src/binary/byte_data.rs, src/binary/encode.rs, src/binary/hash.rs
 - Lua test path(s): tests/lua/unit/test_binary_core_unit.lua; tests/lua/stress/test_binary_stress.lua; tests/lua/integration/test_binary_filesystem.lua; tests/lua/integration/test_binary_compute.lua; tests/lua/golden/test_binary_golden.lua
 
@@ -20,12 +20,13 @@
 - The `binary` module is the byte-oriented data surface for users who need exact control over compact formats, protocol payloads, and structured runtime interchange.
 - Mutable byte containers, typed views, sequential writers, and pack-style helpers work together so a script can both inspect existing binary data and build new payloads without inventing its own low-level buffer rules.
 - Compression, encoding, hashes, checksums, and ring-buffer helpers matter because real binary workflows usually involve transport safety, storage reduction, and integrity checks alongside raw reads and writes.
-- MsgPack, TOML bridges, and schema-like packing utilities make the module useful for both debug tooling and production-facing data paths such as saves, networking, and cached assets.
+- Byte encodings, compression, hashes, checksums, and schema-like packing utilities make the module useful for both debug tooling and production-facing data paths such as saves, networking, and cached assets.
 - Exact offset control, byte-order awareness, and sequential write semantics are especially valuable when interoperating with protocols or compact save formats where structure must be reproduced precisely.
 - The module therefore acts as the engine's low-level data construction kit whenever higher-level structured formats are too heavy or too opaque for the problem at hand.
 - That also makes it useful when tests or tools need to inspect raw payload layout instead of only decoded high-level values.
 - It keeps raw layout work first-class.
 - Read `binary` as the shared byte-language of the engine: other modules decide what the data means, but `binary` owns how that data is packed, transformed, verified, and moved around safely.
+- Structured interchange formats such as TOML and MessagePack belong to `serialize`; `binary` must not expose format-specific structured parsers just because a format can be represented as bytes.
 
 This module is mostly self-contained inside the `Foundations` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
 
@@ -132,8 +133,6 @@ This module is mostly self-contained inside the `Foundations` group. Cross-modul
 - `lurek.binary.decompress(format_str, compressed) -> string`: Decompresses a binary string using a named compression format.
 - `lurek.binary.decompressChunks(format_str, chunks) -> string`: Decompresses a string or table of strings as a chunked byte stream.
 - `lurek.binary.encode(format_str, raw_data) -> string`: Encodes a binary string using a named text encoding format.
-- `lurek.binary.encodeToml(tbl) -> string`: Encodes a Lua table into a TOML document string.
-- `lurek.binary.fromMsgPack(bytes) -> LuaValue`: Decodes a structured binary interchange payload back into Lua values.
 - `lurek.binary.getPackedSize(fmt, ...) -> integer`: Computes the packed byte size for values and a format string.
 - `lurek.binary.hash(algo_str, raw_data) -> string`: Hashes a binary string with a named algorithm.
 - `lurek.binary.newByteData(value) -> LByteData`: Creates ByteData from a size or raw byte string.
@@ -141,10 +140,8 @@ This module is mostly self-contained inside the `Foundations` group. Cross-modul
 - `lurek.binary.newRingBuffer(capacity) -> LRingBuffer`: Creates a fixed-capacity ring buffer for Lua values.
 - `lurek.binary.newWriter() -> LDataWriter`: Creates an empty binary data writer.
 - `lurek.binary.pack(fmt, ...) -> string`: Packs Lua values into a binary string using a format string.
-- `lurek.binary.parseToml(text) -> table`: Parses TOML text into Lua tables and scalar values.
 - `lurek.binary.read(fmt, raw, offset?) -> LuaValue`: Reads binary values from a byte string using a format string.
 - `lurek.binary.size(fmt) -> integer`: Measures fixed byte size for a binary format string.
-- `lurek.binary.toMsgPack(value) -> string`: Encodes a Lua value into the current structured binary interchange payload.
 - `lurek.binary.unpack(fmt, raw, offset?) -> LuaValue`: Unpacks values from a binary string using a format string.
 - `lurek.binary.write(fmt, ...) -> string`: Writes binary values into a byte string using a format string.
 

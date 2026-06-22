@@ -45,8 +45,8 @@ pub mod tileset;
 /// Tiled TMX XML format import. This module is publicly re-exported.
 pub mod tmx;
 
-/// Re-export autotile layout and sheet types for callers.
-pub use autotile_sheet::{AutoTileLayout, AutoTileSheet};
+/// Re-export autotile layout, mode, and sheet types for callers.
+pub use autotile_sheet::{AutoTileLayout, AutoTileMode, AutoTileSheet};
 /// Re-export chunk map type for callers.
 pub use chunk::ChunkMap;
 /// Re-export all coordinate helpers as a flat namespace.

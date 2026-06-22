@@ -988,8 +988,8 @@ pub fn register(
                 .map_err(|e| LuaError::RuntimeError(format!("failed to read {}: {}", path, e)))?;
             let globals = lua.globals();
             let luna_tbl: LuaTable = globals.get("lurek")?;
-            let data_tbl: LuaTable = luna_tbl.get("binary")?;
-            let parse_fn: LuaFunction = data_tbl.get("parseToml")?;
+            let data_tbl: LuaTable = luna_tbl.get("serial")?;
+            let parse_fn: LuaFunction = data_tbl.get("fromToml")?;
             let parsed: LuaTable = parse_fn.call::<_, LuaTable>(content)?;
             let mut entries = Vec::new();
             if let Ok(api_entries) = parsed.get::<_, LuaTable>("entries") {
@@ -1026,8 +1026,8 @@ pub fn register(
                         if let Ok(content) = std::fs::read_to_string(&path) {
                             let globals = lua.globals();
                             let luna_tbl: LuaTable = globals.get("lurek")?;
-                            let data_tbl: LuaTable = luna_tbl.get("binary")?;
-                            let parse_fn: LuaFunction = data_tbl.get("parseToml")?;
+                            let data_tbl: LuaTable = luna_tbl.get("serial")?;
+                            let parse_fn: LuaFunction = data_tbl.get("fromToml")?;
                             if let Ok(parsed) = parse_fn.call::<_, LuaTable>(content) {
                                 if let Ok(api_entries) = parsed.get::<_, LuaTable>("entries") {
                                     for (_, et) in api_entries.pairs::<i64, LuaTable>().flatten() {

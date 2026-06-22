@@ -13,7 +13,7 @@
 - Source path: `src/render/`
 - Binding: `src/lua_api/render_api.rs`
 - Namespace: `lurek.render`
-- Lua API surface: `117` functions, `14` types, `88` methods
+- Lua API surface: `117` functions, `14` types, `89` methods
 - Rust test path(s): src/render/ (inline #[cfg(test)] in canvas, decal_surface, draw_layer, font, image_effect, mesh, shader, shape), src/render/renderer_tests.rs, src/render/postfx_pipeline_tests.rs
 - Lua test path(s): tests/lua/unit/test_render_unit.lua
 
@@ -737,6 +737,7 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 
 ##### Methods
 
+- `LShader:getId() -> number`: Returns the internal numeric handle ID for this shader.
 - `LShader:hasUniform(name) -> boolean`: Checks whether this shader declares a uniform with the given name.
 - `LShader:release() -> boolean`: Releases the shader resource. If active, the default shader is restored.
 - `LShader:send(name, value) -> nil`: Sends a uniform value to this shader by name. Supported types: number, boolean, or table (vec2/vec3/vec4).

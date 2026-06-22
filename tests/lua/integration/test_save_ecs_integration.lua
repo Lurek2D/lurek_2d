@@ -11,7 +11,7 @@ describe("integration: save entity world state", function()
     -- @integration LUniverse:spawn
     -- @integration lurek.ecs.newUniverse
     -- @integration lurek.save.newSaveManager
-    -- @integration lurek.binary.parseToml
+    -- @integration lurek.serial.fromToml
     -- @integration lurek.ecs.newUniverse
     -- @integration lurek.save.newSaveManager
     it("save manager tracks entity dirty state", function()
@@ -37,7 +37,7 @@ describe("integration: TOML config for entities", function()
     -- @integration LUniverse:getEntityCount
     -- @integration LUniverse:set
     -- @integration LUniverse:spawn
-    -- @integration lurek.binary.parseToml
+    -- @integration lurek.serial.fromToml
     -- @integration lurek.ecs.newUniverse
     it("entity blueprints from TOML", function()
         local toml_str = [[
@@ -57,7 +57,7 @@ describe("integration: TOML config for entities", function()
             name = "Dragon"
         ]]
 
-        local config = lurek.binary.parseToml(toml_str)
+        local config = lurek.serial.fromToml(toml_str)
 
         local universe = lurek.ecs.newUniverse()
 

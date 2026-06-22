@@ -7,10 +7,15 @@
 //! Open it when collection behavior changes; per-light data definitions and shadow geometry live in sibling files.
 
 use crate::color::Color;
+use crate::light::attenuation::Attenuation;
+use crate::light::blend_mode::LightBlendMode;
+use crate::light::falloff::FalloffMode;
 use crate::light::light2d::Light2D;
 use crate::light::light_type::LightType;
 use crate::light::occluder::Occluder;
+use crate::light::shadow::ShadowFilter;
 use crate::log_msg;
+use crate::math::Vec2;
 use crate::runtime::log_messages::{LW01_LIGHT_WORLD_INIT, LW02_LIGHT_ADD};
 use crate::runtime::resource_keys::{LightKey, OccluderKey};
 use slotmap::SlotMap;
@@ -51,6 +56,34 @@ pub struct NormalMapLightHint {
     /// Normal map contribution strength in [0.0, 1.0].
     pub strength: f32,
 }
+
+#[derive(Clone, Copy)]
+struct RenderLight {
+    x: f32,
+    y: f32,
+    radius: f32,
+    color: Color,
+    brightness: f32,
+    blend_mode: LightBlendMode,
+    falloff: FalloffMode,
+    light_type: LightType,
+    direction: f32,
+    inner_angle: f32,
+    outer_angle: f32,
+    attenuation: Attenuation,
+    shadow_enabled: bool,
+    shadow_filter: ShadowFilter,
+    shadow_smooth: f32,
+    shadow_softness: f32,
+    shadow_mask: u16,
+}
+
+struct RenderOccluder {
+    vertices: Vec<Vec2>,
+    opacity: f32,
+    light_mask: u16,
+}
+
 impl LightWorld {
     /// Create an empty world with ambient=0.1, disabled, and max_lights=64.
     pub fn new() -> Self {
@@ -188,80 +221,97 @@ impl LightWorld {
     /// Render an approximate light-map preview of this world into an `ImageData` debug image.
     pub fn draw_to_image(&self, width: u32, height: u32) -> crate::image::ImageData {
         let mut img = crate::image::ImageData::new(width, height);
-        img.fill(10, 10, 15, 255);
-        let light_params: Vec<(f32, f32, f32, f32, f32, f32, f32)> = self
+        let ambient = [
+            (self.ambient.r.clamp(0.0, 1.0) * 255.0).round(),
+            (self.ambient.g.clamp(0.0, 1.0) * 255.0).round(),
+            (self.ambient.b.clamp(0.0, 1.0) * 255.0).round(),
+        ];
+        img.fill(ambient[0] as u8, ambient[1] as u8, ambient[2] as u8, 255);
+        if !self.enabled {
+            return img;
+        }
+
+        let lights: Vec<RenderLight> = self
             .lights
             .values()
             .filter(|l| l.enabled && l.radius > 0.0 && l.intensity > 0.0 && l.energy > 0.0)
-            .map(|l| {
-                (
-                    l.x,
-                    l.y,
-                    l.radius,
-                    l.color.r,
-                    l.color.g,
-                    l.color.b,
-                    l.intensity * l.energy,
-                )
+            .take(self.max_lights as usize)
+            .map(|l| RenderLight {
+                x: l.x,
+                y: l.y,
+                radius: l.radius,
+                color: l.color,
+                brightness: l.intensity * l.energy * l.flicker.multiplier(),
+                blend_mode: l.blend_mode,
+                falloff: l.falloff,
+                light_type: l.light_type,
+                direction: l.direction,
+                inner_angle: l.inner_angle,
+                outer_angle: l.outer_angle,
+                attenuation: l.attenuation,
+                shadow_enabled: l.shadow_enabled,
+                shadow_filter: l.shadow_filter,
+                shadow_smooth: l.shadow_smooth,
+                shadow_softness: l.shadow_softness,
+                shadow_mask: l.shadow_mask,
             })
             .collect();
-        if light_params.is_empty() && self.occluders.is_empty() {
+
+        let occluders: Vec<RenderOccluder> = self
+            .occluders
+            .values()
+            .filter(|occ| occ.enabled && occ.opacity > 0.0 && occ.vertices.len() >= 3)
+            .map(|occ| RenderOccluder {
+                vertices: occ
+                    .vertices
+                    .iter()
+                    .map(|v| Vec2::new(v.x + occ.position.x, v.y + occ.position.y))
+                    .collect(),
+                opacity: occ.opacity.clamp(0.0, 1.0),
+                light_mask: occ.light_mask,
+            })
+            .collect();
+
+        if lights.is_empty() && occluders.is_empty() {
             return img;
         }
         for y in 0..height {
             for x in 0..width {
-                let mut fr = 10.0f32;
-                let mut fg = 10.0f32;
-                let mut fb = 15.0f32;
-                for &(lx, ly, radius, lr, lg, lb, brightness) in &light_params {
-                    let dx = x as f32 - lx;
-                    let dy = y as f32 - ly;
-                    let dist = (dx * dx + dy * dy).sqrt();
-                    let atten = (1.0 - dist / radius).max(0.0);
-                    let atten = atten * atten;
-                    fr += lr * atten * brightness * 200.0;
-                    fg += lg * atten * brightness * 200.0;
-                    fb += lb * atten * brightness * 200.0;
+                let mut fr = ambient[0];
+                let mut fg = ambient[1];
+                let mut fb = ambient[2];
+                let point = Vec2::new(x as f32 + 0.5, y as f32 + 0.5);
+                for light in &lights {
+                    let mut amount = light_intensity_at(light, point);
+                    if amount <= 0.0 {
+                        continue;
+                    }
+                    amount *= shadow_visibility(light, point, &occluders);
+                    if amount <= 0.0 {
+                        continue;
+                    }
+                    blend_light(&mut fr, &mut fg, &mut fb, light, amount);
                 }
                 img.set_pixel(
                     x,
                     y,
-                    fr.min(255.0) as u8,
-                    fg.min(255.0) as u8,
-                    fb.min(255.0) as u8,
+                    fr.clamp(0.0, 255.0) as u8,
+                    fg.clamp(0.0, 255.0) as u8,
+                    fb.clamp(0.0, 255.0) as u8,
                     255,
                 );
             }
         }
-        for occ in self.occluders.values() {
-            let verts = &occ.vertices;
-            if verts.len() >= 2 {
-                let mut min_x = f32::MAX;
-                let mut min_y = f32::MAX;
-                let mut max_x = f32::MIN;
-                let mut max_y = f32::MIN;
-                for v in verts {
-                    min_x = min_x.min(v.x);
-                    min_y = min_y.min(v.y);
-                    max_x = max_x.max(v.x);
-                    max_y = max_y.max(v.y);
-                }
-                img.draw_rect(
-                    min_x as i32,
-                    min_y as i32,
-                    (max_x - min_x) as u32,
-                    (max_y - min_y) as u32,
-                    20,
-                    20,
-                    25,
-                    255,
-                );
+        for occ in &occluders {
+            for edge in occ.vertices.windows(2) {
+                draw_occluder_edge(&mut img, edge[0], edge[1]);
+            }
+            if let (Some(first), Some(last)) = (occ.vertices.first(), occ.vertices.last()) {
+                draw_occluder_edge(&mut img, *last, *first);
             }
         }
-        for l in self.lights.values() {
-            if l.enabled {
-                img.draw_circle(l.x as i32, l.y as i32, 5, 255, 240, 100, 255);
-            }
+        for light in &lights {
+            img.draw_circle(light.x as i32, light.y as i32, 4, 255, 240, 100, 255);
         }
         img
     }
@@ -307,4 +357,207 @@ impl Default for LightWorld {
     fn default() -> Self {
         Self::new()
     }
+}
+
+fn light_intensity_at(light: &RenderLight, point: Vec2) -> f32 {
+    let dx = point.x - light.x;
+    let dy = point.y - light.y;
+    let distance = (dx * dx + dy * dy).sqrt();
+    let radial = match light.light_type {
+        LightType::Directional => 1.0,
+        LightType::Point | LightType::Spot => {
+            if distance > light.radius {
+                return 0.0;
+            }
+            radial_falloff(light.falloff, distance / light.radius)
+        }
+    };
+    let angular = match light.light_type {
+        LightType::Spot => spot_factor(
+            light.direction,
+            light.inner_angle,
+            light.outer_angle,
+            dx,
+            dy,
+        ),
+        LightType::Point | LightType::Directional => 1.0,
+    };
+    radial * angular * light.attenuation.factor(distance) * light.brightness
+}
+
+fn radial_falloff(mode: FalloffMode, t: f32) -> f32 {
+    let t = t.clamp(0.0, 1.0);
+    match mode {
+        FalloffMode::Linear => 1.0 - t,
+        FalloffMode::Smooth => 1.0 - (t * t * (3.0 - 2.0 * t)),
+        FalloffMode::Constant => 1.0,
+    }
+}
+
+fn spot_factor(direction: f32, inner_angle: f32, outer_angle: f32, dx: f32, dy: f32) -> f32 {
+    let angle = dy.atan2(dx);
+    let diff = angle_delta(angle, direction).abs();
+    let inner = inner_angle.max(0.0);
+    let outer = outer_angle.max(inner + f32::EPSILON);
+    if diff <= inner {
+        1.0
+    } else if diff >= outer {
+        0.0
+    } else {
+        1.0 - ((diff - inner) / (outer - inner))
+    }
+}
+
+fn angle_delta(a: f32, b: f32) -> f32 {
+    let mut d = a - b;
+    while d > std::f32::consts::PI {
+        d -= std::f32::consts::TAU;
+    }
+    while d < -std::f32::consts::PI {
+        d += std::f32::consts::TAU;
+    }
+    d
+}
+
+fn shadow_visibility(light: &RenderLight, point: Vec2, occluders: &[RenderOccluder]) -> f32 {
+    if !light.shadow_enabled || occluders.is_empty() {
+        return 1.0;
+    }
+    let offsets = shadow_sample_offsets(light.shadow_filter);
+    let radius = match light.shadow_filter {
+        ShadowFilter::None => 0.0,
+        ShadowFilter::Pcf5 | ShadowFilter::Pcf13 => {
+            (light.shadow_smooth * light.shadow_softness).max(0.0)
+        }
+    };
+    let mut total = 0.0;
+    for &(ox, oy) in offsets {
+        let sample = Vec2::new(point.x + ox * radius, point.y + oy * radius);
+        total += hard_shadow_visibility(light, sample, occluders);
+    }
+    total / offsets.len() as f32
+}
+
+fn shadow_sample_offsets(filter: ShadowFilter) -> &'static [(f32, f32)] {
+    match filter {
+        ShadowFilter::None => &[(0.0, 0.0)],
+        ShadowFilter::Pcf5 => &[(0.0, 0.0), (1.0, 0.0), (-1.0, 0.0), (0.0, 1.0), (0.0, -1.0)],
+        ShadowFilter::Pcf13 => &[
+            (0.0, 0.0),
+            (1.0, 0.0),
+            (-1.0, 0.0),
+            (0.0, 1.0),
+            (0.0, -1.0),
+            (0.7, 0.7),
+            (-0.7, 0.7),
+            (0.7, -0.7),
+            (-0.7, -0.7),
+            (2.0, 0.0),
+            (-2.0, 0.0),
+            (0.0, 2.0),
+            (0.0, -2.0),
+        ],
+    }
+}
+
+fn hard_shadow_visibility(light: &RenderLight, point: Vec2, occluders: &[RenderOccluder]) -> f32 {
+    let origin = Vec2::new(light.x, light.y);
+    let mut blocked = 0.0f32;
+    for occ in occluders {
+        if light.shadow_mask & occ.light_mask == 0 {
+            continue;
+        }
+        if point_in_polygon(origin, &occ.vertices) {
+            continue;
+        }
+        if point_in_polygon(point, &occ.vertices)
+            || segment_hits_polygon(origin, point, &occ.vertices)
+        {
+            blocked = blocked.max(occ.opacity);
+        }
+    }
+    1.0 - blocked.clamp(0.0, 1.0)
+}
+
+fn point_in_polygon(point: Vec2, vertices: &[Vec2]) -> bool {
+    let mut inside = false;
+    let mut j = vertices.len() - 1;
+    for i in 0..vertices.len() {
+        let vi = vertices[i];
+        let vj = vertices[j];
+        let crosses = (vi.y > point.y) != (vj.y > point.y);
+        if crosses {
+            let x_at_y = (vj.x - vi.x) * (point.y - vi.y) / (vj.y - vi.y) + vi.x;
+            if point.x < x_at_y {
+                inside = !inside;
+            }
+        }
+        j = i;
+    }
+    inside
+}
+
+fn segment_hits_polygon(origin: Vec2, point: Vec2, vertices: &[Vec2]) -> bool {
+    for i in 0..vertices.len() {
+        let a = vertices[i];
+        let b = vertices[(i + 1) % vertices.len()];
+        if segments_intersect(origin, point, a, b) {
+            return true;
+        }
+    }
+    false
+}
+
+fn segments_intersect(a: Vec2, b: Vec2, c: Vec2, d: Vec2) -> bool {
+    let r = Vec2::new(b.x - a.x, b.y - a.y);
+    let s = Vec2::new(d.x - c.x, d.y - c.y);
+    let denom = cross(r, s);
+    if denom.abs() < 1e-5 {
+        return false;
+    }
+    let cma = Vec2::new(c.x - a.x, c.y - a.y);
+    let t = cross(cma, s) / denom;
+    let u = cross(cma, r) / denom;
+    t > 1e-4 && t < 1.0 - 1e-4 && (0.0..=1.0).contains(&u)
+}
+
+fn cross(a: Vec2, b: Vec2) -> f32 {
+    a.x * b.y - a.y * b.x
+}
+
+fn blend_light(fr: &mut f32, fg: &mut f32, fb: &mut f32, light: &RenderLight, amount: f32) {
+    let r = light.color.r.clamp(0.0, 1.0) * amount * 255.0;
+    let g = light.color.g.clamp(0.0, 1.0) * amount * 255.0;
+    let b = light.color.b.clamp(0.0, 1.0) * amount * 255.0;
+    match light.blend_mode {
+        LightBlendMode::Add => {
+            *fr += r;
+            *fg += g;
+            *fb += b;
+        }
+        LightBlendMode::Sub => {
+            *fr -= r;
+            *fg -= g;
+            *fb -= b;
+        }
+        LightBlendMode::Mix => {
+            let alpha = amount.clamp(0.0, 1.0);
+            *fr = *fr * (1.0 - alpha) + r * alpha;
+            *fg = *fg * (1.0 - alpha) + g * alpha;
+            *fb = *fb * (1.0 - alpha) + b * alpha;
+        }
+    }
+}
+
+fn draw_occluder_edge(img: &mut crate::image::ImageData, a: Vec2, b: Vec2) {
+    img.draw_line(
+        a.x.round() as i32,
+        a.y.round() as i32,
+        b.x.round() as i32,
+        b.y.round() as i32,
+        36,
+        38,
+        46,
+        255,
+    );
 }

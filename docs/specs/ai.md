@@ -5,7 +5,7 @@
 - Orchestrates agent choices via behavior trees, FSMs, GOAP, HTN, and utility AI.
 - Synthesizes steering locomotion, spatial collision avoidance, and sensory perception.
 - Tracks tactical influence grids, squad formations, and trait-driven emotional motives.
-- Embeds adaptable machine learning solvers, Q-learning, and neuroevolution pipelines.
+- Consumes learned policies only through explicit `learning` integration points; ML/RL constructors live under the `learning` module.
 - Controls dramatic pacing waves and optimizes runtime budgets with distance-based LOD tiers.
 
 ## General Info
@@ -14,7 +14,7 @@
 - Source path: `src/ai/`
 - Binding: `src/lua_api/ai_api.rs`
 - Namespace: `lurek.ai`
-- Lua API surface: `36` functions, `24` types, `247` methods
+- Lua API surface: `31` functions, `24` types, `247` methods
 - Rust test path(s): tests/rust/unit/ai_tests.rs, tests/rust/game/ai_tests.rs
 - Lua test path(s): tests/lua/unit/test_ai.lua, tests/lua/golden/test_ai_golden.lua, tests/lua/integration/test_ecs_ai.lua, tests/lua/integration/test_ai_physics.lua, tests/lua/integration/test_ai_pathfind.lua, tests/lua/integration/test_ai_ecs_scene.lua, tests/lua/stress/test_ai_stress.lua
 
@@ -36,6 +36,7 @@
 - Level-of-detail and update-policy support matter for scale. Large groups of intelligent actors can become expensive quickly, so the module includes ways to throttle, schedule, or simplify updates without abandoning the common behavior vocabulary.
 - Debug rendering and inspection support are essential for real use. Visualizing state machines, behavior trees, perception ranges, chosen targets, or queue contents shortens the path from “the agent behaved strangely” to “here is the exact internal reason.”
 - The module is useful for enemies, companions, neutral populations, strategic directors, simulation agents, crowd coordinators, and any feature where behavior should be data-driven, inspectable, and scalable rather than buried in one-off control code.
+- Machine-learning, reinforcement-learning, bandit, neural-network, genetic, and neuroevolution constructors are not owned here. Those belong to `learning`; `ai` may consume their outputs through explicit integration but must not duplicate their public API.
 - Neighboring modules still matter, but the boundary is clear. `pathfind` searches space, `physics` defines motion and collision semantics, and `render` visualizes results, while `ai` owns the reasoning structures, internal drives, sensory interpretation, and coordination layers that decide what to do.
 - The breadth of the spec is intentional because modern game AI is an ecosystem. Perception, memory, scoring, planning, execution, local movement, and group coordination all reinforce one another, and users need them to live under a shared conceptual surface.
 - That ecosystem view also improves authoring. Teams can mix authored logic, tactical heuristics, and simulation-like drives within one runtime surface instead of treating each behavior family as an isolated special case.
@@ -50,7 +51,6 @@ This module primarily collaborates with `dialog`, `image`, `learning`, `patterns
 
 - `dialog`: Imports or references `src/dialog/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
 - `image`: Imports or references `image` from `src/image/`.
-- `learning`: Imports or references `src/learning/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
 - `patterns`: Imports or references `src/patterns/`. Cross-group dependency from `Feature Systems` into `Foundations`.
 - `render`: Imports or references `render` from `src/render/`.
 - `runtime`: Imports or references `runtime` from `src/runtime/`.
@@ -278,7 +278,6 @@ This module primarily collaborates with `dialog`, `image`, `learning`, `patterns
 - `lurek.ai.newAIDirector() -> LAIDirector`: Creates an AI director for tension, phase, and pacing factor calculations.
 - `lurek.ai.newAILod() -> LAILod`: Creates a default AI level-of-detail tier selector.
 - `lurek.ai.newAction(callback) -> LBTNode`: Creates a behavior tree action leaf backed by a Lua callback.
-- `lurek.ai.newBandit(arm_count, strategy, epsilon, seed) -> LBandit`: Creates a multi-armed bandit with a named selection strategy.
 - `lurek.ai.newBehaviorTree() -> LBehaviorTree`: Creates an empty behavior tree that can receive a root node.
 - `lurek.ai.newBlackboard() -> LAIBlackboard`: Creates an empty AI blackboard for typed local facts.
 - `lurek.ai.newCommandQueue() -> LCommandQueue`: Creates an empty command queue for callback-backed AI commands.
@@ -287,18 +286,14 @@ This module primarily collaborates with `dialog`, `image`, `learning`, `patterns
 - `lurek.ai.newDialogueAI() -> LDialogueAI`: Creates an empty dialogue selector for weighted topics and branches.
 - `lurek.ai.newEmotionModel() -> LEmotionModel`: Creates an empty emotion model for named decaying emotion values.
 - `lurek.ai.newGOAPPlanner() -> LGOAPPlanner`: Creates an empty GOAP planner for boolean world-state planning.
-- `lurek.ai.newGeneticAlgorithm(pop_size, gene_count, seed) -> LGeneticAlgorithm`: Creates a genetic algorithm population with fixed chromosome length.
 - `lurek.ai.newGuard(predicate, child) -> LBTNode`: Creates a guard decorator that runs a predicate before ticking its child.
 - `lurek.ai.newHTNDomain() -> LHTNDomain`: Creates an empty hierarchical task network domain.
 - `lurek.ai.newInfluenceMap(w, h, cs) -> LInfluenceMap`: Creates a grid influence map with the supplied cell dimensions and world cell size.
 - `lurek.ai.newInverter() -> LBTNode`: Creates a behavior tree inverter decorator with an empty sequence child.
 - `lurek.ai.newMCTSEngine(iters, uct_c, depth, seed) -> LMCTSEngine`: Creates a Monte Carlo tree search engine with deterministic configuration.
 - `lurek.ai.newNeedSystem() -> LNeedSystem`: Creates an empty need system for decaying named needs.
-- `lurek.ai.newNeuralNet() -> LNeuralNet`: Creates an empty feed-forward neural network.
-- `lurek.ai.newNeuroevolution(layer_spec, pop_size, seed) -> LNeuroevolution`: Creates a neuroevolution population from a layer specification table.
 - `lurek.ai.newORCASolver(time_horizon) -> LORCASolver`: Creates an ORCA avoidance solver with the supplied prediction horizon.
 - `lurek.ai.newParallel(sp?, fp?) -> LBTNode`: Creates a behavior tree parallel node with optional success and failure policies.
-- `lurek.ai.newQLearner(sc, ac) -> LQLearner`: Creates a Q-learner with fixed state and action counts.
 - `lurek.ai.newRepeater(count?) -> LBTNode`: Creates a behavior tree repeater decorator with an optional repeat count.
 - `lurek.ai.newSelector() -> LBTNode`: Creates a behavior tree selector node with no children.
 - `lurek.ai.newSequence() -> LBTNode`: Creates a behavior tree sequence node with no children.
@@ -855,7 +850,6 @@ This module primarily collaborates with `dialog`, `image`, `learning`, `patterns
 
 - `dialog`: Imports or references `src/dialog/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
 - `image`: Imports or references `image` from `src/image/`.
-- `learning`: Imports or references `src/learning/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
 - `patterns`: Imports or references `src/patterns/`. Cross-group dependency from `Feature Systems` into `Foundations`.
 - `render`: Imports or references `render` from `src/render/`.
 - `runtime`: Imports or references `runtime` from `src/runtime/`.

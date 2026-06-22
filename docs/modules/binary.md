@@ -5,12 +5,13 @@
 - The `binary` module is the byte-oriented data surface for users who need exact control over compact formats, protocol payloads, and structured runtime interchange.
 - Mutable byte containers, typed views, sequential writers, and pack-style helpers work together so a script can both inspect existing binary data and build new payloads without inventing its own low-level buffer rules.
 - Compression, encoding, hashes, checksums, and ring-buffer helpers matter because real binary workflows usually involve transport safety, storage reduction, and integrity checks alongside raw reads and writes.
-- MsgPack, TOML bridges, and schema-like packing utilities make the module useful for both debug tooling and production-facing data paths such as saves, networking, and cached assets.
+- Byte encodings, compression, hashes, checksums, and schema-like packing utilities make the module useful for both debug tooling and production-facing data paths such as saves, networking, and cached assets.
 - Exact offset control, byte-order awareness, and sequential write semantics are especially valuable when interoperating with protocols or compact save formats where structure must be reproduced precisely.
 - The module therefore acts as the engine's low-level data construction kit whenever higher-level structured formats are too heavy or too opaque for the problem at hand.
 - That also makes it useful when tests or tools need to inspect raw payload layout instead of only decoded high-level values.
 - It keeps raw layout work first-class.
 - Read `binary` as the shared byte-language of the engine: other modules decide what the data means, but `binary` owns how that data is packed, transformed, verified, and moved around safely.
+- Structured interchange formats such as TOML and MessagePack belong to `serialize`; `binary` must not expose format-specific structured parsers just because a format can be represented as bytes.
 
 This module is mostly self-contained inside the `Foundations` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
 
@@ -266,75 +267,6 @@ end
 
 ---
 
-### `lurek.binary.encodeToml`
-
-Encodes a Lua table into a TOML document string.
-
-```lua
-lurek.binary.encodeToml(tbl)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `tbl` | table | Lua table to encode as TOML. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| string | TOML document text. |
-
-**Example**
-
-```lua
-do
-    local t = {title = "My Game", version = "1.0"}
-    local text = lurek.binary.encodeToml(t)
-    local parsed = lurek.binary.parseToml(text)
-    local preview = text:sub(1, 20)
-    lurek.log.info("encoded toml len=" .. tostring(#text) .. " preview=" .. tostring(preview))
-    lurek.log.info("encoded toml title=" .. tostring(parsed.title) .. " version=" .. tostring(parsed.version))
-end
-```
-
----
-
-### `lurek.binary.fromMsgPack`
-
-Decodes a structured binary interchange payload back into Lua values.
-
-```lua
-lurek.binary.fromMsgPack(bytes)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `bytes` | string | Encoded binary payload. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| LuaValue | Decoded Lua value. |
-
-**Example**
-
-```lua
-do
-    local payload = {score = 100, name = "test"}
-    local bytes = lurek.binary.toMsgPack(payload)
-    local decoded = lurek.binary.fromMsgPack(bytes)
-    example_print_log("decoded score = " .. decoded.score)
-    example_print_log("decoded name = " .. decoded.name)
-end
-```
-
----
-
 ### `lurek.binary.getPackedSize`
 
 Computes the packed byte size for values and a format string.
@@ -583,42 +515,6 @@ end
 
 ---
 
-### `lurek.binary.parseToml`
-
-Parses TOML text into Lua tables and scalar values.
-
-```lua
-lurek.binary.parseToml(text)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `text` | string | TOML document text. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| table | Lua representation of the TOML document. |
-
-**Example**
-
-```lua
-do
-    local toml_text = "[player]\nname = \"Hero\"\nlevel = 5"
-    local t = lurek.binary.parseToml(toml_text)
-    local playerName = t.player.name
-    local playerLevel = t.player.level
-    local playerSummary = playerName .. ":" .. tostring(playerLevel)
-    lurek.log.info("parsed toml player=" .. tostring(playerSummary))
-    lurek.log.info("parsed toml has player table=" .. tostring(t.player ~= nil))
-end
-```
-
----
-
 ### `lurek.binary.read`
 
 Reads binary values from a byte string using a format string.
@@ -685,41 +581,6 @@ do
     local transformBytes = lurek.binary.write("f32 f32 f32", 1.0, 2.0, 3.0)
     lurek.log.info("single u32 size=" .. tostring(sz))
     lurek.log.info("transform bytes match=" .. tostring(transformSize == #transformBytes))
-end
-```
-
----
-
-### `lurek.binary.toMsgPack`
-
-Encodes a Lua value into the current structured binary interchange payload.
-
-```lua
-lurek.binary.toMsgPack(value)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `value` | any | Lua value to encode through the serial table converter. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| string | Encoded binary payload. |
-
-**Example**
-
-```lua
-do
-    local payload = {score = 100, name = "test"}
-    local bytes = lurek.binary.toMsgPack(payload)
-    local decoded = lurek.binary.fromMsgPack(bytes)
-    local firstByte = string.byte(bytes, 1)
-    lurek.log.info("msgpack bytes=" .. tostring(#bytes) .. " first byte=" .. tostring(firstByte))
-    lurek.log.info("msgpack score=" .. tostring(decoded.score) .. " name=" .. tostring(decoded.name))
 end
 ```
 

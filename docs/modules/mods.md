@@ -794,6 +794,32 @@ LMod:getSandbox()
 |------|-------------|
 | table | Sandbox configuration table, or nil when unset. |
 
+**Example**
+
+```lua
+do
+    ensure_dir("save")
+    local root = "save/_mods_sandbox_readback/"
+    ensure_dir(root)
+    local mod = lurek.mods.newMod({ id = "sandbox_readback", name = "Sandbox Readback" })
+    mod:setSandbox({
+        api_mode = "allow_list",
+        apis = { "filesystem" },
+        hook_mode = "allow_list",
+        hooks = { "on_load" },
+        read_mode = "allow_list",
+        read_roots = { root },
+        blocked_ops = { "filesystem.remove" },
+        allow_network = false,
+        allow_file_write = false,
+    })
+    local sandbox = mod:getSandbox()
+    mods_log("sandbox hooks=" .. tostring(sandbox and sandbox.hooks and sandbox.hooks[1]))
+    mods_log("sandbox allow_network=" .. tostring(sandbox and sandbox.allow_network))
+    mods_log("sandbox blocked_op=" .. tostring(sandbox and sandbox.blocked_ops and sandbox.blocked_ops[1]))
+end
+```
+
 ---
 
 #### `LMod:getVersion`
@@ -962,6 +988,24 @@ LMod:runHook(name)
 | Type | Description |
 |------|-------------|
 | any | Hook return values. |
+
+**Example**
+
+```lua
+do
+    local mod = lurek.mods.newMod({ id = "runtime_hooks", name = "Runtime Hooks" })
+    mod:setSandbox({
+        hook_mode = "allow_list",
+        hooks = { "on_load" },
+    })
+    mod:setHook("on_load", function(a, b)
+        return a + b, "ok"
+    end)
+    local sum, status = mod:runHook("on_load", 2, 3)
+    mods_log("hook sum=" .. tostring(sum))
+    mods_log("hook status=" .. tostring(status))
+end
+```
 
 ---
 
@@ -1154,6 +1198,32 @@ LMod:setSandbox(sandbox)
 | Name | Type | Description |
 |------|------|-------------|
 | `sandbox` | table | Sandbox configuration table. |
+
+**Example**
+
+```lua
+do
+    ensure_dir("save")
+    ensure_dir("save/example-mods")
+    local root = "save/_mods_sandbox_unit/"
+    ensure_dir(root)
+    local mod = lurek.mods.newMod({ id = "sandbox_guard", name = "Sandbox Guard" })
+    mod:setSandbox({
+        api_mode = "allow_list",
+        apis = { "filesystem" },
+        hook_mode = "allow_list",
+        hooks = { "on_load" },
+        read_mode = "allow_list",
+        read_roots = { root },
+        allow_network = false,
+        allow_file_write = false,
+        max_memory = 4096,
+    })
+    local sandbox = mod:getSandbox()
+    mods_log("sandbox api_mode=" .. tostring(sandbox and sandbox.api_mode))
+    mods_log("sandbox max_memory=" .. tostring(sandbox and sandbox.max_memory))
+end
+```
 
 ---
 

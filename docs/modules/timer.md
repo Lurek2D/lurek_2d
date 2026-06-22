@@ -1575,7 +1575,7 @@ do
     local is_object = sched:typeOf("LObject")
     local is_window = sched:typeOf("LWindow")
     lurek.log.info("typeOf LScheduler = " .. tostring(is_sched))
-    lurek.log.info("window span = " .. tostring(tw:getWindow()) .. " window=" .. tostring(is_window))
+    lurek.log.info("is object = " .. tostring(is_object) .. " window=" .. tostring(is_window))
 end
 ```
 

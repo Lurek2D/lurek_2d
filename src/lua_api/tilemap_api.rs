@@ -2,7 +2,7 @@
 
 use super::SharedState;
 use crate::math::Rect;
-use crate::tilemap::autotile_sheet::{AutoTileLayout, AutoTileSheet};
+use crate::tilemap::autotile_sheet::{layout_name, AutoTileLayout, AutoTileMode, AutoTileSheet};
 use crate::tilemap::chunk::ChunkMap;
 use crate::tilemap::coords;
 use crate::tilemap::isomap::IsoMap;
@@ -29,6 +29,17 @@ fn one_based_usize(name: &str, val: usize) -> LuaResult<usize> {
 fn one_based_u32(name: &str, val: u32) -> LuaResult<u32> {
     val.checked_sub(1)
         .ok_or_else(|| mlua::Error::RuntimeError(format!("{name} must be >= 1 (got {val})")))
+}
+
+fn parse_auto_tile_mode(name: &str, mode: &str) -> LuaResult<AutoTileMode> {
+    match mode {
+        "matchSides" => Ok(AutoTileMode::MatchSides),
+        "matchCorners" => Ok(AutoTileMode::MatchCorners),
+        "matchCornersAndSides" => Ok(AutoTileMode::MatchCornersAndSides),
+        other => Err(LuaError::RuntimeError(format!(
+            "{name}: unknown mode '{other}', use 'matchSides', 'matchCorners', or 'matchCornersAndSides'"
+        ))),
+    }
 }
 
 fn tilemap_import_error_table<'lua>(
@@ -341,6 +352,25 @@ impl LuaUserData for LuaTileSet {
                     .map(|id| id + 1))
             },
         );
+        // -- setAutoTileMode --
+        /// Sets the neighbor matching mode for a named auto-tile type.
+        /// @param | typeName | string | Logical tile type name.
+        /// @param | mode | string | One of `"matchSides"`, `"matchCorners"`, `"matchCornersAndSides"`.
+        methods.add_method(
+            "setAutoTileMode",
+            |_, this, (type_name, mode): (String, String)| {
+                let mode = parse_auto_tile_mode("setAutoTileMode", &mode)?;
+                this.inner.borrow_mut().set_auto_tile_mode(&type_name, mode);
+                Ok(())
+            },
+        );
+        // -- getAutoTileMode --
+        /// Returns the neighbor matching mode for a named auto-tile type.
+        /// @param | typeName | string | Logical tile type name.
+        /// @return | string | One of `"matchSides"`, `"matchCorners"`, `"matchCornersAndSides"`.
+        methods.add_method("getAutoTileMode", |_, this, type_name: String| {
+            Ok(this.inner.borrow().get_auto_tile_mode(&type_name).as_str())
+        });
         // -- type --
         /// Returns the type name of this userdata.
         /// @return | string | Always `"LTileSet"`.
@@ -837,6 +867,34 @@ impl LuaUserData for LuaTileMap {
                 Ok(())
             },
         );
+        // -- applyAutoTileMode --
+        /// Runs auto-tiling on an entire layer using the mode configured on the matching tileset.
+        /// @param | layer | integer | Layer index (1-based).
+        /// @param | typeName | string | Tile type name whose configured mode and rules to apply.
+        methods.add_method(
+            "applyAutoTileMode",
+            |_, this, (layer, type_name): (usize, String)| {
+                this.inner
+                    .borrow_mut()
+                    .apply_autotile_mode(layer - 1, &type_name);
+                Ok(())
+            },
+        );
+        // -- applyAutoTileModeAt --
+        /// Runs configured-mode auto-tiling at a single tile position and updates it and its neighbors.
+        /// @param | layer | integer | Layer index (1-based).
+        /// @param | x | integer | Column (1-based).
+        /// @param | y | integer | Row (1-based).
+        /// @param | typeName | string | Tile type name whose configured mode and rules to apply.
+        methods.add_method(
+            "applyAutoTileModeAt",
+            |_, this, (layer, x, y, type_name): (usize, u32, u32, String)| {
+                this.inner
+                    .borrow_mut()
+                    .apply_autotile_mode_at(layer - 1, x - 1, y - 1, &type_name);
+                Ok(())
+            },
+        );
         // -- rectOverlapsSolid --
         /// Tests whether a world-space rectangle overlaps any solid tile on a layer.
         /// @param | layer | integer | Layer index (1-based).
@@ -1123,14 +1181,15 @@ impl LuaUserData for LuaAutoTileSheet {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         // -- getLayout --
         /// Returns the auto-tile layout type as a string.
-        /// @return | string | One of `"blob47"`, `"composite48"`, `"minimal16"`.
+        /// @return | string | One of `"blob47"`, `"composite48"`, `"rpgmaker48"`, `"minimal16"`.
         methods.add_method("getLayout", |_, this, ()| {
-            let l = this.inner.borrow().get_layout();
-            Ok(match l {
-                AutoTileLayout::Blob47 => "blob47",
-                AutoTileLayout::Composite48 => "composite48",
-                AutoTileLayout::Minimal16 => "minimal16",
-            })
+            Ok(this.inner.borrow().get_layout_name())
+        });
+        // -- getDefaultMode --
+        /// Returns the default neighbor matching mode for this auto-tile sheet layout.
+        /// @return | string | One of `"matchSides"` or `"matchCornersAndSides"`.
+        methods.add_method("getDefaultMode", |_, this, ()| {
+            Ok(this.inner.borrow().get_default_mode().as_str())
         });
         // -- getTileCount --
         /// Returns the total number of tiles in this auto-tile sheet.
@@ -2120,17 +2179,18 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// Creates an auto-tile sheet with a given tile size and layout.
     /// @param | tileW | integer | Tile width in pixels.
     /// @param | tileH | integer | Tile height in pixels.
-    /// @param | layout | string | Layout type: `"blob47"`, `"composite48"`, or `"minimal16"`.
+    /// @param | layout | string | Layout type: `"blob47"`, `"composite48"`, `"rpgmaker48"`, or `"minimal16"`.
     /// @return | LAutoTileSheet | New auto-tile sheet.
     tbl.set("newAutoTileSheet", lua.create_function(
             |lua, (tile_w, tile_h, layout_str): (u32, u32, String)| {
                 let layout = match layout_str.as_str() {
                     "blob47" => AutoTileLayout::Blob47,
                     "composite48" => AutoTileLayout::Composite48,
+                    "rpgmaker48" | "rpgmaker" => AutoTileLayout::RpgMaker48,
                     "minimal16" => AutoTileLayout::Minimal16,
                     other => {
                         return Err(LuaError::RuntimeError(format!(
-                            "newAutoTileSheet: unknown layout '{}', use 'blob47', 'composite48', or 'minimal16'",
+                            "newAutoTileSheet: unknown layout '{}', use 'blob47', 'composite48', 'rpgmaker48', or 'minimal16'",
                             other
                         )))
                     }
@@ -2140,6 +2200,32 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 })
             },
         )?,
+    )?;
+    // -- getAutoTileFormats --
+    /// Returns the supported auto-tile sheet layouts and their default matching modes.
+    /// @return | table | Array of `{ name, tileCount, mode }` entries.
+    tbl.set(
+        "getAutoTileFormats",
+        lua.create_function(|lua, ()| {
+            let formats = [
+                (AutoTileLayout::Minimal16, 16u32),
+                (AutoTileLayout::Blob47, 47u32),
+                (AutoTileLayout::Composite48, 48u32),
+                (AutoTileLayout::RpgMaker48, 48u32),
+            ];
+            let outer = lua.create_table()?;
+            for (idx, (layout, tile_count)) in formats.iter().enumerate() {
+                let entry = lua.create_table()?;
+                entry.set("name", layout_name(*layout))?;
+                entry.set("tileCount", *tile_count)?;
+                entry.set(
+                    "mode",
+                    crate::tilemap::autotile_sheet::default_mode_for_layout(*layout).as_str(),
+                )?;
+                outer.set(idx + 1, entry)?;
+            }
+            Ok(outer)
+        })?,
     )?;
     // -- newChunkMap --
     /// Creates a new infinite chunk-based tile map.

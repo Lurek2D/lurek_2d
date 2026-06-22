@@ -2,7 +2,7 @@
 -- Auto-generated from content/examples2/data_*.lua by tools/fix/merge_examples2_into_examples.py
 -- Run: cargo run -- content/examples/binary.lua
 
---- Binary Module Part 1: Pack/Unpack, Compression, Encoding, Hashing, TOML, MsgPack, RingBuffer, DataView, Writer
+--- Binary Module Part 1: Pack/Unpack, Compression, Encoding, Hashing, RingBuffer, DataView, Writer
 
 local function example_print_log(...)
     local parts = {}
@@ -169,27 +169,6 @@ do
     lurek.log.info("transform bytes match=" .. tostring(transformSize == #transformBytes))
 end
 
---@api: lurek.binary.parseToml
-do
-    local toml_text = "[player]\nname = \"Hero\"\nlevel = 5"
-    local t = lurek.binary.parseToml(toml_text)
-    local playerName = t.player.name
-    local playerLevel = t.player.level
-    local playerSummary = playerName .. ":" .. tostring(playerLevel)
-    lurek.log.info("parsed toml player=" .. tostring(playerSummary))
-    lurek.log.info("parsed toml has player table=" .. tostring(t.player ~= nil))
-end
-
---@api: lurek.binary.encodeToml
-do
-    local t = {title = "My Game", version = "1.0"}
-    local text = lurek.binary.encodeToml(t)
-    local parsed = lurek.binary.parseToml(text)
-    local preview = text:sub(1, 20)
-    lurek.log.info("encoded toml len=" .. tostring(#text) .. " preview=" .. tostring(preview))
-    lurek.log.info("encoded toml title=" .. tostring(parsed.title) .. " version=" .. tostring(parsed.version))
-end
-
 --@api: lurek.binary.newRingBuffer
 do
     local rb = lurek.binary.newRingBuffer(8)
@@ -199,25 +178,6 @@ do
     local length = rb:len()
     lurek.log.info("event ring capacity=" .. tostring(capacity))
     lurek.log.info("event ring len=" .. tostring(length) .. " empty=" .. tostring(rb:isEmpty()))
-end
-
---@api: lurek.binary.toMsgPack
-do
-    local payload = {score = 100, name = "test"}
-    local bytes = lurek.binary.toMsgPack(payload)
-    local decoded = lurek.binary.fromMsgPack(bytes)
-    local firstByte = string.byte(bytes, 1)
-    lurek.log.info("msgpack bytes=" .. tostring(#bytes) .. " first byte=" .. tostring(firstByte))
-    lurek.log.info("msgpack score=" .. tostring(decoded.score) .. " name=" .. tostring(decoded.name))
-end
-
---@api: lurek.binary.fromMsgPack
-do
-    local payload = {score = 100, name = "test"}
-    local bytes = lurek.binary.toMsgPack(payload)
-    local decoded = lurek.binary.fromMsgPack(bytes)
-    example_print_log("decoded score = " .. decoded.score)
-    example_print_log("decoded name = " .. decoded.name)
 end
 
 --@api: lurek.binary.newWriter

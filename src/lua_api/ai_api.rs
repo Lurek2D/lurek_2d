@@ -3,12 +3,12 @@
 use super::SharedState;
 use crate::ai::validation::{finite_f32, finite_f64, non_negative, positive_nonzero};
 use crate::ai::{
-    AIDirector, AILod, AIWorld, AiValidationLimits, BTNode, Bandit, BanditStrategy, BehaviorTree,
-    Blackboard, CallbackErrorTrace, CommandQueue, Consideration, ContextSteering, DecisionModel,
-    DialogueAI, Emotion, EmotionModel, FormationType, GOAPPlanner, GeneticAlgorithm, HTNDomain,
-    HTNMethod, HTNPlanner, MCTSConfig, MCTSEngine, Need, NeedSystem, NeuralNet, Neuroevolution,
-    ORCAAgent, ORCASolver, ParallelPolicy, QLearner, ResponseCurve, Squad, SteeringManager,
-    StimulusWorld, StrategyAI, TraitProfile, UtilityAI, WorldState,
+    AIDirector, AILod, AIWorld, AiValidationLimits, BTNode, BehaviorTree, Blackboard,
+    CallbackErrorTrace, CommandQueue, Consideration, ContextSteering, DecisionModel, DialogueAI,
+    Emotion, EmotionModel, FormationType, GOAPPlanner, HTNDomain, HTNMethod, HTNPlanner,
+    MCTSConfig, MCTSEngine, Need, NeedSystem, ORCAAgent, ORCASolver, ParallelPolicy,
+    ResponseCurve, Squad, SteeringManager, StimulusWorld, StrategyAI, TraitProfile, UtilityAI,
+    WorldState,
 };
 use crate::lua_api::callback_registry::CallbackRegistry;
 use crate::pathfind::InfluenceMap;
@@ -1299,9 +1299,6 @@ impl LuaUserData for LuaSteeringManager {
 }
 /// Re-use the dialogue AI handle from the dialog_api module for backward compatibility.
 use super::dialog_api::LuaDialogueAI;
-use super::learning_api::{
-    LuaBandit, LuaGeneticAlgorithm, LuaNeuralNet, LuaNeuroevolution, LuaQLearner,
-};
 /// Lua handle for utility AI action scoring and consideration curves.
 #[derive(Clone)]
 struct LuaUtilityAI {
@@ -3160,19 +3157,6 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
             })
         })?,
     )?;
-    // -- newQLearner --
-    /// Creates a Q-learner with fixed state and action counts.
-    /// @param | sc | integer | Number of discrete states.
-    /// @param | ac | integer | Number of discrete actions.
-    /// @return | LQLearner | New Q-learner handle.
-    tbl.set(
-        "newQLearner",
-        lua.create_function(|_, (sc, ac): (usize, usize)| {
-            Ok(LuaQLearner {
-                inner: Rc::new(RefCell::new(QLearner::new(sc, ac))),
-            })
-        })?,
-    )?;
     // -- newUtilityAI --
     /// Creates an empty utility AI action scorer.
     /// @return | LUtilityAI | New utility AI handle.
@@ -3355,88 +3339,6 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         lua.create_function(|_, time_horizon: f32| {
             Ok(LuaORCASolver {
                 inner: Rc::new(RefCell::new(ORCASolver::new(time_horizon))),
-            })
-        })?,
-    )?;
-    // -- newNeuralNet --
-    /// Creates an empty feed-forward neural network.
-    /// @return | LNeuralNet | New neural network handle.
-    tbl.set(
-        "newNeuralNet",
-        lua.create_function(|_, ()| {
-            Ok(LuaNeuralNet {
-                inner: Rc::new(RefCell::new(NeuralNet::new())),
-            })
-        })?,
-    )?;
-    // -- newGeneticAlgorithm --
-    /// Creates a genetic algorithm population with fixed chromosome length.
-    /// @param | pop_size | integer | Number of chromosomes in the population.
-    /// @param | gene_count | integer | Number of floating-point genes per chromosome.
-    /// @param | seed | integer | Random seed used for population initialization and evolution.
-    /// @return | LGeneticAlgorithm | New genetic algorithm handle.
-    tbl.set(
-        "newGeneticAlgorithm",
-        lua.create_function(|_, (pop_size, gene_count, seed): (usize, usize, u64)| {
-            Ok(LuaGeneticAlgorithm {
-                inner: Rc::new(RefCell::new(GeneticAlgorithm::new(
-                    pop_size, gene_count, seed,
-                ))),
-            })
-        })?,
-    )?;
-    // -- newBandit --
-    /// Creates a multi-armed bandit with a named selection strategy.
-    /// @param | arm_count | integer | Number of selectable arms.
-    /// @param | strategy | string | Strategy name such as `ucb1`, `thompson`, or an epsilon-greedy fallback.
-    /// @param | epsilon | number | Exploration probability used by epsilon-greedy strategy and clamped to `[0, 1]`.
-    /// @param | seed | integer | Random seed used by the bandit.
-    /// @return | LBandit | New bandit handle.
-    tbl.set(
-        "newBandit",
-        lua.create_function(
-            |_, (arm_count, strategy, epsilon, seed): (usize, String, f32, u64)| {
-                let strat = match strategy.as_str() {
-                    "ucb1" => BanditStrategy::UCB1,
-                    "thompson" | "thompson_sampling" => BanditStrategy::ThompsonSampling,
-                    _ => BanditStrategy::EpsilonGreedy {
-                        epsilon: epsilon.clamp(0.0, 1.0),
-                    },
-                };
-                Ok(LuaBandit {
-                    inner: Rc::new(RefCell::new(Bandit::new(arm_count, strat, seed))),
-                })
-            },
-        )?,
-    )?;
-    // -- newNeuroevolution --
-    /// Creates a neuroevolution population from a layer specification table.
-    /// @param | layer_spec | table | Array of layer tables with `inputs`, `outputs`, and optional `activation` fields.
-    /// @param | pop_size | integer | Number of chromosomes in the population.
-    /// @param | seed | integer | Random seed used for population initialization and evolution.
-    /// @return | LNeuroevolution | New neuroevolution handle.
-    tbl.set(
-        "newNeuroevolution",
-        lua.create_function(|_, (layer_spec, pop_size, seed): (LuaTable, usize, u64)| {
-            let mut spec: Vec<(usize, usize, &'static str)> = Vec::new();
-            for i in 1..=layer_spec.raw_len() {
-                let entry: LuaTable = layer_spec.raw_get(i)?;
-                let in_size: usize = entry.raw_get("inputs").unwrap_or(1);
-                let out_size: usize = entry.raw_get("outputs").unwrap_or(1);
-                let act_str: String = entry
-                    .raw_get("activation")
-                    .unwrap_or_else(|_| "relu".into());
-                let act: &'static str = match act_str.as_str() {
-                    "sigmoid" => "sigmoid",
-                    "tanh" => "tanh",
-                    "linear" => "linear",
-                    "softmax" => "softmax",
-                    _ => "relu",
-                };
-                spec.push((in_size, out_size, act));
-            }
-            Ok(LuaNeuroevolution {
-                inner: Rc::new(RefCell::new(Neuroevolution::new(spec, pop_size, seed))),
             })
         })?,
     )?;

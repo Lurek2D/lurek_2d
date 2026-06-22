@@ -154,6 +154,35 @@ end
 
 ---
 
+### `lurek.tilemap.getAutoTileFormats`
+
+Returns the supported auto-tile sheet layouts and their default matching modes.
+
+```lua
+lurek.tilemap.getAutoTileFormats()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of `{ name, tileCount, mode }` entries. |
+
+**Example**
+
+```lua
+do
+    local formats = lurek.tilemap.getAutoTileFormats()
+    for _, format in ipairs(formats) do
+        if format.name == "rpgmaker48" or format.name == "minimal16" then
+            example_print_log(format.name .. " tiles=" .. format.tileCount .. " mode=" .. format.mode)
+        end
+    end
+end
+```
+
+---
+
 ### `lurek.tilemap.hexArea`
 
 Returns all hex cells within a filled area of a given radius.
@@ -673,7 +702,7 @@ lurek.tilemap.newAutoTileSheet(tileW, tileH, layout)
 |------|------|-------------|
 | `tileW` | number | Tile width in pixels. |
 | `tileH` | number | Tile height in pixels. |
-| `layout` | string | Layout type: `"blob47"`, `"composite48"`, or `"minimal16"`. |
+| `layout` | string | Layout type: `"blob47"`, `"composite48"`, `"rpgmaker48"`, or `"minimal16"`. |
 
 **Returns**
 
@@ -691,6 +720,8 @@ do
     example_print_log("blob47 tile size = " .. blob:getTileWidth() .. "x" .. blob:getTileHeight())
     local minimal = lurek.tilemap.newAutoTileSheet(16, 16, "minimal16")
     example_print_log("minimal16 tile count = " .. minimal:getTileCount())
+    local rpg = lurek.tilemap.newAutoTileSheet(16, 16, "rpgmaker48")
+    example_print_log("rpgmaker48 mode = " .. rpg:getDefaultMode())
 end
 ```
 
@@ -1245,6 +1276,35 @@ end
 
 ---
 
+#### `LAutoTileSheet:getDefaultMode`
+
+Returns the default neighbor matching mode for this auto-tile sheet layout.
+
+```lua
+LAutoTileSheet:getDefaultMode()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | One of `"matchSides"` or `"matchCornersAndSides"`. |
+
+**Example**
+
+```lua
+do
+    local sides = lurek.tilemap.newAutoTileSheet(16, 16, "minimal16")
+    local rpg = lurek.tilemap.newAutoTileSheet(16, 16, "rpgmaker48")
+    local sides_mode = sides:getDefaultMode()
+    local rpg_mode = rpg:getDefaultMode()
+    example_print_log("minimal16 mode:", sides_mode)
+    example_print_log("rpgmaker48 mode:", rpg_mode)
+end
+```
+
+---
+
 #### `LAutoTileSheet:getLayout`
 
 Returns the auto-tile layout type as a string.
@@ -1257,7 +1317,7 @@ LAutoTileSheet:getLayout()
 
 | Type | Description |
 |------|-------------|
-| string | One of `"blob47"`, `"composite48"`, `"minimal16"`. |
+| string | One of `"blob47"`, `"composite48"`, `"rpgmaker48"`, `"minimal16"`. |
 
 **Example**
 
@@ -5822,6 +5882,82 @@ end
 
 ---
 
+#### `LTileMap:applyAutoTileMode`
+
+Runs auto-tiling on an entire layer using the mode configured on the matching tileset.
+
+```lua
+LTileMap:applyAutoTileMode(layer, typeName)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `layer` | number | Layer index (1-based). |
+| `typeName` | string | Tile type name whose configured mode and rules to apply. |
+
+**Example**
+
+```lua
+do
+    local map = lurek.tilemap.newTileMap(16, 16)
+    local ts = lurek.tilemap.newTileSet(1, 64, 8, 16, 16)
+    ts:setAutoTileMode("shore", "matchCornersAndSides")
+    ts:setAutoTileRule8("shore", 255, 8)
+    map:addTileSet(ts)
+    local layer = map:addLayer("shore", 8, 8)
+    for y = 3, 5 do
+        for x = 3, 5 do
+            map:setTile(layer, x, y, 1)
+        end
+    end
+    map:applyAutoTileMode(layer, "shore")
+    example_print_log("configured-mode center tile = " .. map:getTile(layer, 4, 4))
+end
+```
+
+---
+
+#### `LTileMap:applyAutoTileModeAt`
+
+Runs configured-mode auto-tiling at a single tile position and updates it and its neighbors.
+
+```lua
+LTileMap:applyAutoTileModeAt(layer, x, y, typeName)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `layer` | number | Layer index (1-based). |
+| `x` | number | Column (1-based). |
+| `y` | number | Row (1-based). |
+| `typeName` | string | Tile type name whose configured mode and rules to apply. |
+
+**Example**
+
+```lua
+do
+    local map = lurek.tilemap.newTileMap(16, 16)
+    local ts = lurek.tilemap.newTileSet(1, 32, 8, 16, 16)
+    ts:setAutoTileMode("corner", "matchCorners")
+    ts:setAutoTileRule("corner", 15, 4)
+    map:addTileSet(ts)
+    local layer = map:addLayer("corner", 8, 8)
+    map:setTile(layer, 4, 4, 1)
+    map:setTile(layer, 3, 3, 1)
+    map:setTile(layer, 5, 3, 1)
+    map:setTile(layer, 3, 5, 1)
+    map:setTile(layer, 5, 5, 1)
+    map:applyAutoTileModeAt(layer, 4, 4, "corner")
+    example_print_log("corner-mode center tile = " .. map:getTile(layer, 4, 4))
+end
+```
+
+---
+
 #### `LTileMap:checkEntities`
 
 Checks a list of entities against registered tile-enter callbacks on a layer.
@@ -6103,6 +6239,20 @@ Returns tilemap diagnostics counters for invalid calls, unknown gids, and lazy i
 
 ```lua
 LTileMap:getDiagnostics()
+```
+
+**Example**
+
+```lua
+do
+    local map = lurek.tilemap.newTileMap(32, 32)
+    local layer = map:addLayer("main", 10, 10)
+    map:trySetTile(layer, 11, 1, 7)
+    map:tryGetTile(2, 1, 1)
+    local diagnostics = map:getDiagnostics()
+    example_print_log("invalid layer = " .. tostring(diagnostics.invalidLayer))
+    example_print_log("invalid coord = " .. tostring(diagnostics.invalidCoord))
+end
 ```
 
 ---
@@ -7228,6 +7378,18 @@ LTileMap:tryAddLayer(name, w, h)
 | number? | Index of the new layer (1-based). |
 | string? | Error message when validation fails. |
 
+**Example**
+
+```lua
+do
+    local map = lurek.tilemap.newTileMap(32, 32, 8, { maxLayers = 1 })
+    local first, first_err = map:tryAddLayer("ground", 2, 2)
+    local second, second_err = map:tryAddLayer("props", 2, 2)
+    example_print_log("tryAddLayer first = " .. tostring(first) .. " err = " .. tostring(first_err))
+    example_print_log("tryAddLayer second = " .. tostring(second) .. " err = " .. tostring(second_err))
+end
+```
+
 ---
 
 #### `LTileMap:tryGetTile`
@@ -7252,6 +7414,18 @@ LTileMap:tryGetTile(layer, x, y)
 |------|-------------|
 | number? | Global tile ID at that position. |
 | string? | Error message on failure. |
+
+**Example**
+
+```lua
+do
+    local map = lurek.tilemap.newTileMap(32, 32)
+    map:addLayer("main", 10, 10)
+    local gid, err = map:tryGetTile(2, 1, 1)
+    example_print_log("tryGetTile gid = " .. tostring(gid))
+    example_print_log("tryGetTile err = " .. tostring(err))
+end
+```
 
 ---
 
@@ -7279,6 +7453,18 @@ LTileMap:trySetTile(layer, x, y, gid)
 | boolean | True on success. |
 | string? | Error message on failure. |
 
+**Example**
+
+```lua
+do
+    local map = lurek.tilemap.newTileMap(32, 32)
+    local layer = map:addLayer("main", 10, 10)
+    local ok, err = map:trySetTile(layer, 11, 1, 7)
+    example_print_log("trySetTile ok = " .. tostring(ok))
+    example_print_log("trySetTile err = " .. tostring(err))
+end
+```
+
 ---
 
 #### `LTileMap:trySetTileTint`
@@ -7300,6 +7486,19 @@ LTileMap:trySetTileTint(layer, x, y, r, g, b, a)
 | `g` | any |  |
 | `b` | any |  |
 | `a` | any |  |
+
+**Example**
+
+```lua
+do
+    local map = lurek.tilemap.newTileMap(32, 32)
+    local layer = map:addLayer("tinted", 10, 10)
+    map:setTile(layer, 1, 1, 1)
+    local ok, err = map:trySetTileTint(layer, 1, 1, 1.0, 0.0, 0.0, 1.0)
+    example_print_log("trySetTileTint ok = " .. tostring(ok))
+    example_print_log("trySetTileTint err = " .. tostring(err))
+end
+```
 
 ---
 
@@ -7324,6 +7523,19 @@ LTileMap:tryWorldToTile(wx, wy)
 |------|-------------|
 | number? | Tile column (1-based). |
 | number? | Tile row (1-based). |
+
+**Example**
+
+```lua
+do
+    local map = lurek.tilemap.newTileMap(32, 32)
+    map:addLayer("main", 20, 20)
+    local tx, ty = map:tryWorldToTile(64, 32)
+    local bad_tx, bad_ty = map:tryWorldToTile(-1, 0)
+    example_print_log("tryWorldToTile valid = " .. tostring(tx) .. "," .. tostring(ty))
+    example_print_log("tryWorldToTile invalid = " .. tostring(bad_tx) .. "," .. tostring(bad_ty))
+end
+```
 
 ---
 
@@ -7579,6 +7791,41 @@ do
     local edge = ts:getAutoTileId8("wall", 0)
     example_print_log("8-bit bitmask 255 -> tile " .. id)
     example_print_log("8-bit bitmask 0 -> tile " .. edge)
+end
+```
+
+---
+
+#### `LTileSet:getAutoTileMode`
+
+Returns the neighbor matching mode for a named auto-tile type.
+
+```lua
+LTileSet:getAutoTileMode(typeName)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `typeName` | string | Logical tile type name. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | One of `"matchSides"`, `"matchCorners"`, `"matchCornersAndSides"`. |
+
+**Example**
+
+```lua
+do
+    local ts = lurek.tilemap.newTileSet(1, 64, 8, 16, 16)
+    local default_mode = ts:getAutoTileMode("grass")
+    ts:setAutoTileMode("grass", "matchSides")
+    local configured_mode = ts:getAutoTileMode("grass")
+    example_print_log("grass default mode = " .. default_mode)
+    example_print_log("grass configured mode = " .. configured_mode)
 end
 ```
 
@@ -7917,6 +8164,35 @@ do
     end
     local noAnim = ts:getAnimation(10)
     example_print_log("tile 10 anim = " .. tostring(noAnim))
+end
+```
+
+---
+
+#### `LTileSet:setAutoTileMode`
+
+Sets the neighbor matching mode for a named auto-tile type.
+
+```lua
+LTileSet:setAutoTileMode(typeName, mode)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `typeName` | string | Logical tile type name. |
+| `mode` | string | One of `"matchSides"`, `"matchCorners"`, `"matchCornersAndSides"`. |
+
+**Example**
+
+```lua
+do
+    local ts = lurek.tilemap.newTileSet(1, 64, 8, 16, 16)
+    ts:setAutoTileRule8("shore", 255, 8)
+    ts:setAutoTileMode("shore", "matchCornersAndSides")
+    local mode = ts:getAutoTileMode("shore")
+    example_print_log("shore mode = " .. mode)
 end
 ```
 

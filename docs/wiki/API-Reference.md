@@ -572,7 +572,6 @@ LWorkingMemory:push(key: string, value: any) -- Inserts or updates a key-value e
 lurek.ai.newAction(callback: function) -> LBTNode -- Creates a behavior tree action leaf backed by a Lua callback.
 lurek.ai.newAIDirector() -> LAIDirector -- Creates an AI director for tension, phase, and pacing factor calculations.
 lurek.ai.newAILod() -> LAILod -- Creates a default AI level-of-detail tier selector.
-lurek.ai.newBandit(arm_count: integer, strategy: string, epsilon: number, seed: integer) -> LBandit -- Creates a multi-armed bandit with a named selection strategy.
 lurek.ai.newBehaviorTree() -> LBehaviorTree -- Creates an empty behavior tree that can receive a root node.
 lurek.ai.newBlackboard() -> LAIBlackboard -- Creates an empty AI blackboard for typed local facts.
 lurek.ai.newCommandQueue() -> LCommandQueue -- Creates an empty command queue for callback-backed AI commands.
@@ -580,7 +579,6 @@ lurek.ai.newCondition(callback: function) -> LBTNode -- Creates a behavior tree 
 lurek.ai.newContextSteering(slots: integer) -> LContextSteering -- Creates a context steering model with the requested directional slot count.
 lurek.ai.newDialogueAI() -> LDialogueAI -- Creates an empty dialogue selector for weighted topics and branches.
 lurek.ai.newEmotionModel() -> LEmotionModel -- Creates an empty emotion model for named decaying emotion values.
-lurek.ai.newGeneticAlgorithm(pop_size: integer, gene_count: integer, seed: integer) -> LGeneticAlgorithm -- Creates a genetic algorithm population with fixed chromosome length.
 lurek.ai.newGOAPPlanner() -> LGOAPPlanner -- Creates an empty GOAP planner for boolean world-state planning.
 lurek.ai.newGuard(predicate: function, child: LBTNode) -> LBTNode -- Creates a guard decorator that runs a predicate before ticking its child.
 lurek.ai.newHTNDomain() -> LHTNDomain -- Creates an empty hierarchical task network domain.
@@ -588,11 +586,8 @@ lurek.ai.newInfluenceMap(w: integer, h: integer, cs: number) -> LInfluenceMap --
 lurek.ai.newInverter() -> LBTNode -- Creates a behavior tree inverter decorator with an empty sequence child.
 lurek.ai.newMCTSEngine(iters: integer, uct_c: number, depth: integer, seed: integer) -> LMCTSEngine -- Creates a Monte Carlo tree search engine with deterministic configuration.
 lurek.ai.newNeedSystem() -> LNeedSystem -- Creates an empty need system for decaying named needs.
-lurek.ai.newNeuralNet() -> LNeuralNet -- Creates an empty feed-forward neural network.
-lurek.ai.newNeuroevolution(layer_spec: table, pop_size: integer, seed: integer) -> LNeuroevolution -- Creates a neuroevolution population from a layer specification table.
 lurek.ai.newORCASolver(time_horizon: number) -> LORCASolver -- Creates an ORCA avoidance solver with the supplied prediction horizon.
 lurek.ai.newParallel([sp]: string, [fp]: string) -> LBTNode -- Creates a behavior tree parallel node with optional success and failure policies.
-lurek.ai.newQLearner(sc: integer, ac: integer) -> LQLearner -- Creates a Q-learner with fixed state and action counts.
 lurek.ai.newRepeater([count]: integer) -> LBTNode -- Creates a behavior tree repeater decorator with an optional repeat count.
 lurek.ai.newSelector() -> LBTNode -- Creates a behavior tree selector node with no children.
 lurek.ai.newSequence() -> LBTNode -- Creates a behavior tree sequence node with no children.
@@ -1454,8 +1449,6 @@ lurek.binary.decode(format_str: string, encoded: string) -> string -- Decodes a 
 lurek.binary.decompress(format_str: string, compressed: string) -> string -- Decompresses a binary string using a named compression format.
 lurek.binary.decompressChunks(format_str: string, chunks: any) -> string -- Decompresses a string or table of strings as a chunked byte stream.
 lurek.binary.encode(format_str: string, raw_data: string) -> string -- Encodes a binary string using a named text encoding format.
-lurek.binary.encodeToml(tbl: table) -> string -- Encodes a Lua table into a TOML document string.
-lurek.binary.fromMsgPack(bytes: string) -> LuaValue -- Decodes a structured binary interchange payload back into Lua values.
 lurek.binary.getPackedSize(fmt: string, ...: any) -> integer -- Computes the packed byte size for values and a format string.
 lurek.binary.hash(algo_str: string, raw_data: string) -> string -- Hashes a binary string with a named algorithm.
 lurek.binary.newByteData(value: any) -> LByteData -- Creates ByteData from a size or raw byte string.
@@ -1463,10 +1456,8 @@ lurek.binary.newDataView(raw: string, [offset]: integer, [size]: integer) -> LDa
 lurek.binary.newRingBuffer(capacity: integer) -> LRingBuffer -- Creates a fixed-capacity ring buffer for Lua values.
 lurek.binary.newWriter() -> LDataWriter -- Creates an empty binary data writer.
 lurek.binary.pack(fmt: string, ...: any) -> string -- Packs Lua values into a binary string using a format string.
-lurek.binary.parseToml(text: string) -> table -- Parses TOML text into Lua tables and scalar values.
 lurek.binary.read(fmt: string, raw: string, [offset]: integer) -> LuaValue -- Reads binary values from a byte string using a format string.
 lurek.binary.size(fmt: string) -> integer -- Measures fixed byte size for a binary format string.
-lurek.binary.toMsgPack(value: any) -> string -- Encodes a Lua value into the current structured binary interchange payload.
 lurek.binary.unpack(fmt: string, raw: string, [offset]: integer) -> LuaValue -- Unpacks values from a binary string using a format string.
 lurek.binary.write(fmt: string, ...: any) -> string -- Writes binary values into a byte string using a format string.
 ```
@@ -6722,6 +6713,7 @@ LQuad:typeOf(name: string) -> boolean -- Checks whether this object matches the 
 ### LShader
 
 ```lua
+LShader:getId() -> number -- Returns the internal numeric handle ID for this shader.
 LShader:hasUniform(name: string) -> boolean -- Checks whether this shader declares a uniform with the given name.
 LShader:release() -> boolean -- Releases the shader resource. If active, the default shader is restored.
 LShader:send(name: string, value: number|boolean|table) -- Sends a uniform value to this shader by name. Supported types: number, boolean, or table (vec2/vec3/vec4).
@@ -7220,6 +7212,7 @@ LTerminal:mousepressed(px: number, py: number, [button]: integer) -- Forwards a 
 LTerminal:print(col: integer, row: integer, text: string) -- Writes text to the terminal grid starting at a specific cell.
 LTerminal:removeWidget(widget: LWidget) -- Detaches a widget from this terminal, removing it from rendering and input handling.
 LTerminal:render([x]: number, [y]: number) -- Renders the terminal grid and widgets and stages a window size matching the grid and active cell size.
+LTerminal:renderImage(width: integer, height: integer) -> LImageData -- Rasterizes the composed terminal grid and widgets into an `ImageData` preview.
 LTerminal:resetCellSize() -- Removes any custom cell size override, reverting to the active font metrics and refitting the window.
 LTerminal:set(col: integer, row: integer, ch: string|number, [fr]: number, [fg]: number, [fb]: number, [fa]: number, [br]: number, [bg]: number, [bb]: number, [ba]: number) -- Writes a character with foreground and background color to a specific cell in the terminal grid.
 LTerminal:setCellSize(w: number, h: number) -- Overrides the cell width and height used for rendering this terminal grid and refits the window.
@@ -7351,6 +7344,7 @@ LThreadPool:typeOf(name: string) -> boolean -- Checks whether this object matche
 lurek.tilemap.fromLDtk(jsonStr: string, [levelName]: string, [opts]: any) -> LTileMap -- Loads a tilemap from an LDtk JSON string, optionally targeting a specific level.
 lurek.tilemap.fromScreenHex(sx: number, sy: number, size: number) -> integer -- Converts screen-space pixel coordinates to axial hex coordinates.
 lurek.tilemap.fromScreenIso(sx: number, sy: number, tw: number, th: number) -> number -- Converts screen-space coordinates back to tile coordinates for isometric projection.
+lurek.tilemap.getAutoTileFormats() -> table -- Returns the supported auto-tile sheet layouts and their default matching modes.
 lurek.tilemap.hexArea(q: integer, r: integer, radius: integer) -> table -- Returns all hex cells within a filled area of a given radius.
 lurek.tilemap.hexDistance(q1: integer, r1: integer, q2: integer, r2: integer) -> integer -- Computes the hex grid distance between two axial coordinates.
 lurek.tilemap.hexLine(q1: integer, r1: integer, q2: integer, r2: integer) -> table -- Returns all hex cells along a line between two axial coordinates.
@@ -7384,6 +7378,7 @@ lurek.tilemap.toScreenIso(tx: number, ty: number, tw: number, th: number) -> num
 ```lua
 LAutoTileSheet:applyToTileSet(tileSet: LTileSet, typeName: string, [startGid]: integer) -- Writes the auto-tile bitmask-to-tile rules from this sheet into a tileset.
 LAutoTileSheet:getBitmaskForTile(tileId: integer) -> integer -- Returns the bitmask associated with a tile in this auto-tile sheet.
+LAutoTileSheet:getDefaultMode() -> string -- Returns the default neighbor matching mode for this auto-tile sheet layout.
 LAutoTileSheet:getLayout() -> string -- Returns the auto-tile layout type as a string.
 LAutoTileSheet:getQuad(tileId: integer) -> integer -- Returns the source rectangle for a tile in the auto-tile sheet.
 LAutoTileSheet:getTileCount() -> integer -- Returns the total number of tiles in this auto-tile sheet.
@@ -7521,6 +7516,8 @@ LTileMap:applyAutoTile(layer: integer, typeName: string) -- Runs 4-bit auto-tili
 LTileMap:applyAutoTile8(layer: integer, typeName: string) -- Runs 8-bit auto-tiling on an entire layer, considering diagonal neighbors.
 LTileMap:applyAutoTile8At(layer: integer, x: integer, y: integer, typeName: string) -- Runs 8-bit auto-tiling at a single tile position and updates it and its neighbors.
 LTileMap:applyAutoTileAt(layer: integer, x: integer, y: integer, typeName: string) -- Runs 4-bit auto-tiling at a single tile position and updates it and its neighbors.
+LTileMap:applyAutoTileMode(layer: integer, typeName: string) -- Runs auto-tiling on an entire layer using the mode configured on the matching tileset.
+LTileMap:applyAutoTileModeAt(layer: integer, x: integer, y: integer, typeName: string) -- Runs configured-mode auto-tiling at a single tile position and updates it and its neighbors.
 LTileMap:checkEntities(layer: integer, entities: table) -- Checks a list of entities against registered tile-enter callbacks on a layer.
 LTileMap:clearTile(layer: integer, x: integer, y: integer) -- Removes the tile at a specific grid position, setting it to empty (GID 0).
 LTileMap:drawToImage(tileSize: integer) -> LImage -- Rasterizes the map into an image using the given tile size, returning an image handle.
@@ -7579,6 +7576,7 @@ LTileMap:worldToTile(wx: number, wy: number) -> integer -- Converts world-space 
 LTileSet:getAnimation(tileId: integer) -> table -- Returns the animation frames for a tile, or nil if none are set.
 LTileSet:getAutoTileId(typeName: string, bitmask: integer) -> integer -- Looks up the tile ID for a 4-bit auto-tile bitmask and type name.
 LTileSet:getAutoTileId8(typeName: string, bitmask: integer) -> integer -- Looks up the tile ID for an 8-bit auto-tile bitmask and type name.
+LTileSet:getAutoTileMode(typeName: string) -> string -- Returns the neighbor matching mode for a named auto-tile type.
 LTileSet:getColumns() -> integer -- Returns the number of columns in the tileset atlas image.
 LTileSet:getFirstGid() -> integer -- Returns the first global tile ID (GID) of this tileset.
 LTileSet:getMargin() -> integer -- Returns the margin around the edge of the atlas image, in pixels.
@@ -7590,6 +7588,7 @@ LTileSet:getTileHeight() -> integer -- Returns the height of a single tile in pi
 LTileSet:getTileWidth() -> integer -- Returns the width of a single tile in pixels.
 LTileSet:isSolid(tileId: integer) -> boolean -- Checks whether a tile is marked as solid.
 LTileSet:setAnimation(tileId: integer, frames: table) -- Assigns an animation sequence to a tile. Each frame references another tile ID and a duration.
+LTileSet:setAutoTileMode(typeName: string, mode: string) -- Sets the neighbor matching mode for a named auto-tile type.
 LTileSet:setAutoTileRule(typeName: string, bitmask: integer, tileId: integer) -- Registers a 4-bit auto-tile rule mapping a bitmask to a tile ID for a named tile type.
 LTileSet:setAutoTileRule8(typeName: string, bitmask: integer, tileId: integer) -- Registers an 8-bit auto-tile rule mapping a bitmask to a tile ID for a named tile type.
 LTileSet:setSolid(tileId: integer, solid: boolean) -- Marks a tile as solid or non-solid for collision queries.

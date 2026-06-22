@@ -991,6 +991,18 @@ lurek.terminal.tryPushCmdHistory(terminal, cmd)
 | boolean | True on success; otherwise false and a reason string. (value 1). |
 | string? | True on success; otherwise false and a reason string. (value 2). |
 
+**Example**
+
+```lua
+do
+    local term = make_console(48, 16)
+    lurek.terminal.clearCmdHistory(term)
+    local ok, err = lurek.terminal.tryPushCmdHistory(term, "dock")
+    terminal_log("tryPushCmdHistory ok=" .. tostring(ok) .. " err=" .. tostring(err))
+    terminal_log("tryPushCmdHistory len=" .. tostring(lurek.terminal.cmdHistoryLen(term)))
+end
+```
+
 ---
 
 ### `lurek.terminal.tryPushScrollback`
@@ -1014,6 +1026,18 @@ lurek.terminal.tryPushScrollback(terminal, line)
 |------|-------------|
 | boolean | True on success; otherwise false and a reason string. (value 1). |
 | string? | True on success; otherwise false and a reason string. (value 2). |
+
+**Example**
+
+```lua
+do
+    local term = make_console(48, 16)
+    local ok, err = lurek.terminal.tryPushScrollback(term, "[warn] low coolant")
+    terminal_log("tryPushScrollback ok=" .. tostring(ok) .. " err=" .. tostring(err))
+    terminal_log("tryPushScrollback len=" .. tostring(lurek.terminal.scrollbackLen(term)))
+    terminal_log("tryPushScrollback latest='" .. tostring(lurek.terminal.getScrollback(term, 0, 1)[1]) .. "'")
+end
+```
 
 ---
 
@@ -1547,6 +1571,20 @@ Clears all terminal diagnostics counters.
 LTerminal:clearDiagnostics()
 ```
 
+**Example**
+
+```lua
+do
+    local term = lurek.terminal.newTerminal(10, 5)
+    term:set(0, 1, "A", 1, 1, 1, 1, 0, 0, 0, 0)
+    local before = term:getDiagnostics()
+    term:clearDiagnostics()
+    local after = term:getDiagnostics()
+    terminal_log("clearDiagnostics before=" .. tostring(before.out_of_bounds_writes))
+    terminal_log("clearDiagnostics after=" .. tostring(after.out_of_bounds_writes))
+end
+```
+
 ---
 
 #### `LTerminal:clearWidgets`
@@ -1659,6 +1697,24 @@ LTerminal:getDiagnostics()
 |------|-------------|
 | table | Diagnostic counters keyed by counter name. |
 
+**Example**
+
+```lua
+do
+    local term = lurek.terminal.newTerminal(10, 5)
+    local input = lurek.terminal.newTextBox(1, 1, 5)
+    input:setMaxLength(3)
+    term:addWidget(input)
+    term:setFocus(input)
+    term:clearDiagnostics()
+    term:set(0, 1, "A", 1, 1, 1, 1, 0, 0, 0, 0)
+    term:textinput("abcdef")
+    local diagnostics = term:getDiagnostics()
+    terminal_log("diagnostics oob=" .. tostring(diagnostics.out_of_bounds_writes))
+    terminal_log("diagnostics clipped=" .. tostring(diagnostics.clipped_text))
+end
+```
+
 ---
 
 #### `LTerminal:getDimensions`
@@ -1733,6 +1789,21 @@ LTerminal:getRenderStats()
 | Type | Description |
 |------|-------------|
 | table | Render stats keyed by stat name. |
+
+**Example**
+
+```lua
+do
+    local term = make_console(32, 8)
+    local list = make_inventory_list()
+    term:addWidget(list)
+    term:render()
+    local stats = term:getRenderStats()
+    terminal_log("render stats cells=" .. tostring(stats.cells_composed))
+    terminal_log("render stats widgets=" .. tostring(stats.widgets_drawn))
+    terminal_log("render stats list_items=" .. tostring(stats.list_items_drawn))
+end
+```
 
 ---
 
@@ -1915,6 +1986,42 @@ do
     term:render()
     local cols, rows = term:getDimensions()
     terminal_log("render submitted terminal at " .. cols .. "x" .. rows)
+end
+```
+
+---
+
+#### `LTerminal:renderImage`
+
+Rasterizes the composed terminal grid and widgets into an `ImageData` preview.
+
+```lua
+LTerminal:renderImage(width, height)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `width` | number | Output image width in pixels. |
+| `height` | number | Output image height in pixels. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LImageData](render.md#limagedata) | Image data containing the terminal cells as colored blocks. |
+
+**Example**
+
+```lua
+do
+    local term = make_console(32, 8)
+    term:print(1, 7, "image diagnostics")
+    local img = term:renderImage(256, 128)
+    local width = img:getWidth()
+    local height = img:getHeight()
+    terminal_log("renderImage produced " .. width .. "x" .. height .. " image")
 end
 ```
 
@@ -2135,6 +2242,18 @@ LTerminal:trySet(col, row, ch, fr, fg, fb, fa, br, bg, bb, ba)
 | boolean | True on success; otherwise false and a reason string. (value 1). |
 | string? | True on success; otherwise false and a reason string. (value 2). |
 
+**Example**
+
+```lua
+do
+    local term = make_console(32, 8)
+    local ok, err = term:trySet(5, 3, "A", 1, 1, 1, 1, 0, 0, 0, 0)
+    local bad_ok, bad_err = term:trySet(99, 1, string.byte("A"), 1, 1, 1, 1, 0, 0, 0, 0)
+    terminal_log("trySet success=" .. tostring(ok) .. " err=" .. tostring(err))
+    terminal_log("trySet invalid=" .. tostring(bad_ok) .. " reason=" .. tostring(bad_err))
+end
+```
+
 ---
 
 #### `LTerminal:type`
@@ -2213,6 +2332,29 @@ LTerminal:validateWidgets()
 |------|-------------|
 | boolean | True when valid; otherwise false plus an array of validation messages. (value 1). |
 | string[]? | True when valid; otherwise false plus an array of validation messages. (value 2). |
+
+**Example**
+
+```lua
+do
+    local term = lurek.terminal.newTerminal(20, 10)
+    local panel_a = lurek.terminal.newPanel(1, 1, 10, 4)
+    local panel_b = lurek.terminal.newPanel(2, 2, 8, 3)
+    local hidden = lurek.terminal.newButton(1, 5, 8, 1, "Hidden")
+    hidden:setVisible(false)
+    term:addWidget(panel_a)
+    term:addWidget(panel_b)
+    term:addWidget(hidden)
+    term:setFocus(hidden)
+    panel_a:addChild(panel_b)
+    pcall(function()
+        panel_b:addChild(panel_a)
+    end)
+    local valid, errors = term:validateWidgets()
+    terminal_log("validateWidgets valid=" .. tostring(valid))
+    terminal_log("validateWidgets errors=" .. tostring(errors and #errors or 0))
+end
+```
 
 ---
 
@@ -3246,6 +3388,18 @@ LWidget:trySetText(text)
 |------|-------------|
 | boolean | True on success; otherwise false and a reason string. (value 1). |
 | string? | True on success; otherwise false and a reason string. (value 2). |
+
+**Example**
+
+```lua
+do
+    local input = lurek.terminal.newTextBox(2, 8, 20)
+    local ok, err = input:trySetText("reroute convoy")
+    terminal_log("trySetText ok=" .. tostring(ok) .. " err=" .. tostring(err))
+    terminal_log("trySetText value='" .. tostring(input:getText()) .. "'")
+    terminal_log("trySetText max=" .. tostring(input:getMaxLength()))
+end
+```
 
 ---
 

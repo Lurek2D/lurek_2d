@@ -138,6 +138,23 @@ describe("lurek.tilemap module", function()
         expect_equal("LAutoTileSheet", new_autotile_sheet():type())
     end)
 
+    -- @covers lurek.tilemap.getAutoTileFormats
+    it("getAutoTileFormats lists supported autotile layouts", function()
+        local formats = lurek.tilemap.getAutoTileFormats()
+        local found_rpgmaker = false
+        local found_minimal = false
+        for _, format in ipairs(formats) do
+            if format.name == "rpgmaker48" then
+                found_rpgmaker = format.tileCount == 48 and format.mode == "matchCornersAndSides"
+            end
+            if format.name == "minimal16" then
+                found_minimal = format.tileCount == 16 and format.mode == "matchSides"
+            end
+        end
+        expect_true(found_rpgmaker)
+        expect_true(found_minimal)
+    end)
+
     -- @covers lurek.tilemap.newChunkMap
     it("newChunkMap constructs a chunk map and rejects zero chunk size", function()
         expect_equal("LChunkMap", new_chunkmap():type())
@@ -428,6 +445,19 @@ describe("LTileSet methods", function()
         local ts = new_tileset()
         ts:setAutoTileRule8("wall", 0, 6)
         expect_equal(6, ts:getAutoTileId8("wall", 0))
+    end)
+
+    -- @covers LTileSet:setAutoTileMode
+    it("setAutoTileMode stores the matching mode for a terrain type", function()
+        local ts = new_tileset()
+        ts:setAutoTileMode("wall", "matchCornersAndSides")
+        expect_equal("matchCornersAndSides", ts:getAutoTileMode("wall"))
+    end)
+
+    -- @covers LTileSet:getAutoTileMode
+    it("getAutoTileMode defaults to side matching", function()
+        local ts = new_tileset()
+        expect_equal("matchSides", ts:getAutoTileMode("grass"))
     end)
 
     -- @covers LTileSet:type
@@ -768,6 +798,38 @@ describe("LTileMap methods", function()
         expect_no_error(function() tm:applyAutoTile8At(1, 3, 3, "wall") end)
     end)
 
+    -- @covers LTileMap:applyAutoTileMode
+    it("applyAutoTileMode uses the tileset matching mode", function()
+        local tm = new_ready_tilemap()
+        local ts = new_tileset()
+        ts:setAutoTileMode("stone", "matchCornersAndSides")
+        ts:setAutoTileRule8("stone", 255, 8)
+        tm:addTileSet(ts)
+        for y = 4, 6 do
+            for x = 4, 6 do
+                tm:setTile(1, x, y, 1)
+            end
+        end
+        tm:applyAutoTileMode(1, "stone")
+        expect_equal(8, tm:getTile(1, 5, 5))
+    end)
+
+    -- @covers LTileMap:applyAutoTileModeAt
+    it("applyAutoTileModeAt supports corner-only matching", function()
+        local tm = new_ready_tilemap()
+        local ts = new_tileset()
+        ts:setAutoTileMode("corner", "matchCorners")
+        ts:setAutoTileRule("corner", 15, 4)
+        tm:addTileSet(ts)
+        tm:setTile(1, 5, 5, 1)
+        tm:setTile(1, 4, 4, 1)
+        tm:setTile(1, 6, 4, 1)
+        tm:setTile(1, 4, 6, 1)
+        tm:setTile(1, 6, 6, 1)
+        tm:applyAutoTileModeAt(1, 5, 5, "corner")
+        expect_equal(4, tm:getTile(1, 5, 5))
+    end)
+
     -- @covers LTileMap:tileTypeIndex
     it("tileTypeIndex groups layer positions by gid", function()
         local tm = new_ready_tilemap()
@@ -925,6 +987,16 @@ describe("LAutoTileSheet methods", function()
     -- @covers LAutoTileSheet:getLayout
     it("getLayout returns the chosen layout name", function()
         expect_equal("minimal16", new_autotile_sheet():getLayout())
+        expect_equal("rpgmaker48", lurek.tilemap.newAutoTileSheet(16, 16, "rpgmaker48"):getLayout())
+    end)
+
+    -- @covers LAutoTileSheet:getDefaultMode
+    it("getDefaultMode reports the layout matching mode", function()
+        expect_equal("matchSides", new_autotile_sheet():getDefaultMode())
+        expect_equal(
+            "matchCornersAndSides",
+            lurek.tilemap.newAutoTileSheet(16, 16, "rpgmaker48"):getDefaultMode()
+        )
     end)
 
     -- @covers LAutoTileSheet:getTileCount

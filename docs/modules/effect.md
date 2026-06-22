@@ -124,7 +124,8 @@ lurek.effect.newCustomEffect(shader_id)
 
 ```lua
 do
-    local fx = lurek.effect.newCustomEffect(1)
+    local shader = lurek.render.newShader("@fragment fn fs() -> @location(0) vec4<f32> { return vec4<f32>(1.0); }")
+    local fx = lurek.effect.newCustomEffect(shader:getId())
     fx:setParameter("distortion", 0.15)
     fx:disableAutoUniforms()
     local enabled = fx:isEnabled()
@@ -227,7 +228,8 @@ lurek.effect.newPass(shader_id)
 
 ```lua
 do
-    local fx = lurek.effect.newPass(2)
+    local shader = lurek.render.newShader("@fragment fn fs() -> @location(0) vec4<f32> { return vec4<f32>(1.0); }")
+    local fx = lurek.effect.newPass(shader:getId())
     fx:setParameter("exposure", 1.1)
     fx:enableAutoUniforms()
     local type_name = fx:getType()
@@ -948,7 +950,7 @@ LPostFxEffect:getTypeName()
 do
     local fx = lurek.effect.newEffect("crt")
     fx:setScanlineStrength(0.35)
-    fx:setOffset(0.002)
+    fx:setEnabled(true)
     local type_name = fx:getTypeName()
     effect_log("crt type name=" .. type_name .. " owner=" .. fx:type())
 end
@@ -1092,7 +1094,7 @@ LPostFxEffect:setBrightness(v)
 
 ```lua
 do
-    local fx = lurek.effect.newEffect("bloom")
+    local fx = lurek.effect.newEffect("colourgrade")
     fx:setBrightness(1.2)
     fx:setContrast(1.05)
     local brightness = fx:getParameter("brightness", 0.0)
@@ -1120,7 +1122,7 @@ LPostFxEffect:setContrast(v)
 
 ```lua
 do
-    local fx = lurek.effect.newEffect("bloom")
+    local fx = lurek.effect.newEffect("colourgrade")
     fx:setContrast(1.1)
     fx:setBrightness(0.95)
     local contrast = fx:getParameter("contrast", 0.0)
@@ -1204,11 +1206,11 @@ LPostFxEffect:setOffset(v)
 
 ```lua
 do
-    local fx = lurek.effect.newEffect("crt")
+    local fx = lurek.effect.newEffect("chromatic")
     fx:setOffset(0.002)
-    fx:setScanlineStrength(0.25)
+    fx:setEnabled(true)
     local offset = fx:getParameter("offset", 0.0)
-    effect_log("crt offset=" .. offset)
+    effect_log("chromatic offset=" .. offset)
 end
 ```
 
@@ -1289,7 +1291,7 @@ LPostFxEffect:setSaturation(v)
 
 ```lua
 do
-    local fx = lurek.effect.newEffect("bloom")
+    local fx = lurek.effect.newEffect("colourgrade")
     fx:setSaturation(0.8)
     fx:setContrast(1.1)
     local saturation = fx:getParameter("saturation", 0.0)
@@ -1319,7 +1321,7 @@ LPostFxEffect:setScanlineStrength(v)
 do
     local fx = lurek.effect.newEffect("crt")
     fx:setScanlineStrength(0.3)
-    fx:setOffset(0.002)
+    fx:setEnabled(true)
     local scanline = fx:getParameter("scanline_strength", 0.0)
     effect_log("crt scanlines=" .. scanline)
 end

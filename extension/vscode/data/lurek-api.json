@@ -1,6 +1,6 @@
 {
   "version": "auto-generated",
-  "generated": "2026-06-19",
+  "generated": "2026-06-22",
   "modules": [
     {
       "name": "agent",
@@ -536,30 +536,6 @@
           "objectType": null
         },
         {
-          "name": "newQLearner",
-          "fullPath": "lurek.ai.newQLearner",
-          "signature": "(sc, ac)",
-          "description": "Creates a Q-learner with fixed state and action counts.",
-          "parameters": [
-            {
-              "name": "sc",
-              "type": "integer",
-              "description": "Number of discrete states.",
-              "optional": false
-            },
-            {
-              "name": "ac",
-              "type": "integer",
-              "description": "Number of discrete actions.",
-              "optional": false
-            }
-          ],
-          "returns": "LQLearner",
-          "returnType": "LQLearner",
-          "isMethod": false,
-          "objectType": null
-        },
-        {
           "name": "newUtilityAI",
           "fullPath": "lurek.ai.newUtilityAI",
           "signature": "()",
@@ -786,113 +762,6 @@
           ],
           "returns": "LORCASolver",
           "returnType": "LORCASolver",
-          "isMethod": false,
-          "objectType": null
-        },
-        {
-          "name": "newNeuralNet",
-          "fullPath": "lurek.ai.newNeuralNet",
-          "signature": "()",
-          "description": "Creates an empty feed-forward neural network.",
-          "parameters": [],
-          "returns": "LNeuralNet",
-          "returnType": "LNeuralNet",
-          "isMethod": false,
-          "objectType": null
-        },
-        {
-          "name": "newGeneticAlgorithm",
-          "fullPath": "lurek.ai.newGeneticAlgorithm",
-          "signature": "(pop_size, gene_count, seed)",
-          "description": "Creates a genetic algorithm population with fixed chromosome length.",
-          "parameters": [
-            {
-              "name": "pop_size",
-              "type": "integer",
-              "description": "Number of chromosomes in the population.",
-              "optional": false
-            },
-            {
-              "name": "gene_count",
-              "type": "integer",
-              "description": "Number of floating-point genes per chromosome.",
-              "optional": false
-            },
-            {
-              "name": "seed",
-              "type": "integer",
-              "description": "Random seed used for population initialization and evolution.",
-              "optional": false
-            }
-          ],
-          "returns": "LGeneticAlgorithm",
-          "returnType": "LGeneticAlgorithm",
-          "isMethod": false,
-          "objectType": null
-        },
-        {
-          "name": "newBandit",
-          "fullPath": "lurek.ai.newBandit",
-          "signature": "(arm_count, strategy, epsilon, seed)",
-          "description": "Creates a multi-armed bandit with a named selection strategy.",
-          "parameters": [
-            {
-              "name": "arm_count",
-              "type": "integer",
-              "description": "Number of selectable arms.",
-              "optional": false
-            },
-            {
-              "name": "strategy",
-              "type": "string",
-              "description": "Strategy name such as `ucb1`, `thompson`, or an epsilon-greedy fallback.",
-              "optional": false
-            },
-            {
-              "name": "epsilon",
-              "type": "number",
-              "description": "Exploration probability used by epsilon-greedy strategy and clamped to `[0, 1]`.",
-              "optional": false
-            },
-            {
-              "name": "seed",
-              "type": "integer",
-              "description": "Random seed used by the bandit.",
-              "optional": false
-            }
-          ],
-          "returns": "LBandit",
-          "returnType": "LBandit",
-          "isMethod": false,
-          "objectType": null
-        },
-        {
-          "name": "newNeuroevolution",
-          "fullPath": "lurek.ai.newNeuroevolution",
-          "signature": "(layer_spec, pop_size, seed)",
-          "description": "Creates a neuroevolution population from a layer specification table.",
-          "parameters": [
-            {
-              "name": "layer_spec",
-              "type": "table",
-              "description": "Array of layer tables with `inputs`, `outputs`, and optional `activation` fields.",
-              "optional": false
-            },
-            {
-              "name": "pop_size",
-              "type": "integer",
-              "description": "Number of chromosomes in the population.",
-              "optional": false
-            },
-            {
-              "name": "seed",
-              "type": "integer",
-              "description": "Random seed used for population initialization and evolution.",
-              "optional": false
-            }
-          ],
-          "returns": "LNeuroevolution",
-          "returnType": "LNeuroevolution",
           "isMethod": false,
           "objectType": null
         },
@@ -3862,7 +3731,7 @@
     },
     {
       "name": "binary",
-      "description": "Registers the `lurek.binary` Lua API for byte packing, compression, hashing, ring buffers, and TOML helpers.",
+      "description": "Registers the `lurek.binary` Lua API for byte packing, compression, hashing, and ring buffers.",
       "functions": [
         {
           "name": "pack",
@@ -4261,42 +4130,6 @@
           "objectType": null
         },
         {
-          "name": "parseToml",
-          "fullPath": "lurek.binary.parseToml",
-          "signature": "(text)",
-          "description": "Parses TOML text into Lua tables and scalar values.",
-          "parameters": [
-            {
-              "name": "text",
-              "type": "string",
-              "description": "TOML document text.",
-              "optional": false
-            }
-          ],
-          "returns": "table",
-          "returnType": "table",
-          "isMethod": false,
-          "objectType": null
-        },
-        {
-          "name": "encodeToml",
-          "fullPath": "lurek.binary.encodeToml",
-          "signature": "(tbl)",
-          "description": "Encodes a Lua table into a TOML document string.",
-          "parameters": [
-            {
-              "name": "tbl",
-              "type": "table",
-              "description": "Lua table to encode as TOML.",
-              "optional": false
-            }
-          ],
-          "returns": "string",
-          "returnType": "string",
-          "isMethod": false,
-          "objectType": null
-        },
-        {
           "name": "newRingBuffer",
           "fullPath": "lurek.binary.newRingBuffer",
           "signature": "(capacity)",
@@ -4311,42 +4144,6 @@
           ],
           "returns": "LRingBuffer",
           "returnType": "LRingBuffer",
-          "isMethod": false,
-          "objectType": null
-        },
-        {
-          "name": "toMsgPack",
-          "fullPath": "lurek.binary.toMsgPack",
-          "signature": "(value)",
-          "description": "Encodes a Lua value into the current structured binary interchange payload.",
-          "parameters": [
-            {
-              "name": "value",
-              "type": "any",
-              "description": "Lua value to encode through the serial table converter.",
-              "optional": false
-            }
-          ],
-          "returns": "string",
-          "returnType": "string",
-          "isMethod": false,
-          "objectType": null
-        },
-        {
-          "name": "fromMsgPack",
-          "fullPath": "lurek.binary.fromMsgPack",
-          "signature": "(bytes)",
-          "description": "Decodes a structured binary interchange payload back into Lua values.",
-          "parameters": [
-            {
-              "name": "bytes",
-              "type": "string",
-              "description": "Encoded binary payload.",
-              "optional": false
-            }
-          ],
-          "returns": "LuaValue",
-          "returnType": "LuaValue",
           "isMethod": false,
           "objectType": null
         },
@@ -28065,12 +27862,23 @@
             {
               "name": "layout",
               "type": "string",
-              "description": "Layout type: `\"blob47\"`, `\"composite48\"`, or `\"minimal16\"`.",
+              "description": "Layout type: `\"blob47\"`, `\"composite48\"`, `\"rpgmaker48\"`, or `\"minimal16\"`.",
               "optional": false
             }
           ],
           "returns": "LAutoTileSheet",
           "returnType": "LAutoTileSheet",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "getAutoTileFormats",
+          "fullPath": "lurek.tilemap.getAutoTileFormats",
+          "signature": "()",
+          "description": "Returns the supported auto-tile sheet layouts and their default matching modes.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
           "isMethod": false,
           "objectType": null
         },
@@ -38957,6 +38765,17 @@
           "fullPath": "LAutoTileSheet:getLayout",
           "signature": "()",
           "description": "Returns the auto-tile layout type as a string.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LAutoTileSheet"
+        },
+        {
+          "name": "getDefaultMode",
+          "fullPath": "LAutoTileSheet:getDefaultMode",
+          "signature": "()",
+          "description": "Returns the default neighbor matching mode for this auto-tile sheet layout.",
           "parameters": [],
           "returns": "string",
           "returnType": "string",
@@ -126059,6 +125878,17 @@
       "description": "GPU shader program for custom rendering effects (post-processing, distortion, etc.).",
       "methods": [
         {
+          "name": "getId",
+          "fullPath": "LShader:getId",
+          "signature": "()",
+          "description": "Returns the internal numeric handle ID for this shader.",
+          "parameters": [],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LShader"
+        },
+        {
           "name": "send",
           "fullPath": "LShader:send",
           "signature": "(name, value)",
@@ -142919,6 +142749,30 @@
           "objectType": "LTerminal"
         },
         {
+          "name": "renderImage",
+          "fullPath": "LTerminal:renderImage",
+          "signature": "(width, height)",
+          "description": "Rasterizes the composed terminal grid and widgets into an `ImageData` preview.",
+          "parameters": [
+            {
+              "name": "width",
+              "type": "integer",
+              "description": "Output image width in pixels.",
+              "optional": false
+            },
+            {
+              "name": "height",
+              "type": "integer",
+              "description": "Output image height in pixels.",
+              "optional": false
+            }
+          ],
+          "returns": "LImageData",
+          "returnType": "LImageData",
+          "isMethod": true,
+          "objectType": "LTerminal"
+        },
+        {
           "name": "setFont",
           "fullPath": "LTerminal:setFont",
           "signature": "(height)",
@@ -146032,6 +145886,66 @@
           "objectType": "LTileMap"
         },
         {
+          "name": "applyAutoTileMode",
+          "fullPath": "LTileMap:applyAutoTileMode",
+          "signature": "(layer, type_name)",
+          "description": "Runs auto-tiling on an entire layer using the mode configured on the matching tileset.",
+          "parameters": [
+            {
+              "name": "layer",
+              "type": "integer",
+              "description": "Layer index (1-based).",
+              "optional": false
+            },
+            {
+              "name": "typeName",
+              "type": "string",
+              "description": "Tile type name whose configured mode and rules to apply.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileMap"
+        },
+        {
+          "name": "applyAutoTileModeAt",
+          "fullPath": "LTileMap:applyAutoTileModeAt",
+          "signature": "(layer, x, y, type_name)",
+          "description": "Runs configured-mode auto-tiling at a single tile position and updates it and its neighbors.",
+          "parameters": [
+            {
+              "name": "layer",
+              "type": "integer",
+              "description": "Layer index (1-based).",
+              "optional": false
+            },
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "Column (1-based).",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "Row (1-based).",
+              "optional": false
+            },
+            {
+              "name": "typeName",
+              "type": "string",
+              "description": "Tile type name whose configured mode and rules to apply.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileMap"
+        },
+        {
           "name": "rectOverlapsSolid",
           "fullPath": "LTileMap:rectOverlapsSolid",
           "signature": "(layer, x, y, w, h)",
@@ -146839,6 +146753,48 @@
           ],
           "returns": "integer",
           "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LTileSet"
+        },
+        {
+          "name": "setAutoTileMode",
+          "fullPath": "LTileSet:setAutoTileMode",
+          "signature": "(type_name, mode)",
+          "description": "Sets the neighbor matching mode for a named auto-tile type.",
+          "parameters": [
+            {
+              "name": "typeName",
+              "type": "string",
+              "description": "Logical tile type name.",
+              "optional": false
+            },
+            {
+              "name": "mode",
+              "type": "string",
+              "description": "One of `\"matchSides\"`, `\"matchCorners\"`, `\"matchCornersAndSides\"`.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileSet"
+        },
+        {
+          "name": "getAutoTileMode",
+          "fullPath": "LTileSet:getAutoTileMode",
+          "signature": "(type_name)",
+          "description": "Returns the neighbor matching mode for a named auto-tile type.",
+          "parameters": [
+            {
+              "name": "typeName",
+              "type": "string",
+              "description": "Logical tile type name.",
+              "optional": false
+            }
+          ],
+          "returns": "string",
+          "returnType": "string",
           "isMethod": true,
           "objectType": "LTileSet"
         },

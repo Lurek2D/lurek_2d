@@ -16,7 +16,7 @@ local ctx = Tests.make_context(ROOT, C, DataGeneration, Pipeline, Controls)
 
 describe("household_finance_lab", function()
     it("loads TOML config and generates deterministic CSV data", function()
-        expect_true(Tests.check_config(ROOT, C), "config loaded through parseToml")
+        expect_true(Tests.check_config(ROOT, C), "config loaded through serial.fromToml")
         local _csv, row_count, deterministic = Tests.generate_csv(C, DataGeneration)
         expect_true(deterministic, "deterministic CSV")
         expect_greater(row_count, 200, "row count")

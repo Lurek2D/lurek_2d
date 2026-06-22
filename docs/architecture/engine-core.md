@@ -6,9 +6,9 @@
 
 
 
-Companion documents: [philosophy.md](philosophy.md) · [render-pipeline.md](render-pipeline.md) · [quality-assurance.md](quality-assurance.md)
+Companion documents: [philosophy.md](philosophy.md) · [module-scope-boundaries.md](module-scope-boundaries.md) · [render-pipeline.md](render-pipeline.md) · [quality-assurance.md](quality-assurance.md)
 
-`philosophy.md` defines *why* and *what constraints*. This document defines *how the engine is structured*. `render-pipeline.md` defines the rendering pipeline in detail. All four documents must remain in sync.
+`philosophy.md` defines *why* and *what constraints*. This document defines *how the engine is structured*. `module-scope-boundaries.md` defines pairwise ownership rules for easily confused modules. `render-pipeline.md` defines the rendering pipeline in detail. These documents must remain in sync.
 
 ---
 

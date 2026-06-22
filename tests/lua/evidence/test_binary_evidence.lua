@@ -17,31 +17,6 @@ describe("Evidence: lurek.binary data outputs", function()
     before_each(function()
         ensure_evidence_dir("binary")
     end)
-    -- Does: Runs "writes binary_toml_roundtrip_snapshot.toml" and turns the owner-module result into an inspectable artifact.
-    -- Shows: The artifact should expose the behavior produced by lurek.binary.parseToml and related owner calls.
-    -- Artifact: tests/artifacts/current/binary/binary_toml_roundtrip_snapshot.toml
-    -- Why: This is meaningful only if the output is driven by lurek.binary.parseToml and related owner calls rather than by helper-only drawing.
-
-    it("writes binary_toml_roundtrip_snapshot.toml", function()
-        local input = [[
-[game]
-title = "Test Game"
-version = "1.0.0"
-
-[window]
-width = 800
-height = 600
-fullscreen = false
-
-[physics]
-gravity_x = 0.0
-gravity_y = 9.8
-max_bodies = 1000
-]]
-        local parsed = lurek.binary.parseToml(input)
-        local encoded = lurek.binary.encodeToml(parsed)
-        write_text(OUT .. "binary_toml_roundtrip_snapshot.toml", encoded)
-    end)
     -- Does: Runs "writes binary_encode_reference_values.txt" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by lurek.binary.encode and related owner calls.
     -- Artifact: tests/artifacts/current/binary/binary_encode_reference_values.txt
@@ -97,29 +72,24 @@ max_bodies = 1000
         }
         write_text(OUT .. "binary_pack_roundtrip_snapshot.txt", table.concat(lines, "\n") .. "\n")
     end)
-    -- Does: Runs "writes binary_compression_msgpack_snapshot.txt" and turns the owner-module result into an inspectable artifact.
+    -- Does: Runs "writes binary_compression_snapshot.txt" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by lurek.binary.compress and related owner calls.
-    -- Artifact: tests/artifacts/current/binary/binary_compression_msgpack_snapshot.txt
+    -- Artifact: tests/artifacts/current/binary/binary_compression_snapshot.txt
     -- Why: This is meaningful only if the output is driven by lurek.binary.compress and related owner calls rather than by helper-only drawing.
 
-    it("writes binary_compression_msgpack_snapshot.txt", function()
+    it("writes binary_compression_snapshot.txt", function()
         local raw = string.rep("hello", 40)
         local compressed = lurek.binary.compress("deflate", raw)
         local restored = lurek.binary.decompress("deflate", compressed)
         local chunk_blob = lurek.binary.compressChunks("zlib", { "alpha", "beta", "gamma" })
         local chunk_restore = lurek.binary.decompressChunks("zlib", chunk_blob)
-        local msgpack = lurek.binary.toMsgPack({ score = 100, name = "test" })
-        local decoded = lurek.binary.fromMsgPack(msgpack)
         local lines = {
             "raw_len=" .. tostring(#raw),
             "compressed_len=" .. tostring(#compressed),
             "restored_matches=" .. tostring(restored == raw),
             "chunks_restored=" .. tostring(chunk_restore),
-            "msgpack_len=" .. tostring(#msgpack),
-            "msgpack_name=" .. tostring(decoded.name),
-            "msgpack_score=" .. tostring(decoded.score),
         }
-        write_text(OUT .. "binary_compression_msgpack_snapshot.txt", table.concat(lines, "\n") .. "\n")
+        write_text(OUT .. "binary_compression_snapshot.txt", table.concat(lines, "\n") .. "\n")
     end)
     -- Does: Runs "writes binary_buffer_surface_snapshot.txt" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by lurek.binary.newByteData and related owner calls.

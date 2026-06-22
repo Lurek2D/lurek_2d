@@ -842,8 +842,10 @@ do
     local sm = lurek.save.newSaveManager()
     local is_save = sm:typeOf("LSaveManager")
     local is_object = sm:typeOf("LObject")
+    local slots = sm:getSlots()
     example_print_log("is save manager = " .. tostring(is_save))
-    example_print_log("save keys now = " .. tostring(#slot:listKeys()))
+    example_print_log("save slots now = " .. tostring(#slots))
+    example_print_log("is object = " .. tostring(is_object))
     example_print_log("type = " .. sm:type())
 end
 ```

@@ -13,6 +13,8 @@
 - `render` still draws the final image, but `overlay` owns the grouping, configuration, temporal behavior, accessibility policy, and diagnostics for these large-scale scene treatments.
 - Read `overlay` as the orchestration layer for scene-wide atmospheric and transitional effects.
 
+This module primarily collaborates with `color`, `image`, `render`, `runtime`. Its responsibility should stay inside the `Edge/Integration` group rather than absorb behavior owned by those neighbors.
+
 ## Functions
 
 ### `lurek.overlay.new`
@@ -252,6 +254,23 @@ LOverlay:getAccessibilityPolicy()
 | Type | Description |
 |------|-------------|
 | table | Policy table with reduced motion, flash, shake, lightning, and grain controls. |
+
+**Example**
+
+```lua
+do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setAccessibilityPolicy({
+        max_flash_alpha = 0.3,
+        disable_lightning = true,
+        disable_film_grain = true,
+    })
+    local policy = ov:getAccessibilityPolicy()
+    overlay_log("policy flash alpha=" .. string.format("%.2f", policy.max_flash_alpha))
+    overlay_log("policy disable lightning=" .. tostring(policy.disable_lightning))
+    overlay_log("policy disable grain=" .. tostring(policy.disable_film_grain))
+end
+```
 
 ---
 
@@ -700,6 +719,22 @@ LOverlay:getRenderPlan()
 |------|-------------|
 | table | Table with `rendered` and `externally_handled` string arrays. |
 
+**Example**
+
+```lua
+do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setFogEnabled(true)
+    ov:setWater(0.2, 1.0, 0.5)
+    ov:setCloudShadows(true)
+    ov:setFilmGrainEnabled(true)
+    local plan = ov:getRenderPlan()
+    overlay_log("rendered layers=" .. tostring(#plan.rendered))
+    overlay_log("external layers=" .. tostring(#plan.externally_handled))
+    overlay_log("first external=" .. tostring(plan.externally_handled[1]))
+end
+```
+
 ---
 
 #### `LOverlay:getShakeOffset`
@@ -932,6 +967,18 @@ LOverlay:getWeatherRngState()
 | Type | Description |
 |------|-------------|
 | number | Current weather RNG state. |
+
+**Example**
+
+```lua
+do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setWeatherSeed(246813579)
+    local state = ov:getWeatherRngState()
+    overlay_log("weather rng state=" .. tostring(state))
+    overlay_log("weather type=" .. tostring(ov:getWeather()))
+end
+```
 
 ---
 
@@ -1481,6 +1528,25 @@ LOverlay:setAccessibilityPolicy(policy)
 | Name | Type | Description |
 |------|------|-------------|
 | `policy?` | table | Optional policy table; nil resets defaults. |
+
+**Example**
+
+```lua
+do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setAccessibilityPolicy({
+        reduced_motion = true,
+        max_flash_alpha = 0.2,
+        max_flash_duration = 0.1,
+        max_shake_intensity = 1.25,
+        disable_lightning = true,
+        disable_film_grain = true,
+    })
+    ov:triggerFlash(1.0, 1.0, 1.0, 0.9, 0.5)
+    overlay_log("reduced motion=" .. tostring(ov:getAccessibilityPolicy().reduced_motion))
+    overlay_log("flash alpha after clamp=" .. string.format("%.2f", ov:getFlashAlpha()))
+end
+```
 
 ---
 
@@ -2240,6 +2306,18 @@ LOverlay:setWeatherRngState(state)
 |------|------|-------------|
 | `state` | number | New weather RNG state; zero maps to the engine default seed. |
 
+**Example**
+
+```lua
+do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setWeatherRngState(987654321)
+    overlay_log("weather rng state=" .. tostring(ov:getWeatherRngState()))
+    ov:setWeather("rain")
+    overlay_log("overlay type=" .. tostring(ov:type()))
+end
+```
+
 ---
 
 #### `LOverlay:setWeatherSeed`
@@ -2255,6 +2333,18 @@ LOverlay:setWeatherSeed(seed)
 | Name | Type | Description |
 |------|------|-------------|
 | `seed` | number | Non-zero preferred seed value; zero maps to the engine default seed. |
+
+**Example**
+
+```lua
+do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setWeatherSeed(123456789)
+    overlay_log("weather seed state=" .. tostring(ov:getWeatherRngState()))
+    ov:setWeatherEnabled(true)
+    overlay_log("weather enabled=" .. tostring(ov:isWeatherEnabled()))
+end
+```
 
 ---
 
@@ -2896,7 +2986,7 @@ LScreenTransition:typeOf(name)
 do
     local tr = lurek.overlay.newTransition("fade", 1.0, { 0.0, 0.0, 0.0, 1.0 })
     overlay_log("typeOf LScreenTransition=" .. tostring(tr:typeOf("LScreenTransition")))
-    overlay_log("tooltip text=" .. tostring(tr:getText()))
+    overlay_log("typeOf LObject=" .. tostring(tr:typeOf("LObject")))
     overlay_log("typeOf LOverlay=" .. tostring(tr:typeOf("LOverlay")))
     overlay_log("kind=" .. tr:kind())
 end

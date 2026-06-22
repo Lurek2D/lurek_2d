@@ -1,0 +1,4 @@
+raw_len=200
+compressed_len=22
+restored_matches=true
+chunks_restored=alphabetagamma

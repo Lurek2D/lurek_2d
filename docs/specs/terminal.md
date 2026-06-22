@@ -11,7 +11,7 @@
 - Source path: `src/terminal/`
 - Binding: `src/lua_api/terminal_api.rs`
 - Namespace: `lurek.terminal`
-- Lua API surface: `31` functions, `3` types, `65` methods
+- Lua API surface: `31` functions, `3` types, `66` methods
 - Rust test path(s): tests/rust/unit/terminal_tests.rs, tests/rust/ext/terminal_demo_smoke_tests.rs
 - Lua test path(s): tests/lua/unit/test_terminal_core_unit.lua
 
@@ -81,7 +81,7 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 
 - This file owns terminal-to-render export helpers that flatten the composed cell surface into visual outputs.
 - `generate_render_commands` translates cells into `RenderCommand` streams with colored backgrounds and glyphs.
-- `draw_to_image` rasterizes the same terminal surface into a coarse `ImageData` snapshot for tools or previews.
+- `draw_to_image` rasterizes the same terminal surface into a readable `ImageData` snapshot for tools or previews.
 - Both paths read the composed grid through terminal helpers, so widget overlays are included automatically.
 - Open it when terminal visual export changes; core grid mutation and widget layout live in sibling state files.
 
@@ -194,6 +194,7 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 - `LTerminal:print(col, row, text) -> nil`: Writes text to the terminal grid starting at a specific cell.
 - `LTerminal:removeWidget(widget) -> nil`: Detaches a widget from this terminal, removing it from rendering and input handling.
 - `LTerminal:render(x?, y?) -> nil`: Renders the terminal grid and widgets and stages a window size matching the grid and active cell size.
+- `LTerminal:renderImage(width, height) -> LImageData`: Rasterizes the composed terminal grid and widgets into an `ImageData` preview.
 - `LTerminal:resetCellSize() -> nil`: Removes any custom cell size override, reverting to the active font metrics and refitting the window.
 - `LTerminal:set(col, row, ch, fr?, fg?, fb?, fa?, br?, bg?, bb?, ba?) -> nil`: Writes a character with foreground and background color to a specific cell in the terminal grid.
 - `LTerminal:setCellSize(w, h) -> nil`: Overrides the cell width and height used for rendering this terminal grid and refits the window.

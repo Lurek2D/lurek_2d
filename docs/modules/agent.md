@@ -190,11 +190,11 @@ lurek.agent.configure(config)
 ```lua
 do
     lurek.agent.configure({
-        provider    = "ollama",
-        base_url    = "http://127.0.0.1:11434",
-        model       = "SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M",
-        timeout_ms  = 30000,
-        api_key     = nil,
+        provider = "ollama",
+        base_url = "http://127.0.0.1:9",
+        model = "offline-test-model",
+        timeout_ms = 1000,
+        api_key = nil,
     })
 end
 ```
@@ -249,6 +249,18 @@ lurek.agent.getDiagnostics()
 |------|-------------|
 | table | Diagnostics with queue, latency, and failure counters. |
 
+**Example**
+
+```lua
+do
+    local diagnostics = lurek.agent.getDiagnostics()
+    lurek.log.info("module in_flight=" .. tostring(diagnostics.in_flight))
+    lurek.log.info("module queued=" .. tostring(diagnostics.queued))
+    lurek.log.info("module timeout_failures=" .. tostring(diagnostics.timeout_failures))
+    lurek.log.info("module backend_failures=" .. tostring(diagnostics.backend_failures))
+end
+```
+
 ---
 
 ### `lurek.agent.isAvailable`
@@ -301,10 +313,8 @@ do
     local models = lurek.agent.listModels()
     local first_model = models[1] or "none"
     local model_count = #models
-    local available = lurek.agent.isAvailable()
     lurek.log.info("available model count=" .. tostring(model_count))
     lurek.log.info("first model=" .. tostring(first_model))
-    lurek.log.info("backend reachable=" .. tostring(available))
 end
 ```
 
@@ -335,14 +345,14 @@ lurek.agent.new(config)
 ```lua
 do
     local agent = lurek.agent.new({
-        url          = "http://localhost:11434/api/generate",
-        model        = "SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M",
+        url          = "http://127.0.0.1:9/api/generate",
+        model        = "offline-test-model",
+        timeout      = 1,
+        max_retries  = 0,
         system_prompt = "You are a helpful game AI.",
         format       = "json",
         name         = "helper",
         description  = "Provides general assistance to the player.",
-        max_retries  = 2,
-        timeout      = 30,
         options      = {
             num_ctx     = 4096,
             temperature = 0.7,
@@ -504,12 +514,14 @@ lurek.agent.newOllama(config)
 
 ```lua
 do
-    local ollama = lurek.agent.newOllama({ url = "http://127.0.0.1:11434" })
+    local ollama = lurek.agent.newOllama({
+        url = "http://127.0.0.1:9",
+        healthcheck_timeout_ms = 100,
+        healthcheck_poll_ms = 25,
+    })
     local base_url = ollama:baseUrl()
-    local running = ollama:isRunning()
     local pending = ollama:pendingCount()
     lurek.log.info("ollama base url=" .. tostring(base_url))
-    lurek.log.info("ollama reachable=" .. tostring(running))
     lurek.log.info("pull jobs pending=" .. tostring(pending))
 end
 ```
@@ -773,7 +785,7 @@ LAISystem:addAgent(name, agent)
 do
     local system = lurek.agent.newSystem({ system_prompt = "You are a game design AI." })
 
-    local npc = lurek.agent.new({ url = "http://localhost:11434/api/generate", model = "SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M", format = "json" })
+    local npc = lurek.agent.new({ url = "http://127.0.0.1:9/api/generate", model = "offline-test-model", timeout = 1, max_retries = 0, format = "json" })
     npc:setDescription("Writes NPC dialogue with emotional depth and regional accents.")
 
     system:addAgent("npc_writer", npc)
@@ -957,6 +969,22 @@ LAISystem:buildContextReport(instruction, opts)
 |------|-------------|
 | table | `{ text = string, provenance = { ... } }`. |
 
+**Example**
+
+```lua
+do
+    local system = lurek.agent.newSystem({ system_prompt = "base context" })
+    system:addInstruction("safety", "be safe")
+    system:addSkill("math", { "matrix" }, "help with math")
+    local report = system:buildContextReport("solve matrix problem", {
+        instructions = { "safety" },
+    })
+    lurek.log.info("context report text length=" .. tostring(#report.text))
+    lurek.log.info("context provenance count=" .. tostring(#report.provenance))
+    lurek.log.info("first provenance kind=" .. tostring(report.provenance[1] and report.provenance[1].kind))
+end
+```
+
 ---
 
 #### `LAISystem:getDiagnostics`
@@ -972,6 +1000,18 @@ LAISystem:getDiagnostics()
 | Type | Description |
 |------|-------------|
 | table | Diagnostics with queue, latency, and failure counters. |
+
+**Example**
+
+```lua
+do
+    local system = lurek.agent.newSystem({})
+    local diagnostics = system:getDiagnostics()
+    lurek.log.info("system in_flight=" .. tostring(diagnostics.in_flight))
+    lurek.log.info("system queued=" .. tostring(diagnostics.queued))
+    lurek.log.info("system network_failures=" .. tostring(diagnostics.network_failures))
+end
+```
 
 ---
 
@@ -1204,8 +1244,10 @@ do
     system:addSkill("pixel_art_rules", { "sprite", "texture" }, "Max 16 colours per tile.")
 
     local designer = lurek.agent.new({
-        url    = "http://localhost:11434/api/generate",
-        model  = "SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M",
+        url    = "http://127.0.0.1:9/api/generate",
+        model  = "offline-test-model",
+        timeout = 1,
+        max_retries = 0,
         format = "json",
     })
     designer:setDescription("Visual design specialist focusing on sprites and environments.")
@@ -1365,8 +1407,8 @@ do
     local system = lurek.agent.newSystem({ system_prompt = "You are a game AI team." })
     system:addInstruction("art_style", "16-bit pixel art.")
 
-    local writer   = lurek.agent.new({ url = "http://localhost:11434/api/generate", model = "SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M", format = "json" })
-    local designer = lurek.agent.new({ url = "http://localhost:11434/api/generate", model = "SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M", format = "json" })
+    local writer   = lurek.agent.new({ url = "http://127.0.0.1:9/api/generate", model = "offline-test-model", timeout = 1, max_retries = 0, format = "json" })
+    local designer = lurek.agent.new({ url = "http://127.0.0.1:9/api/generate", model = "offline-test-model", timeout = 1, max_retries = 0, format = "json" })
     writer:setDescription("Writes story and NPC dialogue.")
     designer:setDescription("Designs levels and visual assets.")
 
@@ -1520,12 +1562,18 @@ LAgent:cancel(callback_id)
 ```lua
 do
     local agent = lurek.agent.new({
-        url = "http://localhost:11434/api/generate",
-        model = "SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M",
+        url = "http://127.0.0.1:9/api/generate",
+        model = "offline-test-model",
+        timeout = 1,
+        max_retries = 0,
     })
+    local pending_before = agent:pendingCount()
     local id = agent:prompt("Long-running request.", function() end)
     agent:cancel(id)
+    local pending_after = agent:pendingCount()
+    example_print_log("Pending before cancel:", pending_before)
     example_print_log("Request cancelled, id =", id)
+    example_print_log("Pending after cancel:", pending_after)
 end
 ```
 
@@ -1641,6 +1689,18 @@ LAgent:getDiagnostics()
 |------|-------------|
 | table | Diagnostics with queue, latency, and failure counters. |
 
+**Example**
+
+```lua
+do
+    local agent = lurek.agent.new({})
+    local diagnostics = agent:getDiagnostics()
+    lurek.log.info("agent in_flight=" .. tostring(diagnostics.in_flight))
+    lurek.log.info("agent queued=" .. tostring(diagnostics.queued))
+    lurek.log.info("agent backend_failures=" .. tostring(diagnostics.backend_failures))
+end
+```
+
 ---
 
 #### `LAgent:getFormat`
@@ -1749,7 +1809,12 @@ LAgent:getUrl()
 
 ```lua
 do
-    local agent = lurek.agent.new({ url = "http://127.0.0.1:11434/api/generate" })
+    local agent = lurek.agent.new({
+        url = "http://127.0.0.1:9/api/generate",
+        model = "offline-test-model",
+        timeout = 1,
+        max_retries = 0,
+    })
     agent:setName("local_preview")
     local url = agent:getUrl()
     local name = agent:getName()
@@ -1882,8 +1947,10 @@ LAgent:prompt(instruction, callback)
 ```lua
 do
     local agent = lurek.agent.new({
-        url    = "http://localhost:11434/api/generate",
-        model  = "SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M",
+        url    = "http://127.0.0.1:9/api/generate",
+        model  = "offline-test-model",
+        timeout = 1,
+        max_retries = 0,
         format = "json",
     })
 
@@ -1927,8 +1994,10 @@ LAgent:promptBatch(instructions, callback)
 ```lua
 do
     local agent = lurek.agent.new({
-        url    = "http://localhost:11434/api/generate",
-        model  = "SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M",
+        url    = "http://127.0.0.1:9/api/generate",
+        model  = "offline-test-model",
+        timeout = 1,
+        max_retries = 0,
         format = "json",
     })
 
@@ -2306,7 +2375,7 @@ LAgent:setUrl(url)
 ```lua
 do
     local agent = lurek.agent.new({})
-    agent:setUrl("http://10.0.0.5:11434/api/generate")
+    agent:setUrl("http://127.0.0.1:9/api/generate")
     agent:setName("remote_writer")
     local url = agent:getUrl()
     local name = agent:getName()
@@ -2588,8 +2657,8 @@ LAgentManager:runAll(tasks, callback)
 do
     local manager = lurek.agent.newManager()
 
-    local writer   = lurek.agent.new({ url = "http://localhost:11434/api/generate", model = "SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M", format = "json" })
-    local designer = lurek.agent.new({ url = "http://localhost:11434/api/generate", model = "SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M", format = "json" })
+    local writer   = lurek.agent.new({ url = "http://127.0.0.1:9/api/generate", model = "offline-test-model", timeout = 1, max_retries = 0, format = "json" })
+    local designer = lurek.agent.new({ url = "http://127.0.0.1:9/api/generate", model = "offline-test-model", timeout = 1, max_retries = 0, format = "json" })
 
     local id = manager:runAll({
         { agent = writer,   instruction = "Write a boss intro monologue." },
@@ -2686,6 +2755,18 @@ LAgentMemory:getDiagnostics()
 | Type | Description |
 |------|-------------|
 | table | Counts, approximate bytes, and storage-policy information. |
+
+**Example**
+
+```lua
+do
+    local mem = lurek.agent.newAgentMemory({ working_capacity = 6 })
+    local diagnostics = mem:getDiagnostics()
+    lurek.log.info("memory working_entries=" .. tostring(diagnostics.working_entries))
+    lurek.log.info("memory max_bytes=" .. tostring(diagnostics.max_bytes))
+    lurek.log.info("memory sandbox_root=" .. tostring(diagnostics.sandbox_root))
+end
+```
 
 ---
 
@@ -3035,12 +3116,14 @@ LOllamaManager:baseUrl()
 
 ```lua
 do
-    local ollama = lurek.agent.newOllama({ url = "http://127.0.0.1:11434" })
+    local ollama = lurek.agent.newOllama({
+        url = "http://127.0.0.1:9",
+        healthcheck_timeout_ms = 100,
+        healthcheck_poll_ms = 25,
+    })
     local url = ollama:baseUrl()
-    local running = ollama:isRunning()
     local pending = ollama:pendingCount()
     lurek.log.info("ollama base url=" .. tostring(url))
-    lurek.log.info("ollama running=" .. tostring(running))
     lurek.log.info("ollama pull queue=" .. tostring(pending))
 end
 ```
@@ -3066,6 +3149,24 @@ LOllamaManager:cancelPull(callback_id)
 | Type | Description |
 |------|-------------|
 | boolean | `true` when the callback ID was marked as cancelled. |
+
+**Example**
+
+```lua
+do
+    local ollama = lurek.agent.newOllama({
+        url = "http://127.0.0.1:9",
+        healthcheck_timeout_ms = 100,
+        healthcheck_poll_ms = 25,
+    })
+    local id = ollama:pullModel("llama3", function(success, err_msg)
+        example_print_log("cancelPull callback", tostring(success), tostring(err_msg))
+    end)
+    local ok = ollama:cancelPull(id)
+    lurek.log.info("cancel pull id=" .. tostring(id))
+    lurek.log.info("cancel pull accepted=" .. tostring(ok))
+end
+```
 
 ---
 
@@ -3094,12 +3195,17 @@ LOllamaManager:deleteModel(name, confirm_token)
 
 ```lua
 do
-    local ollama = lurek.agent.newOllama()
+    local ollama = lurek.agent.newOllama({
+        url = "http://127.0.0.1:9",
+        healthcheck_timeout_ms = 100,
+        healthcheck_poll_ms = 25,
+    })
     local target_model = "SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M"
-    local existed_before = ollama:hasModel(target_model)
-    local deleted = ollama:deleteModel(target_model)
+    local ok, deleted = pcall(function()
+        return ollama:deleteModel(target_model)
+    end)
     local pending = ollama:pendingCount()
-    lurek.log.info("model existed before delete=" .. tostring(existed_before))
+    lurek.log.info("delete request ok=" .. tostring(ok))
     lurek.log.info("delete request accepted=" .. tostring(deleted))
     lurek.log.info("pending pull jobs=" .. tostring(pending))
 end
@@ -3120,6 +3226,22 @@ LOllamaManager:getDiagnostics()
 | Type | Description |
 |------|-------------|
 | table | Diagnostics with pull queue state and last error information. |
+
+**Example**
+
+```lua
+do
+    local ollama = lurek.agent.newOllama({
+        url = "http://127.0.0.1:9",
+        healthcheck_timeout_ms = 100,
+        healthcheck_poll_ms = 25,
+    })
+    local diagnostics = ollama:getDiagnostics()
+    lurek.log.info("ollama in_flight_pulls=" .. tostring(diagnostics.in_flight_pulls))
+    lurek.log.info("ollama queued_pulls=" .. tostring(diagnostics.queued_pulls))
+    lurek.log.info("ollama last_error=" .. tostring(diagnostics.last_error))
+end
+```
 
 ---
 
@@ -3147,14 +3269,15 @@ LOllamaManager:hasModel(name)
 
 ```lua
 do
-    local ollama = lurek.agent.newOllama()
+    local ollama = lurek.agent.newOllama({
+        url = "http://127.0.0.1:9",
+        healthcheck_timeout_ms = 100,
+        healthcheck_poll_ms = 25,
+    })
     local target_model = "SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M"
     local found = ollama:hasModel(target_model)
-    local running = ollama:isRunning()
-    local base_url = ollama:baseUrl()
     lurek.log.info("model available=" .. tostring(found))
     lurek.log.info("model probe target=" .. target_model)
-    lurek.log.info("ollama at " .. tostring(base_url) .. " running=" .. tostring(running))
 end
 ```
 
@@ -3178,13 +3301,15 @@ LOllamaManager:isRunning()
 
 ```lua
 do
-    local ollama  = lurek.agent.newOllama()
+    local ollama  = lurek.agent.newOllama({
+        url = "http://127.0.0.1:9",
+        healthcheck_timeout_ms = 100,
+        healthcheck_poll_ms = 25,
+    })
     local running = ollama:isRunning()
     local base_url = ollama:baseUrl()
-    local version = ollama:version()
     lurek.log.info("ollama running=" .. tostring(running))
     lurek.log.info("ollama base url=" .. tostring(base_url))
-    lurek.log.info("ollama version probe=" .. tostring(version))
 end
 ```
 
@@ -3208,7 +3333,11 @@ LOllamaManager:listModels()
 
 ```lua
 do
-    local ollama = lurek.agent.newOllama()
+    local ollama = lurek.agent.newOllama({
+        url = "http://127.0.0.1:9",
+        healthcheck_timeout_ms = 100,
+        healthcheck_poll_ms = 25,
+    })
     local models = ollama:listModels()
     for _, m in ipairs(models) do
         example_print_log(m.name, string.format("%.1f GB", m.size_gb))
@@ -3236,7 +3365,11 @@ LOllamaManager:modelNames()
 
 ```lua
 do
-    local ollama = lurek.agent.newOllama()
+    local ollama = lurek.agent.newOllama({
+        url = "http://127.0.0.1:9",
+        healthcheck_timeout_ms = 100,
+        healthcheck_poll_ms = 25,
+    })
     local names  = ollama:modelNames()
     for _, name in ipairs(names) do
         example_print_log("Available model:", name)
@@ -3264,13 +3397,17 @@ LOllamaManager:pendingCount()
 
 ```lua
 do
-    local ollama = lurek.agent.newOllama()
+    local ollama = lurek.agent.newOllama({
+        url = "http://127.0.0.1:9",
+        healthcheck_timeout_ms = 100,
+        healthcheck_poll_ms = 25,
+    })
     local pending = ollama:pendingCount()
+    local base_url = ollama:baseUrl()
     local running = ollama:isRunning()
-    local version = ollama:version()
     lurek.log.info("in-flight pulls=" .. tostring(pending))
+    lurek.log.info("ollama base url=" .. tostring(base_url))
     lurek.log.info("ollama running=" .. tostring(running))
-    lurek.log.info("ollama version probe=" .. tostring(version))
 end
 ```
 
@@ -3301,7 +3438,11 @@ LOllamaManager:pullModel(name, callback)
 
 ```lua
 do
-    local ollama = lurek.agent.newOllama()
+    local ollama = lurek.agent.newOllama({
+        url = "http://127.0.0.1:9",
+        healthcheck_timeout_ms = 100,
+        healthcheck_poll_ms = 25,
+    })
     local id     = ollama:pullModel("SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M", function(success, err_msg)
         if success then
             example_print_log("Model downloaded successfully.")
@@ -3333,13 +3474,16 @@ LOllamaManager:restart()
 
 ```lua
 do
-    local ollama = lurek.agent.newOllama()
-    local running_before = ollama:isRunning()
-    local restarted = ollama:restart()
-    local running_after = ollama:isRunning()
-    lurek.log.info("ollama running before restart=" .. tostring(running_before))
-    lurek.log.info("ollama restart requested=" .. tostring(restarted))
-    lurek.log.info("ollama running after restart=" .. tostring(running_after))
+    local ollama = lurek.agent.newOllama({
+        url = "http://127.0.0.1:9",
+        healthcheck_timeout_ms = 100,
+        healthcheck_poll_ms = 25,
+    })
+    local ok, restarted = pcall(function()
+        return ollama:restart()
+    end)
+    lurek.log.info("ollama restart ok=" .. tostring(ok))
+    lurek.log.info("ollama restart result=" .. tostring(restarted))
 end
 ```
 
@@ -3363,13 +3507,16 @@ LOllamaManager:start()
 
 ```lua
 do
-    local ollama = lurek.agent.newOllama()
-    local started = ollama:start()
-    local running = ollama:isRunning()
-    local base_url = ollama:baseUrl()
-    lurek.log.info("ollama start requested=" .. tostring(started))
-    lurek.log.info("ollama running after start=" .. tostring(running))
-    lurek.log.info("ollama base url=" .. tostring(base_url))
+    local ollama = lurek.agent.newOllama({
+        url = "http://127.0.0.1:9",
+        healthcheck_timeout_ms = 100,
+        healthcheck_poll_ms = 25,
+    })
+    local ok, started = pcall(function()
+        return ollama:start()
+    end)
+    lurek.log.info("ollama start ok=" .. tostring(ok))
+    lurek.log.info("ollama start result=" .. tostring(started))
 end
 ```
 
@@ -3393,13 +3540,17 @@ LOllamaManager:stop()
 
 ```lua
 do
-    local ollama = lurek.agent.newOllama()
-    local running_before = ollama:isRunning()
+    local ollama = lurek.agent.newOllama({
+        url = "http://127.0.0.1:9",
+        healthcheck_timeout_ms = 100,
+        healthcheck_poll_ms = 25,
+    })
+    local base_url = ollama:baseUrl()
     local stopped = ollama:stop()
-    local running_after = ollama:isRunning()
-    lurek.log.info("ollama running before stop=" .. tostring(running_before))
+    local pending = ollama:pendingCount()
     lurek.log.info("ollama stop requested=" .. tostring(stopped))
-    lurek.log.info("ollama running after stop=" .. tostring(running_after))
+    lurek.log.info("ollama base url=" .. tostring(base_url))
+    lurek.log.info("ollama pending pulls=" .. tostring(pending))
 end
 ```
 
@@ -3423,7 +3574,11 @@ LOllamaManager:update()
 
 ```lua
 do
-    local ollama = lurek.agent.newOllama()
+    local ollama = lurek.agent.newOllama({
+        url = "http://127.0.0.1:9",
+        healthcheck_timeout_ms = 100,
+        healthcheck_poll_ms = 25,
+    })
     local pending_before = ollama:pendingCount()
     ollama:update()
     local pending_after = ollama:pendingCount()
@@ -3453,13 +3608,17 @@ LOllamaManager:version()
 
 ```lua
 do
-    local ollama = lurek.agent.newOllama()
+    local ollama = lurek.agent.newOllama({
+        url = "http://127.0.0.1:9",
+        healthcheck_timeout_ms = 100,
+        healthcheck_poll_ms = 25,
+    })
     local version = ollama:version()
     local base_url = ollama:baseUrl()
-    local running = ollama:isRunning()
+    local pending = ollama:pendingCount()
     lurek.log.info("ollama version=" .. tostring(version))
     lurek.log.info("ollama base url=" .. tostring(base_url))
-    lurek.log.info("ollama running=" .. tostring(running))
+    lurek.log.info("ollama pending pulls=" .. tostring(pending))
 end
 ```
 

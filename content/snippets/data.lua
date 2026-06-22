@@ -1,12 +1,14 @@
 -- content/snippets/data.lua
--- Handcrafted snippets for lurek.binary — binary serialisation, checksums, compression,
--- encoding, hashing, TOML, ring-buffers, binary reader/writer, DataView.
+-- Handcrafted snippets for data APIs: lurek.binary owns bytes, checksums,
+-- compression, encoding, ring-buffers, binary reader/writer, and DataView;
+-- lurek.serial owns structured TOML and MessagePack conversion.
 -- API surface covered: pack, unpack, getPackedSize, crc32, hash, encode, decode,
 --   compress, decompress, compressChunks, write, read, size,
---   parseToml, encodeToml, newRingBuffer, newByteData, newDataView,
---   newWriter, toMsgPack, fromMsgPack.
+--   newRingBuffer, newByteData, newDataView, newWriter,
+--   fromToml, toToml, encodeMsgPack, decodeMsgPack.
 
 local d = lurek.binary
+local s = lurek.serial
 
 -- ─────────────────────────────────────────────────────────────
 -- BINARY SERIALISATION — pack / unpack
@@ -127,7 +129,8 @@ print("xxh64=" .. fast_key)
 -- @description Use to protect save files and transmitted blobs from silent corruption. Append the CRC to the blob on write; recompute and compare on load before parsing the payload.
 -- @body
 local SNIP_1_d    = lurek.binary
-local save = d.encodeToml({ player = { level = 5, gold = 300 } })
+local SNIP_1_s    = lurek.serial
+local save = s.toToml({ player = { level = 5, gold = 300 } })
 local crc  = d.crc32(save)
 -- write: append CRC as 4 bytes
 local safe_blob = save .. d.pack(">I", crc)
@@ -165,7 +168,8 @@ print(string.format("decoded=0x%04x 0x%04x", a, b))
 -- @description Use zlib compression on save blobs to reduce file-system write size. Level 6 balances speed and ratio for structured config data; verify round-trip before writing with the assert check below.
 -- @body
 local SNIP_1_d   = lurek.binary
-local payload    = d.encodeToml({ world = { map = "dungeon_01", seed = 42 } })
+local SNIP_1_s   = lurek.serial
+local payload    = s.toToml({ world = { map = "dungeon_01", seed = 42 } })
 local compressed = d.compress("zlib", payload, 6)
 print(string.format("original=%d  compressed=%d  ratio=%.2f",
     #payload, #compressed, #compressed / #payload))
@@ -199,31 +203,31 @@ print("first section id=" .. section_id)
 -- TOML CONFIGURATION
 -- ─────────────────────────────────────────────────────────────
 
--- @snippet binary.toml_load_validate_defaults
--- @prefix lk-data-toml-load
+-- @snippet serialize.toml_load_validate_defaults
+-- @prefix lk-data-serial-toml-load
 -- @module data
 -- @description Use at startup to load a TOML config, apply defaults for optional keys, and validate required fields. Fail fast with a clear error rather than silently propagating nil values into game logic.
 -- @body
-local SNIP_1_d = lurek.binary
+local SNIP_1_s = lurek.serial
 local toml_str = [[
 [audio]
 volume = 0.8
 [graphics]
 resolution = "1920x1080"
 ]]
-local cfg    = d.parseToml(toml_str)
+local cfg    = s.fromToml(toml_str)
 local volume = (cfg.audio and cfg.audio.volume) or 0.75
 local res    = (cfg.graphics and cfg.graphics.resolution) or "1280x720"
 assert(type(volume) == "number" and volume >= 0 and volume <= 1, "invalid volume")
 print("volume=" .. volume .. "  resolution=" .. res)
 -- @end
 
--- @snippet binary.toml_config_patch_save
--- @prefix lk-data-toml-patch
+-- @snippet serialize.toml_config_patch_save
+-- @prefix lk-data-serial-toml-patch
 -- @module data
--- @description Use to apply partial preference updates without rewriting the whole config. parseToml -> mutate the table -> encodeToml preserves all other keys and structure.
+-- @description Use to apply partial preference updates without rewriting the whole config. fromToml -> mutate the table -> toToml preserves all other keys and structure.
 -- @body
-local SNIP_1_d   = lurek.binary
+local SNIP_1_s   = lurek.serial
 local raw = [[
 [player]
 name = "Hero"
@@ -231,21 +235,21 @@ level = 1
 [audio]
 volume = 0.8
 ]]
-local cfg = d.parseToml(raw)
+local cfg = s.fromToml(raw)
 cfg.player.level = cfg.player.level + 1
 cfg.audio.volume = 0.6
 
-local updated = d.encodeToml(cfg)
+local updated = s.toToml(cfg)
 print(updated)
 -- write to disk: lurek.filesystem.write("save/options.toml", updated)
 -- @end
 
--- @snippet binary.toml_game_manifest_parse
--- @prefix lk-data-toml-manifest
+-- @snippet serialize.toml_game_manifest_parse
+-- @prefix lk-data-serial-toml-manifest
 -- @module data
 -- @description Use to load and validate a game manifest (name, version, entry point) during boot. Centralise all schema checks here so the game loop never receives unvalidated manifest data.
 -- @body
-local SNIP_1_d = lurek.binary
+local SNIP_1_s = lurek.serial
 local manifest_toml = [[
 name    = "Dungeon Explorer"
 version = "1.2.0"
@@ -253,7 +257,7 @@ entry   = "main.lua"
 [requires]
 engine = "0.6"
 ]]
-local m = d.parseToml(manifest_toml)
+local m = s.fromToml(manifest_toml)
 assert(m.name,    "manifest: missing name")
 assert(m.version, "manifest: missing version")
 assert(m.entry,   "manifest: missing entry")
@@ -310,22 +314,22 @@ print(string.format("rolling avg frame_ms=%.2f  window=%d", avg, #samples))
 -- MSGPACK INTEROP
 -- ─────────────────────────────────────────────────────────────
 
--- @snippet binary.msgpack_state_roundtrip
--- @prefix lk-data-msgpack-roundtrip
+-- @snippet serialize.msgpack_state_roundtrip
+-- @prefix lk-data-serial-msgpack-roundtrip
 -- @module data
--- @description Use toMsgPack / fromMsgPack for compact structured serialisation of game state snapshots passed between Lua VMs via Channel, or written as save slot blobs. Smaller than TOML; more type-safe than raw pack.
+-- @description Use encodeMsgPack / decodeMsgPack for compact structured serialisation of game state snapshots passed between Lua VMs via Channel, or written as save slot blobs. Smaller than TOML; more type-safe than raw pack.
 -- @body
-local SNIP_1_d = lurek.binary
+local SNIP_1_s = lurek.serial
 local state = {
     player = { name = "Hero", hp = 80, level = 5 },
     round  = 3,
     flags  = { has_sword = true, chest_open = false },
 }
 
-local blob = d.toMsgPack(state)
+local blob = s.encodeMsgPack(state)
 print("msgpack bytes=" .. #blob)
 
-local loaded = d.fromMsgPack(blob)
+local loaded = s.decodeMsgPack(blob)
 if type(loaded) == "table" then
     local player = loaded.player
     if player then

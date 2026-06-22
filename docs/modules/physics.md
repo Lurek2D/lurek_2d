@@ -5143,6 +5143,23 @@ Fully resets the world to its post-construction state.
 LWorld:resetWorld()
 ```
 
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 100)
+    world:setGravity(5, 6)
+    world:setMeter(96)
+    world:setSolverIterations(12)
+    world:newBody(0, 0, "dynamic")
+    world:resetWorld()
+    local gx, gy = world:getGravity()
+    physics_log("reset bodies=" .. world:getBodyCount() .. " joints=" .. world:jointCount())
+    physics_log("reset gravity=" .. gx .. "," .. gy)
+    physics_log("reset meter=" .. world:getMeter() .. " iterations=" .. world:getSolverIterations())
+end
+```
+
 ---
 
 #### `LWorld:setBeginContact`

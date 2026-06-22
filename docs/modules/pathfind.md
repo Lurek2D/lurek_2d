@@ -4037,6 +4037,42 @@ LTileMap:applyAutoTileAt(layer, x, y, typeName)
 
 ---
 
+#### `LTileMap:applyAutoTileMode`
+
+Runs auto-tiling on an entire layer using the mode configured on the matching tileset.
+
+```lua
+LTileMap:applyAutoTileMode(layer, typeName)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `layer` | number | Layer index (1-based). |
+| `typeName` | string | Tile type name whose configured mode and rules to apply. |
+
+---
+
+#### `LTileMap:applyAutoTileModeAt`
+
+Runs configured-mode auto-tiling at a single tile position and updates it and its neighbors.
+
+```lua
+LTileMap:applyAutoTileModeAt(layer, x, y, typeName)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `layer` | number | Layer index (1-based). |
+| `x` | number | Column (1-based). |
+| `y` | number | Row (1-based). |
+| `typeName` | string | Tile type name whose configured mode and rules to apply. |
+
+---
+
 #### `LTileMap:checkEntities`
 
 Checks a list of entities against registered tile-enter callbacks on a layer.

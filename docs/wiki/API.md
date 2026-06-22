@@ -17,13 +17,13 @@ The API index is generated from machine-readable Lua API data and links back to 
 ## Source Artifacts
 
 - Lua API data: [logs/data/lua_api_data.json](../blob/main/logs/data/lua_api_data.json)
-- Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (9146 lines)
-- LuaCATS stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (32842 lines)
+- Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (9145 lines)
+- LuaCATS stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (32830 lines)
 
 ## Coverage
 
 - 70 modules
-- 6087 functions and methods
+- 6086 functions and methods
 - 100.0% documented
 
 ## API Module Index
@@ -31,12 +31,12 @@ The API index is generated from machine-readable Lua API data and links back to 
 | API | Functions | Types | Purpose |
 |---|---:|---:|---|
 | [lurek.agent](Module-agent) | 21 | 10 | LLM agent runtime: async prompt dispatch, skill-context assembly, batch polling, and Lua callback delivery. |
-| [lurek.ai](Module-ai) | 36 | 23 | Game AI toolkit: FSMs, behaviour trees, GOAP, steering, utility AI, blackboards. Pure CPU. |
+| [lurek.ai](Module-ai) | 31 | 23 | Game AI toolkit: FSMs, behaviour trees, GOAP, steering, utility AI, blackboards. Pure CPU. |
 | [lurek.animation](Module-animation) | 7 | 5 | Sprite animation: source-rect changes over time. Imports only math; headless-testable. |
 | [lurek.asset](Module-asset) | 23 | 1 | Ref-counted media cache: load images, fonts, audio, and text assets by path; hold LAssetHandle values to keep them alive. |
 | [lurek.audio](Module-audio) | 94 | 7 | Sound loading and playback wrapping rodio; Mixer / Bus instances live in SharedState. |
 | [lurek.automation](Module-automation) | 32 | 0 | Automated input simulation for headless tests, QA replay, recorded sessions. |
-| [lurek.binary](Module-binary) | 22 | 4 | Binary data toolkit: byte buffers, compression, hashing, encoding, structured pack / unpack. |
+| [lurek.binary](Module-binary) | 18 | 4 | Binary data toolkit: byte buffers, compression, hashing, encoding, structured pack / unpack. |
 | [lurek.camera](Module-camera) | 4 | 3 | 2D camera and viewport types. Pure data; no GPU resources. |
 | [lurek.charts](Module-charts) | 9 | 7 | Software-rasterized chart renderers (line, bar, scatter, pie, area) to RGBA8 pixel buffers. |
 | [lurek.cinematic](Module-cinematic) | 2 | 2 | The cinematic module is the timeline authoring surface for cutscenes, scripted reveals, and other multi-system sequences. |
@@ -93,7 +93,7 @@ The API index is generated from machine-readable Lua API data and links back to 
 | [lurek.runtime](Module-system) | 28 | 0 | Registers the lurek.system Lua API for host utilities, process helpers, and runtime environment queries. |
 | [lurek.terminal](Module-terminal) | 31 | 2 | Character-cell text-mode terminal for roguelikes, debug consoles, ASCII rendering. |
 | [lurek.thread](Module-thread) | 7 | 4 | Background threading with per-thread isolated Lua VMs (B-04: VMs cannot be shared). |
-| [lurek.physics](Module-tilemap) | 29 | 10 | Single- to multi-layer tile maps with animated tiles, TMX/LDtk import, autotile, iso sort. |
+| [lurek.physics](Module-tilemap) | 30 | 10 | Single- to multi-layer tile maps with animated tiles, TMX/LDtk import, autotile, iso sort. |
 | [lurek.timer](Module-timer) | 21 | 1 | Frame-timing (Clock) and deferred / repeating callback scheduling (Scheduler). |
 | [lurek.tween](Module-tween) | 15 | 6 | Property animation: interpolated transitions on Lua table fields without per-frame lerp code. |
 | [lurek.ui](Module-ui) | 92 | 36 | Retained-mode widget system; rendering deferred through RenderCommand. |

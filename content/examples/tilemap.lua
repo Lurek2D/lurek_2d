@@ -498,6 +498,35 @@ do
     example_print_log("8-bit bitmask 0 -> tile " .. edge)
 end
 
+--@api: LTileSet:setAutoTileMode
+do
+    local ts = lurek.tilemap.newTileSet(1, 64, 8, 16, 16)
+    ts:setAutoTileRule8("shore", 255, 8)
+    ts:setAutoTileMode("shore", "matchCornersAndSides")
+    local mode = ts:getAutoTileMode("shore")
+    example_print_log("shore mode = " .. mode)
+end
+
+--@api: LTileSet:getAutoTileMode
+do
+    local ts = lurek.tilemap.newTileSet(1, 64, 8, 16, 16)
+    local default_mode = ts:getAutoTileMode("grass")
+    ts:setAutoTileMode("grass", "matchSides")
+    local configured_mode = ts:getAutoTileMode("grass")
+    example_print_log("grass default mode = " .. default_mode)
+    example_print_log("grass configured mode = " .. configured_mode)
+end
+
+--@api: lurek.tilemap.getAutoTileFormats
+do
+    local formats = lurek.tilemap.getAutoTileFormats()
+    for _, format in ipairs(formats) do
+        if format.name == "rpgmaker48" or format.name == "minimal16" then
+            example_print_log(format.name .. " tiles=" .. format.tileCount .. " mode=" .. format.mode)
+        end
+    end
+end
+
 --@api: lurek.tilemap.newAutoTileSheet
 do
     local blob = lurek.tilemap.newAutoTileSheet(16, 16, "blob47")
@@ -506,6 +535,8 @@ do
     example_print_log("blob47 tile size = " .. blob:getTileWidth() .. "x" .. blob:getTileHeight())
     local minimal = lurek.tilemap.newAutoTileSheet(16, 16, "minimal16")
     example_print_log("minimal16 tile count = " .. minimal:getTileCount())
+    local rpg = lurek.tilemap.newAutoTileSheet(16, 16, "rpgmaker48")
+    example_print_log("rpgmaker48 mode = " .. rpg:getDefaultMode())
 end
 
 --@api: LAutoTileSheet:applyToTileSet
@@ -617,6 +648,40 @@ do
     map:fill(layer, 1)
     map:applyAutoTile8At(layer, 3, 3, "dirt")
     example_print_log("single cell 8-bit auto-tiled at 3,3")
+end
+
+--@api: LTileMap:applyAutoTileMode
+do
+    local map = lurek.tilemap.newTileMap(16, 16)
+    local ts = lurek.tilemap.newTileSet(1, 64, 8, 16, 16)
+    ts:setAutoTileMode("shore", "matchCornersAndSides")
+    ts:setAutoTileRule8("shore", 255, 8)
+    map:addTileSet(ts)
+    local layer = map:addLayer("shore", 8, 8)
+    for y = 3, 5 do
+        for x = 3, 5 do
+            map:setTile(layer, x, y, 1)
+        end
+    end
+    map:applyAutoTileMode(layer, "shore")
+    example_print_log("configured-mode center tile = " .. map:getTile(layer, 4, 4))
+end
+
+--@api: LTileMap:applyAutoTileModeAt
+do
+    local map = lurek.tilemap.newTileMap(16, 16)
+    local ts = lurek.tilemap.newTileSet(1, 32, 8, 16, 16)
+    ts:setAutoTileMode("corner", "matchCorners")
+    ts:setAutoTileRule("corner", 15, 4)
+    map:addTileSet(ts)
+    local layer = map:addLayer("corner", 8, 8)
+    map:setTile(layer, 4, 4, 1)
+    map:setTile(layer, 3, 3, 1)
+    map:setTile(layer, 5, 3, 1)
+    map:setTile(layer, 3, 5, 1)
+    map:setTile(layer, 5, 5, 1)
+    map:applyAutoTileModeAt(layer, 4, 4, "corner")
+    example_print_log("corner-mode center tile = " .. map:getTile(layer, 4, 4))
 end
 
 --@api: LTileMap:sweepRect
@@ -1759,6 +1824,16 @@ do
     example_print_log("layout:", layout)
     example_print_log("tileCount:", count)
     example_print_log("tileWidth:", sheet:getTileWidth())
+end
+
+--@api: LAutoTileSheet:getDefaultMode
+do
+    local sides = lurek.tilemap.newAutoTileSheet(16, 16, "minimal16")
+    local rpg = lurek.tilemap.newAutoTileSheet(16, 16, "rpgmaker48")
+    local sides_mode = sides:getDefaultMode()
+    local rpg_mode = rpg:getDefaultMode()
+    example_print_log("minimal16 mode:", sides_mode)
+    example_print_log("rpgmaker48 mode:", rpg_mode)
 end
 
 --@api: LAutoTileSheet:getTileCount

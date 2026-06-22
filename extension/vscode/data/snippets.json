@@ -110,7 +110,8 @@
     "scope": "lua",
     "body": [
       "local ${1:d}    = lurek.binary",
-      "local save = d.encodeToml({ player = { level = 5, gold = 300 } })",
+      "local ${1:s}    = lurek.serial",
+      "local save = s.toToml({ player = { level = 5, gold = 300 } })",
       "local crc  = d.crc32(save)",
       "-- write: append CRC as 4 bytes",
       "local safe_blob = save .. d.pack(\">I\", crc)",
@@ -144,7 +145,8 @@
     "scope": "lua",
     "body": [
       "local ${1:d}   = lurek.binary",
-      "local payload    = d.encodeToml({ world = { map = \"dungeon_01\", seed = 42 } })",
+      "local ${1:s}   = lurek.serial",
+      "local payload    = s.toToml({ world = { map = \"dungeon_01\", seed = 42 } })",
       "local compressed = d.compress(\"zlib\", payload, 6)",
       "print(string.format(\"original=%d  compressed=%d  ratio=%.2f\",",
       "    #payload, #compressed, #compressed / #payload))",
@@ -174,31 +176,31 @@
       "print(\"first section id=\" .. section_id)"
     ]
   },
-  "data: lk-data-toml-load": {
-    "prefix": "lk-data-toml-load",
+  "data: lk-data-serial-toml-load": {
+    "prefix": "lk-data-serial-toml-load",
     "description": "Use at startup to load a TOML config, apply defaults for optional keys, and validate required fields. Fail fast with a clear error rather than silently propagating nil values into game logic.",
     "scope": "lua",
     "body": [
-      "local ${1:d} = lurek.binary",
+      "local ${1:s} = lurek.serial",
       "local toml_str = [[",
       "[audio]",
       "volume = 0.8",
       "[graphics]",
       "resolution = \"1920x1080\"",
       "]]",
-      "local cfg    = d.parseToml(toml_str)",
+      "local cfg    = s.fromToml(toml_str)",
       "local volume = (cfg.audio and cfg.audio.volume) or 0.75",
       "local res    = (cfg.graphics and cfg.graphics.resolution) or \"1280x720\"",
       "assert(type(volume) == \"number\" and volume >= 0 and volume <= 1, \"invalid volume\")",
       "print(\"volume=\" .. volume .. \"  resolution=\" .. res)"
     ]
   },
-  "data: lk-data-toml-patch": {
-    "prefix": "lk-data-toml-patch",
-    "description": "Use to apply partial preference updates without rewriting the whole config. parseToml -> mutate the table -> encodeToml preserves all other keys and structure.",
+  "data: lk-data-serial-toml-patch": {
+    "prefix": "lk-data-serial-toml-patch",
+    "description": "Use to apply partial preference updates without rewriting the whole config. fromToml -> mutate the table -> toToml preserves all other keys and structure.",
     "scope": "lua",
     "body": [
-      "local ${1:d}   = lurek.binary",
+      "local ${1:s}   = lurek.serial",
       "local raw = [[",
       "[player]",
       "name = \"Hero\"",
@@ -206,21 +208,21 @@
       "[audio]",
       "volume = 0.8",
       "]]",
-      "local cfg = d.parseToml(raw)",
+      "local cfg = s.fromToml(raw)",
       "cfg.player.level = cfg.player.level + 1",
       "cfg.audio.volume = 0.6",
       "",
-      "local updated = d.encodeToml(cfg)",
+      "local updated = s.toToml(cfg)",
       "print(updated)",
       "-- write to disk: lurek.filesystem.write(\"save/options.toml\", updated)"
     ]
   },
-  "data: lk-data-toml-manifest": {
-    "prefix": "lk-data-toml-manifest",
+  "data: lk-data-serial-toml-manifest": {
+    "prefix": "lk-data-serial-toml-manifest",
     "description": "Use to load and validate a game manifest (name, version, entry point) during boot. Centralise all schema checks here so the game loop never receives unvalidated manifest data.",
     "scope": "lua",
     "body": [
-      "local ${1:d} = lurek.binary",
+      "local ${1:s} = lurek.serial",
       "local manifest_toml = [[",
       "name    = \"Dungeon Explorer\"",
       "version = \"1.2.0\"",
@@ -228,7 +230,7 @@
       "[requires]",
       "engine = \"0.6\"",
       "]]",
-      "local m = d.parseToml(manifest_toml)",
+      "local m = s.fromToml(manifest_toml)",
       "assert(m.name,    \"manifest: missing name\")",
       "assert(m.version, \"manifest: missing version\")",
       "assert(m.entry,   \"manifest: missing entry\")",
@@ -277,22 +279,22 @@
       "print(string.format(\"rolling avg frame_ms=%.2f  window=%d\", avg, #samples))"
     ]
   },
-  "data: lk-data-msgpack-roundtrip": {
-    "prefix": "lk-data-msgpack-roundtrip",
-    "description": "Use toMsgPack / fromMsgPack for compact structured serialisation of game state snapshots passed between Lua VMs via Channel, or written as save slot blobs. Smaller than TOML; more type-safe than raw pack.",
+  "data: lk-data-serial-msgpack-roundtrip": {
+    "prefix": "lk-data-serial-msgpack-roundtrip",
+    "description": "Use encodeMsgPack / decodeMsgPack for compact structured serialisation of game state snapshots passed between Lua VMs via Channel, or written as save slot blobs. Smaller than TOML; more type-safe than raw pack.",
     "scope": "lua",
     "body": [
-      "local ${1:d} = lurek.binary",
+      "local ${1:s} = lurek.serial",
       "local state = {",
       "    player = { name = \"Hero\", hp = 80, level = 5 },",
       "    round  = 3,",
       "    flags  = { has_sword = true, chest_open = false },",
       "}",
       "",
-      "local blob = d.toMsgPack(state)",
+      "local blob = s.encodeMsgPack(state)",
       "print(\"msgpack bytes=\" .. #blob)",
       "",
-      "local loaded = d.fromMsgPack(blob)",
+      "local loaded = s.decodeMsgPack(blob)",
       "if type(loaded) == \"table\" then",
       "    local player = loaded.player",
       "    if player then",
@@ -1481,7 +1483,7 @@
       "end"
     ]
   },
-  "system: lk-sys-platform-branch": {
+  "runtime: lk-sys-platform-branch": {
     "prefix": "lk-sys-platform-branch",
     "description": "Use to apply platform-specific code paths (e.g. keyboard shortcuts, path separators, OS integration). Combine with getArch() for more precise dispatch (e.g. \"Windows\" + \"x86_64\").",
     "scope": "lua",
@@ -1499,7 +1501,7 @@
       "end"
     ]
   },
-  "system: lk-sys-version-guard": {
+  "runtime: lk-sys-version-guard": {
     "prefix": "lk-sys-version-guard",
     "description": "Use at game boot to verify the engine version meets the minimum requirement. Fail fast with a clear message rather than crashing later on a missing API or changed behaviour.",
     "scope": "lua",
@@ -1519,7 +1521,7 @@
       "print(\"version ok\")"
     ]
   },
-  "system: lk-sys-info-dump": {
+  "runtime: lk-sys-info-dump": {
     "prefix": "lk-sys-info-dump",
     "description": "Use during development or debug builds to log the full engine environment (OS, version, Lua runtime, renderer, CPU count, memory). Gate behind isDebug to avoid leaking info in release builds.",
     "scope": "lua",
@@ -1536,7 +1538,7 @@
       "end"
     ]
   },
-  "system: lk-sys-env-path": {
+  "runtime: lk-sys-env-path": {
     "prefix": "lk-sys-env-path",
     "description": "Use to read environment variables for configuring dev overrides, save directories, or tool paths without hardcoding. Falls back gracefully when the variable is not set.",
     "scope": "lua",
@@ -1548,7 +1550,7 @@
       "print(\"log_dir=\"  .. log_dir)"
     ]
   },
-  "system: lk-sys-parseargs": {
+  "runtime: lk-sys-parseargs": {
     "prefix": "lk-sys-parseargs",
     "description": "Use to parse --flag and --key=value CLI arguments at game startup. parseArgs returns structured flags, options, and positional args so you can override config values without editing files.",
     "scope": "lua",
@@ -1565,7 +1567,7 @@
       "print(\"start_map=\"  .. map_name)"
     ]
   },
-  "system: lk-sys-log": {
+  "runtime: lk-sys-log": {
     "prefix": "lk-sys-log",
     "description": "Use lurek.runtime.log() for structured game-level log entries instead of print(). Level-tagged messages integrate with the RUST_LOG filter so debug lines are suppressed in release builds automatically.",
     "scope": "lua",
@@ -1577,7 +1579,7 @@
       "rt.log(\"error\", \"Failed to load asset: assets/fonts/missing.ttf\")"
     ]
   },
-  "system: lk-sys-loglevel": {
+  "runtime: lk-sys-loglevel": {
     "prefix": "lk-sys-loglevel",
     "description": "Use setLogLevel to lower verbosity in release builds and raise it during development sessions. Pair with getLogLevel() to display the current level in a debug overlay or settings menu.",
     "scope": "lua",
@@ -1591,7 +1593,7 @@
       "print(\"log level=\" .. rt.getLogLevel())"
     ]
   },
-  "system: lk-sys-clipboard": {
+  "runtime: lk-sys-clipboard": {
     "prefix": "lk-sys-clipboard",
     "description": "Use for user-facing copy/paste: share codes, map seeds, chat messages. getClipboardText returns nil when the clipboard is empty or unavailable — always guard before using the value.",
     "scope": "lua",
@@ -1611,7 +1613,7 @@
       "end"
     ]
   },
-  "system: lk-sys-config-inspect": {
+  "runtime: lk-sys-config-inspect": {
     "prefix": "lk-sys-config-inspect",
     "description": "Use to read active engine config at runtime and detect when a hot- reload has occurred (config_reload_revision increments). Apply changed values without restarting.",
     "scope": "lua",
@@ -1629,7 +1631,7 @@
       "_ = last_rev"
     ]
   },
-  "system: lk-sys-last-error": {
+  "runtime: lk-sys-last-error": {
     "prefix": "lk-sys-last-error",
     "description": "Use getLastError() after calls that can fail to show a user-facing error message and log a diagnostic hint. The table includes message, code, category, and an optional hint for resolution.",
     "scope": "lua",
@@ -1646,7 +1648,7 @@
       "end"
     ]
   },
-  "system: lk-sys-error-snapshot": {
+  "runtime: lk-sys-error-snapshot": {
     "prefix": "lk-sys-error-snapshot",
     "description": "Use errorSnapshot to create a structured JSON diagnostic that captures the engine state at the point of failure — useful for crash reporters, telemetry, and support tickets.",
     "scope": "lua",
@@ -1658,7 +1660,7 @@
       "-- lurek.filesystem.write(\"save/crash_report.json\", snap)"
     ]
   },
-  "system: lk-sys-runbatch": {
+  "runtime: lk-sys-runbatch": {
     "prefix": "lk-sys-runbatch",
     "description": "Use runBatch to run a set of named boot validation tasks and collect per-task pass/fail/time results. getBatchResults summarises the counts for a single-line CI gate or dev-mode startup report.",
     "scope": "lua",

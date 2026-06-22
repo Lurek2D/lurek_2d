@@ -1225,7 +1225,9 @@ do
     local doc = lurek.html.newDocument("<p>owned</p>")
     local el = doc:query("p")
     if el then
-        example_print_log("document title now = " .. tostring(el:getDocument():getTitle()))
+        local owner = el:getDocument()
+        example_print_log("document owner present = " .. tostring(owner ~= nil))
+        example_print_log("document exposes setHtml = " .. tostring(owner and owner.setHtml ~= nil))
     end
 end
 ```

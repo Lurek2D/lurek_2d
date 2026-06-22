@@ -1054,12 +1054,15 @@ end
 --@api: lurek.light.drawToImage
 do
     lurek.light.clear()
-    local light = lurek.light.newLight(200, 150, 120)
+    lurek.light.setAmbient(0.04, 0.04, 0.06, 1.0)
+    local light = lurek.light.newLight(200, 72, 180, { shadowEnabled = true, shadowFilter = "pcf5" })
     light:setColor(1.0, 0.9, 0.7, 1.0)
-    light:setIntensity(1.25)
+    light:setIntensity(1.6)
+    local occ = lurek.light.newOccluder({160, 128, 240, 128, 240, 144, 160, 144})
     local light_count = lurek.light.getLightCount()
-    light:setColor(1.0, 0.9, 0.6, 1.0)
+    local occ_count = lurek.light.getOccluderCount()
     local img = lurek.light.drawToImage(400, 300)
     example_print_log("lurek.light.drawToImage type=" .. type(img))
-    example_print_log("lurek.light.drawToImage hasLight = " .. tostring(light:isValid()))
+    example_print_log("lurek.light.drawToImage size=" .. img:getWidth() .. "x" .. img:getHeight())
+    example_print_log("preview lights=" .. light_count .. " occluders=" .. occ_count .. " valid=" .. tostring(occ:isValid()))
 end

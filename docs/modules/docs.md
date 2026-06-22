@@ -1926,6 +1926,19 @@ LQualityReport:getIssues()
 |------|-------------|
 | table[] | Array of issue rows. |
 
+**Example**
+
+```lua
+do
+    local cat = docs_example_cat
+    local qr = docs_example_quality
+    local issues = qr:getIssues()
+    docs_log("quality issues = " .. #issues)
+    docs_log("first issue kind = " .. tostring(issues[1] and issues[1].kind))
+    docs_log("first issue message = " .. tostring(issues[1] and issues[1].message))
+end
+```
+
 ---
 
 #### `LQualityReport:getModuleScores`
@@ -2060,6 +2073,19 @@ LQualityReport:issueCount()
 | Type | Description |
 |------|-------------|
 | number | Total issue count. |
+
+**Example**
+
+```lua
+do
+    local cat = docs_example_cat
+    local qr = docs_example_quality
+    local issues = qr:getIssues()
+    docs_log("quality issue count = " .. qr:issueCount())
+    docs_log("issues table size = " .. #issues)
+    docs_log("quality grade = " .. tostring(qr:getGrade()))
+end
+```
 
 ---
 
@@ -2454,6 +2480,19 @@ LValidationReport:getIssues()
 |------|-------------|
 | table[] | Array of issue rows. |
 
+**Example**
+
+```lua
+do
+    local cat = docs_example_cat
+    local report = docs_example_validate
+    local issues = report:getIssues()
+    docs_log("issues = " .. #issues)
+    docs_log("first issue severity = " .. tostring(issues[1] and issues[1].severity))
+    docs_log("first issue module = " .. tostring(issues[1] and issues[1].module))
+end
+```
+
 ---
 
 #### `LValidationReport:getMissing`
@@ -2610,6 +2649,19 @@ LValidationReport:issueCount()
 | Type | Description |
 |------|-------------|
 | number | Total issue count. |
+
+**Example**
+
+```lua
+do
+    local cat = docs_example_cat
+    local report = docs_example_validate
+    local issues = report:getIssues()
+    docs_log("issue count = " .. report:issueCount())
+    docs_log("issues table size = " .. #issues)
+    docs_log("is valid = " .. tostring(report:isValid()))
+end
+```
 
 ---
 

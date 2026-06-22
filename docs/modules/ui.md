@@ -27,6 +27,8 @@
 - For wiki readers, the practical boundary is clear: if a feature is about widget identity, composition, style, layout, focus, event dispatch, data binding, or retained state over time, it belongs to `ui` even when another system supplies the data being shown.
 - Read `ui` as the engine's main authority for structured interactive surfaces. It is the module that makes screens persistent, composable, themeable, testable, and interoperable, whether the result is a simple pause menu or a full internal editor workspace.
 
+This module primarily collaborates with `dataframe`, `image`, `math`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
+
 ## Functions
 
 ### `lurek.ui.addToast`
@@ -50,8 +52,8 @@ do
     lurek.ui.addToast({ message = "File saved successfully", duration = 3.0, type = "info" })
     example_print_log("toast added")
     local layout = lurek.ui.loadLayout({ type = "panel", children = {} })
-    example_print_log("layout=" .. tostring(layout ~= nil))
-    example_print_log("rect x = " .. select(1, layout:getRect()))
+    example_print_log("layout id=" .. tostring(layout))
+    example_print_log("layout loaded=" .. tostring(type(layout) == "number"))
 end
 ```
 
@@ -574,6 +576,21 @@ lurek.ui.getAccessibilityTree()
 | Type | Description |
 |------|-------------|
 | table | Array of accessibility node tables. |
+
+**Example**
+
+```lua
+do
+    lurek.ui.clear()
+    local label = lurek.ui.newLabel("Name")
+    local input = lurek.ui.newTextInput()
+    label:setLabelFor(input._idx)
+    local nodes = lurek.ui.getAccessibilityTree()
+    example_print_log("a11y nodes = " .. tostring(#nodes))
+    example_print_log("first node role = " .. tostring(nodes[1] and nodes[1].role))
+    example_print_log("first node name = " .. tostring(nodes[1] and nodes[1].name))
+end
+```
 
 ---
 
@@ -2958,6 +2975,24 @@ lurek.ui.validateUx()
 |------|-------------|
 | table | Array of diagnostic tables containing `message` and optional `widget_idx`. |
 
+**Example**
+
+```lua
+do
+    lurek.ui.clear()
+    lurek.ui.setViewport(100, 100)
+    local dialog = lurek.ui.newDialog("Confirm")
+    dialog:open()
+    dialog:setModal(true)
+    dialog:setCloseable(false)
+    dialog:setPosition(-20, 10)
+    dialog:setSize(120, 90)
+    local diagnostics = lurek.ui.validateUx()
+    example_print_log("validateUx count = " .. tostring(#diagnostics))
+    example_print_log("validateUx first = " .. tostring(diagnostics[1] and diagnostics[1].message))
+end
+```
+
 ---
 
 ### `lurek.ui.visibleRange`
@@ -4035,6 +4070,18 @@ LComboBox:getMaxVisibleItems()
 |------|-------------|
 | number | Maximum visible dropdown row count. |
 
+**Example**
+
+```lua
+do
+    local combo = lurek.ui.newComboBox()
+    combo:setMaxVisibleItems(3)
+    example_print_log("max visible = " .. combo:getMaxVisibleItems())
+    example_print_log("selected index = " .. tostring(combo:getSelectedIndex()))
+    example_print_log("item count = " .. combo:getItemCount())
+end
+```
+
 ---
 
 #### `LComboBox:getSelectedIndex`
@@ -4154,6 +4201,21 @@ LComboBox:setMaxVisibleItems(count)
 | Name | Type | Description |
 |------|------|-------------|
 | `count` | number | Maximum visible dropdown rows; values below 1 clamp to 1. |
+
+**Example**
+
+```lua
+do
+    local combo = lurek.ui.newComboBox()
+    combo:addItem("Easy")
+    combo:addItem("Normal")
+    combo:addItem("Hard")
+    combo:addItem("Nightmare")
+    combo:setMaxVisibleItems(3)
+    example_print_log("max visible = " .. combo:getMaxVisibleItems())
+    example_print_log("item count = " .. combo:getItemCount())
+end
+```
 
 ---
 
@@ -6034,7 +6096,7 @@ do
     local tbl = lurek.ui.newTable()
     local count = tbl:setDataFrame(df, { columns = { "category", "amount" }, maxRows = 2 })
     example_print_log("setDataFrame=" .. count .. ", cols=" .. tbl:getColumnCount())
-    example_print_log("rect x = " .. select(1, df:getRect()))
+    example_print_log("rect x = " .. select(1, tbl:getRect()))
 end
 ```
 
@@ -11376,6 +11438,18 @@ LTextInput:getSubmitOnEnter()
 |------|-------------|
 | boolean | True if Enter submits the parent dialog default action. |
 
+**Example**
+
+```lua
+do
+    local input = lurek.ui.newTextInput()
+    input:setSubmitOnEnter(false)
+    example_print_log("submit_on_enter = " .. tostring(input:getSubmitOnEnter()))
+    example_print_log("focused = " .. tostring(input:isFocused()))
+    example_print_log("text = " .. input:getText())
+end
+```
+
 ---
 
 #### `LTextInput:getText`
@@ -11508,6 +11582,18 @@ LTextInput:setSubmitOnEnter(value)
 | Name | Type | Description |
 |------|------|-------------|
 | `value` | boolean | True to submit on Enter, false to consume Enter locally. |
+
+**Example**
+
+```lua
+do
+    local input = lurek.ui.newTextInput()
+    input:setSubmitOnEnter(false)
+    input:setText("Confirm name")
+    example_print_log("submit_on_enter = " .. tostring(input:getSubmitOnEnter()))
+    example_print_log("text = " .. input:getText())
+end
+```
 
 ---
 
@@ -13386,6 +13472,18 @@ LUiWidget:getAriaName()
 |------|-------------|
 | string | The stored accessible name, or an empty string when unset. |
 
+**Example**
+
+```lua
+do
+    local btn = lurek.ui.newButton("Save")
+    btn:setAriaName("Save game")
+    example_print_log("aria name = " .. btn:getAriaName())
+    example_print_log("button text = " .. btn:getText())
+    example_print_log("button visible = " .. tostring(btn:isVisible()))
+end
+```
+
 ---
 
 #### `LUiWidget:getChildCount`
@@ -13551,6 +13649,18 @@ LUiWidget:getLabelFor()
 | Type | Description |
 |------|-------------|
 | number | The linked widget index. |
+
+**Example**
+
+```lua
+do
+    local label = lurek.ui.newLabel("Email")
+    local input = lurek.ui.newTextInput()
+    label:setLabelFor(input._idx)
+    example_print_log("label for = " .. tostring(label:getLabelFor()))
+    example_print_log("label text = " .. label:getText())
+end
+```
 
 ---
 
@@ -13784,6 +13894,18 @@ LUiWidget:getRole()
 | Type | Description |
 |------|-------------|
 | string | The configured or default semantic role. |
+
+**Example**
+
+```lua
+do
+    local btn = lurek.ui.newButton("Save")
+    btn:setRole("button")
+    example_print_log("button role = " .. btn:getRole())
+    example_print_log("button text = " .. btn:getText())
+    example_print_log("button visible = " .. tostring(btn:isVisible()))
+end
+```
 
 ---
 
@@ -14484,6 +14606,18 @@ LUiWidget:setLabelFor(target)
 | Name | Type | Description |
 |------|------|-------------|
 | `target?` | number | Target widget index, or nil to clear the link. |
+
+**Example**
+
+```lua
+do
+    local label = lurek.ui.newLabel("Name")
+    local input = lurek.ui.newTextInput()
+    label:setLabelFor(input._idx)
+    example_print_log("label target = " .. tostring(label:getLabelFor()))
+    example_print_log("input idx = " .. tostring(input._idx))
+end
+```
 
 ---
 

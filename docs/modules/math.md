@@ -87,7 +87,7 @@ lurek.math.Vec3(x, y, z)
 do
     local v = lurek.math.Vec3(1, 2, 3)
     example_print_log("vec3 = " .. v.x .. "," .. v.y .. "," .. v.z)
-    example_print_log("heading = " .. v:angle())
+    example_print_log("lengthSquared = " .. v:lengthSquared())
     example_print_log("vector length = " .. v:length())
     example_print_log("unit x = " .. v:normalize().x)
 end
@@ -3521,7 +3521,7 @@ lurek.math.vec3(x, y, z)
 do
     local v = lurek.math.vec3(1, 2, 3)
     example_print_log("vec3 = " .. v.x .. "," .. v.y .. "," .. v.z)
-    example_print_log("heading = " .. v:angle())
+    example_print_log("lengthSquared = " .. v:lengthSquared())
     example_print_log("vector length = " .. v:length())
     example_print_log("unit x = " .. v:normalize().x)
 end
@@ -5352,7 +5352,7 @@ do
     a:add("a", 1.0)
     a:build()
     local blob = a:save()
-    example_print_log("save blob = " .. tostring(blob))
+    example_print_log("save blob bytes = " .. tostring(#blob))
 end
 ```
 

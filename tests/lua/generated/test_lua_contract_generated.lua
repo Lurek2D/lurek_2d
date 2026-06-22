@@ -33,6 +33,11 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.agent.embed)
     end)
 
+    -- @covers lurek.agent.getDiagnostics
+    it("lurek.agent.getDiagnostics exists", function()
+        expect_type("function", lurek.agent.getDiagnostics)
+    end)
+
     -- @covers lurek.agent.isAvailable
     it("lurek.agent.isAvailable exists", function()
         expect_type("function", lurek.agent.isAvailable)
@@ -118,11 +123,6 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.ai.newAction)
     end)
 
-    -- @covers lurek.ai.newBandit
-    it("lurek.ai.newBandit exists", function()
-        expect_type("function", lurek.ai.newBandit)
-    end)
-
     -- @covers lurek.ai.newBehaviorTree
     it("lurek.ai.newBehaviorTree exists", function()
         expect_type("function", lurek.ai.newBehaviorTree)
@@ -163,11 +163,6 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.ai.newGOAPPlanner)
     end)
 
-    -- @covers lurek.ai.newGeneticAlgorithm
-    it("lurek.ai.newGeneticAlgorithm exists", function()
-        expect_type("function", lurek.ai.newGeneticAlgorithm)
-    end)
-
     -- @covers lurek.ai.newGuard
     it("lurek.ai.newGuard exists", function()
         expect_type("function", lurek.ai.newGuard)
@@ -198,16 +193,6 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.ai.newNeedSystem)
     end)
 
-    -- @covers lurek.ai.newNeuralNet
-    it("lurek.ai.newNeuralNet exists", function()
-        expect_type("function", lurek.ai.newNeuralNet)
-    end)
-
-    -- @covers lurek.ai.newNeuroevolution
-    it("lurek.ai.newNeuroevolution exists", function()
-        expect_type("function", lurek.ai.newNeuroevolution)
-    end)
-
     -- @covers lurek.ai.newORCASolver
     it("lurek.ai.newORCASolver exists", function()
         expect_type("function", lurek.ai.newORCASolver)
@@ -216,11 +201,6 @@ describe("generated: top-level lurek contract", function()
     -- @covers lurek.ai.newParallel
     it("lurek.ai.newParallel exists", function()
         expect_type("function", lurek.ai.newParallel)
-    end)
-
-    -- @covers lurek.ai.newQLearner
-    it("lurek.ai.newQLearner exists", function()
-        expect_type("function", lurek.ai.newQLearner)
     end)
 
     -- @covers lurek.ai.newRepeater
@@ -1098,16 +1078,6 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.binary.encode)
     end)
 
-    -- @covers lurek.binary.encodeToml
-    it("lurek.binary.encodeToml exists", function()
-        expect_type("function", lurek.binary.encodeToml)
-    end)
-
-    -- @covers lurek.binary.fromMsgPack
-    it("lurek.binary.fromMsgPack exists", function()
-        expect_type("function", lurek.binary.fromMsgPack)
-    end)
-
     -- @covers lurek.binary.getPackedSize
     it("lurek.binary.getPackedSize exists", function()
         expect_type("function", lurek.binary.getPackedSize)
@@ -1143,11 +1113,6 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.binary.pack)
     end)
 
-    -- @covers lurek.binary.parseToml
-    it("lurek.binary.parseToml exists", function()
-        expect_type("function", lurek.binary.parseToml)
-    end)
-
     -- @covers lurek.binary.read
     it("lurek.binary.read exists", function()
         expect_type("function", lurek.binary.read)
@@ -1156,11 +1121,6 @@ describe("generated: top-level lurek contract", function()
     -- @covers lurek.binary.size
     it("lurek.binary.size exists", function()
         expect_type("function", lurek.binary.size)
-    end)
-
-    -- @covers lurek.binary.toMsgPack
-    it("lurek.binary.toMsgPack exists", function()
-        expect_type("function", lurek.binary.toMsgPack)
     end)
 
     -- @covers lurek.binary.unpack
@@ -6538,6 +6498,16 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.terminal.stripAnsi)
     end)
 
+    -- @covers lurek.terminal.tryPushCmdHistory
+    it("lurek.terminal.tryPushCmdHistory exists", function()
+        expect_type("function", lurek.terminal.tryPushCmdHistory)
+    end)
+
+    -- @covers lurek.terminal.tryPushScrollback
+    it("lurek.terminal.tryPushScrollback exists", function()
+        expect_type("function", lurek.terminal.tryPushScrollback)
+    end)
+
     -- @covers lurek.thread.async
     it("lurek.thread.async exists", function()
         expect_type("function", lurek.thread.async)
@@ -6586,6 +6556,11 @@ describe("generated: top-level lurek contract", function()
     -- @covers lurek.tilemap.fromScreenIso
     it("lurek.tilemap.fromScreenIso exists", function()
         expect_type("function", lurek.tilemap.fromScreenIso)
+    end)
+
+    -- @covers lurek.tilemap.getAutoTileFormats
+    it("lurek.tilemap.getAutoTileFormats exists", function()
+        expect_type("function", lurek.tilemap.getAutoTileFormats)
     end)
 
     -- @covers lurek.tilemap.hexArea
@@ -6983,6 +6958,11 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.ui.focusPrev)
     end)
 
+    -- @covers lurek.ui.getAccessibilityTree
+    it("lurek.ui.getAccessibilityTree exists", function()
+        expect_type("function", lurek.ui.getAccessibilityTree)
+    end)
+
     -- @covers lurek.ui.getActiveDrag
     it("lurek.ui.getActiveDrag exists", function()
         expect_type("function", lurek.ui.getActiveDrag)
@@ -7336,6 +7316,11 @@ describe("generated: top-level lurek contract", function()
     -- @covers lurek.ui.update_bindings
     it("lurek.ui.update_bindings exists", function()
         expect_type("function", lurek.ui.update_bindings)
+    end)
+
+    -- @covers lurek.ui.validateUx
+    it("lurek.ui.validateUx exists", function()
+        expect_type("function", lurek.ui.validateUx)
     end)
 
     -- @covers lurek.ui.visibleRange

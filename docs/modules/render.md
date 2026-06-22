@@ -6521,6 +6521,22 @@ end
 
 ### Type Methods
 
+#### `LShader:getId`
+
+Returns the internal numeric handle ID for this shader.
+
+```lua
+LShader:getId()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Opaque shader handle identifier. |
+
+---
+
 #### `LShader:hasUniform`
 
 Checks whether this shader declares a uniform with the given name.
@@ -6670,7 +6686,7 @@ do
     local shader = lurek.render.newShader(code)
     shader:send("u_time", 0.5)
     example_print_log("shader typeOf LShader = " .. tostring(shader:typeOf("LShader")))
-    example_print_log("shader source bytes = " .. tostring(#src))
+    example_print_log("shader source bytes = " .. tostring(#code))
     shader:release()
 end
 ```

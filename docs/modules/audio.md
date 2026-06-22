@@ -4147,10 +4147,9 @@ do
     local bus = lurek.audio.newBus("meter_bus")
     bus:setVolume(0.75)
     local peak = bus:getPeak()
-    local rms = bus:getRms()
     local name = bus:getName()
     lurek.log.info("meter bus=" .. tostring(name))
-    lurek.log.info("peak=" .. tostring(peak) .. " rms=" .. tostring(rms))
+    lurek.log.info("peak=" .. tostring(peak) .. " volume=" .. tostring(bus:getVolume()))
 end
 ```
 

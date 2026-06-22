@@ -4,6 +4,7 @@
 //! Acts as the atlas-metadata boundary between raw tilesheet images and higher-level map storage owners.
 //! Open this file when tile quad lookup, solid flags, or animated tileset frame data behaves incorrectly.
 
+use super::autotile_sheet::AutoTileMode;
 use crate::log_msg;
 use crate::math::Rect;
 use crate::runtime::log_messages::{TS01, TS02, TS03};
@@ -43,6 +44,8 @@ pub struct TileSet {
     auto_rules_4: HashMap<(String, u8), u32>,
     /// 8-bit autotile rules: `(type_name, bitmask) -> local_tile_id`.
     auto_rules_8: HashMap<(String, u16), u32>,
+    /// Matching strategy per logical autotile type.
+    auto_modes: HashMap<String, AutoTileMode>,
 }
 
 /// Construction, geometry queries, collision, animation, and autotile rule management.
@@ -70,6 +73,7 @@ impl TileSet {
             animations: HashMap::new(),
             auto_rules_4: HashMap::new(),
             auto_rules_8: HashMap::new(),
+            auto_modes: HashMap::new(),
         }
     }
     /// Return the first global GID owned by this tileset.
@@ -176,5 +180,23 @@ impl TileSet {
         self.auto_rules_8
             .get(&(type_name.to_string(), bitmask))
             .copied()
+    }
+
+    /// Set the neighbour matching strategy for a logical autotile type.
+    pub fn set_auto_tile_mode(&mut self, type_name: &str, mode: AutoTileMode) {
+        self.auto_modes.insert(type_name.to_string(), mode);
+    }
+
+    /// Return the neighbour matching strategy for a logical autotile type.
+    pub fn get_auto_tile_mode(&self, type_name: &str) -> AutoTileMode {
+        self.auto_modes
+            .get(type_name)
+            .copied()
+            .unwrap_or(AutoTileMode::MatchSides)
+    }
+
+    /// Return `true` if this tileset has an explicit matching strategy for the logical autotile type.
+    pub fn has_auto_tile_mode(&self, type_name: &str) -> bool {
+        self.auto_modes.contains_key(type_name)
     }
 }

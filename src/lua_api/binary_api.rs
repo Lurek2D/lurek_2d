@@ -1,4 +1,4 @@
-//! Registers the `lurek.binary` Lua API for byte packing, compression, hashing, ring buffers, and TOML helpers.
+//! Registers the `lurek.binary` Lua API for byte packing, compression, hashing, and ring buffers.
 
 use super::SharedState;
 use crate::binary::{
@@ -6,8 +6,6 @@ use crate::binary::{
     LuaDataView, PackValue,
 };
 use crate::lua_api::lua_types::LurekType;
-use crate::serialize as serial;
-use indexmap::IndexMap as LuaIndexMap;
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::collections::VecDeque;
@@ -235,70 +233,6 @@ impl LuaUserData for LuaRingBuffer {
         methods.add_method("typeOf", |_, _, name: String| {
             Ok(name == "LRingBuffer" || name == "LObject")
         });
-    }
-}
-/// Converts a TOML value into a Lua value.
-fn toml_value_to_lua<'lua>(lua: &'lua Lua, value: &toml::Value) -> LuaResult<LuaValue<'lua>> {
-    match value {
-        toml::Value::String(s) => lua.create_string(s.as_bytes()).map(LuaValue::String),
-        toml::Value::Integer(n) => Ok(LuaValue::Integer(*n)),
-        toml::Value::Float(f) => Ok(LuaValue::Number(*f)),
-        toml::Value::Boolean(b) => Ok(LuaValue::Boolean(*b)),
-        toml::Value::Array(arr) => {
-            let tbl = lua.create_table()?;
-            for (i, v) in arr.iter().enumerate() {
-                tbl.set(i + 1, toml_value_to_lua(lua, v)?)?;
-            }
-            Ok(LuaValue::Table(tbl))
-        }
-        toml::Value::Table(map) => {
-            let tbl = lua.create_table()?;
-            for (k, v) in map {
-                tbl.set(k.as_str(), toml_value_to_lua(lua, v)?)?;
-            }
-            Ok(LuaValue::Table(tbl))
-        }
-        toml::Value::Datetime(dt) => lua
-            .create_string(dt.to_string().as_bytes())
-            .map(LuaValue::String),
-    }
-}
-/// Converts a Lua value into a TOML value.
-fn lua_table_to_toml_value(value: &LuaValue) -> LuaResult<toml::Value> {
-    match value {
-        LuaValue::Boolean(b) => Ok(toml::Value::Boolean(*b)),
-        LuaValue::Integer(n) => Ok(toml::Value::Integer(*n)),
-        LuaValue::Number(f) => Ok(toml::Value::Float(*f)),
-        LuaValue::String(s) => {
-            let st = s
-                .to_str()
-                .map_err(|e| LuaError::RuntimeError(e.to_string()))?;
-            Ok(toml::Value::String(st.to_string()))
-        }
-        LuaValue::Table(tbl) => {
-            let len = tbl.raw_len();
-            if len > 0 {
-                let mut arr = Vec::new();
-                for i in 1..=len {
-                    let v: LuaValue = tbl.raw_get(i)?;
-                    arr.push(lua_table_to_toml_value(&v)?);
-                }
-                Ok(toml::Value::Array(arr))
-            } else {
-                let mut map = toml::map::Map::new();
-                for pair in tbl.clone().pairs::<LuaString, LuaValue>() {
-                    let (k, v) = pair?;
-                    let key = k
-                        .to_str()
-                        .map_err(|e| LuaError::RuntimeError(e.to_string()))?;
-                    map.insert(key.to_string(), lua_table_to_toml_value(&v)?);
-                }
-                Ok(toml::Value::Table(map))
-            }
-        }
-        _ => Err(LuaError::RuntimeError(
-            "Cannot convert this Lua type to TOML".to_string(),
-        )),
     }
 }
 /// Registers the `lurek.binary` API table with the Lua VM.
@@ -532,28 +466,6 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
             binary::bin_measure_size(&fmt).map_err(LuaError::RuntimeError)
         })?,
     )?;
-    // -- parseToml --
-    /// Parses TOML text into Lua tables and scalar values.
-    /// @param | text | string | TOML document text.
-    /// @return | table | Lua representation of the TOML document.
-    tbl.set(
-        "parseToml",
-        lua.create_function(|lua, text: String| {
-            let value = serial::parse_toml(&text).map_err(LuaError::RuntimeError)?;
-            toml_value_to_lua(lua, &value)
-        })?,
-    )?;
-    // -- encodeToml --
-    /// Encodes a Lua table into a TOML document string.
-    /// @param | tbl | table | Lua table to encode as TOML.
-    /// @return | string | TOML document text.
-    tbl.set(
-        "encodeToml",
-        lua.create_function(|_, tbl: LuaTable| {
-            let value = lua_table_to_toml_value(&LuaValue::Table(tbl))?;
-            serial::encode_toml(&value).map_err(LuaError::RuntimeError)
-        })?,
-    )?;
     // -- newRingBuffer --
     /// Creates a fixed-capacity ring buffer for Lua values.
     /// @param | capacity | integer | Maximum value count; must be greater than zero.
@@ -561,33 +473,6 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "newRingBuffer",
         lua.create_function(|_, capacity: usize| new_lua_ring_buffer(capacity))?,
-    )?;
-    // -- toMsgPack --
-    /// Encodes a Lua value into the current structured binary interchange payload.
-    /// @param | value | any | Lua value to encode through the serial table converter.
-    /// @return | string | Encoded binary payload.
-    tbl.set(
-        "toMsgPack",
-        lua.create_function(|lua, value: LuaValue| {
-            let serial_val =
-                crate::serialize::lua_table::from_lua(&value).map_err(LuaError::external)?;
-            let json_val = serial_value_to_json(&serial_val);
-            let bytes = crate::serialize::encode_json(&json_val).map_err(LuaError::RuntimeError)?;
-            lua.create_string(&bytes)
-        })?,
-    )?;
-    // -- fromMsgPack --
-    /// Decodes a structured binary interchange payload back into Lua values.
-    /// @param | bytes | string | Encoded binary payload.
-    /// @return | LuaValue | Decoded Lua value.
-    tbl.set(
-        "fromMsgPack",
-        lua.create_function(|lua, bytes: LuaString| {
-            let raw: &[u8] = bytes.as_bytes();
-            let json_val = crate::serialize::decode_json(raw).map_err(LuaError::RuntimeError)?;
-            let serial = json_value_to_serial(&json_val);
-            crate::serialize::lua_table::to_lua(lua, &serial)
-        })?,
     )?;
     // -- newWriter --
     /// Creates an empty binary data writer.
@@ -603,57 +488,6 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// Performs the 'binary' operation.
     luna.set("binary", tbl)?;
     Ok(())
-}
-/// Converts a serial Lua-table value into JSON for binary payload encoding.
-fn serial_value_to_json(sv: &crate::serialize::lua_table::SerialValue) -> serde_json::Value {
-    use crate::serialize::lua_table::SerialValue;
-    match sv {
-        SerialValue::Null => serde_json::Value::Null,
-        SerialValue::Bool(b) => serde_json::Value::Bool(*b),
-        SerialValue::Int(n) => serde_json::Value::Number((*n).into()),
-        SerialValue::Float(f) => serde_json::Number::from_f64(*f)
-            .map(serde_json::Value::Number)
-            .unwrap_or(serde_json::Value::Null),
-        SerialValue::Str(s) => serde_json::Value::String(s.clone()),
-        SerialValue::Seq(arr) => {
-            serde_json::Value::Array(arr.iter().map(serial_value_to_json).collect())
-        }
-        SerialValue::Map(map) => {
-            let obj: serde_json::Map<String, serde_json::Value> = map
-                .iter()
-                .map(|(k, v)| (k.clone(), serial_value_to_json(v)))
-                .collect();
-            serde_json::Value::Object(obj)
-        }
-    }
-}
-/// Converts JSON into the serial Lua-table value representation.
-fn json_value_to_serial(val: &serde_json::Value) -> crate::serialize::lua_table::SerialValue {
-    use crate::serialize::lua_table::SerialValue;
-    match val {
-        serde_json::Value::Null => SerialValue::Null,
-        serde_json::Value::Bool(b) => SerialValue::Bool(*b),
-        serde_json::Value::Number(n) => {
-            if let Some(i) = n.as_i64() {
-                SerialValue::Int(i)
-            } else if let Some(f) = n.as_f64() {
-                SerialValue::Float(f)
-            } else {
-                SerialValue::Int(0)
-            }
-        }
-        serde_json::Value::String(s) => SerialValue::Str(s.clone()),
-        serde_json::Value::Array(arr) => {
-            SerialValue::Seq(arr.iter().map(json_value_to_serial).collect())
-        }
-        serde_json::Value::Object(obj) => {
-            let mut map = LuaIndexMap::new();
-            for (k, v) in obj {
-                map.insert(k.clone(), json_value_to_serial(v));
-            }
-            SerialValue::Map(map)
-        }
-    }
 }
 impl LuaUserData for LuaDataView {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {

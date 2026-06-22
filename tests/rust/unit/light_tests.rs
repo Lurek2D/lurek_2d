@@ -6,6 +6,8 @@ use lurek2d::light::attenuation::Attenuation;
 use lurek2d::light::flicker::FlickerConfig;
 use lurek2d::light::light2d::Light2D;
 use lurek2d::light::light_world::LightWorld;
+use lurek2d::light::occluder::Occluder;
+use lurek2d::math::Vec2;
 
 mod attenuation_tests {
     use super::*;
@@ -78,6 +80,19 @@ mod flicker_tests {
 mod light_world_tests {
     use super::*;
 
+    fn luminance(pixel: (u8, u8, u8, u8)) -> u16 {
+        u16::from(pixel.0) + u16::from(pixel.1) + u16::from(pixel.2)
+    }
+
+    fn rectangle_occluder(x: f32, y: f32, w: f32, h: f32) -> Occluder {
+        Occluder::new(vec![
+            Vec2::new(x, y),
+            Vec2::new(x + w, y),
+            Vec2::new(x + w, y + h),
+            Vec2::new(x, y + h),
+        ])
+    }
+
     #[test]
     fn has_active_lights_reflects_enabled_flag() {
         let mut world = LightWorld::new();
@@ -127,6 +142,56 @@ mod light_world_tests {
         assert_eq!(hints[0].y, 20.0);
         assert_eq!(hints[0].path, "assets/textures/normals/brick.png");
         assert!((hints[0].strength - 1.7).abs() < 1e-6);
+    }
+
+    #[test]
+    fn draw_to_image_casts_shadow_behind_enabled_occluder() {
+        let mut world = LightWorld::new();
+        world.ambient = lurek2d::color::Color::new(0.02, 0.02, 0.02, 1.0);
+
+        let light_key = world.add_light(Light2D::new(50.0, 20.0, 110.0));
+        {
+            let light = world.get_light_mut(light_key).unwrap();
+            light.set_shadow_enabled(true);
+            light.set_intensity(1.8);
+        }
+        world.add_occluder(rectangle_occluder(40.0, 45.0, 20.0, 10.0));
+
+        let img = world.draw_to_image(120, 120);
+        let shadowed = luminance(img.get_pixel(50, 92).unwrap());
+        let lit_side = luminance(img.get_pixel(95, 92).unwrap());
+
+        assert!(
+            shadowed + 20 < lit_side,
+            "expected occluder shadow pixel to be darker than side light: shadowed={shadowed}, side={lit_side}"
+        );
+    }
+
+    #[test]
+    fn draw_to_image_applies_occluder_position_to_shadow_geometry() {
+        let mut world = LightWorld::new();
+        world.ambient = lurek2d::color::Color::new(0.02, 0.02, 0.02, 1.0);
+
+        let light_key = world.add_light(Light2D::new(50.0, 20.0, 110.0));
+        {
+            let light = world.get_light_mut(light_key).unwrap();
+            light.set_shadow_enabled(true);
+            light.set_intensity(1.8);
+        }
+        let occ_key = world.add_occluder(rectangle_occluder(0.0, 0.0, 20.0, 10.0));
+        world
+            .get_occluder_mut(occ_key)
+            .unwrap()
+            .set_position(Vec2::new(40.0, 45.0));
+
+        let img = world.draw_to_image(120, 120);
+        let shadowed = luminance(img.get_pixel(50, 92).unwrap());
+        let lit_side = luminance(img.get_pixel(95, 92).unwrap());
+
+        assert!(
+            shadowed + 20 < lit_side,
+            "expected positioned occluder to cast a shadow: shadowed={shadowed}, side={lit_side}"
+        );
     }
 }
 

@@ -153,16 +153,6 @@ do
   example_print_log("lurek.ai.newSteeringManager: behaviors=" .. tostring(steer:getBehaviorCount()))
 end
 
---@api: lurek.ai.newQLearner
-do
-  local ql = lurek.ai.newQLearner(10, 4)
-  ql:setQValue(0, 0, 0.1)
-  local best = ql:bestAction(0)
-  ql:setQValue(1, 2, 0.75)
-  example_print_log("lurek.ai.newQLearner: ok=" .. tostring(ql ~= nil))
-  example_print_log("lurek.ai.newQLearner: best_action=" .. tostring(ql:bestAction(1)))
-end
-
 --@api: lurek.ai.newUtilityAI
 do
   local util = lurek.ai.newUtilityAI()
@@ -311,44 +301,6 @@ do
   local preview_count = orca:agentCount()
   example_print_log("lurek.ai.newORCASolver: ok=" .. tostring(orca ~= nil))
   example_print_log("lurek.ai.newORCASolver: agents=" .. tostring(orca:agentCount()))
-end
-
---@api: lurek.ai.newNeuralNet
-do
-  local nn = lurek.ai.newNeuralNet()
-  nn:addLayer(2, 3, "relu")
-  nn:addLayer(3, 1, "linear")
-  example_print_log("lurek.ai.newNeuralNet: ok=" .. tostring(nn ~= nil))
-  example_print_log("lurek.ai.newNeuralNet: layers=" .. tostring(nn:layerCount()))
-end
-
---@api: lurek.ai.newGeneticAlgorithm
-do
-  local ga = lurek.ai.newGeneticAlgorithm(8, 5, 7)
-  local generation = ga:generation()
-  local pop = ga:popSize()
-  example_print_log("lurek.ai.newGeneticAlgorithm: ok=" .. tostring(ga ~= nil))
-  example_print_log("lurek.ai.newGeneticAlgorithm: pop=" .. tostring(ga:popSize()))
-end
-
---@api: lurek.ai.newBandit
-do
-  local bandit = lurek.ai.newBandit(3, "ucb1", 0.15, 55)
-  local arm = bandit:select()
-  bandit:update(arm, 0.8)
-  example_print_log("lurek.ai.newBandit: ok=" .. tostring(bandit ~= nil))
-  example_print_log("lurek.ai.newBandit: arms=" .. tostring(bandit:armCount()))
-end
-
---@api: lurek.ai.newNeuroevolution
-do
-  local layers = {
-    { inputs = 3, outputs = 6, activation = "relu" },
-    { inputs = 6, outputs = 2, activation = "softmax" },
-  }
-  local ne = lurek.ai.newNeuroevolution(layers, 8, 1)
-  example_print_log("lurek.ai.newNeuroevolution: ok=" .. tostring(ne ~= nil))
-  example_print_log("lurek.ai.newNeuroevolution: pop=" .. tostring(ne:popSize()))
 end
 
 --@api: lurek.ai.newStrategyAI

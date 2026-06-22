@@ -9,6 +9,7 @@
 //! Acts as the operational boundary for layered tile storage rather than external import or large-map chunk policy.
 //! Open this file when layered map state, autotiling, collisions, or coordinate conversion behaves incorrectly.
 
+use super::autotile_sheet::AutoTileMode;
 use super::error::TileMapError;
 use super::limits::{
     checked_image_pixels, checked_layer_cells, validate_finite, validate_positive_rect,
@@ -1053,6 +1054,76 @@ impl TileMap {
             self.set_tile(layer, x, y, gid);
         }
     }
+    /// Apply autotile substitution using the matching strategy configured on the tileset for `type_name`.
+    pub fn apply_autotile_mode(&mut self, layer: usize, type_name: &str) {
+        match self.lookup_autotile_mode(type_name) {
+            AutoTileMode::MatchSides => self.apply_autotile(layer, type_name),
+            AutoTileMode::MatchCorners => self.apply_autotile_corners(layer, type_name),
+            AutoTileMode::MatchCornersAndSides => self.apply_autotile_8(layer, type_name),
+        }
+    }
+
+    /// Apply configured-strategy autotile substitution to the 3x3 neighbourhood around `(x, y)` only.
+    pub fn apply_autotile_mode_at(&mut self, layer: usize, x: u32, y: u32, type_name: &str) {
+        match self.lookup_autotile_mode(type_name) {
+            AutoTileMode::MatchSides => self.apply_autotile_at(layer, x, y, type_name),
+            AutoTileMode::MatchCorners => self.apply_autotile_corners_at(layer, x, y, type_name),
+            AutoTileMode::MatchCornersAndSides => self.apply_autotile_8_at(layer, x, y, type_name),
+        }
+    }
+
+    /// Apply corner-only autotile GID substitution to all non-empty tiles in `layer`.
+    fn apply_autotile_corners(&mut self, layer: usize, type_name: &str) {
+        let (width, height) = match self.layers.get(layer) {
+            Some(l) => (l.width, l.height),
+            None => return,
+        };
+        let mut replacements = Vec::new();
+        for y in 0..height {
+            for x in 0..width {
+                if self.get_tile(layer, x, y) == 0 {
+                    continue;
+                }
+                let mask = self.compute_bitmask_corners(layer, x, y, width, height);
+                if let Some(new_gid) = self.lookup_autotile_4(type_name, mask) {
+                    replacements.push((x, y, new_gid));
+                }
+            }
+        }
+        for (x, y, gid) in replacements {
+            self.set_tile(layer, x, y, gid);
+        }
+    }
+
+    /// Apply corner-only autotile substitution to the 3x3 neighbourhood around `(x, y)` only.
+    fn apply_autotile_corners_at(&mut self, layer: usize, x: u32, y: u32, type_name: &str) {
+        let (width, height) = match self.layers.get(layer) {
+            Some(l) => (l.width, l.height),
+            None => return,
+        };
+        if width == 0 || height == 0 {
+            return;
+        }
+        let mut replacements = Vec::new();
+        let x_start = x.saturating_sub(1);
+        let y_start = y.saturating_sub(1);
+        let x_end = (x + 1).min(width - 1);
+        let y_end = (y + 1).min(height - 1);
+        for ny in y_start..=y_end {
+            for nx in x_start..=x_end {
+                if self.get_tile(layer, nx, ny) == 0 {
+                    continue;
+                }
+                let mask = self.compute_bitmask_corners(layer, nx, ny, width, height);
+                if let Some(new_gid) = self.lookup_autotile_4(type_name, mask) {
+                    replacements.push((nx, ny, new_gid));
+                }
+            }
+        }
+        for (x, y, gid) in replacements {
+            self.set_tile(layer, x, y, gid);
+        }
+    }
     /// Compute the 4-bit cardinal-neighbour bitmask for `(x, y)` in `layer`; bits: N=1, E=2, S=4, W=8.
     fn compute_bitmask_4(&self, layer: usize, x: u32, y: u32, width: u32, height: u32) -> u8 {
         let mut mask = 0u8;
@@ -1102,6 +1173,32 @@ impl TileMap {
             mask |= 128;
         }
         mask
+    }
+    /// Compute the 4-bit corner-neighbour bitmask for `(x, y)`; bits: NE=1, SE=2, SW=4, NW=8.
+    fn compute_bitmask_corners(&self, layer: usize, x: u32, y: u32, width: u32, height: u32) -> u8 {
+        let mut mask = 0u8;
+        if y > 0 && x + 1 < width && self.get_tile(layer, x + 1, y - 1) != 0 {
+            mask |= 1;
+        }
+        if y + 1 < height && x + 1 < width && self.get_tile(layer, x + 1, y + 1) != 0 {
+            mask |= 2;
+        }
+        if y + 1 < height && x > 0 && self.get_tile(layer, x - 1, y + 1) != 0 {
+            mask |= 4;
+        }
+        if y > 0 && x > 0 && self.get_tile(layer, x - 1, y - 1) != 0 {
+            mask |= 8;
+        }
+        mask
+    }
+    /// Search all tilesets for a configured autotile mode for `type_name`; defaults to side matching.
+    fn lookup_autotile_mode(&self, type_name: &str) -> AutoTileMode {
+        for ts in &self.tilesets {
+            if ts.has_auto_tile_mode(type_name) {
+                return ts.get_auto_tile_mode(type_name);
+            }
+        }
+        AutoTileMode::MatchSides
     }
     /// Search all tilesets for a 4-bit autotile match for `type_name` and `bitmask`; returns the global GID or `None`.
     fn lookup_autotile_4(&self, type_name: &str, bitmask: u8) -> Option<u32> {

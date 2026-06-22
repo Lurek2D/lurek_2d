@@ -1131,7 +1131,7 @@ mod chunk_tests {
 
 mod autotile_sheet_tests {
     use super::*;
-    use lurek2d::tilemap::autotile_sheet::{AutoTileLayout, AutoTileSheet};
+    use lurek2d::tilemap::autotile_sheet::{AutoTileLayout, AutoTileMode, AutoTileSheet};
 
     #[test]
     fn creation_blob47() {
@@ -1150,6 +1150,15 @@ mod autotile_sheet_tests {
     }
 
     #[test]
+    fn creation_rpgmaker48() {
+        let sheet = AutoTileSheet::new(16, 16, AutoTileLayout::RpgMaker48);
+        assert_eq!(sheet.get_layout(), AutoTileLayout::RpgMaker48);
+        assert_eq!(sheet.get_layout_name(), "rpgmaker48");
+        assert_eq!(sheet.get_tile_count(), 48);
+        assert_eq!(sheet.get_default_mode(), AutoTileMode::MatchCornersAndSides);
+    }
+
+    #[test]
     fn creation_minimal16() {
         let sheet = AutoTileSheet::new(24, 24, AutoTileLayout::Minimal16);
         assert_eq!(sheet.get_layout(), AutoTileLayout::Minimal16);
@@ -1164,6 +1173,10 @@ mod autotile_sheet_tests {
         );
         assert_eq!(
             AutoTileSheet::new(16, 16, AutoTileLayout::Composite48).get_tile_count(),
+            48
+        );
+        assert_eq!(
+            AutoTileSheet::new(16, 16, AutoTileLayout::RpgMaker48).get_tile_count(),
             48
         );
         assert_eq!(
@@ -1244,11 +1257,29 @@ mod autotile_sheet_tests {
         sheet.apply_to_tileset(&mut ts, "stone", None);
         let bm0 = sheet.get_bitmask_for_tile(0);
         assert_eq!(ts.get_auto_tile_id_8("stone", bm0), Some(0));
+        assert_eq!(
+            ts.get_auto_tile_mode("stone"),
+            AutoTileMode::MatchCornersAndSides
+        );
+    }
+
+    #[test]
+    fn apply_to_tileset_rpgmaker48_sets_8bit_rules_and_mode() {
+        let sheet = AutoTileSheet::new(16, 16, AutoTileLayout::RpgMaker48);
+        let mut ts = TileSet::new(1, 64, 8, 16, 16, 0, 0);
+        sheet.apply_to_tileset(&mut ts, "water", Some(3));
+        let bm0 = sheet.get_bitmask_for_tile(0);
+        assert_eq!(ts.get_auto_tile_id_8("water", bm0), Some(3));
+        assert_eq!(
+            ts.get_auto_tile_mode("water"),
+            AutoTileMode::MatchCornersAndSides
+        );
     }
 
     #[test]
     fn layout_equality() {
         assert_ne!(AutoTileLayout::Blob47, AutoTileLayout::Composite48);
+        assert_ne!(AutoTileLayout::Composite48, AutoTileLayout::RpgMaker48);
         assert_ne!(AutoTileLayout::Composite48, AutoTileLayout::Minimal16);
         assert_eq!(AutoTileLayout::Blob47, AutoTileLayout::Blob47);
     }

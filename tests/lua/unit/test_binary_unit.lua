@@ -121,18 +121,12 @@ describe("binary module functions", function()
         expect_equal(14, lurek.binary.size("f32 f64 bool pad"))
     end)
 
-    -- @covers lurek.binary.parseToml
-    it("parseToml decodes nested tables", function()
-        local parsed = lurek.binary.parseToml('[window]\nwidth = 800\nheight = 600')
-        expect_equal(800, parsed.window.width)
-        expect_equal(600, parsed.window.height)
-    end)
-
-    -- @covers lurek.binary.encodeToml
-    it("encodeToml emits scalar assignments", function()
-        local encoded = lurek.binary.encodeToml({ name = "test", count = 5 })
-        expect_contains(encoded, 'name = "test"')
-        expect_contains(encoded, "count = 5")
+    -- @covers lurek.serial.fromToml
+    it("does not expose structured TOML serialization", function()
+        expect_equal(nil, lurek.binary.parseToml)
+        expect_equal(nil, lurek.binary.encodeToml)
+        expect_type("function", lurek.serial.fromToml)
+        expect_type("function", lurek.serial.toToml)
     end)
 
     -- @covers lurek.binary.newRingBuffer
@@ -140,15 +134,12 @@ describe("binary module functions", function()
         expect_type("userdata", new_ring_buffer(4))
     end)
 
-    -- @covers lurek.binary.toMsgPack
-    it("toMsgPack serializes Lua tables", function()
-        local blob = lurek.binary.toMsgPack({ x = 1, y = 2 })
-        expect_type("string", blob)
-    end)
-
-    -- @covers lurek.binary.fromMsgPack
-    it("fromMsgPack decodes a scalar payload", function()
-        expect_equal(42, lurek.binary.fromMsgPack(lurek.binary.toMsgPack(42)))
+    -- @covers lurek.serial.encodeMsgPack
+    it("does not expose structured MessagePack serialization", function()
+        expect_equal(nil, lurek.binary.toMsgPack)
+        expect_equal(nil, lurek.binary.fromMsgPack)
+        expect_type("function", lurek.serial.encodeMsgPack)
+        expect_type("function", lurek.serial.decodeMsgPack)
     end)
 
     -- @covers lurek.binary.newWriter

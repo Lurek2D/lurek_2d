@@ -4696,14 +4696,6 @@ lurek.ai.newAILod = function() end
 ---@return LBTNode New action node handle.
 lurek.ai.newAction = function(callback) end
 
---- Creates a multi-armed bandit with a named selection strategy.
----@param arm_count number Number of selectable arms.
----@param strategy string Strategy name such as `ucb1`, `thompson`, or an epsilon-greedy fallback.
----@param epsilon number Exploration probability used by epsilon-greedy strategy and clamped to `[0, 1]`.
----@param seed number Random seed used by the bandit.
----@return LBandit New bandit handle.
-lurek.ai.newBandit = function(arm_count, strategy, epsilon, seed) end
-
 --- Creates an empty behavior tree that can receive a root node.
 ---@return LBehaviorTree New behavior tree handle.
 lurek.ai.newBehaviorTree = function() end
@@ -4738,13 +4730,6 @@ lurek.ai.newEmotionModel = function() end
 ---@return LGOAPPlanner New GOAP planner handle.
 lurek.ai.newGOAPPlanner = function() end
 
---- Creates a genetic algorithm population with fixed chromosome length.
----@param pop_size number Number of chromosomes in the population.
----@param gene_count number Number of floating-point genes per chromosome.
----@param seed number Random seed used for population initialization and evolution.
----@return LGeneticAlgorithm New genetic algorithm handle.
-lurek.ai.newGeneticAlgorithm = function(pop_size, gene_count, seed) end
-
 --- Creates a guard decorator that runs a predicate before ticking its child.
 ---@param predicate function Callback that decides whether the child may run.
 ---@param child LBTNode Child node handle consumed by the guard.
@@ -4778,17 +4763,6 @@ lurek.ai.newMCTSEngine = function(iters, uct_c, depth, seed) end
 ---@return LNeedSystem New need system handle.
 lurek.ai.newNeedSystem = function() end
 
---- Creates an empty feed-forward neural network.
----@return LNeuralNet New neural network handle.
-lurek.ai.newNeuralNet = function() end
-
---- Creates a neuroevolution population from a layer specification table.
----@param layer_spec table Array of layer tables with `inputs`, `outputs`, and optional `activation` fields.
----@param pop_size number Number of chromosomes in the population.
----@param seed number Random seed used for population initialization and evolution.
----@return LNeuroevolution New neuroevolution handle.
-lurek.ai.newNeuroevolution = function(layer_spec, pop_size, seed) end
-
 --- Creates an ORCA avoidance solver with the supplied prediction horizon.
 ---@param time_horizon number Time horizon used when computing collision avoidance velocities.
 ---@return LORCASolver New ORCA solver handle.
@@ -4799,12 +4773,6 @@ lurek.ai.newORCASolver = function(time_horizon) end
 ---@param fp? string Failure policy name; defaults to the engine's require-one policy.
 ---@return LBTNode New parallel node handle.
 lurek.ai.newParallel = function(sp, fp) end
-
---- Creates a Q-learner with fixed state and action counts.
----@param sc number Number of discrete states.
----@param ac number Number of discrete actions.
----@return LQLearner New Q-learner handle.
-lurek.ai.newQLearner = function(sc, ac) end
 
 --- Creates a behavior tree repeater decorator with an optional repeat count.
 ---@param count? number Repeat count stored on the node; defaults to zero.
@@ -6865,16 +6833,6 @@ lurek.binary.decompressChunks = function(format_str, chunks) end
 ---@return string Encoded string.
 lurek.binary.encode = function(format_str, raw_data) end
 
---- Encodes a Lua table into a TOML document string.
----@param tbl table Lua table to encode as TOML.
----@return string TOML document text.
-lurek.binary.encodeToml = function(tbl) end
-
---- Decodes a structured binary interchange payload back into Lua values.
----@param bytes string Encoded binary payload.
----@return LuaValue Decoded Lua value.
-lurek.binary.fromMsgPack = function(bytes) end
-
 --- Computes the packed byte size for values and a format string.
 ---@param fmt string Binary pack format string.
 ---@param ... any Values measured according to the format.
@@ -6914,11 +6872,6 @@ lurek.binary.newWriter = function() end
 ---@return string Packed binary byte string.
 lurek.binary.pack = function(fmt, ...) end
 
---- Parses TOML text into Lua tables and scalar values.
----@param text string TOML document text.
----@return table Lua representation of the TOML document.
-lurek.binary.parseToml = function(text) end
-
 --- Reads binary values from a byte string using a format string.
 ---@param fmt string Binary reader format string.
 ---@param raw string Binary byte string to read.
@@ -6930,11 +6883,6 @@ lurek.binary.read = function(fmt, raw, offset) end
 ---@param fmt string Binary format string to measure.
 ---@return number Fixed byte size for the format.
 lurek.binary.size = function(fmt) end
-
---- Encodes a Lua value into the current structured binary interchange payload.
----@param value any Lua value to encode through the serial table converter.
----@return string Encoded binary payload.
-lurek.binary.toMsgPack = function(value) end
 
 --- Unpacks values from a binary string using a format string.
 ---@param fmt string Binary unpack format string.
@@ -25843,6 +25791,10 @@ function LQuad:type() end
 ---@return boolean True if the name matches.
 function LQuad:typeOf(name) end
 
+--- Returns the internal numeric handle ID for this shader.
+---@return number Opaque shader handle identifier.
+function LShader:getId() end
+
 --- Checks whether this shader declares a uniform with the given name.
 ---@param name string Uniform name to check.
 ---@return boolean True if the uniform exists.
@@ -28118,6 +28070,12 @@ function LTerminal:removeWidget(widget) end
 ---@param y? number Screen Y offset in pixels (default 0).
 function LTerminal:render(x, y) end
 
+--- Rasterizes the composed terminal grid and widgets into an `ImageData` preview.
+---@param width number Output image width in pixels.
+---@param height number Output image height in pixels.
+---@return LImageData Image data containing the terminal cells as colored blocks.
+function LTerminal:renderImage(width, height) end
+
 --- Removes any custom cell size override, reverting to the active font metrics and refitting the window.
 function LTerminal:resetCellSize() end
 
@@ -28720,8 +28678,12 @@ function LAutoTileSheet:applyToTileSet(tileSet, typeName, startGid) end
 ---@return number Bitmask value, or nil if not found.
 function LAutoTileSheet:getBitmaskForTile(tileId) end
 
+--- Returns the default neighbor matching mode for this auto-tile sheet layout.
+---@return string One of `"matchSides"` or `"matchCornersAndSides"`.
+function LAutoTileSheet:getDefaultMode() end
+
 --- Returns the auto-tile layout type as a string.
----@return string One of `"blob47"`, `"composite48"`, `"minimal16"`.
+---@return string One of `"blob47"`, `"composite48"`, `"rpgmaker48"`, `"minimal16"`.
 function LAutoTileSheet:getLayout() end
 
 --- Returns the source rectangle for a tile in the auto-tile sheet.
@@ -29198,6 +29160,18 @@ function LTileMap:applyAutoTile8At(layer, x, y, typeName) end
 ---@param typeName string Tile type name whose rules to apply.
 function LTileMap:applyAutoTileAt(layer, x, y, typeName) end
 
+--- Runs auto-tiling on an entire layer using the mode configured on the matching tileset.
+---@param layer number Layer index (1-based).
+---@param typeName string Tile type name whose configured mode and rules to apply.
+function LTileMap:applyAutoTileMode(layer, typeName) end
+
+--- Runs configured-mode auto-tiling at a single tile position and updates it and its neighbors.
+---@param layer number Layer index (1-based).
+---@param x number Column (1-based).
+---@param y number Row (1-based).
+---@param typeName string Tile type name whose configured mode and rules to apply.
+function LTileMap:applyAutoTileModeAt(layer, x, y, typeName) end
+
 --- Checks a list of entities against registered tile-enter callbacks on a layer.
 ---@param layer number Layer index (1-based).
 ---@param entities table Array of entity tables, each with `x`/`y` or `[1]`/`[2]` fields.
@@ -29522,6 +29496,11 @@ function LTileSet:getAutoTileId(typeName, bitmask) end
 ---@return number Resolved tile ID (1-based), or nil if no rule matches.
 function LTileSet:getAutoTileId8(typeName, bitmask) end
 
+--- Returns the neighbor matching mode for a named auto-tile type.
+---@param typeName string Logical tile type name.
+---@return string One of `"matchSides"`, `"matchCorners"`, `"matchCornersAndSides"`.
+function LTileSet:getAutoTileMode(typeName) end
+
 --- Returns the number of columns in the tileset atlas image.
 ---@return number Column count.
 function LTileSet:getColumns() end
@@ -29569,6 +29548,11 @@ function LTileSet:isSolid(tileId) end
 ---@param tileId number Tile ID to animate (1-based).
 ---@param frames table Array of `{tileid=number, duration=number}` frame definitions.
 function LTileSet:setAnimation(tileId, frames) end
+
+--- Sets the neighbor matching mode for a named auto-tile type.
+---@param typeName string Logical tile type name.
+---@param mode string One of `"matchSides"`, `"matchCorners"`, `"matchCornersAndSides"`.
+function LTileSet:setAutoTileMode(typeName, mode) end
 
 --- Registers a 4-bit auto-tile rule mapping a bitmask to a tile ID for a named tile type.
 ---@param typeName string Logical tile type name (e.g. "grass").
@@ -29620,6 +29604,10 @@ lurek.tilemap.fromScreenHex = function(sx, sy, size) end
 ---@return number Tile X.
 ---@return number Tile Y.
 lurek.tilemap.fromScreenIso = function(sx, sy, tw, th) end
+
+--- Returns the supported auto-tile sheet layouts and their default matching modes.
+---@return table Array of `{ name, tileCount, mode }` entries.
+lurek.tilemap.getAutoTileFormats = function() end
 
 --- Returns all hex cells within a filled area of a given radius.
 ---@param q number Center Q.
@@ -29717,7 +29705,7 @@ lurek.tilemap.loadTMX = function(xml, opts) end
 --- Creates an auto-tile sheet with a given tile size and layout.
 ---@param tileW number Tile width in pixels.
 ---@param tileH number Tile height in pixels.
----@param layout string Layout type: `"blob47"`, `"composite48"`, or `"minimal16"`.
+---@param layout string Layout type: `"blob47"`, `"composite48"`, `"rpgmaker48"`, or `"minimal16"`.
 ---@return LAutoTileSheet New auto-tile sheet.
 lurek.tilemap.newAutoTileSheet = function(tileW, tileH, layout) end
 

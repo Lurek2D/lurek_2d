@@ -59,7 +59,7 @@ function Tests.build_pipeline(ctx)
 end
 
 function Tests.check_config(root, C)
-    local parsed = lurek.binary.parseToml(lurek.filesystem.read(root .. "app/config.toml"))
+    local parsed = lurek.serial.fromToml(lurek.filesystem.read(root .. "app/config.toml"))
     return parsed.window.width == C.WIDTH and parsed.paths.csv_path == C.CSV_PATH
 end
 
@@ -304,7 +304,7 @@ end
 
 function Tests.run_report(ctx)
     local results = {}
-    add_result(results, "toml_config_parseToml", Tests.check_config(ctx.root, ctx.C), ctx.C.CSV_PATH)
+    add_result(results, "toml_config_fromToml", Tests.check_config(ctx.root, ctx.C), ctx.C.CSV_PATH)
     Tests.write_report(ctx.C, results)
 
     local csv, row_count, deterministic = Tests.generate_csv(ctx.C, ctx.DataGeneration)

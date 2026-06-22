@@ -14,7 +14,7 @@
 - Source path: `src/tilemap/`
 - Binding: `src/lua_api/tilemap_api.rs`
 - Namespace: `lurek.physics`
-- Lua API surface: `29` functions, `23` types, `168` methods
+- Lua API surface: `30` functions, `23` types, `173` methods
 - Rust test path(s): tests/rust/unit/tilemap_tests.rs
 - Lua test path(s): tests/lua/unit/test_tilemap_core_unit.lua, tests/lua/stress/test_tilemap_stress.lua, tests/lua/integration/test_tilemap_physics.lua, tests/lua/integration/test_tilemap_pathfind.lua, tests/lua/integration/test_tilemap_camera.lua, tests/lua/integration/test_save_tilemap.lua, tests/lua/integration/test_procgen_tilemap.lua, tests/lua/golden/test_tilemap_golden.lua, tests/lua/evidence/test_evidence_tilemap.lua
 
@@ -229,6 +229,7 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 - `lurek.tilemap.fromLDtk(jsonStr, levelName?, opts?) -> LTileMap`: Loads a tilemap from an LDtk JSON string, optionally targeting a specific level.
 - `lurek.tilemap.fromScreenHex(sx, sy, size) -> integer`: Converts screen-space pixel coordinates to axial hex coordinates.
 - `lurek.tilemap.fromScreenIso(sx, sy, tw, th) -> number`: Converts screen-space coordinates back to tile coordinates for isometric projection.
+- `lurek.tilemap.getAutoTileFormats() -> table`: Returns the supported auto-tile sheet layouts and their default matching modes.
 - `lurek.tilemap.hexArea(q, r, radius) -> table`: Returns all hex cells within a filled area of a given radius.
 - `lurek.tilemap.hexDistance(q1, r1, q2, r2) -> integer`: Computes the hex grid distance between two axial coordinates.
 - `lurek.tilemap.hexLine(q1, r1, q2, r2) -> table`: Returns all hex cells along a line between two axial coordinates.
@@ -280,6 +281,7 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 
 - `LAutoTileSheet:applyToTileSet(tileSet, typeName, startGid?) -> nil`: Writes the auto-tile bitmask-to-tile rules from this sheet into a tileset.
 - `LAutoTileSheet:getBitmaskForTile(tileId) -> integer`: Returns the bitmask associated with a tile in this auto-tile sheet.
+- `LAutoTileSheet:getDefaultMode() -> string`: Returns the default neighbor matching mode for this auto-tile sheet layout.
 - `LAutoTileSheet:getLayout() -> string`: Returns the auto-tile layout type as a string.
 - `LAutoTileSheet:getQuad(tileId) -> integer`: Returns the source rectangle for a tile in the auto-tile sheet.
 - `LAutoTileSheet:getTileCount() -> integer`: Returns the total number of tiles in this auto-tile sheet.
@@ -491,6 +493,8 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 - `LTileMap:applyAutoTile8(layer, typeName) -> nil`: Runs 8-bit auto-tiling on an entire layer, considering diagonal neighbors.
 - `LTileMap:applyAutoTile8At(layer, x, y, typeName) -> nil`: Runs 8-bit auto-tiling at a single tile position and updates it and its neighbors.
 - `LTileMap:applyAutoTileAt(layer, x, y, typeName) -> nil`: Runs 4-bit auto-tiling at a single tile position and updates it and its neighbors.
+- `LTileMap:applyAutoTileMode(layer, typeName) -> nil`: Runs auto-tiling on an entire layer using the mode configured on the matching tileset.
+- `LTileMap:applyAutoTileModeAt(layer, x, y, typeName) -> nil`: Runs configured-mode auto-tiling at a single tile position and updates it and its neighbors.
 - `LTileMap:checkEntities(layer, entities) -> nil`: Checks a list of entities against registered tile-enter callbacks on a layer.
 - `LTileMap:clearTile(layer, x, y) -> nil`: Removes the tile at a specific grid position, setting it to empty (GID 0).
 - `LTileMap:drawToImage(tileSize) -> LImage`: Rasterizes the map into an image using the given tile size, returning an image handle.
@@ -581,6 +585,7 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 - `LTileSet:getAnimation(tileId) -> table`: Returns the animation frames for a tile, or nil if none are set.
 - `LTileSet:getAutoTileId(typeName, bitmask) -> integer`: Looks up the tile ID for a 4-bit auto-tile bitmask and type name.
 - `LTileSet:getAutoTileId8(typeName, bitmask) -> integer`: Looks up the tile ID for an 8-bit auto-tile bitmask and type name.
+- `LTileSet:getAutoTileMode(typeName) -> string`: Returns the neighbor matching mode for a named auto-tile type.
 - `LTileSet:getColumns() -> integer`: Returns the number of columns in the tileset atlas image.
 - `LTileSet:getFirstGid() -> integer`: Returns the first global tile ID (GID) of this tileset.
 - `LTileSet:getMargin() -> integer`: Returns the margin around the edge of the atlas image, in pixels.
@@ -592,6 +597,7 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 - `LTileSet:getTileWidth() -> integer`: Returns the width of a single tile in pixels.
 - `LTileSet:isSolid(tileId) -> boolean`: Checks whether a tile is marked as solid.
 - `LTileSet:setAnimation(tileId, frames) -> nil`: Assigns an animation sequence to a tile. Each frame references another tile ID and a duration.
+- `LTileSet:setAutoTileMode(typeName, mode) -> nil`: Sets the neighbor matching mode for a named auto-tile type.
 - `LTileSet:setAutoTileRule(typeName, bitmask, tileId) -> nil`: Registers a 4-bit auto-tile rule mapping a bitmask to a tile ID for a named tile type.
 - `LTileSet:setAutoTileRule8(typeName, bitmask, tileId) -> nil`: Registers an 8-bit auto-tile rule mapping a bitmask to a tile ID for a named tile type.
 - `LTileSet:setSolid(tileId, solid) -> nil`: Marks a tile as solid or non-solid for collision queries.

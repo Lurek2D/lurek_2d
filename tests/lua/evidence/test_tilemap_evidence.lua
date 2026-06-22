@@ -9,6 +9,17 @@ local function save_png(img, path)
     expect_evidence_created(path)
 end
 
+local function save_text(path, text)
+    if write_file then
+        write_file(path, text)
+    elseif lurek and lurek.filesystem and lurek.filesystem.write then
+        lurek.filesystem.write(path, text)
+    else
+        error("unable to create evidence text artifact: " .. path)
+    end
+    expect_evidence_created(path)
+end
+
 -- Helper: GID color mapping
 local function gid_color(gid)
     if gid == 0 then return 30, 30, 40 end
@@ -24,6 +35,83 @@ local function gid_color(gid)
     }
     local idx = ((gid - 1) % #colors) + 1
     return colors[idx][1], colors[idx][2], colors[idx][3]
+end
+
+local function autotile_gid_color(gid)
+    if gid == 0 then return 24, 26, 34 end
+    local hue = (gid * 37) % 180
+    local r = 60 + ((hue * 3) % 150)
+    local g = 80 + ((hue * 5) % 140)
+    local b = 100 + ((hue * 7) % 120)
+    return r, g, b
+end
+
+local function build_autotile_map(layout, type_name, mode)
+    local TILE, MAP_W, MAP_H = 14, 7, 7
+    local tm = lurek.tilemap.newTileMap(TILE, TILE)
+    local ts = lurek.tilemap.newTileSet(1, 128, 16, TILE, TILE)
+    local layer = tm:addLayer(type_name, MAP_W, MAP_H)
+
+    if layout then
+        local sheet = lurek.tilemap.newAutoTileSheet(TILE, TILE, layout)
+        sheet:applyToTileSet(ts, type_name)
+    end
+    if mode then
+        ts:setAutoTileMode(type_name, mode)
+    end
+    if mode == "matchCorners" then
+        for mask = 0, 15 do
+            ts:setAutoTileRule(type_name, mask, 48 + mask)
+        end
+    end
+    tm:addTileSet(ts)
+
+    if mode == "matchCorners" then
+        tm:setTile(layer, 4, 4, 1)
+        tm:setTile(layer, 3, 3, 1)
+        tm:setTile(layer, 5, 3, 1)
+        tm:setTile(layer, 3, 5, 1)
+        tm:setTile(layer, 5, 5, 1)
+    else
+        for y = 2, 6 do
+            for x = 2, 6 do
+                local notch = (x == 2 and y == 2) or (x == 6 and y == 2) or
+                    (x == 2 and y == 6) or (x == 6 and y == 6)
+                if not notch then
+                    tm:setTile(layer, x, y, 1)
+                end
+            end
+        end
+        tm:setTile(layer, 4, 4, 1)
+    end
+
+    tm:applyAutoTileMode(layer, type_name)
+    return {
+        map = tm,
+        layer = layer,
+        mode = ts:getAutoTileMode(type_name),
+        center = tm:getTile(layer, 4, 4),
+    }
+end
+
+local function draw_autotile_panel(img, sample, ox, oy, cell)
+    for y = 1, 7 do
+        for x = 1, 7 do
+            local gid = sample.map:getTile(sample.layer, x, y)
+            local r, g, b = autotile_gid_color(gid)
+            local px = ox + (x - 1) * cell
+            local py = oy + (y - 1) * cell
+            img:drawRect(px, py, cell - 1, cell - 1, r, g, b, 255)
+            if gid == 0 then
+                img:drawRect(px + 3, py + 3, cell - 7, cell - 7, 12, 14, 20, 255)
+            end
+        end
+    end
+    img:drawLine(ox, oy, ox + 7 * cell, oy, 232, 236, 244, 255)
+    img:drawLine(ox + 7 * cell, oy, ox + 7 * cell, oy + 7 * cell, 232, 236, 244, 255)
+    img:drawLine(ox + 7 * cell, oy + 7 * cell, ox, oy + 7 * cell, 232, 236, 244, 255)
+    img:drawLine(ox, oy + 7 * cell, ox, oy, 232, 236, 244, 255)
+    img:drawCircle(ox + 3.5 * cell, oy + 3.5 * cell, 4, 255, 242, 128, 255)
 end
 
 local function draw_hex_outline(img, cx, cy, radius, r, g, b)
@@ -327,6 +415,109 @@ describe("Evidence: lurek.tilemap scenarios", function()
         end
 
         save_png(img, path)
+    end)
+    -- Does: Builds concrete autotile maps for each supported sheet layout and configured matching mode, then exports an inspectable PNG plus a step-by-step text manifest.
+    -- Shows: The PNG should compare side-only, corner-only, and corner+side terrain matching, while the text artifact documents the exact Lua calls used to build each map.
+    -- Artifact: tests/artifacts/current/tilemap/tilemap_autotile_format_showcase.png, tests/artifacts/current/tilemap/tilemap_autotile_format_showcase.txt
+    -- Why: This is meaningful because the final GIDs come from lurek.tilemap.newAutoTileSheet, LAutoTileSheet:applyToTileSet, LTileSet:setAutoTileMode, and LTileMap:applyAutoTileMode rather than from hand-authored tile IDs.
+
+    it("PNG+TXT: tilemap autotile format and mode showcase", function()
+        ensure_evidence_dir("tilemap")
+        local png_path = OUT .. "tilemap_autotile_format_showcase.png"
+        local txt_path = OUT .. "tilemap_autotile_format_showcase.txt"
+
+        local cases = {
+            {
+                label = "minimal16",
+                layout = "minimal16",
+                type = "grass",
+                note = "4-bit side matching; use for simple NESW terrain joins.",
+            },
+            {
+                label = "blob47",
+                layout = "blob47",
+                type = "stone",
+                note = "47 reduced 8-bit blob masks; corners are valid only when adjacent sides connect.",
+            },
+            {
+                label = "composite48",
+                layout = "composite48",
+                type = "cliff",
+                note = "48-entry composite layout with an explicit empty variant at index 0.",
+            },
+            {
+                label = "rpgmaker48",
+                layout = "rpgmaker48",
+                type = "shore",
+                note = "RPG Maker-style 48-entry autotile layout using corner+side terrain matching.",
+            },
+            {
+                label = "manual matchCorners",
+                layout = nil,
+                type = "corner",
+                mode = "matchCorners",
+                note = "Godot-style corner-only terrain matching configured directly on the tileset.",
+            },
+        }
+
+        local img = lurek.image.newImageData(560, 340)
+        img:fill(14, 16, 24, 255)
+
+        local formats = lurek.tilemap.getAutoTileFormats()
+        local format_lines = {
+            "Lurek2D tilemap autotile format showcase",
+            "",
+            "Supported formats reported by lurek.tilemap.getAutoTileFormats():",
+        }
+        for _, format in ipairs(formats) do
+            table.insert(format_lines, string.format(
+                "- %s: %d tiles, default mode %s",
+                format.name,
+                format.tileCount,
+                format.mode
+            ))
+        end
+        table.insert(format_lines, "")
+        table.insert(format_lines, "Build pattern used by each layout-backed case:")
+        table.insert(format_lines, "1. local sheet = lurek.tilemap.newAutoTileSheet(14, 14, layout)")
+        table.insert(format_lines, "2. local ts = lurek.tilemap.newTileSet(1, 128, 16, 14, 14)")
+        table.insert(format_lines, "3. sheet:applyToTileSet(ts, typeName)")
+        table.insert(format_lines, "4. map:addTileSet(ts)")
+        table.insert(format_lines, "5. map:applyAutoTileMode(layer, typeName)")
+        table.insert(format_lines, "")
+        table.insert(format_lines, "Manual Godot-style mode pattern:")
+        table.insert(format_lines, "1. ts:setAutoTileMode(typeName, \"matchCorners\")")
+        table.insert(format_lines, "2. ts:setAutoTileRule(typeName, mask, tileId)")
+        table.insert(format_lines, "3. map:applyAutoTileMode(layer, typeName)")
+        table.insert(format_lines, "")
+        table.insert(format_lines, "Panel order in tilemap_autotile_format_showcase.png:")
+
+        for i, case in ipairs(cases) do
+            local sample = build_autotile_map(case.layout, case.type, case.mode)
+            local col = (i - 1) % 3
+            local row = math.floor((i - 1) / 3)
+            local ox = 30 + col * 175
+            local oy = 42 + row * 145
+
+            local bar_r = 72 + i * 22
+            local bar_g = 86 + i * 18
+            local bar_b = 112 + i * 11
+            img:drawRect(ox, oy - 18, 98, 12, bar_r, bar_g, bar_b, 255)
+            draw_autotile_panel(img, sample, ox, oy, 14)
+
+            table.insert(format_lines, string.format(
+                "%d. %s -> type '%s', mode %s, center gid %d. %s",
+                i,
+                case.label,
+                case.type,
+                sample.mode,
+                sample.center,
+                case.note
+            ))
+        end
+
+        save_png(img, png_path)
+        save_text(txt_path, table.concat(format_lines, "\n") .. "\n")
     end)
     -- Does: Runs "tilemap drawToImage standalone layers" and turns the owner-module result into separate inspectable artifacts.
     -- Shows: Each PNG should expose one layer state instead of collapsing ground and object layers into one composite image.

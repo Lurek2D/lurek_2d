@@ -5,7 +5,7 @@ Persist game state with versioned TOML saves, migration, autosave, multiple slot
 ## Key Concepts
 
 - **Save structure**: A plain Lua table with a `save_version` field for forward compatibility.
-- **TOML encoding**: Use `lurek.binary.encodeToml` / `lurek.binary.parseToml` for human-readable saves.
+- **TOML encoding**: Use `lurek.serial.toToml` / `lurek.serial.fromToml` for human-readable saves.
 - **Migration**: On load, check `save_version` and apply transforms to upgrade old saves.
 - **Autosave**: Trigger on key events (room change, quest complete) — not every frame.
 - **Validation**: After decoding, verify required fields exist before using the data.
@@ -38,7 +38,7 @@ end
 ```lua
 local function save_game(slot)
     local data = build_save()
-    local toml_str = lurek.binary.encodeToml(data)
+    local toml_str = lurek.serial.toToml(data)
     local path = "saves/slot" .. slot .. ".toml"
     lurek.filesystem.write(path, toml_str)
 end
@@ -51,7 +51,7 @@ local function load_game(slot)
     local path = "saves/slot" .. slot .. ".toml"
     if not lurek.filesystem.exists(path) then return nil, "no save" end
     local content = lurek.filesystem.read(path)
-    local data = lurek.binary.parseToml(content)
+    local data = lurek.serial.fromToml(content)
     if not data or not data.save_version then return nil, "corrupt" end
     data = migrate(data)
     return data
@@ -97,7 +97,7 @@ local function get_slot_info()
         local path = "saves/slot" .. i .. ".toml"
         if lurek.filesystem.exists(path) then
             local content = lurek.filesystem.read(path)
-            local data = lurek.binary.parseToml(content)
+            local data = lurek.serial.fromToml(content)
             slots[i] = {
                 time_played = data.world.time_played,
                 map = data.world.current_map,

@@ -8,7 +8,7 @@
 
 use super::tileset::TileSet;
 use crate::math::Rect;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 /// Sprite-sheet packing variant that determines tile count and bitmask encoding.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -17,8 +17,32 @@ pub enum AutoTileLayout {
     Blob47,
     /// 48-tile composite layout with an explicit empty tile at index 0.
     Composite48,
+    /// RPG Maker-style 48-tile autotile layout using the same reduced 8-bit terrain masks.
+    RpgMaker48,
     /// 16-tile minimal layout using only the 4 cardinal neighbor bits.
     Minimal16,
+}
+
+/// Terrain-neighbour matching strategy used when applying autotile rules.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum AutoTileMode {
+    /// Match only north, east, south, and west sides.
+    MatchSides,
+    /// Match only corner/diagonal occupancy.
+    MatchCorners,
+    /// Match sides and valid corners together.
+    MatchCornersAndSides,
+}
+
+impl AutoTileMode {
+    /// Return the stable Lua/API name for this matching strategy.
+    pub fn as_str(self) -> &'static str {
+        match self {
+            AutoTileMode::MatchSides => "matchSides",
+            AutoTileMode::MatchCorners => "matchCorners",
+            AutoTileMode::MatchCornersAndSides => "matchCornersAndSides",
+        }
+    }
 }
 
 /// Autotile sprite sheet: holds bitmask tables for fast neighbor-to-tile lookup.
@@ -37,6 +61,26 @@ pub struct AutoTileSheet {
     /// Reverse lookup from bitmask to tile index, including all 256 raw masks.
     reverse_map: HashMap<u16, u32>,
 }
+/// Return the stable Lua/API name for an autotile sheet layout.
+pub fn layout_name(layout: AutoTileLayout) -> &'static str {
+    match layout {
+        AutoTileLayout::Blob47 => "blob47",
+        AutoTileLayout::Composite48 => "composite48",
+        AutoTileLayout::RpgMaker48 => "rpgmaker48",
+        AutoTileLayout::Minimal16 => "minimal16",
+    }
+}
+
+/// Return the default terrain-neighbour matching mode for an autotile sheet layout.
+pub fn default_mode_for_layout(layout: AutoTileLayout) -> AutoTileMode {
+    match layout {
+        AutoTileLayout::Minimal16 => AutoTileMode::MatchSides,
+        AutoTileLayout::Blob47 | AutoTileLayout::Composite48 | AutoTileLayout::RpgMaker48 => {
+            AutoTileMode::MatchCornersAndSides
+        }
+    }
+}
+
 /// Collapse diagonal bits that are only valid when both adjacent cardinal neighbours are set.
 fn reduce_8bit(mask: u8) -> u8 {
     collapse_diagonals(mask)
@@ -134,6 +178,10 @@ impl AutoTileSheet {
                 let (bm, rm) = build_composite48_tables();
                 (48, bm, rm)
             }
+            AutoTileLayout::RpgMaker48 => {
+                let (bm, rm) = build_composite48_tables();
+                (48, bm, rm)
+            }
             AutoTileLayout::Minimal16 => {
                 let (bm, rm) = build_minimal16_tables();
                 (16, bm, rm)
@@ -153,6 +201,16 @@ impl AutoTileSheet {
         self.layout
     }
 
+    /// Return the stable string name of the sheet's packing layout.
+    pub fn get_layout_name(&self) -> &'static str {
+        layout_name(self.layout)
+    }
+
+    /// Return the default terrain-neighbour matching strategy for this layout.
+    pub fn get_default_mode(&self) -> AutoTileMode {
+        default_mode_for_layout(self.layout)
+    }
+
     /// Return the number of unique tiles in this sheet.
     pub fn get_tile_count(&self) -> u32 {
         self.tile_count
@@ -170,14 +228,22 @@ impl AutoTileSheet {
     /// Register each sheet bitmask as an autotile rule in `tileset` for `type_name`, offset by `start_gid`.
     pub fn apply_to_tileset(&self, tileset: &mut TileSet, type_name: &str, start_gid: Option<u32>) {
         let offset = start_gid.unwrap_or(0);
+        tileset.set_auto_tile_mode(type_name, self.get_default_mode());
+        let mut registered = HashSet::new();
         match self.layout {
             AutoTileLayout::Minimal16 => {
                 for (i, &bm) in self.bitmask_map.iter().enumerate() {
+                    if !registered.insert(bm) {
+                        continue;
+                    }
                     tileset.set_auto_tile_rule(type_name, bm as u8, i as u32 + offset);
                 }
             }
-            AutoTileLayout::Blob47 | AutoTileLayout::Composite48 => {
+            AutoTileLayout::Blob47 | AutoTileLayout::Composite48 | AutoTileLayout::RpgMaker48 => {
                 for (i, &bm) in self.bitmask_map.iter().enumerate() {
+                    if !registered.insert(bm) {
+                        continue;
+                    }
                     tileset.set_auto_tile_rule_8(type_name, bm, i as u32 + offset);
                 }
             }

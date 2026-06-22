@@ -34,7 +34,7 @@ local map = {}
 
 local function load_map(path)
     local content = lurek.filesystem.read(path)
-    local data = lurek.binary.parseToml(content)
+    local data = lurek.serial.fromToml(content)
     map.width = data.map.width
     map.height = data.map.height
     map.tile_size = data.map.tile_size
