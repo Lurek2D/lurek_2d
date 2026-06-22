@@ -1,5 +1,44 @@
 # Binary
 
+## Purpose
+
+Manages byte buffers, format packing, compression, hashing, and byte-safe encodings.
+
+## When To Use
+
+- Mutable byte containers, typed views, sequential writers, and pack-style helpers work together so a script can both inspect existing binary data and build new payloads without inventing its own low-level buffer rules.
+- Compression, encoding, hashes, checksums, and ring-buffer helpers matter because real binary workflows usually involve transport safety, storage reduction, and integrity checks alongside raw reads and writes.
+- Byte encodings, compression, hashes, checksums, and schema-like packing utilities make the module useful for both debug tooling and production-facing data paths such as saves, networking, and cached assets.
+
+## Minimal Example
+
+From the `lurek.binary.pack` example block:
+
+```lua
+do
+    local actorId = 255
+    local health = 1000
+    local gold = 123456
+    local packed = lurek.binary.pack("BHI", actorId, health, gold)
+    local savedActorId, savedHealth, savedGold = lurek.binary.unpack("BHI", packed)
+    lurek.log.info("save header bytes=" .. tostring(#packed))
+    lurek.log.info("save header actor=" .. tostring(savedActorId) .. " hp=" .. tostring(savedHealth) .. " gold=" .. tostring(savedGold))
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.binary.compress` when exploring this module.
+- Start with `lurek.binary.compressChunks` when exploring this module.
+- Start with `lurek.binary.crc32` when exploring this module.
+- Start with `lurek.binary.decode` when exploring this module.
+- Start with `lurek.binary.decompress` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/binary.lua`
+
 ## Summary
 
 - The `binary` module is the byte-oriented data surface for users who need exact control over compact formats, protocol payloads, and structured runtime interchange.

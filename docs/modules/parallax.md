@@ -1,5 +1,48 @@
 # Parallax
 
+## Purpose
+
+Manages layered scroll depth, autoscrolling, and tiling.
+
+## When To Use
+
+- Layer definitions, presets, tiling behavior, and render helpers let several planes move at different camera-relative rates and create a stronger sense of scene depth.
+- Drawing support and image export matter because parallax content may be used both in live rendering and in tooling or preview workflows.
+- The module is useful for skies, distant scenery, decorative world layers, and motion-rich menu or transition backdrops that should stay cheaper and simpler than full interactive geometry.
+
+## Minimal Example
+
+From the `lurek.parallax.newLayer` example block:
+
+```lua
+do
+    local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+    local layer = lurek.parallax.newLayer({
+        texture = image,
+        scroll_factor_x = 0.3,
+        scroll_factor_y = 0.1,
+        z = 10,
+        opacity = 0.9,
+        tiling = true,
+    })
+    local sx, sy = layer:getScrollFactor()
+    example_print_log("type = " .. layer:type())
+    example_print_log("scroll = " .. sx .. "," .. sy)
+    example_print_log("z = " .. layer:getZ())
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.parallax.newLayer` when exploring this module.
+- Start with `lurek.parallax.newPresetLayer` when exploring this module.
+- Start with `lurek.parallax.newSet` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/parallax.lua`
+
 ## Summary
 
 - The `parallax` module is the layered-background surface for projects that want depth and atmospheric motion without full 3D simulation.

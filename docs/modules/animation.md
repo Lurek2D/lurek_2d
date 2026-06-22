@@ -1,5 +1,44 @@
 # Animation
 
+## Purpose
+
+Orchestrates sprite animation playback and processes Aseprite JSON imports.
+
+## When To Use
+
+- Clips, frames, controllers, state machines, sync groups, events, blending, and curve handling live together here so simple loops and richer motion behavior share one model.
+- Animation is not only frame stepping; it also needs transitions, timing hooks, authored state changes, and gameplay-aware playback control.
+- Runtime events make the module useful beyond visuals, since footsteps, attack windows, cutscene timing, and other logic often need to fire from the animation timeline.
+
+## Minimal Example
+
+From the `lurek.animation.new` example block:
+
+```lua
+do
+    local anim = lurek.animation.new()
+    anim:addFrame(0, 0, 32, 32)
+    anim:addClip("idle", { 0 }, 4, true)
+    local frameCount = anim:getFrameCount()
+    local clipCount = anim:getClipCount()
+    lurek.log.info("empty actor animation frame count=" .. tostring(frameCount))
+    lurek.log.info("empty actor animation clip count=" .. tostring(clipCount))
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.animation.buildCharacter` when exploring this module.
+- Start with `lurek.animation.fromAseprite` when exploring this module.
+- Start with `lurek.animation.new` when exploring this module.
+- Start with `lurek.animation.newBlendLayerSet` when exploring this module.
+- Start with `lurek.animation.newCurve` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/animation.lua`
+
 ## Summary
 
 - The `animation` module is the engine's time-based motion system for users who need sprites, poses, and related visual states to advance through structured runtime playback.

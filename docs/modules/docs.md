@@ -1,5 +1,42 @@
 # Docs
 
+## Purpose
+
+Builds an API catalog to generate editor files and Markdown reference.
+
+## When To Use
+
+- It builds and maintains a structured catalog of API knowledge, compares that catalog against what the engine actually exposes, and turns the result into actionable reports about missing, stale, or incomplete documentation.
+- This matters because documentation quality drifts quickly in evolving codebases. Without a module like this, docs become passive artifacts that are only corrected sporadically instead of being continuously checked against source reality.
+- The module acts as a bridge between implementation and publication by discovering what exists, validating whether it is described, and preparing that knowledge for several downstream consumers.
+
+## Minimal Example
+
+From the `lurek.docs.scan` example block:
+
+```lua
+do
+    local cat = lurek.docs.scan()
+    local modules = cat:getModules()
+    docs_log("scanned entries = " .. cat:entryCount())
+    docs_log("catalog entries = " .. tostring(cat:entryCount()))
+    docs_log("first module = " .. tostring(modules[1]))
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.docs.checkStaleness` when exploring this module.
+- Start with `lurek.docs.coverage` when exploring this module.
+- Start with `lurek.docs.coverageModule` when exploring this module.
+- Start with `lurek.docs.describe` when exploring this module.
+- Start with `lurek.docs.exportAll` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/docs.lua`
+
 ## Summary
 
 - The `docs` module treats documentation as an active engine-managed system rather than as a pile of disconnected markdown files.

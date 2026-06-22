@@ -1,5 +1,42 @@
 # Sprite
 
+## Purpose
+
+Manages 2D sprites, JSON atlases, animation sheets, nine-slice panels, and lit-sprite normal-map state.
+
+## When To Use
+
+- It unifies several common 2D visual patterns that often become fragmented in smaller engines: stand-alone images, atlas regions, sheet-based animation helpers, batched draws, and resizable textured panels all belong to the same family here.
+- Atlas support matters because production assets are frequently packed, and a sprite system that does not understand regions and packing semantics quickly forces users into repetitive coordinate plumbing.
+- Sheet-oriented helpers broaden the feature into frame-driven presentation while still staying lighter-weight than the more general animation module.
+
+## Minimal Example
+
+From the `lurek.sprite.newSheet` example block:
+
+```lua
+do
+    local sheet = lurek.sprite.newSheet(128, 64, 32, 32)
+    local frames = sheet:getFrameCount()
+    local cols, rows = sheet:getGridSize()
+    local fw, fh = sheet:getFrameSize()
+    sprite_log("newSheet type=" .. sheet:type() .. " frames=" .. frames .. " grid=" .. cols .. "x" .. rows .. " frame=" .. fw .. "x" .. fh)
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.sprite.newAnimator` when exploring this module.
+- Start with `lurek.sprite.newAtlasPacker` when exploring this module.
+- Start with `lurek.sprite.newAtlasSheet` when exploring this module.
+- Start with `lurek.sprite.newRPGMakerSheet` when exploring this module.
+- Start with `lurek.sprite.newSheet` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/sprite.lua`
+
 ## Summary
 
 - The `sprite` module is the engine's textured-2D surface for users who want single sprites, sheets, atlases, scalable panels, and batched instances to share one coherent runtime model.

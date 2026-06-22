@@ -1,5 +1,43 @@
 # Devtools
 
+## Purpose
+
+Gathers hardware frame stats and runs a hierarchical zone profiler.
+
+## When To Use
+
+- Frame stats, profiling, structured logs, REPL evaluation, file watching, and value display work together so performance issues, script mistakes, and content regressions can be investigated through one integrated toolset.
+- Debugging rarely depends on one signal at a time, so the same workflow often needs timings, logs, on-the-fly evaluation, and change detection to explain what is actually happening.
+- Retained history, snapshots, and bounded diagnostic state make the module useful for both immediate interactive debugging and later post-failure analysis.
+
+## Minimal Example
+
+From the `lurek.devtools.log` example block:
+
+```lua
+do
+    lurek.devtools.log("info", "game started")
+    lurek.devtools.log("warn", "shader cache cold on first boot")
+    local level = lurek.devtools.getLogLevel()
+    local history = lurek.devtools.getLogHistory(2)
+    lurek.log.info("devtools log level=" .. tostring(level))
+    lurek.log.info("devtools log history rows=" .. tostring(#history))
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.devtools.clearLog` when exploring this module.
+- Start with `lurek.devtools.clearWatches` when exploring this module.
+- Start with `lurek.devtools.debug` when exploring this module.
+- Start with `lurek.devtools.error` when exploring this module.
+- Start with `lurek.devtools.eval` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/devtools.lua`
+
 ## Summary
 
 - The `devtools` module is the live diagnostics surface for users who need to inspect runtime behavior while the game is still running.

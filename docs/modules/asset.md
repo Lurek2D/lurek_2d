@@ -1,5 +1,87 @@
 # Asset
 
+## Purpose
+
+Caches, tags, and queries reference-counted asset handles.
+
+## When To Use
+
+- Its core value is lifecycle control: the cache keeps assets deduplicated, reference counted, and discoverable by name, group, and tag.
+- Preload and lookup features keep it useful during startup setup, content pipelines, and diagnostics because the same module can answer what is loaded and what should stay alive.
+- Read it as the ownership layer for resource identity and retention. Neighboring modules still decide how loaded resources are consumed.
+
+## Minimal Example
+
+From the `lurek.asset.load` example block:
+
+```lua
+do
+    -- Minimal load: text type reads file content immediately.
+    local h = lurek.asset.load(PATH_TEXT, "text")
+    example_print_log("loaded: " .. h:type())
+    lurek.asset.unload(h)
+
+    -- load type=toml
+    local ht = lurek.asset.load(PATH_TOML, "toml")
+    example_print_log("toml loaded: " .. tostring(lurek.asset.isLoaded(ht)))
+    lurek.asset.unload(ht)
+
+    -- load type=json
+    local hj = lurek.asset.load(PATH_JSON, "json")
+    example_print_log("json loaded: " .. tostring(lurek.asset.isLoaded(hj)))
+    lurek.asset.unload(hj)
+
+    -- load type=lua
+    local hl = lurek.asset.load(PATH_LUA, "lua")
+    example_print_log("lua loaded: " .. tostring(lurek.asset.isLoaded(hl)))
+    lurek.asset.unload(hl)
+
+    -- load type=shader
+    local hs = lurek.asset.load(PATH_SHADER, "shader")
+    example_print_log("shader loaded: " .. tostring(lurek.asset.isLoaded(hs)))
+    lurek.asset.unload(hs)
+
+    -- load type=obj (any text file works for raw OBJ geometry)
+    local ho = lurek.asset.load(PATH_OBJ, "obj")
+    example_print_log("obj loaded: " .. tostring(lurek.asset.isLoaded(ho)))
+    lurek.asset.unload(ho)
+
+    -- load type=music (binary path reference only; no file content cached)
+    local hm = lurek.asset.load(PATH_BIN, "music")
+    example_print_log("music loaded: " .. tostring(lurek.asset.isLoaded(hm)))
+    lurek.asset.unload(hm)
+
+    -- load type=audio (same as music but semantically a sound effect)
+    local ha = lurek.asset.load(PATH_BIN, "audio")
+    example_print_log("audio loaded: " .. tostring(lurek.asset.isLoaded(ha)))
+    lurek.asset.unload(ha)
+
+    -- load with opts: name, group, and tags supplied inline.
+    local h = lurek.asset.load(PATH_TOML, "toml", {
+        name  = "build_config",
+        group = "project",
+        tags  = {"config", "meta"},
+    })
+    example_print_log("name="  .. lurek.asset.getName(h))
+    example_print_log("group=" .. lurek.asset.getGroup(h))
+    example_print_log("hasTag config=" .. tostring(lurek.asset.hasTag(h, "config")))
+    lurek.asset.unload(h)
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.asset.addTag` when exploring this module.
+- Start with `lurek.asset.clear` when exploring this module.
+- Start with `lurek.asset.findByGroup` when exploring this module.
+- Start with `lurek.asset.findByName` when exploring this module.
+- Start with `lurek.asset.findByTag` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/asset.lua`
+
 ## Summary
 
 - The `asset` module is the shared runtime catalog for loaded resources, so users can work with stable handles instead of repeatedly reopening raw file paths.

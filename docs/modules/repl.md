@@ -1,5 +1,39 @@
 # Repl
 
+## Purpose
+
+Evaluates Lua inputs with tab completion.
+
+## When To Use
+
+- Session state, commands, completion, and value rendering work together so ad hoc evaluation feels like a usable runtime console instead of a raw eval hook.
+- Read it as the runtime console boundary. repl owns how state is queried, evaluated, formatted, and returned.
+
+## Minimal Example
+
+From the `lurek.repl.new` example block:
+
+```lua
+do
+    ---@type LReplSession
+    local repl = lurek.repl.new(8)
+    local initial_len = repl:len()
+    local is_session = repl:typeOf("LReplSession")
+    lurek.log.info("repl type = " .. repl:type())
+    lurek.log.info("initial len = " .. initial_len)
+    assert(is_session and initial_len == 0, "new REPL session starts empty")
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.repl.new` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/repl.lua`
+
 ## Summary
 
 - The `repl` module is the interactive evaluation surface for users who want to inspect or execute Lua code live inside a running engine context.

@@ -1,5 +1,47 @@
 # Particle
 
+## Purpose
+
+Simulates pooled particles with rich shapes, gravity forces, and collider bounces.
+
+## When To Use
+
+- Emitters, particle state, force application, lifetimes, presets, trails, and render bridges all live together here, so effects can be authored as configurations instead of one-off update loops.
+- Pooling is central to the design because short-lived effects appear in large numbers and need predictable reuse instead of constant allocation churn.
+- Emission rules, spawn shapes, attractors, turbulence, and per-particle lifetime state give the module enough range to cover both ambient effects and gameplay feedback.
+
+## Minimal Example
+
+From the `lurek.particle.newSystem` example block:
+
+```lua
+do
+    local ps = lurek.particle.newSystem({
+        seed = 42,
+        maxParticles = 128,
+        emissionRate = 24,
+        lifetimeMin = 0.25,
+        lifetimeMax = 0.75,
+    })
+
+    example_print_log("type = " .. ps:type())
+    example_print_log("buffer = " .. ps:getBufferSize())
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.particle.drawLifecycleToImage` when exploring this module.
+- Start with `lurek.particle.fromTOML` when exploring this module.
+- Start with `lurek.particle.newPreset` when exploring this module.
+- Start with `lurek.particle.newSystem` when exploring this module.
+- Start with `lurek.particle.newTrail` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/particle.lua`
+
 ## Summary
 
 - The `particle` module is the pooled visual-effects system for users who want smoke, sparks, rain, trails, bursts, and other transient visuals to behave like one reusable runtime feature.

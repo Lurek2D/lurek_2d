@@ -1,5 +1,41 @@
 # Debugbridge
 
+## Purpose
+
+Connects the game runtime to external editor panels.
+
+## When To Use
+
+- It owns the bridge state, network protocol, queued requests and responses, print-history streaming, and guarded remote operations such as screenshots or hot reload requests.
+- Read it as the integration boundary for external observability: gameplay systems do not need to know editor protocols, because debugbridge translates between runtime state and tool clients.
+
+## Minimal Example
+
+From the `lurek.debugbridge.start` example block:
+
+```lua
+do
+    local port = start_bridge()
+    local running = lurek.debugbridge.isRunning()
+    local active_port = lurek.debugbridge.getPort()
+    bridge_log("start running=" .. tostring(running) .. " requested_port=" .. tostring(port) .. " active_port=" .. tostring(active_port))
+    stop_bridge_if_running()
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.debugbridge.broadcast` when exploring this module.
+- Start with `lurek.debugbridge.capturePrint` when exploring this module.
+- Start with `lurek.debugbridge.clearPrintHistory` when exploring this module.
+- Start with `lurek.debugbridge.consumeHotReloadRequest` when exploring this module.
+- Start with `lurek.debugbridge.getClientCount` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/debugbridge.lua`
+
 ## Summary
 
 - The `debugbridge` module is the remote inspection channel between a running game and external development tools such as the VS Code extension or MCP-style clients.

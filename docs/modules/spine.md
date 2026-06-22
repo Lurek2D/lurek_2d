@@ -1,5 +1,41 @@
 # Spine
 
+## Purpose
+
+Simulates skeletal rigs using bone hierarchies, slots, skin swaps, and target IK.
+
+## When To Use
+
+- Bones, IK constraints, importers, skeleton state, slots, timelines, and render bridges work together so the same module can load authored rigs, pose them at runtime, and expose the result to the rest of the visual stack.
+- That matters because skeletal animation is more than playback: projects also need skin changes, attachment control, hierarchy updates, and pose solving that stay coherent across several animation clips.
+- Import support makes the module practical for authored content workflows, while runtime skeleton control keeps it useful for gameplay-driven animation changes after import.
+
+## Minimal Example
+
+From the `lurek.spine.newSkeleton` example block:
+
+```lua
+do
+    local skel, root, torso, slot = make_demo_skeleton("hero")
+    local type_name = skel:type()
+    local bones = skel:boneCount()
+    local slots = skel:slotCount()
+    spine_log("newSkeleton type=" .. type_name .. " root=" .. tostring(root) .. " torso=" .. tostring(torso) .. " slot=" .. tostring(slot) .. " bones=" .. tostring(bones) .. " slots=" .. tostring(slots))
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.spine.animationFromJson` when exploring this module.
+- Start with `lurek.spine.newSkeleton` when exploring this module.
+- Start with `lurek.spine.newSkeletonAnimation` when exploring this module.
+- Start with `lurek.spine.skeletonFromJson` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/spine.lua`
+
 ## Summary
 
 - The `spine` module is the skeletal-animation surface for users who want bone-based rigs, slots, skins, and timeline-driven pose changes inside the engine.

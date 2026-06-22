@@ -1,5 +1,42 @@
 # Runtime
 
+## Purpose
+
+Manages engine shared state, asset registries, and configurations.
+
+## When To Use
+
+- Its role is to keep the rest of the engine coherent. Configuration, shared state, execution mode, error vocabulary, resource keys, logging support, and OS-aware helpers live here so the engine has one common operating language.
+- This central vocabulary matters because large engines become fragile when every subsystem invents its own concepts for startup state, environment mode, resource identity, logging, or global context.
+- Mode handling is especially important because the same engine may run in normal interactive play, headless automation, docs generation, tests, screenshots, or other specialized workflows that need different assumptions.
+
+## Minimal Example
+
+From the `lurek.runtime.getVersion` example block:
+
+```lua
+do
+    local version = lurek.runtime.getVersion()
+    local major = version:match("^[^.]+") or "0"
+    local parts = lurek.runtime.parseArgs({ "--version=" .. version })
+    local tagged = parts.options.version or "unknown"
+    runtime_log("getVersion version=" .. version .. " major=" .. major .. " tagged=" .. tagged)
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.runtime.errorSnapshot` when exploring this module.
+- Start with `lurek.runtime.getArch` when exploring this module.
+- Start with `lurek.runtime.getArgs` when exploring this module.
+- Start with `lurek.runtime.getBatchResults` when exploring this module.
+- Start with `lurek.runtime.getClipboardText` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/runtime.lua`
+
 ## Summary
 
 - The `runtime` module is the shared engine-state surface that many other modules depend on before they expose their own user-facing features.

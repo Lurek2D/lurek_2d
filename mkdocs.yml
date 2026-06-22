@@ -1,5 +1,5 @@
 site_name: Lurek2D
-site_description: Single-binary 2D Rust runtime for Lua game scripts
+site_description: Lua-first 2D runtime and toolkit for games, simulations, visual tools, and interactive desktop apps
 site_url: https://lurek2d.github.io/lurek_2d/
 repo_url: https://github.com/Lurek2D/lurek_2d
 repo_name: Lurek2D/lurek_2d
@@ -11,10 +11,11 @@ use_directory_urls: false
 
 exclude_docs: |
   specs/
-  api/
   wiki/
   templates/
+  meta/
   snippets.md
+  api/rust.md
   CHANGELOG.md
   linux_build.md
   rust-api.md
@@ -85,70 +86,39 @@ extra:
 
 nav:
   - Home: index.md
+  - Getting Started:
+    - Overview: getting-started.md
+    - First Game: first-game.md
+    - Project Structure: project-structure.md
   - Lua API:
-    - Home: callbacks.md
-    - Animation: modules/animation.md
-    - App: modules/app.md
-    - Audio: modules/audio.md
-    - Automation: modules/automation.md
-    - Binary: modules/binary.md
-    - Camera: modules/camera.md
-    - Charts: modules/charts.md
-    - Color: modules/color.md
-    - Compute: modules/compute.md
-    - Cursor: modules/cursor.md
-    - Dataframe: modules/dataframe.md
-    - Debug Bridge: modules/debugbridge.md
-    - Dev Tools: modules/devtools.md
-    - Dialog: modules/dialog.md
-    - Docs: modules/docs.md
-    - DSP: modules/dsp.md
-    - ECS: modules/ecs.md
-    - Effect: modules/effect.md
-    - Event: modules/event.md
-    - Filesystem: modules/filesystem.md
-    - Flownet: modules/flownet.md
-    - Font: modules/font.md
-    - Globe: modules/globe.md
-    - Grep: modules/grep.md
-    - HTML: modules/html.md
-    - I18n: modules/i18n.md
-    - Image: modules/image.md
-    - Input: modules/input.md
-    - Layout: modules/layout.md
-    - Learning: modules/learning.md
-    - Light: modules/light.md
-    - Log: modules/log.md
-    - Mapblock: modules/mapblock.md
-    - Math: modules/math.md
-    - Midi: modules/midi.md
-    - Minimap: modules/minimap.md
-    - Mods: modules/mods.md
-    - Network: modules/network.md
-    - Overlay: modules/overlay.md
-    - Parallax: modules/parallax.md
-    - Particle: modules/particle.md
-    - Pathfind: modules/pathfind.md
-    - Patterns: modules/patterns.md
-    - Physics: modules/physics.md
-    - Pipeline: modules/pipeline.md
-    - Procgen: modules/procgen.md
-    - Province: modules/province.md
-    - Raycaster: modules/raycaster.md
+    - Overview: lua-api.md
+    - Full lurek API: api/lurek.md
+    - Callbacks: api/callbacks.md
+    - Lureksome: api/lureksome.md
+  - Module Guides:
+    - Overview: module-guides.md
     - Render: modules/render.md
-    - Repl: modules/repl.md
-    - Runtime: modules/runtime.md
-    - Save: modules/save.md
+    - Audio: modules/audio.md
+    - Input: modules/input.md
+    - Physics: modules/physics.md
     - Scene: modules/scene.md
-    - Serialize: modules/serialize.md
-    - Spine: modules/spine.md
     - Sprite: modules/sprite.md
-    - Terminal: modules/terminal.md
-    - Thread: modules/thread.md
     - Tilemap: modules/tilemap.md
-    - Timer: modules/timer.md
-    - Tween: modules/tween.md
     - UI: modules/ui.md
-    - Validator: modules/validator.md
-    - Visibility: modules/visibility.md
-    - Window: modules/window.md
+    - Save: modules/save.md
+    - Procgen: modules/procgen.md
+    - AI: modules/ai.md
+    - Automation: modules/automation.md
+    - Compute: modules/compute.md
+    - Pipeline: modules/pipeline.md
+    - Dataframe: modules/dataframe.md
+    - Province: modules/province.md
+    - Graph: modules/flownet.md
+    - Pathfind: modules/pathfind.md
+    - Network: modules/network.md
+  - Examples:
+    - Overview: examples.md
+    - Reference Games: reference-games.md
+    - Recipes: recipes.md
+  - Contributors:
+    - Overview: contributors.md

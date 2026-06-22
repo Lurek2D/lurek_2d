@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- Consolidated AI-first developer experience architecture: VS Code extension, CAG doctrine, MCP integration, and local RAG index.
+- Consolidated AI-assisted and agent-friendly developer experience architecture: VS Code extension, CAG doctrine, MCP integration, and local RAG index.
 
 ---
 

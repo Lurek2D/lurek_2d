@@ -61,13 +61,13 @@ The module grouping (Foundations â†’ Core Runtime â†’ Platform Service
 
 ## Core Idea
 
-Lurek2D is the engine for people who think game engines have become too complicated.
+Lurek2D is the Lua-first runtime and toolkit for people who want interactive 2D systems without the ceremony of editor-heavy engines.
 
-A game is a `main.lua` file. The engine runs it. You write Lua; the engine owns the GPU, the physics solver, the audio mixer, and the threading model. You never see a `.dll`, a `.framework`, or a build system.
+A game, simulation, tool, or interactive app can start as a `main.lua` file. The runtime runs it. You write Lua; the Rust core owns the GPU, the physics solver, the audio mixer, the filesystem boundary, and the threading model.
 
-The competitive landscape is dominated by multi-gigabyte engines with visual editors and months-long learning curves. Lurek2D is the opposite: one binary, one scripting language, one afternoon to learn.
+The competitive landscape is dominated by large editor-first engines and minimal frameworks that leave most systems to the user. Lurek2D sits between them: one runtime, one scripting language, and a broad built-in `lurek.*` API.
 
-**The AI angle**: Lurek2D is designed with AI copilots as first-class users. Every API is shaped so an AI agent can use it correctly from the docs alone. The CAG layer, the VS Code extension, and the docs-general pipeline are all optimised for AI-assisted workflow.
+**The AI/tooling angle**: Lurek2D is AI-assisted and agent-friendly, but not dependent on generative AI. Every API is shaped so humans and coding agents can use it correctly from generated docs, stubs, specs, examples, and tests. Runtime AI modules are separate features for game behavior, simulations, automation, and learning experiments.
 
 ---
 

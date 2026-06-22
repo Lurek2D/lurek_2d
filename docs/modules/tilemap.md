@@ -1,5 +1,44 @@
 # Tilemap
 
+## Purpose
+
+Supports orthogonal, isometric, and hex grids with sparse culling, LOD, and standard map imports.
+
+## When To Use
+
+- Its value begins with representation. The module gives projects a stable way to describe tile space itself, including orthogonal, isometric, hex-based, layered, large, and chunked interpretations, so different grid styles can still live inside one conceptual family.
+- That multi-model support matters because grid worlds are not all alike. A tactics map, an isometric action world, a hex strategy board, and a layered platforming scene all have different adjacency, transform, and draw-order assumptions, yet they still need shared tooling.
+- Storage and indexing are only the foundation. Practical tile worlds also require import pipelines, coordinate conversion, tile queries, collision helpers, rendering rules, overlays, metadata, and traversal semantics, and this module keeps those concerns together.
+
+## Minimal Example
+
+From the `lurek.tilemap.newTileMap` example block:
+
+```lua
+do
+    ---@type LTileMap
+    local map = lurek.tilemap.newTileMap(32, 32)
+    example_print_log("type = " .. map:type())
+    local tw, th = map:getTileDimensions()
+    local chunk_size = map:getChunkSize()
+    example_print_log("tile size = " .. tw .. "x" .. th)
+    example_print_log("chunk size = " .. chunk_size)
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.tilemap.fromLDtk` when exploring this module.
+- Start with `lurek.tilemap.fromScreenHex` when exploring this module.
+- Start with `lurek.tilemap.fromScreenIso` when exploring this module.
+- Start with `lurek.tilemap.getAutoTileFormats` when exploring this module.
+- Start with `lurek.tilemap.hexArea` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/tilemap.lua`
+
 ## Summary
 
 - The `tilemap` module is the engine's full grid-world framework for users who want tile-based spaces to be authored, generated, rendered, queried, and traversed through one reusable system rather than through several disconnected helpers.

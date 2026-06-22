@@ -1,5 +1,43 @@
 # Event
 
+## Purpose
+
+Runs a dual-priority event queue and wildcard signal registry.
+
+## When To Use
+
+- Queues, priorities, listeners, signals, and deferred dispatch work together so gameplay, input, and tooling events can move through one predictable channel.
+- Wildcard-style subscriptions and explicit listener lifecycle management make the bus practical for both large subsystems and small script integrations.
+- History and Rust-Lua payload transfer matter because the module is not only about dispatch, but also about making that dispatch inspectable and usable across the engine boundary.
+
+## Minimal Example
+
+From the `lurek.event.push` example block:
+
+```lua
+do
+    reset_event_state()
+    lurek.event.push("player_hit", 25, "critical")
+    local events = collect_polled_events()
+    local first = events[1]
+    local count = #events
+    event_log("push count=" .. tostring(count) .. " name=" .. tostring(first and first.name) .. " damage=" .. tostring(first and first.args[1]) .. " tag=" .. tostring(first and first.args[2]))
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.event.clear` when exploring this module.
+- Start with `lurek.event.clearHistory` when exploring this module.
+- Start with `lurek.event.enableHistory` when exploring this module.
+- Start with `lurek.event.exit` when exploring this module.
+- Start with `lurek.event.flushDeferred` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/event.lua`
+
 ## Summary
 
 - The `event` module is the central message-routing layer for users who want runtime systems to communicate without hardwiring direct dependencies.

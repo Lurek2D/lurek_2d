@@ -1,5 +1,43 @@
 # Font
 
+## Purpose
+
+Manages font loading, metrics caching, and text wrapping.
+
+## When To Use
+
+- It covers loading and registering fonts, so scripts can reuse named font resources instead of rebuilding text setup at every draw site.
+- Measurement and shaping are just as important as loading here: glyph metrics, wrapping, line sizing, and text geometry helpers let layout code make reliable decisions before anything is rendered.
+- Read this module as the place where text data becomes stable and reusable. Rendering and UI systems still decide where text appears, but font keeps measurement consistent.
+
+## Minimal Example
+
+From the `lurek.font.getDefault` example block:
+
+```lua
+do
+    local font = lurek.font.getDefault()
+    local name = font:getName()
+    local size = font:getSize()
+    local line_height = font:lineHeight()
+    local title_width = select(1, font:measure(ui_title(), 1.0))
+    font_log("default ui font name=" .. tostring(name) .. " size=" .. tostring(size) .. " line_height=" .. tostring(line_height) .. " title_width=" .. tostring(title_width))
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.font.availableSizes` when exploring this module.
+- Start with `lurek.font.charAdvance` when exploring this module.
+- Start with `lurek.font.getDefault` when exploring this module.
+- Start with `lurek.font.lineHeight` when exploring this module.
+- Start with `lurek.font.list` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/font.lua`
+
 ## Summary
 
 - The `font` module is the typography layer for users who need predictable text behavior in UI, HUDs, overlays, or retro-style screens.

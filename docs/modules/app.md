@@ -1,5 +1,28 @@
 # App
 
+## Purpose
+
+Drives the main winit/wgpu frame loop and Lua VM execution.
+
+## When To Use
+
+- It owns startup, frame progression, host-window lifecycle, and guarded callback dispatch, so update, draw, input, and lifecycle hooks reach game code in a stable order instead of through scattered platform calls.
+- Splash screens, error screens, and debug overlays belong here because they are part of the user-facing execution shell rather than any one gameplay feature.
+- This central shell also makes recovery possible when startup, callback, or shutdown errors occur.
+
+## Minimal Example
+
+See `content/examples/app.lua` for runnable examples when this module has public examples.
+
+## Common Patterns
+
+- Check the module summary and related examples before using lower-level details.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/app.lua`
+
 ## Summary
 
 - The `app` module is the top-level runtime shell that turns the engine from a set of subsystems into one running desktop application.

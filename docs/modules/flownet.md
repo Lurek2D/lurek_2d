@@ -1,5 +1,38 @@
 # Flownet
 
+## Purpose
+
+Simulates directed logistics networks using node inventories, push-pull rates, and overflow policies.
+
+## When To Use
+
+- Nodes, edges, items, capacities, queue rules, cooldowns, transit timing, and placement semantics combine into a model where supply and processing are visible parts of gameplay rather than hidden bookkeeping.
+- Logistics-heavy features depend on more than pathfinding alone. They also need ownership of where an item is, how much throughput a path supports, how congestion behaves, and how transformation steps consume and produce goods.
+- Push and pull flows, reservations, demand matching, and simulation ticks make the module useful for factory loops, economy simulations, routing puzzles, and colony-style systems where movement through a graph is itself part of the game.
+
+## Minimal Example
+
+From the `lurek.graph.newGraph` example block:
+
+```lua
+do
+    local g = lurek.graph.newGraph()
+    local mine = g:addNode("mine", 24)
+    local depot = g:addNode("depot", 48)
+    g:addEdge(mine, depot, "belt")
+    flownet_log("fresh network nodes=" .. g:getNodeCount() .. " edges=" .. g:getEdgeCount())
+end
+```
+
+## Common Patterns
+
+- Check the module summary and related examples before using lower-level details.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/flownet.lua`
+
 ## Summary
 
 - The `flownet` module is the logistics-graph simulation surface for users who want resources, items, queues, routes, and transformation rules to behave as one explicit networked system.

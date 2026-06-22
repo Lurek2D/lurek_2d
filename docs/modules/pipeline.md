@@ -1,5 +1,42 @@
 # Pipeline
 
+## Purpose
+
+Orchestrates steps using validated dependency graphs.
+
+## When To Use
+
+- Its core value is that staged work becomes data. Steps, dependencies, scheduler policy, inputs, outputs, and result handling can be represented and advanced as pipeline state rather than hidden inside bespoke control flow.
+- DAG structure matters because many real workflows are dependency-aware rather than purely linear: some work can run only after prerequisites complete, while other work may branch, fan out, or proceed in parallel.
+- That makes the module useful for asset processing, validation chains, analytics jobs, build-like tasks, scripted tool workflows, content transforms, and other domains where several operations must be coordinated explicitly.
+
+## Minimal Example
+
+From the `lurek.pipeline.newPipeline` example block:
+
+```lua
+do
+    local pipe = lurek.pipeline.newPipeline("build")
+
+    pipe:setErrorMode("continue")
+    pipe:addStep(lurek.pipeline.newStep("compile", function(ctx) ctx.compiled = true end))
+    example_print_log("name = " .. pipe:getName())
+    example_print_log("step count = " .. pipe:getStepCount())
+    example_print_log("mode = " .. pipe:getErrorMode())
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.pipeline.fromTable` when exploring this module.
+- Start with `lurek.pipeline.newPipeline` when exploring this module.
+- Start with `lurek.pipeline.newStep` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/pipeline.lua`
+
 ## Summary
 
 - The `pipeline` module is the engine's workflow-orchestration surface for users who want multi-step processing to behave like explicit directed workflows instead of loosely nested call sequences.

@@ -1,5 +1,42 @@
 # Render
 
+## Purpose
+
+Orchestrates the engine's visual backend using a device-facing wgpu renderer.
+
+## When To Use
+
+- Its most important user-facing role is normalization. Different modules can describe sprites, shapes, text, overlays, tiles, provinces, lights, effects, or custom geometry in their own terms while still relying on one shared renderer to decide how those requests become final pixels.
+- This makes render less like one feature among many and more like the final translation authority for visual state. Other modules decide what should exist visually, but render decides how that existence is encoded, ordered, shaded, and emitted.
+- The module spans several rendering families at once: sprite and texture drawing, text output, shape drawing, mesh and geometry support, canvas-like targets, shader pipelines, post-processing, lighting, shadows, decals, screenshots, and software-render evidence paths.
+
+## Minimal Example
+
+From the `lurek.render.print` example block:
+
+```lua
+do
+    local font = lurek.render.getDefaultFont(16)
+    lurek.render.setFont(font)
+    lurek.render.print("Hello from lurek.render.print", 10, 10)
+    example_print_log("print font type = " .. font:type())
+    example_print_log("printed plain text")
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.render.applyTransform` when exploring this module.
+- Start with `lurek.render.arc` when exploring this module.
+- Start with `lurek.render.beginSortGroup` when exploring this module.
+- Start with `lurek.render.captureScreenshot` when exploring this module.
+- Start with `lurek.render.circle` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/render.lua`
+
 ## Summary
 
 - The `render` module is the engine's central visual execution layer, responsible for turning high-level drawing intent from many other systems into concrete frame output on GPU-backed and software-backed paths.

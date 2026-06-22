@@ -16,7 +16,7 @@ Before enumerating use cases it is important to understand the engine's core ide
 | Desktop-only | Windows / Linux / macOS; no mobile, no WASM | Rules out consumer mobile games |
 | 2D only | No 3D scene graph | Correct scope for 2D-native problems |
 | Lua scripting + Rust core | LuaJIT primary, Lua 5.4 CI fallback | Fast iteration + production-grade performance |
-| AI-first | Local LLM integration via `lurek.agent.*` + Ollama | First-class LLM workflow, not an afterthought |
+| AI-assisted and agent-friendly | Local LLM integration via `lurek.agent.*`, generated docs, stubs, specs, examples, and CAG guidance | Tooling-friendly workflows without making Lurek an AI-only product |
 | Code-only | No visual editor; VS Code extension = DX layer | AI agents can use the full API without GUI |
 | 5 000+ `lurek.*` functions | 70+ modules; 100% doc coverage enforced | High-coverage API reduces AI slop to near zero |
 | MIT license | Zero royalties, no runtime fees | Safe for commercial, research, military, education |
@@ -181,7 +181,7 @@ Static CRT on Windows (`-C target-feature=+crt-static`) → zero runtime DLL req
 
 | Engine | Lurek advantage |
 |--------|----------------|
-| Love2D | Larger built-in API; AI-first tooling; single namespace |
+| Love2D | Larger built-in API; AI-assisted tooling; single namespace |
 | Godot 4 | No editor required; smaller binary; faster AI-assisted iteration |
 | GameMaker 2 | MIT license; no subscription; code-only = AI-friendly |
 | Unity 2D | Smaller binary; no DLL dependency; no royalties |
@@ -215,7 +215,7 @@ Any example from `content/examples/` can be copied and modified as a jam startin
 - All callbacks optional — add only what the game needs.
 - REPL (`lurek2d --repl`) enables live Lua evaluation without restarting.
 - 67 content examples cover every common pattern.
-- AI-assisted workflow: describe the mechanic, get working Lua from the agent.
+- AI-assisted workflow: use generated docs, stubs, examples, and an agent to produce working Lua.
 
 ### Constraints
 
@@ -224,7 +224,7 @@ Any example from `content/examples/` can be copied and modified as a jam startin
 
 ### Competition
 
-Love2D is the dominant jam engine for Lua developers. Lurek2D's advantage is richer built-in API (no need to `require` third-party libraries) and AI-assisted generation.
+Love2D is the dominant jam engine for Lua developers. Lurek2D's advantage is a richer built-in API, generated docs and stubs, and AI-assisted generation when a team wants that workflow.
 
 ### Complexity Level
 
@@ -2343,7 +2343,7 @@ Godot has an editor and can target mobile but requires GUI interaction.
 Python + pandas is data-rich but requires a runtime and has no GPU renderer.
 Bevy is Rust-native but has no Lua scripting and no simulation data modules.
 
-**No single tool in 2026 combines:** desktop 2D rendering + physics + audio + dataframe + globe + province + flownet + local LLM + headless + single binary + MIT + code-only + VS Code IntelliSense + AI-first CAG system.
+**No single tool in 2026 combines:** desktop 2D rendering + physics + audio + dataframe + globe + province + flownet + local LLM modules + headless mode + single binary + MIT + code-first Lua + VS Code IntelliSense + agent-friendly CAG guidance.
 
 That combination is Lurek2D's defensible position.
 

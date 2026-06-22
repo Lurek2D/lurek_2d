@@ -1,5 +1,42 @@
 # Terminal
 
+## Purpose
+
+Grid terminal supporting ANSI formats, syntax highlighting, and cycling tab-completions.
+
+## When To Use
+
+- It treats terminal behavior as an actual interface model rather than as plain text drawing: cells, ANSI parsing, completion, highlighting, editing state, prompt handling, and render helpers cooperate under one system.
+- That matters because terminal-like surfaces need cursor movement, history, navigation, scrollback, and structured command input, not only glyph output.
+- The grid model gives the module a clear role distinct from ordinary widget UI and makes it suitable for dense dashboards, shells, ASCII-heavy views, and trace-oriented tooling.
+
+## Minimal Example
+
+From the `lurek.terminal.newTerminal` example block:
+
+```lua
+do
+    local term = make_console(80, 24)
+    local cols, rows = term:getDimensions()
+    local cell_w, cell_h = term:getCellSize()
+    local prompt_char = string.char(term:get(1, 1))
+    terminal_log("newTerminal grid=" .. cols .. "x" .. rows .. " cell=" .. cell_w .. "x" .. cell_h .. " prompt=" .. prompt_char)
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.terminal.addCompletion` when exploring this module.
+- Start with `lurek.terminal.applyTheme` when exploring this module.
+- Start with `lurek.terminal.clearCmdHistory` when exploring this module.
+- Start with `lurek.terminal.clearCompletions` when exploring this module.
+- Start with `lurek.terminal.cmdHistoryLen` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/terminal.lua`
+
 ## Summary
 
 - The `terminal` module is the engine's character-grid interface surface for users who want text-mode displays, debug consoles, command panels, or roguelike-style presentation.

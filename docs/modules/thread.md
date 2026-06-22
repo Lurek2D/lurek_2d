@@ -1,5 +1,42 @@
 # Thread
 
+## Purpose
+
+Parallel Lua workers via isolated threads, safe channels, and promises.
+
+## When To Use
+
+- Channels, worker threads, pools, and promises let asynchronous work move messages and results between isolated execution contexts instead of sharing unsafe state directly.
+- That matters because concurrency here is not just thread creation; it is about controlling what can cross between workers and how results return safely.
+- The module is useful for expensive background tasks, staged jobs, and workflows where script-facing logic should continue while separate workers finish their part of the work.
+
+## Minimal Example
+
+From the `lurek.thread.newChannel` example block:
+
+```lua
+do
+    local channel = lurek.thread.newChannel()
+    channel:push("spawn_enemy")
+    local type_name = channel:type()
+    local count = channel:getCount()
+    thread_log("new channel type=" .. type_name .. " count=" .. count .. " bounded=" .. tostring(channel:isBounded()))
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.thread.async` when exploring this module.
+- Start with `lurek.thread.getChannel` when exploring this module.
+- Start with `lurek.thread.getWorkerCapabilities` when exploring this module.
+- Start with `lurek.thread.newBoundedChannel` when exploring this module.
+- Start with `lurek.thread.newChannel` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/thread.lua`
+
 ## Summary
 
 - The `thread` module is the isolated-concurrency surface for projects that want background Lua work without violating the engine's VM and runtime-safety rules.

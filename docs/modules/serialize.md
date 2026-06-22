@@ -1,5 +1,39 @@
 # Serialize
 
+## Purpose
+
+Translates JSON, TOML, CSV, XML, INI, and MessagePack via one intermediate tree.
+
+## When To Use
+
+- JSON, TOML, CSV, XML, INI, MessagePack, schemas, and codec entrypoints all matter here because a project often needs to move content between several representations without rewriting conversion logic each time.
+- The module is useful both for loading or saving data and for validating whether translated data actually fits an expected structure.
+- Its shared intermediate tree is the key user-facing idea: several formats can participate in the same workflows because they resolve into one normalized serial representation.
+
+## Minimal Example
+
+From the `lurek.serial.fromJson` example block:
+
+```lua
+do
+    local jsonStr = '{"name":"warrior","level":12,"alive":true,"items":["sword","shield"]}'
+    local data = lurek.serial.fromJson(jsonStr)
+    local equipment = data.items[1] .. " + " .. data.items[2]
+    local summary = data.name .. " lvl " .. data.level
+    lurek.log.info("loaded party member: " .. summary)
+    lurek.log.info("alive = " .. tostring(data.alive) .. ", gear = " .. equipment)
+end
+```
+
+## Common Patterns
+
+- Check the module summary and related examples before using lower-level details.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/serialize.lua`
+
 ## Summary
 
 - The `serialize` module is the format-translation surface for users who want several external data formats to map into one shared runtime value model.

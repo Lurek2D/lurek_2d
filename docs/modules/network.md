@@ -1,5 +1,44 @@
 # Network
 
+## Purpose
+
+Manages ENet UDP hosts, TCP/WebSocket pools, and ureq-backed HTTP/SSE channels.
+
+## When To Use
+
+- Its scope is intentionally broad because real communication needs are broad. Raw TCP, HTTP-style requests, websockets, SSE-like streams, lobbies, host state, relays, RPC, sync structures, and worker-thread coordination all appear in one engine-facing family.
+- That breadth is a practical advantage because projects often need several kinds of communication at once. A multiplayer game may also need service APIs, diagnostics channels, content downloads, and background coordination without wanting four unrelated networking stacks.
+- Message and transport types are central to the contract because networking is not just about opening a socket; it is also about how payloads are described, routed, retried, synchronized, and surfaced to the rest of the engine.
+
+## Minimal Example
+
+From the `lurek.network.newServer` example block:
+
+```lua
+do
+    local server = lurek.network.newServer({port = 7777, maxPeers = 16, channels = 2})
+    local limits = server:getBandwidthLimit()
+    local metrics = server:getMetrics()
+    network_log("dedicated server role=" .. server:getRole() .. " addr=" .. server:getAddress())
+    network_log("peer_limit=" .. server:getPeerLimit() .. " channels=" .. server:getChannelLimit())
+    network_log("bw=" .. tostring(limits.incoming) .. "/" .. tostring(limits.outgoing) .. " connected=" .. metrics.connected_peers)
+    server:destroy()
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.network.createLobby` when exploring this module.
+- Start with `lurek.network.createRoom` when exploring this module.
+- Start with `lurek.network.discoverLobbies` when exploring this module.
+- Start with `lurek.network.getPlayerList` when exploring this module.
+- Start with `lurek.network.getRoom` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/network.lua`
+
 ## Summary
 
 - The `network` module is the engine's communication and session surface for users who need game state, tool messages, service calls, telemetry, or multiplayer traffic to move between processes or machines.

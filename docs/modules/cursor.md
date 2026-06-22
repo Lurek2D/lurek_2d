@@ -1,5 +1,41 @@
 # Cursor
 
+## Purpose
+
+Manages contextual custom cursors, motion trails, and magnifiers.
+
+## When To Use
+
+- System cursors, custom RGBA cursors, animated states, and context-driven switching work together so interaction modes can communicate themselves visually without extra UI explanation.
+- Trail effects, zoom-lens support, locking, visibility control, and mode-aware switching extend the same module into readability, precision work, and tool-oriented pointer behavior.
+- That makes the module especially useful for menus, editors, strategy controls, drag-and-drop flows, and inspection-heavy screens where the cursor is a major part of the interaction language.
+
+## Minimal Example
+
+From the `lurek.cursor.newManager` example block:
+
+```lua
+do
+    local manager = lurek.cursor.newManager()
+    manager:setContext("default")
+    local visible = manager:isVisible()
+    local context = manager:getContext()
+    cursor_log("manager visible=" .. tostring(visible) .. " context=" .. context)
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.cursor.newAnimated` when exploring this module.
+- Start with `lurek.cursor.newCustom` when exploring this module.
+- Start with `lurek.cursor.newManager` when exploring this module.
+- Start with `lurek.cursor.systemCursors` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/cursor.lua`
+
 ## Summary
 
 - The `cursor` module is the pointer-behavior surface for users who want the cursor to feel like part of the game UX rather than a fixed OS artifact.

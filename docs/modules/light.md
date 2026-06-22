@@ -1,5 +1,42 @@
 # Light
 
+## Purpose
+
+Manages point, spot, and directional lights with custom decay falloffs and groups.
+
+## When To Use
+
+- It lets scripts reason about lighting as scene data instead of raw draw commands by grouping light types, falloff, attenuation, blend modes, occlusion, and shadow-related state in one model.
+- This matters because atmosphere, visibility, stealth cues, alarms, and scene readability often depend on several changing lights at once.
+- Flicker, ramps, fades, and other transitions are part of the contract because lighting is usually dynamic rather than fixed at load time.
+
+## Minimal Example
+
+From the `lurek.light.newLight` example block:
+
+```lua
+do
+    local light = lurek.light.newLight(400, 300, 200)
+    light:setColor(1.0, 0.9, 0.7, 1.0)
+    light:setIntensity(1.25)
+    local light_count = lurek.light.getLightCount()
+    example_print_log("radius = " .. light:getRadius())
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.light.advanceFlickers` when exploring this module.
+- Start with `lurek.light.clear` when exploring this module.
+- Start with `lurek.light.drawToImage` when exploring this module.
+- Start with `lurek.light.getAmbient` when exploring this module.
+- Start with `lurek.light.getGodRayHints` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/light.lua`
+
 ## Summary
 
 - The `light` module is the engine's shared 2D lighting-data surface for users who need lights, occluders, shadows, and illumination behavior to remain structured before rendering.

@@ -1,5 +1,45 @@
 # Scene
 
+## Purpose
+
+Manages stack-based scenes, overlays, and metatable factories.
+
+## When To Use
+
+- Scene stacks, shared scene data, lifecycle callbacks, transitions, depth sorting, object containers, and render bridges matter because changing what is active usually affects simulation, UI, rendering, and progression at the same time.
+- Push, pop, replace, and overlay semantics are central to the module's value. They let projects layer pause menus over gameplay, cutscenes over maps, or modal flows over existing screens without destroying the context underneath.
+- Lifecycle hooks make scenes more than labels: entry, exit, pause, resume, preload, and ready-style behavior let logic and resources react cleanly when control moves between states.
+
+## Minimal Example
+
+From the `lurek.scene.new` example block:
+
+```lua
+do
+    lurek.scene.clear()
+    local enter_count = 0
+    local menu_scene = lurek.scene.new({ name = "menu", enter = function(self, params) self.mode = params.mode; enter_count = enter_count + 1 end, draw = function() end })
+    lurek.scene.push(menu_scene, nil, nil, nil, { mode = "story" })
+    local current = lurek.scene.getCurrent()
+    local depth = lurek.scene.getStackSize()
+    scene_log("new current=" .. tostring(current and current.name) .. " mode=" .. tostring(current and current.mode) .. " enters=" .. tostring(enter_count) .. " depth=" .. tostring(depth))
+    lurek.scene.clear()
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.scene.clear` when exploring this module.
+- Start with `lurek.scene.clearQueuedTransitions` when exploring this module.
+- Start with `lurek.scene.define` when exploring this module.
+- Start with `lurek.scene.depth` when exploring this module.
+- Start with `lurek.scene.deserializeScene` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/scene.lua`
+
 ## Summary
 
 - The `scene` module is the high-level flow coordinator for users who want menus, gameplay states, overlays, pause layers, and transitions to behave like one ordered stack instead of a collection of unrelated toggles.

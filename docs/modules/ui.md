@@ -1,5 +1,43 @@
 # Ui
 
+## Purpose
+
+Centralized retained-mode UI context with arena storage, automatic layouts, and resolution scaling.
+
+## When To Use
+
+- Its core promise is continuity across frames. The UI context remembers widget identity, parent-child structure, focus, hover, active state, capture, bindings, transitions, and pending events, so a screen can evolve over time without losing the state that makes it feel interactive and stable.
+- This retained model matters because large interfaces are rarely redrawn from pure stateless logic. Text inputs need cursors and selection, lists need scroll position, windows need placement, trees need expansion state, and complex panels need to survive temporary data changes without resetting user intent.
+- Container widgets define the structural grammar of the module. Panels, windows, stacks, docks, split regions, scroll containers, frames, and nine-slice shells let projects assemble larger interface layouts from composable blocks rather than hand-managing every rectangle.
+
+## Minimal Example
+
+From the `lurek.ui.newButton` example block:
+
+```lua
+do
+    ---@type LButton
+    local btn = lurek.ui.newButton("Click Me")
+    example_print_log("type = " .. btn:type())
+    example_print_log("text = " .. btn:getText())
+    example_print_log("button text = " .. btn:getText())
+    example_print_log("button width = " .. select(3, btn:getRect()))
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.ui.addToast` when exploring this module.
+- Start with `lurek.ui.animateColor` when exploring this module.
+- Start with `lurek.ui.animateRotation` when exploring this module.
+- Start with `lurek.ui.animateScale` when exploring this module.
+- Start with `lurek.ui.beginDrag` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/ui.lua`
+
 ## Summary
 
 - The `ui` module is the engine's retained-interface system for users who want menus, HUDs, editors, overlays, and tool panels to behave like one persistent application layer instead of a loose pile of draw calls and ad hoc click tests.

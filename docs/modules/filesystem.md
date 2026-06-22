@@ -1,5 +1,42 @@
 # Filesystem
 
+## Purpose
+
+Sandboxes path resolution, mount overlays, and ZIP archives.
+
+## When To Use
+
+- Path normalization, traversal checks, mounts, archive access, synchronous handles, and asynchronous IO combine into one controlled runtime view of storage.
+- That matters because asset lookup, save data, mod content, hot reload, and tooling workflows all need file access, but they should not each invent their own safety and path rules.
+- Watchers, metadata queries, recursive listing, and convenience helpers make the module useful for diagnostics and content tooling as well as for normal gameplay persistence.
+
+## Minimal Example
+
+From the `lurek.filesystem.getSource` example block:
+
+```lua
+do
+    local source_root = lurek.filesystem.getSource()
+    local examples_path = source_root .. "/content/examples"
+    local looks_absolute = source_root:find(":") ~= nil or source_root:sub(1, 1) == "/"
+    local style = looks_absolute and "absolute" or "relative"
+    fs_log("source root for content discovery is " .. style .. ": " .. examples_path)
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.filesystem.append` when exploring this module.
+- Start with `lurek.filesystem.copy` when exploring this module.
+- Start with `lurek.filesystem.createDirectory` when exploring this module.
+- Start with `lurek.filesystem.createTempFile` when exploring this module.
+- Start with `lurek.filesystem.exists` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/filesystem.lua`
+
 ## Summary
 
 - The `filesystem` module is the sandboxed storage surface for users who need file access without giving every script raw platform path power.

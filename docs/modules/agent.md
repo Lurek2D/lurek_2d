@@ -1,5 +1,53 @@
 # Agent
 
+## Purpose
+
+Orchestrates multi-agent AI completions and stateful conversations.
+
+## When To Use
+
+- It turns raw model calls into an engine feature by combining direct chat, structured outputs, embeddings, background request transport, and named agent configuration in one subsystem.
+- Working, episodic, and semantic memory are central because the module is designed for repeated interaction, not only for one-shot completions.
+- That memory model matters because a useful assistant usually needs continuity: it should keep recent context, retain important facts, and support longer-lived agent identities instead of acting like a stateless prompt box.
+
+## Minimal Example
+
+From the `lurek.agent.new` example block:
+
+```lua
+do
+    local agent = lurek.agent.new({
+        url          = "http://127.0.0.1:9/api/generate",
+        model        = "offline-test-model",
+        timeout      = 1,
+        max_retries  = 0,
+        system_prompt = "You are a helpful game AI.",
+        format       = "json",
+        name         = "helper",
+        description  = "Provides general assistance to the player.",
+        options      = {
+            num_ctx     = 4096,
+            temperature = 0.7,
+            seed        = 42,
+        },
+    })
+    example_print_log("Agent created:", agent)
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.agent.cancel` when exploring this module.
+- Start with `lurek.agent.complete` when exploring this module.
+- Start with `lurek.agent.completeAsync` when exploring this module.
+- Start with `lurek.agent.completeJson` when exploring this module.
+- Start with `lurek.agent.configure` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/agent.lua`
+
 ## Summary
 
 - The `agent` module is the engine's AI-assistant surface for users who want LLM-backed behavior inside the runtime without building transport, memory, and orchestration infrastructure from scratch.

@@ -1,5 +1,43 @@
 # Ai
 
+## Purpose
+
+Orchestrates agent choices via behavior trees, FSMs, GOAP, HTN, and utility AI.
+
+## When To Use
+
+- Its defining characteristic is breadth of decision models. The module deliberately supports behavior trees, finite state machines, utility scoring, GOAP, HTN, Monte Carlo Tree Search, and related helpers so a single project can choose the right reasoning style for each actor type or gameplay layer.
+- That breadth matters because game AI is rarely solved by one universal algorithm.
+- Reactive control and deliberative planning are both first-class here. An actor can respond immediately through short-horizon stateful logic while also relying on planning, utility, or hierarchical decomposition for larger goals and longer-term behavior.
+
+## Minimal Example
+
+From the `lurek.ai.newWorld` example block:
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  local world_type = world:type()
+  local scout = world:addAgent("scout_preview")
+  local count = world:getAgentCount()
+  example_print_log("lurek.ai.newWorld: agents=" .. tostring(count))
+  example_print_log("lurek.ai.newWorld: first_agent=" .. scout:getName())
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.ai.newAIDirector` when exploring this module.
+- Start with `lurek.ai.newAILod` when exploring this module.
+- Start with `lurek.ai.newAction` when exploring this module.
+- Start with `lurek.ai.newBehaviorTree` when exploring this module.
+- Start with `lurek.ai.newBlackboard` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/ai.lua`
+
 ## Summary
 
 - The `ai` module is the engine's gameplay-intelligence surface for users who need actors to perceive, decide, coordinate, and adapt in ways that go far beyond hard-coded if-then behavior.

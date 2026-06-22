@@ -1,5 +1,43 @@
 # Input
 
+## Purpose
+
+Unifies keyboard, mouse, gamepad slotting, and touch events into stable inputs.
+
+## When To Use
+
+- Its main job is normalization. Device-specific events become stable engine-side state so scripts can ask about buttons, axes, touches, combos, and actions through one consistent vocabulary.
+- Per-frame snapshots matter because gameplay, UI, replays, and tools all need deterministic control state rather than raw transient platform events.
+- Action mapping, rebinding, presets, and conflict handling are central because real projects care about intent and user-configurable schemes more than about hardwired physical keys.
+
+## Minimal Example
+
+From the `lurek.input.keyboard.isDown` example block:
+
+```lua
+do
+    local jumpHeld = lurek.input.keyboard.isDown("space")
+    local climbHeld = lurek.input.keyboard.isDown("w", "up")
+    local moveHeld = lurek.input.keyboard.isDown("a", "d", "left", "right")
+    local hasInput = jumpHeld or climbHeld or moveHeld
+    lurek.log.info("platformer input jump=" .. tostring(jumpHeld) .. " climb=" .. tostring(climbHeld))
+    lurek.log.info("platformer movement held=" .. tostring(moveHeld) .. " active=" .. tostring(hasInput))
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.input.advancePlayback` when exploring this module.
+- Start with `lurek.input.bind` when exploring this module.
+- Start with `lurek.input.clearBindings` when exploring this module.
+- Start with `lurek.input.define` when exploring this module.
+- Start with `lurek.input.deserializeBindings` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/input.lua`
+
 ## Summary
 
 - The `input` module is the engine's unified control surface for users who need keyboard, mouse, gamepad, and touch state to behave as one coherent runtime system.

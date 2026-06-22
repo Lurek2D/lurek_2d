@@ -1,5 +1,43 @@
 # Audio
 
+## Purpose
+
+Plays static and streaming sound via voice pools and mixing buses.
+
+## When To Use
+
+- It covers the full everyday audio workflow: loading or decoding sound assets, creating reusable sound data, instantiating live voices, tracking listener state, and managing mixer-facing behavior without splitting those jobs across unrelated helpers.
+- Named buses are one of the core abstractions because projects usually want music, effects, voice, ambience, and UI to be grouped, muted, paused, ducked, or rebalanced as categories instead of as isolated sounds.
+- Source lifecycle and inspectable runtime state make the module practical for reactive gameplay cues, debugging, and longer sequences where scripts need to know what is playing, stopped, fading, pooled, or otherwise active.
+
+## Minimal Example
+
+From the `lurek.audio.newSource` example block:
+
+```lua
+do
+    local path = "content/examples/assets/audio/sample_click.wav"
+    local src = lurek.audio.newSource(path, "static")
+    local source_type = lurek.audio.getSourceType(src)
+    example_print_log("source created = " .. tostring(src ~= nil))
+    example_print_log("path = " .. path)
+    example_print_log("source type = " .. tostring(source_type))
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.audio.beatClockFromSource` when exploring this module.
+- Start with `lurek.audio.clearFilter` when exploring this module.
+- Start with `lurek.audio.clearMidiSoundFont` when exploring this module.
+- Start with `lurek.audio.clearRandomPitch` when exploring this module.
+- Start with `lurek.audio.clone` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/audio.lua`
+
 ## Summary
 
 - The `audio` module is the engine's main runtime sound system for users who need playback, routing, source state, timing, and mix control to live under one API.

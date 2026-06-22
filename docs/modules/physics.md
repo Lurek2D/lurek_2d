@@ -1,5 +1,44 @@
 # Physics
 
+## Purpose
+
+Simulates 2D bodies under dynamic, static, kinematic, or sensor behaviors.
+
+## When To Use
+
+- Bodies, colliders, forces, terrain, joints, sensors, and collision layers all belong to the same simulation step, which keeps movement and contact rules coherent across the engine.
+- The module supports dynamic, static, kinematic, and sensor-style roles so projects can mix actors, level geometry, triggers, platforms, and detection-only regions inside one physical space without switching subsystems.
+- Practical physics also depends on querying the world, not only advancing it. Raycasts, overlap checks, sweep-style tests, and contact inspection let gameplay ask what was hit, what overlaps, and why motion changed.
+
+## Minimal Example
+
+From the `lurek.physics.newWorld` example block:
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 400)
+    local floor = world:newBody(320, 520, "static")
+    local crate = world:newCircleBody(320, 120, 14, "dynamic")
+    local gx, gy = world:getGravity()
+    world:step(1 / 60)
+    physics_log("training room gravity=" .. gx .. "," .. gy)
+    physics_log("floor=" .. floor:getType() .. " crate_y=" .. select(2, crate:getPosition()))
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.physics.attachShape` when exploring this module.
+- Start with `lurek.physics.debugDraw` when exploring this module.
+- Start with `lurek.physics.destroyWorld` when exploring this module.
+- Start with `lurek.physics.drawDebugGpu` when exploring this module.
+- Start with `lurek.physics.getBody` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/physics.lua`
+
 ## Summary
 
 - The `physics` module is the engine's 2D simulation authority for users who want motion, contact, shapes, joints, and collision queries to live inside one consistent world model.

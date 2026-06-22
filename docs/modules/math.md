@@ -1,5 +1,42 @@
 # Math
 
+## Purpose
+
+Provides vectors, matrices, spatial indexes (AABB tree and spatial hash), and polygon geometry.
+
+## When To Use
+
+- Its primary role is standardization. When rendering, physics, pathfinding, camera logic, UI layout, procedural generation, and gameplay helpers all rely on the same vector, matrix, angle, and shape vocabulary, the rest of the engine can cooperate without hidden conversions or drifting assumptions.
+- Core vector and matrix types provide the base language for position, direction, orientation, scale, projection, and composition. They are the primitives that let modules talk about where something is, how it is rotated, how it moves, and how one space maps into another.
+- Geometry helpers extend the module beyond raw numbers into practical spatial entities such as rectangles, circles, polygons, bounds, overlap tests, distance checks, clipping helpers, and containment queries used across collision, UI, culling, and selection.
+
+## Minimal Example
+
+From the `lurek.math.pi` example block:
+
+```lua
+do
+    example_print_log("pi = " .. lurek.math.pi)
+    example_print_log("pi * 2 = " .. lurek.math.pi * 2)
+    example_print_log("half turn = " .. lurek.math.pi)
+    local quarter_turn = lurek.math.pi / 2
+    example_print_log("quarter turn = " .. quarter_turn)
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.math.Vec2` when exploring this module.
+- Start with `lurek.math.Vec3` when exploring this module.
+- Start with `lurek.math.aabbTree` when exploring this module.
+- Start with `lurek.math.abs` when exploring this module.
+- Start with `lurek.math.acos` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/math.lua`
+
 ## Summary
 
 - The `math` module is the engine's shared numerical and geometric foundation for users who need consistent rules for coordinates, shapes, transforms, interpolation, sampling, and spatial reasoning across many feature areas.

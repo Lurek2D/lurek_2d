@@ -1,5 +1,42 @@
 # Image
 
+## Purpose
+
+Manages CPU image buffers, compressed textures, layered stacks, palette remapping, and atlases.
+
+## When To Use
+
+- Its role is broader than ordinary file loading. Raw buffers, filters, resizing, layers, palettes, atlas packing, drawing helpers, visualization output, and serialization all live here because real image workflows usually chain several of those operations together.
+- This breadth matters because many projects need to do image work inside the engine, not only before runtime in an external editor. Asset preparation, theme variation, generated visuals, screenshots, comparison tests, and data extraction can all depend on image processing.
+- Layer support is especially important for tooling and content workflows where staged or partially non-destructive composition is useful.
+
+## Minimal Example
+
+From the `lurek.image.newImageData` example block:
+
+```lua
+do
+    local img = lurek.image.newImageData(128, 64)
+    img:fill(20, 30, 60, 255)
+    local w, h = img:getDimensions()
+    local raw = img:getRawBytes()
+    image_log("blank minimap canvas " .. w .. "x" .. h .. " bytes=" .. #raw)
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.image.fromScreen` when exploring this module.
+- Start with `lurek.image.isCompressed` when exploring this module.
+- Start with `lurek.image.loadImage` when exploring this module.
+- Start with `lurek.image.loadLayered` when exploring this module.
+- Start with `lurek.image.newCompressedData` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/image.lua`
+
 ## Summary
 
 - The `image` module is the engine's CPU-side image workbench for users who need pixel data to be loaded, transformed, composed, inspected, compared, and exported under one coherent API.

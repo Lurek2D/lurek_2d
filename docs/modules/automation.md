@@ -1,5 +1,43 @@
 # Automation
 
+## Purpose
+
+Replays input steps and runs visual test assertions.
+
+## When To Use
+
+- It turns authored steps into real runtime input flow, covering the parsing of automation scripts, ordered playback, and step-level control over how the scenario advances.
+- Simulation and assertion features work together here: the same module can replay actions, wait on conditions, and verify visual or behavioral outcomes under the same timing rules.
+- Determinism is the key promise: authored steps should replay under controlled timing.
+
+## Minimal Example
+
+From the `lurek.automation.load` example block:
+
+```lua
+do
+    local steps = { { action = "wait", time = 0.0 } }
+    lurek.automation.load("login_flow", { steps = steps })
+    local scripts = lurek.automation.getScripts()
+    example_print_log("loaded = " .. tostring(lurek.automation.hasScript("login_flow")))
+    example_print_log("script count = " .. tostring(#scripts))
+    lurek.automation.unload("login_flow")
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.automation.getCondition` when exploring this module.
+- Start with `lurek.automation.getCurrentScript` when exploring this module.
+- Start with `lurek.automation.getCurrentStep` when exploring this module.
+- Start with `lurek.automation.getElapsedTime` when exploring this module.
+- Start with `lurek.automation.getLastError` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/automation.lua`
+
 ## Summary
 
 - The `automation` module is the scripted replay layer for users who want deterministic QA, repeatable demos, or regression-oriented gameplay checks.

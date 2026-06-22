@@ -1,5 +1,42 @@
 # Camera
 
+## Purpose
+
+Tracks targets smoothly via customizable presets, dead-zones, and bounds.
+
+## When To Use
+
+- Follow logic, dead zones, damping, bounds, zoom, rotation, path motion, and viewport policy all live here so projects can define how scene focus becomes visible framing.
+- This matters because camera behavior shapes feel and readability just as much as raw world state does.
+- Follow and constraint logic are central because a useful camera is rarely just a position; it must decide how tightly to track a target, how much to lag, and what world bounds or dead zones should still preserve readability.
+
+## Minimal Example
+
+From the `lurek.camera.new` example block:
+
+```lua
+do
+    local cam = lurek.camera.new(800, 600)
+    cam:setPosition(320, 180)
+    cam:setZoom(1.25)
+    local x, y = cam:getPosition()
+    lurek.log.info("arena camera created=" .. tostring(cam ~= nil))
+    lurek.log.info("arena camera type=" .. cam:type() .. " pos=" .. x .. "," .. y .. " zoom=" .. cam:getZoom())
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.camera.new` when exploring this module.
+- Start with `lurek.camera.newCamera` when exploring this module.
+- Start with `lurek.camera.newRig` when exploring this module.
+- Start with `lurek.camera.newWalker` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/camera.lua`
+
 ## Summary
 
 - The `camera` module is the engine's shared view-control surface for users who need world motion to become readable player-facing framing.

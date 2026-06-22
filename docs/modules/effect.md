@@ -1,5 +1,42 @@
 # Effect
 
+## Purpose
+
+Manages visual post-processing stacks, shader parameters, and presets.
+
+## When To Use
+
+- Effect stacks, presets, and parameter control let projects combine blur, bloom, grading, distortion, and custom passes as a reusable look pipeline rather than as isolated toggles.
+- The same module supports both full-frame and image-scoped workflows, which makes it useful for global scene mood, local asset treatment, and diagnostic capture flows.
+- Runtime enabling, disabling, and reordering matter because visual iteration often depends on trying combinations quickly while the game is running.
+
+## Minimal Example
+
+From the `lurek.effect.newEffect` example block:
+
+```lua
+do
+    local fx = lurek.effect.newEffect("bloom")
+    fx:setThreshold(0.65)
+    fx:setIntensity(1.8)
+    local effect_type = fx:getType()
+    effect_log("cinematic " .. effect_type .. " built_in=" .. tostring(fx:isBuiltIn()))
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.effect.getEffectTypes` when exploring this module.
+- Start with `lurek.effect.getPresetNames` when exploring this module.
+- Start with `lurek.effect.getShaderErrorDisplay` when exploring this module.
+- Start with `lurek.effect.newCustomEffect` when exploring this module.
+- Start with `lurek.effect.newEffect` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/effect.lua`
+
 ## Summary
 
 - The `effect` module is the post-processing surface for users who want final-frame styling to be configurable at runtime instead of buried in renderer internals.

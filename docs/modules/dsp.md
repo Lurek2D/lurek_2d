@@ -1,5 +1,43 @@
 # Dsp
 
+## Purpose
+
+Manages audio effect graphs, procedural synthesis, level detection, and visualizations.
+
+## When To Use
+
+- Effect chains and graph-style processing keep filters, modulation, tone shaping, and other signal operations composable instead of hardcoded into one playback path.
+- Real-time and offline workflows live under the same conceptual surface, which means a processing idea can be used during gameplay, in content preparation, or in evidence-oriented audio diagnostics.
+- Synthesis, envelopes, metering, spectrum work, and visualization support make the module useful both for designing sound behavior and for understanding why that behavior sounds the way it does.
+
+## Minimal Example
+
+From the `lurek.dsp.newEffectParams` example block:
+
+```lua
+do
+    local params = lurek.dsp.newEffectParams("reverb", 0.7, 0.4, 0.2)
+    dsp_log("effect params type=" .. type(params))
+    dsp_log("effect=" .. tostring(params.type))
+    dsp_log("wet mix p1=" .. tostring(params.p1))
+    dsp_log("room size p2=" .. tostring(params.p2))
+    dsp_log("damping p3=" .. tostring(params.p3))
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.dsp.addEffectToBus` when exploring this module.
+- Start with `lurek.dsp.analyzeFft` when exploring this module.
+- Start with `lurek.dsp.analyzeFft` when exploring this module.
+- Start with `lurek.dsp.analyzePeak` when exploring this module.
+- Start with `lurek.dsp.analyzeRms` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/dsp.lua`
+
 ## Summary
 
 - The `dsp` module is the programmable signal-processing layer for users who need audio to be transformed, analyzed, or synthesized at runtime.

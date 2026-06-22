@@ -1,5 +1,47 @@
 # Pathfind
 
+## Purpose
+
+Navigates grids, hex layouts, isometric maps, navmeshes, and province graphs.
+
+## When To Use
+
+- It supports several spatial models at once, including weighted grids, hex and isometric spaces, province-style graphs, influence fields, and other routing abstractions, so different worlds can still share one navigation family.
+- A* is only part of the surface. The module also covers bidirectional search, Jump Point Search, hierarchical routing, graph travel, flow fields, influence maps, and reachability-style analysis under one subsystem.
+- This breadth matters because movement questions differ dramatically across features. Some systems need one precise route, others need shared guidance, tactical pressure, move ranges, or background jobs for expensive searches.
+
+## Minimal Example
+
+From the `lurek.pathfind.newPathGrid` example block:
+
+```lua
+do
+    local grid = lurek.pathfind.newPathGrid(20, 15, 32)
+    grid:setWalkable(10, 8, false)
+    local width = grid:getWidth()
+    local height = grid:getHeight()
+    local cell_size = grid:getCellSize()
+    local chokepoint_open = grid:isWalkable(10, 7)
+
+    pathfind_log("patrol grid = " .. width .. "x" .. height)
+    pathfind_log("patrol cell size = " .. cell_size)
+    pathfind_log("approach tile walkable = " .. tostring(chokepoint_open))
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.pathfind.cancelAsyncPath` when exploring this module.
+- Start with `lurek.pathfind.clearAsyncPaths` when exploring this module.
+- Start with `lurek.pathfind.getAsyncPendingCount` when exploring this module.
+- Start with `lurek.pathfind.getThreadCount` when exploring this module.
+- Start with `lurek.pathfind.newFlowField` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/pathfind.lua`
+
 ## Summary
 
 - The `pathfind` module is the engine's navigation and movement-analysis surface for users who need more than one hard-coded shortest-path helper.

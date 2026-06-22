@@ -1,5 +1,43 @@
 # Procgen
 
+## Purpose
+
+Orchestrates deterministic generation of terrain heightmaps, biomes, dungeons, and overworlds.
+
+## When To Use
+
+- Its strength is range. Noise, BSP, cellular methods, Voronoi-style construction, flood fill, L-systems, room placement, graph assembly, wave-function-collapse style constraints, biome logic, and naming helpers all coexist because procedural work rarely stays inside one algorithm family.
+- That breadth matters because procedural generation in games usually spans several scales at once, from local texture or room shape up to region connectivity and readable generated labels.
+- The module is useful not only for final world output but also for support structures that other systems consume, such as region maps, connectivity data, biome assignments, or candidate placements.
+
+## Minimal Example
+
+From the `lurek.procgen.simplex2d` example block:
+
+```lua
+do
+    local value = lurek.procgen.simplex2d(1.5, 2.3)
+    local mirrored = lurek.procgen.simplex2d(2.3, 1.5)
+    local ridge = lurek.procgen.simplex2d(1.75, 2.55)
+    procgen_log(string.format("simplex2d hillside=%.4f", value))
+    procgen_log(string.format("simplex2d mirrored hillside=%.4f", mirrored))
+    procgen_log(string.format("simplex2d ridge sample=%.4f", ridge))
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.procgen.biomeColor` when exploring this module.
+- Start with `lurek.procgen.bspDungeon` when exploring this module.
+- Start with `lurek.procgen.bspDungeonWithPrefabs` when exploring this module.
+- Start with `lurek.procgen.cellularAutomata` when exploring this module.
+- Start with `lurek.procgen.fbm` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/procgen.lua`
+
 ## Summary
 
 - The `procgen` module is the engine's procedural-content creation toolkit for users who want maps, regions, structures, names, distributions, and generated support data to be produced inside the engine from reusable algorithms.

@@ -11,6 +11,16 @@
 - `docs/specs/manual/*.md`
 - `docs/architecture/*.md`
 
+## Surface roles
+
+- `README.md` is the first-contact landing page and repository map.
+- GitHub Pages is the official public documentation for users.
+- `docs/api/` contains generated API artifacts for Pages, editors, agents, and tooling.
+- `docs/modules/` contains generated human-readable module guides plus callable details.
+- `docs/specs/` contains contributor-facing generated module contracts.
+- `docs/architecture/` contains contributor-facing design constraints, strategy, positioning, and durable decisions.
+- `docs/wiki/` is a generated cookbook/onboarding layer, not a second full API reference.
+
 ## Generated outputs
 
 - `docs/specs/*.md`

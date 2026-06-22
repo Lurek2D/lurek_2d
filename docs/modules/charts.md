@@ -1,5 +1,43 @@
 # Charts
 
+## Purpose
+
+Rasterizes line, bar, area, scatter, pie, histogram, and heatmap charts into RGBA buffers and drawable runtime textures.
+
+## When To Use
+
+- It supports line, bar, area, scatter, pie, histogram, and heatmap views so different kinds of telemetry and balancing data can share one visualization system.
+- That range matters because frame-time traces, economy curves, loot distributions, progression trends, and density-style data do not all want the same display form.
+- Live projects often need to inspect those measurements without exporting them into external plotting tools first, and this module keeps that workflow inside the runtime.
+
+## Minimal Example
+
+From the `lurek.charts.newLine` example block:
+
+```lua
+do
+    local chart = lurek.charts.newLine({ width = 400, height = 300, title = "Monthly Sales" })
+    chart:addSeries("North", {{1, 12}, {2, 18}, {3, 15}})
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("line chart created=" .. tostring(chart ~= nil))
+    lurek.log.info("line chart size=" .. tostring(width) .. "x" .. tostring(height))
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.charts.defaultPalette` when exploring this module.
+- Start with `lurek.charts.newArea` when exploring this module.
+- Start with `lurek.charts.newBar` when exploring this module.
+- Start with `lurek.charts.newHeatmap` when exploring this module.
+- Start with `lurek.charts.newHistogram` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/charts.lua`
+
 ## Summary
 
 - The `charts` module is the engine's in-runtime data-visualization surface for users who want tables, counters, time series, and distributions to become readable graphics.

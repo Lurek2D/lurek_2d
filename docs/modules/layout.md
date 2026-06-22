@@ -1,5 +1,53 @@
 # Layout
 
+## Purpose
+
+Computes graph layouts with grid snapping.
+
+## When To Use
+
+- It supports different layout strategies for different shapes, so dependency graphs, trees, and more organic maps can use an algorithm that matches the structure.
+- This is useful when a graph changes and still needs readable coordinates without manual upkeep.
+- Read it as the module that turns abstract structure into stable coordinates.
+
+## Minimal Example
+
+From the `lurek.layout.tree` example block:
+
+```lua
+do
+    local nodes = {
+        { id = 1, width = 60, height = 30, label = "Root" },
+        { id = 2, width = 50, height = 24, label = "Left" },
+        { id = 3, width = 50, height = 24, label = "Right" },
+    }
+    local children = {
+        [1] = { 2, 3 },
+    }
+    local result = lurek.layout.tree(nodes, children, 1, {
+        hSpacing = 70,
+        vSpacing = 90,
+        margin = 20,
+    })
+    example_print_log("tree nodes = " .. #result.nodes)
+    example_print_log("tree size = " .. result.width .. "x" .. result.height)
+    example_print_log("root x = " .. result.nodes[1].x)
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.layout.centerInArea` when exploring this module.
+- Start with `lurek.layout.dag` when exploring this module.
+- Start with `lurek.layout.force` when exploring this module.
+- Start with `lurek.layout.snapToGrid` when exploring this module.
+- Start with `lurek.layout.tree` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/layout.lua`
+
 ## Summary
 
 - The `layout` module is the automatic placement layer for users who need graph-like structures to become readable 2D diagrams without hand-positioning every node.

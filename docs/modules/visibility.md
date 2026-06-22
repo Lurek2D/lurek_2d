@@ -1,5 +1,40 @@
 # Visibility
 
+## Purpose
+
+Geometry-agnostic fog-of-war and shadowcasting field-of-view simulation.
+
+## When To Use
+
+- It combines adjacency rules, reveal cost, ownership flags, events, shadowcasting, and stored state so the same module can answer both gameplay questions and presentation needs.
+- That makes it more than a single visibility check: current sight, remembered discovery, reveal transitions, and display-friendly output are meant to behave as one coherent information system.
+- Team-specific reveal state and remembered exploration are especially important because many map-aware games care not only about what is visible now, but also about what was discovered earlier and by whom.
+
+## Minimal Example
+
+From the `lurek.visibility.new` example block:
+
+```lua
+do
+    local vg = lurek.visibility.new({ regions = 20 * 15, players = 4 })
+    local regions = vg:regionCount()
+    local players = vg:playerCount()
+    local first_state = vg:getState(0, 0)
+    lurek.log.info("visibility grid created for dungeon floor")
+    lurek.log.info("regions=" .. regions .. " players=" .. players .. " state=" .. first_state)
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.visibility.new` when exploring this module.
+- Start with `lurek.visibility.newFov` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/visibility.lua`
+
 ## Summary
 
 - The `visibility` module is the shared answer to fog-of-war, line-of-sight, and remembered exploration for users building map-aware gameplay.

@@ -1,5 +1,41 @@
 # Midi
 
+## Purpose
+
+Synthesizes MIDI files.
+
+## When To Use
+
+- It combines transport, playback state, and SoundFont-backed synthesis under one runtime surface.
+- That makes it useful for adaptive scoring, live control, and note-driven playback.
+- Read it as the bridge from MIDI data to audible output.
+
+## Minimal Example
+
+From the `lurek.midi.newPlayer` example block:
+
+```lua
+do
+    local path = "content/examples/assets/audio/sample_midi.mid"
+    local player = lurek.midi.newPlayer(path)
+    example_print_log("type = " .. player:type())
+    example_print_log("loaded = " .. tostring(player:isLoaded()))
+    example_print_log("path = " .. tostring(player:getFilePath()))
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.midi.clearSoundFont` when exploring this module.
+- Start with `lurek.midi.hasSoundFont` when exploring this module.
+- Start with `lurek.midi.loadSoundFont` when exploring this module.
+- Start with `lurek.midi.newPlayer` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/midi.lua`
+
 ## Summary
 
 - The `midi` module is the playback surface for projects that want symbolic music control instead of treating every cue as rendered audio.

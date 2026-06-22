@@ -1,5 +1,43 @@
 # Html
 
+## Purpose
+
+Runs interactive HTML/CSS documents with input routing, selector queries, and element mutations.
+
+## When To Use
+
+- Parsing, runtime document state, selectors, style resolution, layout, and event routing work together so a project can build menus, tool panels, and overlays with a web-like authoring model.
+- Dynamic mutation matters because the module is not only for static documents: scripts can update attributes, styles, and content while still relying on the same layout and event system.
+- Input handling, dirty or reflow behavior, and render-command generation make the feature practical as an interactive UI stack instead of a passive HTML parser.
+
+## Minimal Example
+
+From the `lurek.html.newDocument` example block:
+
+```lua
+do
+    local doc = lurek.html.newDocument("<main id='hud'><h1>HUD</h1><p>Status</p></main>")
+    local root = doc:getRoot()
+    html_log("doc created=" .. tostring(doc ~= nil))
+    html_log("root tag=" .. root:getTagName())
+    html_log("html length=" .. #doc:getHtml())
+    html_log("type=" .. doc:type())
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.html.isDefaultPrevented` when exploring this module.
+- Start with `lurek.html.loadDocument` when exploring this module.
+- Start with `lurek.html.newDocument` when exploring this module.
+- Start with `lurek.html.preventDefault` when exploring this module.
+- Start with `lurek.html.stopPropagation` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/html.lua`
+
 ## Summary
 
 - The `html` module is the in-engine document-style UI surface for users who want markup, styles, and DOM-like interaction inside the runtime.

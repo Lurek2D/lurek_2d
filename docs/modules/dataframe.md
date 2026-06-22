@@ -1,5 +1,45 @@
 # Dataframe
 
+## Purpose
+
+Manages DataFrames, databases, SQL query execution, and lazy pipelines.
+
+## When To Use
+
+- At its core are DataFrame and Database concepts that let a project work with both standalone tables and related multi-table collections, which is important because some workflows are local column operations while others look more like lightweight analytics databases.
+- Query behavior is deliberately broad. Filtering, sorting, slicing, grouping, joining, pivoting, window calculations, ranking, cumulative metrics, and percent-change analysis all live under the same module family so data processing can stay close to the game or tool using it.
+- SQL-like execution makes the feature practical for users who think declaratively, while direct frame methods keep it approachable for scripts that prefer explicit programmatic transformation.
+
+## Minimal Example
+
+From the `lurek.dataframe.newDataFrame` example block:
+
+```lua
+do
+-- Creates an empty dataframe with no columns or rows
+  -- newDataFrame builds an empty frame; define columns before inserting rows.
+  local df = lurek.dataframe.newDataFrame()
+  df:addColumn("name", "")
+  df:addColumn("score", 0)
+  df:addRow({name = "Alice", score = 1200})
+  dataframe_log("scoreboard rows=" .. df:nrows() .. " cols=" .. df:ncols())
+  dataframe_log("first player=" .. df:getValue(1, "name"))
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.dataframe.fromBinary` when exploring this module.
+- Start with `lurek.dataframe.fromCSV` when exploring this module.
+- Start with `lurek.dataframe.fromCSVFile` when exploring this module.
+- Start with `lurek.dataframe.fromCSVFileAsync` when exploring this module.
+- Start with `lurek.dataframe.fromJSON` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/dataframe.lua`
+
 ## Summary
 
 - The `dataframe` module is the engine's tabular-data workspace for users who want table-shaped information to be loaded, queried, transformed, summarized, and exported without leaving the runtime.

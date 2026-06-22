@@ -1,5 +1,44 @@
 # Province
 
+## Purpose
+
+Simulates region maps decoded from color-coded PNG cartographic assets.
+
+## When To Use
+
+- Topology, registries, imports, labels, caches, route helpers, property layers, render bridges, and view transforms matter because a province map is more than a color fill; it is a structured graph of regions with state and presentation rules.
+- Province identity is central from the user perspective. Scripts need to ask which region an area belongs to, how regions connect, what properties they carry, and how those answers change over time.
+- Ownership, labels, borders, and view helpers make the module useful for strategy maps, campaign layers, regional simulations, and UI-heavy territory systems where territory data must be both playable and readable.
+
+## Minimal Example
+
+From the `lurek.province.newFromPng` example block:
+
+```lua
+do
+    local reg = province_registry("new_from_png")
+    local width = reg:getWidth()
+    local height = reg:getHeight()
+    local ids = reg:provinceIds()
+    local first_id = ids[1]
+    local first_neighbors = first_id and #reg:getNeighbors(first_id) or 0
+    province_log("campaign map loaded name=" .. reg:getName() .. " size=" .. tostring(width) .. "x" .. tostring(height) .. " provinces=" .. tostring(#ids) .. " frontier_neighbors=" .. tostring(first_neighbors))
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.province.clearProperties` when exploring this module.
+- Start with `lurek.province.exists` when exploring this module.
+- Start with `lurek.province.get` when exploring this module.
+- Start with `lurek.province.getActive` when exploring this module.
+- Start with `lurek.province.getAttr` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/province.lua`
+
 ## Summary
 
 - The `province` module is the engine's territory-region system for users who want named areas, borders, ownership, routing, and province-like gameplay state to behave as one native feature.

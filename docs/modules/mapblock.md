@@ -1,5 +1,43 @@
 # Mapblock
 
+## Purpose
+
+Assembles tilemaps from block pieces using socket rules, scripts, and multi-level grids.
+
+## When To Use
+
+- Blocks, sockets, constraints, groups, scripts, orientation rules, and multilevel placement live together here so handcrafted pieces can recombine without losing local design intent.
+- The module is especially useful for dungeons, modular interiors, overworld chunks, and other generators where the meaningful unit is a room or chunk rather than an individual tile.
+- Constraint and socket logic are central because modular generation only works when legal adjacency, facing, and connector rules remain explicit and enforceable.
+
+## Minimal Example
+
+From the `lurek.mapblock.newConfig` example block:
+
+```lua
+do
+    local cfg = lurek.mapblock.newConfig()
+    cfg:addSlot("detail", false, 0)
+    local slots = cfg:getSlotCount()
+    mapblock_log("newConfig slotCount=" .. slots)
+    mapblock_log("newConfig supports detail slot=" .. tostring(slots > 0))
+    mapblock_log("newConfig ready for layered room blocks")
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.mapblock.newBlock` when exploring this module.
+- Start with `lurek.mapblock.newConfig` when exploring this module.
+- Start with `lurek.mapblock.newEmptyConfig` when exploring this module.
+- Start with `lurek.mapblock.newEmptyGrid` when exploring this module.
+- Start with `lurek.mapblock.newGenerator` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/mapblock.lua`
+
 ## Summary
 
 - The `mapblock` module is the engine's modular map-assembly surface for users who want larger spaces built from reusable authored blocks instead of from one monolithic generator.

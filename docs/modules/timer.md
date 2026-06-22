@@ -1,5 +1,43 @@
 # Timer
 
+## Purpose
+
+Clock system with smoothed deltas, FPS telemetry, and schedulers for timed callbacks and coroutines.
+
+## When To Use
+
+- Clocks, accumulators, schedulers, and sleep helpers live together here so one module can cover frame deltas, elapsed tracking, wall-time waits, and callback scheduling.
+- That matters because different systems rely on time in different ways: some need smooth frame metrics, some need deferred events, and some need accumulated timing without drift or ad hoc frame math.
+- Delayed callbacks, repeating intervals, and cancelable timer handles give gameplay, UI, and tooling code a structured way to express future work instead of scattering timing state through unrelated systems.
+
+## Minimal Example
+
+From the `lurek.timer.getDelta` example block:
+
+```lua
+do
+    local dt = lurek.timer.getDelta()
+    local fps = lurek.timer.getFPS()
+    local avg = lurek.timer.getAverageDelta()
+    local smoothed = lurek.timer.getSmoothedDelta()
+    lurek.log.info("frame delta = " .. dt .. " seconds")
+    lurek.log.info("fps=" .. fps .. " avg=" .. avg .. " smoothed=" .. smoothed)
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.timer.afterReal` when exploring this module.
+- Start with `lurek.timer.chain` when exploring this module.
+- Start with `lurek.timer.getAverageDelta` when exploring this module.
+- Start with `lurek.timer.getDelta` when exploring this module.
+- Start with `lurek.timer.getFPS` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/timer.lua`
+
 ## Summary
 
 - The `timer` module is the shared time-management surface for users who need clocks, delayed callbacks, repeating work, and timing queries to behave consistently.

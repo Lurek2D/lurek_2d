@@ -1,5 +1,40 @@
 # Save
 
+## Purpose
+
+Manages game saves with compression, auto-save timers, and schema migrations.
+
+## When To Use
+
+- Save managers, metadata, migration support, schema versions, and summary information work together so save files can evolve over time without every project rolling its own compatibility rules.
+- That matters because persistence is usually more than writing bytes: projects also need naming, summaries, migration paths, and validation.
+- It also needs a clear lifecycle for selecting, migrating, and restoring stored game state.
+
+## Minimal Example
+
+From the `lurek.save.newSaveManager` example block:
+
+```lua
+do
+    ---@type LSaveManager
+    local mgr = lurek.save.newSaveManager()
+    mgr:setSummary("New Game")
+    mgr:setSchemaVersion(1)
+    example_print_log("type = " .. mgr:type())
+    example_print_log("is LSaveManager = " .. tostring(mgr:typeOf("LSaveManager")))
+    example_print_log("summary = " .. mgr:getSummary())
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.save.newSaveManager` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/save.lua`
+
 ## Summary
 
 - The `save` module is the persistence-lifecycle surface for users who want game state to be stored, versioned, and restored as a managed workflow instead of a raw file dump.

@@ -1,5 +1,43 @@
 # Window
 
+## Purpose
+
+Manages OS window lifecycles, displays, VSync syncs, and viewport scaling with native dialogs.
+
+## When To Use
+
+- Event-loop display data, staged window-management requests, and viewport conversion helpers work together so a project can reason about screen state without embedding platform-specific code in gameplay modules.
+- Fullscreen choices, placement, resizing, file-dialog support, and coordinate conversion matter because the window is both a presentation target and a user-facing operating-system object.
+- The module is useful for settings screens, startup configuration, tool windows, and any feature that needs to query or change how the engine occupies the desktop.
+
+## Minimal Example
+
+From the `lurek.window.getDimensions` example block:
+
+```lua
+do
+    local w, h = lurek.window.getDimensions()
+    local pixel_w, pixel_h = lurek.window.getPixelDimensions()
+    local dpi = lurek.window.getDPIScale()
+    local title = lurek.window.getTitle()
+    lurek.log.info("window '" .. title .. "' dimensions = " .. w .. "x" .. h)
+    lurek.log.info("pixel size = " .. pixel_w .. "x" .. pixel_h .. " dpi=" .. dpi)
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.window.close` when exploring this module.
+- Start with `lurek.window.flash` when exploring this module.
+- Start with `lurek.window.focus` when exploring this module.
+- Start with `lurek.window.fromPixels` when exploring this module.
+- Start with `lurek.window.getCurrentDisplay` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/window.lua`
+
 ## Summary
 
 - The `window` module is the desktop-window control surface for users who need display selection, viewport scaling, mode changes, and OS-facing window behavior under one runtime API.

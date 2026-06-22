@@ -1,5 +1,40 @@
 # Ecs
 
+## Purpose
+
+Manages an Entity-Component-System database with generational IDs.
+
+## When To Use
+
+- Its core value is separation of identity from data. Entities provide stable handles, components hold structured state, and systems or queries interpret that state without forcing one rigid object hierarchy.
+- Generational handles, dynamic component attachment, tags, layers, and relationships make the model practical for varied world populations such as actors, props, projectiles, and temporary runtime markers.
+- Query views and dirty tracking are especially important because downstream systems need efficient access to exactly the slices of world state they care about.
+
+## Minimal Example
+
+From the `lurek.ecs.newUniverse` example block:
+
+```lua
+do
+    local uni = lurek.ecs.newUniverse()
+    local hero = uni:spawn()
+    uni:set(hero, "name", "hero")
+    local entities = uni:getEntities()
+    local count = uni:getEntityCount()
+    ecs_log("universe created count=" .. tostring(count) .. " first_id=" .. tostring(entities[1]) .. " hero_name=" .. tostring(uni:get(hero, "name")))
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.ecs.newRelationshipManager` when exploring this module.
+- Start with `lurek.ecs.newUniverse` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/ecs.lua`
+
 ## Summary
 
 - The `ecs` module is the engine's entity-component world model for users who want gameplay state to scale through entities, components, queries, and scheduled systems.

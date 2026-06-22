@@ -1,5 +1,43 @@
 # Raycaster
 
+## Purpose
+
+Simulates pseudo-3D first-person views from 2D maps using DDA marching.
+
+## When To Use
+
+- Its technical base is DDA-style ray traversal over map-aligned space, but the important user-facing point is that the module turns that low-level technique into a complete first-person workflow with scene building, interaction helpers, lighting hooks, and deterministic output options.
+- The module is valuable because it solves the interpretation layer between a tile or cell world and a playable camera view. Users provide structured world data, and raycaster decides how that data becomes walls, depth, occlusion, visible openings, and navigable perspective.
+- This matters most in projects that want first-person presence without the complexity of general 3D mesh authoring, continuous physics, and fully free camera semantics. The system stays constrained enough to be authorable and testable while still producing a convincing viewpoint.
+
+## Minimal Example
+
+From the `lurek.raycaster.new` example block:
+
+```lua
+do
+    local map = lurek.raycaster.new(16, 16)
+    map:setCell(1, 1, 2)
+    ray_log("new width=" .. map:width())
+    ray_log("new height=" .. map:height())
+    ray_log("spawn cell=" .. map:getCell(1, 1))
+    ray_log("spawn blocked=" .. tostring(map:isBlocked(1, 1)))
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.raycaster.applyLitShade` when exploring this module.
+- Start with `lurek.raycaster.buildMultiLevelScene` when exploring this module.
+- Start with `lurek.raycaster.buildMultiLevelSceneFromAdapter` when exploring this module.
+- Start with `lurek.raycaster.distanceShade` when exploring this module.
+- Start with `lurek.raycaster.getLastBuildStats` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/raycaster.lua`
+
 ## Summary
 
 - The `raycaster` module is the engine's pseudo-3D first-person view system for users who want corridor shooters, dungeon crawlers, exploration views, or tactical previews built from structured 2D world data instead of from a full freeform 3D engine stack.

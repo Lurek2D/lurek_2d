@@ -12,7 +12,9 @@
 - [Short Path](#short-path)
 - [Wiki Map](#wiki-map)
 
-Lurek2D is a single-binary 2D runtime for games written in Lua. This wiki is generated from the current specs, examples, reference games, and Lua API artifacts.
+Lurek2D is a Lua-first 2D runtime and toolkit for games, simulations, visual tools, and interactive desktop apps.
+
+This generated Wiki is the friendly cookbook and quick-guide layer. The full `lurek.*` API lives in `docs/api/` and on GitHub Pages, not in the Wiki.
 
 ## Project Snapshot
 
@@ -28,7 +30,7 @@ Lurek2D is a single-binary 2D runtime for games written in Lua. This wiki is gen
 1. [Getting Started](Getting-Started) - orientation and first commands.
 2. [First Game](First-Game) - minimal game script.
 3. [Modules](Modules) - choose the right `lurek.*` namespace.
-4. [API](API) - detailed functions, methods, types, and examples.
+4. [API](API) - where to find the official full API reference.
 
 ## Wiki Map
 

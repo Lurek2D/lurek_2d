@@ -23,7 +23,7 @@ LEGACY_LOGS_DATA = module_registry.LEGACY_LOGS_DATA
 LUA_API_JSON = module_registry.lua_api_json_path()
 EXAMPLES_DIR = ROOT / "content" / "examples"
 OUT_DIR = ROOT / "docs" / "modules"  # MkDocs input - Lua API module markdown documentation
-CALLBACKS_MD = ROOT / "docs" / "callbacks.md"
+CALLBACKS_MD = ROOT / "docs" / "api" / "callbacks.md"
 
 # ---------------------------------------------------------------------------
 # Spec description extraction
@@ -281,6 +281,35 @@ def load_examples(module: str) -> dict[str, str]:
     return result
 
 
+def clean_markdown_text(text: str) -> str:
+    """Return compact prose suitable for generated overview bullets."""
+    text = re.sub(r"\[([^\]]+)\]\([^\)]+\)", r"\1", text)
+    text = text.replace("`", "")
+    text = re.sub(r"\s+", " ", text)
+    return text.strip(" -")
+
+
+def first_bullets(markdown: str, limit: int) -> list[str]:
+    bullets: list[str] = []
+    for line in markdown.splitlines():
+        stripped = line.strip()
+        if not stripped.startswith("- "):
+            continue
+        bullet = clean_markdown_text(stripped[2:])
+        if bullet:
+            bullets.append(bullet)
+        if len(bullets) >= limit:
+            break
+    return bullets
+
+
+def first_example_block(examples: dict[str, str]) -> tuple[str, str] | None:
+    for key, code in examples.items():
+        if code.strip():
+            return key, code.strip()
+    return None
+
+
 # ---------------------------------------------------------------------------
 # Page renderer
 # ---------------------------------------------------------------------------
@@ -453,6 +482,59 @@ def build_page(
 
     out = []
     out.append(f"# {module.title()}")
+    out.append("")
+
+    purpose_text = ""
+    tldr_bullets = first_bullets(spec.get("tldr", ""), 1)
+    summary_bullets = first_bullets(summary_text, 4)
+    if tldr_bullets:
+        purpose_text = tldr_bullets[0]
+    elif summary_bullets:
+        purpose_text = summary_bullets[0]
+
+    out.append("## Purpose")
+    out.append("")
+    out.append(purpose_text or f"`lurek.{module}` exposes the public Lua API for the {module} module.")
+    out.append("")
+
+    out.append("## When To Use")
+    out.append("")
+    when_bullets = summary_bullets[1:4] if len(summary_bullets) > 1 else summary_bullets
+    if when_bullets:
+        for bullet in when_bullets:
+            out.append(f"- {bullet}")
+    else:
+        out.append(f"- Use this module when a script needs the `{module}` runtime capability through `lurek.*`.")
+    out.append("")
+
+    out.append("## Minimal Example")
+    out.append("")
+    example = first_example_block(examples)
+    if example:
+        key, code = example
+        out.append(f"From the `{key}` example block:")
+        out.append("")
+        out.append("```lua")
+        out.append(code)
+        out.append("```")
+    else:
+        out.append(f"See `content/examples/{module}.lua` for runnable examples when this module has public examples.")
+    out.append("")
+
+    out.append("## Common Patterns")
+    out.append("")
+    pattern_names = [entry["full_name"] for entry in sorted(module_fns.get(module, []), key=lambda e: e["name"])[:5]]
+    if pattern_names:
+        for name in pattern_names:
+            out.append(f"- Start with `{name}` when exploring this module.")
+    else:
+        out.append("- Check the module summary and related examples before using lower-level details.")
+    out.append("")
+
+    out.append("## API Reference")
+    out.append("")
+    out.append(f"- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)")
+    out.append(f"- Runnable example owner: `content/examples/{module}.lua`")
     out.append("")
 
     if summary_text:
@@ -661,8 +743,8 @@ def build_callbacks_page() -> str:
 
     out.append("## Sources")
     out.append("")
-    out.append("- [Spec callbacks](specs/callbacks.md)")
-    out.append("- [Generated API (Markdown)](api/lurek.md)")
+    out.append("- [Spec callbacks](https://github.com/Lurek2D/lurek_2d/blob/main/docs/specs/callbacks.md)")
+    out.append("- [Generated API (Markdown)](lurek.md)")
     out.append("")
 
     return "\n".join(out)

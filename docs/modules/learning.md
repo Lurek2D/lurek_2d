@@ -1,5 +1,46 @@
 # Learning
 
+## Purpose
+
+Manages dynamic neural nets, attention blocks, transformers, and flat tensor buffers.
+
+## When To Use
+
+- Its defining feature is breadth across learning styles. Tensor math, feedforward models, convolutional structures, recurrent logic, attention, transformer-style components, Q-learning, bandits, genetic algorithms, and neuroevolution all coexist because game-related learning problems vary widely.
+- That breadth matters because one project may want inference from a pretrained model, another may want online adaptation, and another may want population-based search or discrete action learning rather than gradient-heavy end-to-end training.
+- The module therefore acts less like a single ML framework and more like an engine-owned research and experimentation toolkit with several entry points.
+
+## Minimal Example
+
+From the `lurek.learning.newNeuralNet` example block:
+
+```lua
+do
+    local net = lurek.learning.newNeuralNet()
+    net:addLayer(3, 4, "linear")
+    local net_layers = net:layerCount()
+    net:addLayer(4, 4, "relu")
+    net:addLayer(4, 2, "softmax")
+
+    local output = net:forward({ 0.2, 0.6, -0.1 })
+    example_print_log("lurek.learning.newNeuralNet layers", net:layerCount())
+    example_print_log("lurek.learning.newNeuralNet firstOutput", output[1])
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.learning.defineEnv` when exploring this module.
+- Start with `lurek.learning.frameStack` when exploring this module.
+- Start with `lurek.learning.loadOnnx` when exploring this module.
+- Start with `lurek.learning.newBandit` when exploring this module.
+- Start with `lurek.learning.newConv2D` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/learning.lua`
+
 ## Summary
 
 - The `learning` module is the engine's machine-learning and adaptive-policy surface for users who want experimentation, inference, and lightweight training loops to live inside the same runtime as gameplay and tooling code.

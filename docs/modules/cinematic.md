@@ -1,5 +1,37 @@
 # Cinematic
 
+## Purpose
+
+Multi-track timeline system for orchestrating game sequences.
+
+## When To Use
+
+- Use this module when a script needs the `cinematic` runtime capability through `lurek.*`.
+
+## Minimal Example
+
+From the `lurek.cinematic.newTimeline` example block:
+
+```lua
+do
+    local timeline = lurek.cinematic.newTimeline()
+    timeline:addTrack("camera")
+    local state = timeline:getState()
+    local type_name = timeline:type()
+    cinematic_log("new timeline type=" .. type_name .. " state=" .. state)
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.cinematic.new` when exploring this module.
+- Start with `lurek.cinematic.newTimeline` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/cinematic.lua`
+
 ## Summary
 
 The `cinematic` module is the timeline authoring surface for cutscenes, scripted reveals, and other multi-system sequences. It lets motion, camera, audio, tween, and signal tracks advance against one playhead so designers can choreograph timing instead of hand-synchronizing callbacks. Playback controls such as play, pause, seek, loop, labels, and branching keep the same timeline useful for both fixed sequences and reactive presentation logic. It gives multi-system presentation one explicit sequencing surface inside the engine.

@@ -1,5 +1,43 @@
 # Patterns
 
+## Purpose
+
+Provides a comprehensive architectural toolkit for state, decision, and communication coordination.
+
+## When To Use
+
+- Its defining value is that it packages recurring design patterns as runtime-ready components rather than leaving them as abstract advice. A project can directly use an event bus, a behavior tree, a bounded queue, a blackboard, or a command history instead of re-deriving those ideas from scratch.
+- Decision and control-flow patterns are a major part of the surface. Behavior trees, state machines, and related orchestration helpers provide stable ways to express staged logic, branching behavior, mode transitions, and rule-driven execution.
+- That is useful even outside ai, because many systems need explicit control flow: scripted encounters, UI workflows, tool wizards, tutorial logic, job pipelines, and editor modes all benefit from the same transition-oriented vocabulary.
+
+## Minimal Example
+
+From the `lurek.patterns.newServiceLocator` example block:
+
+```lua
+do
+    local services = lurek.patterns.newServiceLocator()
+    services:provide("audio", {volume = 0.8, muted = false})
+    services:provide("input", {keyboard = true, mouse = true})
+    local audio = services:locate("audio")
+    local service_count = #services:getServices()
+    patterns_log("service locator ready has_audio=" .. tostring(services:has("audio")) .. " service_count=" .. tostring(service_count) .. " audio_volume=" .. tostring(audio and audio.volume))
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.patterns.newBehaviorTree` when exploring this module.
+- Start with `lurek.patterns.newBlackboard` when exploring this module.
+- Start with `lurek.patterns.newCommandStack` when exploring this module.
+- Start with `lurek.patterns.newDebounce` when exploring this module.
+- Start with `lurek.patterns.newEventBus` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/patterns.lua`
+
 ## Summary
 
 - The `patterns` module is the engine's reusable architectural toolkit for users who want common coordination, control-flow, storage, and utility structures implemented once and then reused across gameplay, tools, UI, AI, and automation features.

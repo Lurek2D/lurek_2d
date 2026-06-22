@@ -1,5 +1,43 @@
 # Grep
 
+## Purpose
+
+Provides literal-first file scanning, lightweight pattern helpers, and JSON/log searches.
+
+## When To Use
+
+- Search configuration, path filtering, matching, and specialized JSON or log helpers work together so one module can cover ordinary content search as well as more structured diagnostic queries.
+- Literal-first behavior matters because many runtime and tooling searches are about exact identifiers, paths, or messages rather than full external-regex-engine complexity.
+- Threaded scanning and result shaping make the module practical for tools, editors, audit scripts, and content workflows that need search without leaving the project runtime.
+
+## Minimal Example
+
+From the `lurek.grep.newEngine` example block:
+
+```lua
+do
+    local paths = fixture_paths()
+    local engine = lurek.grep.newEngine()
+    local result = engine:search(paths.search, "needle")
+    local total = result.total_matches
+    local files = result.files_searched
+    grep_log("newEngine files=" .. files .. " total_matches=" .. total)
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.grep.jsonSearch` when exploring this module.
+- Start with `lurek.grep.logSearch` when exploring this module.
+- Start with `lurek.grep.luaFilter` when exploring this module.
+- Start with `lurek.grep.newEngine` when exploring this module.
+- Start with `lurek.grep.newEngineOpts` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/grep.lua`
+
 ## Summary
 
 - The `grep` module is the scriptable text-search surface for users who want to scan project files, logs, or structured content from inside the engine environment.

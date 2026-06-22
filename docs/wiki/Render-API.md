@@ -1,14 +1,16 @@
-<!-- Manual wiki stub kept for audit_module W-05. Prefer docs/specs/render.md and docs/api/lurek.md for canonical generated reference. -->
+<!-- Manual wiki stub kept for audit_module W-05. This is not a full API reference. Prefer GitHub Pages and docs/api/lurek.md for canonical generated API docs. -->
 
 # Render API
 
-`lurek.render` exposes image loading, canvases, text, mesh drawing, shader setup, batching, and low-level draw queue helpers for Lua games.
+`lurek.render` exposes image loading, canvases, text, mesh drawing, shader setup, batching, and draw queue helpers for Lua games, simulations, visual tools, and interactive apps.
+
+This Wiki page is a pointer only. Full signatures, parameters, returns, and examples live in the generated API docs.
 
 Canonical references:
 
-- [`docs/specs/render.md`](/c:/Users/tombl/Documents/lurek_2D/docs/specs/render.md)
-- [`docs/api/lurek.md`](/c:/Users/tombl/Documents/lurek_2D/docs/api/lurek.md)
-- [`src/lua_api/render_api.rs`](/c:/Users/tombl/Documents/lurek_2D/src/lua_api/render_api.rs)
+- [`docs/specs/render.md`](../blob/main/docs/specs/render.md)
+- [`docs/api/lurek.md`](../blob/main/docs/api/lurek.md)
+- [`src/lua_api/render_api.rs`](../blob/main/src/lua_api/render_api.rs)
 
 Current maintenance notes:
 

@@ -1,5 +1,42 @@
 # Tween
 
+## Purpose
+
+Timed interpolation engine supporting easing curves, spring dynamics, and sequence composition with coroutine awaiting.
+
+## When To Use
+
+- Tweens, handles, chains, grouped sequences, interpolators, and springs all live together here so one-off transitions and larger scripted motion can share one model.
+- This matters because many features need shaped progression, not just endpoint changes: UI reveals, camera motion, gameplay feedback, and scripted effects all depend on timing semantics.
+- Easing and spring behavior give the module expressive range, while handle-based control makes active transitions inspectable, cancelable, and synchronizable.
+
+## Minimal Example
+
+From the `lurek.tween.tween` example block:
+
+```lua
+do
+    local obj = { x = 0, y = 0 }
+    local tw = lurek.tween.tween(1.0, obj, { x = 100, y = 50 })
+    example_print_log("type = " .. tw:type())
+    lurek.tween.update(0.5)
+    example_print_log("at 0.5s: x=" .. obj.x .. " y=" .. obj.y)
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.tween.cancelAll` when exploring this module.
+- Start with `lurek.tween.delay` when exploring this module.
+- Start with `lurek.tween.getActiveCount` when exploring this module.
+- Start with `lurek.tween.getEasingNames` when exploring this module.
+- Start with `lurek.tween.newChain` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/tween.lua`
+
 ## Summary
 
 - The `tween` module is the engine's interpolation and motion-sequencing surface for users who want values to change over time without hand-writing frame-by-frame update loops.

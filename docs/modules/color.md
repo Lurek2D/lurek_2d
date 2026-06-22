@@ -1,5 +1,42 @@
 # Color
 
+## Purpose
+
+Manages color spaces, blends, and retro palettes.
+
+## When To Use
+
+- It combines low-level color math with practical authoring workflows, so scripts can move between RGB, HSL, HSV, hex, blending, and interpolation without custom conversion helpers.
+- That makes it useful for themes, fades, highlights, palette work, and effect tuning.
+- Read it as the common color language for the engine: other systems decide where color is used, but color keeps conversion, composition, and palette logic consistent.
+
+## Minimal Example
+
+From the `lurek.color.new` example block:
+
+```lua
+do
+    local c = lurek.color.new(0.2, 0.6, 0.9, 1.0)
+    local h, s, l = lurek.color.toHsl(c[1], c[2], c[3])
+    example_print_log("color r=" .. c[1] .. " g=" .. c[2] .. " b=" .. c[3] .. " a=" .. c[4])
+    example_print_log("hex = " .. lurek.color.toHex(c[1], c[2], c[3], c[4]))
+    example_print_log("hsl = " .. string.format("%.1f, %.2f, %.2f", h, s, l))
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.color.additive` when exploring this module.
+- Start with `lurek.color.alphaBlend` when exploring this module.
+- Start with `lurek.color.brightness` when exploring this module.
+- Start with `lurek.color.fromHex` when exploring this module.
+- Start with `lurek.color.fromHsl` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/color.lua`
+
 ## Summary
 
 - The `color` module is the shared toolbox for defining, converting, and reusing runtime color values across the engine.

@@ -1,5 +1,40 @@
 # Overlay
 
+## Purpose
+
+Manages screen-space weather, fog, camera shakes, and screen flashes.
+
+## When To Use
+
+- It groups full-screen and near-full-screen effects that are too global to belong to an individual sprite but too specialized to live as loose render hacks.
+- This matters for fog washes, rain veils, damage flashes, atmospheric tinting, transition masks, and similar treatments that need their own timing and configuration rules.
+- Weather, ambient mood, distortion-style effects, and transition controllers all belong here because they usually evolve over time rather than acting like static post-process toggles.
+
+## Minimal Example
+
+From the `lurek.overlay.new` example block:
+
+```lua
+do
+    local ov = lurek.overlay.new(800, 600)
+    local w, h = ov:getDimensions()
+    overlay_log("new type=" .. ov:type())
+    overlay_log("new size=" .. w .. "x" .. h)
+    overlay_log("new width=" .. ov:getWidth())
+    overlay_log("new height=" .. ov:getHeight())
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.overlay.new` when exploring this module.
+- Start with `lurek.overlay.newTransition` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/overlay.lua`
+
 ## Summary
 
 - The `overlay` module is the engine's screen-layer presentation surface for users who want weather, atmosphere, transitions, and other scene-wide visual treatments to behave as one coherent system.

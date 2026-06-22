@@ -41,7 +41,7 @@ Companion documents: [philosophy.md](philosophy.md) · [module-scope-boundaries.
 
 ## Overview
 
-Lurek2D is a 2D game engine written in Rust that loads and executes Lua game scripts. A game is a `main.lua` file. The engine owns the GPU, the physics solver, the audio mixer, and the threading model. The developer writes Lua; the engine handles everything else.
+Lurek2D is a Lua-first 2D runtime and toolkit written in Rust. It loads Lua scripts for games, simulations, visual tools, and interactive desktop apps. The Rust core owns the GPU, physics solver, audio mixer, filesystem boundary, and threading model. The developer writes Lua against the public `lurek.*` API.
 
 Key design principles (from [philosophy.md](philosophy.md)):
 

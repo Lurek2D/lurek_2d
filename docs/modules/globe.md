@@ -1,5 +1,42 @@
 # Globe
 
+## Purpose
+
+Manages spherical map registries, orbit projections, picking hit tests, and split views.
+
+## When To Use
+
+- It combines region topology, spherical navigation, camera movement, picking, overlays, labels, markers, fog, lighting, and style control so the globe can serve as a strategic layer, simulation view, or inspectable data surface.
+- The module owns both interaction and presentation: users can navigate the sphere, click into it, convert screen interactions into geographic meaning, and layer game-specific information on top.
+- Region adjacency and route helpers matter because many globe-driven games treat the world as a graph of territories, paths, logistics, or influence rather than as a sphere to admire.
+
+## Minimal Example
+
+From the `lurek.globe.MAX_PROVINCES` example block:
+
+```lua
+do
+    local g = lurek.globe.new("capacity_globe")
+    g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
+    local count = g:provinceCount()
+    example_print_log("max provinces = " .. lurek.globe.MAX_PROVINCES)
+    example_print_log("capacity ok = " .. tostring(lurek.globe.MAX_PROVINCES > 0))
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.globe.generateVoronoi` when exploring this module.
+- Start with `lurek.globe.get` when exploring this module.
+- Start with `lurek.globe.greatCircleDistance` when exploring this module.
+- Start with `lurek.globe.greatCirclePath` when exploring this module.
+- Start with `lurek.globe.latLonToUnit` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/globe.lua`
+
 ## Summary
 
 - The `globe` module is the planetary-map surface for users who want a world-scale spherical view to behave as a full gameplay and tooling system instead of a decorative background.

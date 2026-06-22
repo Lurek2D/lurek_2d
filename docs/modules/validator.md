@@ -1,5 +1,41 @@
 # Validator
 
+## Purpose
+
+Static validator verifying APIs, assets, and imports.
+
+## When To Use
+
+- Rule types, execution policy, engine orchestration, and report structures work together so several validation checks can be run through one reusable framework.
+- That matters because a project often needs to catch different classes of mistakes, such as missing assets or invalid lurek.* usage, before those problems become runtime failures.
+- It is therefore useful for CI, local authoring passes, and package or mod checks.
+
+## Minimal Example
+
+From the `lurek.validator.newEngine` example block:
+
+```lua
+do
+    local eng = lurek.validator.newEngine("content/examples")
+    local before = eng:ruleCount()
+    eng:addApiRule()
+    example_print_log("lurek.validator.newEngine type=" .. type(eng))
+    example_print_log("rule count before=" .. before)
+    example_print_log("rule count after=" .. eng:ruleCount())
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.validator.newEngine` when exploring this module.
+- Start with `lurek.validator.validate` when exploring this module.
+- Start with `lurek.validator.validateFile` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/validator.lua`
+
 ## Summary
 
 - The `validator` module is the content-checking surface for users who want assets, imports, and API usage to be verified as a structured workflow instead of informal manual review.

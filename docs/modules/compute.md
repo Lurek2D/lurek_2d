@@ -1,5 +1,42 @@
 # Compute
 
+## Purpose
+
+Manages dense array math, linear algebra, and FFT transforms.
+
+## When To Use
+
+- Multidimensional arrays, element-wise operations, reductions, and in-place math make it practical to treat data as a structured computation surface instead of hand-written Lua loops over raw tables.
+- Linear algebra, decompositions, and solver-style helpers extend that into simulation, optimization, and transform-oriented workloads where matrix logic must stay explicit and reusable.
+- FFT, convolution, morphology, spatial processing, and statistics push the module beyond generic arithmetic, so image-like grids, signal data, and analytics pipelines can all live under one API surface.
+
+## Minimal Example
+
+From the `lurek.compute.newArray` example block:
+
+```lua
+do
+    local spawn_weights = lurek.compute.newArray({4, 4}, "float32")
+    spawn_weights:set(1, 1, 0.25)
+    spawn_weights:set(4, 4, 0.75)
+    local shape = shape_text(spawn_weights)
+    compute_log("spawn weight grid=" .. shape .. " corners=" .. spawn_weights:get(1, 1) .. "/" .. spawn_weights:get(4, 4))
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.compute.affine2d` when exploring this module.
+- Start with `lurek.compute.fft` when exploring this module.
+- Start with `lurek.compute.fftMagnitude` when exploring this module.
+- Start with `lurek.compute.fromTable` when exploring this module.
+- Start with `lurek.compute.gaussianKernel` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/compute.lua`
+
 ## Summary
 
 - The `compute` module is the dense numeric workspace for users who want array-heavy processing, analysis, and transformation logic inside the engine.

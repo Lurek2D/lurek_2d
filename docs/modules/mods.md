@@ -1,5 +1,46 @@
 # Mods
 
+## Purpose
+
+Manages mod lifecycles using dependency sorting, permission sandboxing, and hot reloads.
+
+## When To Use
+
+- Schemas, registries, loaders, managers, and sandbox rules work together so mod content can be discovered, validated, ordered, and constrained under one lifecycle.
+- Real mod workflows need more than file loading: projects also need dependency sorting, manifest metadata, capability boundaries, reload behavior, and explicit trust policy.
+- That policy layer is the main reason the module exists, because external content can be powerful without automatically receiving unrestricted code or data access.
+
+## Minimal Example
+
+From the `lurek.mods.newMod` example block:
+
+```lua
+do
+    local mod = lurek.mods.newMod({
+        id = "my_mod",
+        name = "My Mod",
+        version = "1.0.0",
+        author = "Dev",
+        description = "Example mod",
+        priority = 10,
+    })
+    mods_log("created mod id=" .. mod:getId())
+    mods_log("priority = " .. mod:getPriority())
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.mods.checkApiVersion` when exploring this module.
+- Start with `lurek.mods.newMod` when exploring this module.
+- Start with `lurek.mods.newModManager` when exploring this module.
+- Start with `lurek.mods.newRegistry` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/mods.lua`
+
 ## Summary
 
 - The `mods` module is the governed extension surface for projects that want external content packs to behave like controlled runtime extensions instead of unrestricted code drops.

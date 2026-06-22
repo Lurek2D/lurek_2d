@@ -1,5 +1,44 @@
 # Dialog
 
+## Purpose
+
+Orchestrates branching narrative graphs using conditional gates.
+
+## When To Use
+
+- Dialogue trees, speaker metadata, conditional gates, weighted branching, callbacks, waits, and jumps work together so conversations can be authored as explicit progression instead of scattered local state checks.
+- Sequencing is a core part of the value: reveal timing, advancement, and event hooks let dialogue participate in pacing, scripting, and gameplay rather than acting as a static text lookup table.
+- Variable-aware flow and state tracking make it practical to mix authored story beats with runtime-driven responses, which is important for larger RPG, strategy, and simulation interfaces.
+
+## Minimal Example
+
+From the `lurek.dialog.newAI` example block:
+
+```lua
+do
+    local ai = lurek.dialog.newAI()
+    ai:addTopic("greeting", 1.0)
+    ai:addTopic("quest_offer", 0.7)
+    local type_name = ai:type()
+    local topic_count = ai:getTopicCount()
+    lurek.log.info("dialog AI ready: " .. type_name)
+    lurek.log.info("topics prepared for tavern NPC = " .. topic_count)
+end
+```
+
+## Common Patterns
+
+- Start with `lurek.dialog.call` when exploring this module.
+- Start with `lurek.dialog.choice` when exploring this module.
+- Start with `lurek.dialog.event` when exploring this module.
+- Start with `lurek.dialog.jump` when exploring this module.
+- Start with `lurek.dialog.newAI` when exploring this module.
+
+## API Reference
+
+- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- Runnable example owner: `content/examples/dialog.lua`
+
 ## Summary
 
 - The `dialog` module is the conversation-runtime surface for users building branching narrative, tutorial flows, reactive chatter, or choice-driven exchanges.

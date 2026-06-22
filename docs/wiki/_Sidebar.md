@@ -19,10 +19,9 @@
 * [Platform Services](Modules#platform-services)
 * [Feature Systems](Modules#feature-systems)
 
-**API Indexes**
+**API Map**
 
 * [API](API)
-* [API Reference](API-Reference)
 
 **Examples And Games**
 
