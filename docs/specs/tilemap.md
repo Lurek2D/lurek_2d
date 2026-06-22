@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/tilemap.md or source docstrings instead. -->
+
 # tilemap
 
 ## TL;DR
@@ -11,12 +13,12 @@
 ## General Info
 
 - Module group: `Feature Systems`
-- Source path: `src/tilemap/`
+- Source path: `src/tilemap`
 - Binding: `src/lua_api/tilemap_api.rs`
-- Namespace: `lurek.physics`
+- Namespace: `lurek.tilemap`
 - Lua API surface: `30` functions, `23` types, `173` methods
-- Rust test path(s): tests/rust/unit/tilemap_tests.rs
-- Lua test path(s): tests/lua/unit/test_tilemap_core_unit.lua, tests/lua/stress/test_tilemap_stress.lua, tests/lua/integration/test_tilemap_physics.lua, tests/lua/integration/test_tilemap_pathfind.lua, tests/lua/integration/test_tilemap_camera.lua, tests/lua/integration/test_save_tilemap.lua, tests/lua/integration/test_procgen_tilemap.lua, tests/lua/golden/test_tilemap_golden.lua, tests/lua/evidence/test_evidence_tilemap.lua
+- User-facing: `true`
+- Plugin tier: `core_keep`
 
 ## Summary
 
@@ -43,15 +45,23 @@
 
 This module primarily collaborates with `color`, `image`, `math`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
 
+## Ownership
+
+- Canonical source: `src/tilemap`
+- Owning tier: `Feature Systems`
+- Plugin tier: `core_keep`
+- Lua binding owner: `src/lua_api/tilemap_api.rs`
+- Referenced engine modules: `color`, `image`, `math`, `render`, `runtime`
+
 ## Imports
 
-- `color`: Imports or references `src/color/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
-- `image`: Imports or references `image` from `src/image/`.
-- `math`: Imports or references `math` from `src/math/`.
-- `render`: Imports or references `render` from `src/render/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `color`: Imports or references `src/color/`. Cross-group dependency from `Feature Systems` into `Foundations`.
+- `image`: Imports or references `src/image/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
+- `math`: Imports or references `src/math/`. Cross-group dependency from `Feature Systems` into `Foundations`.
+- `render`: Imports or references `src/render/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
+- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Feature Systems` into `Core Runtime`.
 
-## Files
+## Source Files
 
 ### autotile_sheet.rs
 
@@ -65,11 +75,12 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 
 ### chunk.rs
 
-- Implements sparse chunk storage for very large tile worlds that should not allocate one full dense grid.
-- Keeps world-to-chunk and local-cell transforms precise so reads, writes, and clears hit stable addresses.
-- Provides visible-chunk queries and range updates used by streaming, culling, and large-map maintenance paths.
-- Acts as the storage boundary between raw world tile access and higher-level render or generation systems.
-- Open this file when chunk loading, addressing, fill ranges, or visible-region selection behaves incorrectly.
+- Owns the chunk owner for the tilemap subsystem and keeps its rules local to this file while keeping call sites explicit.
+- Centers the implementation around ChunkMap, DEFAULT_GID, new, with helpers kept close to their invariants.
+- Defines how chunk data is validated, transformed, or stored before neighboring systems use it.
+- Owns tilemap behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on chunk behavior while Lua registration stays elsewhere.
+- Documents the boundary where tilemap code accepts inputs, reports errors, or updates state.
 
 ### coords.rs
 
@@ -81,9 +92,12 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 
 ### error.rs
 
-- Owns typed validation and safety errors shared by tilemap constructors, queries, and import helpers.
-- It keeps failure reasons explicit so safe `try_*` APIs can reject invalid dimensions, limits, and paths consistently.
-- Open this file when tilemap callers need clearer diagnostics or when a new tilemap owner joins the shared safety contract.
+- Owns tilemap behavior with explicit state, validation, and crate-local integration boundaries.
+- Centers the implementation around TileMapError, fmt, with helpers kept close to their invariants.
+- Defines how error data is validated, transformed, or stored before neighboring systems use it.
+- Owns tilemap behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on error behavior while Lua registration stays elsewhere.
+- Documents the boundary where tilemap code accepts inputs, reports errors, or updates state.
 
 ### isomap.rs
 
@@ -114,9 +128,11 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 
 ### limits.rs
 
-- Owns shared tilemap sizing and validation limits used by safe constructors, importers, and bounded queries.
-- It centralizes checked arithmetic and default safety ceilings so tilemap owners share one resource policy.
-- Open this file when tilemap budgets or query guards change across storage, rendering, and importer code.
+- Owns tilemap behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps tilemap data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+- Defines how limits data is validated, transformed, or stored before neighboring systems use it.
+- Owns tilemap behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on limits behavior while Lua registration stays elsewhere.
 
 ### mapgen.rs
 
@@ -177,16 +193,18 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 
 ### tilemap.rs
 
-- Defines the core layered tilemap data model used by simulation, collision, generation, and rendering paths.
-- Stores per-cell gids, per-layer visibility, tint, parallax, and geometry settings under one coherent runtime.
-- Resolves global ids through attached tilesets so tile ownership and atlas lookup stay deterministic.
-- Computes autotile neighborhood masks and substitution results that preserve terrain continuity across edits.
-- Performs swept collision checks against solid tiles for movement systems that need stable tile-based blocking.
-- Advances animated tile timelines from tileset frame data so visual state updates stay tied to map content.
-- Converts between world and tile coordinates using the active map geometry instead of hardcoded projection math.
-- Emits culled draw commands for viewport-scoped debug or runtime visualization without duplicating map scans.
-- Acts as the operational boundary for layered tile storage rather than external import or large-map chunk policy.
-- Open this file when layered map state, autotiling, collisions, or coordinate conversion behaves incorrectly.
+- Owns tilemap behavior with explicit state, validation, and crate-local integration boundaries.
+- Centers the implementation around TileLayer, index, try_new, with helpers kept close to their invariants.
+- Defines how tilemap data is validated, transformed, or stored before neighboring systems use it.
+- Owns tilemap behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on tilemap behavior while Lua registration stays elsewhere.
+- Documents the boundary where tilemap code accepts inputs, reports errors, or updates state.
+- Use this file when changing tilemap defaults, lifecycle handling, validation, or data ownership.
+- Keeps failure paths and edge cases near the tilemap state that can explain them while keeping call sites explicit.
+- Preserves deterministic behavior by keeping tilemap calculations explicit at their owner boundary.
+- Provides the local adaptation layer that lets callers avoid duplicating tilemap rules while keeping call sites explicit.
+- Maintains small helper surfaces so broader engine modules can compose tilemap behavior safely.
+- Protects subsystem contracts by keeping resource, cache, or state mutations visible in one place.
 
 ### tilemap_collision.rs
 
@@ -203,22 +221,24 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 
 ### tileset.rs
 
-- Defines tileset geometry and metadata that map gids onto atlas rectangles, solidity, and animation sequences.
-- Computes source quads from local ids so renderer code can sample the correct sprite region deterministically.
-- Stores per-tile solidity and animation data used by collision, filtering, and animated map presentation.
-- Acts as the atlas-metadata boundary between raw tilesheet images and higher-level map storage owners.
-- Open this file when tile quad lookup, solid flags, or animated tileset frame data behaves incorrectly.
+- Owns tilemap behavior with explicit state, validation, and crate-local integration boundaries.
+- Centers the implementation around TileAnimFrame, TileSet, new, with helpers kept close to their invariants.
+- Defines how tileset data is validated, transformed, or stored before neighboring systems use it.
+- Owns tilemap behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on tileset behavior while Lua registration stays elsewhere.
+- Documents the boundary where tilemap code accepts inputs, reports errors, or updates state.
 
 ### tmx.rs
 
-- Loads Tiled TMX maps into engine tile structures while preserving orientation, layers, objects, and tilesets.
-- Supports TMX orientation modes so authored content can target orthogonal, isometric, and hex-style layouts.
-- Decodes csv, xml, and compressed base64 tile payloads into stable gid streams used by runtime map storage.
-- Parses tileset geometry and metadata required for atlas lookup, collision filtering, and tile animation.
-- Ingests object layers so placement, sizing, and semantic type annotations survive the import boundary.
-- Strips flip flags from raw gids so stored tile identity remains clean, comparable, and easy to post-process.
-- Keeps TMX-specific error handling local instead of mixing format policy into procedural or LDtk importers.
-- Open this file when TMX import, gid decoding, orientation handling, or object-layer parsing is incorrect.
+- Owns the tmx owner for the tilemap subsystem and keeps its rules local to this file while keeping call sites explicit.
+- Keeps tilemap data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+- Defines how tmx data is validated, transformed, or stored before neighboring systems use it.
+- Owns tilemap behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on tmx behavior while Lua registration stays elsewhere.
+- Documents the boundary where tilemap code accepts inputs, reports errors, or updates state.
+- Use this file when changing tmx defaults, lifecycle handling, validation, or data ownership.
+- Keeps failure paths and edge cases near the tilemap state that can explain them while keeping call sites explicit.
+- Preserves deterministic behavior by keeping tmx calculations explicit at their owner boundary.
 
 
 
@@ -536,11 +556,11 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 - `LTileMap:tileToWorld(tx, ty) -> number`: Converts tile-grid coordinates to world-space pixel coordinates (top-left corner of the tile).
 - `LTileMap:tileTypeIndex(layer) -> table`: Builds an index mapping each GID present on a layer to an array of `{x, y}` positions.
 - `LTileMap:toNavGrid(layer, gids) -> boolean[]`: Converts a layer into a 2D boolean grid for pathfinding. Tiles with GIDs in the given list are marked walkable.
-- `LTileMap:tryAddLayer(name, w, h) -> integer?`: Creates a new tile layer and returns `nil, error` instead of throwing on invalid dimensions or layer limits.
-- `LTileMap:tryGetTile(layer, x, y) -> integer?`: Returns the tile GID at a specific grid position, or `nil, error` when the layer or coord is invalid.
+- `LTileMap:tryAddLayer(name, w, h) -> integer`: Creates a new tile layer and returns `nil, error` instead of throwing on invalid dimensions or layer limits.
+- `LTileMap:tryGetTile(layer, x, y) -> integer`: Returns the tile GID at a specific grid position, or `nil, error` when the layer or coord is invalid.
 - `LTileMap:trySetTile(layer, x, y, gid) -> boolean`: Sets a tile and returns `false, error` instead of throwing on invalid layer or coordinate input.
-- `LTileMap:trySetTileTint(layer, x, y, r, g, b, a) -> nil`: Sets a per-cell tint override and returns `false, error` instead of throwing on invalid input.
-- `LTileMap:tryWorldToTile(wx, wy) -> integer?`: Converts world-space pixel coordinates to tile-grid coordinates, returning nils for negative or non-finite input.
+- `LTileMap:trySetTileTint(layer, x, y, r, g, b, a) -> boolean`: Sets a per-cell tint override and returns `false, error` instead of throwing on invalid input.
+- `LTileMap:tryWorldToTile(wx, wy) -> integer`: Converts world-space pixel coordinates to tile-grid coordinates, returning nils for negative or non-finite input.
 - `LTileMap:type() -> string`: Returns the type name of this userdata.
 - `LTileMap:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
 - `LTileMap:update(dt) -> nil`: Advances tile animations by the given delta time.
@@ -735,13 +755,55 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 
 - No documented methods.
 
-## References
+## Examples
 
-- `color`: Imports or references `src/color/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
-- `image`: Imports or references `image` from `src/image/`.
-- `math`: Imports or references `math` from `src/math/`.
-- `render`: Imports or references `render` from `src/render/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `content/examples/tilemap.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_tilemap_unit.lua` (present)
+- Rust: `src/tilemap/tilemap_collision.rs`
+- Rust: `src/tilemap/tilemap_index.rs`
+- Rust: `tests/rust/unit/tilemap_tests.rs`
+
+## Evidence / Golden
+
+| Kind | Path |
+|---|---|
+| Evidence test | `tests/lua/evidence/test_tilemap_evidence.lua` |
+| Golden test | `tests/lua/golden/test_tilemap_golden.lua` |
+| Current artifact | `tests/artifacts/current/tilemap/tilemap_autotile.png` |
+| Current artifact | `tests/artifacts/current/tilemap/tilemap_autotile_format_showcase.png` |
+| Current artifact | `tests/artifacts/current/tilemap/tilemap_autotile_format_showcase.txt` |
+| Current artifact | `tests/artifacts/current/tilemap/tilemap_chunk_streaming_window.png` |
+| Current artifact | `tests/artifacts/current/tilemap/tilemap_collision.png` |
+| Current artifact | `tests/artifacts/current/tilemap/tilemap_draw_to_image_ground.png` |
+| Current artifact | `tests/artifacts/current/tilemap/tilemap_draw_to_image_objects.png` |
+| Current artifact | `tests/artifacts/current/tilemap/tilemap_hex_biomes_area.png` |
+| Current artifact | `tests/artifacts/current/tilemap/tilemap_hex_neighbors.png` |
+| Current artifact | `tests/artifacts/current/tilemap/tilemap_hex_operations_frontier.png` |
+| Current artifact | `tests/artifacts/current/tilemap/tilemap_hex_route.png` |
+| Current artifact | `tests/artifacts/current/tilemap/tilemap_isometric.png` |
+| Current artifact | `tests/artifacts/current/tilemap/tilemap_isometric_stacked_settlement.png` |
+| Current artifact | `tests/artifacts/current/tilemap/tilemap_layers.png` |
+| Current artifact | `tests/artifacts/current/tilemap/tilemap_viewport.png` |
+| Baseline artifact | `tests/artifacts/baselines/tilemap/tilemap_autotile.png` |
+| Baseline artifact | `tests/artifacts/baselines/tilemap/tilemap_chunk_streaming_window.png` |
+| Baseline artifact | `tests/artifacts/baselines/tilemap/tilemap_collision.png` |
+| Baseline artifact | `tests/artifacts/baselines/tilemap/tilemap_draw_to_image_ground.png` |
+| Baseline artifact | `tests/artifacts/baselines/tilemap/tilemap_draw_to_image_objects.png` |
+| Baseline artifact | `tests/artifacts/baselines/tilemap/tilemap_hex_biomes_area.png` |
+| Baseline artifact | `tests/artifacts/baselines/tilemap/tilemap_hex_neighbors.png` |
+| Baseline artifact | `tests/artifacts/baselines/tilemap/tilemap_hex_operations_frontier.png` |
+| Baseline artifact | `tests/artifacts/baselines/tilemap/tilemap_hex_route.png` |
+| Baseline artifact | `tests/artifacts/baselines/tilemap/tilemap_isometric.png` |
+| Baseline artifact | `tests/artifacts/baselines/tilemap/tilemap_isometric_stacked_settlement.png` |
+| Baseline artifact | `tests/artifacts/baselines/tilemap/tilemap_layers.png` |
+| Baseline artifact | `tests/artifacts/baselines/tilemap/tilemap_viewport.png` |
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

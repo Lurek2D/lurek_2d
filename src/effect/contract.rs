@@ -1,6 +1,11 @@
-//! This file owns the shared post-effect validation contract: limits, parameter schemas, errors, and diagnostics.
-//! It keeps post-fx safety policy centralized so effect instances, stacks, debug images, and Lua bindings agree.
-//! Open this file when post-fx validation semantics, dimension ceilings, or diagnostic vocabulary need to change.
+//! Owns the contract surface for the effect subsystem and keeps its rules local to this file.
+//! Keeps effect data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+//! Defines how contract data is validated, transformed, or stored before neighboring systems use it.
+//! Owns effect behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on contract behavior while Lua registration stays elsewhere.
+//! Documents the boundary where effect code accepts inputs, reports errors, or updates state.
+//! Use this file when changing contract defaults, lifecycle handling, validation, or data ownership.
+//! Keeps failure paths and edge cases near the effect state that can explain them while keeping call sites explicit.
 
 use std::fmt;
 

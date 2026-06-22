@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/midi.md or source docstrings instead. -->
+
 # midi
 
 ## TL;DR
@@ -7,12 +9,12 @@
 ## General Info
 
 - Module group: `Platform Services`
-- Source path: `src/midi/`
+- Source path: `src/midi`
 - Binding: `src/lua_api/midi_api.rs`
 - Namespace: `lurek.midi`
 - Lua API surface: `4` functions, `0` types, `0` methods
-- Rust test path(s): tests/rust/unit/audio_tests.rs (shared with audio)
-- Lua test path(s): tests/lua/unit/test_midi_core_unit.lua
+- User-facing: `true`
+- Plugin tier: `not_evaluated`
 
 ## Summary
 
@@ -23,12 +25,20 @@
 
 This module primarily collaborates with `audio`, `runtime`. Its responsibility should stay inside the `Platform Services` group rather than absorb behavior owned by those neighbors.
 
+## Ownership
+
+- Canonical source: `src/midi`
+- Owning tier: `Platform Services`
+- Plugin tier: `not_evaluated`
+- Lua binding owner: `src/lua_api/midi_api.rs`
+- Referenced engine modules: `audio`, `runtime`
+
 ## Imports
 
-- `audio`: Imports or references `src/audio/`. Cross-group dependency from ``Platform Services`` into `Platform Services`.
-- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from ``Platform Services`` into `Core Runtime`.
+- `audio`: Imports or references `src/audio/`. Dependency stays inside `Platform Services` and should remain acyclic.
+- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Platform Services` into `Core Runtime`.
 
-## Files
+## Source Files
 
 ### mod.rs
 
@@ -79,10 +89,22 @@ This module primarily collaborates with `audio`, `runtime`. Its responsibility s
 
 - No documented module types.
 
-## References
+## Examples
 
-- `audio`: Imports or references `src/audio/`. Cross-group dependency from ``Platform Services`` into `Platform Services`.
-- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from ``Platform Services`` into `Core Runtime`.
+- `content/examples/midi.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_midi_unit.lua` (present)
+- Rust: none detected.
+
+## Evidence / Golden
+
+- No evidence or golden artifacts registered.
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

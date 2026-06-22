@@ -26,9 +26,12 @@ from pathlib import Path
 from typing import Dict, List, Optional, Set
 
 ROOT = Path(__file__).resolve().parents[2]
-API_JSON = ROOT / 'logs' / 'data' / 'lua_api_data.json'
+sys.path.insert(0, str(ROOT / "tools" / "docs"))
+import module_registry
+
+API_JSON = module_registry.lua_api_json_path()
 DEFAULT_EXAMPLES_DIR = ROOT / 'content' / 'examples'
-OUTPUT_JSON = ROOT / 'logs' / 'data' / 'api_coverage_report.json'
+OUTPUT_JSON = module_registry.DOCS_DATA / 'api_coverage_report.json'
 
 @dataclass
 class CoverageReport:

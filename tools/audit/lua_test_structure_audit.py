@@ -78,9 +78,12 @@ from typing import Iterable, List
 
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "tools" / "docs"))
+import module_registry
+
 TESTS_ROOT = ROOT / "tests" / "lua"
 API_STUB = ROOT / "docs" / "api" / "lurek.lua"
-API_JSON = ROOT / "logs" / "data" / "lua_api_data.json"
+API_JSON = module_registry.lua_api_json_path()
 UTF8_BOM = b"\xef\xbb\xbf"
 
 BLOCK_RE = re.compile(r'^(?P<indent>\s*)(?P<kind>describe|it)\(\s*["\'](?P<label>.*?)["\']\s*,\s*function\s*\(')

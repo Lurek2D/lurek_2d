@@ -1,7 +1,8 @@
-//! `src/docs/catalog.rs` owns the in-memory catalog that stores, groups, searches, merges, and clears doc entries.
-//! It provides the collection boundary over `DocEntry`, preserving insertion order while exposing module and kind queries.
-//! Merge, duplicate handling, and derived lookup caches live here so export and reporting stages can share one consistent documentation container.
-//! Read it when catalog search, deduplication, module grouping, or entry aggregation behavior needs to change.
+//! Owns the catalog owner for the docs subsystem and keeps its rules local to this file while keeping call sites explicit.
+//! Centers the implementation around SearchOptions, Catalog, new, with helpers kept close to their invariants.
+//! Defines how catalog data is validated, transformed, or stored before neighboring systems use it.
+//! Owns docs behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on catalog behavior while Lua registration stays elsewhere.
 
 use crate::docs::entry::DocEntry;
 use crate::docs::error::{DocsError, DocsResult};

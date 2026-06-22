@@ -1,10 +1,16 @@
-//! This file owns `Overlay` plus its safety policies, diagnostics, render-plan reporting, and debug image helpers.
-//! It stores dimensions plus ambient, weather, flash, shake, fade, clouds, fog, haze, vignette, grain, water, and optional shader intent.
-//! `update` advances enabled subsystems, including ambient tint refresh, weather spawn/cull work, timed decay, cloud scrolling, and water time.
-//! Local safety helpers sanitize direct public-state mutation, clamp reduced-motion-sensitive effects, validate custom shader names, and bound debug image allocation.
-//! Query helpers expose shake offsets, flash and lightning alpha, dimensions, active-state checks, render responsibility, RNG-facing weather telemetry, and diagnostics snapshots.
-//! Render helpers build full-screen commands for flash, fade, lightning, and vignette, then offer checked debug image variants for dashboards and docs workflows.
-//! Open this file when overlay orchestration, safety policy, telemetry, or renderer-facing ownership changes; focused state structs and transition definitions live in siblings.
+//! Owns the controller owner for the overlay subsystem and keeps its rules local to this file.
+//! Keeps overlay data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+//! Defines how controller data is validated, transformed, or stored before neighboring systems use it.
+//! Owns overlay behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on controller behavior while Lua registration stays elsewhere.
+//! Documents the boundary where overlay code accepts inputs, reports errors, or updates state.
+//! Use this file when changing controller defaults, lifecycle handling, validation, or data ownership.
+//! Keeps failure paths and edge cases near the overlay state that can explain them while keeping call sites explicit.
+//! Preserves deterministic behavior by keeping controller calculations explicit at their owner boundary.
+//! Provides the local adaptation layer that lets callers avoid duplicating overlay rules while keeping call sites explicit.
+//! Maintains small helper surfaces so broader engine modules can compose controller behavior safely.
+//! Protects subsystem contracts by keeping resource, cache, or state mutations visible in one place.
+//! Links adjacent concerns only where controller changes need coordination with owned engine data.
 
 use super::ambient::AmbientState;
 use super::atmosphere::{

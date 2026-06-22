@@ -1,7 +1,8 @@
-//! This file owns one 2D block layer, storing width, height, slot count, and row-major `MapTile` cells.
-//! `BlockLayer` exposes bounds-checked tile reads, mutable access, slot writes, fill, clear, and slot-count inspection.
-//! Layer-wide mutation lives here because tile-grid indexing and reset behavior belong below `MapBlock` orchestration.
-//! Open it when per-layer tile storage changes; block footprints, placement logic, and export passes live in siblings.
+//! Owns mapblock behavior with explicit state, validation, and crate-local integration boundaries.
+//! Centers the implementation around BlockLayer, new, try_new, with helpers kept close to their invariants.
+//! Defines how layer data is validated, transformed, or stored before neighboring systems use it.
+//! Owns mapblock behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on layer behavior while Lua registration stays elsewhere.
 
 use super::block::{MapBlockError, MapBlockLimits};
 use super::maptile::MapTile;

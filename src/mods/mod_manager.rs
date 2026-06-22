@@ -1,12 +1,16 @@
-//! `src/mods/mod_manager.rs` owns the runtime registry for discovered mods, manifest metadata, reload queues, and order.
-//! It stores `ModInfo` records with dependencies, capabilities, asset paths, config schema, checksum metadata, and session state.
-//! Registration, lookup, enable-state tracking, capability queries, structured scans, and atomic hot reloads all live here.
-//! Dependency validation and topological ordering stay here so mod startup remains deterministic and cycle-aware.
-//! Manifest parsing from `mod.toml` also happens here, including limits, schema checks, checksum checks, and asset conflicts.
-//! Folder scanning and hot-reload processing are coordinated here so disk changes can update registered mods safely.
-//! This file is the lifecycle and integrity boundary for mods; it does not define schema types or sandbox policy details.
-//! Read it when manifest semantics, reload behavior, dependency resolution, or mod registry ownership needs to change.
-//! Higher layers should treat this file as the source of truth for mod discovery and effective runtime load order.
+//! Owns mods behavior with explicit state, validation, and crate-local integration boundaries.
+//! Centers the implementation around ModInfo, new, from_parts, with helpers kept close to their invariants.
+//! Defines how mod manager data is validated, transformed, or stored before neighboring systems use it.
+//! Owns mods behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on mod manager behavior while Lua registration stays elsewhere.
+//! Documents where mods callers should change defaults, errors, or lifecycle behavior. with focused crate-local behavior.
+//! Use this file when changing mod manager defaults, lifecycle handling, validation, or data ownership.
+//! Keeps failure paths and edge cases near the mods state that can explain them while keeping call sites explicit.
+//! Preserves deterministic behavior by keeping mod manager calculations explicit at their owner boundary.
+//! Provides the local adaptation layer that lets callers avoid duplicating mods rules while keeping call sites explicit.
+//! Maintains small helper surfaces so broader engine modules can compose mod manager behavior safely.
+//! Protects subsystem contracts by keeping resource, cache, or state mutations visible in one place.
+//! Links adjacent concerns only where mod manager changes need coordination with owned engine data.
 
 use super::{
     DependencyCyclePolicy, FieldType, HookPoint, ModError, ModLoadPlan, ModReloadReport, ModResult,

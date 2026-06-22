@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/spine.md or source docstrings instead. -->
+
 # spine
 
 ## TL;DR
@@ -7,12 +9,12 @@
 ## General Info
 
 - Module group: `Feature Systems`
-- Source path: `src/spine/`
+- Source path: `src/spine`
 - Binding: `src/lua_api/spine_api.rs`
 - Namespace: `lurek.spine`
 - Lua API surface: `4` functions, `5` types, `34` methods
-- Rust test path(s): tests/rust/unit/spine_tests.rs
-- Lua test path(s): tests/lua/unit/test_spine_core_unit.lua
+- User-facing: `true`
+- Plugin tier: `tier_1_plugin`
 
 ## Summary
 
@@ -27,13 +29,21 @@
 
 This module primarily collaborates with `image`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
 
+## Ownership
+
+- Canonical source: `src/spine`
+- Owning tier: `Feature Systems`
+- Plugin tier: `tier_1_plugin`
+- Lua binding owner: `src/lua_api/spine_api.rs`
+- Referenced engine modules: `image`, `render`, `runtime`
+
 ## Imports
 
-- `image`: Imports or references `image` from `src/image/`.
-- `render`: Imports or references `render` from `src/render/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `image`: Imports or references `src/image/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
+- `render`: Imports or references `src/render/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
+- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Feature Systems` into `Core Runtime`.
 
-## Files
+## Source Files
 
 ### bone.rs
 
@@ -223,11 +233,38 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 
 - No documented methods.
 
-## References
+## Examples
 
-- `image`: Imports or references `image` from `src/image/`.
-- `render`: Imports or references `render` from `src/render/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `content/examples/spine.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_spine_unit.lua` (present)
+- Rust: `tests/rust/unit/spine_tests.rs`
+
+## Evidence / Golden
+
+| Kind | Path |
+|---|---|
+| Evidence test | `tests/lua/evidence/test_spine_evidence.lua` |
+| Golden test | `tests/lua/golden/test_spine_golden.lua` |
+| Current artifact | `tests/artifacts/current/spine/bone_operations.txt` |
+| Current artifact | `tests/artifacts/current/spine/skeleton_stick_figure.png` |
+| Current artifact | `tests/artifacts/current/spine/spine_ik_target_reach.gif` |
+| Current artifact | `tests/artifacts/current/spine/spine_imported_animation.gif` |
+| Current artifact | `tests/artifacts/current/spine/spine_skin_event_pose_trace.txt` |
+| Current artifact | `tests/artifacts/current/spine/spine_walk_cycle_5s.gif` |
+| Current artifact | `tests/artifacts/current/spine/spine_walk_cycle_pose_snapshots.gif` |
+| Baseline artifact | `tests/artifacts/baselines/spine/bone_operations.txt` |
+| Baseline artifact | `tests/artifacts/baselines/spine/skeleton_stick_figure.png` |
+| Baseline artifact | `tests/artifacts/baselines/spine/spine_ik_target_reach.gif` |
+| Baseline artifact | `tests/artifacts/baselines/spine/spine_imported_animation.gif` |
+| Baseline artifact | `tests/artifacts/baselines/spine/spine_walk_cycle_5s.gif` |
+| Baseline artifact | `tests/artifacts/baselines/spine/spine_walk_cycle_pose_snapshots.gif` |
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

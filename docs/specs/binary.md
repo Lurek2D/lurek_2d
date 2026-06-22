@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/binary.md or source docstrings instead. -->
+
 # binary
 
 ## TL;DR
@@ -8,12 +10,12 @@
 ## General Info
 
 - Module group: `Foundations`
-- Source path: `src/binary/`
+- Source path: `src/binary`
 - Binding: `src/lua_api/binary_api.rs`
 - Namespace: `lurek.binary`
 - Lua API surface: `18` functions, `4` types, `50` methods
-- Rust test path(s): tests/rust/unit/binary_tests.rs; tests/rust/stress/binary_stress_tests.rs; inline tests in src/binary/byte_data.rs, src/binary/encode.rs, src/binary/hash.rs
-- Lua test path(s): tests/lua/unit/test_binary_core_unit.lua; tests/lua/stress/test_binary_stress.lua; tests/lua/integration/test_binary_filesystem.lua; tests/lua/integration/test_binary_compute.lua; tests/lua/golden/test_binary_golden.lua
+- User-facing: `true`
+- Plugin tier: `not_evaluated`
 
 ## Summary
 
@@ -30,11 +32,19 @@
 
 This module is mostly self-contained inside the `Foundations` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
 
+## Ownership
+
+- Canonical source: `src/binary`
+- Owning tier: `Foundations`
+- Plugin tier: `not_evaluated`
+- Lua binding owner: `src/lua_api/binary_api.rs`
+- Referenced engine modules: None detected from Rust imports.
+
 ## Imports
 
 - No top-level `crate::<module>` imports were detected in this module's Rust source files.
 
-## Files
+## Source Files
 
 ### bin_pack.rs
 
@@ -249,9 +259,36 @@ This module is mostly self-contained inside the `Foundations` group. Cross-modul
 - `LRingBuffer:type() -> string`: Returns the Lua-visible type name for this ring buffer handle.
 - `LRingBuffer:typeOf(name) -> boolean`: Returns whether this ring buffer handle matches a supported type name.
 
-## References
+## Examples
 
-- No top-level `crate::<module>` imports were detected in this module's Rust source files.
+- `content/examples/binary.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_binary_unit.lua` (present)
+- Rust: `tests/rust/unit/binary_tests.rs`
+
+## Evidence / Golden
+
+| Kind | Path |
+|---|---|
+| Evidence test | `tests/lua/evidence/test_binary_evidence.lua` |
+| Golden test | `tests/lua/golden/test_binary_golden.lua` |
+| Current artifact | `tests/artifacts/current/binary/binary_buffer_surface_snapshot.txt` |
+| Current artifact | `tests/artifacts/current/binary/binary_compression_msgpack_snapshot.txt` |
+| Current artifact | `tests/artifacts/current/binary/binary_compression_snapshot.txt` |
+| Current artifact | `tests/artifacts/current/binary/binary_encode_reference_values.txt` |
+| Current artifact | `tests/artifacts/current/binary/binary_hash_reference_values.txt` |
+| Current artifact | `tests/artifacts/current/binary/binary_low_level_buffers_trace.txt` |
+| Current artifact | `tests/artifacts/current/binary/binary_pack_roundtrip_snapshot.txt` |
+| Current artifact | `tests/artifacts/current/binary/binary_toml_roundtrip_snapshot.toml` |
+| Baseline artifact | `tests/artifacts/baselines/binary/binary_encode_reference_values.txt` |
+| Baseline artifact | `tests/artifacts/baselines/binary/binary_hash_reference_values.txt` |
+| Baseline artifact | `tests/artifacts/baselines/binary/binary_toml_roundtrip_snapshot.toml` |
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

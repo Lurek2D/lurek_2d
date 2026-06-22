@@ -1,7 +1,8 @@
-//! This file owns the bridge between flat genetic chromosomes and concrete dense neural-network instances.
-//! `Neuroevolution` stores the GA backend plus a layer template used to rebuild `NeuralNet` instances from genomes.
-//! Fitness assignment and generation advancement live here because this wrapper coordinates model decoding with search.
-//! Open it when genome-to-network mapping changes; dense layer math and raw genetic operators live in sibling files.
+//! Owns the neuroevolution owner for the learning subsystem and keeps its rules local to this file.
+//! Centers the implementation around Neuroevolution, new, try_new, with helpers kept close to their invariants.
+//! Defines how neuroevolution data is validated, transformed, or stored before neighboring systems use it.
+//! Owns learning behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on neuroevolution behavior while Lua registration stays elsewhere.
 
 use crate::learning::{
     error::LearningError, genetic::GeneticAlgorithm, limits::validate_finite, neural_net::NeuralNet,

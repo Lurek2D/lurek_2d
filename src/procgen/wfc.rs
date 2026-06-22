@@ -1,8 +1,9 @@
-//! This file owns the Wave Function Collapse generator that resolves tile grids from weighted adjacency constraints.
-//! `WfcTile`, `WfcRules`, `WfcOpts`, and `WfcGrid` define the tile vocabulary, rule set, run inputs, and result cells.
-//! Entropy-style cell choice and weighted collapse stay here because tile selection policy is core WFC behavior.
-//! Constraint propagation also belongs here since neighbor pruning and contradiction detection define valid outcomes.
-//! Retry logic remains local because contradiction recovery is part of the generator contract, not caller plumbing.
+//! Owns the wfc owner for the procgen subsystem and keeps its rules local to this file while keeping call sites explicit.
+//! Centers the implementation around WfcTile, WfcRules, WfcOpts, with helpers kept close to their invariants.
+//! Defines how wfc data is validated, transformed, or stored before neighboring systems use it.
+//! Owns procgen behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on wfc behavior while Lua registration stays elsewhere.
+//! Documents the boundary where procgen code accepts inputs, reports errors, or updates state.
 
 use crate::procgen::lcg::Lcg;
 use crate::procgen::{

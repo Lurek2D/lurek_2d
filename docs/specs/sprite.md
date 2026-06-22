@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/sprite.md or source docstrings instead. -->
+
 # sprite
 
 ## TL;DR
@@ -8,12 +10,12 @@
 ## General Info
 
 - Module group: `Feature Systems`
-- Source path: `src/sprite/`
+- Source path: `src/sprite`
 - Binding: `src/lua_api/sprite_api.rs`
 - Namespace: `lurek.sprite`
 - Lua API surface: `8` functions, `13` types, `53` methods
-- Rust test path(s): tests/rust/unit/sprite_tests.rs
-- Lua test path(s): tests/lua/unit/test_sprite_core_unit.lua
+- User-facing: `true`
+- Plugin tier: `core_keep`
 
 ## Summary
 
@@ -28,15 +30,23 @@
 
 This module primarily collaborates with `animation`, `color`, `image`, `math`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
 
+## Ownership
+
+- Canonical source: `src/sprite`
+- Owning tier: `Feature Systems`
+- Plugin tier: `core_keep`
+- Lua binding owner: `src/lua_api/sprite_api.rs`
+- Referenced engine modules: `animation`, `color`, `image`, `math`, `runtime`
+
 ## Imports
 
 - `animation`: Imports or references `src/animation/`. Dependency stays inside `Feature Systems` and should remain acyclic.
-- `color`: Imports or references `src/color/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
-- `image`: Imports or references `src/image/`. Cross-group dependency from ``Feature Systems.`` into `Platform Services`.
-- `math`: Imports or references `math` from `src/math/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `color`: Imports or references `src/color/`. Cross-group dependency from `Feature Systems` into `Foundations`.
+- `image`: Imports or references `src/image/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
+- `math`: Imports or references `src/math/`. Cross-group dependency from `Feature Systems` into `Foundations`.
+- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Feature Systems` into `Core Runtime`.
 
-## Files
+## Source Files
 
 ### animator.rs
 
@@ -361,13 +371,45 @@ This module primarily collaborates with `animation`, `color`, `image`, `math`, `
 
 - No documented methods.
 
-## References
+## Examples
 
-- `animation`: Imports or references `src/animation/`. Dependency stays inside `Feature Systems` and should remain acyclic.
-- `color`: Imports or references `src/color/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
-- `image`: Imports or references `src/image/`. Cross-group dependency from ``Feature Systems.`` into `Platform Services`.
-- `math`: Imports or references `math` from `src/math/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `content/examples/sprite.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_sprite_unit.lua` (present)
+- Rust: `src/sprite/sprite_batch.rs`
+- Rust: `src/sprite/sprite_sheet.rs`
+- Rust: `tests/rust/unit/sprite_tests.rs`
+
+## Evidence / Golden
+
+| Kind | Path |
+|---|---|
+| Evidence test | `tests/lua/evidence/test_sprite_evidence.lua` |
+| Golden test | `tests/lua/golden/test_sprite_golden.lua` |
+| Current artifact | `tests/artifacts/current/image/sprite_16x16.png` |
+| Current artifact | `tests/artifacts/current/image/sprite_32x32.png` |
+| Current artifact | `tests/artifacts/current/image/sprite_64x64.png` |
+| Current artifact | `tests/artifacts/current/image/sprite_8x8.png` |
+| Current artifact | `tests/artifacts/current/sprite/sprite_animator_clip_playback.gif` |
+| Current artifact | `tests/artifacts/current/sprite/sprite_atlas_regions_flips.png` |
+| Current artifact | `tests/artifacts/current/sprite/sprite_lit_normal_state.png` |
+| Current artifact | `tests/artifacts/current/sprite/sprite_packer_nine_slice.png` |
+| Current artifact | `tests/artifacts/current/sprite/sprite_sheet_groups.png` |
+| Baseline artifact | `tests/artifacts/baselines/image/sprite_16x16.png` |
+| Baseline artifact | `tests/artifacts/baselines/image/sprite_32x32.png` |
+| Baseline artifact | `tests/artifacts/baselines/image/sprite_64x64.png` |
+| Baseline artifact | `tests/artifacts/baselines/image/sprite_8x8.png` |
+| Baseline artifact | `tests/artifacts/baselines/sprite/sprite_animator_clip_playback.gif` |
+| Baseline artifact | `tests/artifacts/baselines/sprite/sprite_atlas_regions_flips.png` |
+| Baseline artifact | `tests/artifacts/baselines/sprite/sprite_lit_normal_state.png` |
+| Baseline artifact | `tests/artifacts/baselines/sprite/sprite_packer_nine_slice.png` |
+| Baseline artifact | `tests/artifacts/baselines/sprite/sprite_sheet_groups.png` |
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

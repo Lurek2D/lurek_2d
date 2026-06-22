@@ -1,7 +1,8 @@
-//! `src/docs/entry.rs` defines normalized documentation records for API symbols, parameters, returns, and metadata.
-//! It owns `DocEntry`, `ParamInfo`, and `ReturnInfo`, plus completeness helpers used by docs quality checks and exports.
-//! This file is the in-memory record contract for the docs pipeline; it does not own catalogs, export, or scoring logic.
-//! Read it when docs field requirements, entry completeness rules, or symbol metadata shape needs to change.
+//! Owns the catalog entry model for the docs subsystem and keeps its rules local to this file.
+//! Centers the implementation around ParamInfo, ReturnInfo, DocEntry, with helpers kept close to their invariants.
+//! Defines how entry data is validated, transformed, or stored before neighboring systems use it.
+//! Owns docs behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on entry behavior while Lua registration stays elsewhere.
 
 use std::collections::HashMap;
 #[derive(Debug, Clone, Default)]

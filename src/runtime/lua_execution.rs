@@ -1,8 +1,8 @@
-//! This file owns shared Lua execution policy used by GUI app, headless runs, and other host-side callers.
-//! `LuaExecutionPolicy` centralizes callback timeout configuration and instruction-hook cadence.
-//! The helper executes already-resolved Lua functions and removes timeout hooks with RAII cleanup.
-//! Keeping this logic in runtime avoids diverging timeout semantics between GUI and headless hosts.
-//! Open it when Lua callback timeout policy or hook cleanup behavior changes.
+//! Owns the Lua execution bridge for the runtime subsystem and keeps its rules local to this file.
+//! Keeps runtime data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+//! Defines how lua execution data is validated, transformed, or stored before neighboring systems use it.
+//! Owns runtime behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on lua execution behavior while Lua registration stays elsewhere.
 
 use mlua::prelude::*;
 use mlua::HookTriggers;

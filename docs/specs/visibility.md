@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/visibility.md or source docstrings instead. -->
+
 # visibility
 
 ## TL;DR
@@ -6,13 +8,13 @@
 
 ## General Info
 
-- Module group: `Edge/Integration`
-- Source path: `src/visibility/`
+- Module group: `Platform Services`
+- Source path: `src/visibility`
 - Binding: `src/lua_api/visibility_api.rs`
 - Namespace: `lurek.visibility`
 - Lua API surface: `2` functions, `2` types, `27` methods
-- Rust test path(s): None found in the workspace
-- Lua test path(s): tests/lua/unit/test_visibility_unit.lua
+- User-facing: `true`
+- Plugin tier: `core_keep`
 
 ## Summary
 
@@ -26,11 +28,19 @@
 
 This module is mostly self-contained inside the `Edge/Integration` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
 
+## Ownership
+
+- Canonical source: `src/visibility`
+- Owning tier: `Platform Services`
+- Plugin tier: `core_keep`
+- Lua binding owner: `src/lua_api/visibility_api.rs`
+- Referenced engine modules: None detected from Rust imports.
+
 ## Imports
 
 - No top-level `crate::<module>` imports were detected in this module's Rust source files.
 
-## Files
+## Source Files
 
 ### adjacency.rs
 
@@ -173,9 +183,22 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 - `LVisibilityGrid:setGroup(players) -> integer`: Sets an alliance group for a list of players (shared visibility).
 - `LVisibilityGrid:sharesVisibility(player_a, player_b) -> boolean`: Checks if two players share visibility (same alliance group or same player).
 
-## References
+## Examples
 
-- No top-level `crate::<module>` imports were detected in this module's Rust source files.
+- `content/examples/visibility.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_visibility_unit.lua` (present)
+- Rust: none detected.
+
+## Evidence / Golden
+
+- No evidence or golden artifacts registered.
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

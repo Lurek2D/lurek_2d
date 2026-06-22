@@ -1,11 +1,12 @@
-//! Loads Tiled TMX maps into engine tile structures while preserving orientation, layers, objects, and tilesets.
-//! Supports TMX orientation modes so authored content can target orthogonal, isometric, and hex-style layouts.
-//! Decodes csv, xml, and compressed base64 tile payloads into stable gid streams used by runtime map storage.
-//! Parses tileset geometry and metadata required for atlas lookup, collision filtering, and tile animation.
-//! Ingests object layers so placement, sizing, and semantic type annotations survive the import boundary.
-//! Strips flip flags from raw gids so stored tile identity remains clean, comparable, and easy to post-process.
-//! Keeps TMX-specific error handling local instead of mixing format policy into procedural or LDtk importers.
-//! Open this file when TMX import, gid decoding, orientation handling, or object-layer parsing is incorrect.
+//! Owns the tmx owner for the tilemap subsystem and keeps its rules local to this file while keeping call sites explicit.
+//! Keeps tilemap data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+//! Defines how tmx data is validated, transformed, or stored before neighboring systems use it.
+//! Owns tilemap behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on tmx behavior while Lua registration stays elsewhere.
+//! Documents the boundary where tilemap code accepts inputs, reports errors, or updates state.
+//! Use this file when changing tmx defaults, lifecycle handling, validation, or data ownership.
+//! Keeps failure paths and edge cases near the tilemap state that can explain them while keeping call sites explicit.
+//! Preserves deterministic behavior by keeping tmx calculations explicit at their owner boundary.
 
 use super::error::TileMapError;
 use super::limits::{checked_layer_cells, TileMapLimits};

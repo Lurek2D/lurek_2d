@@ -1,8 +1,13 @@
-//! `src/docs/export.rs` transforms normalized doc entries into JSON payloads for completions, hovers, and signatures.
-//! It owns completion-kind mapping, hover and signature builders, path-sandbox checks, payload limits, atomic file writes, and bundled export directory output.
-//! Legacy payload functions remain available for compatibility, while typed options add versioned metadata and actionable export reports for stricter tooling.
-//! This file is the serialization boundary for docs artifacts; it does not own entry collection or quality scoring.
-//! Read it when docs JSON shape, file output behavior, or editor integration payload rules need to change.
+//! Owns docs behavior with explicit state, validation, and crate-local integration boundaries.
+//! Centers the implementation around DocsLimits, default, DocsExportOptions, with helpers kept close to their invariants.
+//! Defines how export data is validated, transformed, or stored before neighboring systems use it.
+//! Owns docs behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on export behavior while Lua registration stays elsewhere.
+//! Documents where docs callers should change defaults, errors, or lifecycle behavior. with focused crate-local behavior.
+//! Use this file when changing export defaults, lifecycle handling, validation, or data ownership.
+//! Keeps failure paths and edge cases near the docs state that can explain them while keeping call sites explicit.
+//! Preserves deterministic behavior by keeping export calculations explicit at their owner boundary.
+//! Provides the local adaptation layer that lets callers avoid duplicating docs rules while keeping call sites explicit.
 
 use crate::docs::entry::DocEntry;
 use crate::docs::error::{DocsError, DocsResult};

@@ -1,9 +1,10 @@
-//! Replays text render commands into GPU font-atlas draw buffers.
-//! Keeps glyph expansion, cursor advance, wrapping, alignment, span coloring, and font-atlas draw emission out of frame orchestration.
-//! Uses caller-owned texture scratch buffers so plain, formatted, and rich text do not allocate per glyph.
-//! Preserves current blend, scissor, shader, color mask, and stencil state when emitting prepared draws.
-//! Acts as the GPU text boundary between font metrics and prepared textured draw ranges.
-//! Open this file when plain, formatted, or rich text glyph output differs from font metrics or current draw state.
+//! Owns the gpu text replay owner for the render subsystem and keeps its rules local to this file.
+//! Keeps render data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+//! Defines how gpu text replay data is validated, transformed, or stored before neighboring systems use it.
+//! Owns render behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on gpu text replay behavior while Lua registration stays elsewhere.
+//! Documents the boundary where render code accepts inputs, reports errors, or updates state.
+//! Use this file when changing gpu text replay defaults, lifecycle handling, validation, or data ownership.
 
 use slotmap::SlotMap;
 

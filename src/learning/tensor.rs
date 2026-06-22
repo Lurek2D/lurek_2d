@@ -1,7 +1,8 @@
-//! This file owns `LurekTensor`, the row-major tensor container used by ONNX, attention, convolution, and transformer code.
-//! It stores explicit shape metadata plus flat `f32` data, then offers indexing, flattening, zero allocation, and export.
-//! `gemm` also lives here because basic matrix multiply with optional bias is a shared primitive across learning layers.
-//! Open it when tensor layout or interop changes; model-specific forward logic lives in sibling learning files.
+//! Owns learning behavior with explicit state, validation, and crate-local integration boundaries.
+//! Centers the implementation around LurekTensor, new, try_new, with helpers kept close to their invariants.
+//! Defines how tensor data is validated, transformed, or stored before neighboring systems use it.
+//! Owns learning behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on tensor behavior while Lua registration stays elsewhere.
 
 use super::{
     error::LearningError,

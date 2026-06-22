@@ -1,6 +1,8 @@
-//! Owns shared tilemap sizing and validation limits used by safe constructors, importers, and bounded queries.
-//! It centralizes checked arithmetic and default safety ceilings so tilemap owners share one resource policy.
-//! Open this file when tilemap budgets or query guards change across storage, rendering, and importer code.
+//! Owns tilemap behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps tilemap data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+//! Defines how limits data is validated, transformed, or stored before neighboring systems use it.
+//! Owns tilemap behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on limits behavior while Lua registration stays elsewhere.
 
 use super::error::TileMapError;
 

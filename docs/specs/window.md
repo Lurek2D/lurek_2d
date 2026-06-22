@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/window.md or source docstrings instead. -->
+
 # window
 
 ## TL;DR
@@ -7,12 +9,12 @@
 ## General Info
 
 - Module group: `Platform Services`
-- Source path: `src/window/`
+- Source path: `src/window`
 - Binding: `src/lua_api/window_api.rs`
 - Namespace: `lurek.window`
 - Lua API surface: `55` functions, `4` types, `0` methods
-- Rust test path(s): tests/rust/unit/window_tests.rs
-- Lua test path(s): tests/lua/unit/test_window_core_unit.lua
+- User-facing: `true`
+- Plugin tier: `not_evaluated`
 
 ## Summary
 
@@ -26,11 +28,19 @@
 
 This module primarily collaborates with `runtime`. Its responsibility should stay inside the Platform Services group rather than absorb behavior owned by those neighbors.
 
+## Ownership
+
+- Canonical source: `src/window`
+- Owning tier: `Platform Services`
+- Plugin tier: `not_evaluated`
+- Lua binding owner: `src/lua_api/window_api.rs`
+- Referenced engine modules: `runtime`
+
 ## Imports
 
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Platform Services` into `Core Runtime`.
 
-## Files
+## Source Files
 
 ### event_loop.rs
 
@@ -204,9 +214,22 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 - No documented methods.
 
-## References
+## Examples
 
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `content/examples/window.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_window_unit.lua` (present)
+- Rust: none detected.
+
+## Evidence / Golden
+
+- No evidence or golden artifacts registered.
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

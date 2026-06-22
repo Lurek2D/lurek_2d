@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/particle.md or source docstrings instead. -->
+
 # particle
 
 ## TL;DR
@@ -8,12 +10,12 @@
 ## General Info
 
 - Module group: `Feature Systems`
-- Source path: `src/particle/`
+- Source path: `src/particle`
 - Binding: `src/lua_api/particle_api.rs`
 - Namespace: `lurek.particle`
 - Lua API surface: `5` functions, `3` types, `106` methods
-- Rust test path(s): tests/rust/unit/particle_tests.rs
-- Lua test path(s): tests/lua/unit/test_particle_unit.lua, tests/lua/stress/test_particle_stress.lua, tests/lua/integration/test_particle_timer_integration.lua, tests/lua/evidence/test_particle_evidence.lua
+- User-facing: `true`
+- Plugin tier: `core_keep`
 
 ## Summary
 
@@ -33,27 +35,38 @@
 
 This module primarily collaborates with `color`, `image`, `math`, `physics`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
 
+## Ownership
+
+- Canonical source: `src/particle`
+- Owning tier: `Feature Systems`
+- Plugin tier: `core_keep`
+- Lua binding owner: `src/lua_api/particle_api.rs`
+- Referenced engine modules: `color`, `image`, `math`, `physics`, `render`, `runtime`
+
 ## Imports
 
-- `color`: Imports or references `src/color/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
-- `image`: Imports or references `image` from `src/image/`.
-- `math`: Imports or references `math` from `src/math/`.
+- `color`: Imports or references `src/color/`. Cross-group dependency from `Feature Systems` into `Foundations`.
+- `image`: Imports or references `src/image/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
+- `math`: Imports or references `src/math/`. Cross-group dependency from `Feature Systems` into `Foundations`.
 - `physics`: Imports or references `src/physics/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
-- `render`: Imports or references `render` from `src/render/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `render`: Imports or references `src/render/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
+- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Feature Systems` into `Core Runtime`.
 
-## Files
+## Source Files
 
 ### config.rs
 
-- This file owns the particle configuration schema, including emission rates, lifetimes, forces, shapes, and sub-emitters.
-- It defines enums and helper structs for area distribution, insert order, emitter state, spawn shapes, and relative mode.
-- `ParticleConfig` centralizes every serializable knob so scripts and data files can describe one emitter without code.
-- Sanitization lives here because malformed inputs must be clamped before the emitter update loop consumes them.
-- Default values also live here so callers get a stable fountain-like baseline even when configs omit most fields.
-- Shape-specific normalization for rings, rays, shrapnel, and nested death emitters is handled here, not during rendering.
-- `from_toml_str` and `normalized` make this file the boundary between external config text and runtime-safe values.
-- Open it when option semantics change; spawning, pool simulation, and render-command generation live elsewhere.
+- Owns the configuration model for the particle subsystem and keeps its rules local to this file.
+- Keeps particle data ownership and helper behavior clear for future engine maintenance. for engine changes.
+- Defines how config data is validated, transformed, or stored before neighboring systems use it.
+- Owns particle behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on config behavior while Lua registration stays elsewhere.
+- Documents the boundary where particle code accepts inputs, reports errors, or updates state.
+- Use this file when changing config defaults, lifecycle handling, validation, or data ownership.
+- Keeps failure paths and edge cases near the particle state that can explain them while keeping call sites explicit.
+- Preserves deterministic behavior by keeping config calculations explicit at their owner boundary.
+- Owns particle behavior with explicit state, validation, and crate-local integration boundaries.
+- Maintains small helper surfaces so broader engine modules can compose config behavior safely.
 
 ### emission.rs
 
@@ -65,27 +78,31 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 
 ### emitter.rs
 
-- This file owns `ParticleSystem`, the live particle pool plus emitter timers, attractors, bounds, and child sub-systems.
-- It advances particles each frame by applying gravity, damping, orbit, turbulence, attractors, bounce bounds, and decay.
-- Continuous emission and burst spawning live here because fractional accumulation, insert mode, and RNG mutate state.
-- Death handling also lives here, including pending death records, recycled child systems, and death-emitter bursts.
-- Render-instance construction is local because size, color, texture, and shape all derive from live particle state.
-- State transitions for active, paused, and stopped emitters are managed here with warm-up, reset, and movement helpers.
-- Attractor and bounds mutators stay here so callers change runtime forces without reaching into particle internals.
-- `ParticleSystemStats` also lives here because only this file can summarize direct and nested live counts coherently.
-- Open it when pool ownership or per-frame behavior changes; config schema, spawn math, and previews live elsewhere.
+- Owns the emitter runtime for the particle subsystem and keeps its rules local to this file.
+- Keeps particle data ownership and helper behavior clear for future engine maintenance. for engine changes.
+- Defines how emitter data is validated, transformed, or stored before neighboring systems use it.
+- Owns particle behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on emitter behavior while Lua registration stays elsewhere.
+- Documents the boundary where particle code accepts inputs, reports errors, or updates state.
+- Use this file when changing emitter defaults, lifecycle handling, validation, or data ownership.
+- Keeps failure paths and edge cases near the particle state that can explain them while keeping call sites explicit.
+- Preserves deterministic behavior by keeping emitter calculations explicit at their owner boundary.
+- Owns particle behavior with explicit state, validation, and crate-local integration boundaries.
+- Maintains small helper surfaces so broader engine modules can compose emitter behavior safely.
 
 ### error.rs
 
-- This file owns typed particle validation and safety errors used by strict constructors and bounded helpers.
-- It keeps failure reasons structured so config parsing, runtime limit checks, and strict mutators report the same contract.
-- Open it when particle callers need clearer diagnostics or when new safety ceilings are introduced.
+- Owns the error taxonomy for the particle subsystem and keeps its rules local to this file.
+- Centers the implementation around ParticleError, invalid_config, fmt, with helpers kept close to their invariants.
+- Defines how error data is validated, transformed, or stored before neighboring systems use it.
+- Owns particle behavior with explicit state, validation, and crate-local integration boundaries.
 
 ### limits.rs
 
-- This file owns shared particle safety ceilings used by strict config parsing and runtime helpers.
-- It centralizes pool, recursion, parser, and render budgets so particle callers share one bounded contract.
-- Open it when particle resource ceilings or validation policy changes.
+- Owns particle behavior with explicit state, validation, and crate-local integration boundaries.
+- Centers the implementation around ParticleLimits, default, with helpers kept close to their invariants.
+- Defines how limits data is validated, transformed, or stored before neighboring systems use it.
+- Owns particle behavior with explicit state, validation, and crate-local integration boundaries.
 
 ### math.rs
 
@@ -320,14 +337,47 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 - `LTrail:typeOf(name) -> boolean`: Returns whether this trail handle matches a supported type name.
 - `LTrail:update(dt) -> nil`: Updates trail point lifetimes. This method is available to Lua scripts.
 
-## References
+## Examples
 
-- `color`: Imports or references `src/color/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
-- `image`: Imports or references `image` from `src/image/`.
-- `math`: Imports or references `math` from `src/math/`.
-- `physics`: Imports or references `src/physics/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
-- `render`: Imports or references `render` from `src/render/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `content/examples/particle.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_particle_unit.lua` (present)
+- Rust: `tests/rust/unit/particle_tests.rs`
+
+## Evidence / Golden
+
+| Kind | Path |
+|---|---|
+| Evidence test | `tests/lua/evidence/test_particle_evidence.lua` |
+| Golden test | `tests/lua/golden/test_particle_golden.lua` |
+| Current artifact | `tests/artifacts/current/particle/particle_archetype_showcase.png` |
+| Current artifact | `tests/artifacts/current/particle/particle_attractor_field.gif` |
+| Current artifact | `tests/artifacts/current/particle/particle_bounds_bounce_box.gif` |
+| Current artifact | `tests/artifacts/current/particle/particle_control_state_timeline.gif` |
+| Current artifact | `tests/artifacts/current/particle/particle_emission_area_shapes.png` |
+| Current artifact | `tests/artifacts/current/particle/particle_lifecycle_chart.png` |
+| Current artifact | `tests/artifacts/current/particle/particle_paint_composite.png` |
+| Current artifact | `tests/artifacts/current/particle/particle_shape_size_keyframes.png` |
+| Current artifact | `tests/artifacts/current/particle/particle_subemitter_death_burst.gif` |
+| Current artifact | `tests/artifacts/current/particle/particle_trail_ribbon_decay.gif` |
+| Current artifact | `tests/artifacts/current/particle/particle_velocity_burst.gif` |
+| Baseline artifact | `tests/artifacts/baselines/particle/particle_archetype_showcase.png` |
+| Baseline artifact | `tests/artifacts/baselines/particle/particle_attractor_field.gif` |
+| Baseline artifact | `tests/artifacts/baselines/particle/particle_bounds_bounce_box.gif` |
+| Baseline artifact | `tests/artifacts/baselines/particle/particle_control_state_timeline.gif` |
+| Baseline artifact | `tests/artifacts/baselines/particle/particle_emission_area_shapes.png` |
+| Baseline artifact | `tests/artifacts/baselines/particle/particle_lifecycle_chart.png` |
+| Baseline artifact | `tests/artifacts/baselines/particle/particle_paint_composite.png` |
+| Baseline artifact | `tests/artifacts/baselines/particle/particle_shape_size_keyframes.png` |
+| Baseline artifact | `tests/artifacts/baselines/particle/particle_subemitter_death_burst.gif` |
+| Baseline artifact | `tests/artifacts/baselines/particle/particle_trail_ribbon_decay.gif` |
+| Baseline artifact | `tests/artifacts/baselines/particle/particle_velocity_burst.gif` |
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

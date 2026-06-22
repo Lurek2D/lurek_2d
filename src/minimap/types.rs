@@ -1,8 +1,10 @@
-//! `src/minimap/types.rs` defines the shared enums and data structs that every minimap state and render file reuses.
-//! It owns color mode, fog level, markers, pings, overlay geometry, raw layers, and object descriptors in one contract set.
-//! Small parsing and conversion helpers also live here so value semantics stay close to the types they interpret.
-//! This file carries data shapes only; it does not own minimap mutation, rendering order, or province import behavior.
-//! Read it when minimap payload fields, cross-file data contracts, or serialized marker and overlay semantics need changes.
+//! Owns the shared type model for the minimap subsystem and keeps its rules local to this file.
+//! Centers the implementation around ColorMode, parse_mode, as_str, with helpers kept close to their invariants.
+//! Defines how types data is validated, transformed, or stored before neighboring systems use it.
+//! Owns minimap behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on types behavior while Lua registration stays elsewhere.
+//! Documents the boundary where minimap code accepts inputs, reports errors, or updates state.
+//! Use this file when changing types defaults, lifecycle handling, validation, or data ownership.
 
 use thiserror::Error;
 

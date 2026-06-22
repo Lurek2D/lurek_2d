@@ -29,8 +29,11 @@ from pathlib import Path
 from typing import Dict, List, Optional, Set, Tuple
 
 WORKSPACE_ROOT = Path(__file__).resolve().parent.parent.parent
-LUA_API_DATA = WORKSPACE_ROOT / "logs" / "data" / "lua_api_data.json"
-OUTPUT_JSON = WORKSPACE_ROOT / "logs" / "data" / "lua_api_test_coverage.json"
+sys.path.insert(0, str(WORKSPACE_ROOT / "tools" / "docs"))
+import module_registry
+
+LUA_API_DATA = module_registry.lua_api_json_path()
+OUTPUT_JSON = module_registry.DOCS_DATA / "lua_api_test_coverage.json"
 
 # Regex for @covers markers:
 #   -- @covers lurek.math.sin

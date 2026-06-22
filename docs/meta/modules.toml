@@ -1,0 +1,771 @@
+[aliases]
+"src.serialize" = "lurek.serial"
+"src.flownet" = "lurek.graph"
+"src.runtime" = "lurek.runtime"
+"src.vector" = "lurek.svg"
+
+[canonical_owner]
+"LAreaChart" = "charts"
+"LBarChart" = "charts"
+"LHeatmapChart" = "charts"
+"LHistogramChart" = "charts"
+"LLineChart" = "charts"
+"LPieChart" = "charts"
+"LScatterPlot" = "charts"
+"LMapBlock" = "mapblock"
+"LMapGroup" = "mapblock"
+"LMapScript" = "mapblock"
+"LRelationshipManager" = "ecs"
+
+[canonical_api]
+"LBehaviorTree:setRoot" = "patterns"
+"LBarChart:addSeries" = "charts"
+"LLineChart:addSeries" = "charts"
+"LScatterPlot:addSeries" = "charts"
+"LTween:getDuration" = "tween"
+"LTween:getEasingName" = "tween"
+"LTween:type" = "tween"
+"LTween:typeOf" = "tween"
+"LImageData:blit" = "image"
+"LImageData:diff" = "image"
+"LImageData:getHeight" = "image"
+"LImageData:getRegion" = "image"
+"LImageData:getWidth" = "image"
+"LImageData:mapPixels" = "image"
+"LImageData:resize" = "image"
+"LImageData:type" = "image"
+"LImageData:typeOf" = "image"
+"LMapBlock:getHeight" = "mapblock"
+"LMapBlock:getLayerCount" = "mapblock"
+"LMapBlock:getName" = "mapblock"
+"LMapBlock:getTile" = "mapblock"
+"LMapBlock:getWidth" = "mapblock"
+"LMapBlock:setName" = "mapblock"
+"LMapBlock:setTile" = "mapblock"
+"LMapBlock:setWeight" = "mapblock"
+"LMapGroup:addBlock" = "mapblock"
+"LMapGroup:addScript" = "mapblock"
+"LMapGroup:getBlockCount" = "mapblock"
+"LMapGroup:getName" = "mapblock"
+"LMapScript:addStep" = "mapblock"
+"LMapScript:getStepCount" = "mapblock"
+
+[agent]
+tier = "feature_systems"
+source = "src/agent"
+lua_binding = "src/lua_api/agent_api.rs"
+namespace = "lurek.agent"
+example_file = "content/examples/agent.lua"
+lua_unit_test = "tests/lua/unit/test_agent_unit.lua"
+user_facing = true
+plugin_tier = "not_evaluated"
+
+[ai]
+tier = "feature_systems"
+source = "src/ai"
+lua_binding = "src/lua_api/ai_api.rs"
+namespace = "lurek.ai"
+example_file = "content/examples/ai.lua"
+lua_unit_test = "tests/lua/unit/test_ai_unit.lua"
+user_facing = true
+plugin_tier = "tier_1_plugin"
+
+[animation]
+tier = "feature_systems"
+source = "src/animation"
+lua_binding = "src/lua_api/animation_api.rs"
+namespace = "lurek.animation"
+example_file = "content/examples/animation.lua"
+lua_unit_test = "tests/lua/unit/test_animation_unit.lua"
+user_facing = true
+plugin_tier = "not_evaluated"
+
+[app]
+tier = "edge_integration"
+source = "src/app"
+lua_binding = "src/lua_api/engine_api.rs"
+namespace = "lurek.engine"
+example_file = "content/examples/engine.lua"
+lua_unit_test = "tests/lua/unit/test_engine_unit.lua"
+user_facing = true
+plugin_tier = "not_evaluated"
+
+[asset]
+tier = "feature_systems"
+source = "src/asset"
+lua_binding = "src/lua_api/asset_api.rs"
+namespace = "lurek.asset"
+example_file = "content/examples/asset.lua"
+lua_unit_test = "tests/lua/unit/test_asset_unit.lua"
+user_facing = true
+plugin_tier = "not_evaluated"
+
+[audio]
+tier = "platform_services"
+source = "src/audio"
+lua_binding = "src/lua_api/audio_api.rs"
+namespace = "lurek.audio"
+example_file = "content/examples/audio.lua"
+lua_unit_test = "tests/lua/unit/test_audio_unit.lua"
+user_facing = true
+plugin_tier = "not_evaluated"
+
+[automation]
+tier = "feature_systems"
+source = "src/automation"
+lua_binding = "src/lua_api/automation_api.rs"
+namespace = "lurek.automation"
+example_file = "content/examples/automation.lua"
+lua_unit_test = "tests/lua/unit/test_automation_unit.lua"
+user_facing = true
+plugin_tier = "not_evaluated"
+
+[bin]
+tier = "edge_integration"
+source = "src/bin"
+lua_binding = ""
+namespace = ""
+example_file = ""
+lua_unit_test = ""
+user_facing = false
+plugin_tier = "not_evaluated"
+
+[binary]
+tier = "foundations"
+source = "src/binary"
+lua_binding = "src/lua_api/binary_api.rs"
+namespace = "lurek.binary"
+example_file = "content/examples/binary.lua"
+lua_unit_test = "tests/lua/unit/test_binary_unit.lua"
+user_facing = true
+plugin_tier = "not_evaluated"
+
+[camera]
+tier = "platform_services"
+source = "src/camera"
+lua_binding = "src/lua_api/camera_api.rs"
+namespace = "lurek.camera"
+example_file = "content/examples/camera.lua"
+lua_unit_test = "tests/lua/unit/test_camera_unit.lua"
+user_facing = true
+plugin_tier = "not_evaluated"
+
+[charts]
+tier = "feature_systems"
+source = "src/charts"
+lua_binding = "src/lua_api/charts_api.rs"
+namespace = "lurek.charts"
+example_file = "content/examples/charts.lua"
+lua_unit_test = "tests/lua/unit/test_charts_unit.lua"
+user_facing = true
+plugin_tier = "tier_2_plugin"
+
+[cinematic]
+tier = "feature_systems"
+source = "src/cinematic"
+lua_binding = "src/lua_api/cinematic_api.rs"
+namespace = "lurek.cinematic"
+example_file = "content/examples/cinematic.lua"
+lua_unit_test = "tests/lua/unit/test_cinematic_unit.lua"
+user_facing = true
+plugin_tier = "not_evaluated"
+
+[color]
+tier = "foundations"
+source = "src/color"
+lua_binding = "src/lua_api/color_api.rs"
+namespace = "lurek.color"
+example_file = "content/examples/color.lua"
+lua_unit_test = "tests/lua/unit/test_color_unit.lua"
+user_facing = true
+plugin_tier = "not_evaluated"
+
+[compute]
+tier = "foundations"
+source = "src/compute"
+lua_binding = "src/lua_api/compute_api.rs"
+namespace = "lurek.compute"
+example_file = "content/examples/compute.lua"
+lua_unit_test = "tests/lua/unit/test_compute_unit.lua"
+user_facing = true
+plugin_tier = "tier_2_plugin"
+
+[cursor]
+tier = "feature_systems"
+source = "src/cursor"
+lua_binding = "src/lua_api/cursor_api.rs"
+namespace = "lurek.cursor"
+example_file = "content/examples/cursor.lua"
+lua_unit_test = "tests/lua/unit/test_cursor_unit.lua"
+user_facing = true
+plugin_tier = "not_evaluated"
+
+[dataframe]
+tier = "foundations"
+source = "src/dataframe"
+lua_binding = "src/lua_api/dataframe_api.rs"
+namespace = "lurek.dataframe"
+example_file = "content/examples/dataframe.lua"
+lua_unit_test = "tests/lua/unit/test_dataframe_unit.lua"
+user_facing = true
+plugin_tier = "tier_1_plugin"
+
+[debugbridge]
+tier = "edge_integration"
+source = "src/debugbridge"
+lua_binding = "src/lua_api/debugbridge_api.rs"
+namespace = "lurek.debugbridge"
+example_file = "content/examples/debugbridge.lua"
+lua_unit_test = "tests/lua/unit/test_debugbridge_unit.lua"
+user_facing = true
+plugin_tier = "not_evaluated"
+
+[devtools]
+tier = "edge_integration"
+source = "src/devtools"
+lua_binding = "src/lua_api/devtools_api.rs"
+namespace = "lurek.devtools"
+example_file = "content/examples/devtools.lua"
+lua_unit_test = "tests/lua/unit/test_devtools_unit.lua"
+user_facing = true
+plugin_tier = "not_evaluated"
+
+[dialog]
+tier = "feature_systems"
+source = "src/dialog"
+lua_binding = "src/lua_api/dialog_api.rs"
+namespace = "lurek.dialog"
+example_file = "content/examples/dialog.lua"
+lua_unit_test = "tests/lua/unit/test_dialog_unit.lua"
+user_facing = true
+plugin_tier = "not_evaluated"
+
+[docs]
+tier = "edge_integration"
+source = "src/docs"
+lua_binding = "src/lua_api/docs_api.rs"
+namespace = "lurek.docs"
+example_file = "content/examples/docs.lua"
+lua_unit_test = "tests/lua/unit/test_docs_unit.lua"
+user_facing = true
+plugin_tier = "not_evaluated"
+
+[dsp]
+tier = "platform_services"
+source = "src/dsp"
+lua_binding = "src/lua_api/dsp_api.rs"
+namespace = "lurek.dsp"
+example_file = "content/examples/dsp.lua"
+lua_unit_test = "tests/lua/unit/test_dsp_unit.lua"
+user_facing = true
+plugin_tier = "not_evaluated"
+
+[ecs]
+tier = "feature_systems"
+source = "src/ecs"
+lua_binding = "src/lua_api/ecs_api.rs"
+namespace = "lurek.ecs"
+example_file = "content/examples/ecs.lua"
+lua_unit_test = "tests/lua/unit/test_ecs_unit.lua"
+user_facing = true
+plugin_tier = "not_evaluated"
+
+[effect]
+tier = "platform_services"
+source = "src/effect"
+lua_binding = "src/lua_api/effect_api.rs"
+namespace = "lurek.effect"
+example_file = "content/examples/effect.lua"
+lua_unit_test = "tests/lua/unit/test_effect_unit.lua"
+user_facing = true
+plugin_tier = "core_keep"
+
+[event]
+tier = "core_runtime"
+source = "src/event"
+lua_binding = "src/lua_api/event_api.rs"
+namespace = "lurek.event"
+example_file = "content/examples/event.lua"
+lua_unit_test = "tests/lua/unit/test_event_unit.lua"
+user_facing = true
+plugin_tier = "not_evaluated"
+
+[filesystem]
+tier = "core_runtime"
+source = "src/filesystem"
+lua_binding = "src/lua_api/filesystem_api.rs"
+namespace = "lurek.filesystem"
+example_file = "content/examples/filesystem.lua"
+lua_unit_test = "tests/lua/unit/test_filesystem_unit.lua"
+user_facing = true
+plugin_tier = "not_evaluated"
+
+[flownet]
+tier = "foundations"
+source = "src/flownet"
+lua_binding = "src/lua_api/flownet_api.rs"
+namespace = "lurek.graph"
+example_file = "content/examples/flownet.lua"
+lua_unit_test = "tests/lua/unit/test_flownet_unit.lua"
+user_facing = true
+plugin_tier = "not_evaluated"
+
+[font]
+tier = "platform_services"
+source = "src/font"
+lua_binding = "src/lua_api/font_api.rs"
+namespace = "lurek.font"
+example_file = "content/examples/font.lua"
+lua_unit_test = "tests/lua/unit/test_font_unit.lua"
+user_facing = true
+plugin_tier = "not_evaluated"
+
+[globe]
+tier = "foundations"
+source = "src/globe"
+lua_binding = "src/lua_api/globe_api.rs"
+namespace = "lurek.globe"
+example_file = "content/examples/globe.lua"
+lua_unit_test = "tests/lua/unit/test_globe_unit.lua"
+user_facing = true
+plugin_tier = "not_evaluated"
+
+[grep]
+tier = "feature_systems"
+source = "src/grep"
+lua_binding = "src/lua_api/grep_api.rs"
+namespace = "lurek.grep"
+example_file = "content/examples/grep.lua"
+lua_unit_test = "tests/lua/unit/test_grep_unit.lua"
+user_facing = true
+plugin_tier = "not_evaluated"
+
+[html]
+tier = "feature_systems"
+source = "src/html"
+lua_binding = "src/lua_api/html_api.rs"
+namespace = "lurek.html"
+example_file = "content/examples/html.lua"
+lua_unit_test = "tests/lua/unit/test_html_unit.lua"
+user_facing = true
+plugin_tier = "not_evaluated"
+
+[i18n]
+tier = "feature_systems"
+source = "src/i18n"
+lua_binding = "src/lua_api/i18n_api.rs"
+namespace = "lurek.i18n"
+example_file = "content/examples/i18n.lua"
+lua_unit_test = "tests/lua/unit/test_i18n_unit.lua"
+user_facing = true
+plugin_tier = "not_evaluated"
+
+[image]
+tier = "platform_services"
+source = "src/image"
+lua_binding = "src/lua_api/image_api.rs"
+namespace = "lurek.image"
+example_file = "content/examples/image.lua"
+lua_unit_test = "tests/lua/unit/test_image_unit.lua"
+user_facing = true
+plugin_tier = "not_evaluated"
+
+[input]
+tier = "platform_services"
+source = "src/input"
+lua_binding = "src/lua_api/input_api.rs"
+namespace = "lurek.input"
+example_file = "content/examples/input.lua"
+lua_unit_test = "tests/lua/unit/test_input_unit.lua"
+user_facing = true
+plugin_tier = "not_evaluated"
+
+[layout]
+tier = "foundations"
+source = "src/layout"
+lua_binding = "src/lua_api/layout_api.rs"
+namespace = "lurek.layout"
+example_file = "content/examples/layout.lua"
+lua_unit_test = "tests/lua/unit/test_layout_unit.lua"
+user_facing = true
+plugin_tier = "not_evaluated"
+
+[learning]
+tier = "feature_systems"
+source = "src/learning"
+lua_binding = "src/lua_api/learning_api.rs"
+namespace = "lurek.learning"
+example_file = "content/examples/learning.lua"
+lua_unit_test = "tests/lua/unit/test_learning_unit.lua"
+user_facing = true
+plugin_tier = "tier_1_plugin"
+
+[light]
+tier = "platform_services"
+source = "src/light"
+lua_binding = "src/lua_api/light_api.rs"
+namespace = "lurek.light"
+example_file = "content/examples/light.lua"
+lua_unit_test = "tests/lua/unit/test_light_unit.lua"
+user_facing = true
+plugin_tier = "core_keep"
+
+[log]
+tier = "foundations"
+source = "src/log"
+lua_binding = "src/lua_api/log_api.rs"
+namespace = "lurek.log"
+example_file = "content/examples/log.lua"
+lua_unit_test = "tests/lua/unit/test_log_unit.lua"
+user_facing = true
+plugin_tier = "not_evaluated"
+
+[lua_api]
+tier = "edge_integration"
+source = "src/lua_api"
+lua_binding = ""
+namespace = ""
+example_file = ""
+lua_unit_test = ""
+user_facing = false
+plugin_tier = "not_evaluated"
+
+[mapblock]
+tier = "feature_systems"
+source = "src/mapblock"
+lua_binding = "src/lua_api/mapblock_api.rs"
+namespace = "lurek.mapblock"
+example_file = "content/examples/mapblock.lua"
+lua_unit_test = "tests/lua/unit/test_mapblock_unit.lua"
+user_facing = true
+plugin_tier = "not_evaluated"
+
+[math]
+tier = "foundations"
+source = "src/math"
+lua_binding = "src/lua_api/math_api.rs"
+namespace = "lurek.math"
+example_file = "content/examples/math.lua"
+lua_unit_test = "tests/lua/unit/test_math_unit.lua"
+user_facing = true
+plugin_tier = "not_evaluated"
+
+[midi]
+tier = "platform_services"
+source = "src/midi"
+lua_binding = "src/lua_api/midi_api.rs"
+namespace = "lurek.midi"
+example_file = "content/examples/midi.lua"
+lua_unit_test = "tests/lua/unit/test_midi_unit.lua"
+user_facing = true
+plugin_tier = "not_evaluated"
+
+[minimap]
+tier = "feature_systems"
+source = "src/minimap"
+lua_binding = "src/lua_api/minimap_api.rs"
+namespace = "lurek.minimap"
+example_file = "content/examples/minimap.lua"
+lua_unit_test = "tests/lua/unit/test_minimap_unit.lua"
+user_facing = true
+plugin_tier = "tier_2_plugin"
+
+[mods]
+tier = "feature_systems"
+source = "src/mods"
+lua_binding = "src/lua_api/mods_api.rs"
+namespace = "lurek.mods"
+example_file = "content/examples/mods.lua"
+lua_unit_test = "tests/lua/unit/test_mods_unit.lua"
+user_facing = true
+plugin_tier = "tier_2_plugin"
+
+[network]
+tier = "core_runtime"
+source = "src/network"
+lua_binding = "src/lua_api/network_api.rs"
+namespace = "lurek.network"
+example_file = "content/examples/network.lua"
+lua_unit_test = "tests/lua/unit/test_network_unit.lua"
+user_facing = true
+plugin_tier = "tier_1_plugin"
+
+[overlay]
+tier = "feature_systems"
+source = "src/overlay"
+lua_binding = "src/lua_api/overlay_api.rs"
+namespace = "lurek.overlay"
+example_file = "content/examples/overlay.lua"
+lua_unit_test = "tests/lua/unit/test_overlay_unit.lua"
+user_facing = true
+plugin_tier = "core_keep"
+
+[parallax]
+tier = "feature_systems"
+source = "src/parallax"
+lua_binding = "src/lua_api/parallax_api.rs"
+namespace = "lurek.parallax"
+example_file = "content/examples/parallax.lua"
+lua_unit_test = "tests/lua/unit/test_parallax_unit.lua"
+user_facing = true
+plugin_tier = "tier_2_plugin"
+
+[particle]
+tier = "feature_systems"
+source = "src/particle"
+lua_binding = "src/lua_api/particle_api.rs"
+namespace = "lurek.particle"
+example_file = "content/examples/particle.lua"
+lua_unit_test = "tests/lua/unit/test_particle_unit.lua"
+user_facing = true
+plugin_tier = "core_keep"
+
+[pathfind]
+tier = "feature_systems"
+source = "src/pathfind"
+lua_binding = "src/lua_api/pathfind_api.rs"
+namespace = "lurek.pathfind"
+example_file = "content/examples/pathfind.lua"
+lua_unit_test = "tests/lua/unit/test_pathfind_unit.lua"
+user_facing = true
+plugin_tier = "not_evaluated"
+
+[patterns]
+tier = "foundations"
+source = "src/patterns"
+lua_binding = "src/lua_api/patterns_api.rs"
+namespace = "lurek.patterns"
+example_file = "content/examples/patterns.lua"
+lua_unit_test = "tests/lua/unit/test_patterns_unit.lua"
+user_facing = true
+plugin_tier = "not_evaluated"
+
+[physics]
+tier = "platform_services"
+source = "src/physics"
+lua_binding = "src/lua_api/physics_api.rs"
+namespace = "lurek.physics"
+example_file = "content/examples/physics.lua"
+lua_unit_test = "tests/lua/unit/test_physics_unit.lua"
+user_facing = true
+plugin_tier = "tier_2_plugin"
+
+[pipeline]
+tier = "feature_systems"
+source = "src/pipeline"
+lua_binding = "src/lua_api/pipeline_api.rs"
+namespace = "lurek.pipeline"
+example_file = "content/examples/pipeline.lua"
+lua_unit_test = "tests/lua/unit/test_pipeline_unit.lua"
+user_facing = true
+plugin_tier = "not_evaluated"
+
+[procgen]
+tier = "foundations"
+source = "src/procgen"
+lua_binding = "src/lua_api/procgen_api.rs"
+namespace = "lurek.procgen"
+example_file = "content/examples/procgen.lua"
+lua_unit_test = "tests/lua/unit/test_procgen_unit.lua"
+user_facing = true
+plugin_tier = "tier_2_plugin"
+
+[province]
+tier = "feature_systems"
+source = "src/province"
+lua_binding = "src/lua_api/province_api.rs"
+namespace = "lurek.province"
+example_file = "content/examples/province.lua"
+lua_unit_test = "tests/lua/unit/test_province_unit.lua"
+user_facing = true
+plugin_tier = "core_keep"
+
+[raycaster]
+tier = "feature_systems"
+source = "src/raycaster"
+lua_binding = "src/lua_api/raycaster_api.rs"
+namespace = "lurek.raycaster"
+example_file = "content/examples/raycaster.lua"
+lua_unit_test = "tests/lua/unit/test_raycaster_unit.lua"
+user_facing = true
+plugin_tier = "tier_1_plugin"
+
+[render]
+tier = "platform_services"
+source = "src/render"
+lua_binding = "src/lua_api/render_api.rs"
+namespace = "lurek.render"
+example_file = "content/examples/render.lua"
+lua_unit_test = "tests/lua/unit/test_render_unit.lua"
+user_facing = true
+plugin_tier = "not_evaluated"
+
+[repl]
+tier = "core_runtime"
+source = "src/repl"
+lua_binding = "src/lua_api/repl_api.rs"
+namespace = "lurek.repl"
+example_file = "content/examples/repl.lua"
+lua_unit_test = "tests/lua/unit/test_repl_unit.lua"
+user_facing = true
+plugin_tier = "not_evaluated"
+
+[runtime]
+tier = "core_runtime"
+source = "src/runtime"
+lua_binding = "src/lua_api/system_api.rs"
+namespace = "lurek.runtime"
+example_file = "content/examples/runtime.lua"
+lua_unit_test = "tests/lua/unit/test_runtime_unit.lua"
+user_facing = true
+plugin_tier = "not_evaluated"
+
+[save]
+tier = "feature_systems"
+source = "src/save"
+lua_binding = "src/lua_api/save_api.rs"
+namespace = "lurek.save"
+example_file = "content/examples/save.lua"
+lua_unit_test = "tests/lua/unit/test_save_unit.lua"
+user_facing = true
+plugin_tier = "not_evaluated"
+
+[scene]
+tier = "feature_systems"
+source = "src/scene"
+lua_binding = "src/lua_api/scene_api.rs"
+namespace = "lurek.scene"
+example_file = "content/examples/scene.lua"
+lua_unit_test = "tests/lua/unit/test_scene_unit.lua"
+user_facing = true
+plugin_tier = "not_evaluated"
+
+[serialize]
+tier = "foundations"
+source = "src/serialize"
+lua_binding = "src/lua_api/serialize_api.rs"
+namespace = "lurek.serial"
+example_file = "content/examples/serialize.lua"
+lua_unit_test = "tests/lua/unit/test_serialize_unit.lua"
+user_facing = true
+plugin_tier = "core_keep"
+
+[spine]
+tier = "feature_systems"
+source = "src/spine"
+lua_binding = "src/lua_api/spine_api.rs"
+namespace = "lurek.spine"
+example_file = "content/examples/spine.lua"
+lua_unit_test = "tests/lua/unit/test_spine_unit.lua"
+user_facing = true
+plugin_tier = "tier_1_plugin"
+
+[sprite]
+tier = "feature_systems"
+source = "src/sprite"
+lua_binding = "src/lua_api/sprite_api.rs"
+namespace = "lurek.sprite"
+example_file = "content/examples/sprite.lua"
+lua_unit_test = "tests/lua/unit/test_sprite_unit.lua"
+user_facing = true
+plugin_tier = "core_keep"
+
+[terminal]
+tier = "feature_systems"
+source = "src/terminal"
+lua_binding = "src/lua_api/terminal_api.rs"
+namespace = "lurek.terminal"
+example_file = "content/examples/terminal.lua"
+lua_unit_test = "tests/lua/unit/test_terminal_unit.lua"
+user_facing = true
+plugin_tier = "tier_1_plugin"
+
+[thread]
+tier = "core_runtime"
+source = "src/thread"
+lua_binding = "src/lua_api/thread_api.rs"
+namespace = "lurek.thread"
+example_file = "content/examples/thread.lua"
+lua_unit_test = "tests/lua/unit/test_thread_unit.lua"
+user_facing = true
+plugin_tier = "not_evaluated"
+
+[tilemap]
+tier = "feature_systems"
+source = "src/tilemap"
+lua_binding = "src/lua_api/tilemap_api.rs"
+namespace = "lurek.tilemap"
+example_file = "content/examples/tilemap.lua"
+lua_unit_test = "tests/lua/unit/test_tilemap_unit.lua"
+user_facing = true
+plugin_tier = "core_keep"
+
+[timer]
+tier = "core_runtime"
+source = "src/timer"
+lua_binding = "src/lua_api/timer_api.rs"
+namespace = "lurek.timer"
+example_file = "content/examples/timer.lua"
+lua_unit_test = "tests/lua/unit/test_timer_unit.lua"
+user_facing = true
+plugin_tier = "not_evaluated"
+
+[tween]
+tier = "feature_systems"
+source = "src/tween"
+lua_binding = "src/lua_api/tween_api.rs"
+namespace = "lurek.tween"
+example_file = "content/examples/tween.lua"
+lua_unit_test = "tests/lua/unit/test_tween_unit.lua"
+user_facing = true
+plugin_tier = "not_evaluated"
+
+[ui]
+tier = "feature_systems"
+source = "src/ui"
+lua_binding = "src/lua_api/ui_api.rs"
+namespace = "lurek.ui"
+example_file = "content/examples/ui.lua"
+lua_unit_test = "tests/lua/unit/test_ui_unit.lua"
+user_facing = true
+plugin_tier = "tier_1_plugin"
+
+[validator]
+tier = "feature_systems"
+source = "src/validator"
+lua_binding = "src/lua_api/validator_api.rs"
+namespace = "lurek.validator"
+example_file = "content/examples/validator.lua"
+lua_unit_test = "tests/lua/unit/test_validator_unit.lua"
+user_facing = true
+plugin_tier = "not_evaluated"
+
+[vector]
+tier = "foundations"
+source = "src/vector"
+lua_binding = "src/lua_api/svg_api.rs"
+namespace = "lurek.svg"
+example_file = "content/examples/svg.lua"
+lua_unit_test = "tests/lua/unit/test_svg_unit.lua"
+user_facing = true
+plugin_tier = "not_evaluated"
+
+[visibility]
+tier = "platform_services"
+source = "src/visibility"
+lua_binding = "src/lua_api/visibility_api.rs"
+namespace = "lurek.visibility"
+example_file = "content/examples/visibility.lua"
+lua_unit_test = "tests/lua/unit/test_visibility_unit.lua"
+user_facing = true
+plugin_tier = "core_keep"
+
+[window]
+tier = "platform_services"
+source = "src/window"
+lua_binding = "src/lua_api/window_api.rs"
+namespace = "lurek.window"
+example_file = "content/examples/window.lua"
+lua_unit_test = "tests/lua/unit/test_window_unit.lua"
+user_facing = true
+plugin_tier = "not_evaluated"

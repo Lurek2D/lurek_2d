@@ -606,6 +606,44 @@ def _classify_issue(entry: Optional[BindingEntry], subject: str, index: Optional
     if entry is None:
         return CLASSIFICATION_CONFIRMED_DOC_BUG
 
+    # Table-backed userdata methods often expose a Rust closure argument named
+    # `self` so colon calls can receive the widget table. Public docs normalize
+    # that receiver away, matching normal Lua method documentation.
+    if (
+        kind == "parameter_count_mismatch"
+        and entry.kind == "method"
+        and entry.call_style == ":"
+        and isinstance(expected, int)
+        and isinstance(actual, int)
+        and expected == actual + 1
+        and entry.parameters
+        and entry.parameters[0].name in {"self", "_self"}
+    ):
+        return CLASSIFICATION_EXTRACTION_UNCERTAIN
+
+    # Named Rust helper functions can hide Lua parameters from the lightweight
+    # closure parser, especially when the public registration passes a function
+    # pointer. The nearby docstring remains the better source for Lua shape.
+    if (
+        kind == "parameter_count_mismatch"
+        and isinstance(expected, int)
+        and isinstance(actual, int)
+        and expected == 0
+        and actual > 0
+        and entry.source_signature.strip().startswith("fn ")
+    ):
+        return CLASSIFICATION_EXTRACTION_UNCERTAIN
+
+    # Tuple adapter structs collapse many Lua arguments into one Rust extractor
+    # parameter. Treat count drift against explicit per-argument docs as parser
+    # uncertainty, not a confirmed documentation defect.
+    if (
+        kind == "parameter_count_mismatch"
+        and entry.parameters
+        and any(parameter.name.strip().startswith("(") for parameter in entry.parameters)
+    ):
+        return CLASSIFICATION_EXTRACTION_UNCERTAIN
+
     diagnostic_classes = {diagnostic.classification for diagnostic in entry.diagnostics}
     if subject == "parameter":
         targets = entry.parameters if index is None else entry.parameters[index : index + 1]
@@ -628,14 +666,47 @@ def _classify_issue(entry: Optional[BindingEntry], subject: str, index: Optional
     if kind == "parameter_name_mismatch":
         return CLASSIFICATION_EXTRACTION_UNCERTAIN
 
-    # Rule 2: Code says 'userdata' (from LuaAnyUserData), doc says specific Lua class type (L*).
+    # Rule 2: Code says 'userdata' (from LuaAnyUserData), doc says specific Lua class type.
     # The tool can't verify which userdata subtype is accepted; the doc is more informative.
-    if kind == "parameter_type_mismatch" and expected == "userdata" and isinstance(actual, str) and actual.startswith("L"):
+    if (
+        kind == "parameter_type_mismatch"
+        and expected == "userdata"
+        and isinstance(actual, str)
+        and re.match(r"^[A-Z][A-Za-z0-9_]*$", actual)
+    ):
+        return CLASSIFICATION_EXTRACTION_UNCERTAIN
+
+    # Rust-side tuple/table adapter types are implementation details; docs should
+    # describe the Lua table or expanded scalar arguments accepted by scripts.
+    if (
+        kind == "parameter_type_mismatch"
+        and isinstance(expected, str)
+        and expected.startswith("L")
+        and actual in {"table", "number", "integer", "string", "boolean", "any"}
+    ):
         return CLASSIFICATION_EXTRACTION_UNCERTAIN
 
     # Rule 3: Code says 'any' (from LuaValue generic), doc says a specific type.
     # LuaValue accepts all Lua values; the doc provides semantic type restriction the code can't express.
     if kind in ("parameter_type_mismatch", "return_type_mismatch") and expected == "any" and actual and actual != "any":
+        return CLASSIFICATION_EXTRACTION_UNCERTAIN
+
+    # Rule 3b: Code can only see a raw Lua table while docs narrow the semantic array shape.
+    if (
+        kind in ("parameter_type_mismatch", "return_type_mismatch")
+        and expected == "table"
+        and isinstance(actual, str)
+        and actual.endswith("[]")
+    ):
+        return CLASSIFICATION_EXTRACTION_UNCERTAIN
+
+    # Rule 3c: Some inferred Rust return wrappers leak into the code snapshot.
+    # Lua-facing docs should name the unwrapped Lua value, not `LuaResult<T>`.
+    if (
+        kind == "return_type_mismatch"
+        and isinstance(expected, str)
+        and (expected.startswith("LuaResult<") or expected.startswith("LResult<"))
+    ):
         return CLASSIFICATION_EXTRACTION_UNCERTAIN
 
     # Rule 4: Optionality mismatch where code type is 'any' (from LuaValue, not Option<T>).

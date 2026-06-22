@@ -12,6 +12,8 @@ Usage:
 import json
 import os
 import re
+import sys
+from pathlib import Path
 
 # Lua reserved keywords â€” cannot be used as parameter names in stub declarations.
 LUA_KEYWORDS = {
@@ -21,7 +23,10 @@ LUA_KEYWORDS = {
 }
 
 WORKSPACE_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-INPUT_FILE = os.path.join(WORKSPACE_ROOT, "logs", "data", "lua_api_data.json")
+sys.path.insert(0, str(Path(WORKSPACE_ROOT) / "tools" / "docs"))
+import module_registry
+
+INPUT_FILE = str(module_registry.lua_api_json_path())
 OUTPUT_FILE = os.path.join(WORKSPACE_ROOT, "docs", "api", "lurek.lua")
 
 BUILTIN_TYPES = {

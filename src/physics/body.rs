@@ -1,9 +1,12 @@
-//! This file owns `BodyType`, `BodyShape`, and `Body`, the authored body descriptor used before and during world use.
-//! It stores simulation role, primitive shape, material settings, filters, pose, velocity, and optional extended geometry.
-//! Constructors cover rectangles, circles, polygons, edges, and chains so tools and gameplay code share one body surface.
-//! Geometry helpers expose bounding boxes plus local or world point conversion without requiring a live solver context.
-//! This file is the boundary between authored rigid-body intent and the runtime world that simulates those bodies.
-//! Open it when body payloads or authoring semantics change; stepping, queries, and zones live in sibling owners.
+//! Owns the body owner for the physics subsystem and keeps its rules local to this file while keeping call sites explicit.
+//! Centers the implementation around BodyType, BodyShape, Body, with helpers kept close to their invariants.
+//! Defines how body data is validated, transformed, or stored before neighboring systems use it.
+//! Owns physics behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on body behavior while Lua registration stays elsewhere.
+//! Documents the boundary where physics code accepts inputs, reports errors, or updates state.
+//! Use this file when changing body defaults, lifecycle handling, validation, or data ownership.
+//! Keeps failure paths and edge cases near the physics state that can explain them while keeping call sites explicit.
+//! Preserves deterministic behavior by keeping body calculations explicit at their owner boundary.
 
 use crate::log_msg;
 use crate::math::{Rect, Vec2};

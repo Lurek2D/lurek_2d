@@ -1,6 +1,9 @@
-//! Owns typed validation and safety errors shared by tilemap constructors, queries, and import helpers.
-//! It keeps failure reasons explicit so safe `try_*` APIs can reject invalid dimensions, limits, and paths consistently.
-//! Open this file when tilemap callers need clearer diagnostics or when a new tilemap owner joins the shared safety contract.
+//! Owns tilemap behavior with explicit state, validation, and crate-local integration boundaries.
+//! Centers the implementation around TileMapError, fmt, with helpers kept close to their invariants.
+//! Defines how error data is validated, transformed, or stored before neighboring systems use it.
+//! Owns tilemap behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on error behavior while Lua registration stays elsewhere.
+//! Documents the boundary where tilemap code accepts inputs, reports errors, or updates state.
 
 use std::fmt;
 

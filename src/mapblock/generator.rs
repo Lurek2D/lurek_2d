@@ -1,12 +1,13 @@
-//! This file owns the operational mapblock engine that runs scripts, tracks RNG, and mutates placement state over time.
-//! `MapBlockGenerator` stores config, grid, rules, orientation, groups, levels, paint ops, and output tile sizing knobs.
-//! It reuses the shared `procgen::Lcg` so deterministic picks follow one engine-wide RNG contract.
-//! `generate` orchestrates the whole build, resetting state, running each script step, and then materializing output.
-//! Random, fixed, edge, auto, rectangle-paint, and shape-solver step handlers all live here as runtime control flow.
-//! Weighted block choice and candidate ordering stay here because authored content selection is step execution logic.
-//! Backtracking shape solving stays local because it recursively consumes placement candidates against the live grid state.
-//! `MapBlockReport` and `place_candidate` bridge execution outcomes into diagnostics, `PlacementGrid`, and `MultiLevelMap`.
-//! Open it when generation behavior changes; blocks, scripts, legality checks, and result export live in sibling owners.
+//! Owns the generation pipeline for the mapblock subsystem and keeps its rules local to this file.
+//! Keeps mapblock data ownership and helper behavior clear for future engine maintenance. for engine changes.
+//! Defines how generator data is validated, transformed, or stored before neighboring systems use it.
+//! Owns mapblock behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on generator behavior while Lua registration stays elsewhere.
+//! Documents the boundary where mapblock code accepts inputs, reports errors, or updates state.
+//! Use this file when changing generator defaults, lifecycle handling, validation, or data ownership.
+//! Keeps failure paths and edge cases near the mapblock state that can explain them while keeping call sites explicit.
+//! Preserves deterministic behavior by keeping generator calculations explicit at their owner boundary.
+//! Owns mapblock behavior with explicit state, validation, and crate-local integration boundaries.
 
 use super::config::MapBlockConfig;
 use super::constraints::NeighborRules;

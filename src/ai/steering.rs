@@ -1,12 +1,13 @@
-//! Owns the continuous steering runtime that turns many movement influences into one bounded force for an agent.
-//! Defines seek, flee, arrive, wander, pursue, evade, flock, and custom behavior variants with shared base state.
-//! Combines behavior outputs under weighted or priority blending so path following and reactive forces can coexist.
-//! Stores waypoint path progress, named entity context, and last-force output beside the behavior collection itself.
-//! Provides the movement boundary between high-level intent and low-level velocity updates driven every frame.
-//! This file matters when acceleration shaping, blend semantics, or path-follow steering interaction is incorrect.
-//! Neighboring changes usually involve agent movement data, context steering, ORCA, and authored path waypoints.
-//! Open this owner when motion quality is wrong even though the chosen decision and destination are already correct.
-//! It is the right file for steering-force bugs because no sibling module owns the final force synthesis contract.
+//! Owns the steering owner for the ai subsystem and keeps its rules local to this file while keeping call sites explicit.
+//! Centers the implementation around Force, SteeringEntity, FlockParams, with helpers kept close to their invariants.
+//! Defines how steering data is validated, transformed, or stored before neighboring systems use it.
+//! Owns ai behavior with explicit state, validation, and crate-local integration boundaries. for engine changes.
+//! Keeps public crate helpers focused on steering behavior while Lua registration stays elsewhere.
+//! Documents the boundary where ai code accepts inputs, reports errors, or updates state while keeping call sites explicit.
+//! Use this file when changing steering defaults, lifecycle handling, validation, or data ownership.
+//! Keeps failure paths and edge cases near the ai state that can explain them while keeping call sites explicit.
+//! Preserves deterministic behavior by keeping steering calculations explicit at their owner boundary.
+//! Provides the local adaptation layer that lets callers avoid duplicating ai rules while keeping call sites explicit.
 
 use std::collections::HashMap;
 

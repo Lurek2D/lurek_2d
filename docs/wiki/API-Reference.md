@@ -329,7 +329,7 @@
   - [LPromise](#lpromise)
   - [LThreadHandle](#lthreadhandle)
   - [LThreadPool](#lthreadpool)
-- [lurek.physics](#lurekphysics)
+- [lurek.tilemap](#lurektilemap)
   - [LAutoTileSheet](#lautotilesheet)
   - [LChunkMap](#lchunkmap)
   - [LIsoMap](#lisomap)
@@ -7336,7 +7336,7 @@ LThreadPool:type() -> string -- Returns the type name of this object.
 LThreadPool:typeOf(name: string) -> boolean -- Checks whether this object matches the given type name.
 ```
 
-## lurek.physics
+## lurek.tilemap
 
 [Module page](Module-tilemap)
 

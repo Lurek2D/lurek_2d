@@ -16926,7 +16926,7 @@ lurek.mapblock.newGroup = function(name) end
 lurek.mapblock.newRules = function() end
 
 --- Create a new map script exposed by the lurek engine.
----@param name? string Script name.
+---@param name? string Optional script name, defaulting to `default`.
 ---@return LMapScript New script.
 lurek.mapblock.newScript = function(name) end
 

@@ -44,8 +44,11 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parent.parent.parent
+sys.path.insert(0, str(ROOT / "tools" / "docs"))
+import module_registry
+
 DEFAULT_OUTPUT = ROOT / "docs" / "wiki"
-API_DATA = ROOT / "logs" / "data" / "lua_api_data.json"
+API_DATA = module_registry.lua_api_json_path()
 SPEC_DIR = ROOT / "docs" / "specs"
 SPEC_INDEX = SPEC_DIR / "README.md"
 EXAMPLES_DIR = ROOT / "content" / "examples"

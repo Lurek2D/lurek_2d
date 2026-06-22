@@ -1,12 +1,15 @@
-//! `src/minimap/minimap.rs` owns the `Minimap` state object that stores terrain, fog, markers, overlays, and view settings.
-//! It is the main data and behavior boundary for minimap grids, terrain palettes, owner colors, icons, layers, and paths.
-//! Object types, live objects, pings, marker animations, and viewport outlines are updated here with local state.
-//! Camera tracking, pan and zoom, hover lookup, and grid-to-screen coordinate conversion also live in this implementation.
-//! The file exposes mutation APIs for terrain, fog, objects, markers, overlays, paths, layers, and display configuration.
-//! Export helpers such as `draw_to_image` and render-command entry points are defined here for sibling use.
-//! Internal helpers resolve active cell colors and owner mappings so terrain and political display modes stay consistent.
-//! This file does not import province data or compute raycast visibility; dedicated adapters handle those translations.
-//! Read it when minimap ownership, per-frame updates, view math, or public state mutation behavior needs to change.
+//! Owns minimap behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps minimap data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+//! Defines how minimap data is validated, transformed, or stored before neighboring systems use it.
+//! Owns minimap behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on minimap behavior while Lua registration stays elsewhere.
+//! Documents the boundary where minimap code accepts inputs, reports errors, or updates state.
+//! Use this file when changing minimap defaults, lifecycle handling, validation, or data ownership.
+//! Keeps failure paths and edge cases near the minimap state that can explain them while keeping call sites explicit.
+//! Preserves deterministic behavior by keeping minimap calculations explicit at their owner boundary.
+//! Provides the local adaptation layer that lets callers avoid duplicating minimap rules while keeping call sites explicit.
+//! Maintains small helper surfaces so broader engine modules can compose minimap behavior safely.
+//! Protects subsystem contracts by keeping resource, cache, or state mutations visible in one place.
 
 use super::types::{
     ColorMode, FogLevel, LayerData, MarkerAnimation, MinimapError, MinimapLimits, MinimapMarker,

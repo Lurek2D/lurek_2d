@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/parallax.md or source docstrings instead. -->
+
 # parallax
 
 ## TL;DR
@@ -8,12 +10,12 @@
 ## General Info
 
 - Module group: `Feature Systems`
-- Source path: `src/parallax/`
+- Source path: `src/parallax`
 - Binding: `src/lua_api/parallax_api.rs`
 - Namespace: `lurek.parallax`
 - Lua API surface: `3` functions, `2` types, `50` methods
-- Rust test path(s): tests/rust/unit/parallax_tests.rs
-- Lua test path(s): tests/lua/unit/test_parallax_core_unit.lua, tests/lua/integration/test_parallax_camera.lua
+- User-facing: `true`
+- Plugin tier: `tier_2_plugin`
 
 ## Summary
 
@@ -27,13 +29,21 @@
 
 This module primarily collaborates with `image`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
 
+## Ownership
+
+- Canonical source: `src/parallax`
+- Owning tier: `Feature Systems`
+- Plugin tier: `tier_2_plugin`
+- Lua binding owner: `src/lua_api/parallax_api.rs`
+- Referenced engine modules: `image`, `render`, `runtime`
+
 ## Imports
 
-- `image`: Imports or references `image` from `src/image/`.
-- `render`: Imports or references `render` from `src/render/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `image`: Imports or references `src/image/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
+- `render`: Imports or references `src/render/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
+- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Feature Systems` into `Core Runtime`.
 
-## Files
+## Source Files
 
 ### draw.rs
 
@@ -171,11 +181,37 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 - `LParallaxSet:type() -> string`: Returns the Lua-visible type name for this parallax set handle.
 - `LParallaxSet:update(dt) -> nil`: Updates all layers in this parallax set.
 
-## References
+## Examples
 
-- `image`: Imports or references `image` from `src/image/`.
-- `render`: Imports or references `render` from `src/render/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `content/examples/parallax.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_parallax_unit.lua` (present)
+- Rust: `tests/rust/unit/parallax_tests.rs`
+
+## Evidence / Golden
+
+| Kind | Path |
+|---|---|
+| Evidence test | `tests/lua/evidence/test_parallax_evidence.lua` |
+| Golden test | `tests/lua/golden/test_parallax_golden.lua` |
+| Current artifact | `tests/artifacts/current/parallax/parallax_autoscroll_motion.gif` |
+| Current artifact | `tests/artifacts/current/parallax/parallax_depth_scroll_factors.png` |
+| Current artifact | `tests/artifacts/current/parallax/parallax_effect_tint_motion_stretch.png` |
+| Current artifact | `tests/artifacts/current/parallax/parallax_preset_layer_profiles.png` |
+| Current artifact | `tests/artifacts/current/parallax/parallax_tiling_coverage_stats.png` |
+| Current artifact | `tests/artifacts/current/parallax/parallax_z_sorted_set.png` |
+| Baseline artifact | `tests/artifacts/baselines/parallax/parallax_autoscroll_motion.gif` |
+| Baseline artifact | `tests/artifacts/baselines/parallax/parallax_depth_scroll_factors.png` |
+| Baseline artifact | `tests/artifacts/baselines/parallax/parallax_effect_tint_motion_stretch.png` |
+| Baseline artifact | `tests/artifacts/baselines/parallax/parallax_preset_layer_profiles.png` |
+| Baseline artifact | `tests/artifacts/baselines/parallax/parallax_tiling_coverage_stats.png` |
+| Baseline artifact | `tests/artifacts/baselines/parallax/parallax_z_sorted_set.png` |
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

@@ -44,7 +44,10 @@ def _configure_stdout_utf8() -> None:
 
 
 ROOT = Path(__file__).resolve().parents[2]
-API_JSON = ROOT / "logs" / "data" / "lua_api_data.json"
+sys.path.insert(0, str(ROOT / "tools" / "docs"))
+import module_registry
+
+API_JSON = module_registry.lua_api_json_path()
 TESTS_ROOT = ROOT / "tests" / "lua"
 
 

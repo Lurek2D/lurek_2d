@@ -1,7 +1,8 @@
-//! This file owns `ImageEffect`, the image-scoped pipeline that groups shared `PostFxEffect` handles into pass chains.
-//! It stores owned or shared effect references, supports add and remove workflows, and resolves entries by index or name.
-//! The `to_passes` helper converts active effect state into `ShaderPassDescriptor` values for downstream execution.
-//! Open this file when image-level effect composition changes; effect instances, presets, and stacks live in siblings.
+//! Owns the image effect owner for the effect subsystem and keeps its rules local to this file.
+//! Centers the implementation around ImageEffect, new, add_effect, with helpers kept close to their invariants.
+//! Defines how image effect data is validated, transformed, or stored before neighboring systems use it.
+//! Owns effect behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on image effect behavior while Lua registration stays elsewhere.
 
 use super::contract::{PostFxDiagnostics, PostFxLimits};
 use super::effect::PostFxEffect;

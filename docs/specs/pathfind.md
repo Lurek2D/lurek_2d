@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/pathfind.md or source docstrings instead. -->
+
 # pathfind
 
 ## TL;DR
@@ -9,12 +11,12 @@
 ## General Info
 
 - Module group: `Feature Systems`
-- Source path: `src/pathfind/`
+- Source path: `src/pathfind`
 - Binding: `src/lua_api/pathfind_api.rs`
 - Namespace: `lurek.pathfind`
 - Lua API surface: `18` functions, `22` types, `104` methods
-- Rust test path(s): tests/rust/unit/pathfinding_tests.rs
-- Lua test path(s): tests/lua/unit/test_pathfind.lua, tests/lua/stress/test_pathfind_stress.lua, tests/lua/golden/test_pathfind_golden_grid.lua, tests/lua/integration/test_tilemap_pathfind.lua, tests/lua/integration/test_pathfind_ecs.lua, tests/lua/integration/test_ai_pathfind.lua
+- User-facing: `true`
+- Plugin tier: `not_evaluated`
 
 ## Summary
 
@@ -39,14 +41,22 @@
 
 This module primarily collaborates with `flownet`, `image`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
 
+## Ownership
+
+- Canonical source: `src/pathfind`
+- Owning tier: `Feature Systems`
+- Plugin tier: `not_evaluated`
+- Lua binding owner: `src/lua_api/pathfind_api.rs`
+- Referenced engine modules: `flownet`, `image`, `render`, `runtime`
+
 ## Imports
 
-- `flownet`: Imports or references `src/flownet/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
-- `image`: Imports or references `image` from `src/image/`.
-- `render`: Imports or references `render` from `src/render/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `flownet`: Imports or references `src/flownet/`. Cross-group dependency from `Feature Systems` into `Foundations`.
+- `image`: Imports or references `src/image/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
+- `render`: Imports or references `src/render/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
+- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Feature Systems` into `Core Runtime`.
 
-## Files
+## Source Files
 
 ### ai_flow_field.rs
 
@@ -649,12 +659,38 @@ This module primarily collaborates with `flownet`, `image`, `render`, `runtime`.
 
 - No documented methods.
 
-## References
+## Examples
 
-- `flownet`: Imports or references `src/flownet/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
-- `image`: Imports or references `image` from `src/image/`.
-- `render`: Imports or references `render` from `src/render/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `content/examples/pathfind.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_pathfind_unit.lua` (present)
+- Rust: `tests/rust/unit/pathfind_tests.rs`
+
+## Evidence / Golden
+
+| Kind | Path |
+|---|---|
+| Evidence test | `tests/lua/evidence/test_pathfind_evidence.lua` |
+| Golden test | `tests/lua/golden/test_pathfind_golden.lua` |
+| Current artifact | `tests/artifacts/current/pathfind/astar_basic.png` |
+| Current artifact | `tests/artifacts/current/pathfind/pathfind_advanced_api_trace.txt` |
+| Current artifact | `tests/artifacts/current/pathfind/pathfind_api_surface.png` |
+| Current artifact | `tests/artifacts/current/pathfind/pathfind_astar_gap_trace.json` |
+| Current artifact | `tests/artifacts/current/pathfind/pathfind_flow_field_samples.json` |
+| Current artifact | `tests/artifacts/current/pathfind/pathfind_weighted_route_trace.json` |
+| Current artifact | `tests/artifacts/current/pathfind/weighted_route.png` |
+| Baseline artifact | `tests/artifacts/baselines/pathfind/astar_basic.png` |
+| Baseline artifact | `tests/artifacts/baselines/pathfind/pathfind_api_surface.png` |
+| Baseline artifact | `tests/artifacts/baselines/pathfind/pathfind_astar_gap_trace.json` |
+| Baseline artifact | `tests/artifacts/baselines/pathfind/pathfind_flow_field_samples.json` |
+| Baseline artifact | `tests/artifacts/baselines/pathfind/pathfind_weighted_route_trace.json` |
+| Baseline artifact | `tests/artifacts/baselines/pathfind/weighted_route.png` |
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

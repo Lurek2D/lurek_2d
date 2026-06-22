@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/runtime.md or source docstrings instead. -->
+
 # runtime
 
 ## TL;DR
@@ -9,12 +11,12 @@
 ## General Info
 
 - Module group: `Core Runtime`
-- Source path: `src/runtime/`
-- Binding: None direct
+- Source path: `src/runtime`
+- Binding: `src/lua_api/system_api.rs`
 - Namespace: `lurek.runtime`
 - Lua API surface: `41` functions, `8` types, `0` methods
-- Rust test path(s): tests/rust/unit/runtime_tests.rs, tests/rust/unit/window_tests.rs, tests/rust/ext/graphics_runtime_smoke_tests.rs, plus runtime-focused unit coverage embedded in src/runtime/messages.rs
-- Lua test path(s): tests/lua/config/test_config.lua, tests/lua/unit/test_runtime_core_unit.lua
+- User-facing: `true`
+- Plugin tier: `not_evaluated`
 
 ## Summary
 
@@ -34,41 +36,52 @@
 
 This module primarily collaborates with `audio`, `camera`, `event`, `filesystem`, `image`, `input`, `light`, `lua_api`, and adjacent engine modules. Its responsibility should stay inside the Core Runtime group rather than absorb behavior owned by those neighbors.
 
+## Ownership
+
+- Canonical source: `src/runtime`
+- Owning tier: `Core Runtime`
+- Plugin tier: `not_evaluated`
+- Lua binding owner: `src/lua_api/system_api.rs`
+- Referenced engine modules: `audio`, `camera`, `event`, `filesystem`, `image`, `input`, `light`, `lua_api`, `midi`, `mods`, `parallax`, `particle`, `province`, `raycaster`, `render`, `repl`, `sprite`, `tilemap`, `timer`, `ui`
+
 ## Imports
 
-- `audio`: Imports or references `audio` from `src/audio/`.
-- `camera`: Imports or references `camera` from `src/camera/`.
-- `event`: Imports or references `event` from `src/event/`.
-- `filesystem`: Imports or references `filesystem` from `src/filesystem/`.
+- `audio`: Imports or references `src/audio/`. Cross-group dependency from `Core Runtime` into `Platform Services`.
+- `camera`: Imports or references `src/camera/`. Cross-group dependency from `Core Runtime` into `Platform Services`.
+- `event`: Imports or references `src/event/`. Dependency stays inside `Core Runtime` and should remain acyclic.
+- `filesystem`: Imports or references `src/filesystem/`. Dependency stays inside `Core Runtime` and should remain acyclic.
 - `image`: Imports or references `src/image/`. Cross-group dependency from `Core Runtime` into `Platform Services`.
-- `input`: Imports or references `input` from `src/input/`.
-- `light`: Imports or references `light` from `src/light/`.
-- `lua_api`: `src/lua_api/system_api.rs`, `src/lua_api/engine_api.rs`, and `src/lua_api/register.rs` expose the runtime contract to Lua. `src/runtime/` must not import the binding layer.
-- `midi`: Imports or references `src/midi/`. Cross-group dependency from `Core Runtime` into `Edge/Integration`.
+- `input`: Imports or references `src/input/`. Cross-group dependency from `Core Runtime` into `Platform Services`.
+- `light`: Imports or references `src/light/`. Cross-group dependency from `Core Runtime` into `Platform Services`.
+- `lua_api`: Imports or references `src/lua_api/`. Cross-group dependency from `Core Runtime` into `Edge/Integration`.
+- `midi`: Imports or references `src/midi/`. Cross-group dependency from `Core Runtime` into `Platform Services`.
 - `mods`: Imports or references `src/mods/`. Cross-group dependency from `Core Runtime` into `Feature Systems`.
-- `parallax`: Imports or references `parallax` from `src/parallax/`.
-- `particle`: Imports or references `particle` from `src/particle/`.
-- `province`: Imports or references `src/province/`. Cross-group dependency from `Core Runtime` into `Edge/Integration`.
-- `raycaster`: Imports or references `raycaster` from `src/raycaster/`.
-- `render`: Imports or references `render` from `src/render/`.
-- `repl`: Imports or references `src/repl/`. Cross-group dependency from `Core Runtime` into `Edge/Integration`.
-- `sprite`: Imports or references `sprite` from `src/sprite/`.
-- `tilemap`: Imports or references `tilemap` from `src/tilemap/`.
-- `timer`: Imports or references `timer` from `src/timer/`.
-- `ui`: Imports or references `ui` from `src/ui/`.
+- `parallax`: Imports or references `src/parallax/`. Cross-group dependency from `Core Runtime` into `Feature Systems`.
+- `particle`: Imports or references `src/particle/`. Cross-group dependency from `Core Runtime` into `Feature Systems`.
+- `province`: Imports or references `src/province/`. Cross-group dependency from `Core Runtime` into `Feature Systems`.
+- `raycaster`: Imports or references `src/raycaster/`. Cross-group dependency from `Core Runtime` into `Feature Systems`.
+- `render`: Imports or references `src/render/`. Cross-group dependency from `Core Runtime` into `Platform Services`.
+- `repl`: Imports or references `src/repl/`. Dependency stays inside `Core Runtime` and should remain acyclic.
+- `sprite`: Imports or references `src/sprite/`. Cross-group dependency from `Core Runtime` into `Feature Systems`.
+- `tilemap`: Imports or references `src/tilemap/`. Cross-group dependency from `Core Runtime` into `Feature Systems`.
+- `timer`: Imports or references `src/timer/`. Dependency stays inside `Core Runtime` and should remain acyclic.
+- `ui`: Imports or references `src/ui/`. Cross-group dependency from `Core Runtime` into `Feature Systems`.
 
-## Files
+## Source Files
 
 ### config.rs
 
-- This file owns the typed runtime configuration schema that turns `conf.toml` into deterministic startup policy.
-- It stores top-level config plus mode, window, render, module, performance, TUI, CLI, and headless sections.
-- Default implementations define the baseline engine shape used when projects omit config or provide partial data.
-- Module validation lives here because feature toggles must disable unsupported dependency combinations centrally.
-- Headless-profile helpers also live here so no-window startup can force a supported subset of enabled modules.
-- Load helpers merge file overrides over defaults, log read or parse problems, and preserve a usable config result.
-- Serde support is part of the boundary because this data moves between disk, runtime defaults, and inspections.
-- Open it when startup policy changes; shared mutable state and execution modes consume these contracts elsewhere.
+- Owns the configuration model for the runtime subsystem and keeps its rules local to this file.
+- Keeps runtime data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+- Defines how config data is validated, transformed, or stored before neighboring systems use it.
+- Owns runtime behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on config behavior while Lua registration stays elsewhere.
+- Documents the boundary where runtime code accepts inputs, reports errors, or updates state.
+- Use this file when changing config defaults, lifecycle handling, validation, or data ownership.
+- Keeps failure paths and edge cases near the runtime state that can explain them while keeping call sites explicit.
+- Preserves deterministic behavior by keeping config calculations explicit at their owner boundary.
+- Provides the local adaptation layer that lets callers avoid duplicating runtime rules while keeping call sites explicit.
+- Maintains small helper surfaces so broader engine modules can compose config behavior safely.
 
 ### error.rs
 
@@ -101,11 +114,11 @@ This module primarily collaborates with `audio`, `camera`, `event`, `filesystem`
 
 ### lua_execution.rs
 
-- This file owns shared Lua execution policy used by GUI app, headless runs, and other host-side callers.
-- `LuaExecutionPolicy` centralizes callback timeout configuration and instruction-hook cadence.
-- The helper executes already-resolved Lua functions and removes timeout hooks with RAII cleanup.
-- Keeping this logic in runtime avoids diverging timeout semantics between GUI and headless hosts.
-- Open it when Lua callback timeout policy or hook cleanup behavior changes.
+- Owns the Lua execution bridge for the runtime subsystem and keeps its rules local to this file.
+- Keeps runtime data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+- Defines how lua execution data is validated, transformed, or stored before neighboring systems use it.
+- Owns runtime behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on lua execution behavior while Lua registration stays elsewhere.
 
 ### messages.rs
 
@@ -146,15 +159,17 @@ This module primarily collaborates with `audio`, `camera`, `event`, `filesystem`
 
 ### shared_state.rs
 
-- This file owns `SharedState`, the mutable runtime hub that lets separate engine systems coordinate each frame.
-- It stores render commands, resource pools, timers, window state, input snapshots, and many subsystem handles.
-- Resource ownership for textures, fonts, canvases, meshes, shaders, particles, and related assets lives here.
-- Frame-level services include timing, default fonts, render settings, screenshot requests, and debug overlays.
-- Async file operations, filesystem identity, and poll helpers live here so background I/O shares one runtime hub.
-- Budget enforcement and LRU eviction stay here because they require a global view of runtime-managed resources.
-- Window, fullscreen, scaling, and error snapshot state also live here for Lua bindings and app-loop coordination.
-- Helper methods cover construction, timer stepping, resource touching, memory stats, async requests, and fonts.
-- Open it when cross-system runtime ownership changes; app, Lua bindings, and headless flow depend on this file.
+- Owns the shared state owner for the runtime subsystem and keeps its rules local to this file.
+- Centers the implementation around FullscreenType, WindowState, default, with helpers kept close to their invariants.
+- Defines how shared state data is validated, transformed, or stored before neighboring systems use it.
+- Owns runtime behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on shared state behavior while Lua registration stays elsewhere.
+- Documents the boundary where runtime code accepts inputs, reports errors, or updates state.
+- Use this file when changing shared state defaults, lifecycle handling, validation, or data ownership.
+- Keeps failure paths and edge cases near the runtime state that can explain them while keeping call sites explicit.
+- Preserves deterministic behavior by keeping shared state calculations explicit at their owner boundary.
+- Provides the local adaptation layer that lets callers avoid duplicating runtime rules while keeping call sites explicit.
+- Maintains small helper surfaces so broader engine modules can compose shared state behavior safely.
 
 
 
@@ -363,28 +378,27 @@ This module primarily collaborates with `audio`, `camera`, `event`, `filesystem`
 
 - No documented methods.
 
-## References
+## Examples
 
-- `audio`: Imports or references `audio` from `src/audio/`.
-- `camera`: Imports or references `camera` from `src/camera/`.
-- `event`: Imports or references `event` from `src/event/`.
-- `filesystem`: Imports or references `filesystem` from `src/filesystem/`.
-- `image`: Imports or references `src/image/`. Cross-group dependency from `Core Runtime` into `Platform Services`.
-- `input`: Imports or references `input` from `src/input/`.
-- `light`: Imports or references `light` from `src/light/`.
-- `lua_api`: `src/lua_api/system_api.rs`, `src/lua_api/engine_api.rs`, and `src/lua_api/register.rs` expose the runtime contract to Lua. `src/runtime/` must not import the binding layer.
-- `midi`: Imports or references `src/midi/`. Cross-group dependency from `Core Runtime` into `Edge/Integration`.
-- `mods`: Imports or references `src/mods/`. Cross-group dependency from `Core Runtime` into `Feature Systems`.
-- `parallax`: Imports or references `parallax` from `src/parallax/`.
-- `particle`: Imports or references `particle` from `src/particle/`.
-- `province`: Imports or references `src/province/`. Cross-group dependency from `Core Runtime` into `Edge/Integration`.
-- `raycaster`: Imports or references `raycaster` from `src/raycaster/`.
-- `render`: Imports or references `render` from `src/render/`.
-- `repl`: Imports or references `src/repl/`. Cross-group dependency from `Core Runtime` into `Edge/Integration`.
-- `sprite`: Imports or references `sprite` from `src/sprite/`.
-- `tilemap`: Imports or references `tilemap` from `src/tilemap/`.
-- `timer`: Imports or references `timer` from `src/timer/`.
-- `ui`: Imports or references `ui` from `src/ui/`.
+- `content/examples/runtime.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_runtime_unit.lua` (present)
+- Rust: `tests/rust/ext/effects_audio_runtime_smoke_tests.rs`
+- Rust: `tests/rust/ext/graphics_runtime_smoke_tests.rs`
+- Rust: `tests/rust/unit/runtime_tests.rs`
+
+## Evidence / Golden
+
+| Kind | Path |
+|---|---|
+| Current artifact | `tests/artifacts/current/ui/runtime_input_binding_layout_trace.txt` |
+| Baseline artifact | `tests/artifacts/baselines/ui/runtime_input_binding_layout_trace.txt` |
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

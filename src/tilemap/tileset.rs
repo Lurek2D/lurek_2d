@@ -1,8 +1,9 @@
-//! Defines tileset geometry and metadata that map gids onto atlas rectangles, solidity, and animation sequences.
-//! Computes source quads from local ids so renderer code can sample the correct sprite region deterministically.
-//! Stores per-tile solidity and animation data used by collision, filtering, and animated map presentation.
-//! Acts as the atlas-metadata boundary between raw tilesheet images and higher-level map storage owners.
-//! Open this file when tile quad lookup, solid flags, or animated tileset frame data behaves incorrectly.
+//! Owns tilemap behavior with explicit state, validation, and crate-local integration boundaries.
+//! Centers the implementation around TileAnimFrame, TileSet, new, with helpers kept close to their invariants.
+//! Defines how tileset data is validated, transformed, or stored before neighboring systems use it.
+//! Owns tilemap behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on tileset behavior while Lua registration stays elsewhere.
+//! Documents the boundary where tilemap code accepts inputs, reports errors, or updates state.
 
 use super::autotile_sheet::AutoTileMode;
 use crate::log_msg;

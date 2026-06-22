@@ -18,17 +18,22 @@ import json, re, sys
 from pathlib import Path
 
 ROOT = Path('.').resolve()
-API_JSON = ROOT / 'logs' / 'data' / 'lua_api_data.json'
+sys.path.insert(0, str(ROOT / "tools" / "docs"))
+import module_registry
+
+DOCS_DATA = module_registry.DOCS_DATA
+LEGACY_LOGS_DATA = module_registry.LEGACY_LOGS_DATA
+API_JSON = module_registry.lua_api_json_path()
 EXAMPLES_DIR = ROOT / 'content' / 'examples'
 data = json.loads(API_JSON.read_text(encoding='utf-8'))
 mods = data.get('lua_api', {}).get('modules', {})
 
 expected_apis = []
-NAMESPACE_MAP = {'filesystem': 'fs', 'render': 'graphic'}
 for mod_name, mod_data in mods.items():
     if mod_name not in ['math']: continue
 
-    ns = NAMESPACE_MAP.get(mod_name, mod_name)
+    namespace = module_registry.module_namespace(mod_name)
+    ns = namespace.removeprefix("lurek.") if namespace else mod_name
     for fn in mod_data.get('functions', []):
         expected_apis.append({
             'id': f"lurek.{ns}.{fn['name']}",

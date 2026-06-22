@@ -1,7 +1,9 @@
-//! This file owns ONNX model loading and inference through tract, bridging `LurekTensor` data into runnable CPU plans.
-//! `OnnxModel` stores the optimized tract plan plus cached input and output counts used for validation and inspection.
-//! Safe load and run helpers live here because external model optimization, sandboxing, and tensor conversion are this boundary.
-//! Open it when ONNX interop changes; native tensors and in-repo learning layers live in sibling files.
+//! Owns the onnx owner for the learning subsystem and keeps its rules local to this file while keeping call sites explicit.
+//! Centers the implementation around TractPlan, OnnxLoadOptions, default, with helpers kept close to their invariants.
+//! Defines how onnx data is validated, transformed, or stored before neighboring systems use it.
+//! Owns learning behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on onnx behavior while Lua registration stays elsewhere.
+//! Documents the boundary where learning code accepts inputs, reports errors, or updates state.
 
 use crate::learning::{
     error::LearningError,

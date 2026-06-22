@@ -7,16 +7,17 @@
 ## Files
 - `README.md`: Spec index and tiering guide.
 - `SPEC_TEMPLATE.md`: New spec template.
-- `*.md`: Module specs.
+- `manual/*.md`: Hand-written module intent overlays.
+- `*.md`: Generated module specs.
 
 ## Rules
-- Treat each spec as a strict source/behavior contract.
-- `## Summary` is hand-written.
-- `## General Info`, `## Imports`, `## Files`, `## Lua API Ref`, and module-owned generated `## Callbacks` sections are generator-owned.
-- Update `README.md` when adding, removing, or retiering top-level modules.
-- Rebuild specs after Rust Lua API signature changes.
+- Treat `docs/specs/*.md` as generated output.
+- Edit `docs/specs/manual/<module>.md` for `TL;DR`, `Summary`, `Notes`, and architecture links.
+- Edit source docstrings, tests, examples, or `docs/meta/modules.toml` when generated facts are wrong.
+- Never copy generated spec prose back into Rust docstrings.
+- Rebuild specs after Rust Lua API signature or docs metadata changes.
 
 ## Workflow
 - Run `python tools/docs/gen_module_specs.py` or `python tools/gen_all_docs.py`.
 - Run `python tools/validate/validate_module_coverage.py`.
-- Run `python tools/audit/doc_coverage.py`.
+- Run `python tools/audit/docs_quality.py`.

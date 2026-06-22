@@ -1,9 +1,9 @@
-//! Owns custom GPU shader cache rebuilds, uniform uploads, and custom pipeline lookup.
-//! Keeps user shader lifecycle separate from the full-frame renderer orchestration loop.
-//! Builds color and texture WGSL wrappers, uniform bind groups, and per-state render pipelines on demand.
-//! Uses the renderer's device, queue, bind-group layouts, and surface format without owning frame state.
-//! Records no draw commands itself; callers ask for cached pipelines and bind groups during render encoding.
-//! Open this file when custom shader uniform upload, wrapper compilation, or pipeline reuse behaves incorrectly.
+//! Owns the gpu shader cache owner for the render subsystem and keeps its rules local to this file.
+//! Keeps render data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+//! Defines how gpu shader cache data is validated, transformed, or stored before neighboring systems use it.
+//! Owns render behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on gpu shader cache behavior while Lua registration stays elsewhere.
+//! Documents the boundary where render code accepts inputs, reports errors, or updates state.
 
 use std::collections::HashMap;
 

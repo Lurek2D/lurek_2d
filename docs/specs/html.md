@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/html.md or source docstrings instead. -->
+
 # html
 
 ## TL;DR
@@ -6,13 +8,13 @@
 
 ## General Info
 
-- Module group: `Edge/Integration`
-- Source path: `src/html/`
+- Module group: `Feature Systems`
+- Source path: `src/html`
 - Binding: `src/lua_api/html_api.rs`
 - Namespace: `lurek.html`
 - Lua API surface: `6` functions, `2` types, `54` methods
-- Rust test path(s): None found in the workspace
-- Lua test path(s): tests/lua/unit/test_html_unit.lua
+- User-facing: `true`
+- Plugin tier: `not_evaluated`
 
 ## Summary
 
@@ -27,11 +29,19 @@
 
 This module primarily collaborates with `color`. Its responsibility should stay inside the `Edge/Integration` group rather than absorb behavior owned by those neighbors.
 
+## Ownership
+
+- Canonical source: `src/html`
+- Owning tier: `Feature Systems`
+- Plugin tier: `not_evaluated`
+- Lua binding owner: `src/lua_api/html_api.rs`
+- Referenced engine modules: `color`
+
 ## Imports
 
-- `color`: Imports or references `src/color/`. Cross-group dependency from ``Edge/Integration`` into `Edge/Integration`.
+- `color`: Imports or references `src/color/`. Cross-group dependency from `Feature Systems` into `Foundations`.
 
-## Files
+## Source Files
 
 ### color.rs
 
@@ -195,9 +205,38 @@ This module primarily collaborates with `color`. Its responsibility should stay 
 - `LHtmlElement:type() -> string`: Returns the Lua-visible type name for this HTML element handle.
 - `LHtmlElement:typeOf(name) -> boolean`: Returns whether this element handle matches a supported type name.
 
-## References
+## Examples
 
-- `color`: Imports or references `src/color/`. Cross-group dependency from ``Edge/Integration`` into `Edge/Integration`.
+- `content/examples/html.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_html_unit.lua` (present)
+- Rust: `tests/rust/unit/html_tests.rs`
+
+## Evidence / Golden
+
+| Kind | Path |
+|---|---|
+| Evidence test | `tests/lua/evidence/test_html_evidence.lua` |
+| Golden test | `tests/lua/golden/test_html_golden.lua` |
+| Current artifact | `tests/artifacts/current/html/html_click_event_trace.txt` |
+| Current artifact | `tests/artifacts/current/html/html_document_markup_snapshot.txt` |
+| Current artifact | `tests/artifacts/current/html/html_element_state.json` |
+| Current artifact | `tests/artifacts/current/html/html_lifecycle_trace.txt` |
+| Current artifact | `tests/artifacts/current/html/html_loaded_document_snapshot.txt` |
+| Current artifact | `tests/artifacts/current/html/html_mutation_snapshot.txt` |
+| Current artifact | `tests/artifacts/current/html/html_query_viewport_snapshot.json` |
+| Current artifact | `tests/artifacts/current/html/html_support_render_trace.txt` |
+| Baseline artifact | `tests/artifacts/baselines/html/html_click_event_trace.txt` |
+| Baseline artifact | `tests/artifacts/baselines/html/html_document_markup_snapshot.txt` |
+| Baseline artifact | `tests/artifacts/baselines/html/html_element_state.json` |
+| Baseline artifact | `tests/artifacts/baselines/html/html_mutation_snapshot.txt` |
+| Baseline artifact | `tests/artifacts/baselines/html/html_query_viewport_snapshot.json` |
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

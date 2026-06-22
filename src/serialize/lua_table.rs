@@ -1,8 +1,10 @@
-//! This file owns `SerialValue` plus Lua conversion helpers that bridge dynamic Lua values into serializable Rust data.
-//! It decides whether Lua tables become sequences or maps, while preserving scalars, nulls, and string-keyed content.
-//! `to_lua` rebuilds Lua primitives and tables from decoded values so serialized data can round-trip through scripts.
-//! Array detection is structural and automatic, which keeps callers from tagging plain Lua tables before encoding.
-//! Open this file when shared value semantics change; concrete text and binary codecs live in sibling modules.
+//! Owns the lua table owner for the serialize subsystem and keeps its rules local to this file.
+//! Centers the implementation around SerialValue, fmt, to_lua, with helpers kept close to their invariants.
+//! Defines how lua table data is validated, transformed, or stored before neighboring systems use it.
+//! Owns serialize behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on lua table behavior while Lua registration stays elsewhere.
+//! Documents the boundary where serialize code accepts inputs, reports errors, or updates state.
+//! Use this file when changing lua table defaults, lifecycle handling, validation, or data ownership.
 
 use super::codec::{SerializeError, SerializeLimitKind, SerializeLimits};
 use indexmap::IndexMap;

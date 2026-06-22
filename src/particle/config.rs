@@ -1,11 +1,14 @@
-//! This file owns the particle configuration schema, including emission rates, lifetimes, forces, shapes, and sub-emitters.
-//! It defines enums and helper structs for area distribution, insert order, emitter state, spawn shapes, and relative mode.
-//! `ParticleConfig` centralizes every serializable knob so scripts and data files can describe one emitter without code.
-//! Sanitization lives here because malformed inputs must be clamped before the emitter update loop consumes them.
-//! Default values also live here so callers get a stable fountain-like baseline even when configs omit most fields.
-//! Shape-specific normalization for rings, rays, shrapnel, and nested death emitters is handled here, not during rendering.
-//! `from_toml_str` and `normalized` make this file the boundary between external config text and runtime-safe values.
-//! Open it when option semantics change; spawning, pool simulation, and render-command generation live elsewhere.
+//! Owns the configuration model for the particle subsystem and keeps its rules local to this file.
+//! Keeps particle data ownership and helper behavior clear for future engine maintenance. for engine changes.
+//! Defines how config data is validated, transformed, or stored before neighboring systems use it.
+//! Owns particle behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on config behavior while Lua registration stays elsewhere.
+//! Documents the boundary where particle code accepts inputs, reports errors, or updates state.
+//! Use this file when changing config defaults, lifecycle handling, validation, or data ownership.
+//! Keeps failure paths and edge cases near the particle state that can explain them while keeping call sites explicit.
+//! Preserves deterministic behavior by keeping config calculations explicit at their owner boundary.
+//! Owns particle behavior with explicit state, validation, and crate-local integration boundaries.
+//! Maintains small helper surfaces so broader engine modules can compose config behavior safely.
 
 use super::error::ParticleError;
 use super::limits::ParticleLimits;

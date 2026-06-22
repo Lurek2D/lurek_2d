@@ -1,9 +1,8 @@
-//! Owns GPU surface readback for screenshots and software-visible frame capture.
-//! Copies a rendered surface texture into a mappable buffer with wgpu row-padding rules.
-//! Maps the readback buffer after submission, strips padding, and converts supported surface formats to RGBA bytes.
-//! Keeps readback error logging and format handling separate from the main render-frame orchestration.
-//! Uses `PendingSurfaceReadback` as the short-lived handoff between command encoding and post-submit mapping.
-//! Open this file when GPU screenshots fail, return wrong channel order, or mishandle readback padding.
+//! Owns the gpu screenshot readback owner for the render subsystem and keeps its rules local to this file.
+//! Keeps render data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+//! Defines how gpu screenshot readback data is validated, transformed, or stored before neighboring systems use it.
+//! Owns render behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on gpu screenshot readback behavior while Lua registration stays elsewhere.
 
 use std::sync::mpsc;
 

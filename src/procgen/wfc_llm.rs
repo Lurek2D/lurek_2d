@@ -1,7 +1,8 @@
-//! This file owns the JSON parsing bridge from LLM-produced tile specs into concrete WFC options and constraints.
-//! It converts response objects into `WfcTile`, `WfcRules`, and `WfcOpts` so generation stays deterministic.
-//! Strict schema and parser limits remain local because malformed or oversized LLM output must stop at one boundary.
-//! Open it when AI-assisted tiling input changes; the actual collapse algorithm lives in `wfc.rs`.
+//! Owns procgen behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps procgen data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+//! Defines how wfc llm data is validated, transformed, or stored before neighboring systems use it.
+//! Owns procgen behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on wfc llm behavior while Lua registration stays elsewhere.
 
 use crate::procgen::{
     limits::{validate_count, validate_non_zero_dimensions},

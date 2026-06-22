@@ -1,9 +1,10 @@
-//! Implements goal-oriented action planning over boolean world facts, action effects, and prioritized desired states.
-//! Owns GOAP actions, goals, bounded best-first search nodes, and the iteration cap that keeps planning tractable.
-//! Searches forward from the current world state, reconstructing ordered action names once a goal state is satisfied.
-//! Also exposes mutators for action preconditions, effects, and goal facts so planners can be assembled incrementally.
-//! Provides the deliberative planning boundary between symbolic world state and executable action chains.
-//! Open this owner when plan search cost, iteration ceilings, or goal satisfaction semantics need shared fixes.
+//! Owns the goap owner for the ai subsystem and keeps its rules local to this file while keeping call sites explicit.
+//! Centers the implementation around PlanFailureReason, as_str, GOAPAction, with helpers kept close to their invariants.
+//! Defines how goap data is validated, transformed, or stored before neighboring systems use it.
+//! Owns ai behavior with explicit state, validation, and crate-local integration boundaries. for engine changes.
+//! Keeps public crate helpers focused on goap behavior while Lua registration stays elsewhere.
+//! Documents the boundary where ai code accepts inputs, reports errors, or updates state while keeping call sites explicit.
+//! Use this file when changing goap defaults, lifecycle handling, validation, or data ownership.
 
 use crate::ai::diagnostics::GoapPlanTrace;
 use crate::ai::validation::{finite_f64, non_negative, validate_count, AiValidationLimits};

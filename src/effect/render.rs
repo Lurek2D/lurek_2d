@@ -1,6 +1,8 @@
-//! This file owns `PostFxStack` render-command generation for post-effect capture, end, and apply orchestration.
-//! It emits deterministic renderer commands only when the stack has effects and at least one entry is enabled.
-//! Open this file when post-effect command sequencing changes; stack storage and debug previews live in siblings.
+//! Owns effect behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps effect data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+//! Defines how render data is validated, transformed, or stored before neighboring systems use it.
+//! Owns effect behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on render behavior while Lua registration stays elsewhere.
 
 use crate::effect::{PostFxDiagnostics, PostFxEffect, PostFxError, PostFxLimits, PostFxStack};
 use crate::render::renderer::{PostFxPass, RenderCommand};

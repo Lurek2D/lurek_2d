@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/vector.md or source docstrings instead. -->
+
 # vector
 
 ## TL;DR
@@ -6,13 +8,13 @@
 
 ## General Info
 
-- Module group: `Edge/Integration`
-- Source path: `src/vector/`
-- Binding: None direct
+- Module group: `Foundations`
+- Source path: `src/vector`
+- Binding: `src/lua_api/svg_api.rs`
 - Namespace: `lurek.svg`
 - Lua API surface: `1` functions, `1` types, `24` methods
-- Rust test path(s): None
-- Lua test path(s): tests/lua/unit/test_svg_unit.lua
+- User-facing: `true`
+- Plugin tier: `not_evaluated`
 
 ## Summary
 
@@ -23,13 +25,21 @@
 
 This module primarily collaborates with `math`, `render`, `runtime`. Its responsibility should stay inside the `Edge/Integration` group rather than absorb behavior owned by those neighbors.
 
+## Ownership
+
+- Canonical source: `src/vector`
+- Owning tier: `Foundations`
+- Plugin tier: `not_evaluated`
+- Lua binding owner: `src/lua_api/svg_api.rs`
+- Referenced engine modules: `math`, `render`, `runtime`
+
 ## Imports
 
-- `math`: Imports or references `src/math/`. Cross-group dependency from `Edge/Integration` into `Foundations`.
-- `render`: Imports or references `src/render/`. Cross-group dependency from `Edge/Integration` into `Platform Services`.
-- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Edge/Integration` into `Core Runtime`.
+- `math`: Imports or references `src/math/`. Dependency stays inside `Foundations` and should remain acyclic.
+- `render`: Imports or references `src/render/`. Cross-group dependency from `Foundations` into `Platform Services`.
+- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Foundations` into `Core Runtime`.
 
-## Files
+## Source Files
 
 ### mod.rs
 
@@ -105,11 +115,22 @@ This module primarily collaborates with `math`, `render`, `runtime`. Its respons
 - `LSvgImage:type() -> string`: Returns the fixed type name for this userdata.
 - `LSvgImage:typeOf(name) -> boolean`: Check whether this object matches a given type name.
 
-## References
+## Examples
 
-- `math`: Imports or references `src/math/`. Cross-group dependency from `Edge/Integration` into `Foundations`.
-- `render`: Imports or references `src/render/`. Cross-group dependency from `Edge/Integration` into `Platform Services`.
-- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Edge/Integration` into `Core Runtime`.
+- `content/examples/svg.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_svg_unit.lua` (present)
+- Rust: none detected.
+
+## Evidence / Golden
+
+- No evidence or golden artifacts registered.
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

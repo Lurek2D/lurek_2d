@@ -1,9 +1,10 @@
-//! This file owns `PhysicsZone`, `ZoneBoundary`, `ZoneGravityMode`, and tracker events for area-based rule overrides.
-//! It stores zone shape, gravity behavior, damping overrides, priority, filters, and enabled state in one owner.
-//! Zone helpers configure rectangles or circles, directional gravity, point attraction, repulsion, and zero-gravity fields.
-//! The tracker caches body membership so enter and leave transitions can feed gameplay events as well as force changes.
-//! This file is the boundary for area effects driven by position rather than by rigid contact against solid geometry.
-//! Open it when zone semantics change; body descriptors and world stepping rules live in sibling owners.
+//! Owns the zone owner for the physics subsystem and keeps its rules local to this file while keeping call sites explicit.
+//! Centers the implementation around ZoneId, ZonePriority, ZoneGravityMode, with helpers kept close to their invariants.
+//! Defines how zone data is validated, transformed, or stored before neighboring systems use it.
+//! Owns physics behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on zone behavior while Lua registration stays elsewhere.
+//! Documents the boundary where physics code accepts inputs, reports errors, or updates state.
+//! Use this file when changing zone defaults, lifecycle handling, validation, or data ownership.
 
 use std::collections::{HashMap, HashSet};
 

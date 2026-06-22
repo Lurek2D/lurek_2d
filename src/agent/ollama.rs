@@ -1,9 +1,12 @@
-//! This file owns `OllamaManager`, plus model and pull result structs for local backend lifecycle control.
-//! It checks server reachability, reports versions, lists local models, and tests whether specific models are present.
-//! Process helpers start, stop, and restart `ollama serve` through an explicit process policy with health checks.
-//! Pull operations run through a bounded worker pool and validate model names against the configured model policy.
-//! Deletion supports protected models and explicit confirmation tokens for destructive actions.
-//! Open this file when local backend control changes; synchronous chat calls and async prompt transport live nearby.
+//! Owns the ollama owner for the agent subsystem and keeps its rules local to this file while keeping call sites explicit.
+//! Keeps agent data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+//! Defines how ollama data is validated, transformed, or stored before neighboring systems use it.
+//! Owns agent behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on ollama behavior while Lua registration stays elsewhere.
+//! Documents where agent callers should change defaults, errors, or lifecycle behavior. with focused crate-local behavior.
+//! Use this file when changing ollama defaults, lifecycle handling, validation, or data ownership.
+//! Keeps failure paths and edge cases near the agent state that can explain them while keeping call sites explicit.
+//! Preserves deterministic behavior by keeping ollama calculations explicit at their owner boundary.
 
 use std::collections::HashSet;
 use std::path::PathBuf;

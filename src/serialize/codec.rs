@@ -1,8 +1,12 @@
-//! This file owns the format-agnostic serialization front door for text and binary payloads across supported formats.
-//! It defines `SerialFormat`, encode or decode options, and the `EncodedValue` result used by top-level callers.
-//! Format detection inspects text content, while explicit routing sends MessagePack through byte decoding only.
-//! Encode and decode helpers centralize dispatch so callers do not need per-format branching spread across modules.
-//! Open this file when top-level serialization routing changes; concrete format implementations live in siblings.
+//! Owns serialize behavior with explicit state, validation, and crate-local integration boundaries.
+//! Centers the implementation around SerialFormat, parse, all, with helpers kept close to their invariants.
+//! Defines how codec data is validated, transformed, or stored before neighboring systems use it.
+//! Owns serialize behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on codec behavior while Lua registration stays elsewhere.
+//! Documents the boundary where serialize code accepts inputs, reports errors, or updates state.
+//! Use this file when changing codec defaults, lifecycle handling, validation, or data ownership.
+//! Keeps failure paths and edge cases near the serialize state that can explain them while keeping call sites explicit.
+//! Preserves deterministic behavior by keeping codec calculations explicit at their owner boundary.
 
 use super::csv::{from_csv_with_options, to_csv_with_options, CsvOptions};
 use super::lua_table::validate_serial_value;

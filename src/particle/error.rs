@@ -1,6 +1,7 @@
-//! This file owns typed particle validation and safety errors used by strict constructors and bounded helpers.
-//! It keeps failure reasons structured so config parsing, runtime limit checks, and strict mutators report the same contract.
-//! Open it when particle callers need clearer diagnostics or when new safety ceilings are introduced.
+//! Owns the error taxonomy for the particle subsystem and keeps its rules local to this file.
+//! Centers the implementation around ParticleError, invalid_config, fmt, with helpers kept close to their invariants.
+//! Defines how error data is validated, transformed, or stored before neighboring systems use it.
+//! Owns particle behavior with explicit state, validation, and crate-local integration boundaries.
 
 use std::fmt;
 

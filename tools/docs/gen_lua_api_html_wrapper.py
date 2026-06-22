@@ -21,7 +21,10 @@ from html import escape
 from datetime import datetime
 
 WORKSPACE_ROOT = Path(__file__).resolve().parents[2]
-LUA_API_JSON = WORKSPACE_ROOT / "logs" / "data" / "lua_api_data.json"
+sys.path.insert(0, str(WORKSPACE_ROOT / "tools" / "docs"))
+import module_registry
+
+LUA_API_JSON = module_registry.lua_api_json_path()
 OUTPUT_DIR = WORKSPACE_ROOT / "pages" / "lua-docs"
 
 HTML_TEMPLATE = """<!DOCTYPE html>

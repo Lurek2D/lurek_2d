@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/timer.md or source docstrings instead. -->
+
 # timer
 
 ## TL;DR
@@ -7,12 +9,12 @@
 ## General Info
 
 - Module group: `Core Runtime`
-- Source path: `src/timer/`
+- Source path: `src/timer`
 - Binding: `src/lua_api/timer_api.rs`
 - Namespace: `lurek.timer`
 - Lua API surface: `21` functions, `1` types, `28` methods
-- Rust test path(s): tests/rust/unit/timer_tests.rs, tests/fixtures/timer_api_fixture.rs, plus inline unit coverage in src/timer/scheduler.rs
-- Lua test path(s): tests/lua/unit/test_timer.lua, tests/lua/stress/test_timer_stress.lua, tests/lua/integration/test_timer_math.lua, tests/lua/integration/test_physics_timer.lua, tests/lua/integration/test_particle_timer.lua, tests/lua/integration/test_audio_timer.lua, tests/lua/integration/test_animation_timer.lua
+- User-facing: `true`
+- Plugin tier: `not_evaluated`
 
 ## Summary
 
@@ -28,11 +30,19 @@
 
 This module primarily collaborates with `runtime`. Its responsibility should stay inside the Core Runtime group rather than absorb behavior owned by those neighbors.
 
+## Ownership
+
+- Canonical source: `src/timer`
+- Owning tier: `Core Runtime`
+- Plugin tier: `not_evaluated`
+- Lua binding owner: `src/lua_api/timer_api.rs`
+- Referenced engine modules: `runtime`
+
 ## Imports
 
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `runtime`: Imports or references `src/runtime/`. Dependency stays inside `Core Runtime` and should remain acyclic.
 
-## Files
+## Source Files
 
 ### accumulator.rs
 
@@ -156,9 +166,22 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - `LScheduler:update(dt) -> integer`: Advances all time-based events by dt seconds, fires any callbacks whose delay has elapsed, and cleans up completed one-shot events. Call this once per frame with delta time. Returns the number of callbacks that fired.
 - `LScheduler:updateFrames() -> integer`: Advances all frame-based events by one frame, fires any callbacks whose frame count has been reached, and cleans up completed one-shot events. Call this once per frame. Returns the number of callbacks that fired.
 
-## References
+## Examples
 
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `content/examples/timer.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_timer_unit.lua` (present)
+- Rust: `tests/rust/unit/timer_tests.rs`
+
+## Evidence / Golden
+
+- No evidence or golden artifacts registered.
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

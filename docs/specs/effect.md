@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/effect.md or source docstrings instead. -->
+
 # effect
 
 ## TL;DR
@@ -8,12 +10,12 @@
 ## General Info
 
 - Module group: `Platform Services`
-- Source path: `src/effect/`
+- Source path: `src/effect`
 - Binding: `src/lua_api/effect_api.rs`
 - Namespace: `lurek.effect`
 - Lua API surface: `10` functions, `3` types, `62` methods
-- Rust test path(s): tests/rust/unit/effect_tests.rs
-- Lua test path(s): tests/lua/unit/test_effect_unit.lua, tests/lua/integration/test_effect_camera_integration.lua, tests/lua/integration/test_effect_light_integration.lua, tests/lua/evidence/test_effect_evidence.lua
+- User-facing: `true`
+- Plugin tier: `core_keep`
 
 ## Summary
 
@@ -29,20 +31,33 @@
 
 This module primarily collaborates with `image`, `overlay`, `render`, `runtime`. Its responsibility should stay inside the Platform Services group rather than absorb behavior owned by those neighbors.
 
+## Ownership
+
+- Canonical source: `src/effect`
+- Owning tier: `Platform Services`
+- Plugin tier: `core_keep`
+- Lua binding owner: `src/lua_api/effect_api.rs`
+- Referenced engine modules: `image`, `overlay`, `render`, `runtime`
+
 ## Imports
 
-- `image`: Imports or references `image` from `src/image/`.
-- `overlay`: Imports or references `src/overlay/`. Cross-group dependency from `Platform Services` into `Edge/Integration`.
-- `render`: Imports or references `render` from `src/render/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `image`: Imports or references `src/image/`. Dependency stays inside `Platform Services` and should remain acyclic.
+- `overlay`: Imports or references `src/overlay/`. Cross-group dependency from `Platform Services` into `Feature Systems`.
+- `render`: Imports or references `src/render/`. Dependency stays inside `Platform Services` and should remain acyclic.
+- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Platform Services` into `Core Runtime`.
 
-## Files
+## Source Files
 
 ### contract.rs
 
-- This file owns the shared post-effect validation contract: limits, parameter schemas, errors, and diagnostics.
-- It keeps post-fx safety policy centralized so effect instances, stacks, debug images, and Lua bindings agree.
-- Open this file when post-fx validation semantics, dimension ceilings, or diagnostic vocabulary need to change.
+- Owns the contract surface for the effect subsystem and keeps its rules local to this file.
+- Keeps effect data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+- Defines how contract data is validated, transformed, or stored before neighboring systems use it.
+- Owns effect behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on contract behavior while Lua registration stays elsewhere.
+- Documents the boundary where effect code accepts inputs, reports errors, or updates state.
+- Use this file when changing contract defaults, lifecycle handling, validation, or data ownership.
+- Keeps failure paths and edge cases near the effect state that can explain them while keeping call sites explicit.
 
 ### draw.rs
 
@@ -52,10 +67,12 @@ This module primarily collaborates with `image`, `overlay`, `render`, `runtime`.
 
 ### effect.rs
 
-- This file owns `PostFxEffect`, the runtime state object that couples one effect kind with mutable parameters.
-- It stores the effect type, scalar parameter map, enable flag, optional shader id, and auto-uniform toggle.
-- Construction helpers cover built-in and custom effects, while accessors expose parameter reads, writes, and names.
-- Open this file when per-effect runtime semantics change; type catalogs, stacks, and image grouping live in siblings.
+- Owns the effect owner for the effect subsystem and keeps its rules local to this file while keeping call sites explicit.
+- Centers the implementation around PostFxEffect, new, new_custom, with helpers kept close to their invariants.
+- Defines how effect data is validated, transformed, or stored before neighboring systems use it.
+- Owns effect behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on effect behavior while Lua registration stays elsewhere.
+- Documents the boundary where effect code accepts inputs, reports errors, or updates state.
 
 ### effect_type.rs
 
@@ -68,10 +85,11 @@ This module primarily collaborates with `image`, `overlay`, `render`, `runtime`.
 
 ### image_effect.rs
 
-- This file owns `ImageEffect`, the image-scoped pipeline that groups shared `PostFxEffect` handles into pass chains.
-- It stores owned or shared effect references, supports add and remove workflows, and resolves entries by index or name.
-- The `to_passes` helper converts active effect state into `ShaderPassDescriptor` values for downstream execution.
-- Open this file when image-level effect composition changes; effect instances, presets, and stacks live in siblings.
+- Owns the image effect owner for the effect subsystem and keeps its rules local to this file.
+- Centers the implementation around ImageEffect, new, add_effect, with helpers kept close to their invariants.
+- Defines how image effect data is validated, transformed, or stored before neighboring systems use it.
+- Owns effect behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on image effect behavior while Lua registration stays elsewhere.
 
 ### mod.rs
 
@@ -92,19 +110,22 @@ This module primarily collaborates with `image`, `overlay`, `render`, `runtime`.
 
 ### render.rs
 
-- This file owns `PostFxStack` render-command generation for post-effect capture, end, and apply orchestration.
-- It emits deterministic renderer commands only when the stack has effects and at least one entry is enabled.
-- Open this file when post-effect command sequencing changes; stack storage and debug previews live in siblings.
+- Owns effect behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps effect data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+- Defines how render data is validated, transformed, or stored before neighboring systems use it.
+- Owns effect behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on render behavior while Lua registration stays elsewhere.
 
 ### stack.rs
 
-- This file owns `PostFxStack`, the ordered effect-index container that tracks enable flags, size, and capture state.
-- It stores application order in parallel vectors, supports insertion and removal, and toggles entries efficiently.
-- Query helpers report enabled subsets, one-based positions, dimensions, emptiness, and deduplicated index counts.
-- Resize and clear operations keep render-target bookkeeping local so post-effect callers do not manage raw vectors.
-- Dedup logic preserves first occurrence order while cleaning repeated effect references from dynamic compositions.
-- Several debug image helpers also live here because they visualize stack entries, labels, params, and effect catalogs.
-- Open this file when stack orchestration changes; effect instances, presets, and render commands live in siblings.
+- Owns the stack owner for the effect subsystem and keeps its rules local to this file while keeping call sites explicit.
+- Centers the implementation around PostFxStack, new, try_new, with helpers kept close to their invariants.
+- Defines how stack data is validated, transformed, or stored before neighboring systems use it.
+- Owns effect behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on stack behavior while Lua registration stays elsewhere.
+- Documents the boundary where effect code accepts inputs, reports errors, or updates state.
+- Use this file when changing stack defaults, lifecycle handling, validation, or data ownership.
+- Keeps failure paths and edge cases near the effect state that can explain them while keeping call sites explicit.
 
 
 
@@ -228,12 +249,51 @@ This module primarily collaborates with `image`, `overlay`, `render`, `runtime`.
 - `LPostFxStack:type() -> string`: Returns the Lua-visible type name for this post-processing stack handle.
 - `LPostFxStack:typeOf(name) -> boolean`: Returns whether this stack handle matches a supported type name.
 
-## References
+## Examples
 
-- `image`: Imports or references `image` from `src/image/`.
-- `overlay`: Imports or references `src/overlay/`. Cross-group dependency from `Platform Services` into `Edge/Integration`.
-- `render`: Imports or references `render` from `src/render/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `content/examples/effect.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_effect_unit.lua` (present)
+- Rust: `src/effect/effect_type.rs`
+- Rust: `tests/rust/ext/effects_audio_runtime_smoke_tests.rs`
+- Rust: `tests/rust/unit/effect_contract_tests.rs`
+- Rust: `tests/rust/unit/effect_render_tests.rs`
+- Rust: `tests/rust/unit/effect_tests.rs`
+
+## Evidence / Golden
+
+| Kind | Path |
+|---|---|
+| Evidence test | `tests/lua/evidence/test_effect_evidence.lua` |
+| Golden test | `tests/lua/golden/test_effect_golden.lua` |
+| Current artifact | `tests/artifacts/current/effect/effect_capture_preset_state.json` |
+| Current artifact | `tests/artifacts/current/effect/effect_custom_shader_pass_map.png` |
+| Current artifact | `tests/artifacts/current/effect/effect_enable_dedup_matrix.png` |
+| Current artifact | `tests/artifacts/current/effect/effect_image_chain_parameters.png` |
+| Current artifact | `tests/artifacts/current/effect/effect_image_chain_state.json` |
+| Current artifact | `tests/artifacts/current/effect/effect_parameter_response_curves.png` |
+| Current artifact | `tests/artifacts/current/effect/effect_preset_stack_contact_sheet.png` |
+| Current artifact | `tests/artifacts/current/effect/effect_stack_order_lookbook.gif` |
+| Current artifact | `tests/artifacts/current/effect/effect_stack_pipeline.gif` |
+| Current artifact | `tests/artifacts/current/effect/effect_stack_state.json` |
+| Current artifact | `tests/artifacts/current/effect/effect_type_catalog.png` |
+| Baseline artifact | `tests/artifacts/baselines/effect/effect_capture_preset_state.json` |
+| Baseline artifact | `tests/artifacts/baselines/effect/effect_custom_shader_pass_map.png` |
+| Baseline artifact | `tests/artifacts/baselines/effect/effect_enable_dedup_matrix.png` |
+| Baseline artifact | `tests/artifacts/baselines/effect/effect_image_chain_parameters.png` |
+| Baseline artifact | `tests/artifacts/baselines/effect/effect_image_chain_state.json` |
+| Baseline artifact | `tests/artifacts/baselines/effect/effect_parameter_response_curves.png` |
+| Baseline artifact | `tests/artifacts/baselines/effect/effect_preset_stack_contact_sheet.png` |
+| Baseline artifact | `tests/artifacts/baselines/effect/effect_stack_order_lookbook.gif` |
+| Baseline artifact | `tests/artifacts/baselines/effect/effect_stack_pipeline.gif` |
+| Baseline artifact | `tests/artifacts/baselines/effect/effect_stack_state.json` |
+| Baseline artifact | `tests/artifacts/baselines/effect/effect_type_catalog.png` |
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

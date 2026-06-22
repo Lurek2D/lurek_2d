@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/app.md or source docstrings instead. -->
+
 # app
 
 ## TL;DR
@@ -9,12 +11,12 @@
 ## General Info
 
 - Module group: `Edge/Integration`
-- Source path: `src/app/`
-- Binding: None direct
-- Namespace: `lurek.input`
-- Lua API surface: `0` functions, `0` types, `0` methods
-- Rust test path(s): tests/rust/unit/app_tests.rs; tests/games_load_test.rs; tests/rust/ext/graphics_runtime_smoke_tests.rs
-- Lua test path(s): None dedicated
+- Source path: `src/app`
+- Binding: `src/lua_api/engine_api.rs`
+- Namespace: `lurek.engine`
+- Lua API surface: `13` functions, `3` types, `0` methods
+- User-facing: `true`
+- Plugin tier: `not_evaluated`
 
 ## Summary
 
@@ -27,23 +29,31 @@
 
 This module primarily collaborates with `event`, `filesystem`, `image`, `input`, `light`, `lua_api`, `math`, `parallax`, and adjacent engine modules. Its responsibility should stay inside the Edge/Integration group rather than absorb behavior owned by those neighbors.
 
+## Ownership
+
+- Canonical source: `src/app`
+- Owning tier: `Edge/Integration`
+- Plugin tier: `not_evaluated`
+- Lua binding owner: `src/lua_api/engine_api.rs`
+- Referenced engine modules: `event`, `filesystem`, `image`, `input`, `light`, `lua_api`, `math`, `parallax`, `render`, `runtime`, `sprite`, `tilemap`, `window`
+
 ## Imports
 
-- `event`: Imports or references `event` from `src/event/`.
+- `event`: Imports or references `src/event/`. Cross-group dependency from `Edge/Integration` into `Core Runtime`.
 - `filesystem`: Imports or references `src/filesystem/`. Cross-group dependency from `Edge/Integration` into `Core Runtime`.
-- `image`: Imports or references `image` from `src/image/`.
-- `input`: Imports or references `input` from `src/input/`.
-- `light`: Imports or references `light` from `src/light/`.
-- `lua_api`: Imports or references `lua_api` from `src/lua_api/`.
-- `math`: Imports or references `math` from `src/math/`.
+- `image`: Imports or references `src/image/`. Cross-group dependency from `Edge/Integration` into `Platform Services`.
+- `input`: Imports or references `src/input/`. Cross-group dependency from `Edge/Integration` into `Platform Services`.
+- `light`: Imports or references `src/light/`. Cross-group dependency from `Edge/Integration` into `Platform Services`.
+- `lua_api`: Imports or references `src/lua_api/`. Dependency stays inside `Edge/Integration` and should remain acyclic.
+- `math`: Imports or references `src/math/`. Cross-group dependency from `Edge/Integration` into `Foundations`.
 - `parallax`: Imports or references `src/parallax/`. Cross-group dependency from `Edge/Integration` into `Feature Systems`.
-- `render`: Imports or references `render` from `src/render/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
-- `sprite`: Imports or references `sprite` from `src/sprite/`.
+- `render`: Imports or references `src/render/`. Cross-group dependency from `Edge/Integration` into `Platform Services`.
+- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Edge/Integration` into `Core Runtime`.
+- `sprite`: Imports or references `src/sprite/`. Cross-group dependency from `Edge/Integration` into `Feature Systems`.
 - `tilemap`: Imports or references `src/tilemap/`. Cross-group dependency from `Edge/Integration` into `Feature Systems`.
 - `window`: Imports or references `src/window/`. Cross-group dependency from `Edge/Integration` into `Platform Services`.
 
-## Files
+## Source Files
 
 ### app.rs
 
@@ -88,11 +98,10 @@ This module primarily collaborates with `event`, `filesystem`, `image`, `input`,
 
 ### lua_callbacks.rs
 
-- This file owns guarded `lurek.*` callback invocation helpers used by the desktop app runtime and UI bridges.
-- It exposes logging and checked variants, probes callback presence, and resolves functions from the active Lua VM.
-- Optional timeout wrappers install instruction hooks so runaway callbacks abort with a named runtime error.
-- The file is the safety boundary between host events and Lua execution, keeping timeout policy in one owner.
-- Open it when callback guard semantics change; frame orchestration and input dispatch live in sibling modules.
+- Owns the lua callbacks owner for the app subsystem and keeps its rules local to this file.
+- Keeps app data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+- Defines how lua callbacks data is validated, transformed, or stored before neighboring systems use it.
+- Owns app behavior with explicit state, validation, and crate-local integration boundaries.
 
 ### mod.rs
 
@@ -121,7 +130,19 @@ This module primarily collaborates with `event`, `filesystem`, `image`, `input`,
 
 ### Functions
 
-- No documented module-level functions.
+- `lurek.engine.fps() -> number`: Returns the latest frames-per-second value stored by the runtime.
+- `lurek.engine.frameCount() -> integer`: Returns the number of frames counted by the shared runtime clock.
+- `lurek.engine.getConfigRevision() -> integer`: Returns the configuration reload revision counter.
+- `lurek.engine.getFrameBudget() -> number`: Returns the target frame budget for a 60 FPS update loop.
+- `lurek.engine.getFrameProfile() -> table`: Returns the latest frame timing profile split by engine phase.
+- `lurek.engine.getFrameProfileText() -> string`: Returns the latest frame timing profile formatted as one text line.
+- `lurek.engine.getResourceStats() -> table`: Returns current resource memory usage and object counts by resource kind.
+- `lurek.engine.getVersion() -> string`: Returns the engine crate version string embedded at build time.
+- `lurek.engine.isDebug() -> boolean`: Returns whether the engine binary was built with debug assertions.
+- `lurek.engine.memoryUsage() -> table`: Returns Lua VM memory usage as bytes and rounded kilobytes.
+- `lurek.engine.platform() -> string`: Returns the current desktop operating system name.
+- `lurek.engine.setResourceBudget(budget_bytes) -> nil`: Sets the resource memory budget used by resource statistics reporting.
+- `lurek.engine.uptime() -> number`: Returns total engine runtime accumulated by the main loop.
 
 ### Callbacks
 
@@ -133,23 +154,89 @@ This module primarily collaborates with `event`, `filesystem`, `image`, `input`,
 
 ### Types
 
-- No documented module types.
+#### LEngineGetFrameProfileResult Type
 
-## References
+- Generated result shape from @field tags.
 
-- `event`: Imports or references `event` from `src/event/`.
-- `filesystem`: Imports or references `src/filesystem/`. Cross-group dependency from `Edge/Integration` into `Core Runtime`.
-- `image`: Imports or references `image` from `src/image/`.
-- `input`: Imports or references `input` from `src/input/`.
-- `light`: Imports or references `light` from `src/light/`.
-- `lua_api`: Imports or references `lua_api` from `src/lua_api/`.
-- `math`: Imports or references `math` from `src/math/`.
-- `parallax`: Imports or references `src/parallax/`. Cross-group dependency from `Edge/Integration` into `Feature Systems`.
-- `render`: Imports or references `render` from `src/render/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
-- `sprite`: Imports or references `sprite` from `src/sprite/`.
-- `tilemap`: Imports or references `src/tilemap/`. Cross-group dependency from `Edge/Integration` into `Feature Systems`.
-- `window`: Imports or references `src/window/`. Cross-group dependency from `Edge/Integration` into `Platform Services`.
+##### Fields
+
+- `app_frame_total_ms` (`number`): App frame total ms.
+- `app_render_ms` (`number`): App render ms.
+- `app_tick_ms` (`number`): App tick ms.
+- `app_update_ms` (`number`): App update ms.
+- `callback_total_ms` (`number`): Callback total ms.
+- `draw_ms` (`number`): Draw ms.
+- `draw_ui_ms` (`number`): Draw ui ms.
+- `fixed_update_ms` (`number`): Fixed update ms.
+- `process_late_ms` (`number`): Process late ms.
+- `process_ms` (`number`): Process ms.
+- `process_physics_ms` (`number`): Process physics ms.
+
+##### Methods
+
+- No documented methods.
+
+#### LEngineGetResourceStatsResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `app_frame_total_ms` (`number`): App frame total ms.
+- `app_render_ms` (`number`): App render ms.
+- `app_tick_ms` (`number`): App tick ms.
+- `app_update_ms` (`number`): App update ms.
+- `budget_bytes` (`integer`): Budget bytes.
+- `callback_total_ms` (`number`): Callback total ms.
+- `canvas_bytes` (`integer`): Canvas bytes.
+- `canvas_count` (`integer`): Canvas count.
+- `draw_ms` (`number`): Draw ms.
+- `draw_ui_ms` (`number`): Draw ui ms.
+- `fixed_update_ms` (`number`): Fixed update ms.
+- `font_bytes` (`integer`): Font bytes.
+- `font_count` (`integer`): Font count.
+- `process_late_ms` (`number`): Process late ms.
+- `process_ms` (`number`): Process ms.
+- `process_physics_ms` (`number`): Process physics ms.
+- `shader_bytes` (`integer`): Shader bytes.
+- `shader_count` (`integer`): Shader count.
+- `texture_bytes` (`integer`): Texture bytes.
+- `texture_count` (`integer`): Texture count.
+- `total_bytes` (`integer`): Total bytes.
+
+##### Methods
+
+- No documented methods.
+
+#### LEngineMemoryUsageResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `lua_bytes` (`integer`): Lua bytes.
+- `lua_kb` (`number`): Lua kb.
+
+##### Methods
+
+- No documented methods.
+
+## Examples
+
+- `content/examples/engine.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_engine_unit.lua` (present)
+- Rust: `tests/rust/unit/app_tests.rs`
+
+## Evidence / Golden
+
+- No evidence or golden artifacts registered.
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

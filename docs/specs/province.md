@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/province.md or source docstrings instead. -->
+
 # province
 
 ## TL;DR
@@ -9,13 +11,13 @@
 
 ## General Info
 
-- Module group: `Edge/Integration`
-- Source path: `src/province/`
+- Module group: `Feature Systems`
+- Source path: `src/province`
 - Binding: `src/lua_api/province_api.rs`
 - Namespace: `lurek.province`
 - Lua API surface: `15` functions, `8` types, `45` methods
-- Rust test path(s): tests/rust/unit/province_tests.rs
-- Lua test path(s): tests/lua/unit/test_province_unit.lua
+- User-facing: `true`
+- Plugin tier: `core_keep`
 
 ## Summary
 
@@ -35,13 +37,21 @@
 
 This module primarily collaborates with `image`, `render`, `runtime`. Its responsibility should stay inside the `Edge/Integration` group rather than absorb behavior owned by those neighbors.
 
+## Ownership
+
+- Canonical source: `src/province`
+- Owning tier: `Feature Systems`
+- Plugin tier: `core_keep`
+- Lua binding owner: `src/lua_api/province_api.rs`
+- Referenced engine modules: `image`, `render`, `runtime`
+
 ## Imports
 
-- `image`: Imports or references `src/image/`. Cross-group dependency from `Edge/Integration` into `Platform Services`.
-- `render`: Imports or references `src/render/`. Cross-group dependency from `Edge/Integration` into `Platform Services`.
-- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Edge/Integration` into `Core Runtime`.
+- `image`: Imports or references `src/image/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
+- `render`: Imports or references `src/render/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
+- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Feature Systems` into `Core Runtime`.
 
-## Files
+## Source Files
 
 ### border_index.rs
 
@@ -389,11 +399,49 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 
 - No documented methods.
 
-## References
+## Examples
 
-- `image`: Imports or references `src/image/`. Cross-group dependency from `Edge/Integration` into `Platform Services`.
-- `render`: Imports or references `src/render/`. Cross-group dependency from `Edge/Integration` into `Platform Services`.
-- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Edge/Integration` into `Core Runtime`.
+- `content/examples/province.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_province_unit.lua` (present)
+- Rust: `src/province/province_grid.rs`
+- Rust: `tests/rust/unit/province_tests.rs`
+
+## Evidence / Golden
+
+| Kind | Path |
+|---|---|
+| Evidence test | `tests/lua/evidence/test_province_evidence.lua` |
+| Golden test | `tests/lua/golden/test_province_golden.lua` |
+| Current artifact | `tests/artifacts/current/province/_fixture/province_color_map.png` |
+| Current artifact | `tests/artifacts/current/province/_fixture/province_colors.csv` |
+| Current artifact | `tests/artifacts/current/province/_fixture/province_data.toml` |
+| Current artifact | `tests/artifacts/current/province/_fixture/province_marked_map.png` |
+| Current artifact | `tests/artifacts/current/province/province_border_segments.png` |
+| Current artifact | `tests/artifacts/current/province/province_capitals_centroids.png` |
+| Current artifact | `tests/artifacts/current/province/province_capitals_labels_centroids.png` |
+| Current artifact | `tests/artifacts/current/province/province_economy_properties_trace.txt` |
+| Current artifact | `tests/artifacts/current/province/province_registry_topology_trace.txt` |
+| Current artifact | `tests/artifacts/current/province/province_revision_timeline.gif` |
+| Current artifact | `tests/artifacts/current/province/province_route_trace.png` |
+| Current artifact | `tests/artifacts/current/province/province_sanitized_map.png` |
+| Current artifact | `tests/artifacts/current/province/province_span_runs.png` |
+| Current artifact | `tests/artifacts/current/province/province_strategy_modes.png` |
+| Current artifact | `tests/artifacts/current/province/province_zoom_pick_view.png` |
+| Baseline artifact | `tests/artifacts/baselines/province/province_border_segments.png` |
+| Baseline artifact | `tests/artifacts/baselines/province/province_capitals_labels_centroids.png` |
+| Baseline artifact | `tests/artifacts/baselines/province/province_revision_timeline.gif` |
+| Baseline artifact | `tests/artifacts/baselines/province/province_route_trace.png` |
+| Baseline artifact | `tests/artifacts/baselines/province/province_sanitized_map.png` |
+| Baseline artifact | `tests/artifacts/baselines/province/province_span_runs.png` |
+| Baseline artifact | `tests/artifacts/baselines/province/province_strategy_modes.png` |
+| Baseline artifact | `tests/artifacts/baselines/province/province_zoom_pick_view.png` |
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

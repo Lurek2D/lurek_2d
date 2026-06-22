@@ -1,9 +1,10 @@
-//! This file owns `Shape` and `StandaloneShape`, the geometry vocabulary used by bodies and standalone collision pieces.
-//! It stores circles, rectangles, polygons, edges, and chains, then converts valid inputs into Rapier colliders.
-//! Parsing helpers and regular-polygon generation let scripts or data describe intent without building raw engine types.
-//! Standalone shapes keep density, friction, restitution, and sensor flags next to geometry for authored test fixtures.
-//! Local bounding-box helpers make shapes inspectable in tools and previews without a live body or physics world.
-//! Open this file when geometry semantics change; body ownership and world stepping remain in sibling files.
+//! Owns the shape owner for the physics subsystem and keeps its rules local to this file while keeping call sites explicit.
+//! Centers the implementation around Shape, polygon_area2, is_convex_polygon, with helpers kept close to their invariants.
+//! Defines how shape data is validated, transformed, or stored before neighboring systems use it.
+//! Owns physics behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on shape behavior while Lua registration stays elsewhere.
+//! Documents the boundary where physics code accepts inputs, reports errors, or updates state.
+//! Use this file when changing shape defaults, lifecycle handling, validation, or data ownership.
 
 use crate::math::Vec2;
 use rapier2d::prelude::*;

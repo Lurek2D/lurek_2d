@@ -1,10 +1,11 @@
-//! This file owns `LightWorld`, the scene-level container for registered lights, occluders, ambient color, and limits.
-//! It stores slotmaps, flicker indexes, and ambient settings, then exposes stable keys for runtime light ownership.
-//! Mutation helpers add, remove, query, group-edit, clear, and count lights or occluders without leaking storage details.
-//! Flicker stepping and reindexing live here so animated lights can advance efficiently across the whole scene.
-//! Renderer-facing helpers emit debug images, ambient color hints, directional tuples, and normal-map light snapshots.
-//! This file is the owner for scene lighting orchestration rather than for one light's individual option semantics.
-//! Open it when collection behavior changes; per-light data definitions and shadow geometry live in sibling files.
+//! Owns the light world owner for the light subsystem and keeps its rules local to this file.
+//! Keeps light data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+//! Defines how light world data is validated, transformed, or stored before neighboring systems use it.
+//! Owns light behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on light world behavior while Lua registration stays elsewhere.
+//! Documents where light callers should change defaults, errors, or lifecycle behavior. with focused crate-local behavior.
+//! Use this file when changing light world defaults, lifecycle handling, validation, or data ownership.
+//! Keeps failure paths and edge cases near the light state that can explain them while keeping call sites explicit.
 
 use crate::color::Color;
 use crate::light::attenuation::Attenuation;

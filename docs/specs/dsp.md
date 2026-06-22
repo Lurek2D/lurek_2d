@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/dsp.md or source docstrings instead. -->
+
 # dsp
 
 ## TL;DR
@@ -7,12 +9,12 @@
 ## General Info
 
 - Module group: `Platform Services`
-- Source path: `src/dsp/`
+- Source path: `src/dsp`
 - Binding: `src/lua_api/dsp_api.rs`
 - Namespace: `lurek.dsp`
 - Lua API surface: `29` functions, `7` types, `27` methods
-- Rust test path(s): tests/rust/unit/audio_tests.rs (shared with audio)
-- Lua test path(s): tests/lua/unit/test_dsp_core_unit.lua
+- User-facing: `true`
+- Plugin tier: `not_evaluated`
 
 ## Summary
 
@@ -27,12 +29,20 @@
 
 This module primarily collaborates with `audio`, `runtime`. Its responsibility should stay inside the `Platform Services` group rather than absorb behavior owned by those neighbors.
 
+## Ownership
+
+- Canonical source: `src/dsp`
+- Owning tier: `Platform Services`
+- Plugin tier: `not_evaluated`
+- Lua binding owner: `src/lua_api/dsp_api.rs`
+- Referenced engine modules: `audio`, `runtime`
+
 ## Imports
 
-- `audio`: Imports or references `src/audio/`. Cross-group dependency from ``Platform Services`` into `Platform Services`.
-- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from ``Platform Services`` into `Core Runtime`.
+- `audio`: Imports or references `src/audio/`. Dependency stays inside `Platform Services` and should remain acyclic.
+- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Platform Services` into `Core Runtime`.
 
-## Files
+## Source Files
 
 ### analysis.rs
 
@@ -246,10 +256,63 @@ This module primarily collaborates with `audio`, `runtime`. Its responsibility s
 - `LWaveform:render(freq, duration, sample_rate, amplitude) -> LSoundData`: Renders this waveform to a new SoundData buffer.
 - `LWaveform:type() -> string`: Returns the waveform identifier string.
 
-## References
+## Examples
 
-- `audio`: Imports or references `src/audio/`. Cross-group dependency from ``Platform Services`` into `Platform Services`.
-- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from ``Platform Services`` into `Core Runtime`.
+- `content/examples/dsp.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_dsp_unit.lua` (present)
+- Rust: `tests/rust/unit/dsp_tests.rs`
+
+## Evidence / Golden
+
+| Kind | Path |
+|---|---|
+| Evidence test | `tests/lua/evidence/test_dsp_evidence.lua` |
+| Golden test | `tests/lua/golden/test_dsp_golden.lua` |
+| Current artifact | `tests/artifacts/current/dsp/dsp_bandpass_filtered.png` |
+| Current artifact | `tests/artifacts/current/dsp/dsp_bandpass_source.png` |
+| Current artifact | `tests/artifacts/current/dsp/dsp_fixture_spectrogram.png` |
+| Current artifact | `tests/artifacts/current/dsp/dsp_fixture_waveform.png` |
+| Current artifact | `tests/artifacts/current/dsp/dsp_highpass_filtered.png` |
+| Current artifact | `tests/artifacts/current/dsp/dsp_highpass_source.png` |
+| Current artifact | `tests/artifacts/current/dsp/dsp_lowpass_filtered.png` |
+| Current artifact | `tests/artifacts/current/dsp/dsp_lowpass_source.png` |
+| Current artifact | `tests/artifacts/current/dsp/dsp_normalized_peak_09.wav` |
+| Current artifact | `tests/artifacts/current/dsp/dsp_offline_lowpass_1khz.wav` |
+| Current artifact | `tests/artifacts/current/dsp/dsp_waveform_sawtooth.png` |
+| Current artifact | `tests/artifacts/current/dsp/dsp_waveform_sine.png` |
+| Current artifact | `tests/artifacts/current/dsp/dsp_waveform_square.png` |
+| Current artifact | `tests/artifacts/current/dsp/dsp_waveform_triangle.png` |
+| Current artifact | `tests/artifacts/current/dsp/dsp_waveform_white_noise.png` |
+| Current artifact | `tests/artifacts/current/dsp/normalized.wav` |
+| Current artifact | `tests/artifacts/current/dsp/offline_chain.wav` |
+| Current artifact | `tests/artifacts/current/dsp/spectrogram.png` |
+| Current artifact | `tests/artifacts/current/dsp/waveform.png` |
+| Baseline artifact | `tests/artifacts/baselines/dsp/dsp_bandpass_filtered.png` |
+| Baseline artifact | `tests/artifacts/baselines/dsp/dsp_bandpass_source.png` |
+| Baseline artifact | `tests/artifacts/baselines/dsp/dsp_fixture_spectrogram.png` |
+| Baseline artifact | `tests/artifacts/baselines/dsp/dsp_fixture_waveform.png` |
+| Baseline artifact | `tests/artifacts/baselines/dsp/dsp_highpass_filtered.png` |
+| Baseline artifact | `tests/artifacts/baselines/dsp/dsp_highpass_source.png` |
+| Baseline artifact | `tests/artifacts/baselines/dsp/dsp_lowpass_filtered.png` |
+| Baseline artifact | `tests/artifacts/baselines/dsp/dsp_lowpass_source.png` |
+| Baseline artifact | `tests/artifacts/baselines/dsp/dsp_normalized_peak_09.wav` |
+| Baseline artifact | `tests/artifacts/baselines/dsp/dsp_offline_lowpass_1khz.wav` |
+| Baseline artifact | `tests/artifacts/baselines/dsp/dsp_waveform_sawtooth.png` |
+| Baseline artifact | `tests/artifacts/baselines/dsp/dsp_waveform_sine.png` |
+| Baseline artifact | `tests/artifacts/baselines/dsp/dsp_waveform_square.png` |
+| Baseline artifact | `tests/artifacts/baselines/dsp/dsp_waveform_triangle.png` |
+| Baseline artifact | `tests/artifacts/baselines/dsp/dsp_waveform_white_noise.png` |
+| Baseline artifact | `tests/artifacts/baselines/dsp/normalized.wav` |
+| Baseline artifact | `tests/artifacts/baselines/dsp/offline_chain.wav` |
+| Baseline artifact | `tests/artifacts/baselines/dsp/spectrogram.png` |
+| Baseline artifact | `tests/artifacts/baselines/dsp/waveform.png` |
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

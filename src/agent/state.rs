@@ -1,9 +1,12 @@
-//! This file owns `AgentState`, `SystemSkill`, and `AISystemState`, the mutable config layer behind agent requests.
-//! `AgentState` stores validated endpoint, model, prompt, format, options, skills, retries, and timeout for one caller.
-//! Request builders turn that state into stable `AgentRequest` payloads and reject unsafe URLs, options, or oversized context.
-//! `AISystemState` holds shared system prompts, named instruction blocks, and keyword-matched skills with provenance.
-//! Context assembly merges explicit instructions and matched skills into structured prompt text for downstream agents.
-//! Open it when request-shaping rules change; background delivery and memory behavior live in sibling modules.
+//! Owns agent behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps agent data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+//! Defines how state data is validated, transformed, or stored before neighboring systems use it.
+//! Owns agent behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on state behavior while Lua registration stays elsewhere.
+//! Documents where agent callers should change defaults, errors, or lifecycle behavior. with focused crate-local behavior.
+//! Use this file when changing state defaults, lifecycle handling, validation, or data ownership.
+//! Keeps failure paths and edge cases near the agent state that can explain them while keeping call sites explicit.
+//! Preserves deterministic behavior by keeping state calculations explicit at their owner boundary.
 
 use crate::agent::{AgentError, AgentRequest, AgentResponseFormat};
 use std::collections::{HashMap, HashSet};

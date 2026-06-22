@@ -1,8 +1,10 @@
-//! Owns the utility-AI scorer that ranks candidate actions through response curves and per-action consideration data.
-//! Defines response-curve variants, considerations, actions, and the last-evaluation score snapshot for inspection.
-//! Calls action scorers, applies momentum bonuses, and records the chosen action so later systems can read results.
-//! Provides the continuous scoring boundary between raw Lua evaluations and one selected utility-driven action.
-//! Open this owner when nonlinear score shaping, momentum behavior, or action-evaluation bookkeeping needs changes.
+//! Owns the utility ai owner for the ai subsystem and keeps its rules local to this file while keeping call sites explicit.
+//! Centers the implementation around ResponseCurve, parse_str, apply, with helpers kept close to their invariants.
+//! Defines how utility ai data is validated, transformed, or stored before neighboring systems use it.
+//! Owns ai behavior with explicit state, validation, and crate-local integration boundaries. for engine changes.
+//! Keeps public crate helpers focused on utility ai behavior while Lua registration stays elsewhere.
+//! Documents the boundary where ai code accepts inputs, reports errors, or updates state while keeping call sites explicit.
+//! Use this file when changing utility ai defaults, lifecycle handling, validation, or data ownership.
 
 use crate::ai::diagnostics::{
     CallbackErrorTrace, UtilityActionTrace, UtilityConsiderationTrace, UtilityDecisionTrace,

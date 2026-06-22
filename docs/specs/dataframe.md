@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/dataframe.md or source docstrings instead. -->
+
 # dataframe
 
 ## TL;DR
@@ -9,12 +11,12 @@
 ## General Info
 
 - Module group: `Foundations`
-- Source path: `src/dataframe/`
+- Source path: `src/dataframe`
 - Binding: `src/lua_api/dataframe_api.rs`
 - Namespace: `lurek.dataframe`
 - Lua API surface: `15` functions, `6` types, `145` methods
-- Rust test path(s): tests/rust/unit/dataframe_tests.rs
-- Lua test path(s): tests/lua/unit/test_dataframe.lua; tests/lua/stress/test_dataframe_stress.lua; tests/lua/integration/test_compute_dataframe.lua; tests/lua/golden/test_dataframe_golden.lua
+- User-facing: `true`
+- Plugin tier: `tier_1_plugin`
 
 ## Summary
 
@@ -35,11 +37,19 @@
 
 This module is mostly self-contained inside the Foundations group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
 
+## Ownership
+
+- Canonical source: `src/dataframe`
+- Owning tier: `Foundations`
+- Plugin tier: `tier_1_plugin`
+- Lua binding owner: `src/lua_api/dataframe_api.rs`
+- Referenced engine modules: None detected from Rust imports.
+
 ## Imports
 
 - No top-level `crate::<module>` imports were detected in this module's Rust source files.
 
-## Files
+## Source Files
 
 ### file_io.rs
 
@@ -434,9 +444,49 @@ This module is mostly self-contained inside the Foundations group. Cross-module 
 - `LVecFrame:type() -> string`: Returns the Lua-visible type name for this vectorized frame handle.
 - `LVecFrame:typeOf(name) -> boolean`: Returns whether this vectorized frame handle matches a supported type name.
 
-## References
+## Examples
 
-- No top-level `crate::<module>` imports were detected in this module's Rust source files.
+- `content/examples/dataframe.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_dataframe_unit.lua` (present)
+- Rust: `tests/rust/unit/dataframe_tests.rs`
+
+## Evidence / Golden
+
+| Kind | Path |
+|---|---|
+| Evidence test | `tests/lua/evidence/test_dataframe_evidence.lua` |
+| Golden test | `tests/lua/golden/test_dataframe_golden.lua` |
+| Current artifact | `tests/artifacts/current/dataframe/dataframe_correlation_matrix_heatmap.png` |
+| Current artifact | `tests/artifacts/current/dataframe/dataframe_csv_statistics.txt` |
+| Current artifact | `tests/artifacts/current/dataframe/dataframe_descriptive_statistics.txt` |
+| Current artifact | `tests/artifacts/current/dataframe/dataframe_grouped_kpi_pipeline.txt` |
+| Current artifact | `tests/artifacts/current/dataframe/dataframe_join_pivot_query_trace.txt` |
+| Current artifact | `tests/artifacts/current/dataframe/dataframe_lazy_feature_pipeline.txt` |
+| Current artifact | `tests/artifacts/current/dataframe/dataframe_serialization_snapshot.txt` |
+| Current artifact | `tests/artifacts/current/dataframe/dataframe_structure_query_trace.txt` |
+| Current artifact | `tests/artifacts/current/dataframe/dataframe_transform_snapshot.txt` |
+| Current artifact | `tests/artifacts/current/dataframe/dataframe_value_bars.png` |
+| Current artifact | `tests/artifacts/current/dataframe/dataframe_vecframe_compute_trace.txt` |
+| Current artifact | `tests/artifacts/current/dataframe/dataframe_window_risk_analysis.txt` |
+| Baseline artifact | `tests/artifacts/baselines/dataframe/dataframe_correlation_matrix_heatmap.png` |
+| Baseline artifact | `tests/artifacts/baselines/dataframe/dataframe_csv_statistics.txt` |
+| Baseline artifact | `tests/artifacts/baselines/dataframe/dataframe_descriptive_statistics.txt` |
+| Baseline artifact | `tests/artifacts/baselines/dataframe/dataframe_grouped_kpi_pipeline.txt` |
+| Baseline artifact | `tests/artifacts/baselines/dataframe/dataframe_join_pivot_query_trace.txt` |
+| Baseline artifact | `tests/artifacts/baselines/dataframe/dataframe_lazy_feature_pipeline.txt` |
+| Baseline artifact | `tests/artifacts/baselines/dataframe/dataframe_serialization_snapshot.txt` |
+| Baseline artifact | `tests/artifacts/baselines/dataframe/dataframe_structure_query_trace.txt` |
+| Baseline artifact | `tests/artifacts/baselines/dataframe/dataframe_transform_snapshot.txt` |
+| Baseline artifact | `tests/artifacts/baselines/dataframe/dataframe_value_bars.png` |
+| Baseline artifact | `tests/artifacts/baselines/dataframe/dataframe_vecframe_compute_trace.txt` |
+| Baseline artifact | `tests/artifacts/baselines/dataframe/dataframe_window_risk_analysis.txt` |
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

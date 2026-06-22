@@ -5,7 +5,7 @@ Lurek2D uses two main test layers:
 - Rust tests in `tests/rust/` for internal engine behavior.
 - Lua BDD tests in `tests/lua/` for the public `lurek.*` API.
 
-This file is the contributor guide for test ownership. The lifecycle source of truth is [../docs/architecture/quality-assurance.md](../docs/architecture/quality-assurance.md).
+This file is the contributor guide for test ownership. The lifecycle source of truth is [../docs/architecture/quality-assurance.md](../docs/architecture/quality-assurance.md), and documentation ownership is defined in [../docs/architecture/docs-system.md](../docs/architecture/docs-system.md).
 
 ## Quick Commands
 

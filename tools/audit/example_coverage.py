@@ -46,7 +46,12 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-API_JSON = ROOT / 'logs' / 'data' / 'lua_api_data.json'
+sys.path.insert(0, str(ROOT / "tools" / "docs"))
+import module_registry
+
+DOCS_DATA = module_registry.DOCS_DATA
+LEGACY_LOGS_DATA = module_registry.LEGACY_LOGS_DATA
+API_JSON = module_registry.lua_api_json_path()
 DEFAULT_EXAMPLES_DIR = ROOT / 'content' / 'examples'
 DEFAULT_MARKDOWN_REPORT = ROOT / 'logs' / 'reports' / 'example_coverage.md'
 # FULL requires at least this many body code lines inside the do block.
@@ -63,172 +68,35 @@ END_LINE_RE = re.compile(r'^end(?:\s*--.*)?$')
 UNTIL_LINE_RE = re.compile(r'^until\b')
 API_MARKER_RE = re.compile(r'^--@api(?:-stub)?:\s*(.+)$')
 
-# filename = module name exactly (src/render/ -> render.lua, src/ecs/ -> ecs.lua)
-# JSON key = src/ folder name; example file = content/examples/<src_folder>.lua
-# When Lua API namespace differs from src folder, the example file keeps the src
-# folder name and NAMESPACE_MAP handles the namespace.
-MODULE_TO_EXAMPLE: dict[str, str] = {
-    'ai':          'ai.lua',
-    'animation':   'animation.lua',
-    'audio':       'audio.lua',
-    'automation':  'automation.lua',
-    'charts':      'charts.lua',
-    'binary':      'binary.lua',
-    'camera':      'camera.lua',
-    'compute':     'compute.lua',
-    'dataframe':   'dataframe.lua',
-    'debugbridge': 'debugbridge.lua',
-    'devtools':    'devtools.lua',
-    'docs':        'docs.lua',
-    'ecs':         'ecs.lua',
-    'effect':      'effect.lua',
-    'engine':      'engine.lua',
-    'event':       'event.lua',
-    'filesystem':  'filesystem.lua',
-    'flownet':     'flownet.lua',   # lurek.graph API, example file matches src/ folder
-    'globe':       'globe.lua',
-    'i18n':        'i18n.lua',
-    'image':       'image.lua',
-    'input':       'input.lua',
-    'light':       'light.lua',
-    'log':         'log.lua',
-    'math':        'math.lua',
-    'mapblock':    'mapblock.lua',
-    'minimap':     'minimap.lua',
-    'mods':        'mods.lua',
-    'network':     'network.lua',
-    'parallax':    'parallax.lua',
-    'particle':    'particle.lua',
-    'pathfind':    'pathfind.lua',
-    'patterns':    'patterns.lua',
-    'physics':     'physics.lua',
-    'pipeline':    'pipeline.lua',
-    'procgen':     'procgen.lua',
-    'raycaster':   'raycaster.lua',
-    'render':      'render.lua',
-    'save':        'save.lua',
-    'scene':       'scene.lua',
-    'serialize':   'serialize.lua', # lurek.serial API, example file matches src/ folder
-    'spine':       'spine.lua',
-    'sprite':      'sprite.lua',
-    'system':      'runtime.lua',   # lurek.runtime API; example was renamed from system.lua
-    'terminal':    'terminal.lua',
-    'thread':      'thread.lua',
-    'tilemap':     'tilemap.lua',
-    'timer':       'timer.lua',
-    'tween':       'tween.lua',
-    'ui':          'ui.lua',
-    'window':      'window.lua',
+API_MODULE_TO_REGISTRY_MODULE = {
+    "engine": "app",
+    "system": "runtime",
+    "svg": "vector",
 }
 
-# Maps JSON module key  â†’  lurek.* namespace used in example files
-# Namespace = src/ folder name exactly (e.g. src/render/ -> lurek.render)
-NAMESPACE_MAP: dict[str, str] = {
-    'ai':          'ai',
-    'animation':   'animation',
-    'audio':       'audio',
-    'automation':  'automation',
-    'charts':      'charts',
-    'binary':      'binary',
-    'camera':      'camera',
-    'compute':     'compute',
-    'dataframe':   'dataframe',
-    'debugbridge': 'debugbridge',
-    'devtools':    'devtools',
-    'docs':        'docs',
-    'ecs':         'ecs',
-    'effect':      'effect',
-    'engine':      'engine',
-    'event':       'event',
-    'filesystem':  'filesystem',
-    'flownet':     'graph',       # src/flownet/ -> lurek.graph
-    'globe':       'globe',
-    'i18n':        'i18n',
-    'image':       'image',
-    'input':       'input',
-    'light':       'light',
-    'log':         'log',
-    'math':        'math',
-    'mapblock':    'mapblock',
-    'minimap':     'minimap',
-    'mods':        'mods',
-    'network':     'network',
-    'parallax':    'parallax',
-    'particle':    'particle',
-    'pathfind':    'pathfind',
-    'patterns':    'patterns',
-    'physics':     'physics',
-    'pipeline':    'pipeline',
-    'procgen':     'procgen',
-    'raycaster':   'raycaster',
-    'render':      'render',
-    'save':        'save',
-    'scene':       'scene',
-    'serialize':   'serial',      # src/serialize/ -> lurek.serial
-    'spine':       'spine',
-    'sprite':      'sprite',
-    'system':      'runtime',     # src/runtime/ -> lurek.runtime
-    'terminal':    'terminal',
-    'thread':      'thread',
-    'tilemap':     'tilemap',
-    'timer':       'timer',
-    'tween':       'tween',
-    'ui':          'ui',
-    'window':      'window',
-}
 
-# Some Lua-visible classes are surfaced from multiple module docs, but examples should
-# live in one canonical module file to avoid exact duplicate --@api-stub markers.
-CANONICAL_API_MODULE: dict[str, str] = {
-    'LBehaviorTree:setRoot': 'patterns',
-    'LBarChart:addSeries': 'charts',
-    'LLineChart:addSeries': 'charts',
-    'LScatterPlot:addSeries': 'charts',
-    'LTween:getDuration': 'tween',
-    'LTween:getEasingName': 'tween',
-    'LTween:type': 'tween',
-    'LTween:typeOf': 'tween',
-    'LImageData:blit': 'image',
-    'LImageData:diff': 'image',
-    'LImageData:getHeight': 'image',
-    'LImageData:getRegion': 'image',
-    'LImageData:getWidth': 'image',
-    'LImageData:mapPixels': 'image',
-    'LImageData:resize': 'image',
-    'LImageData:type': 'image',
-    'LImageData:typeOf': 'image',
-    'LMapBlock:getHeight': 'mapblock',
-    'LMapBlock:getLayerCount': 'mapblock',
-    'LMapBlock:getName': 'mapblock',
-    'LMapBlock:getTile': 'mapblock',
-    'LMapBlock:getWidth': 'mapblock',
-    'LMapBlock:setName': 'mapblock',
-    'LMapBlock:setTile': 'mapblock',
-    'LMapBlock:setWeight': 'mapblock',
-    'LMapGroup:addBlock': 'mapblock',
-    'LMapGroup:addScript': 'mapblock',
-    'LMapGroup:getBlockCount': 'mapblock',
-    'LMapGroup:getName': 'mapblock',
-    'LMapScript:addStep': 'mapblock',
-    'LMapScript:getStepCount': 'mapblock',
-}
+def registry_module_for_api_module(module_name: str) -> str:
+    return API_MODULE_TO_REGISTRY_MODULE.get(module_name, module_name)
 
-# Some classes are documented from multiple module views, but examples should
-# live in one canonical namespace file to avoid duplicate coverage findings.
-CANONICAL_OWNER_MODULE: dict[str, str] = {
-    'LAreaChart': 'charts',
-    'LBarChart': 'charts',
-    'LHeatmapChart': 'charts',
-    'LHistogramChart': 'charts',
-    'LLineChart': 'charts',
-    'LPieChart': 'charts',
-    'LScatterPlot': 'charts',
-    'LMapBlock': 'mapblock',
-    'LMapGroup': 'mapblock',
-    'LMapScript': 'mapblock',
-    'LRelationshipManager': 'ecs',
-}
 
+def example_file_for_module(module_name: str) -> str:
+    registry_module = registry_module_for_api_module(module_name)
+    path = module_registry.module_example_file(registry_module)
+    return Path(path).name if path else f"{registry_module}.lua"
+
+
+def namespace_for_module(module_name: str) -> str:
+    registry_module = registry_module_for_api_module(module_name)
+    namespace = module_registry.module_namespace(registry_module)
+    return namespace.removeprefix("lurek.") if namespace else module_name
+
+
+def canonical_api_module(api_name: str) -> str | None:
+    return module_registry.canonical_api_owner(api_name)
+
+
+def canonical_owner_module(owner_type: str) -> str | None:
+    return module_registry.canonical_owner(owner_type)
 
 @dataclass
 class ApiEntry:
@@ -284,10 +152,11 @@ def load_entries(jp: Path) -> list[ApiEntry]:
     for mn, m in mods.items():
         if mn == 'collision': continue
         if mn == 'collision': continue
-        ex = MODULE_TO_EXAMPLE.get(mn, mn + '.lua')
+        registry_module = registry_module_for_api_module(mn)
+        ex = example_file_for_module(mn)
         for fn in (m.get('functions') or []):
             out.append(ApiEntry(
-                module=mn, name=fn['name'], api_name=fn.get('lua_name') or f"lurek.{NAMESPACE_MAP.get(mn, mn)}.{fn['name']}", is_method=False,
+                module=registry_module, name=fn['name'], api_name=fn.get('lua_name') or f"lurek.{namespace_for_module(mn)}.{fn['name']}", is_method=False,
                 owner_type='', example_file=ex,
                 description=fn.get('description', ''),
                 inferred_sig=fn.get('inferred_sig', '()'),
@@ -295,7 +164,7 @@ def load_entries(jp: Path) -> list[ApiEntry]:
         for cn, cls in (m.get('classes') or {}).items():
             for meth in (cls.get('methods') or []):
                 out.append(ApiEntry(
-                    module=mn, name=meth['name'], api_name=meth.get('lua_name') or f'{cn}:{meth["name"]}', is_method=True,
+                    module=registry_module, name=meth['name'], api_name=meth.get('lua_name') or f'{cn}:{meth["name"]}', is_method=True,
                     owner_type=cn, example_file=ex,
                     description=meth.get('description', ''),
                     inferred_sig=meth.get('inferred_sig', '()'),
@@ -520,20 +389,20 @@ def build_cov(entries: list[ApiEntry], texts: dict[str, dict]) -> dict[str, Modu
     seen_api_keys: set[tuple[str, str]] = set()
     for e in entries:
         canonical_module = (
-            CANONICAL_API_MODULE.get(e.api_name)
-            or CANONICAL_OWNER_MODULE.get(e.owner_type or '')
+            canonical_api_module(e.api_name)
+            or canonical_owner_module(e.owner_type or '')
         )
         key = canonical_module or e.module
         dedupe_key = (key, e.api_name)
         if dedupe_key in seen_api_keys:
             continue
         seen_api_keys.add(dedupe_key)
-        example_file = MODULE_TO_EXAMPLE.get(key, key + '.lua')
+        example_file = example_file_for_module(key)
         if key not in bk:
             bk[key] = ModuleCov(
                 key=key,
                 example_file=example_file,
-                namespace=NAMESPACE_MAP.get(key, key),
+                namespace=namespace_for_module(key),
             )
             module_data = collect_module_data(texts, key, example_file)
             module_data_cache[key] = module_data
@@ -804,7 +673,7 @@ def lint_example_files(examples_dir: Path, filt: str | None = None) -> list:
                 i = j + 1
                 continue
 
-            # Found do — collect and inspect body
+            # Found do â€” collect and inspect body
             end_idx, body_lines = _collect_do_block(lines, j)
 
             # E4: thin block
@@ -830,7 +699,7 @@ def print_lint(examples_dir: Path, filt: str | None = None) -> int:
     issues = lint_example_files(examples_dir, filt)
 
     if not issues:
-        print('lint: OK — no structural issues found')
+        print('lint: OK â€” no structural issues found')
         return 0
 
     by_file: dict = defaultdict(list)
@@ -868,7 +737,7 @@ def main() -> int:
     EXTRA_LINT_ISSUES.clear()
 
     if not API_JSON.exists():
-        print(f'ERROR: {API_JSON} not found â€” run python tools/gen_all_docs.py first')
+        print(f'ERROR: {API_JSON} not found Ă˘â‚¬â€ť run python tools/gen_all_docs.py first')
         return 1
 
     examples_dir = resolve_examples_dir(args.examples_dir)
@@ -962,5 +831,6 @@ def main() -> int:
 
 if __name__ == '__main__':
     sys.exit(main())
+
 
 

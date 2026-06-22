@@ -32,6 +32,9 @@ from pathlib import Path
 from typing import Dict, List, Optional
 
 REPO = Path(__file__).resolve().parent.parent.parent
+sys.path.insert(0, str(REPO / "tools" / "docs"))
+import module_registry
+
 LUA_API_DIR = REPO / "src" / "lua_api"
 SPECS_DIR = REPO / "docs" / "specs"
 
@@ -41,7 +44,7 @@ _TBLSET_RE = re.compile(r'tbl\.set\(\s*"([A-Za-z_][A-Za-z0-9_]*)"\s*,')
 # code spans used in descriptions.
 _BULLET_LABEL_RE = re.compile(r"^\s*-\s*`([^`]+)`")
 
-_LUA_API_DATA_FILE = REPO / "logs" / "data" / "lua_api_data.json"
+_LUA_API_DATA_FILE = module_registry.lua_api_json_path()
 _LUA_API_BINDINGS_CACHE: Dict[str, List[str]] = {}
 
 

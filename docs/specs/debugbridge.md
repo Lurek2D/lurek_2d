@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/debugbridge.md or source docstrings instead. -->
+
 # debugbridge
 
 ## TL;DR
@@ -7,12 +9,12 @@
 ## General Info
 
 - Module group: `Edge/Integration`
-- Source path: `src/debugbridge/`
+- Source path: `src/debugbridge`
 - Binding: `src/lua_api/debugbridge_api.rs`
 - Namespace: `lurek.debugbridge`
 - Lua API surface: `16` functions, `2` types, `0` methods
-- Rust test path(s): tests/rust/unit/debugbridge_tests.rs
-- Lua test path(s): tests/lua/unit/test_debugbridge.lua
+- User-facing: `true`
+- Plugin tier: `not_evaluated`
 
 ## Summary
 
@@ -22,11 +24,19 @@
 
 This module is mostly self-contained inside the Edge/Integration group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
 
+## Ownership
+
+- Canonical source: `src/debugbridge`
+- Owning tier: `Edge/Integration`
+- Plugin tier: `not_evaluated`
+- Lua binding owner: `src/lua_api/debugbridge_api.rs`
+- Referenced engine modules: None detected from Rust imports.
+
 ## Imports
 
 - No top-level `crate::<module>` imports were detected in this module's Rust source files.
 
-## Files
+## Source Files
 
 ### bridge.rs
 
@@ -118,9 +128,22 @@ This module is mostly self-contained inside the Edge/Integration group. Cross-mo
 
 - No documented methods.
 
-## References
+## Examples
 
-- No top-level `crate::<module>` imports were detected in this module's Rust source files.
+- `content/examples/debugbridge.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_debugbridge_unit.lua` (present)
+- Rust: `tests/rust/unit/debugbridge_tests.rs`
+
+## Evidence / Golden
+
+- No evidence or golden artifacts registered.
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

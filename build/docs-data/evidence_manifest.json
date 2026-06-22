@@ -1,0 +1,1430 @@
+{
+  "agent": {
+    "baseline_artifacts": [
+      "tests/artifacts/baselines/agent/agent_context_memory_report.txt",
+      "tests/artifacts/baselines/agent/agent_memory_bundle.json"
+    ],
+    "current_artifacts": [
+      "tests/artifacts/current/agent/agent_context_memory_report.txt",
+      "tests/artifacts/current/agent/agent_memory_bundle.json"
+    ],
+    "evidence_tests": [
+      "tests/lua/evidence/test_agent_evidence.lua"
+    ],
+    "golden_tests": [
+      "tests/lua/golden/test_agent_golden.lua"
+    ]
+  },
+  "ai": {
+    "baseline_artifacts": [
+      "tests/artifacts/baselines/ai/ai_state_machine_transitions.txt"
+    ],
+    "current_artifacts": [
+      "tests/artifacts/current/ai/ai_behavior_tree_debug.json",
+      "tests/artifacts/current/ai/ai_blackboard_snapshot.json",
+      "tests/artifacts/current/ai/ai_constructor_surface_snapshot.txt",
+      "tests/artifacts/current/ai/ai_goap_plan_trace.json",
+      "tests/artifacts/current/ai/ai_state_machine_transitions.txt",
+      "tests/artifacts/current/ai/ai_utility_scorecard.json"
+    ],
+    "evidence_tests": [
+      "tests/lua/evidence/test_ai_evidence.lua"
+    ],
+    "golden_tests": [
+      "tests/lua/golden/test_ai_golden.lua"
+    ]
+  },
+  "animation": {
+    "baseline_artifacts": [
+      "tests/artifacts/baselines/animation/animation_clip_preview_frames.gif",
+      "tests/artifacts/baselines/animation/animation_crossfade_transition.gif",
+      "tests/artifacts/baselines/animation/animation_current_frame_walk.png",
+      "tests/artifacts/baselines/animation/animation_curve_eased.png",
+      "tests/artifacts/baselines/animation/animation_curve_linear.png",
+      "tests/artifacts/baselines/animation/animation_state_machine_transition_trace.txt",
+      "tests/artifacts/baselines/animation/animation_walk_cycle_preview.gif"
+    ],
+    "current_artifacts": [
+      "tests/artifacts/current/animation/animation_clip_control_trace.txt",
+      "tests/artifacts/current/animation/animation_clip_preview_frames.gif",
+      "tests/artifacts/current/animation/animation_crossfade_transition.gif",
+      "tests/artifacts/current/animation/animation_current_frame_walk.png",
+      "tests/artifacts/current/animation/animation_curve_eased.png",
+      "tests/artifacts/current/animation/animation_curve_linear.png",
+      "tests/artifacts/current/animation/animation_state_machine_transition_trace.txt",
+      "tests/artifacts/current/animation/animation_walk_cycle_preview.gif"
+    ],
+    "evidence_tests": [
+      "tests/lua/evidence/test_animation_evidence.lua"
+    ],
+    "golden_tests": [
+      "tests/lua/golden/test_animation_golden.lua"
+    ]
+  },
+  "audio": {
+    "baseline_artifacts": [
+      "tests/artifacts/baselines/audio/audio_bus_pitch_up_150.wav",
+      "tests/artifacts/baselines/audio/audio_bus_volume_fadeout.wav",
+      "tests/artifacts/baselines/audio/audio_bus_volume_half_gain.wav",
+      "tests/artifacts/baselines/audio/audio_chord_c_major.wav",
+      "tests/artifacts/baselines/audio/audio_frequency_sweep_200_2000.wav",
+      "tests/artifacts/baselines/audio/audio_mix_into_base.png",
+      "tests/artifacts/baselines/audio/audio_mix_into_mixed.png",
+      "tests/artifacts/baselines/audio/audio_sine_440hz_mono.wav",
+      "tests/artifacts/baselines/audio/audio_stereo_ping_pong.wav",
+      "tests/artifacts/baselines/audio/audio_waveform_chord_c_major.png",
+      "tests/artifacts/baselines/audio/audio_waveform_frequency_sweep.png",
+      "tests/artifacts/baselines/audio/audio_waveform_sine_440hz.png"
+    ],
+    "current_artifacts": [
+      "tests/artifacts/current/audio/audio_beat_clock_scheduler_trace.txt",
+      "tests/artifacts/current/audio/audio_bus_decoder_trace.txt",
+      "tests/artifacts/current/audio/audio_bus_pitch_up_150.wav",
+      "tests/artifacts/current/audio/audio_bus_volume_fadeout.wav",
+      "tests/artifacts/current/audio/audio_bus_volume_half_gain.wav",
+      "tests/artifacts/current/audio/audio_chord_c_major.wav",
+      "tests/artifacts/current/audio/audio_frequency_sweep_200_2000.wav",
+      "tests/artifacts/current/audio/audio_mix_into_base.png",
+      "tests/artifacts/current/audio/audio_mix_into_harmonic_layer.wav",
+      "tests/artifacts/current/audio/audio_mix_into_mixed.png",
+      "tests/artifacts/current/audio/audio_sine_440hz_mono.wav",
+      "tests/artifacts/current/audio/audio_stereo_ping_pong.wav",
+      "tests/artifacts/current/audio/audio_waveform_chord_c_major.png",
+      "tests/artifacts/current/audio/audio_waveform_frequency_sweep.png",
+      "tests/artifacts/current/audio/audio_waveform_sine_440hz.png"
+    ],
+    "evidence_tests": [
+      "tests/lua/evidence/test_audio_evidence.lua"
+    ],
+    "golden_tests": [
+      "tests/lua/golden/test_audio_golden.lua"
+    ]
+  },
+  "automation": {
+    "baseline_artifacts": [
+      "tests/artifacts/baselines/automation/automation_condition_gate_trace.txt",
+      "tests/artifacts/baselines/automation/automation_macro_control_trace.txt",
+      "tests/artifacts/baselines/automation/automation_timeline_trace.txt"
+    ],
+    "current_artifacts": [
+      "tests/artifacts/current/automation/automation_condition_gate_trace.txt",
+      "tests/artifacts/current/automation/automation_macro_control_trace.txt",
+      "tests/artifacts/current/automation/automation_timeline_trace.txt"
+    ],
+    "evidence_tests": [
+      "tests/lua/evidence/test_automation_evidence.lua"
+    ],
+    "golden_tests": [
+      "tests/lua/golden/test_automation_golden.lua"
+    ]
+  },
+  "binary": {
+    "baseline_artifacts": [
+      "tests/artifacts/baselines/binary/binary_encode_reference_values.txt",
+      "tests/artifacts/baselines/binary/binary_hash_reference_values.txt",
+      "tests/artifacts/baselines/binary/binary_toml_roundtrip_snapshot.toml"
+    ],
+    "current_artifacts": [
+      "tests/artifacts/current/binary/binary_buffer_surface_snapshot.txt",
+      "tests/artifacts/current/binary/binary_compression_msgpack_snapshot.txt",
+      "tests/artifacts/current/binary/binary_compression_snapshot.txt",
+      "tests/artifacts/current/binary/binary_encode_reference_values.txt",
+      "tests/artifacts/current/binary/binary_hash_reference_values.txt",
+      "tests/artifacts/current/binary/binary_low_level_buffers_trace.txt",
+      "tests/artifacts/current/binary/binary_pack_roundtrip_snapshot.txt",
+      "tests/artifacts/current/binary/binary_toml_roundtrip_snapshot.toml"
+    ],
+    "evidence_tests": [
+      "tests/lua/evidence/test_binary_evidence.lua"
+    ],
+    "golden_tests": [
+      "tests/lua/golden/test_binary_golden.lua"
+    ]
+  },
+  "camera": {
+    "baseline_artifacts": [
+      "tests/artifacts/baselines/camera/camera_follow_path_trace.png",
+      "tests/artifacts/baselines/camera/camera_follow_smoothing_trace.json",
+      "tests/artifacts/baselines/camera/camera_shake_response_trace.json",
+      "tests/artifacts/baselines/camera/camera_transform_samples.json",
+      "tests/artifacts/baselines/camera/camera_transform_screen_panel.png",
+      "tests/artifacts/baselines/camera/camera_visible_area_panel.png"
+    ],
+    "current_artifacts": [
+      "tests/artifacts/current/camera/camera_follow_effects_bounds_trace.txt",
+      "tests/artifacts/current/camera/camera_follow_path_trace.png",
+      "tests/artifacts/current/camera/camera_follow_smoothing_trace.json",
+      "tests/artifacts/current/camera/camera_shake_response_trace.json",
+      "tests/artifacts/current/camera/camera_transform_samples.json",
+      "tests/artifacts/current/camera/camera_transform_screen_panel.png",
+      "tests/artifacts/current/camera/camera_visible_area_panel.png"
+    ],
+    "evidence_tests": [
+      "tests/lua/evidence/test_camera_evidence.lua"
+    ],
+    "golden_tests": [
+      "tests/lua/golden/test_camera_golden.lua"
+    ]
+  },
+  "charts": {
+    "baseline_artifacts": [
+      "tests/artifacts/baselines/charts/charts_area_layered_usage.png",
+      "tests/artifacts/baselines/charts/charts_bar_category_revenue.png",
+      "tests/artifacts/baselines/charts/charts_dataframe_heatmap.png",
+      "tests/artifacts/baselines/charts/charts_dataframe_histogram.png",
+      "tests/artifacts/baselines/charts/charts_dataframe_line.png",
+      "tests/artifacts/baselines/charts/charts_dataframe_pie.png",
+      "tests/artifacts/baselines/charts/charts_heatmap_region_load.png",
+      "tests/artifacts/baselines/charts/charts_histogram_latency_distribution.png",
+      "tests/artifacts/baselines/charts/charts_line_revenue_trend.png",
+      "tests/artifacts/baselines/charts/charts_nearest_trace.json",
+      "tests/artifacts/baselines/charts/charts_pie_market_share.png",
+      "tests/artifacts/baselines/charts/charts_scatter_player_scores.png"
+    ],
+    "current_artifacts": [
+      "tests/artifacts/current/charts/charts_area_layered_usage.png",
+      "tests/artifacts/current/charts/charts_bar_category_revenue.png",
+      "tests/artifacts/current/charts/charts_dataframe_heatmap.png",
+      "tests/artifacts/current/charts/charts_dataframe_histogram.png",
+      "tests/artifacts/current/charts/charts_dataframe_line.png",
+      "tests/artifacts/current/charts/charts_dataframe_pie.png",
+      "tests/artifacts/current/charts/charts_heatmap_region_load.png",
+      "tests/artifacts/current/charts/charts_histogram_latency_distribution.png",
+      "tests/artifacts/current/charts/charts_line_revenue_trend.png",
+      "tests/artifacts/current/charts/charts_nearest_trace.json",
+      "tests/artifacts/current/charts/charts_pie_market_share.png",
+      "tests/artifacts/current/charts/charts_scatter_player_scores.png"
+    ],
+    "evidence_tests": [
+      "tests/lua/evidence/test_charts_evidence.lua"
+    ],
+    "golden_tests": [
+      "tests/lua/golden/test_charts_golden.lua"
+    ]
+  },
+  "cinematic": {
+    "baseline_artifacts": [
+      "tests/artifacts/baselines/cinematic/cinematic_completion_controls.png",
+      "tests/artifacts/baselines/cinematic/cinematic_labels_branching.png",
+      "tests/artifacts/baselines/cinematic/cinematic_legacy_cut_list.png",
+      "tests/artifacts/baselines/cinematic/cinematic_multitrack_schedule.png",
+      "tests/artifacts/baselines/cinematic/cinematic_playhead_controls.gif",
+      "tests/artifacts/baselines/cinematic/cinematic_signal_audio_sequence.png"
+    ],
+    "current_artifacts": [
+      "tests/artifacts/current/cinematic/cinematic_completion_controls.png",
+      "tests/artifacts/current/cinematic/cinematic_labels_branching.png",
+      "tests/artifacts/current/cinematic/cinematic_legacy_cut_list.png",
+      "tests/artifacts/current/cinematic/cinematic_multitrack_schedule.png",
+      "tests/artifacts/current/cinematic/cinematic_playhead_controls.gif",
+      "tests/artifacts/current/cinematic/cinematic_signal_audio_sequence.png"
+    ],
+    "evidence_tests": [
+      "tests/lua/evidence/test_cinematic_evidence.lua"
+    ],
+    "golden_tests": [
+      "tests/lua/golden/test_cinematic_golden.lua"
+    ]
+  },
+  "color": {
+    "baseline_artifacts": [
+      "tests/artifacts/baselines/color/color_base_a.png",
+      "tests/artifacts/baselines/color/color_base_b.png",
+      "tests/artifacts/baselines/color/color_blend_additive.png",
+      "tests/artifacts/baselines/color/color_blend_alpha_blend.png",
+      "tests/artifacts/baselines/color/color_blend_invert_a.png",
+      "tests/artifacts/baselines/color/color_blend_multiply.png",
+      "tests/artifacts/baselines/color/color_blend_overlay.png",
+      "tests/artifacts/baselines/color/color_blend_screen.png",
+      "tests/artifacts/baselines/color/color_conversion_trace.txt",
+      "tests/artifacts/baselines/color/color_hsl_hue_band.png"
+    ],
+    "current_artifacts": [
+      "tests/artifacts/current/color/color_base_a.png",
+      "tests/artifacts/current/color/color_base_b.png",
+      "tests/artifacts/current/color/color_blend_additive.png",
+      "tests/artifacts/current/color/color_blend_alpha_blend.png",
+      "tests/artifacts/current/color/color_blend_invert_a.png",
+      "tests/artifacts/current/color/color_blend_multiply.png",
+      "tests/artifacts/current/color/color_blend_overlay.png",
+      "tests/artifacts/current/color/color_blend_screen.png",
+      "tests/artifacts/current/color/color_conversion_trace.txt",
+      "tests/artifacts/current/color/color_hsl_hue_band.png"
+    ],
+    "evidence_tests": [
+      "tests/lua/evidence/test_color_evidence.lua"
+    ],
+    "golden_tests": [
+      "tests/lua/golden/test_color_golden.lua"
+    ]
+  },
+  "compute": {
+    "baseline_artifacts": [
+      "tests/artifacts/baselines/compute/compute_affine_transform_snapshot.txt",
+      "tests/artifacts/baselines/compute/compute_array_constructor_snapshot.txt",
+      "tests/artifacts/baselines/compute/compute_covariance_projection_trace.txt",
+      "tests/artifacts/baselines/compute/compute_feature_engineering_trace.txt",
+      "tests/artifacts/baselines/compute/compute_fft_roundtrip_snapshot.txt",
+      "tests/artifacts/baselines/compute/compute_gaussian_kernel_heatmap.png",
+      "tests/artifacts/baselines/compute/compute_linear_model_solve_trace.txt",
+      "tests/artifacts/baselines/compute/compute_ndarray_fill_summary.txt",
+      "tests/artifacts/baselines/compute/compute_parallel_threshold_trace.txt",
+      "tests/artifacts/baselines/compute/compute_range_rotation_snapshot.txt",
+      "tests/artifacts/baselines/compute/compute_region_morphology_trace.txt",
+      "tests/artifacts/baselines/compute/compute_signal_analysis_pipeline.txt",
+      "tests/artifacts/baselines/compute/compute_spatial_segmentation_atlas.png"
+    ],
+    "current_artifacts": [
+      "tests/artifacts/current/compute/compute_affine_transform_snapshot.txt",
+      "tests/artifacts/current/compute/compute_array_constructor_snapshot.txt",
+      "tests/artifacts/current/compute/compute_covariance_projection_trace.txt",
+      "tests/artifacts/current/compute/compute_feature_engineering_trace.txt",
+      "tests/artifacts/current/compute/compute_fft_roundtrip_snapshot.txt",
+      "tests/artifacts/current/compute/compute_gaussian_kernel_heatmap.png",
+      "tests/artifacts/current/compute/compute_linear_model_solve_trace.txt",
+      "tests/artifacts/current/compute/compute_ndarray_fill_summary.txt",
+      "tests/artifacts/current/compute/compute_parallel_threshold_trace.txt",
+      "tests/artifacts/current/compute/compute_range_rotation_snapshot.txt",
+      "tests/artifacts/current/compute/compute_region_morphology_trace.txt",
+      "tests/artifacts/current/compute/compute_signal_analysis_pipeline.txt",
+      "tests/artifacts/current/compute/compute_spatial_segmentation_atlas.png"
+    ],
+    "evidence_tests": [
+      "tests/lua/evidence/test_compute_evidence.lua"
+    ],
+    "golden_tests": [
+      "tests/lua/golden/test_compute_golden.lua"
+    ]
+  },
+  "dataframe": {
+    "baseline_artifacts": [
+      "tests/artifacts/baselines/dataframe/dataframe_correlation_matrix_heatmap.png",
+      "tests/artifacts/baselines/dataframe/dataframe_csv_statistics.txt",
+      "tests/artifacts/baselines/dataframe/dataframe_descriptive_statistics.txt",
+      "tests/artifacts/baselines/dataframe/dataframe_grouped_kpi_pipeline.txt",
+      "tests/artifacts/baselines/dataframe/dataframe_join_pivot_query_trace.txt",
+      "tests/artifacts/baselines/dataframe/dataframe_lazy_feature_pipeline.txt",
+      "tests/artifacts/baselines/dataframe/dataframe_serialization_snapshot.txt",
+      "tests/artifacts/baselines/dataframe/dataframe_structure_query_trace.txt",
+      "tests/artifacts/baselines/dataframe/dataframe_transform_snapshot.txt",
+      "tests/artifacts/baselines/dataframe/dataframe_value_bars.png",
+      "tests/artifacts/baselines/dataframe/dataframe_vecframe_compute_trace.txt",
+      "tests/artifacts/baselines/dataframe/dataframe_window_risk_analysis.txt"
+    ],
+    "current_artifacts": [
+      "tests/artifacts/current/dataframe/dataframe_correlation_matrix_heatmap.png",
+      "tests/artifacts/current/dataframe/dataframe_csv_statistics.txt",
+      "tests/artifacts/current/dataframe/dataframe_descriptive_statistics.txt",
+      "tests/artifacts/current/dataframe/dataframe_grouped_kpi_pipeline.txt",
+      "tests/artifacts/current/dataframe/dataframe_join_pivot_query_trace.txt",
+      "tests/artifacts/current/dataframe/dataframe_lazy_feature_pipeline.txt",
+      "tests/artifacts/current/dataframe/dataframe_serialization_snapshot.txt",
+      "tests/artifacts/current/dataframe/dataframe_structure_query_trace.txt",
+      "tests/artifacts/current/dataframe/dataframe_transform_snapshot.txt",
+      "tests/artifacts/current/dataframe/dataframe_value_bars.png",
+      "tests/artifacts/current/dataframe/dataframe_vecframe_compute_trace.txt",
+      "tests/artifacts/current/dataframe/dataframe_window_risk_analysis.txt"
+    ],
+    "evidence_tests": [
+      "tests/lua/evidence/test_dataframe_evidence.lua"
+    ],
+    "golden_tests": [
+      "tests/lua/golden/test_dataframe_golden.lua"
+    ]
+  },
+  "dsp": {
+    "baseline_artifacts": [
+      "tests/artifacts/baselines/dsp/dsp_bandpass_filtered.png",
+      "tests/artifacts/baselines/dsp/dsp_bandpass_source.png",
+      "tests/artifacts/baselines/dsp/dsp_fixture_spectrogram.png",
+      "tests/artifacts/baselines/dsp/dsp_fixture_waveform.png",
+      "tests/artifacts/baselines/dsp/dsp_highpass_filtered.png",
+      "tests/artifacts/baselines/dsp/dsp_highpass_source.png",
+      "tests/artifacts/baselines/dsp/dsp_lowpass_filtered.png",
+      "tests/artifacts/baselines/dsp/dsp_lowpass_source.png",
+      "tests/artifacts/baselines/dsp/dsp_normalized_peak_09.wav",
+      "tests/artifacts/baselines/dsp/dsp_offline_lowpass_1khz.wav",
+      "tests/artifacts/baselines/dsp/dsp_waveform_sawtooth.png",
+      "tests/artifacts/baselines/dsp/dsp_waveform_sine.png",
+      "tests/artifacts/baselines/dsp/dsp_waveform_square.png",
+      "tests/artifacts/baselines/dsp/dsp_waveform_triangle.png",
+      "tests/artifacts/baselines/dsp/dsp_waveform_white_noise.png",
+      "tests/artifacts/baselines/dsp/normalized.wav",
+      "tests/artifacts/baselines/dsp/offline_chain.wav",
+      "tests/artifacts/baselines/dsp/spectrogram.png",
+      "tests/artifacts/baselines/dsp/waveform.png"
+    ],
+    "current_artifacts": [
+      "tests/artifacts/current/dsp/dsp_bandpass_filtered.png",
+      "tests/artifacts/current/dsp/dsp_bandpass_source.png",
+      "tests/artifacts/current/dsp/dsp_fixture_spectrogram.png",
+      "tests/artifacts/current/dsp/dsp_fixture_waveform.png",
+      "tests/artifacts/current/dsp/dsp_highpass_filtered.png",
+      "tests/artifacts/current/dsp/dsp_highpass_source.png",
+      "tests/artifacts/current/dsp/dsp_lowpass_filtered.png",
+      "tests/artifacts/current/dsp/dsp_lowpass_source.png",
+      "tests/artifacts/current/dsp/dsp_normalized_peak_09.wav",
+      "tests/artifacts/current/dsp/dsp_offline_lowpass_1khz.wav",
+      "tests/artifacts/current/dsp/dsp_waveform_sawtooth.png",
+      "tests/artifacts/current/dsp/dsp_waveform_sine.png",
+      "tests/artifacts/current/dsp/dsp_waveform_square.png",
+      "tests/artifacts/current/dsp/dsp_waveform_triangle.png",
+      "tests/artifacts/current/dsp/dsp_waveform_white_noise.png",
+      "tests/artifacts/current/dsp/normalized.wav",
+      "tests/artifacts/current/dsp/offline_chain.wav",
+      "tests/artifacts/current/dsp/spectrogram.png",
+      "tests/artifacts/current/dsp/waveform.png"
+    ],
+    "evidence_tests": [
+      "tests/lua/evidence/test_dsp_evidence.lua"
+    ],
+    "golden_tests": [
+      "tests/lua/golden/test_dsp_golden.lua"
+    ]
+  },
+  "ecs": {
+    "baseline_artifacts": [
+      "tests/artifacts/baselines/ecs/ecs_entity_lifecycle_snapshot.txt"
+    ],
+    "current_artifacts": [
+      "tests/artifacts/current/ecs/ecs_blueprint_snapshot.txt",
+      "tests/artifacts/current/ecs/ecs_component_query_snapshot.txt",
+      "tests/artifacts/current/ecs/ecs_entity_lifecycle_snapshot.txt",
+      "tests/artifacts/current/ecs/ecs_hierarchy_relation_observer_trace.txt",
+      "tests/artifacts/current/ecs/ecs_system_snapshot_trace.txt",
+      "tests/artifacts/current/ecs/ecs_tag_layer_snapshot.txt"
+    ],
+    "evidence_tests": [
+      "tests/lua/evidence/test_ecs_evidence.lua"
+    ],
+    "golden_tests": [
+      "tests/lua/golden/test_ecs_golden.lua"
+    ]
+  },
+  "effect": {
+    "baseline_artifacts": [
+      "tests/artifacts/baselines/effect/effect_capture_preset_state.json",
+      "tests/artifacts/baselines/effect/effect_custom_shader_pass_map.png",
+      "tests/artifacts/baselines/effect/effect_enable_dedup_matrix.png",
+      "tests/artifacts/baselines/effect/effect_image_chain_parameters.png",
+      "tests/artifacts/baselines/effect/effect_image_chain_state.json",
+      "tests/artifacts/baselines/effect/effect_parameter_response_curves.png",
+      "tests/artifacts/baselines/effect/effect_preset_stack_contact_sheet.png",
+      "tests/artifacts/baselines/effect/effect_stack_order_lookbook.gif",
+      "tests/artifacts/baselines/effect/effect_stack_pipeline.gif",
+      "tests/artifacts/baselines/effect/effect_stack_state.json",
+      "tests/artifacts/baselines/effect/effect_type_catalog.png"
+    ],
+    "current_artifacts": [
+      "tests/artifacts/current/effect/effect_capture_preset_state.json",
+      "tests/artifacts/current/effect/effect_custom_shader_pass_map.png",
+      "tests/artifacts/current/effect/effect_enable_dedup_matrix.png",
+      "tests/artifacts/current/effect/effect_image_chain_parameters.png",
+      "tests/artifacts/current/effect/effect_image_chain_state.json",
+      "tests/artifacts/current/effect/effect_parameter_response_curves.png",
+      "tests/artifacts/current/effect/effect_preset_stack_contact_sheet.png",
+      "tests/artifacts/current/effect/effect_stack_order_lookbook.gif",
+      "tests/artifacts/current/effect/effect_stack_pipeline.gif",
+      "tests/artifacts/current/effect/effect_stack_state.json",
+      "tests/artifacts/current/effect/effect_type_catalog.png"
+    ],
+    "evidence_tests": [
+      "tests/lua/evidence/test_effect_evidence.lua"
+    ],
+    "golden_tests": [
+      "tests/lua/golden/test_effect_golden.lua"
+    ]
+  },
+  "flownet": {
+    "baseline_artifacts": [
+      "tests/artifacts/baselines/flownet/flownet_queue_overflow.png",
+      "tests/artifacts/baselines/flownet/flownet_route_constraints.png",
+      "tests/artifacts/baselines/flownet/flownet_supply_conversion.png",
+      "tests/artifacts/baselines/flownet/flownet_topology_algorithms.png",
+      "tests/artifacts/baselines/flownet/flownet_transit_capacity.png"
+    ],
+    "current_artifacts": [
+      "tests/artifacts/current/flownet/flownet_queue_overflow.png",
+      "tests/artifacts/current/flownet/flownet_route_constraints.png",
+      "tests/artifacts/current/flownet/flownet_supply_conversion.png",
+      "tests/artifacts/current/flownet/flownet_topology_algorithms.png",
+      "tests/artifacts/current/flownet/flownet_transit_capacity.png"
+    ],
+    "evidence_tests": [
+      "tests/lua/evidence/test_flownet_evidence.lua"
+    ],
+    "golden_tests": [
+      "tests/lua/golden/test_flownet_golden.lua"
+    ]
+  },
+  "globe": {
+    "baseline_artifacts": [
+      "tests/artifacts/baselines/globe/globe_camera_fog_registry_trace.txt",
+      "tests/artifacts/baselines/globe/globe_camera_lod_panels.png",
+      "tests/artifacts/baselines/globe/globe_great_circle_metrics.txt",
+      "tests/artifacts/baselines/globe/globe_great_circle_route.png",
+      "tests/artifacts/baselines/globe/globe_layer_heat_fog_composite.png",
+      "tests/artifacts/baselines/globe/globe_marker_pick_surface.png",
+      "tests/artifacts/baselines/globe/globe_province_projection.png",
+      "tests/artifacts/baselines/globe/globe_region_trace.txt",
+      "tests/artifacts/baselines/globe/globe_semantic_region_holes.png",
+      "tests/artifacts/baselines/globe/globe_topology_cost_route.png"
+    ],
+    "current_artifacts": [
+      "tests/artifacts/current/globe/globe_camera_fog_registry_trace.txt",
+      "tests/artifacts/current/globe/globe_camera_lod_panels.png",
+      "tests/artifacts/current/globe/globe_great_circle_metrics.txt",
+      "tests/artifacts/current/globe/globe_great_circle_route.png",
+      "tests/artifacts/current/globe/globe_layer_heat_fog_composite.png",
+      "tests/artifacts/current/globe/globe_marker_pick_surface.png",
+      "tests/artifacts/current/globe/globe_province_projection.png",
+      "tests/artifacts/current/globe/globe_region_trace.txt",
+      "tests/artifacts/current/globe/globe_semantic_region_holes.png",
+      "tests/artifacts/current/globe/globe_topology_cost_route.png"
+    ],
+    "evidence_tests": [
+      "tests/lua/evidence/test_globe_evidence.lua"
+    ],
+    "golden_tests": [
+      "tests/lua/golden/test_globe_golden.lua"
+    ]
+  },
+  "html": {
+    "baseline_artifacts": [
+      "tests/artifacts/baselines/html/html_click_event_trace.txt",
+      "tests/artifacts/baselines/html/html_document_markup_snapshot.txt",
+      "tests/artifacts/baselines/html/html_element_state.json",
+      "tests/artifacts/baselines/html/html_mutation_snapshot.txt",
+      "tests/artifacts/baselines/html/html_query_viewport_snapshot.json"
+    ],
+    "current_artifacts": [
+      "tests/artifacts/current/html/html_click_event_trace.txt",
+      "tests/artifacts/current/html/html_document_markup_snapshot.txt",
+      "tests/artifacts/current/html/html_element_state.json",
+      "tests/artifacts/current/html/html_lifecycle_trace.txt",
+      "tests/artifacts/current/html/html_loaded_document_snapshot.txt",
+      "tests/artifacts/current/html/html_mutation_snapshot.txt",
+      "tests/artifacts/current/html/html_query_viewport_snapshot.json",
+      "tests/artifacts/current/html/html_support_render_trace.txt"
+    ],
+    "evidence_tests": [
+      "tests/lua/evidence/test_html_evidence.lua"
+    ],
+    "golden_tests": [
+      "tests/lua/golden/test_html_golden.lua"
+    ]
+  },
+  "image": {
+    "baseline_artifacts": [
+      "tests/artifacts/baselines/image/gradient_horizontal.png",
+      "tests/artifacts/baselines/image/gradient_vertical.png",
+      "tests/artifacts/baselines/image/image_blur_crop.png",
+      "tests/artifacts/baselines/image/image_cropped_grayscale.png",
+      "tests/artifacts/baselines/image/image_drawing_primitives_scene.png",
+      "tests/artifacts/baselines/image/image_effect_base.png",
+      "tests/artifacts/baselines/image/image_effect_grayscale.png",
+      "tests/artifacts/baselines/image/image_effect_invert.png",
+      "tests/artifacts/baselines/image/image_effect_posterize.png",
+      "tests/artifacts/baselines/image/image_layered_merge_scene.png",
+      "tests/artifacts/baselines/image/image_layered_opacity_visibility.png",
+      "tests/artifacts/baselines/image/image_layered_swapped.limg",
+      "tests/artifacts/baselines/image/image_low_level_filtered.png",
+      "tests/artifacts/baselines/image/image_low_level_raw_clone.png",
+      "tests/artifacts/baselines/image/image_low_level_region.png",
+      "tests/artifacts/baselines/image/image_paste_composite.png",
+      "tests/artifacts/baselines/image/image_pixel_grid.png",
+      "tests/artifacts/baselines/image/image_resize_nearest.png",
+      "tests/artifacts/baselines/image/image_resize_smooth.png",
+      "tests/artifacts/baselines/image/image_shape_concentric_circles.png",
+      "tests/artifacts/baselines/image/image_shape_radiating_lines.png",
+      "tests/artifacts/baselines/image/image_shape_rect_grid.png",
+      "tests/artifacts/baselines/image/image_sharpen_crop.png",
+      "tests/artifacts/baselines/image/image_threshold_128.png",
+      "tests/artifacts/baselines/image/image_transform_flip_horizontal.png",
+      "tests/artifacts/baselines/image/image_transform_flip_vertical.png",
+      "tests/artifacts/baselines/image/image_transform_original.png",
+      "tests/artifacts/baselines/image/image_transform_rotate90.png",
+      "tests/artifacts/baselines/image/tileset_128x128.png"
+    ],
+    "current_artifacts": [
+      "tests/artifacts/current/image/gradient_horizontal.png",
+      "tests/artifacts/current/image/gradient_vertical.png",
+      "tests/artifacts/current/image/image_animated_pulse_sequence.gif",
+      "tests/artifacts/current/image/image_blur_crop.png",
+      "tests/artifacts/current/image/image_cropped_grayscale.png",
+      "tests/artifacts/current/image/image_drawing_primitives_scene.png",
+      "tests/artifacts/current/image/image_effect_base.png",
+      "tests/artifacts/current/image/image_effect_grayscale.png",
+      "tests/artifacts/current/image/image_effect_invert.png",
+      "tests/artifacts/current/image/image_effect_posterize.png",
+      "tests/artifacts/current/image/image_layered_merge_scene.png",
+      "tests/artifacts/current/image/image_layered_opacity_visibility.png",
+      "tests/artifacts/current/image/image_layered_swapped.limg",
+      "tests/artifacts/current/image/image_low_level_filtered.png",
+      "tests/artifacts/current/image/image_low_level_pipeline_trace.txt",
+      "tests/artifacts/current/image/image_low_level_raw_clone.png",
+      "tests/artifacts/current/image/image_low_level_region.png",
+      "tests/artifacts/current/image/image_paste_composite.png",
+      "tests/artifacts/current/image/image_pixel_grid.png",
+      "tests/artifacts/current/image/image_province_grid_source.png",
+      "tests/artifacts/current/image/image_province_palette_topology.png",
+      "tests/artifacts/current/image/image_province_palette_topology_trace.txt",
+      "tests/artifacts/current/image/image_resize_nearest.png",
+      "tests/artifacts/current/image/image_resize_smooth.png",
+      "tests/artifacts/current/image/image_shape_concentric_circles.png",
+      "tests/artifacts/current/image/image_shape_radiating_lines.png",
+      "tests/artifacts/current/image/image_shape_rect_grid.png",
+      "tests/artifacts/current/image/image_sharpen_crop.png",
+      "tests/artifacts/current/image/image_threshold_128.png",
+      "tests/artifacts/current/image/image_transform_flip_horizontal.png",
+      "tests/artifacts/current/image/image_transform_flip_vertical.png",
+      "tests/artifacts/current/image/image_transform_original.png",
+      "tests/artifacts/current/image/image_transform_rotate90.png",
+      "tests/artifacts/current/image/tileset_128x128.png"
+    ],
+    "evidence_tests": [
+      "tests/lua/evidence/test_image_evidence.lua"
+    ],
+    "golden_tests": [
+      "tests/lua/golden/test_image_golden.lua"
+    ]
+  },
+  "layout": {
+    "baseline_artifacts": [
+      "tests/artifacts/baselines/layout/layout_center_in_area.png",
+      "tests/artifacts/baselines/layout/layout_dag_pipeline.png",
+      "tests/artifacts/baselines/layout/layout_force_cluster.png",
+      "tests/artifacts/baselines/layout/layout_snap_to_grid.png",
+      "tests/artifacts/baselines/layout/layout_tree_hierarchy.png",
+      "tests/artifacts/baselines/ui/layout_dashboard_compact_960x540.png",
+      "tests/artifacts/baselines/ui/layout_dashboard_desktop_1280x720.png",
+      "tests/artifacts/baselines/ui/layout_dashboard_fixture.png",
+      "tests/artifacts/baselines/ui/layout_diplomacy_fixture.png",
+      "tests/artifacts/baselines/ui/layout_gallery_manifest.txt",
+      "tests/artifacts/baselines/ui/layout_inventory_fixture.png",
+      "tests/artifacts/baselines/ui/layout_main_menu_fixture.png",
+      "tests/artifacts/baselines/ui/layout_rpg_inventory_1280x720.png",
+      "tests/artifacts/baselines/ui/layout_settings_desktop_1366x768.png",
+      "tests/artifacts/baselines/ui/layout_settings_fixture.png",
+      "tests/artifacts/baselines/ui/layout_settings_ultrawide_1920x1080.png",
+      "tests/artifacts/baselines/ui/layout_strategy_diplomacy_1400x800.png"
+    ],
+    "current_artifacts": [
+      "tests/artifacts/current/layout/layout_center_in_area.png",
+      "tests/artifacts/current/layout/layout_dag_pipeline.png",
+      "tests/artifacts/current/layout/layout_force_cluster.png",
+      "tests/artifacts/current/layout/layout_snap_to_grid.png",
+      "tests/artifacts/current/layout/layout_tree_hierarchy.png",
+      "tests/artifacts/current/ui/layout_dashboard_compact_960x540.png",
+      "tests/artifacts/current/ui/layout_dashboard_desktop_1280x720.png",
+      "tests/artifacts/current/ui/layout_dashboard_fixture.png",
+      "tests/artifacts/current/ui/layout_diplomacy_fixture.png",
+      "tests/artifacts/current/ui/layout_gallery_manifest.txt",
+      "tests/artifacts/current/ui/layout_inventory_fixture.png",
+      "tests/artifacts/current/ui/layout_main_menu_fixture.png",
+      "tests/artifacts/current/ui/layout_rpg_inventory_1280x720.png",
+      "tests/artifacts/current/ui/layout_settings_desktop_1366x768.png",
+      "tests/artifacts/current/ui/layout_settings_fixture.png",
+      "tests/artifacts/current/ui/layout_settings_ultrawide_1920x1080.png",
+      "tests/artifacts/current/ui/layout_strategy_diplomacy_1400x800.png"
+    ],
+    "evidence_tests": [
+      "tests/lua/evidence/test_layout_evidence.lua"
+    ],
+    "golden_tests": [
+      "tests/lua/golden/test_layout_golden.lua"
+    ]
+  },
+  "light": {
+    "baseline_artifacts": [
+      "tests/artifacts/baselines/light/light_color_mix.png",
+      "tests/artifacts/baselines/light/light_cone_spotlight.png",
+      "tests/artifacts/baselines/light/light_falloff.png",
+      "tests/artifacts/baselines/light/light_normal_map.png",
+      "tests/artifacts/baselines/light/light_shadow_occlusion.png",
+      "tests/artifacts/baselines/light/light_spotlight_sweep.gif"
+    ],
+    "current_artifacts": [
+      "tests/artifacts/current/light/light_color_mix.png",
+      "tests/artifacts/current/light/light_cone_spotlight.png",
+      "tests/artifacts/current/light/light_falloff.png",
+      "tests/artifacts/current/light/light_group_transition_flicker_trace.txt",
+      "tests/artifacts/current/light/light_normal_map.png",
+      "tests/artifacts/current/light/light_occluder_left.png",
+      "tests/artifacts/current/light/light_occluder_right.png",
+      "tests/artifacts/current/light/light_shadow_occlusion.png",
+      "tests/artifacts/current/light/light_spotlight_sweep.gif",
+      "tests/artifacts/current/light/light_vending_machine_occlusion.png"
+    ],
+    "evidence_tests": [
+      "tests/lua/evidence/test_light_evidence.lua"
+    ],
+    "golden_tests": [
+      "tests/lua/golden/test_light_golden.lua"
+    ]
+  },
+  "mapblock": {
+    "baseline_artifacts": [
+      "tests/artifacts/baselines/mapblock/mapblock_edge_interior_constraints.png",
+      "tests/artifacts/baselines/mapblock/mapblock_generation_timeline.gif",
+      "tests/artifacts/baselines/mapblock/mapblock_multilevel_layers.png",
+      "tests/artifacts/baselines/mapblock/mapblock_result_contract_histogram.png",
+      "tests/artifacts/baselines/mapblock/mapblock_script_pipeline_storyboard.png",
+      "tests/artifacts/baselines/mapblock/mapblock_scripted_paint_diagnostics.png",
+      "tests/artifacts/baselines/mapblock/mapblock_socket_constraints.png",
+      "tests/artifacts/baselines/mapblock/mapblock_solver_footprints.png",
+      "tests/artifacts/baselines/mapblock/mapblock_strategic_tactical_split.png",
+      "tests/artifacts/baselines/mapblock/mapblock_transform_export.png",
+      "tests/artifacts/baselines/mapblock/mapblock_two_level_cutaway.png"
+    ],
+    "current_artifacts": [
+      "tests/artifacts/current/mapblock/mapblock_detail_level0.png",
+      "tests/artifacts/current/mapblock/mapblock_detail_level1.png",
+      "tests/artifacts/current/mapblock/mapblock_edge_interior_constraints.png",
+      "tests/artifacts/current/mapblock/mapblock_generation_timeline.gif",
+      "tests/artifacts/current/mapblock/mapblock_macro_placement.png",
+      "tests/artifacts/current/mapblock/mapblock_multilevel_layers.png",
+      "tests/artifacts/current/mapblock/mapblock_result_contract_histogram.png",
+      "tests/artifacts/current/mapblock/mapblock_script_pipeline_storyboard.png",
+      "tests/artifacts/current/mapblock/mapblock_scripted_paint_diagnostics.png",
+      "tests/artifacts/current/mapblock/mapblock_socket_constraints.png",
+      "tests/artifacts/current/mapblock/mapblock_solver_footprints.png",
+      "tests/artifacts/current/mapblock/mapblock_strategic_tactical_split.png",
+      "tests/artifacts/current/mapblock/mapblock_transform_export.png",
+      "tests/artifacts/current/mapblock/mapblock_two_level_cutaway.png",
+      "tests/artifacts/current/mapblock/mapblock_two_stage_manifest.json"
+    ],
+    "evidence_tests": [
+      "tests/lua/evidence/test_mapblock_evidence.lua"
+    ],
+    "golden_tests": [
+      "tests/lua/golden/test_mapblock_golden.lua"
+    ]
+  },
+  "math": {
+    "baseline_artifacts": [
+      "tests/artifacts/baselines/math/math_bezier_crossing_pair.png",
+      "tests/artifacts/baselines/math/math_bezier_cubic_showcase.png",
+      "tests/artifacts/baselines/math/math_bezier_cubic_tangent.png",
+      "tests/artifacts/baselines/math/math_bezier_quadratic.png",
+      "tests/artifacts/baselines/math/math_bresenham_rays.png",
+      "tests/artifacts/baselines/math/math_distance_heatmap.png",
+      "tests/artifacts/baselines/math/math_easing_apply_inout_quad.png",
+      "tests/artifacts/baselines/math/math_easing_apply_linear.png",
+      "tests/artifacts/baselines/math/math_easing_apply_out_bounce.png",
+      "tests/artifacts/baselines/math/math_easing_apply_out_elastic.png",
+      "tests/artifacts/baselines/math/math_easing_in_cubic.png",
+      "tests/artifacts/baselines/math/math_easing_in_quad.png",
+      "tests/artifacts/baselines/math/math_easing_inout_quad.png",
+      "tests/artifacts/baselines/math/math_easing_linear.png",
+      "tests/artifacts/baselines/math/math_easing_out_bounce.png",
+      "tests/artifacts/baselines/math/math_easing_out_cubic.png",
+      "tests/artifacts/baselines/math/math_easing_out_quad.png",
+      "tests/artifacts/baselines/math/math_line_intersection_report.txt",
+      "tests/artifacts/baselines/math/math_polygon_algorithms_report.txt",
+      "tests/artifacts/baselines/math/math_polygon_metrics.png",
+      "tests/artifacts/baselines/math/math_segment_intersections.png",
+      "tests/artifacts/baselines/math/math_vec2_unit_circle.png"
+    ],
+    "current_artifacts": [
+      "tests/artifacts/current/math/math_bezier_crossing_pair.png",
+      "tests/artifacts/current/math/math_bezier_cubic_showcase.png",
+      "tests/artifacts/current/math/math_bezier_cubic_tangent.png",
+      "tests/artifacts/current/math/math_bezier_quadratic.png",
+      "tests/artifacts/current/math/math_bresenham_rays.png",
+      "tests/artifacts/current/math/math_distance_heatmap.png",
+      "tests/artifacts/current/math/math_easing_apply_inout_quad.png",
+      "tests/artifacts/current/math/math_easing_apply_linear.png",
+      "tests/artifacts/current/math/math_easing_apply_out_bounce.png",
+      "tests/artifacts/current/math/math_easing_apply_out_elastic.png",
+      "tests/artifacts/current/math/math_easing_in_cubic.png",
+      "tests/artifacts/current/math/math_easing_in_quad.png",
+      "tests/artifacts/current/math/math_easing_inout_quad.png",
+      "tests/artifacts/current/math/math_easing_linear.png",
+      "tests/artifacts/current/math/math_easing_out_bounce.png",
+      "tests/artifacts/current/math/math_easing_out_cubic.png",
+      "tests/artifacts/current/math/math_easing_out_quad.png",
+      "tests/artifacts/current/math/math_line_intersection_report.txt",
+      "tests/artifacts/current/math/math_polygon_algorithms_report.txt",
+      "tests/artifacts/current/math/math_polygon_metrics.png",
+      "tests/artifacts/current/math/math_segment_intersections.png",
+      "tests/artifacts/current/math/math_vec2_unit_circle.png"
+    ],
+    "evidence_tests": [
+      "tests/lua/evidence/test_math_evidence.lua"
+    ],
+    "golden_tests": [
+      "tests/lua/golden/test_math_golden.lua"
+    ]
+  },
+  "minimap": {
+    "baseline_artifacts": [
+      "tests/artifacts/baselines/minimap/minimap_blips.png",
+      "tests/artifacts/baselines/minimap/minimap_circular_border.png",
+      "tests/artifacts/baselines/minimap/minimap_floor_level0.png",
+      "tests/artifacts/baselines/minimap/minimap_floor_level1_active.png",
+      "tests/artifacts/baselines/minimap/minimap_floor_level2.png",
+      "tests/artifacts/baselines/minimap/minimap_fog.png",
+      "tests/artifacts/baselines/minimap/minimap_radar_sweep.png",
+      "tests/artifacts/baselines/minimap/minimap_terrain.png",
+      "tests/artifacts/baselines/minimap/minimap_unexplored_mask.png",
+      "tests/artifacts/baselines/minimap/minimap_viewport_bounds.png",
+      "tests/artifacts/baselines/minimap/minimap_waypoints.png",
+      "tests/artifacts/baselines/minimap/minimap_zoomed_sector.png"
+    ],
+    "current_artifacts": [
+      "tests/artifacts/current/minimap/minimap_blips.png",
+      "tests/artifacts/current/minimap/minimap_circular_border.png",
+      "tests/artifacts/current/minimap/minimap_command_overlay_route.png",
+      "tests/artifacts/current/minimap/minimap_floor_level0.png",
+      "tests/artifacts/current/minimap/minimap_floor_level1_active.png",
+      "tests/artifacts/current/minimap/minimap_floor_level2.png",
+      "tests/artifacts/current/minimap/minimap_fog.png",
+      "tests/artifacts/current/minimap/minimap_radar_sweep.png",
+      "tests/artifacts/current/minimap/minimap_terrain.png",
+      "tests/artifacts/current/minimap/minimap_unexplored_mask.png",
+      "tests/artifacts/current/minimap/minimap_viewport_bounds.png",
+      "tests/artifacts/current/minimap/minimap_waypoints.png",
+      "tests/artifacts/current/minimap/minimap_zoomed_sector.png"
+    ],
+    "evidence_tests": [
+      "tests/lua/evidence/test_minimap_evidence.lua"
+    ],
+    "golden_tests": [
+      "tests/lua/golden/test_minimap_golden.lua"
+    ]
+  },
+  "overlay": {
+    "baseline_artifacts": [
+      "tests/artifacts/baselines/overlay/overlay_atmosphere_compositor.png",
+      "tests/artifacts/baselines/overlay/overlay_environment_layers.gif",
+      "tests/artifacts/baselines/overlay/overlay_flash_shake_fade_composite.gif",
+      "tests/artifacts/baselines/overlay/overlay_screen_effects_timeline.gif",
+      "tests/artifacts/baselines/overlay/overlay_storm_front_wind_sweep.gif",
+      "tests/artifacts/baselines/overlay/overlay_transition_mask_atlas.png",
+      "tests/artifacts/baselines/overlay/overlay_transition_modes.gif",
+      "tests/artifacts/baselines/overlay/overlay_weather_state_trace.json",
+      "tests/artifacts/baselines/overlay/overlay_weather_wind_field.png"
+    ],
+    "current_artifacts": [
+      "tests/artifacts/current/overlay/overlay_atmosphere_compositor.png",
+      "tests/artifacts/current/overlay/overlay_environment_layers.gif",
+      "tests/artifacts/current/overlay/overlay_flash_shake_fade_composite.gif",
+      "tests/artifacts/current/overlay/overlay_screen_effects_timeline.gif",
+      "tests/artifacts/current/overlay/overlay_storm_front_wind_sweep.gif",
+      "tests/artifacts/current/overlay/overlay_transition_mask_atlas.png",
+      "tests/artifacts/current/overlay/overlay_transition_modes.gif",
+      "tests/artifacts/current/overlay/overlay_weather_state_trace.json",
+      "tests/artifacts/current/overlay/overlay_weather_wind_field.png"
+    ],
+    "evidence_tests": [
+      "tests/lua/evidence/test_overlay_evidence.lua"
+    ],
+    "golden_tests": [
+      "tests/lua/golden/test_overlay_golden.lua"
+    ]
+  },
+  "parallax": {
+    "baseline_artifacts": [
+      "tests/artifacts/baselines/parallax/parallax_autoscroll_motion.gif",
+      "tests/artifacts/baselines/parallax/parallax_depth_scroll_factors.png",
+      "tests/artifacts/baselines/parallax/parallax_effect_tint_motion_stretch.png",
+      "tests/artifacts/baselines/parallax/parallax_preset_layer_profiles.png",
+      "tests/artifacts/baselines/parallax/parallax_tiling_coverage_stats.png",
+      "tests/artifacts/baselines/parallax/parallax_z_sorted_set.png"
+    ],
+    "current_artifacts": [
+      "tests/artifacts/current/parallax/parallax_autoscroll_motion.gif",
+      "tests/artifacts/current/parallax/parallax_depth_scroll_factors.png",
+      "tests/artifacts/current/parallax/parallax_effect_tint_motion_stretch.png",
+      "tests/artifacts/current/parallax/parallax_preset_layer_profiles.png",
+      "tests/artifacts/current/parallax/parallax_tiling_coverage_stats.png",
+      "tests/artifacts/current/parallax/parallax_z_sorted_set.png"
+    ],
+    "evidence_tests": [
+      "tests/lua/evidence/test_parallax_evidence.lua"
+    ],
+    "golden_tests": [
+      "tests/lua/golden/test_parallax_golden.lua"
+    ]
+  },
+  "particle": {
+    "baseline_artifacts": [
+      "tests/artifacts/baselines/particle/particle_archetype_showcase.png",
+      "tests/artifacts/baselines/particle/particle_attractor_field.gif",
+      "tests/artifacts/baselines/particle/particle_bounds_bounce_box.gif",
+      "tests/artifacts/baselines/particle/particle_control_state_timeline.gif",
+      "tests/artifacts/baselines/particle/particle_emission_area_shapes.png",
+      "tests/artifacts/baselines/particle/particle_lifecycle_chart.png",
+      "tests/artifacts/baselines/particle/particle_paint_composite.png",
+      "tests/artifacts/baselines/particle/particle_shape_size_keyframes.png",
+      "tests/artifacts/baselines/particle/particle_subemitter_death_burst.gif",
+      "tests/artifacts/baselines/particle/particle_trail_ribbon_decay.gif",
+      "tests/artifacts/baselines/particle/particle_velocity_burst.gif"
+    ],
+    "current_artifacts": [
+      "tests/artifacts/current/particle/particle_archetype_showcase.png",
+      "tests/artifacts/current/particle/particle_attractor_field.gif",
+      "tests/artifacts/current/particle/particle_bounds_bounce_box.gif",
+      "tests/artifacts/current/particle/particle_control_state_timeline.gif",
+      "tests/artifacts/current/particle/particle_emission_area_shapes.png",
+      "tests/artifacts/current/particle/particle_lifecycle_chart.png",
+      "tests/artifacts/current/particle/particle_paint_composite.png",
+      "tests/artifacts/current/particle/particle_shape_size_keyframes.png",
+      "tests/artifacts/current/particle/particle_subemitter_death_burst.gif",
+      "tests/artifacts/current/particle/particle_trail_ribbon_decay.gif",
+      "tests/artifacts/current/particle/particle_velocity_burst.gif"
+    ],
+    "evidence_tests": [
+      "tests/lua/evidence/test_particle_evidence.lua"
+    ],
+    "golden_tests": [
+      "tests/lua/golden/test_particle_golden.lua"
+    ]
+  },
+  "pathfind": {
+    "baseline_artifacts": [
+      "tests/artifacts/baselines/pathfind/astar_basic.png",
+      "tests/artifacts/baselines/pathfind/pathfind_api_surface.png",
+      "tests/artifacts/baselines/pathfind/pathfind_astar_gap_trace.json",
+      "tests/artifacts/baselines/pathfind/pathfind_flow_field_samples.json",
+      "tests/artifacts/baselines/pathfind/pathfind_weighted_route_trace.json",
+      "tests/artifacts/baselines/pathfind/weighted_route.png"
+    ],
+    "current_artifacts": [
+      "tests/artifacts/current/pathfind/astar_basic.png",
+      "tests/artifacts/current/pathfind/pathfind_advanced_api_trace.txt",
+      "tests/artifacts/current/pathfind/pathfind_api_surface.png",
+      "tests/artifacts/current/pathfind/pathfind_astar_gap_trace.json",
+      "tests/artifacts/current/pathfind/pathfind_flow_field_samples.json",
+      "tests/artifacts/current/pathfind/pathfind_weighted_route_trace.json",
+      "tests/artifacts/current/pathfind/weighted_route.png"
+    ],
+    "evidence_tests": [
+      "tests/lua/evidence/test_pathfind_evidence.lua"
+    ],
+    "golden_tests": [
+      "tests/lua/golden/test_pathfind_golden.lua"
+    ]
+  },
+  "physics": {
+    "baseline_artifacts": [
+      "tests/artifacts/baselines/physics/physics_collision_bands.png",
+      "tests/artifacts/baselines/physics/physics_constraint_mouse_slider.gif",
+      "tests/artifacts/baselines/physics/physics_gravity_drop.png",
+      "tests/artifacts/baselines/physics/physics_gravity_drop_timeline_5s.gif",
+      "tests/artifacts/baselines/physics/physics_joint_distance_debug.png",
+      "tests/artifacts/baselines/physics/physics_joint_revolute_debug.png",
+      "tests/artifacts/baselines/physics/physics_joint_wheel_debug.png",
+      "tests/artifacts/baselines/physics/physics_one_way_sensor_timeline.gif",
+      "tests/artifacts/baselines/physics/physics_query_map.png",
+      "tests/artifacts/baselines/physics/physics_raycast_filter_lanes.png",
+      "tests/artifacts/baselines/physics/physics_sleep_flags.png",
+      "tests/artifacts/baselines/physics/physics_terrain_crater_raster.png",
+      "tests/artifacts/baselines/physics/physics_terrain_debris_crater.png",
+      "tests/artifacts/baselines/physics/physics_velocity_tracks.png",
+      "tests/artifacts/baselines/physics/physics_zone_priority_fields.png"
+    ],
+    "current_artifacts": [
+      "tests/artifacts/current/physics/physics_collision_bands.png",
+      "tests/artifacts/current/physics/physics_constraint_mouse_slider.gif",
+      "tests/artifacts/current/physics/physics_gravity_drop.png",
+      "tests/artifacts/current/physics/physics_gravity_drop_timeline_5s.gif",
+      "tests/artifacts/current/physics/physics_joint_distance_debug.png",
+      "tests/artifacts/current/physics/physics_joint_revolute_debug.png",
+      "tests/artifacts/current/physics/physics_joint_wheel_debug.png",
+      "tests/artifacts/current/physics/physics_one_way_sensor_timeline.gif",
+      "tests/artifacts/current/physics/physics_query_map.png",
+      "tests/artifacts/current/physics/physics_query_trace.txt",
+      "tests/artifacts/current/physics/physics_raycast_filter_lanes.png",
+      "tests/artifacts/current/physics/physics_sleep_flags.png",
+      "tests/artifacts/current/physics/physics_terrain_crater_raster.png",
+      "tests/artifacts/current/physics/physics_terrain_debris_crater.png",
+      "tests/artifacts/current/physics/physics_velocity_tracks.png",
+      "tests/artifacts/current/physics/physics_zone_priority_fields.png"
+    ],
+    "evidence_tests": [
+      "tests/lua/evidence/test_physics_evidence.lua"
+    ],
+    "golden_tests": [
+      "tests/lua/golden/test_physics_golden.lua"
+    ]
+  },
+  "procgen": {
+    "baseline_artifacts": [
+      "tests/artifacts/baselines/procgen/procgen_bsp_dungeon.png",
+      "tests/artifacts/baselines/procgen/procgen_cellular_cave_map.png",
+      "tests/artifacts/baselines/procgen/procgen_cellular_cave_map_stats.txt",
+      "tests/artifacts/baselines/procgen/procgen_cellular_dense_map.png",
+      "tests/artifacts/baselines/procgen/procgen_cellular_flood.png",
+      "tests/artifacts/baselines/procgen/procgen_cellular_material_sandbox.gif",
+      "tests/artifacts/baselines/procgen/procgen_climate_biome_world.png",
+      "tests/artifacts/baselines/procgen/procgen_height_worldgraph.png",
+      "tests/artifacts/baselines/procgen/procgen_lsystem_river_settlement.png",
+      "tests/artifacts/baselines/procgen/procgen_noise_heightmap_colored.png",
+      "tests/artifacts/baselines/procgen/procgen_noise_map.png",
+      "tests/artifacts/baselines/procgen/procgen_noise_map_parallel.png",
+      "tests/artifacts/baselines/procgen/procgen_perlin_grid.json",
+      "tests/artifacts/baselines/procgen/procgen_perlin_strip.png",
+      "tests/artifacts/baselines/procgen/procgen_poisson_voronoi.png",
+      "tests/artifacts/baselines/procgen/procgen_prefab_dungeon_stamps.png",
+      "tests/artifacts/baselines/procgen/procgen_rooms_dungeon.png",
+      "tests/artifacts/baselines/procgen/procgen_seeded_noise_grid.json",
+      "tests/artifacts/baselines/procgen/procgen_simplex2d_strip.png",
+      "tests/artifacts/baselines/procgen/procgen_simplex3d_strip.png",
+      "tests/artifacts/baselines/procgen/procgen_simplex_grid.json",
+      "tests/artifacts/baselines/procgen/procgen_wfc_constraint_world.png",
+      "tests/artifacts/baselines/procgen/procgen_wfc_lsystem_names.png"
+    ],
+    "current_artifacts": [
+      "tests/artifacts/current/procgen/procgen_bsp_dungeon.png",
+      "tests/artifacts/current/procgen/procgen_cellular_cave_map.png",
+      "tests/artifacts/current/procgen/procgen_cellular_cave_map_stats.txt",
+      "tests/artifacts/current/procgen/procgen_cellular_dense_map.png",
+      "tests/artifacts/current/procgen/procgen_cellular_flood.png",
+      "tests/artifacts/current/procgen/procgen_cellular_material_sandbox.gif",
+      "tests/artifacts/current/procgen/procgen_climate_biome_world.png",
+      "tests/artifacts/current/procgen/procgen_extended_api_trace.txt",
+      "tests/artifacts/current/procgen/procgen_height_worldgraph.png",
+      "tests/artifacts/current/procgen/procgen_lsystem_river_settlement.png",
+      "tests/artifacts/current/procgen/procgen_noise_heightmap_colored.png",
+      "tests/artifacts/current/procgen/procgen_noise_map.png",
+      "tests/artifacts/current/procgen/procgen_noise_map_parallel.png",
+      "tests/artifacts/current/procgen/procgen_perlin_grid.json",
+      "tests/artifacts/current/procgen/procgen_perlin_strip.png",
+      "tests/artifacts/current/procgen/procgen_poisson_voronoi.png",
+      "tests/artifacts/current/procgen/procgen_prefab_dungeon_stamps.png",
+      "tests/artifacts/current/procgen/procgen_rooms_dungeon.png",
+      "tests/artifacts/current/procgen/procgen_seeded_noise_grid.json",
+      "tests/artifacts/current/procgen/procgen_simplex2d_strip.png",
+      "tests/artifacts/current/procgen/procgen_simplex3d_strip.png",
+      "tests/artifacts/current/procgen/procgen_simplex_grid.json",
+      "tests/artifacts/current/procgen/procgen_wfc_constraint_world.png",
+      "tests/artifacts/current/procgen/procgen_wfc_lsystem_names.png"
+    ],
+    "evidence_tests": [
+      "tests/lua/evidence/test_procgen_evidence.lua"
+    ],
+    "golden_tests": [
+      "tests/lua/golden/test_procgen_golden.lua"
+    ]
+  },
+  "province": {
+    "baseline_artifacts": [
+      "tests/artifacts/baselines/province/province_border_segments.png",
+      "tests/artifacts/baselines/province/province_capitals_labels_centroids.png",
+      "tests/artifacts/baselines/province/province_revision_timeline.gif",
+      "tests/artifacts/baselines/province/province_route_trace.png",
+      "tests/artifacts/baselines/province/province_sanitized_map.png",
+      "tests/artifacts/baselines/province/province_span_runs.png",
+      "tests/artifacts/baselines/province/province_strategy_modes.png",
+      "tests/artifacts/baselines/province/province_zoom_pick_view.png"
+    ],
+    "current_artifacts": [
+      "tests/artifacts/current/province/_fixture/province_color_map.png",
+      "tests/artifacts/current/province/_fixture/province_colors.csv",
+      "tests/artifacts/current/province/_fixture/province_data.toml",
+      "tests/artifacts/current/province/_fixture/province_marked_map.png",
+      "tests/artifacts/current/province/province_border_segments.png",
+      "tests/artifacts/current/province/province_capitals_centroids.png",
+      "tests/artifacts/current/province/province_capitals_labels_centroids.png",
+      "tests/artifacts/current/province/province_economy_properties_trace.txt",
+      "tests/artifacts/current/province/province_registry_topology_trace.txt",
+      "tests/artifacts/current/province/province_revision_timeline.gif",
+      "tests/artifacts/current/province/province_route_trace.png",
+      "tests/artifacts/current/province/province_sanitized_map.png",
+      "tests/artifacts/current/province/province_span_runs.png",
+      "tests/artifacts/current/province/province_strategy_modes.png",
+      "tests/artifacts/current/province/province_zoom_pick_view.png"
+    ],
+    "evidence_tests": [
+      "tests/lua/evidence/test_province_evidence.lua"
+    ],
+    "golden_tests": [
+      "tests/lua/golden/test_province_golden.lua"
+    ]
+  },
+  "raycaster": {
+    "baseline_artifacts": [
+      "tests/artifacts/baselines/raycaster/raycaster_camera_sweep_atlas.png",
+      "tests/artifacts/baselines/raycaster/raycaster_corridor_view_with_fov.png",
+      "tests/artifacts/baselines/raycaster/raycaster_depth_columns_vs_view.png",
+      "tests/artifacts/baselines/raycaster/raycaster_feature_walls_view_pick.png",
+      "tests/artifacts/baselines/raycaster/raycaster_floor_ceiling_pick_uv.png",
+      "tests/artifacts/baselines/raycaster/raycaster_los_wall_window_door.png",
+      "tests/artifacts/baselines/raycaster/raycaster_minimap_reveal_lighting.png",
+      "tests/artifacts/baselines/raycaster/raycaster_multilevel_hole_pick.png",
+      "tests/artifacts/baselines/raycaster/raycaster_topdown_reveal_fov.png",
+      "tests/artifacts/baselines/raycaster/raycaster_transparent_layered_hits.png"
+    ],
+    "current_artifacts": [
+      "tests/artifacts/current/raycaster/raycaster_camera_sweep_atlas.png",
+      "tests/artifacts/current/raycaster/raycaster_corridor_view_with_fov.png",
+      "tests/artifacts/current/raycaster/raycaster_depth_columns_vs_view.png",
+      "tests/artifacts/current/raycaster/raycaster_feature_walls_view_pick.png",
+      "tests/artifacts/current/raycaster/raycaster_floor_ceiling_pick_uv.png",
+      "tests/artifacts/current/raycaster/raycaster_los_wall_window_door.png",
+      "tests/artifacts/current/raycaster/raycaster_minimap_reveal_lighting.png",
+      "tests/artifacts/current/raycaster/raycaster_multilevel_hole_pick.png",
+      "tests/artifacts/current/raycaster/raycaster_topdown_reveal_fov.png",
+      "tests/artifacts/current/raycaster/raycaster_transparent_layered_hits.png"
+    ],
+    "evidence_tests": [
+      "tests/lua/evidence/test_raycaster_evidence.lua"
+    ],
+    "golden_tests": [
+      "tests/lua/golden/test_raycaster_golden.lua"
+    ]
+  },
+  "render": {
+    "baseline_artifacts": [
+      "tests/artifacts/baselines/render/render_advanced_vector_scene.png",
+      "tests/artifacts/baselines/render/render_blend_alpha_scene.png",
+      "tests/artifacts/baselines/render/render_canvas_composite_scene.png",
+      "tests/artifacts/baselines/render/render_layers_sort_group_scene.png",
+      "tests/artifacts/baselines/render/render_mesh_custom_geometry.png",
+      "tests/artifacts/baselines/render/render_obj_model_preview.png",
+      "tests/artifacts/baselines/render/render_primitive_family_scene.png",
+      "tests/artifacts/baselines/render/render_retained_shape_instances.png",
+      "tests/artifacts/baselines/render/render_scissor_nested_clip.png",
+      "tests/artifacts/baselines/render/render_shader_uniform_scene.png",
+      "tests/artifacts/baselines/render/render_spritebatch_grid_scene.png",
+      "tests/artifacts/baselines/render/render_stencil_portal_scene.png",
+      "tests/artifacts/baselines/render/render_text_font_layout.png",
+      "tests/artifacts/baselines/render/render_texture_quad_nineslice_scene.png",
+      "tests/artifacts/baselines/render/render_transform_hierarchy_scene.png"
+    ],
+    "current_artifacts": [
+      "tests/artifacts/current/render/render_advanced_vector_scene.png",
+      "tests/artifacts/current/render/render_blend_alpha_scene.png",
+      "tests/artifacts/current/render/render_canvas_composite_scene.png",
+      "tests/artifacts/current/render/render_layers_sort_group_scene.png",
+      "tests/artifacts/current/render/render_mesh_custom_geometry.png",
+      "tests/artifacts/current/render/render_obj_model_preview.png",
+      "tests/artifacts/current/render/render_primitive_family_scene.png",
+      "tests/artifacts/current/render/render_retained_shape_instances.png",
+      "tests/artifacts/current/render/render_scissor_nested_clip.png",
+      "tests/artifacts/current/render/render_shader_uniform_scene.png",
+      "tests/artifacts/current/render/render_spritebatch_grid_scene.png",
+      "tests/artifacts/current/render/render_stencil_portal_scene.png",
+      "tests/artifacts/current/render/render_text_font_layout.png",
+      "tests/artifacts/current/render/render_texture_quad_nineslice_scene.png",
+      "tests/artifacts/current/render/render_transform_hierarchy_scene.png"
+    ],
+    "evidence_tests": [
+      "tests/lua/evidence/test_render_evidence.lua"
+    ],
+    "golden_tests": [
+      "tests/lua/golden/test_render_golden.lua"
+    ]
+  },
+  "repl": {
+    "baseline_artifacts": [
+      "tests/artifacts/baselines/repl/repl_commands_ui.png",
+      "tests/artifacts/baselines/repl/repl_completion_ui.png",
+      "tests/artifacts/baselines/repl/repl_error_recovery_ui.png",
+      "tests/artifacts/baselines/repl/repl_eval_session_ui.png",
+      "tests/artifacts/baselines/repl/repl_history_ui.png"
+    ],
+    "current_artifacts": [
+      "tests/artifacts/current/repl/repl_commands_ui.png",
+      "tests/artifacts/current/repl/repl_completion_ui.png",
+      "tests/artifacts/current/repl/repl_error_recovery_ui.png",
+      "tests/artifacts/current/repl/repl_eval_session_ui.png",
+      "tests/artifacts/current/repl/repl_history_ui.png"
+    ],
+    "evidence_tests": [
+      "tests/lua/evidence/test_repl_evidence.lua"
+    ],
+    "golden_tests": [
+      "tests/lua/golden/test_repl_golden.lua"
+    ]
+  },
+  "runtime": {
+    "baseline_artifacts": [
+      "tests/artifacts/baselines/ui/runtime_input_binding_layout_trace.txt"
+    ],
+    "current_artifacts": [
+      "tests/artifacts/current/ui/runtime_input_binding_layout_trace.txt"
+    ],
+    "evidence_tests": [],
+    "golden_tests": []
+  },
+  "scene": {
+    "baseline_artifacts": [
+      "tests/artifacts/baselines/scene/scene_depth_sort_ascending.txt",
+      "tests/artifacts/baselines/scene/scene_depth_sort_bands.png",
+      "tests/artifacts/baselines/scene/scene_depth_sort_object_entries.txt",
+      "tests/artifacts/baselines/scene/scene_depth_sort_stable_equal_depth.txt",
+      "tests/artifacts/baselines/scene/scene_transition_queue_trace.txt"
+    ],
+    "current_artifacts": [
+      "tests/artifacts/current/scene/scene_depth_sort_ascending.txt",
+      "tests/artifacts/current/scene/scene_depth_sort_bands.png",
+      "tests/artifacts/current/scene/scene_depth_sort_object_entries.txt",
+      "tests/artifacts/current/scene/scene_depth_sort_stable_equal_depth.txt",
+      "tests/artifacts/current/scene/scene_object_container_layer_trace.txt",
+      "tests/artifacts/current/scene/scene_state_preload_overlay_trace.txt",
+      "tests/artifacts/current/scene/scene_transition_progress_step01.png",
+      "tests/artifacts/current/scene/scene_transition_progress_step02.png",
+      "tests/artifacts/current/scene/scene_transition_progress_step03.png",
+      "tests/artifacts/current/scene/scene_transition_progress_step04.png",
+      "tests/artifacts/current/scene/scene_transition_queue_trace.txt"
+    ],
+    "evidence_tests": [
+      "tests/lua/evidence/test_scene_evidence.lua"
+    ],
+    "golden_tests": [
+      "tests/lua/golden/test_scene_golden.lua"
+    ]
+  },
+  "serialize": {
+    "baseline_artifacts": [],
+    "current_artifacts": [],
+    "evidence_tests": [],
+    "golden_tests": [
+      "tests/lua/golden/test_serialize_golden.lua"
+    ]
+  },
+  "spine": {
+    "baseline_artifacts": [
+      "tests/artifacts/baselines/spine/bone_operations.txt",
+      "tests/artifacts/baselines/spine/skeleton_stick_figure.png",
+      "tests/artifacts/baselines/spine/spine_ik_target_reach.gif",
+      "tests/artifacts/baselines/spine/spine_imported_animation.gif",
+      "tests/artifacts/baselines/spine/spine_walk_cycle_5s.gif",
+      "tests/artifacts/baselines/spine/spine_walk_cycle_pose_snapshots.gif"
+    ],
+    "current_artifacts": [
+      "tests/artifacts/current/spine/bone_operations.txt",
+      "tests/artifacts/current/spine/skeleton_stick_figure.png",
+      "tests/artifacts/current/spine/spine_ik_target_reach.gif",
+      "tests/artifacts/current/spine/spine_imported_animation.gif",
+      "tests/artifacts/current/spine/spine_skin_event_pose_trace.txt",
+      "tests/artifacts/current/spine/spine_walk_cycle_5s.gif",
+      "tests/artifacts/current/spine/spine_walk_cycle_pose_snapshots.gif"
+    ],
+    "evidence_tests": [
+      "tests/lua/evidence/test_spine_evidence.lua"
+    ],
+    "golden_tests": [
+      "tests/lua/golden/test_spine_golden.lua"
+    ]
+  },
+  "sprite": {
+    "baseline_artifacts": [
+      "tests/artifacts/baselines/image/sprite_16x16.png",
+      "tests/artifacts/baselines/image/sprite_32x32.png",
+      "tests/artifacts/baselines/image/sprite_64x64.png",
+      "tests/artifacts/baselines/image/sprite_8x8.png",
+      "tests/artifacts/baselines/sprite/sprite_animator_clip_playback.gif",
+      "tests/artifacts/baselines/sprite/sprite_atlas_regions_flips.png",
+      "tests/artifacts/baselines/sprite/sprite_lit_normal_state.png",
+      "tests/artifacts/baselines/sprite/sprite_packer_nine_slice.png",
+      "tests/artifacts/baselines/sprite/sprite_sheet_groups.png"
+    ],
+    "current_artifacts": [
+      "tests/artifacts/current/image/sprite_16x16.png",
+      "tests/artifacts/current/image/sprite_32x32.png",
+      "tests/artifacts/current/image/sprite_64x64.png",
+      "tests/artifacts/current/image/sprite_8x8.png",
+      "tests/artifacts/current/sprite/sprite_animator_clip_playback.gif",
+      "tests/artifacts/current/sprite/sprite_atlas_regions_flips.png",
+      "tests/artifacts/current/sprite/sprite_lit_normal_state.png",
+      "tests/artifacts/current/sprite/sprite_packer_nine_slice.png",
+      "tests/artifacts/current/sprite/sprite_sheet_groups.png"
+    ],
+    "evidence_tests": [
+      "tests/lua/evidence/test_sprite_evidence.lua"
+    ],
+    "golden_tests": [
+      "tests/lua/golden/test_sprite_golden.lua"
+    ]
+  },
+  "terminal": {
+    "baseline_artifacts": [
+      "tests/artifacts/baselines/terminal/terminal_tui_chart_panels.png",
+      "tests/artifacts/baselines/terminal/terminal_tui_command_palette.png",
+      "tests/artifacts/baselines/terminal/terminal_tui_dashboard_widgets.png",
+      "tests/artifacts/baselines/terminal/terminal_tui_diagnostics_panels.png",
+      "tests/artifacts/baselines/terminal/terminal_tui_form_focus.png"
+    ],
+    "current_artifacts": [
+      "tests/artifacts/current/terminal/terminal_tui_chart_panels.png",
+      "tests/artifacts/current/terminal/terminal_tui_command_palette.png",
+      "tests/artifacts/current/terminal/terminal_tui_dashboard_widgets.png",
+      "tests/artifacts/current/terminal/terminal_tui_diagnostics_panels.png",
+      "tests/artifacts/current/terminal/terminal_tui_form_focus.png"
+    ],
+    "evidence_tests": [
+      "tests/lua/evidence/test_terminal_evidence.lua"
+    ],
+    "golden_tests": [
+      "tests/lua/golden/test_terminal_golden.lua"
+    ]
+  },
+  "tilemap": {
+    "baseline_artifacts": [
+      "tests/artifacts/baselines/tilemap/tilemap_autotile.png",
+      "tests/artifacts/baselines/tilemap/tilemap_chunk_streaming_window.png",
+      "tests/artifacts/baselines/tilemap/tilemap_collision.png",
+      "tests/artifacts/baselines/tilemap/tilemap_draw_to_image_ground.png",
+      "tests/artifacts/baselines/tilemap/tilemap_draw_to_image_objects.png",
+      "tests/artifacts/baselines/tilemap/tilemap_hex_biomes_area.png",
+      "tests/artifacts/baselines/tilemap/tilemap_hex_neighbors.png",
+      "tests/artifacts/baselines/tilemap/tilemap_hex_operations_frontier.png",
+      "tests/artifacts/baselines/tilemap/tilemap_hex_route.png",
+      "tests/artifacts/baselines/tilemap/tilemap_isometric.png",
+      "tests/artifacts/baselines/tilemap/tilemap_isometric_stacked_settlement.png",
+      "tests/artifacts/baselines/tilemap/tilemap_layers.png",
+      "tests/artifacts/baselines/tilemap/tilemap_viewport.png"
+    ],
+    "current_artifacts": [
+      "tests/artifacts/current/tilemap/tilemap_autotile.png",
+      "tests/artifacts/current/tilemap/tilemap_autotile_format_showcase.png",
+      "tests/artifacts/current/tilemap/tilemap_autotile_format_showcase.txt",
+      "tests/artifacts/current/tilemap/tilemap_chunk_streaming_window.png",
+      "tests/artifacts/current/tilemap/tilemap_collision.png",
+      "tests/artifacts/current/tilemap/tilemap_draw_to_image_ground.png",
+      "tests/artifacts/current/tilemap/tilemap_draw_to_image_objects.png",
+      "tests/artifacts/current/tilemap/tilemap_hex_biomes_area.png",
+      "tests/artifacts/current/tilemap/tilemap_hex_neighbors.png",
+      "tests/artifacts/current/tilemap/tilemap_hex_operations_frontier.png",
+      "tests/artifacts/current/tilemap/tilemap_hex_route.png",
+      "tests/artifacts/current/tilemap/tilemap_isometric.png",
+      "tests/artifacts/current/tilemap/tilemap_isometric_stacked_settlement.png",
+      "tests/artifacts/current/tilemap/tilemap_layers.png",
+      "tests/artifacts/current/tilemap/tilemap_viewport.png"
+    ],
+    "evidence_tests": [
+      "tests/lua/evidence/test_tilemap_evidence.lua"
+    ],
+    "golden_tests": [
+      "tests/lua/golden/test_tilemap_golden.lua"
+    ]
+  },
+  "tween": {
+    "baseline_artifacts": [
+      "tests/artifacts/baselines/tween/tween_easing_inCubic.png",
+      "tests/artifacts/baselines/tween/tween_easing_inCubic.txt",
+      "tests/artifacts/baselines/tween/tween_easing_inExpo.png",
+      "tests/artifacts/baselines/tween/tween_easing_inExpo.txt",
+      "tests/artifacts/baselines/tween/tween_easing_inOutCubic.png",
+      "tests/artifacts/baselines/tween/tween_easing_inOutCubic.txt",
+      "tests/artifacts/baselines/tween/tween_easing_inOutQuad.png",
+      "tests/artifacts/baselines/tween/tween_easing_inOutQuad.txt",
+      "tests/artifacts/baselines/tween/tween_easing_inOutSine.png",
+      "tests/artifacts/baselines/tween/tween_easing_inOutSine.txt",
+      "tests/artifacts/baselines/tween/tween_easing_inQuad.png",
+      "tests/artifacts/baselines/tween/tween_easing_inQuad.txt",
+      "tests/artifacts/baselines/tween/tween_easing_inSine.png",
+      "tests/artifacts/baselines/tween/tween_easing_inSine.txt",
+      "tests/artifacts/baselines/tween/tween_easing_linear.png",
+      "tests/artifacts/baselines/tween/tween_easing_linear.txt",
+      "tests/artifacts/baselines/tween/tween_easing_outCubic.png",
+      "tests/artifacts/baselines/tween/tween_easing_outCubic.txt",
+      "tests/artifacts/baselines/tween/tween_easing_outExpo.png",
+      "tests/artifacts/baselines/tween/tween_easing_outExpo.txt",
+      "tests/artifacts/baselines/tween/tween_easing_outQuad.png",
+      "tests/artifacts/baselines/tween/tween_easing_outQuad.txt",
+      "tests/artifacts/baselines/tween/tween_easing_outSine.png",
+      "tests/artifacts/baselines/tween/tween_easing_outSine.txt",
+      "tests/artifacts/baselines/tween/tween_pause_resume_scrub_trace.txt"
+    ],
+    "current_artifacts": [
+      "tests/artifacts/current/tween/tween_easing_inCubic.png",
+      "tests/artifacts/current/tween/tween_easing_inCubic.txt",
+      "tests/artifacts/current/tween/tween_easing_inExpo.png",
+      "tests/artifacts/current/tween/tween_easing_inExpo.txt",
+      "tests/artifacts/current/tween/tween_easing_inOutCubic.png",
+      "tests/artifacts/current/tween/tween_easing_inOutCubic.txt",
+      "tests/artifacts/current/tween/tween_easing_inOutQuad.png",
+      "tests/artifacts/current/tween/tween_easing_inOutQuad.txt",
+      "tests/artifacts/current/tween/tween_easing_inOutSine.png",
+      "tests/artifacts/current/tween/tween_easing_inOutSine.txt",
+      "tests/artifacts/current/tween/tween_easing_inQuad.png",
+      "tests/artifacts/current/tween/tween_easing_inQuad.txt",
+      "tests/artifacts/current/tween/tween_easing_inSine.png",
+      "tests/artifacts/current/tween/tween_easing_inSine.txt",
+      "tests/artifacts/current/tween/tween_easing_linear.png",
+      "tests/artifacts/current/tween/tween_easing_linear.txt",
+      "tests/artifacts/current/tween/tween_easing_outCubic.png",
+      "tests/artifacts/current/tween/tween_easing_outCubic.txt",
+      "tests/artifacts/current/tween/tween_easing_outExpo.png",
+      "tests/artifacts/current/tween/tween_easing_outExpo.txt",
+      "tests/artifacts/current/tween/tween_easing_outQuad.png",
+      "tests/artifacts/current/tween/tween_easing_outQuad.txt",
+      "tests/artifacts/current/tween/tween_easing_outSine.png",
+      "tests/artifacts/current/tween/tween_easing_outSine.txt",
+      "tests/artifacts/current/tween/tween_pause_resume_scrub_trace.txt"
+    ],
+    "evidence_tests": [
+      "tests/lua/evidence/test_tween_evidence.lua"
+    ],
+    "golden_tests": [
+      "tests/lua/golden/test_tween_golden.lua"
+    ]
+  },
+  "ui": {
+    "baseline_artifacts": [
+      "tests/artifacts/baselines/ui/container_widget_inspector_panel.png",
+      "tests/artifacts/baselines/ui/container_widget_scroll_bar.png",
+      "tests/artifacts/baselines/ui/container_widget_scroll_panel.png",
+      "tests/artifacts/baselines/ui/form_widget_account_panel.png",
+      "tests/artifacts/baselines/ui/form_widget_plan_panel.png",
+      "tests/artifacts/baselines/ui/navigation_widget_dock_panel.png",
+      "tests/artifacts/baselines/ui/navigation_widget_split_panel.png",
+      "tests/artifacts/baselines/ui/navigation_widget_status_bar.png",
+      "tests/artifacts/baselines/ui/navigation_widget_tabs.png",
+      "tests/artifacts/baselines/ui/navigation_widget_toolbar.png",
+      "tests/artifacts/baselines/ui/popup_widget_badge.png",
+      "tests/artifacts/baselines/ui/popup_widget_dialog.png",
+      "tests/artifacts/baselines/ui/popup_widget_menu_bar.png",
+      "tests/artifacts/baselines/ui/popup_widget_toast.png",
+      "tests/artifacts/baselines/ui/popup_widget_tooltip.png",
+      "tests/artifacts/baselines/ui/popup_widget_window.png",
+      "tests/artifacts/baselines/ui/range_widgets_panel.png",
+      "tests/artifacts/baselines/ui/selection_widgets_panel.png",
+      "tests/artifacts/baselines/ui/structured_widget_accordion.png",
+      "tests/artifacts/baselines/ui/structured_widget_color_picker.png",
+      "tests/artifacts/baselines/ui/structured_widget_custom_surface.png",
+      "tests/artifacts/baselines/ui/structured_widget_table.png",
+      "tests/artifacts/baselines/ui/structured_widget_tree_view.png",
+      "tests/artifacts/baselines/ui/visual_widget_image.png",
+      "tests/artifacts/baselines/ui/visual_widget_nine_patch.png"
+    ],
+    "current_artifacts": [
+      "tests/artifacts/current/ui/container_widget_inspector_panel.png",
+      "tests/artifacts/current/ui/container_widget_scroll_bar.png",
+      "tests/artifacts/current/ui/container_widget_scroll_panel.png",
+      "tests/artifacts/current/ui/form_widget_account_panel.png",
+      "tests/artifacts/current/ui/form_widget_plan_panel.png",
+      "tests/artifacts/current/ui/navigation_widget_dock_panel.png",
+      "tests/artifacts/current/ui/navigation_widget_split_panel.png",
+      "tests/artifacts/current/ui/navigation_widget_status_bar.png",
+      "tests/artifacts/current/ui/navigation_widget_tabs.png",
+      "tests/artifacts/current/ui/navigation_widget_toolbar.png",
+      "tests/artifacts/current/ui/popup_widget_badge.png",
+      "tests/artifacts/current/ui/popup_widget_dialog.png",
+      "tests/artifacts/current/ui/popup_widget_menu_bar.png",
+      "tests/artifacts/current/ui/popup_widget_toast.png",
+      "tests/artifacts/current/ui/popup_widget_tooltip.png",
+      "tests/artifacts/current/ui/popup_widget_window.png",
+      "tests/artifacts/current/ui/range_widgets_panel.png",
+      "tests/artifacts/current/ui/selection_widgets_panel.png",
+      "tests/artifacts/current/ui/structured_widget_accordion.png",
+      "tests/artifacts/current/ui/structured_widget_color_picker.png",
+      "tests/artifacts/current/ui/structured_widget_custom_surface.png",
+      "tests/artifacts/current/ui/structured_widget_table.png",
+      "tests/artifacts/current/ui/structured_widget_tree_view.png",
+      "tests/artifacts/current/ui/visual_widget_image.png",
+      "tests/artifacts/current/ui/visual_widget_nine_patch.png"
+    ],
+    "evidence_tests": [
+      "tests/lua/evidence/test_ui_evidence.lua"
+    ],
+    "golden_tests": [
+      "tests/lua/golden/test_ui_golden.lua"
+    ]
+  }
+}

@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/ui.md or source docstrings instead. -->
+
 # ui
 
 ## TL;DR
@@ -11,12 +13,12 @@
 ## General Info
 
 - Module group: `Feature Systems`
-- Source path: `src/ui/`
+- Source path: `src/ui`
 - Binding: `src/lua_api/ui_api.rs`
 - Namespace: `lurek.ui`
 - Lua API surface: `92` functions, `39` types, `339` methods
-- Rust test path(s): tests/rust/unit/gui_tests.rs
-- Lua test path(s): tests/lua/unit/test_gui.lua, tests/lua/unit/test_ui_input_unit.lua, tests/lua/unit/test_ui_layout.lua, tests/lua/integration/test_i18n_ui.lua
+- User-facing: `true`
+- Plugin tier: `tier_1_plugin`
 
 ## Summary
 
@@ -47,15 +49,23 @@
 
 This module primarily collaborates with `dataframe`, `image`, `math`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
 
+## Ownership
+
+- Canonical source: `src/ui`
+- Owning tier: `Feature Systems`
+- Plugin tier: `tier_1_plugin`
+- Lua binding owner: `src/lua_api/ui_api.rs`
+- Referenced engine modules: `dataframe`, `image`, `math`, `render`, `runtime`
+
 ## Imports
 
 - `dataframe`: Imports or references `src/dataframe/`. Cross-group dependency from `Feature Systems` into `Foundations`.
-- `image`: Imports or references `image` from `src/image/`.
-- `math`: Imports or references `math` from `src/math/`.
-- `render`: Imports or references `render` from `src/render/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `image`: Imports or references `src/image/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
+- `math`: Imports or references `src/math/`. Cross-group dependency from `Feature Systems` into `Foundations`.
+- `render`: Imports or references `src/render/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
+- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Feature Systems` into `Core Runtime`.
 
-## Files
+## Source Files
 
 ### containers.rs
 
@@ -87,22 +97,22 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 
 ### controls.rs
 
-- Defines the concrete interactive controls that sit on top of shared widget state inside the retained UI system.
-- Owns buttons, labels, text inputs, checkboxes, sliders, radios, combos, lists, tabs, and spin-style widgets.
-- Keeps control construction explicit so type identity, defaults, and base widget integration stay unambiguous.
-- Implements text editing helpers that clamp cursor motion, insertion, deletion, and maximum-length constraints.
-- Normalizes selection and numeric-value handling so dynamic option lists do not violate control invariants.
-- Provides the control-layer boundary between generic widget nodes and user-facing interactive primitives.
-- Feeds consistent layout, style, and interaction semantics into the context and renderer without extra adapters.
-- Open this file when editable values, selection rules, or control defaults behave differently than expected.
+- Owns the control widget model for the ui subsystem and keeps its rules local to this file.
+- Centers the implementation around normalized_range_or, Button, new, with helpers kept close to their invariants.
+- Defines how controls data is validated, transformed, or stored before neighboring systems use it.
+- Owns ui behavior with explicit state, validation, and crate-local integration boundaries. for engine changes.
+- Keeps public crate helpers focused on controls behavior while Lua registration stays elsewhere.
+- Documents the boundary where ui code accepts inputs, reports errors, or updates state while keeping call sites explicit.
+- Use this file when changing controls defaults, lifecycle handling, validation, or data ownership.
+- Keeps failure paths and edge cases near the ui state that can explain them while keeping call sites explicit.
+- Preserves deterministic behavior by keeping controls calculations explicit at their owner boundary.
+- Provides the local adaptation layer that lets callers avoid duplicating ui rules while keeping call sites explicit.
 
 ### diagnostics.rs
 
-- Defines lightweight accessibility snapshots and UX diagnostics for the retained UI system.
-- Keeps report payload types separate from the live context owner so diagnostics APIs stay readable.
-- Provides stable data shapes used by Lua bindings, tests, and tooling that inspect UI semantics.
-- Acts as the type boundary for validation output without owning tree traversal or interaction logic.
-- Open this file when accessibility dumps or diagnostics payloads need to grow without bloating `context.rs`.
+- Owns ui behavior with explicit state, validation, and crate-local integration boundaries. for engine changes.
+- Centers the implementation around UiAccessibilityNode, UiDiagnostic, new, with helpers kept close to their invariants.
+- Defines how diagnostics data is validated, transformed, or stored before neighboring systems use it.
 
 ### extras.rs
 
@@ -119,14 +129,15 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 
 ### layout_loader.rs
 
-- Loads declarative TOML layout definitions into live widget trees built on the retained UI context.
-- Maps textual widget kinds onto concrete constructors so authored layouts resolve to the same runtime widgets.
-- Applies shared base properties and per-type fields to convert authored structure into usable live controls.
-- Supports recursive child definitions that mirror the same parent-child composition used by code-built screens.
-- Provides headless render-to-image helpers so declarative layouts can be snapshotted and verified offline.
-- Keeps serde and parsing concerns local instead of spreading authored-layout decoding through widget modules.
-- Acts as the data-driven boundary between TOML layout content and concrete UI tree construction.
-- Open this file when authored layout files load with wrong structure, defaults, or snapshot rendering output.
+- Owns ui behavior with explicit state, validation, and crate-local integration boundaries. for engine changes.
+- Centers the implementation around DialogActionDef, WidgetDef, LayoutDef, with helpers kept close to their invariants.
+- Defines how layout loader data is validated, transformed, or stored before neighboring systems use it.
+- Owns ui behavior with explicit state, validation, and crate-local integration boundaries. for engine changes.
+- Keeps public crate helpers focused on layout loader behavior while Lua registration stays elsewhere.
+- Documents the boundary where ui code accepts inputs, reports errors, or updates state while keeping call sites explicit.
+- Use this file when changing layout loader defaults, lifecycle handling, validation, or data ownership.
+- Keeps failure paths and edge cases near the ui state that can explain them while keeping call sites explicit.
+- Preserves deterministic behavior by keeping layout loader calculations explicit at their owner boundary.
 
 ### mod.rs
 
@@ -171,15 +182,16 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 
 ### widget.rs
 
-- Defines the core widget primitives that carry identity, layout, state flags, and transition semantics.
-- Owns shared enums and records for widget type, mouse filtering, easing, alignment, and common widget fields.
-- Represents the tree unit that context, layout, and renderer code all consume, mutate, and traverse.
-- Keeps parent-child composition explicit so ownership and traversal remain stable across retained updates.
-- Stores transition-facing values like alpha, position, and scale that drive hover, press, and animated visuals.
-- Provides parsing and helper accessors that normalize widget metadata before higher layers inspect it.
-- Acts as the contract boundary between concrete control variants and the shared state every widget carries.
-- Open this file when widget identity, state flags, or transition values fail before control-specific logic runs.
-- It is the base owner for UI node semantics, so upstream layout and render bugs often start with this shape.
+- Owns the widget runtime for the ui subsystem and keeps its rules local to this file while keeping call sites explicit.
+- Centers the implementation around TextVAlign, parse_str, as_str, with helpers kept close to their invariants.
+- Defines how widget data is validated, transformed, or stored before neighboring systems use it.
+- Owns ui behavior with explicit state, validation, and crate-local integration boundaries. for engine changes.
+- Keeps public crate helpers focused on widget behavior while Lua registration stays elsewhere.
+- Documents the boundary where ui code accepts inputs, reports errors, or updates state while keeping call sites explicit.
+- Use this file when changing widget defaults, lifecycle handling, validation, or data ownership.
+- Keeps failure paths and edge cases near the ui state that can explain them while keeping call sites explicit.
+- Preserves deterministic behavior by keeping widget calculations explicit at their owner boundary.
+- Provides the local adaptation layer that lets callers avoid duplicating ui rules while keeping call sites explicit.
 
 
 
@@ -1082,13 +1094,75 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 
 - No documented methods.
 
-## References
+## Examples
 
-- `dataframe`: Imports or references `src/dataframe/`. Cross-group dependency from `Feature Systems` into `Foundations`.
-- `image`: Imports or references `image` from `src/image/`.
-- `math`: Imports or references `math` from `src/math/`.
-- `render`: Imports or references `render` from `src/render/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `content/examples/ui.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_ui_unit.lua` (present)
+- Rust: `tests/rust/unit/gui_tests.rs`
+
+## Evidence / Golden
+
+| Kind | Path |
+|---|---|
+| Evidence test | `tests/lua/evidence/test_ui_evidence.lua` |
+| Golden test | `tests/lua/golden/test_ui_golden.lua` |
+| Current artifact | `tests/artifacts/current/ui/container_widget_inspector_panel.png` |
+| Current artifact | `tests/artifacts/current/ui/container_widget_scroll_bar.png` |
+| Current artifact | `tests/artifacts/current/ui/container_widget_scroll_panel.png` |
+| Current artifact | `tests/artifacts/current/ui/form_widget_account_panel.png` |
+| Current artifact | `tests/artifacts/current/ui/form_widget_plan_panel.png` |
+| Current artifact | `tests/artifacts/current/ui/navigation_widget_dock_panel.png` |
+| Current artifact | `tests/artifacts/current/ui/navigation_widget_split_panel.png` |
+| Current artifact | `tests/artifacts/current/ui/navigation_widget_status_bar.png` |
+| Current artifact | `tests/artifacts/current/ui/navigation_widget_tabs.png` |
+| Current artifact | `tests/artifacts/current/ui/navigation_widget_toolbar.png` |
+| Current artifact | `tests/artifacts/current/ui/popup_widget_badge.png` |
+| Current artifact | `tests/artifacts/current/ui/popup_widget_dialog.png` |
+| Current artifact | `tests/artifacts/current/ui/popup_widget_menu_bar.png` |
+| Current artifact | `tests/artifacts/current/ui/popup_widget_toast.png` |
+| Current artifact | `tests/artifacts/current/ui/popup_widget_tooltip.png` |
+| Current artifact | `tests/artifacts/current/ui/popup_widget_window.png` |
+| Current artifact | `tests/artifacts/current/ui/range_widgets_panel.png` |
+| Current artifact | `tests/artifacts/current/ui/selection_widgets_panel.png` |
+| Current artifact | `tests/artifacts/current/ui/structured_widget_accordion.png` |
+| Current artifact | `tests/artifacts/current/ui/structured_widget_color_picker.png` |
+| Current artifact | `tests/artifacts/current/ui/structured_widget_custom_surface.png` |
+| Current artifact | `tests/artifacts/current/ui/structured_widget_table.png` |
+| Current artifact | `tests/artifacts/current/ui/structured_widget_tree_view.png` |
+| Current artifact | `tests/artifacts/current/ui/visual_widget_image.png` |
+| Current artifact | `tests/artifacts/current/ui/visual_widget_nine_patch.png` |
+| Baseline artifact | `tests/artifacts/baselines/ui/container_widget_inspector_panel.png` |
+| Baseline artifact | `tests/artifacts/baselines/ui/container_widget_scroll_bar.png` |
+| Baseline artifact | `tests/artifacts/baselines/ui/container_widget_scroll_panel.png` |
+| Baseline artifact | `tests/artifacts/baselines/ui/form_widget_account_panel.png` |
+| Baseline artifact | `tests/artifacts/baselines/ui/form_widget_plan_panel.png` |
+| Baseline artifact | `tests/artifacts/baselines/ui/navigation_widget_dock_panel.png` |
+| Baseline artifact | `tests/artifacts/baselines/ui/navigation_widget_split_panel.png` |
+| Baseline artifact | `tests/artifacts/baselines/ui/navigation_widget_status_bar.png` |
+| Baseline artifact | `tests/artifacts/baselines/ui/navigation_widget_tabs.png` |
+| Baseline artifact | `tests/artifacts/baselines/ui/navigation_widget_toolbar.png` |
+| Baseline artifact | `tests/artifacts/baselines/ui/popup_widget_badge.png` |
+| Baseline artifact | `tests/artifacts/baselines/ui/popup_widget_dialog.png` |
+| Baseline artifact | `tests/artifacts/baselines/ui/popup_widget_menu_bar.png` |
+| Baseline artifact | `tests/artifacts/baselines/ui/popup_widget_toast.png` |
+| Baseline artifact | `tests/artifacts/baselines/ui/popup_widget_tooltip.png` |
+| Baseline artifact | `tests/artifacts/baselines/ui/popup_widget_window.png` |
+| Baseline artifact | `tests/artifacts/baselines/ui/range_widgets_panel.png` |
+| Baseline artifact | `tests/artifacts/baselines/ui/selection_widgets_panel.png` |
+| Baseline artifact | `tests/artifacts/baselines/ui/structured_widget_accordion.png` |
+| Baseline artifact | `tests/artifacts/baselines/ui/structured_widget_color_picker.png` |
+| Baseline artifact | `tests/artifacts/baselines/ui/structured_widget_custom_surface.png` |
+| Baseline artifact | `tests/artifacts/baselines/ui/structured_widget_table.png` |
+| Baseline artifact | `tests/artifacts/baselines/ui/structured_widget_tree_view.png` |
+| Baseline artifact | `tests/artifacts/baselines/ui/visual_widget_image.png` |
+| Baseline artifact | `tests/artifacts/baselines/ui/visual_widget_nine_patch.png` |
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

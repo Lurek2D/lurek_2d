@@ -1,11 +1,12 @@
-//! Owns persistent GPU resource lifetimes, uploads, and resizing for textures, fonts, canvases, and buffers.
-//! Grows vertex, index, and instance buffers on demand so render workloads can scale without manual sizing.
-//! Caches texture and sampler bind groups so compatible resources reuse stable GPU-side descriptors.
-//! Creates raw textures and canvas resources while hiding wgpu allocation details from higher render layers.
-//! Prunes stale resources to keep GPU memory usage bounded during long sessions or heavy content churn.
-//! Uploads static geometry into dedicated buffers so later frames can reuse cached meshes efficiently.
-//! Acts as the resource-allocation boundary rather than the owner of draw ordering or pass sequencing.
-//! Open this file when GPU buffers, textures, samplers, or resource cleanup behavior looks incorrect.
+//! Owns the gpu resources owner for the render subsystem and keeps its rules local to this file.
+//! Keeps render data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+//! Defines how gpu resources data is validated, transformed, or stored before neighboring systems use it.
+//! Owns render behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on gpu resources behavior while Lua registration stays elsewhere.
+//! Documents the boundary where render code accepts inputs, reports errors, or updates state.
+//! Use this file when changing gpu resources defaults, lifecycle handling, validation, or data ownership.
+//! Keeps failure paths and edge cases near the render state that can explain them while keeping call sites explicit.
+//! Preserves deterministic behavior by keeping gpu resources calculations explicit at their owner boundary.
 
 use crate::render::gpu_state::{DepthStencilTarget, GpuTexture};
 use crate::render::shader::Shader;

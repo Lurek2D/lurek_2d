@@ -1,12 +1,13 @@
-//! Defines the core widget primitives that carry identity, layout, state flags, and transition semantics.
-//! Owns shared enums and records for widget type, mouse filtering, easing, alignment, and common widget fields.
-//! Represents the tree unit that context, layout, and renderer code all consume, mutate, and traverse.
-//! Keeps parent-child composition explicit so ownership and traversal remain stable across retained updates.
-//! Stores transition-facing values like alpha, position, and scale that drive hover, press, and animated visuals.
-//! Provides parsing and helper accessors that normalize widget metadata before higher layers inspect it.
-//! Acts as the contract boundary between concrete control variants and the shared state every widget carries.
-//! Open this file when widget identity, state flags, or transition values fail before control-specific logic runs.
-//! It is the base owner for UI node semantics, so upstream layout and render bugs often start with this shape.
+//! Owns the widget runtime for the ui subsystem and keeps its rules local to this file while keeping call sites explicit.
+//! Centers the implementation around TextVAlign, parse_str, as_str, with helpers kept close to their invariants.
+//! Defines how widget data is validated, transformed, or stored before neighboring systems use it.
+//! Owns ui behavior with explicit state, validation, and crate-local integration boundaries. for engine changes.
+//! Keeps public crate helpers focused on widget behavior while Lua registration stays elsewhere.
+//! Documents the boundary where ui code accepts inputs, reports errors, or updates state while keeping call sites explicit.
+//! Use this file when changing widget defaults, lifecycle handling, validation, or data ownership.
+//! Keeps failure paths and edge cases near the ui state that can explain them while keeping call sites explicit.
+//! Preserves deterministic behavior by keeping widget calculations explicit at their owner boundary.
+//! Provides the local adaptation layer that lets callers avoid duplicating ui rules while keeping call sites explicit.
 
 use crate::runtime::resource_keys::FontKey;
 

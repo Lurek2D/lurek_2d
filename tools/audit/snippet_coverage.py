@@ -11,10 +11,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT / "tools" / "snippets") not in sys.path:
     sys.path.insert(0, str(ROOT / "tools" / "snippets"))
+sys.path.insert(0, str(ROOT / "tools" / "docs"))
 
 from snippet_catalog import parse_dir  # noqa: E402
+import module_registry  # noqa: E402
 
-API_JSON = ROOT / "logs" / "data" / "lua_api_data.json"
+API_JSON = module_registry.lua_api_json_path()
 DEFAULT_SNIPPETS_DIR = ROOT / "content" / "snippets"
 DEFAULT_REPORT = ROOT / "logs" / "reports" / "snippet_coverage.md"
 

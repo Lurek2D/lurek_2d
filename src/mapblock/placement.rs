@@ -1,10 +1,11 @@
-//! This file owns grid-shape state and candidate legality checks for placing transformed blocks onto available cells.
-//! `PlacementGrid` stores available cells, occupied cells, placed-block records, and a reverse map from cell to placement.
-//! `PlacedBlock`, `PlacementCandidate`, and `PlacementSearch` live here because they describe the search and commit states.
-//! Rectangular and arbitrary-shape grid setup belongs here because map shape is separate from authored block geometry.
-//! `find_valid_placements` also stays here, combining transformed footprints, edge-only rules, and occupied-cell checks.
-//! Neighbor compatibility evaluation is local because socket matching depends on grid state plus `NeighborRules` policy.
-//! Open it when placement legality changes; block definitions, scripted execution, and output building live in siblings.
+//! Owns the placement owner for the mapblock subsystem and keeps its rules local to this file.
+//! Keeps mapblock data ownership and helper behavior clear for future engine maintenance. for engine changes.
+//! Defines how placement data is validated, transformed, or stored before neighboring systems use it.
+//! Owns mapblock behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on placement behavior while Lua registration stays elsewhere.
+//! Documents the boundary where mapblock code accepts inputs, reports errors, or updates state.
+//! Use this file when changing placement defaults, lifecycle handling, validation, or data ownership.
+//! Keeps failure paths and edge cases near the mapblock state that can explain them while keeping call sites explicit.
 
 use super::block::{Edge, MapBlock};
 use super::constraints::{opposite_edge, NeighborRules};

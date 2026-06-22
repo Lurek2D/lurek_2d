@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/camera.md or source docstrings instead. -->
+
 # camera
 
 ## TL;DR
@@ -8,12 +10,12 @@
 ## General Info
 
 - Module group: `Platform Services`
-- Source path: `src/camera/`
+- Source path: `src/camera`
 - Binding: `src/lua_api/camera_api.rs`
 - Namespace: `lurek.camera`
 - Lua API surface: `4` functions, `3` types, `97` methods
-- Rust test path(s): tests/rust/unit/camera_tests.rs, tests/rust/stress/camera_fuzz_tests.rs
-- Lua test path(s): tests/lua/unit/test_camera_unit.lua, tests/lua/stress/test_camera_stress.lua, tests/lua/integration/test_tween_camera.lua, tests/lua/integration/test_tilemap_camera.lua, tests/lua/integration/test_scene_camera.lua, tests/lua/integration/test_parallax_camera.lua, tests/lua/integration/test_input_camera.lua, tests/lua/integration/test_render_camera.lua
+- User-facing: `true`
+- Plugin tier: `not_evaluated`
 
 ## Summary
 
@@ -32,13 +34,21 @@
 
 This module primarily collaborates with `math`, `render`, `tilemap`. Its responsibility should stay inside the Platform Services group rather than absorb behavior owned by those neighbors.
 
+## Ownership
+
+- Canonical source: `src/camera`
+- Owning tier: `Platform Services`
+- Plugin tier: `not_evaluated`
+- Lua binding owner: `src/lua_api/camera_api.rs`
+- Referenced engine modules: `math`, `render`, `tilemap`
+
 ## Imports
 
-- `math`: Imports or references `math` from `src/math/`.
-- `render`: Imports or references `render` from `src/render/`.
+- `math`: Imports or references `src/math/`. Cross-group dependency from `Platform Services` into `Foundations`.
+- `render`: Imports or references `src/render/`. Dependency stays inside `Platform Services` and should remain acyclic.
 - `tilemap`: Imports or references `src/tilemap/`. Cross-group dependency from `Platform Services` into `Feature Systems`.
 
-## Files
+## Source Files
 
 ### effects.rs
 
@@ -265,11 +275,38 @@ This module primarily collaborates with `math`, `render`, `tilemap`. Its respons
 - `LCameraWalker:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
 - `LCameraWalker:update(dt?) -> nil`: Updates camera state and advances smooth interpolation.
 
-## References
+## Examples
 
-- `math`: Imports or references `math` from `src/math/`.
-- `render`: Imports or references `render` from `src/render/`.
-- `tilemap`: Imports or references `src/tilemap/`. Cross-group dependency from `Platform Services` into `Feature Systems`.
+- `content/examples/camera.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_camera_unit.lua` (present)
+- Rust: `tests/rust/unit/camera_tests.rs`
+
+## Evidence / Golden
+
+| Kind | Path |
+|---|---|
+| Evidence test | `tests/lua/evidence/test_camera_evidence.lua` |
+| Golden test | `tests/lua/golden/test_camera_golden.lua` |
+| Current artifact | `tests/artifacts/current/camera/camera_follow_effects_bounds_trace.txt` |
+| Current artifact | `tests/artifacts/current/camera/camera_follow_path_trace.png` |
+| Current artifact | `tests/artifacts/current/camera/camera_follow_smoothing_trace.json` |
+| Current artifact | `tests/artifacts/current/camera/camera_shake_response_trace.json` |
+| Current artifact | `tests/artifacts/current/camera/camera_transform_samples.json` |
+| Current artifact | `tests/artifacts/current/camera/camera_transform_screen_panel.png` |
+| Current artifact | `tests/artifacts/current/camera/camera_visible_area_panel.png` |
+| Baseline artifact | `tests/artifacts/baselines/camera/camera_follow_path_trace.png` |
+| Baseline artifact | `tests/artifacts/baselines/camera/camera_follow_smoothing_trace.json` |
+| Baseline artifact | `tests/artifacts/baselines/camera/camera_shake_response_trace.json` |
+| Baseline artifact | `tests/artifacts/baselines/camera/camera_transform_samples.json` |
+| Baseline artifact | `tests/artifacts/baselines/camera/camera_transform_screen_panel.png` |
+| Baseline artifact | `tests/artifacts/baselines/camera/camera_visible_area_panel.png` |
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

@@ -1,7 +1,8 @@
-//! This file owns `AgentError`, `AgentRequest`, and `AgentResponse`, the shared payload contract for agent I/O.
-//! It keeps callback ids, prompt envelopes, response bodies, and stable error codes aligned across runtime layers.
-//! Error helpers classify retryable failures and expose Lua-safe codes without coupling callers to transport details.
-//! Open this file when request or response structure changes; client execution and state assembly live in siblings.
+//! Owns the shared type model for the agent subsystem and keeps its rules local to this file.
+//! Centers the implementation around AgentResponseFormat, parse, as_str, with helpers kept close to their invariants.
+//! Defines how types data is validated, transformed, or stored before neighboring systems use it.
+//! Owns agent behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on types behavior while Lua registration stays elsewhere.
 
 use std::fmt;
 

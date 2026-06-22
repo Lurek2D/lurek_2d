@@ -4,7 +4,7 @@
 Each stub emits:
   1. A machine-readable marker line:   --@api-stub: Owner.functionName
   2. A one-line description comment
-  3. Real (minimal) executable Lua code that calls the API — NOT pseudocode.
+  3. Real (minimal) executable Lua code that calls the API â€” NOT pseudocode.
 
 The marker format allows example_coverage.py to distinguish hand-written scenario
 code from auto-generated stubs.  Run flesh-out-example.prompt.md to replace every
@@ -18,8 +18,8 @@ Usage:
     python tools/audit/example_add_missing.py --report         # exit 1 if stubs needed
 
 Exit codes:
-    0 — nothing to add (all 100%) or dry-run completed
-    1 — one or more stubs were appended (or --report with gaps)
+    0 â€” nothing to add (all 100%) or dry-run completed
+    1 â€” one or more stubs were appended (or --report with gaps)
 """
 from __future__ import annotations
 import argparse, json, re, sys
@@ -27,7 +27,12 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-API_JSON = ROOT / 'logs' / 'data' / 'lua_api_data.json'
+sys.path.insert(0, str(ROOT / "tools" / "docs"))
+import module_registry
+
+DOCS_DATA = module_registry.DOCS_DATA
+LEGACY_LOGS_DATA = module_registry.LEGACY_LOGS_DATA
+API_JSON = module_registry.lua_api_json_path()
 EXAMPLES_DIR = ROOT / 'content' / 'examples'
 
 
@@ -55,113 +60,41 @@ def find_target_file(examples_dir: Path, module: str, ex_filename: str) -> Path:
     # Fallback: create ex_filename in the target dir
     return direct
 
-# filename = module name exactly (src/render/ -> render.lua, src/ecs/ -> ecs.lua)
-MODULE_TO_EXAMPLE: dict[str, str] = {
-    'ai':          'ai.lua',
-    'animation':   'animation.lua',
-    'audio':       'audio.lua',
-    'automation':  'automation.lua',
-    'camera':      'camera.lua',
-    'compute':     'compute.lua',
-    'data':        'data.lua',
-    'dataframe':   'dataframe.lua',
-    'debugbridge': 'debugbridge.lua',
-    'devtools':    'devtools.lua',
-    'docs':        'docs.lua',
-    'ecs':         'ecs.lua',
-    'effect':      'effect.lua',
-    'engine':      'engine.lua',
-    'event':       'event.lua',
-    'filesystem':  'filesystem.lua',
-    'globe':       'globe.lua',
-    'graph':       'graph.lua',
-    'html':        'html.lua',
-    'i18n':        'i18n.lua',
-    'image':       'image.lua',
-    'input':       'input.lua',
-    'light':       'light.lua',
-    'log':         'log.lua',
-    'math':        'math.lua',
-    'minimap':     'minimap.lua',
-    'mods':        'mods.lua',
-    'network':     'network.lua',
-    'parallax':    'parallax.lua',
-    'particle':    'particle.lua',
-    'pathfind':    'pathfind.lua',
-    'patterns':    'patterns.lua',
-    'physics':     'physics.lua',
-    'pipeline':    'pipeline.lua',
-    'procgen':     'procgen.lua',
-    'raycaster':   'raycaster.lua',
-    'render':      'render.lua',
-    'save':        'save.lua',
-    'scene':       'scene.lua',
-    'serial':      'serial.lua',
-    'spine':       'spine.lua',
-    'sprite':      'sprite.lua',
-    'system':      'runtime.lua',
-    'terminal':    'terminal.lua',
-    'thread':      'thread.lua',
-    'tilemap':     'tilemap.lua',
-    'timer':       'timer.lua',
-    'tween':       'tween.lua',
-    'ui':          'ui.lua',
-    'window':      'window.lua',
+API_MODULE_TO_REGISTRY_MODULE = {
+    "engine": "app",
+    "system": "runtime",
+    "svg": "vector",
 }
 
-# Namespace = src/ folder name exactly (e.g. src/render/ -> lurek.render)
-NAMESPACE_MAP: dict[str, str] = {
-    'ai':          'ai',
-    'animation':   'animation',
-    'audio':       'audio',
-    'automation':  'automation',
-    'camera':      'camera',
-    'compute':     'compute',
-    'data':        'data',
-    'dataframe':   'dataframe',
-    'debugbridge': 'debugbridge',
-    'devtools':    'devtools',
-    'docs':        'docs',
-    'ecs':         'ecs',
-    'effect':      'effect',
-    'engine':      'engine',
-    'event':       'event',
-    'filesystem':  'filesystem',
-    'globe':       'globe',
-    'graph':       'graph',
-    'html':        'html',
-    'i18n':        'i18n',
-    'image':       'image',
-    'input':       'input',
-    'light':       'light',
-    'log':         'log',
-    'math':        'math',
-    'minimap':     'minimap',
-    'mods':        'mods',
-    'network':     'network',
-    'parallax':    'parallax',
-    'particle':    'particle',
-    'pathfind':    'pathfind',
-    'patterns':    'patterns',
-    'physics':     'physics',
-    'pipeline':    'pipeline',
-    'procgen':     'procgen',
-    'raycaster':   'raycaster',
-    'render':      'render',
-    'save':        'save',
-    'scene':       'scene',
-    'serial':      'serial',
-    'spine':       'spine',
-    'sprite':      'sprite',
-    'system':      'system',
-    'terminal':    'terminal',
-    'thread':      'thread',
-    'tilemap':     'tilemap',
-    'timer':       'timer',
-    'tween':       'tween',
-    'ui':          'ui',
-    'window':      'window',
+
+def registry_module_for_api_module(module_name: str) -> str:
+    return API_MODULE_TO_REGISTRY_MODULE.get(module_name, module_name)
+
+
+def _example_file(module_name: str) -> str:
+    registry_module = registry_module_for_api_module(module_name)
+    path = module_registry.module_example_file(registry_module)
+    return Path(path).name if path else f"{registry_module}.lua"
+
+
+def _namespace(module_name: str) -> str:
+    registry_module = registry_module_for_api_module(module_name)
+    namespace = module_registry.module_namespace(registry_module)
+    return namespace.removeprefix("lurek.") if namespace else module_name
+
+
+MODULE_TO_EXAMPLE: dict[str, str] = {
+    name: _example_file(name)
+    for name in module_registry.list_modules()
+    if module_registry.module_example_file(name)
 }
+MODULE_TO_EXAMPLE.update({alias: _example_file(alias) for alias in API_MODULE_TO_REGISTRY_MODULE})
+NAMESPACE_MAP: dict[str, str] = {
+    name: _namespace(name)
+    for name in module_registry.list_modules()
+    if module_registry.module_namespace(name)
+}
+NAMESPACE_MAP.update({alias: _namespace(alias) for alias in API_MODULE_TO_REGISTRY_MODULE})
 
 _LINE = '-' * 77
 
@@ -355,7 +288,7 @@ def main() -> int:
     examples_dir = resolve_examples_dir(args.examples_dir)
 
     if not API_JSON.exists():
-        print(f'ERROR: {API_JSON} not found — run python tools/gen_all_docs.py first')
+        print(f'ERROR: {API_JSON} not found â€” run python tools/gen_all_docs.py first')
         return 1
 
     all_entries = load_entries(API_JSON)
@@ -385,7 +318,7 @@ def main() -> int:
         print(f'\nDone. {action} {total_stubs} stub(s) across {len(modules)} module(s).')
         print('Next step: run .github/prompts/flesh-out-example.md to expand stubs.')
     else:
-        print('All example files are already 100% covered — nothing to add.')
+        print('All example files are already 100% covered â€” nothing to add.')
 
     if args.report and total_stubs:
         return 1

@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/event.md or source docstrings instead. -->
+
 # event
 
 ## TL;DR
@@ -7,12 +9,12 @@
 ## General Info
 
 - Module group: `Core Runtime`
-- Source path: `src/event/`
+- Source path: `src/event`
 - Binding: `src/lua_api/event_api.rs`
 - Namespace: `lurek.event`
 - Lua API surface: `16` functions, `2` types, `12` methods
-- Rust test path(s): tests/rust/unit/event_tests.rs
-- Lua test path(s): tests/lua/unit/test_event.lua, tests/lua/integration/test_audio_event.lua
+- User-facing: `true`
+- Plugin tier: `not_evaluated`
 
 ## Summary
 
@@ -24,11 +26,19 @@
 
 This module primarily collaborates with `runtime`. Its responsibility should stay inside the Core Runtime group rather than absorb behavior owned by those neighbors.
 
+## Ownership
+
+- Canonical source: `src/event`
+- Owning tier: `Core Runtime`
+- Plugin tier: `not_evaluated`
+- Lua binding owner: `src/lua_api/event_api.rs`
+- Referenced engine modules: `runtime`
+
 ## Imports
 
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `runtime`: Imports or references `src/runtime/`. Dependency stays inside `Core Runtime` and should remain acyclic.
 
-## Files
+## Source Files
 
 ### event_queue.rs
 
@@ -130,9 +140,23 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - `LSignal:type() -> string`: Returns the Lua-visible type name for this signal handle.
 - `LSignal:typeOf(name) -> boolean`: Returns whether this signal handle matches a supported type name.
 
-## References
+## Examples
 
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `content/examples/event.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_event_unit.lua` (present)
+- Rust: `src/event/event_queue.rs`
+- Rust: `tests/rust/unit/event_tests.rs`
+
+## Evidence / Golden
+
+- No evidence or golden artifacts registered.
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

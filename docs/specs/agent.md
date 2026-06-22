@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/agent.md or source docstrings instead. -->
+
 # agent
 
 ## TL;DR
@@ -9,12 +11,12 @@
 ## General Info
 
 - Module group: `Feature Systems`
-- Source path: `src/agent/`
+- Source path: `src/agent`
 - Binding: `src/lua_api/agent_api.rs`
 - Namespace: `lurek.agent`
 - Lua API surface: `21` functions, `10` types, `91` methods
-- Rust test path(s): tests/rust/unit/agent_tests.rs
-- Lua test path(s): tests/lua/unit/test_agent_core_unit.lua
+- User-facing: `true`
+- Plugin tier: `not_evaluated`
 
 ## Summary
 
@@ -33,11 +35,19 @@
 
 This module primarily collaborates with `network`. Its responsibility should stay inside the `Feature Systems` group rather than absorb behavior owned by those neighbors.
 
+## Ownership
+
+- Canonical source: `src/agent`
+- Owning tier: `Feature Systems`
+- Plugin tier: `not_evaluated`
+- Lua binding owner: `src/lua_api/agent_api.rs`
+- Referenced engine modules: `network`
+
 ## Imports
 
-- `network`: `src/agent/client.rs` delegates HTTP transport to `crate::network::http::execute_request`.
+- `network`: Imports or references `src/network/`. Cross-group dependency from `Feature Systems` into `Core Runtime`.
 
-## Files
+## Source Files
 
 ### chat.rs
 
@@ -51,21 +61,25 @@ This module primarily collaborates with `network`. Its responsibility should sta
 
 ### client.rs
 
-- This file owns `AgentClient`, the background prompt transport that keeps model HTTP work off the frame loop.
-- It tracks bounded queued and in-flight work, exposes diagnostics, and keeps cancellation Lua-safe.
-- Send logic uses a fixed worker pool instead of per-request thread spawn and retries only transient failures.
-- Polling returns finished `AgentResponse` values in batches, letting Lua runtimes drain work at safe update points.
-- Open this file when transport lifecycle changes; payload contracts and request shaping live in sibling files.
+- Owns agent behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps agent data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+- Defines how client data is validated, transformed, or stored before neighboring systems use it.
+- Owns agent behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on client behavior while Lua registration stays elsewhere.
+- Documents where agent callers should change defaults, errors, or lifecycle behavior. with focused crate-local behavior.
+- Use this file when changing client defaults, lifecycle handling, validation, or data ownership.
+- Keeps failure paths and edge cases near the agent state that can explain them while keeping call sites explicit.
 
 ### memory.rs
 
-- This file owns layered agent memory: bounded working slots, append-only episodes, semantic facts, and persistence.
-- `WorkingMemory` keeps recent key-value context with capacity-based eviction so prompt state stays compact and fresh.
-- `EpisodicMemory` records tick-stamped event snapshots and supports equality-filter queries plus age-based pruning.
-- `SemanticMemory` stores named JSON facts for durable recall and object-field filtering outside immediate chat turns.
-- `AgentMemory` bundles the three stores, safe disk persistence policy, and schema-validated save or load paths.
-- Persistence uses atomic writes, a versioned envelope, and a sandbox rooted in the current workspace directory.
-- Open this file when recall semantics change; request transport and prompt assembly live in sibling files.
+- Owns the memory store for the agent subsystem and keeps its rules local to this file while keeping call sites explicit.
+- Keeps agent data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+- Defines how memory data is validated, transformed, or stored before neighboring systems use it.
+- Owns agent behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on memory behavior while Lua registration stays elsewhere.
+- Documents where agent callers should change defaults, errors, or lifecycle behavior. with focused crate-local behavior.
+- Use this file when changing memory defaults, lifecycle handling, validation, or data ownership.
+- Keeps failure paths and edge cases near the agent state that can explain them while keeping call sites explicit.
 
 ### mod.rs
 
@@ -78,12 +92,15 @@ This module primarily collaborates with `network`. Its responsibility should sta
 
 ### ollama.rs
 
-- This file owns `OllamaManager`, plus model and pull result structs for local backend lifecycle control.
-- It checks server reachability, reports versions, lists local models, and tests whether specific models are present.
-- Process helpers start, stop, and restart `ollama serve` through an explicit process policy with health checks.
-- Pull operations run through a bounded worker pool and validate model names against the configured model policy.
-- Deletion supports protected models and explicit confirmation tokens for destructive actions.
-- Open this file when local backend control changes; synchronous chat calls and async prompt transport live nearby.
+- Owns the ollama owner for the agent subsystem and keeps its rules local to this file while keeping call sites explicit.
+- Keeps agent data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+- Defines how ollama data is validated, transformed, or stored before neighboring systems use it.
+- Owns agent behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on ollama behavior while Lua registration stays elsewhere.
+- Documents where agent callers should change defaults, errors, or lifecycle behavior. with focused crate-local behavior.
+- Use this file when changing ollama defaults, lifecycle handling, validation, or data ownership.
+- Keeps failure paths and edge cases near the agent state that can explain them while keeping call sites explicit.
+- Preserves deterministic behavior by keeping ollama calculations explicit at their owner boundary.
 
 ### orchestration.rs
 
@@ -94,19 +111,23 @@ This module primarily collaborates with `network`. Its responsibility should sta
 
 ### state.rs
 
-- This file owns `AgentState`, `SystemSkill`, and `AISystemState`, the mutable config layer behind agent requests.
-- `AgentState` stores validated endpoint, model, prompt, format, options, skills, retries, and timeout for one caller.
-- Request builders turn that state into stable `AgentRequest` payloads and reject unsafe URLs, options, or oversized context.
-- `AISystemState` holds shared system prompts, named instruction blocks, and keyword-matched skills with provenance.
-- Context assembly merges explicit instructions and matched skills into structured prompt text for downstream agents.
-- Open it when request-shaping rules change; background delivery and memory behavior live in sibling modules.
+- Owns agent behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps agent data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+- Defines how state data is validated, transformed, or stored before neighboring systems use it.
+- Owns agent behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on state behavior while Lua registration stays elsewhere.
+- Documents where agent callers should change defaults, errors, or lifecycle behavior. with focused crate-local behavior.
+- Use this file when changing state defaults, lifecycle handling, validation, or data ownership.
+- Keeps failure paths and edge cases near the agent state that can explain them while keeping call sites explicit.
+- Preserves deterministic behavior by keeping state calculations explicit at their owner boundary.
 
 ### types.rs
 
-- This file owns `AgentError`, `AgentRequest`, and `AgentResponse`, the shared payload contract for agent I/O.
-- It keeps callback ids, prompt envelopes, response bodies, and stable error codes aligned across runtime layers.
-- Error helpers classify retryable failures and expose Lua-safe codes without coupling callers to transport details.
-- Open this file when request or response structure changes; client execution and state assembly live in siblings.
+- Owns the shared type model for the agent subsystem and keeps its rules local to this file.
+- Centers the implementation around AgentResponseFormat, parse, as_str, with helpers kept close to their invariants.
+- Defines how types data is validated, transformed, or stored before neighboring systems use it.
+- Owns agent behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on types behavior while Lua registration stays elsewhere.
 
 
 
@@ -353,9 +374,29 @@ This module primarily collaborates with `network`. Its responsibility should sta
 - `LWorkingMemory:len() -> integer`: Returns the current number of entries.
 - `LWorkingMemory:push(key, value) -> nil`: Inserts or updates a key-value entry; evicts the oldest entry if capacity is exceeded.
 
-## References
+## Examples
 
-- `network`: `src/agent/client.rs` delegates HTTP transport to `crate::network::http::execute_request`.
+- `content/examples/agent.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_agent_unit.lua` (present)
+- Rust: `tests/rust/unit/agent_tests.rs`
+
+## Evidence / Golden
+
+| Kind | Path |
+|---|---|
+| Evidence test | `tests/lua/evidence/test_agent_evidence.lua` |
+| Golden test | `tests/lua/golden/test_agent_golden.lua` |
+| Current artifact | `tests/artifacts/current/agent/agent_context_memory_report.txt` |
+| Current artifact | `tests/artifacts/current/agent/agent_memory_bundle.json` |
+| Baseline artifact | `tests/artifacts/baselines/agent/agent_context_memory_report.txt` |
+| Baseline artifact | `tests/artifacts/baselines/agent/agent_memory_bundle.json` |
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

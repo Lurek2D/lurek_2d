@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/input.md or source docstrings instead. -->
+
 # input
 
 ## TL;DR
@@ -8,12 +10,12 @@
 ## General Info
 
 - Module group: `Platform Services`
-- Source path: `src/input/`
+- Source path: `src/input`
 - Binding: `src/lua_api/input_api.rs`
 - Namespace: `lurek.input`
 - Lua API surface: `89` functions, `8` types, `18` methods
-- Rust test path(s): tests/rust/unit/input_tests.rs
-- Lua test path(s): tests/lua/unit/test_input.lua, tests/lua/integration/test_input_camera.lua
+- User-facing: `true`
+- Plugin tier: `not_evaluated`
 
 ## Summary
 
@@ -32,18 +34,28 @@
 
 This module primarily collaborates with `filesystem`, `runtime`. Its responsibility should stay inside the Platform Services group rather than absorb behavior owned by those neighbors.
 
+## Ownership
+
+- Canonical source: `src/input`
+- Owning tier: `Platform Services`
+- Plugin tier: `not_evaluated`
+- Lua binding owner: `src/lua_api/input_api.rs`
+- Referenced engine modules: `filesystem`, `runtime`
+
 ## Imports
 
 - `filesystem`: Imports or references `src/filesystem/`. Cross-group dependency from `Platform Services` into `Core Runtime`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Platform Services` into `Core Runtime`.
 
-## Files
+## Source Files
 
 ### action_def.rs
 
-- This file owns `ActionDef` and `ActionMap`, the serializable action-binding data used by the input system.
-- It stores ordered binding strings and optional category labels so menus and tools can group logical actions.
-- Open this file when binding schema changes; live device polling and combo logic live in sibling modules.
+- Owns input behavior with explicit state, validation, and crate-local integration boundaries.
+- Centers the implementation around InputBinding, parse, to_canonical_string, with helpers kept close to their invariants.
+- Defines how action def data is validated, transformed, or stored before neighboring systems use it.
+- Owns input behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on action def behavior while Lua registration stays elsewhere.
 
 ### combo.rs
 
@@ -90,21 +102,23 @@ This module primarily collaborates with `filesystem`, `runtime`. Its responsibil
 
 ### mouse.rs
 
-- This file owns `MouseState`, `SystemCursor`, `CursorKind`, and `CursorHandle`, the runtime mouse model.
-- It stores cursor position, button hold state, frame-local press and release deltas, visibility, grab, and scroll.
-- Request helpers also queue cursor warps and track relative mode so window integration can apply OS-side changes.
-- Cursor enums separate built-in OS shapes from custom RGBA cursor images with explicit hotspot coordinates.
-- The file keeps pointer state and cursor policy together, but leaves host event dispatch to the app runtime owner.
-- Open it when mouse semantics change; touch, keyboard, and combo logic live in sibling input modules.
+- Owns the mouse owner for the input subsystem and keeps its rules local to this file while keeping call sites explicit.
+- Centers the implementation around CursorImageLimits, default, SystemCursor, with helpers kept close to their invariants.
+- Defines how mouse data is validated, transformed, or stored before neighboring systems use it.
+- Owns input behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on mouse behavior while Lua registration stays elsewhere.
+- Documents where input callers should change defaults, errors, or lifecycle behavior. with focused crate-local behavior.
+- Use this file when changing mouse defaults, lifecycle handling, validation, or data ownership.
 
 ### recorder.rs
 
-- This file owns `InputEvent`, `RecordedFrame`, `InputRecording`, and `InputRecorder` replay state.
-- It stores sparse frame activity, total frame counts, playback cursors, and recorder lifecycle booleans.
-- Serialization uses a versioned JSON envelope so persisted recordings can be validated on load and save.
-- Recording helpers append per-frame events and mouse positions, while playback re-emits events on original frames.
-- The owner boundary is about deterministic capture and replay, not about collecting raw device state itself.
-- Open this file when replay schema or playback semantics change; live device polling lives in sibling files.
+- Owns input behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps input data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+- Defines how recorder data is validated, transformed, or stored before neighboring systems use it.
+- Owns input behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on recorder behavior while Lua registration stays elsewhere.
+- Documents where input callers should change defaults, errors, or lifecycle behavior. with focused crate-local behavior.
+- Use this file when changing recorder defaults, lifecycle handling, validation, or data ownership.
 
 ### touch.rs
 
@@ -343,10 +357,22 @@ This module primarily collaborates with `filesystem`, `runtime`. Its responsibil
 
 - No documented methods.
 
-## References
+## Examples
 
-- `filesystem`: Imports or references `src/filesystem/`. Cross-group dependency from `Platform Services` into `Core Runtime`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `content/examples/input.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_input_unit.lua` (present)
+- Rust: `tests/rust/unit/input_tests.rs`
+
+## Evidence / Golden
+
+- No evidence or golden artifacts registered.
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

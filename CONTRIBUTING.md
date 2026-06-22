@@ -1,6 +1,6 @@
 # Contributing to Lurek2D
 
-Lurek2D is a desktop-only 2D engine written in Rust that runs Lua game scripts. Read [docs/architecture/philosophy.md](docs/architecture/philosophy.md) and [docs/architecture/engine-architecture.md](docs/architecture/engine-architecture.md) before making structural changes.
+Lurek2D is a desktop-only 2D engine written in Rust that runs Lua game scripts. Read [docs/architecture/philosophy.md](docs/architecture/philosophy.md), [docs/architecture/engine-architecture.md](docs/architecture/engine-architecture.md), and [docs/architecture/docs-system.md](docs/architecture/docs-system.md) before making structural or documentation-flow changes.
 
 ---
 

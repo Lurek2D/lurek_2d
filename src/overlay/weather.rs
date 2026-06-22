@@ -1,8 +1,10 @@
-//! This file owns `WeatherType`, `WeatherParticle`, `WeatherProfile`, and `WeatherState`, the screen-space weather data model.
-//! It catalogs rain, snow, hail, dust, leaves, ash, and pollen behaviors with stable lowercase lookup names.
-//! Runtime state stores intensity, wind, live particles, spawn timing, validated per-type profiles, and PRNG state used for variation.
-//! The local helpers cover RNG sampling, seed/state control, and profile validation; particle spawning and motion updates live in the controller.
-//! Open this file when weather data semantics change; overlay orchestration and other atmosphere blocks live in siblings.
+//! Owns overlay behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps overlay data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+//! Defines how weather data is validated, transformed, or stored before neighboring systems use it.
+//! Owns overlay behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on weather behavior while Lua registration stays elsewhere.
+//! Documents the boundary where overlay code accepts inputs, reports errors, or updates state.
+//! Use this file when changing weather defaults, lifecycle handling, validation, or data ownership.
 
 use std::collections::HashMap;
 

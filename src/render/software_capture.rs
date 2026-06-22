@@ -1,17 +1,13 @@
-//! Implements CPU-side screenshot capture by replaying supported render commands into mutable ImageData output.
-//! Exists as a fallback path for tests, headless evidence, and environments where GPU readback is unavailable.
-//! Replays a practical subset of RenderCommand values so visual assertions can run without a live graphics device.
-//! Includes local transform, pixel write, stencil, and line helpers needed to rasterize queued commands in software.
-//! Keeps capture logic separate from the main GPU renderer so test-friendly output does not complicate frame code.
-//! Acts as the software-capture boundary between front-end render commands and headless image generation.
-//! Provides one owner for CPU replay semantics, making screenshot differences easier to debug in non-GPU runs.
-//! Support matrix:
-//! - Supported state: color, line width, point size, transforms, scissor, color masks, and stencil controls.
-//! - Supported geometry: rectangles, rounded rectangles, circles, ellipses, triangles, polygons, lines, polylines, arcs, and points.
-//! - Approximated geometry: colored polygons, convex fans, and transient meshes render as solid CPU polygons.
-//! - Ignored and counted: GPU resources, textures, text, shaders, post-fx, layers, sort groups, batches, registered meshes, and physics/Spine debug paths.
-//! Open this file when headless capture output differs from expected draw behavior or misses command coverage.
-//! Use this owner before GPU renderer changes when only software screenshot evidence appears incorrect.
+//! Owns the software capture owner for the render subsystem and keeps its rules local to this file.
+//! Keeps render data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+//! Defines how software capture data is validated, transformed, or stored before neighboring systems use it.
+//! Owns render behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on software capture behavior while Lua registration stays elsewhere.
+//! Documents the boundary where render code accepts inputs, reports errors, or updates state.
+//! Use this file when changing software capture defaults, lifecycle handling, validation, or data ownership.
+//! Keeps failure paths and edge cases near the render state that can explain them while keeping call sites explicit.
+//! Preserves deterministic behavior by keeping software capture calculations explicit at their owner boundary.
+//! Provides the local adaptation layer that lets callers avoid duplicating render rules while keeping call sites explicit.
 
 use crate::image::ImageData;
 use crate::render::mesh::Mesh;

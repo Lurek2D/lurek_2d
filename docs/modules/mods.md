@@ -799,7 +799,8 @@ LMod:getSandbox()
 ```lua
 do
     ensure_dir("save")
-    local root = "save/_mods_sandbox_readback/"
+    local root = "save/_mods_sandbox_readback"
+    local root_abs = lurek.filesystem.getSaveDirectory() .. "/_mods_sandbox_readback"
     ensure_dir(root)
     local mod = lurek.mods.newMod({ id = "sandbox_readback", name = "Sandbox Readback" })
     mod:setSandbox({
@@ -808,7 +809,7 @@ do
         hook_mode = "allow_list",
         hooks = { "on_load" },
         read_mode = "allow_list",
-        read_roots = { root },
+        read_roots = { root_abs },
         blocked_ops = { "filesystem.remove" },
         allow_network = false,
         allow_file_write = false,
@@ -1205,7 +1206,8 @@ LMod:setSandbox(sandbox)
 do
     ensure_dir("save")
     ensure_dir("save/example-mods")
-    local root = "save/_mods_sandbox_unit/"
+    local root = "save/_mods_sandbox_unit"
+    local root_abs = lurek.filesystem.getSaveDirectory() .. "/_mods_sandbox_unit"
     ensure_dir(root)
     local mod = lurek.mods.newMod({ id = "sandbox_guard", name = "Sandbox Guard" })
     mod:setSandbox({
@@ -1214,7 +1216,7 @@ do
         hook_mode = "allow_list",
         hooks = { "on_load" },
         read_mode = "allow_list",
-        read_roots = { root },
+        read_roots = { root_abs },
         allow_network = false,
         allow_file_write = false,
         max_memory = 4096,

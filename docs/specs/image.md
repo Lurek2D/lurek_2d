@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/image.md or source docstrings instead. -->
+
 # image
 
 ## TL;DR
@@ -8,12 +10,12 @@
 ## General Info
 
 - Module group: `Platform Services`
-- Source path: `src/image/`
+- Source path: `src/image`
 - Binding: `src/lua_api/image_api.rs`
 - Namespace: `lurek.image`
 - Lua API surface: `13` functions, `10` types, `90` methods
-- Rust test path(s): tests/rust/unit/image_tests.rs, tests/rust/stress/image_stress_tests.rs
-- Lua test path(s): tests/lua/unit/test_image_core_unit.lua, tests/lua/unit/test_image.lua, tests/lua/unit/test_image_effect.lua, tests/lua/unit/test_render_core_unit.lua, tests/lua/stress/test_image_stress.lua, tests/lua/evidence/test_evidence_image_drawing.lua, tests/lua/evidence/test_evidence_imagedata.lua, tests/lua/evidence/test_evidence_image_effects.lua, tests/lua/evidence/test_evidence_imagedata_effects.lua
+- User-facing: `true`
+- Plugin tier: `not_evaluated`
 
 ## Summary
 
@@ -36,17 +38,25 @@
 
 This module primarily collaborates with `animation`, `camera`, `color`, `math`, `province`, `render`, `runtime`. Its responsibility should stay inside the Platform Services group rather than absorb behavior owned by those neighbors.
 
+## Ownership
+
+- Canonical source: `src/image`
+- Owning tier: `Platform Services`
+- Plugin tier: `not_evaluated`
+- Lua binding owner: `src/lua_api/image_api.rs`
+- Referenced engine modules: `animation`, `camera`, `color`, `math`, `province`, `render`, `runtime`
+
 ## Imports
 
-- `animation`: Imports or references `animation` from `src/animation/`.
-- `camera`: Imports or references `camera` from `src/camera/`.
-- `color`: Imports or references `src/color/`. Cross-group dependency from `Platform Services` into `Edge/Integration`.
-- `math`: Imports or references `math` from `src/math/`.
-- `province`: Imports or references `src/province/`. Cross-group dependency from `Platform Services` into `Edge/Integration`.
-- `render`: Imports or references `render` from `src/render/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `animation`: Imports or references `src/animation/`. Cross-group dependency from `Platform Services` into `Feature Systems`.
+- `camera`: Imports or references `src/camera/`. Dependency stays inside `Platform Services` and should remain acyclic.
+- `color`: Imports or references `src/color/`. Cross-group dependency from `Platform Services` into `Foundations`.
+- `math`: Imports or references `src/math/`. Cross-group dependency from `Platform Services` into `Foundations`.
+- `province`: Imports or references `src/province/`. Cross-group dependency from `Platform Services` into `Feature Systems`.
+- `render`: Imports or references `src/render/`. Dependency stays inside `Platform Services` and should remain acyclic.
+- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Platform Services` into `Core Runtime`.
 
-## Files
+## Source Files
 
 ### animated_gif.rs
 
@@ -503,15 +513,90 @@ This module primarily collaborates with `animation`, `camera`, `color`, `math`, 
 
 - No documented methods.
 
-## References
+## Examples
 
-- `animation`: Imports or references `animation` from `src/animation/`.
-- `camera`: Imports or references `camera` from `src/camera/`.
-- `color`: Imports or references `src/color/`. Cross-group dependency from `Platform Services` into `Edge/Integration`.
-- `math`: Imports or references `math` from `src/math/`.
-- `province`: Imports or references `src/province/`. Cross-group dependency from `Platform Services` into `Edge/Integration`.
-- `render`: Imports or references `render` from `src/render/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `content/examples/image.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_image_unit.lua` (present)
+- Rust: `src/image/image_data.rs`
+- Rust: `src/image/visualization/image_ops.rs`
+- Rust: `tests/rust/unit/image_tests.rs`
+
+## Evidence / Golden
+
+| Kind | Path |
+|---|---|
+| Evidence test | `tests/lua/evidence/test_image_evidence.lua` |
+| Golden test | `tests/lua/golden/test_image_golden.lua` |
+| Current artifact | `tests/artifacts/current/image/gradient_horizontal.png` |
+| Current artifact | `tests/artifacts/current/image/gradient_vertical.png` |
+| Current artifact | `tests/artifacts/current/image/image_animated_pulse_sequence.gif` |
+| Current artifact | `tests/artifacts/current/image/image_blur_crop.png` |
+| Current artifact | `tests/artifacts/current/image/image_cropped_grayscale.png` |
+| Current artifact | `tests/artifacts/current/image/image_drawing_primitives_scene.png` |
+| Current artifact | `tests/artifacts/current/image/image_effect_base.png` |
+| Current artifact | `tests/artifacts/current/image/image_effect_grayscale.png` |
+| Current artifact | `tests/artifacts/current/image/image_effect_invert.png` |
+| Current artifact | `tests/artifacts/current/image/image_effect_posterize.png` |
+| Current artifact | `tests/artifacts/current/image/image_layered_merge_scene.png` |
+| Current artifact | `tests/artifacts/current/image/image_layered_opacity_visibility.png` |
+| Current artifact | `tests/artifacts/current/image/image_layered_swapped.limg` |
+| Current artifact | `tests/artifacts/current/image/image_low_level_filtered.png` |
+| Current artifact | `tests/artifacts/current/image/image_low_level_pipeline_trace.txt` |
+| Current artifact | `tests/artifacts/current/image/image_low_level_raw_clone.png` |
+| Current artifact | `tests/artifacts/current/image/image_low_level_region.png` |
+| Current artifact | `tests/artifacts/current/image/image_paste_composite.png` |
+| Current artifact | `tests/artifacts/current/image/image_pixel_grid.png` |
+| Current artifact | `tests/artifacts/current/image/image_province_grid_source.png` |
+| Current artifact | `tests/artifacts/current/image/image_province_palette_topology.png` |
+| Current artifact | `tests/artifacts/current/image/image_province_palette_topology_trace.txt` |
+| Current artifact | `tests/artifacts/current/image/image_resize_nearest.png` |
+| Current artifact | `tests/artifacts/current/image/image_resize_smooth.png` |
+| Current artifact | `tests/artifacts/current/image/image_shape_concentric_circles.png` |
+| Current artifact | `tests/artifacts/current/image/image_shape_radiating_lines.png` |
+| Current artifact | `tests/artifacts/current/image/image_shape_rect_grid.png` |
+| Current artifact | `tests/artifacts/current/image/image_sharpen_crop.png` |
+| Current artifact | `tests/artifacts/current/image/image_threshold_128.png` |
+| Current artifact | `tests/artifacts/current/image/image_transform_flip_horizontal.png` |
+| Current artifact | `tests/artifacts/current/image/image_transform_flip_vertical.png` |
+| Current artifact | `tests/artifacts/current/image/image_transform_original.png` |
+| Current artifact | `tests/artifacts/current/image/image_transform_rotate90.png` |
+| Current artifact | `tests/artifacts/current/image/tileset_128x128.png` |
+| Baseline artifact | `tests/artifacts/baselines/image/gradient_horizontal.png` |
+| Baseline artifact | `tests/artifacts/baselines/image/gradient_vertical.png` |
+| Baseline artifact | `tests/artifacts/baselines/image/image_blur_crop.png` |
+| Baseline artifact | `tests/artifacts/baselines/image/image_cropped_grayscale.png` |
+| Baseline artifact | `tests/artifacts/baselines/image/image_drawing_primitives_scene.png` |
+| Baseline artifact | `tests/artifacts/baselines/image/image_effect_base.png` |
+| Baseline artifact | `tests/artifacts/baselines/image/image_effect_grayscale.png` |
+| Baseline artifact | `tests/artifacts/baselines/image/image_effect_invert.png` |
+| Baseline artifact | `tests/artifacts/baselines/image/image_effect_posterize.png` |
+| Baseline artifact | `tests/artifacts/baselines/image/image_layered_merge_scene.png` |
+| Baseline artifact | `tests/artifacts/baselines/image/image_layered_opacity_visibility.png` |
+| Baseline artifact | `tests/artifacts/baselines/image/image_layered_swapped.limg` |
+| Baseline artifact | `tests/artifacts/baselines/image/image_low_level_filtered.png` |
+| Baseline artifact | `tests/artifacts/baselines/image/image_low_level_raw_clone.png` |
+| Baseline artifact | `tests/artifacts/baselines/image/image_low_level_region.png` |
+| Baseline artifact | `tests/artifacts/baselines/image/image_paste_composite.png` |
+| Baseline artifact | `tests/artifacts/baselines/image/image_pixel_grid.png` |
+| Baseline artifact | `tests/artifacts/baselines/image/image_resize_nearest.png` |
+| Baseline artifact | `tests/artifacts/baselines/image/image_resize_smooth.png` |
+| Baseline artifact | `tests/artifacts/baselines/image/image_shape_concentric_circles.png` |
+| Baseline artifact | `tests/artifacts/baselines/image/image_shape_radiating_lines.png` |
+| Baseline artifact | `tests/artifacts/baselines/image/image_shape_rect_grid.png` |
+| Baseline artifact | `tests/artifacts/baselines/image/image_sharpen_crop.png` |
+| Baseline artifact | `tests/artifacts/baselines/image/image_threshold_128.png` |
+| Baseline artifact | `tests/artifacts/baselines/image/image_transform_flip_horizontal.png` |
+| Baseline artifact | `tests/artifacts/baselines/image/image_transform_flip_vertical.png` |
+| Baseline artifact | `tests/artifacts/baselines/image/image_transform_original.png` |
+| Baseline artifact | `tests/artifacts/baselines/image/image_transform_rotate90.png` |
+| Baseline artifact | `tests/artifacts/baselines/image/tileset_128x128.png` |
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

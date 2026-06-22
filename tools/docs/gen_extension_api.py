@@ -25,6 +25,11 @@ import json
 import os
 import sys
 from datetime import date
+from pathlib import Path
+
+WORKSPACE_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(WORKSPACE_ROOT / "tools" / "docs"))
+import module_registry
 
 # Engine callbacks are sourced from `engine_callbacks` in logs/data/lua_api_data.json,
 # which is extracted from Rust `@engine-callback` tags in src/app/lua_callbacks.rs.
@@ -236,7 +241,7 @@ Examples:
         epilog=epilog,
         formatter_class=RawDescriptionHelpFormatter
     )
-    parser.add_argument("--input",   default=os.path.join(repo_root, "logs", "data", "lua_api_data.json"))
+    parser.add_argument("--input",   default=str(module_registry.lua_api_json_path()))
     parser.add_argument("--output",  default=os.path.join(repo_root, "extension", "vscode", "data", "lurek-api.json"))
     parser.add_argument("--verbose", action="store_true")
     args = parser.parse_args()

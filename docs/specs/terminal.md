@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/terminal.md or source docstrings instead. -->
+
 # terminal
 
 ## TL;DR
@@ -8,12 +10,12 @@
 ## General Info
 
 - Module group: `Feature Systems`
-- Source path: `src/terminal/`
+- Source path: `src/terminal`
 - Binding: `src/lua_api/terminal_api.rs`
 - Namespace: `lurek.terminal`
 - Lua API surface: `31` functions, `3` types, `66` methods
-- Rust test path(s): tests/rust/unit/terminal_tests.rs, tests/rust/ext/terminal_demo_smoke_tests.rs
-- Lua test path(s): tests/lua/unit/test_terminal_core_unit.lua
+- User-facing: `true`
+- Plugin tier: `tier_1_plugin`
 
 ## Summary
 
@@ -31,13 +33,21 @@
 
 This module primarily collaborates with `image`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
 
+## Ownership
+
+- Canonical source: `src/terminal`
+- Owning tier: `Feature Systems`
+- Plugin tier: `tier_1_plugin`
+- Lua binding owner: `src/lua_api/terminal_api.rs`
+- Referenced engine modules: `image`, `render`, `runtime`
+
 ## Imports
 
-- `image`: Imports or references `image` from `src/image/`.
-- `render`: Imports or references `render` from `src/render/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `image`: Imports or references `src/image/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
+- `render`: Imports or references `src/render/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
+- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Feature Systems` into `Core Runtime`.
 
-## Files
+## Source Files
 
 ### ansi.rs
 
@@ -79,26 +89,30 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 
 ### render.rs
 
-- This file owns terminal-to-render export helpers that flatten the composed cell surface into visual outputs.
-- `generate_render_commands` translates cells into `RenderCommand` streams with colored backgrounds and glyphs.
-- `draw_to_image` rasterizes the same terminal surface into a readable `ImageData` snapshot for tools or previews.
-- Both paths read the composed grid through terminal helpers, so widget overlays are included automatically.
-- Open it when terminal visual export changes; core grid mutation and widget layout live in sibling state files.
+- Owns the rendering path for the terminal subsystem and keeps its rules local to this file.
+- Centers the implementation around LineGlyph, fn, color_channel, with helpers kept close to their invariants.
+- Defines how render data is validated, transformed, or stored before neighboring systems use it.
+- Owns terminal behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on render behavior while Lua registration stays elsewhere.
+- Documents the boundary where terminal code accepts inputs, reports errors, or updates state.
+- Use this file when changing render defaults, lifecycle handling, validation, or data ownership.
 
 ### terminal_state.rs
 
-- This file owns `Terminal`, the main state machine for the character grid, cursor, widgets, and histories.
-- It stores the row-major cell buffer, focus state, clipboard, command history, scrollback, and size overrides.
-- Helper functions draw compact buttons, frames, cursor text, and bounded writes onto composed cell slices.
-- Input handlers route keyboard, text, and mouse events to focused widgets and emit typed terminal events.
-- Text-box editing covers cursor movement, selection replacement, clipboard shortcuts, and word deletes.
-- List handling covers focus, selection, scrolling, and mouse hit resolution for terminal UI controls.
-- Render composition overlays visible widgets on top of the base grid and reuses scratch buffers.
-- Border rendering, panel child maintenance, and widget removal cleanup keep layered layouts consistent.
-- Public grid APIs cover cell reads, writes, resizing, colored printing, default colors, and cursor moves.
-- History APIs manage scrollback limits, command navigation, and durable memory beyond render output.
-- Command builders translate the composed surface into batched render commands without duplicated logic.
-- Open it when terminal interaction or surface semantics change; widgets and exporters depend on it.
+- Owns the terminal state owner for the terminal subsystem and keeps its rules local to this file.
+- Centers the implementation around MAX_COLS, MAX_ROWS, BUTTON_FG, with helpers kept close to their invariants.
+- Defines how terminal state data is validated, transformed, or stored before neighboring systems use it.
+- Owns terminal behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on terminal state behavior while Lua registration stays elsewhere.
+- Documents the boundary where terminal code accepts inputs, reports errors, or updates state.
+- Use this file when changing terminal state defaults, lifecycle handling, validation, or data ownership.
+- Keeps failure paths and edge cases near the terminal state that can explain them while keeping call sites explicit.
+- Preserves deterministic behavior by keeping terminal state calculations explicit at their owner boundary.
+- Owns terminal behavior with explicit state, validation, and crate-local integration boundaries.
+- Maintains small helper surfaces so broader engine modules can compose terminal state behavior safely.
+- Protects subsystem contracts by keeping resource, cache, or state mutations visible in one place.
+- Links adjacent concerns only where terminal state changes need coordination with owned engine data.
+- Keeps terminal data ownership and helper behavior clear for future engine maintenance. for engine changes.
 
 ### text_utils.rs
 
@@ -108,14 +122,16 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 
 ### widget.rs
 
-- This file owns the terminal widget model used to build labels, buttons, text boxes, lists, borders, and panels.
-- `BorderStyle` defines frame glyph choices, while `WidgetBase` centralizes position, size, visibility, and tags.
-- `WidgetKind` stores kind-specific data for text, selection, scroll, border styling, and panel child membership.
-- `Widget` constructors create grid-aligned UI parts with size clamping that matches terminal row limits.
-- Mutation helpers keep text, color, max-length, selection, border style, and title updates in one owner.
-- List helpers manage item addition, removal, scroll, and 1-based selection semantics used by input handlers.
-- Kind-check helpers let callers branch on widget behavior without matching all enum payloads at each call site.
-- Open it when terminal UI object semantics change; event dispatch and rendering integration live in state.
+- Owns the widget runtime for the terminal subsystem and keeps its rules local to this file.
+- Centers the implementation around BorderStyle, from_str_name, as_str, with helpers kept close to their invariants.
+- Defines how widget data is validated, transformed, or stored before neighboring systems use it.
+- Owns terminal behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on widget behavior while Lua registration stays elsewhere.
+- Documents the boundary where terminal code accepts inputs, reports errors, or updates state.
+- Use this file when changing widget defaults, lifecycle handling, validation, or data ownership.
+- Keeps failure paths and edge cases near the terminal state that can explain them while keeping call sites explicit.
+- Preserves deterministic behavior by keeping widget calculations explicit at their owner boundary.
+- Owns terminal behavior with explicit state, validation, and crate-local integration boundaries.
 
 
 
@@ -152,8 +168,8 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 - `lurek.terminal.scrollbackLen(terminal) -> integer`: Returns the number of lines currently stored in the terminal scrollback buffer.
 - `lurek.terminal.setScrollbackCap(terminal, cap) -> nil`: Sets the maximum number of lines retained in the terminal scrollback buffer. Older lines are discarded when the cap is exceeded.
 - `lurek.terminal.stripAnsi(text) -> string`: Removes all ANSI escape sequences from a string, returning plain text.
-- `lurek.terminal.tryPushCmdHistory(terminal, cmd) -> boolean, string?`: Strictly appends a command string to the terminal command history.
-- `lurek.terminal.tryPushScrollback(terminal, line) -> boolean, string?`: Strictly appends a line of text to the terminal scrollback buffer.
+- `lurek.terminal.tryPushCmdHistory(terminal, cmd) -> boolean, string`: Strictly appends a command string to the terminal command history.
+- `lurek.terminal.tryPushScrollback(terminal, line) -> boolean, string`: Strictly appends a line of text to the terminal scrollback buffer.
 
 ### Callbacks
 
@@ -201,10 +217,10 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 - `LTerminal:setFocus(widget?) -> nil`: Sets which widget currently has keyboard focus, or clears focus when nil is passed.
 - `LTerminal:setFont(height) -> nil`: Selects the nearest built-in bitmap font by pixel height and refits the window to the terminal grid.
 - `LTerminal:textinput(text) -> boolean`: Forwards a text input event to the terminal for character entry into focused widgets.
-- `LTerminal:trySet(col, row, ch, fr?, fg?, fb?, fa?, br?, bg?, bb?, ba?) -> boolean, string?`: Strictly writes a character with colors to a specific cell and returns an explicit error string on invalid input.
+- `LTerminal:trySet(col, row, ch, fr?, fg?, fb?, fa?, br?, bg?, bb?, ba?) -> boolean, string`: Strictly writes a character with colors to a specific cell and returns an explicit error string on invalid input.
 - `LTerminal:type() -> string`: Returns the type name string "LTerminal".
 - `LTerminal:typeOf(name) -> boolean`: Checks whether this object matches a given type name. Accepts "LTerminal" or "Object".
-- `LTerminal:validateWidgets() -> boolean, string[]?`: Validates panel child ownership, stale references, cycles, and the current focus target.
+- `LTerminal:validateWidgets() -> boolean, table`: Validates panel child ownership, stale references, cycles, and the current focus target.
 
 #### LTerminalParseAnsiResult Type
 
@@ -267,15 +283,41 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 - `LWidget:setText(text) -> nil`: Sets the display text of a label, button, or text box widget. Fires the onChange callback if the text actually changed.
 - `LWidget:setTitle(title) -> nil`: Sets the title text displayed in the border of a border or panel widget.
 - `LWidget:setVisible(visible) -> nil`: Controls whether the widget is drawn and receives input events.
-- `LWidget:trySetText(text) -> boolean, string?`: Strictly sets widget text and returns an explicit error string instead of silently truncating.
+- `LWidget:trySetText(text) -> boolean, string`: Strictly sets widget text and returns an explicit error string instead of silently truncating.
 - `LWidget:type() -> string`: Returns the type name string "LWidget".
 - `LWidget:typeOf(name) -> boolean`: Checks whether this object matches a given type name. Accepts "LWidget" or "Object".
 
-## References
+## Examples
 
-- `image`: Imports or references `image` from `src/image/`.
-- `render`: Imports or references `render` from `src/render/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `content/examples/terminal.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_terminal_unit.lua` (present)
+- Rust: `src/terminal/terminal_state.rs`
+- Rust: `tests/rust/ext/terminal_demo_smoke_tests.rs`
+- Rust: `tests/rust/unit/terminal_tests.rs`
+
+## Evidence / Golden
+
+| Kind | Path |
+|---|---|
+| Evidence test | `tests/lua/evidence/test_terminal_evidence.lua` |
+| Golden test | `tests/lua/golden/test_terminal_golden.lua` |
+| Current artifact | `tests/artifacts/current/terminal/terminal_tui_chart_panels.png` |
+| Current artifact | `tests/artifacts/current/terminal/terminal_tui_command_palette.png` |
+| Current artifact | `tests/artifacts/current/terminal/terminal_tui_dashboard_widgets.png` |
+| Current artifact | `tests/artifacts/current/terminal/terminal_tui_diagnostics_panels.png` |
+| Current artifact | `tests/artifacts/current/terminal/terminal_tui_form_focus.png` |
+| Baseline artifact | `tests/artifacts/baselines/terminal/terminal_tui_chart_panels.png` |
+| Baseline artifact | `tests/artifacts/baselines/terminal/terminal_tui_command_palette.png` |
+| Baseline artifact | `tests/artifacts/baselines/terminal/terminal_tui_dashboard_widgets.png` |
+| Baseline artifact | `tests/artifacts/baselines/terminal/terminal_tui_diagnostics_panels.png` |
+| Baseline artifact | `tests/artifacts/baselines/terminal/terminal_tui_form_focus.png` |
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

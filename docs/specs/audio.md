@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/audio.md or source docstrings instead. -->
+
 # audio
 
 ## TL;DR
@@ -10,12 +12,12 @@
 ## General Info
 
 - Module group: `Platform Services`
-- Source path: `src/audio/`
+- Source path: `src/audio`
 - Binding: `src/lua_api/audio_api.rs`
 - Namespace: `lurek.audio`
 - Lua API surface: `94` functions, `7` types, `157` methods
-- Rust test path(s): tests/rust/unit/audio_tests.rs, tests/rust/unit/audio_sound_tests.rs
-- Lua test path(s): tests/lua/unit/test_audio.lua, tests/lua/unit/test_audio_bus.lua, tests/lua/unit/test_audio_dsp.lua, tests/lua/integration/test_audio_timer.lua, tests/lua/integration/test_audio_event.lua, tests/lua/evidence/test_evidence_audio.lua, tests/lua/evidence/test_evidence_audio_bus.lua
+- User-facing: `true`
+- Plugin tier: `not_evaluated`
 
 ## Summary
 
@@ -39,14 +41,22 @@
 
 This module primarily collaborates with `dsp`, `image`, `midi`, `runtime`. Its responsibility should stay inside the Platform Services group rather than absorb behavior owned by those neighbors.
 
+## Ownership
+
+- Canonical source: `src/audio`
+- Owning tier: `Platform Services`
+- Plugin tier: `not_evaluated`
+- Lua binding owner: `src/lua_api/audio_api.rs`
+- Referenced engine modules: `dsp`, `image`, `midi`, `runtime`
+
 ## Imports
 
-- `dsp`: Imports or references `src/dsp/`. Cross-group dependency from `Platform Services` into `Edge/Integration`.
-- `image`: Imports or references `src/image/`. Cross-group dependency from ``Platform Services`` into `Platform Services`.
-- `midi`: Imports or references `src/midi/`. Cross-group dependency from `Platform Services` into `Edge/Integration`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `dsp`: Imports or references `src/dsp/`. Dependency stays inside `Platform Services` and should remain acyclic.
+- `image`: Imports or references `src/image/`. Dependency stays inside `Platform Services` and should remain acyclic.
+- `midi`: Imports or references `src/midi/`. Dependency stays inside `Platform Services` and should remain acyclic.
+- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Platform Services` into `Core Runtime`.
 
-## Files
+## Source Files
 
 ### beat_clock.rs
 
@@ -476,12 +486,53 @@ This module primarily collaborates with `dsp`, `image`, `midi`, `runtime`. Its r
 - `LSource:type() -> string`: Returns the type name of this object for runtime type-checking.
 - `LSource:typeOf(name) -> boolean`: Checks whether this object is of the given type name or a parent type.
 
-## References
+## Examples
 
-- `dsp`: Imports or references `src/dsp/`. Cross-group dependency from `Platform Services` into `Edge/Integration`.
-- `image`: Imports or references `src/image/`. Cross-group dependency from ``Platform Services`` into `Platform Services`.
-- `midi`: Imports or references `src/midi/`. Cross-group dependency from `Platform Services` into `Edge/Integration`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `content/examples/audio.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_audio_unit.lua` (present)
+- Rust: `tests/rust/ext/effects_audio_runtime_smoke_tests.rs`
+- Rust: `tests/rust/unit/audio_tests.rs`
+
+## Evidence / Golden
+
+| Kind | Path |
+|---|---|
+| Evidence test | `tests/lua/evidence/test_audio_evidence.lua` |
+| Golden test | `tests/lua/golden/test_audio_golden.lua` |
+| Current artifact | `tests/artifacts/current/audio/audio_beat_clock_scheduler_trace.txt` |
+| Current artifact | `tests/artifacts/current/audio/audio_bus_decoder_trace.txt` |
+| Current artifact | `tests/artifacts/current/audio/audio_bus_pitch_up_150.wav` |
+| Current artifact | `tests/artifacts/current/audio/audio_bus_volume_fadeout.wav` |
+| Current artifact | `tests/artifacts/current/audio/audio_bus_volume_half_gain.wav` |
+| Current artifact | `tests/artifacts/current/audio/audio_chord_c_major.wav` |
+| Current artifact | `tests/artifacts/current/audio/audio_frequency_sweep_200_2000.wav` |
+| Current artifact | `tests/artifacts/current/audio/audio_mix_into_base.png` |
+| Current artifact | `tests/artifacts/current/audio/audio_mix_into_harmonic_layer.wav` |
+| Current artifact | `tests/artifacts/current/audio/audio_mix_into_mixed.png` |
+| Current artifact | `tests/artifacts/current/audio/audio_sine_440hz_mono.wav` |
+| Current artifact | `tests/artifacts/current/audio/audio_stereo_ping_pong.wav` |
+| Current artifact | `tests/artifacts/current/audio/audio_waveform_chord_c_major.png` |
+| Current artifact | `tests/artifacts/current/audio/audio_waveform_frequency_sweep.png` |
+| Current artifact | `tests/artifacts/current/audio/audio_waveform_sine_440hz.png` |
+| Baseline artifact | `tests/artifacts/baselines/audio/audio_bus_pitch_up_150.wav` |
+| Baseline artifact | `tests/artifacts/baselines/audio/audio_bus_volume_fadeout.wav` |
+| Baseline artifact | `tests/artifacts/baselines/audio/audio_bus_volume_half_gain.wav` |
+| Baseline artifact | `tests/artifacts/baselines/audio/audio_chord_c_major.wav` |
+| Baseline artifact | `tests/artifacts/baselines/audio/audio_frequency_sweep_200_2000.wav` |
+| Baseline artifact | `tests/artifacts/baselines/audio/audio_mix_into_base.png` |
+| Baseline artifact | `tests/artifacts/baselines/audio/audio_mix_into_mixed.png` |
+| Baseline artifact | `tests/artifacts/baselines/audio/audio_sine_440hz_mono.wav` |
+| Baseline artifact | `tests/artifacts/baselines/audio/audio_stereo_ping_pong.wav` |
+| Baseline artifact | `tests/artifacts/baselines/audio/audio_waveform_chord_c_major.png` |
+| Baseline artifact | `tests/artifacts/baselines/audio/audio_waveform_frequency_sweep.png` |
+| Baseline artifact | `tests/artifacts/baselines/audio/audio_waveform_sine_440hz.png` |
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

@@ -42,8 +42,11 @@ def _configure_stdout_utf8() -> None:
         pass
 
 WORKSPACE_ROOT = Path(__file__).resolve().parent.parent.parent
-RUST_INPUT = WORKSPACE_ROOT / "logs" / "data" / "rust_api_data.json"
-LUA_INPUT = WORKSPACE_ROOT / "logs" / "data" / "lua_api_data.json"
+sys.path.insert(0, str(WORKSPACE_ROOT / "tools" / "docs"))
+import module_registry
+
+RUST_INPUT = module_registry.rust_api_json_path()
+LUA_INPUT = module_registry.lua_api_json_path()
 OUTPUT_FILE = WORKSPACE_ROOT / "logs" / "reports" / "coverage_gaps.md"
 
 # Minimum description length to be considered "documented"

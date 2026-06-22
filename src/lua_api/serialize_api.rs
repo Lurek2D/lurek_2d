@@ -166,6 +166,8 @@ fn parse_format_arg(op: &str, format: Option<&str>) -> LuaResult<Option<SerialFo
 }
 
 /// Encodes one Lua table into MessagePack after validating the Lua-facing input type.
+/// @param | value | table | Lua table to encode; primitive values are rejected.
+/// @return | string | Binary MessagePack payload as a Lua string.
 fn encode_msgpack_value<'lua>(lua: &'lua Lua, value: LuaValue<'lua>) -> LuaResult<LuaString<'lua>> {
     if !matches!(value, LuaValue::Table(_)) {
         return Err(LuaError::RuntimeError(

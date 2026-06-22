@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/physics.md or source docstrings instead. -->
+
 # physics
 
 ## TL;DR
@@ -10,12 +12,12 @@
 ## General Info
 
 - Module group: `Platform Services`
-- Source path: `src/physics/`
+- Source path: `src/physics`
 - Binding: `src/lua_api/physics_api.rs`
 - Namespace: `lurek.physics`
 - Lua API surface: `22` functions, `17` types, `173` methods
-- Rust test path(s): src/physics/world_tests.rs, inline #[cfg(test)] in body.rs, shape.rs, zone.rs, cellular.rs, terrain.rs, render.rs, collision_helpers.rs
-- Lua test path(s): tests/lua/unit/test_physics_unit.lua
+- User-facing: `true`
+- Plugin tier: `tier_2_plugin`
 
 ## Summary
 
@@ -38,23 +40,34 @@
 
 This module primarily collaborates with `image`, `math`, `render`, `runtime`. Its responsibility should stay inside the Platform Services group rather than absorb behavior owned by those neighbors.
 
+## Ownership
+
+- Canonical source: `src/physics`
+- Owning tier: `Platform Services`
+- Plugin tier: `tier_2_plugin`
+- Lua binding owner: `src/lua_api/physics_api.rs`
+- Referenced engine modules: `image`, `math`, `render`, `runtime`
+
 ## Imports
 
-- `image`: Imports or references `image` from `src/image/`.
-- `math`: Imports or references `math` from `src/math/`.
-- `render`: Imports or references `render` from `src/render/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `image`: Imports or references `src/image/`. Dependency stays inside `Platform Services` and should remain acyclic.
+- `math`: Imports or references `src/math/`. Cross-group dependency from `Platform Services` into `Foundations`.
+- `render`: Imports or references `src/render/`. Dependency stays inside `Platform Services` and should remain acyclic.
+- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Platform Services` into `Core Runtime`.
 
-## Files
+## Source Files
 
 ### body.rs
 
-- This file owns `BodyType`, `BodyShape`, and `Body`, the authored body descriptor used before and during world use.
-- It stores simulation role, primitive shape, material settings, filters, pose, velocity, and optional extended geometry.
-- Constructors cover rectangles, circles, polygons, edges, and chains so tools and gameplay code share one body surface.
-- Geometry helpers expose bounding boxes plus local or world point conversion without requiring a live solver context.
-- This file is the boundary between authored rigid-body intent and the runtime world that simulates those bodies.
-- Open it when body payloads or authoring semantics change; stepping, queries, and zones live in sibling owners.
+- Owns the body owner for the physics subsystem and keeps its rules local to this file while keeping call sites explicit.
+- Centers the implementation around BodyType, BodyShape, Body, with helpers kept close to their invariants.
+- Defines how body data is validated, transformed, or stored before neighboring systems use it.
+- Owns physics behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on body behavior while Lua registration stays elsewhere.
+- Documents the boundary where physics code accepts inputs, reports errors, or updates state.
+- Use this file when changing body defaults, lifecycle handling, validation, or data ownership.
+- Keeps failure paths and edge cases near the physics state that can explain them while keeping call sites explicit.
+- Preserves deterministic behavior by keeping body calculations explicit at their owner boundary.
 
 ### collision.rs
 
@@ -70,15 +83,20 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 
 ### error.rs
 
-- This file owns typed validation and safety errors shared by physics constructors, stepping, terrain, and Lua-facing helpers.
-- It keeps failure reasons explicit so `try_*` APIs can reject invalid geometry, ids, bytes, and time-step inputs consistently.
-- Open it when physics callers need clearer diagnostics or when a new owner starts participating in the shared safety contract.
+- Owns physics behavior with explicit state, validation, and crate-local integration boundaries.
+- Centers the implementation around PhysicsError, fmt, with helpers kept close to their invariants.
+- Defines how error data is validated, transformed, or stored before neighboring systems use it.
+- Owns physics behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on error behavior while Lua registration stays elsewhere.
+- Documents the boundary where physics code accepts inputs, reports errors, or updates state.
 
 ### limits.rs
 
-- This file owns shared physics sizing and validation limits used by safe constructors, stepping, terrain, and shape helpers.
-- It centralizes checked arithmetic and numeric policy so physics owners share one resource and finite-value contract.
-- Open it when ceilings or validation rules change across world, body, shape, zone, or terrain code.
+- Owns physics behavior with explicit state, validation, and crate-local integration boundaries.
+- Centers the implementation around PhysicsLimits, default, validate_finite, with helpers kept close to their invariants.
+- Defines how limits data is validated, transformed, or stored before neighboring systems use it.
+- Owns physics behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on limits behavior while Lua registration stays elsewhere.
 
 ### mod.rs
 
@@ -99,22 +117,24 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 
 ### shape.rs
 
-- This file owns `Shape` and `StandaloneShape`, the geometry vocabulary used by bodies and standalone collision pieces.
-- It stores circles, rectangles, polygons, edges, and chains, then converts valid inputs into Rapier colliders.
-- Parsing helpers and regular-polygon generation let scripts or data describe intent without building raw engine types.
-- Standalone shapes keep density, friction, restitution, and sensor flags next to geometry for authored test fixtures.
-- Local bounding-box helpers make shapes inspectable in tools and previews without a live body or physics world.
-- Open this file when geometry semantics change; body ownership and world stepping remain in sibling files.
+- Owns the shape owner for the physics subsystem and keeps its rules local to this file while keeping call sites explicit.
+- Centers the implementation around Shape, polygon_area2, is_convex_polygon, with helpers kept close to their invariants.
+- Defines how shape data is validated, transformed, or stored before neighboring systems use it.
+- Owns physics behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on shape behavior while Lua registration stays elsewhere.
+- Documents the boundary where physics code accepts inputs, reports errors, or updates state.
+- Use this file when changing shape defaults, lifecycle handling, validation, or data ownership.
 
 ### terrain.rs
 
-- This file owns `TerrainMap`, a chunked solid-cell grid that rebuilds static physics bodies only where edits occur.
-- It stores map dimensions, cell scale, world offsets, per-cell solidity, spawned chunk body ids, and dirty chunks.
-- Editing helpers flip single cells or fill circles, rectangles, and whole maps so gameplay can carve or restore terrain.
-- Flush logic removes stale chunk colliders, merges horizontal solid runs, and respawns compact static bodies in `World`.
-- Collapse and debris helpers support destructible terrain flows by pruning unsupported cells and spawning fragments.
-- Image and byte serialization make the same terrain usable for previews, saves, reloads, and external authoring tools.
-- Open this file when terrain editing or sync semantics change; body simulation and contact solving live in siblings.
+- Owns physics behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps physics data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+- Defines how terrain data is validated, transformed, or stored before neighboring systems use it.
+- Owns physics behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on terrain behavior while Lua registration stays elsewhere.
+- Documents the boundary where physics code accepts inputs, reports errors, or updates state.
+- Use this file when changing terrain defaults, lifecycle handling, validation, or data ownership.
+- Keeps failure paths and edge cases near the physics state that can explain them while keeping call sites explicit.
 
 ### types.rs
 
@@ -142,12 +162,13 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 
 ### zone.rs
 
-- This file owns `PhysicsZone`, `ZoneBoundary`, `ZoneGravityMode`, and tracker events for area-based rule overrides.
-- It stores zone shape, gravity behavior, damping overrides, priority, filters, and enabled state in one owner.
-- Zone helpers configure rectangles or circles, directional gravity, point attraction, repulsion, and zero-gravity fields.
-- The tracker caches body membership so enter and leave transitions can feed gameplay events as well as force changes.
-- This file is the boundary for area effects driven by position rather than by rigid contact against solid geometry.
-- Open it when zone semantics change; body descriptors and world stepping rules live in sibling owners.
+- Owns the zone owner for the physics subsystem and keeps its rules local to this file while keeping call sites explicit.
+- Centers the implementation around ZoneId, ZonePriority, ZoneGravityMode, with helpers kept close to their invariants.
+- Defines how zone data is validated, transformed, or stored before neighboring systems use it.
+- Owns physics behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on zone behavior while Lua registration stays elsewhere.
+- Documents the boundary where physics code accepts inputs, reports errors, or updates state.
+- Use this file when changing zone defaults, lifecycle handling, validation, or data ownership.
 
 
 
@@ -597,12 +618,56 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LZone:type() -> string`: Returns the type name of this object ("LZone").
 - `LZone:typeOf(name) -> boolean`: Checks if this object is of a given type name.
 
-## References
+## Examples
 
-- `image`: Imports or references `image` from `src/image/`.
-- `math`: Imports or references `math` from `src/math/`.
-- `render`: Imports or references `render` from `src/render/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `content/examples/physics.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_physics_unit.lua` (present)
+- Rust: `tests/rust/unit/physics_tests.rs`
+
+## Evidence / Golden
+
+| Kind | Path |
+|---|---|
+| Evidence test | `tests/lua/evidence/test_physics_evidence.lua` |
+| Golden test | `tests/lua/golden/test_physics_golden.lua` |
+| Current artifact | `tests/artifacts/current/physics/physics_collision_bands.png` |
+| Current artifact | `tests/artifacts/current/physics/physics_constraint_mouse_slider.gif` |
+| Current artifact | `tests/artifacts/current/physics/physics_gravity_drop.png` |
+| Current artifact | `tests/artifacts/current/physics/physics_gravity_drop_timeline_5s.gif` |
+| Current artifact | `tests/artifacts/current/physics/physics_joint_distance_debug.png` |
+| Current artifact | `tests/artifacts/current/physics/physics_joint_revolute_debug.png` |
+| Current artifact | `tests/artifacts/current/physics/physics_joint_wheel_debug.png` |
+| Current artifact | `tests/artifacts/current/physics/physics_one_way_sensor_timeline.gif` |
+| Current artifact | `tests/artifacts/current/physics/physics_query_map.png` |
+| Current artifact | `tests/artifacts/current/physics/physics_query_trace.txt` |
+| Current artifact | `tests/artifacts/current/physics/physics_raycast_filter_lanes.png` |
+| Current artifact | `tests/artifacts/current/physics/physics_sleep_flags.png` |
+| Current artifact | `tests/artifacts/current/physics/physics_terrain_crater_raster.png` |
+| Current artifact | `tests/artifacts/current/physics/physics_terrain_debris_crater.png` |
+| Current artifact | `tests/artifacts/current/physics/physics_velocity_tracks.png` |
+| Current artifact | `tests/artifacts/current/physics/physics_zone_priority_fields.png` |
+| Baseline artifact | `tests/artifacts/baselines/physics/physics_collision_bands.png` |
+| Baseline artifact | `tests/artifacts/baselines/physics/physics_constraint_mouse_slider.gif` |
+| Baseline artifact | `tests/artifacts/baselines/physics/physics_gravity_drop.png` |
+| Baseline artifact | `tests/artifacts/baselines/physics/physics_gravity_drop_timeline_5s.gif` |
+| Baseline artifact | `tests/artifacts/baselines/physics/physics_joint_distance_debug.png` |
+| Baseline artifact | `tests/artifacts/baselines/physics/physics_joint_revolute_debug.png` |
+| Baseline artifact | `tests/artifacts/baselines/physics/physics_joint_wheel_debug.png` |
+| Baseline artifact | `tests/artifacts/baselines/physics/physics_one_way_sensor_timeline.gif` |
+| Baseline artifact | `tests/artifacts/baselines/physics/physics_query_map.png` |
+| Baseline artifact | `tests/artifacts/baselines/physics/physics_raycast_filter_lanes.png` |
+| Baseline artifact | `tests/artifacts/baselines/physics/physics_sleep_flags.png` |
+| Baseline artifact | `tests/artifacts/baselines/physics/physics_terrain_crater_raster.png` |
+| Baseline artifact | `tests/artifacts/baselines/physics/physics_terrain_debris_crater.png` |
+| Baseline artifact | `tests/artifacts/baselines/physics/physics_velocity_tracks.png` |
+| Baseline artifact | `tests/artifacts/baselines/physics/physics_zone_priority_fields.png` |
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

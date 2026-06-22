@@ -21,61 +21,42 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "tools" / "docs"))
+import module_registry
+
 EXAMPLES_DIR = ROOT / "content" / "examples"
-API_JSON = ROOT / "logs" / "data" / "lua_api_data.json"
+DOCS_DATA = module_registry.DOCS_DATA
+LEGACY_LOGS_DATA = module_registry.LEGACY_LOGS_DATA
+API_JSON = module_registry.lua_api_json_path()
 
 # Map module name -> example file stem
-MODULE_TO_EXAMPLE: dict[str, str] = {
-    "ai": "ai",
-    "animation": "animation",
-    "audio": "audio",
-    "automation": "automation",
-    "camera": "camera",
-    "compute": "compute",
-    "binary": "binary",
-    "data": "binary",
-    "dataframe": "dataframe",
-    "ecs": "ecs",
-    "event": "event",
-    "filesystem": "filesystem",
-    "flownet": "flownet",
-    "render": "render",
-    "ui": "ui",
-    "image": "image",
-    "input": "input",
-    "math": "math",
-    "minimap": "minimap",
-    "mods": "mods",
-    "effect": "effect",
-    "particle": "particle",
-    "pathfind": "pathfind",
-    "patterns": "patterns",
-    "physics": "physics",
-    "postfx": "fx",
-    "save": "save",
-    "scene": "scene",
-    "sound": "sound",
-    "terminal": "terminal",
-    "thread": "thread",
-    "tilemap": "tilemap",
-    "timer": "timer",
-    "window": "window",
-    "i18n": "i18n",
-    "devtools": "devtools",
-    "pipeline": "pipeline",
-    "raycaster": "raycaster",
-    "spine": "spine",
-    "docs": "docs",
-    "log": "log",
-    "network": "network",
-    "procgen": "procgen",
-    "serialize": "serialize",
-    "light": "light",
-    "debugbridge": "debugbridge",
+API_MODULE_TO_REGISTRY_MODULE = {
+    "engine": "app",
+    "system": "runtime",
+    "svg": "vector",
 }
+
+
+def registry_module_for_api_module(module_name: str) -> str:
+    return API_MODULE_TO_REGISTRY_MODULE.get(module_name, module_name)
+
+
+def example_stem(module_name: str) -> str:
+    registry_module = registry_module_for_api_module(module_name)
+    path = module_registry.module_example_file(registry_module)
+    return Path(path).stem if path else registry_module
+
+
+MODULE_TO_EXAMPLE: dict[str, str] = {
+    name: example_stem(name)
+    for name in module_registry.list_modules()
+    if module_registry.module_example_file(name)
+}
+MODULE_TO_EXAMPLE.update({alias: example_stem(alias) for alias in API_MODULE_TO_REGISTRY_MODULE})
 
 # ─── Parameter default heuristics ────────────────────────────────────────────
 

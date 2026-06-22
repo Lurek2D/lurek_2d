@@ -1,8 +1,9 @@
-//! Implements sparse chunk storage for very large tile worlds that should not allocate one full dense grid.
-//! Keeps world-to-chunk and local-cell transforms precise so reads, writes, and clears hit stable addresses.
-//! Provides visible-chunk queries and range updates used by streaming, culling, and large-map maintenance paths.
-//! Acts as the storage boundary between raw world tile access and higher-level render or generation systems.
-//! Open this file when chunk loading, addressing, fill ranges, or visible-region selection behaves incorrectly.
+//! Owns the chunk owner for the tilemap subsystem and keeps its rules local to this file while keeping call sites explicit.
+//! Centers the implementation around ChunkMap, DEFAULT_GID, new, with helpers kept close to their invariants.
+//! Defines how chunk data is validated, transformed, or stored before neighboring systems use it.
+//! Owns tilemap behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on chunk behavior while Lua registration stays elsewhere.
+//! Documents the boundary where tilemap code accepts inputs, reports errors, or updates state.
 
 use super::error::TileMapError;
 use super::limits::{checked_chunk_cells, TileMapLimits};

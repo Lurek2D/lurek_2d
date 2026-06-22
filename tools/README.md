@@ -21,50 +21,51 @@ Single registry for all durable tooling under `tools/`.
 
 - `audit/api_occurrence_validator.py` [audit; durable; mcp:no] - API Occurrence Validator -- Check that each lurek.* API has examples.
 - `audit/api_stub_validator.py` [audit; durable; mcp:no] - API Stub Validator -- Validate pending --@api-stub: block structure and content.
-- `audit/audit_module.py` [audit; durable; mcp:no] - audit_module.py — Lurek2D module quality audit tool.
-- `audit/cag_coverage.py` [audit; durable; mcp:no] - cag_coverage.py — required-section coverage analytics for CAG files.
-- `audit/cag_link_check.py` [audit; durable; mcp:candidate] - cag_link_check.py — broken-link checker for the CAG layer.
-- `audit/cag_persona_matrix.py` [audit; durable; mcp:no] - cag_persona_matrix.py — persona ↔ agent value matrix.
-- `audit/count_gaps.py` [audit; durable; mcp:no] - count_gaps.py — Count undocumented public API items per lurek.* module.
-- `audit/doc_audit.py` [audit; durable; mcp:no] - doc_audit.py — Lurek2D unified docs-general audit.
-- `audit/doc_coverage.py` [audit; durable; mcp:no] - doc_coverage.py — Lurek2D docs-general coverage analytics.
+- `audit/audit_module.py` [audit; durable; mcp:no] - audit_module.py Ă˘â‚¬â€ť Lurek2D module quality audit tool.
+- `audit/cag_coverage.py` [audit; durable; mcp:no] - cag_coverage.py Ă˘â‚¬â€ť required-section coverage analytics for CAG files.
+- `audit/cag_link_check.py` [audit; durable; mcp:candidate] - cag_link_check.py Ă˘â‚¬â€ť broken-link checker for the CAG layer.
+- `audit/cag_persona_matrix.py` [audit; durable; mcp:no] - cag_persona_matrix.py Ă˘â‚¬â€ť persona Ă˘â€ â€ť agent value matrix.
+- `audit/count_gaps.py` [audit; durable; mcp:no] - count_gaps.py Ă˘â‚¬â€ť Count undocumented public API items per lurek.* module.
+- `audit/doc_audit.py` [audit; durable; mcp:no] - doc_audit.py Ă˘â‚¬â€ť Lurek2D unified docs-general audit.
+- `audit/doc_coverage.py` [audit; durable; mcp:no] - doc_coverage.py Ă˘â‚¬â€ť Lurek2D docs-general coverage analytics.
+- `audit/docs_quality.py` [audit; durable; mcp:no] - Audit docs ownership, generated headers, overlays, coverage data, and dead architecture links.
 - `audit/docstring_audit.py` [audit; durable; mcp:no] - docstring_audit.py -- Audit Lurek2D Lua API docstrings for missing content.
 - `audit/docstring_quality_audit.py` [audit; durable; mcp:no] - Audit docstring quality - identifies files with poor/unclear module documentation.
 - `audit/example_add_missing.py` [audit; durable; mcp:no] - Append stub sections to content/examples/ for uncovered lurek.* API items.
 - `audit/example_coverage.py` [audit; durable; mcp:candidate] - Cross-reference Lua example scripts against the lurek.* Lua API.
 - `audit/extract_constructors.py` [audit; durable; mcp:no] - Extract all lurek.module.function signatures from docs/api/lurek.lua
-- `audit/gen_coverage_gaps.py` [audit; durable; mcp:no] - gen_coverage_gaps.py — Generate an API gap report for Lurek2D.
-- `audit/gen_lua_contract_tests.py` [audit; durable; mcp:no] - gen_lua_contract_tests.py — generate Lua contract smoke tests from lua_api_data.json.
+- `audit/gen_coverage_gaps.py` [audit; durable; mcp:no] - gen_coverage_gaps.py Ă˘â‚¬â€ť Generate an API gap report for Lurek2D.
+- `audit/gen_lua_contract_tests.py` [audit; durable; mcp:no] - gen_lua_contract_tests.py Ă˘â‚¬â€ť generate Lua contract smoke tests from lua_api_data.json.
 - `audit/get_api_sigs.py` [audit; durable; mcp:no] - Extract all lurek.* namespace-level function signatures from docs/api/lurek.lua
-- `audit/golden_test.py` [audit; durable; mcp:no] - golden_test.py — Lurek2D golden file comparison tests.
-- `audit/inline_test_audit.py` [audit; durable; mcp:no] - inline_test_audit.py — Enforce TST-02 (no inline `#[cfg(test)]` in src/).
-- `audit/integration_coverage.py` [audit; durable; mcp:no] - integration_coverage.py — Lurek2D integration test coverage analysis.
-- `audit/library_coverage.py` [audit; durable; mcp:candidate] - library_coverage.py — Audit Lureksome library coverage across three dimensions.
-- `audit/lua_api_test_coverage.py` [audit; durable; mcp:candidate] - lua_api_test_coverage.py — Precise Lua API test coverage analysis.
+- `audit/golden_test.py` [audit; durable; mcp:no] - golden_test.py Ă˘â‚¬â€ť Lurek2D golden file comparison tests.
+- `audit/inline_test_audit.py` [audit; durable; mcp:no] - inline_test_audit.py Ă˘â‚¬â€ť Enforce TST-02 (no inline `#[cfg(test)]` in src/).
+- `audit/integration_coverage.py` [audit; durable; mcp:no] - integration_coverage.py Ă˘â‚¬â€ť Lurek2D integration test coverage analysis.
+- `audit/library_coverage.py` [audit; durable; mcp:candidate] - library_coverage.py Ă˘â‚¬â€ť Audit Lureksome library coverage across three dimensions.
+- `audit/lua_api_test_coverage.py` [audit; durable; mcp:candidate] - lua_api_test_coverage.py Ă˘â‚¬â€ť Precise Lua API test coverage analysis.
 - `audit/lua_artifact_lock.py` [audit; durable; mcp:no] - Shared lock for Lua artifact maintenance tools.
 - `audit/lua_covers_lurek_api_audit.py` [audit; durable; mcp:no] - Audit @covers markers against docs/api/lurek.lua.
 - `audit/lua_evidence_golden_contract_audit.py` [audit; durable; mcp:no] - Audit Lua evidence and golden test contract compliance.
 - `audit/lua_nonunit_test_coverage.py` [audit; durable; mcp:no] - lua_nonunit_test_coverage.py - Audit canonical non-unit Lua tests in tests/lua.
-- `audit/lua_spec_coverage.py` [audit; durable; mcp:candidate] - lua_spec_coverage.py — Measure how completely docs/specs/<module>.md covers the lurek.* Lua API.
+- `audit/lua_spec_coverage.py` [audit; durable; mcp:candidate] - lua_spec_coverage.py Ă˘â‚¬â€ť Measure how completely docs/specs/<module>.md covers the lurek.* Lua API.
 - `audit/lua_test_structure_audit.py` [audit; durable; mcp:no] - Audit and normalize Lua BDD test structure under tests/lua.
 - `audit/module_docstring_audit.py` [audit; durable; mcp:no] - Audit Rust source files for exact file-level //! documentation coverage.
-- `audit/mutation_report.py` [audit; durable; mcp:no] - mutation_report.py — run cargo-mutants for selected priority modules.
-- `audit/parse_test_log.py` [audit; durable; mcp:no] - tools/audit/parse_test_log.py — Parse `cargo test` output into a structured summary.
-- `audit/perf_regression_gate.py` [audit; durable; mcp:no] - perf_regression_gate.py — lightweight perf/stress regression gate for CI.
-- `audit/quality_report.py` [audit; durable; mcp:candidate] - quality_report.py — Lurek2D master quality report.
+- `audit/mutation_report.py` [audit; durable; mcp:no] - mutation_report.py Ă˘â‚¬â€ť run cargo-mutants for selected priority modules.
+- `audit/parse_test_log.py` [audit; durable; mcp:no] - tools/audit/parse_test_log.py Ă˘â‚¬â€ť Parse `cargo test` output into a structured summary.
+- `audit/perf_regression_gate.py` [audit; durable; mcp:no] - perf_regression_gate.py Ă˘â‚¬â€ť lightweight perf/stress regression gate for CI.
+- `audit/quality_report.py` [audit; durable; mcp:candidate] - quality_report.py Ă˘â‚¬â€ť Lurek2D master quality report.
 - `audit/reseed_lua_artifacts.py` [audit; durable; mcp:no] - Rebuild Lua golden baselines from current evidence artifacts.
 - `audit/scan_api_names.py` [audit; durable; mcp:no] - Extract all registered function names from Rust API files.
 - `audit/scan_exact.py` [audit; durable; mcp:no] - Scan specific Rust API files for exact function signatures.
 - `audit/scan_module_fns.py` [audit; durable; mcp:no] - Find module-level constructors (registered on lurek.X table, not on UserData).
 - `audit/scan_sigs.py` [audit; durable; mcp:no] - Find exact function registrations for failing APIs in Rust source files.
 - `audit/snippet_coverage.py` [audit; durable; mcp:candidate] - Report snippet coverage per Lua API module based on -- @snippet markers.
-- `audit/stress_report.py` [audit; durable; mcp:no] - stress_report.py — Lurek2D stress test runner and reporter.
+- `audit/stress_report.py` [audit; durable; mcp:no] - stress_report.py Ă˘â‚¬â€ť Lurek2D stress test runner and reporter.
 - `audit/strict_api_check.py` [audit; durable; mcp:no] - Validate fleshed-out lurek.* API examples in content/examples/.
 - `audit/strict_api_check_math.py` [audit; durable; mcp:no] - Validate math-module API stubs in content/examples/math.lua.
-- `audit/test_analytics.py` [audit; durable; mcp:no] - test_analytics.py — Lurek2D comprehensive test analytics.
-- `audit/test_coverage.py` [audit; durable; mcp:candidate] - test_coverage.py — Lurek2D test coverage analysis.
-- `audit/thin_modrs_audit.py` [audit; durable; mcp:no] - thin_modrs_audit.py — Enforce TST-04 (thin `mod.rs`).
-- `audit/thin_wrapper_audit.py` [audit; durable; mcp:no] - thin_wrapper_audit.py — Enforce TST-03 (thin wrappers in src/lua_api/).
+- `audit/test_analytics.py` [audit; durable; mcp:no] - test_analytics.py Ă˘â‚¬â€ť Lurek2D comprehensive test analytics.
+- `audit/test_coverage.py` [audit; durable; mcp:candidate] - test_coverage.py Ă˘â‚¬â€ť Lurek2D test coverage analysis.
+- `audit/thin_modrs_audit.py` [audit; durable; mcp:no] - thin_modrs_audit.py Ă˘â‚¬â€ť Enforce TST-04 (thin `mod.rs`).
+- `audit/thin_wrapper_audit.py` [audit; durable; mcp:no] - thin_wrapper_audit.py Ă˘â‚¬â€ť Enforce TST-03 (thin wrappers in src/lua_api/).
 - `audit/tool_registry_audit.py` [audit; durable; mcp:candidate] - Audit the single-source tools registry for internal consistency.
 - `audit/unit_test_api_coverage.py` [audit; durable; mcp:no] - unit_test_api_coverage.py - Lurek2D unit-test API coverage analysis.
 - `audit/wiki_coverage.py` [audit; durable; mcp:no] - Audit wiki page coverage against engine modules and Lua API.
@@ -72,13 +73,14 @@ Single registry for all durable tooling under `tools/`.
 ## demos
 
 - `demos/audit_games.py` [maintenance; targeted-maintenance; mcp:no] - Audit content/games readiness for the public demo catalog.
+- `demos/audit_showcase.py` [maintenance; targeted-maintenance; mcp:no] - Inventory and classify example-style entries.
 - `demos/capture_demo_gifs.py` [maintenance; targeted-maintenance; mcp:no] - Create preview.gif files for content/games demos from existing screen.png.
 - `demos/game_catalog.py` [internal-helper; internal; mcp:no] - Shared discovery and classification helpers for content/games catalogs.
 - `demos/gen_demo_catalog.py` [maintenance; targeted-maintenance; mcp:no] - Generate content/games/README.md and catalog.json from audited metadata.
 - `demos/migrate_game_shelves.py` [maintenance; targeted-maintenance; mcp:no] - Move non-public game catalog entries into explicit holding shelves.
-- `demos/gen_demo_screenshots.py` [maintenance; targeted-maintenance; mcp:no] - gen_demo_screenshots.py — Capture a screen.png for every Lurek2D game demo.
-- `demos/gen_game_readmes.py` [maintenance; targeted-maintenance; mcp:no] - gen_game_readmes.py — Generate or repair README.md files for content/games/ projects.
-- `demos/organize_demos.py` [maintenance; targeted-maintenance; mcp:no] - organize_demos.py — Three-in-one demos maintenance tool.
+- `demos/gen_demo_screenshots.py` [maintenance; targeted-maintenance; mcp:no] - gen_demo_screenshots.py Ă˘â‚¬â€ť Capture a screen.png for every Lurek2D game demo.
+- `demos/gen_game_readmes.py` [maintenance; targeted-maintenance; mcp:no] - gen_game_readmes.py Ă˘â‚¬â€ť Generate or repair README.md files for content/games/ projects.
+- `demos/organize_demos.py` [maintenance; targeted-maintenance; mcp:no] - organize_demos.py Ă˘â‚¬â€ť Three-in-one demos maintenance tool.
 - `demos/smoke_sweep.py` [maintenance; targeted-maintenance; mcp:no] - Smoke-sweep every playable project under content/games/ and every single-file
 
 ## dev
@@ -89,55 +91,59 @@ Single registry for all durable tooling under `tools/`.
 
 ## dist
 
-- `dist/pack.py` [packaging; durable; mcp:no] - tools/pack.py — Pack a Lurek2D game directory into a .lurek archive.
-- `dist/package_games.py` [packaging; durable; mcp:no] - tools/dist/package_games.py — Pack each game into a .lurek archive (ZIP).
+- `dist/pack.py` [packaging; durable; mcp:no] - tools/pack.py Ă˘â‚¬â€ť Pack a Lurek2D game directory into a .lurek archive.
+- `dist/package_games.py` [packaging; durable; mcp:no] - tools/dist/package_games.py Ă˘â‚¬â€ť Pack each game into a .lurek archive (ZIP).
 
 ## docs
 
-- `docs/collect_docs.py` [generator; durable; mcp:no] - collect_docs.py — Lurek2D rich structured API docs-general collector.
+- `docs/collect_docs.py` [generator; durable; mcp:no] - collect_docs.py Ă˘â‚¬â€ť Lurek2D rich structured API docs-general collector.
+- `docs/check_freshness.py` [validator; durable; mcp:no] - Regenerate docs and fail if generated outputs are stale.
+- `docs/gen_evidence_manifest.py` [generator; durable; mcp:no] - Generate build/docs-data/evidence_manifest.json for module specs.
 - `docs/gen_docs_lua.py` [generator; durable; mcp:no] - gen_docs_lua.py -- Generate Lua API reference from logs/data/lua_api_data.json.
 - `docs/gen_docs_lua_html.py` [generator; durable; mcp:no] - Generate compatibility redirects for legacy ``/lua-docs`` URLs.
-- `docs/gen_docs_rust.py` [generator; durable; mcp:no] - gen_docs_rust.py — Generate compact inline Rust API reference from logs/data/rust_api_data.json.
-- `docs/gen_engine_docs.py` [generator; durable; mcp:no] - gen_engine_docs.py — Generate per-module docs-general for Lurek2D Rust engine source.
+- `docs/gen_docs_rust.py` [generator; durable; mcp:no] - gen_docs_rust.py Ă˘â‚¬â€ť Generate compact inline Rust API reference from logs/data/rust_api_data.json.
+- `docs/gen_engine_docs.py` [generator; durable; mcp:no] - gen_engine_docs.py Ă˘â‚¬â€ť Generate per-module docs-general for Lurek2D Rust engine source.
 - `docs/gen_extension_api.py` [generator; durable; mcp:no] - gen_extension_api.py -- Convert logs/data/lua_api_data.json to
-- `docs/gen_lib_docs.py` [generator; durable; mcp:no] - gen_lib_docs.py — Generate API docs from Lurek2D library Lua files.
-- `docs/gen_lua_api.py` [generator; durable; mcp:no] - gen_lua_api.py â€” Lurek2D Lua API parser library.
-- `docs/gen_lua_api_data.py` [generator; durable; mcp:no] - gen_lua_api_data.py — Generate Lurek2D master API data file.
-- `docs/gen_lua_api_html_wrapper.py` [generator; durable; mcp:no] - gen_lua_api_html_wrapper.py — Generate HTML index wrapper for Lua API docs-general in pages/lua-docs/.
+- `docs/gen_lib_docs.py` [generator; durable; mcp:no] - gen_lib_docs.py Ă˘â‚¬â€ť Generate API docs from Lurek2D library Lua files.
+- `docs/gen_lua_api.py` [generator; durable; mcp:no] - gen_lua_api.py Ä‚ËĂ˘â€šÂ¬Ă˘â‚¬ĹĄ Lurek2D Lua API parser library.
+- `docs/gen_lua_api_data.py` [generator; durable; mcp:no] - gen_lua_api_data.py Ă˘â‚¬â€ť Generate Lurek2D master API data file.
+- `docs/gen_lua_api_html_wrapper.py` [generator; durable; mcp:no] - gen_lua_api_html_wrapper.py Ă˘â‚¬â€ť Generate HTML index wrapper for Lua API docs-general in pages/lua-docs/.
 - `docs/gen_lua_binding_reports.py` [generator; durable; mcp:no] - Generate source-derived Lua binding snapshots from src/lua_api/*.rs.
-- `docs/gen_lua_dev_docs.py` [generator; durable; mcp:no] - gen_lua_dev_docs.py — Generate Lua developer docs-general from lua_api *.rs files.
+- `docs/gen_lua_dev_docs.py` [generator; durable; mcp:no] - gen_lua_dev_docs.py Ă˘â‚¬â€ť Generate Lua developer docs-general from lua_api *.rs files.
 - `docs/gen_lua_docstring_skeletons.py` [generator; durable; mcp:no] - gen_lua_docstring_skeletons.py -- Rebuild Lua API docstring skeletons from Rust source only.
-- `docs/gen_lua_library_api.py` [generator; durable; mcp:no] - gen_lua_library_api.py — Generate API reference docs from Lurek2D Lua library files.
-- `docs/gen_luadoc.py` [generator; durable; mcp:no] - gen_luadoc.py â€” Generate LuaCATS type-annotation stubs for the Lurek2D VS Code extension.
-- `docs/gen_module_pages.py` [generator; durable; mcp:no] - Generate per-module MkDocs pages in docs/lua/ from:
-- `docs/gen_module_specs.py` [generator; durable; mcp:no] - Generate merged docs/specs/<module>.md files for top-level src modules.
-- `docs/gen_rust_api_data.py` [generator; durable; mcp:no] - gen_rust_api_data.py — Generate Lurek2D master API data file.
-- `docs/gen_rust_docstrings.py` [generator; durable; mcp:no] - gen_rust_docstrings.py — AI-assisted Rust doc-comment generator for src/ (excluding lua_api/).
-- `docs/gen_test_docs.py` [generator; durable; mcp:no] - gen_test_docs.py — Generate human-readable test docs-general for Lurek2D.
+- `docs/gen_lua_library_api.py` [generator; durable; mcp:no] - gen_lua_library_api.py Ă˘â‚¬â€ť Generate API reference docs from Lurek2D Lua library files.
+- `docs/gen_luadoc.py` [generator; durable; mcp:no] - gen_luadoc.py Ä‚ËĂ˘â€šÂ¬Ă˘â‚¬ĹĄ Generate LuaCATS type-annotation stubs for the Lurek2D VS Code extension.
+- `docs/gen_module_pages.py` [generator; durable; mcp:no] - Generate per-module MkDocs pages in docs/modules/ from:
+- `docs/gen_module_specs.py` [generator; durable; mcp:no] - Generate docs/specs/<module>.md from source facts and manual overlays.
+- `docs/migrate_spec_manual_overlays.py` [maintenance; targeted-maintenance; mcp:no] - Migrate hand-written spec sections into docs/specs/manual overlays.
+- `docs/module_registry.py` [validator; durable; mcp:no] - Load and inspect docs/meta/modules.toml module metadata.
+- `docs/gen_rust_api_data.py` [generator; durable; mcp:no] - gen_rust_api_data.py Ă˘â‚¬â€ť Generate Lurek2D master API data file.
+- `docs/gen_rust_docstrings.py` [generator; durable; mcp:no] - gen_rust_docstrings.py Ă˘â‚¬â€ť AI-assisted Rust doc-comment generator for src/ (excluding lua_api/).
+- `docs/gen_test_docs.py` [generator; durable; mcp:no] - gen_test_docs.py Ă˘â‚¬â€ť Generate human-readable test docs-general for Lurek2D.
 - `docs/gen_wiki.py` [generator; durable; mcp:no] - Generate the user-facing GitHub Wiki for Lurek2D.
-- `docs/gen_wiki_api.py` [generator; durable; mcp:no] - gen_wiki_api.py — Generate wiki/API-Reference.md from logs/data/lua_api_data.json.
-- `docs/scan_missing_docs.py` [generator; durable; mcp:no] - scan_missing_docs.py — detect Rust items without doc-comments in src/ (no lua_api).
+- `docs/gen_wiki_api.py` [generator; durable; mcp:no] - gen_wiki_api.py Ă˘â‚¬â€ť Generate wiki/API-Reference.md from logs/data/lua_api_data.json.
+- `docs/scan_missing_docs.py` [generator; durable; mcp:no] - scan_missing_docs.py Ă˘â‚¬â€ť detect Rust items without doc-comments in src/ (no lua_api).
 
 ## fix
 
 - `fix/add_lua_docstrings.py` [maintenance; targeted-maintenance; mcp:no] - add_lua_docstrings.py - Auto-generate /// docstrings from inline comments.
-- `fix/add_lua_docstrings_auto.py` [maintenance; targeted-maintenance; mcp:no] - add_lua_docstrings_auto.py — Automatically inject /// docstrings above every
+- `fix/add_lua_docstrings_auto.py` [maintenance; targeted-maintenance; mcp:no] - add_lua_docstrings_auto.py Ă˘â‚¬â€ť Automatically inject /// docstrings above every
 - `fix/add_test_markers.py` [maintenance; targeted-maintenance; mcp:no] - Add @covers / @stress / @golden / @security markers to Lurek2D Lua test files.
 - `fix/docstring_fix.py` [maintenance; targeted-maintenance; mcp:no] - docstring_fix.py -- Auto-inject missing @param/@return tags into Lua API docstrings.
 - `fix/expand_examples.py` [maintenance; targeted-maintenance; mcp:no] - tools/fix/expand_examples.py
 - `fix/fix_file_docstrings.py` [maintenance; targeted-maintenance; mcp:no] - Fix file-level //! docstrings to meet size and length requirements.
-- `fix/fix_param_types.py` [maintenance; targeted-maintenance; mcp:no] - fix_param_types.py — Auto-fix @param type tags where documented ``number`` should be ``integer``.
+- `fix/fix_param_types.py` [maintenance; targeted-maintenance; mcp:no] - fix_param_types.py Ă˘â‚¬â€ť Auto-fix @param type tags where documented ``number`` should be ``integer``.
 - `fix/format_examples.py` [maintenance; targeted-maintenance; mcp:no] - tools/fix/format_examples.py
 - `fix/improve_examples.py` [maintenance; targeted-maintenance; mcp:no] - tools/fix/improve_examples.py
-- `fix/improve_lua_docstrings.py` [maintenance; targeted-maintenance; mcp:no] - improve_lua_docstrings.py — Rewrites existing thin/incorrect /// docstrings in
+- `fix/improve_lua_docstrings.py` [maintenance; targeted-maintenance; mcp:no] - improve_lua_docstrings.py Ă˘â‚¬â€ť Rewrites existing thin/incorrect /// docstrings in
 - `fix/module_docstring_fix.py` [maintenance; targeted-maintenance; mcp:no] - Apply manually authored Rust file-level //! docs from a manifest.
-- `fix/spec_docstring_apply.py` [maintenance; targeted-maintenance; mcp:no] - spec_docstring_apply.py -- Apply Source Documentation from specs to Rust //! docstrings.
+- `fix/spec_docstring_apply.py` [legacy; targeted-maintenance; mcp:no] - Deprecated one-time migration helper; default docs flow is source docstrings -> generated specs.
 - `fix/strip_garbage_doc_lines.py` [maintenance; targeted-maintenance; mcp:no] - strip_garbage_doc_lines.py -- Remove auto-generated garbage lines from //! docstrings.
 
 ## github
 
 - `github/ideas_to_github_issues.py` [integration; targeted-maintenance; mcp:no] - Create GitHub issues from each markdown file in docs/ideas/.
-- `github/sync_agent_rules.py` [integration; targeted-maintenance; mcp:no] - sync_agent_rules.py — Synchronize workspace rules files with Lurek2D system prompt.
+- `github/sync_agent_rules.py` [integration; targeted-maintenance; mcp:no] - sync_agent_rules.py Ă˘â‚¬â€ť Synchronize workspace rules files with Lurek2D system prompt.
 
 ## mcp
 
@@ -145,7 +151,7 @@ Single registry for all durable tooling under `tools/`.
 
 ## mods
 
-- `mods/mod_init.py` [scaffold; durable; mcp:no] - mod_init.py — Scaffold a minimal Lurek2D mod project.
+- `mods/mod_init.py` [scaffold; durable; mcp:no] - mod_init.py Ă˘â‚¬â€ť Scaffold a minimal Lurek2D mod project.
 
 ## rag
 
@@ -178,19 +184,19 @@ Single registry for all durable tooling under `tools/`.
 ## validate
 
 - `validate/_cag_common.py` [internal-helper; internal; mcp:no] - Common helpers shared by CAG validator and audit tools.
-- `validate/cag_validate.py` [validate; durable; mcp:candidate] - cag_validate.py — Lurek2D CAG layer validator.
-- `validate/check_callbacks.py` [validate; durable; mcp:no] - check_callbacks.py — Verify that gen_docs_lua.py _callbacks() output has no embedded newlines.
+- `validate/cag_validate.py` [validate; durable; mcp:candidate] - cag_validate.py Ă˘â‚¬â€ť Lurek2D CAG layer validator.
+- `validate/check_callbacks.py` [validate; durable; mcp:no] - check_callbacks.py Ă˘â‚¬â€ť Verify that gen_docs_lua.py _callbacks() output has no embedded newlines.
 - `validate/cleanup_prompt_catalog.py` [validate; durable; mcp:no] - Remove deprecated prompts and rename remaining create-oriented prompts.
 - `validate/prompt_scope_report.py` [validate; durable; mcp:no] - Report active prompt scope and flag deprecated analysis-style prompts.
 - `validate/validate_changelog.py` [validate; durable; mcp:no] - Validate docs/CHANGELOG.md structure and content.
-- `validate/validate_example_coverage.py` [validate; durable; mcp:candidate] - validate_example_coverage.py — Quality gate for example coverage.
-- `validate/validate_game.py` [validate; durable; mcp:candidate] - validate_game.py — Validate Lua game scripts against the Lurek2D API surface.
+- `validate/validate_example_coverage.py` [validate; durable; mcp:candidate] - validate_example_coverage.py Ă˘â‚¬â€ť Quality gate for example coverage.
+- `validate/validate_game.py` [validate; durable; mcp:candidate] - validate_game.py Ă˘â‚¬â€ť Validate Lua game scripts against the Lurek2D API surface.
 - `validate/validate_generated_lua_stubs.py` [validate; durable; mcp:no] - Validate committed generated Lua API artifacts against fresh generator output.
 - `validate/validate_library.py` [validate; durable; mcp:candidate] - Validate Lureksome libraries under content/library/.
 - `validate/validate_lua_api.py` [validate; durable; mcp:no] - validate_lua_api.py -- Validates a Lurek2D lua_api file against the SKILL.md contract.
 - `validate/validate_lua_binding_reports.py` [validate; durable; mcp:candidate] - Validate docstring bindings against code-derived Lua registration snapshots.
 - `validate/validate_module_coverage.py` [validate; durable; mcp:candidate] - Validate top-level module/spec coverage.
-- `validate/validate_param_types.py` [validate; durable; mcp:candidate] - validate_param_types.py — Verify that @param type tags match Rust closure type inference.
+- `validate/validate_param_types.py` [validate; durable; mcp:candidate] - validate_param_types.py Ă˘â‚¬â€ť Verify that @param type tags match Rust closure type inference.
 - `validate/validate_rust_file_docs.py` [validate; durable; mcp:no] - Validate Rust file-level //! docs with the repository docstring coverage policy.
 - `validate/validate_rust_source_docs.py` [validate; durable; mcp:no] - Validate file-level and public-item Rust docs-general under src/.
 - `validate/validate_snippets.py` [validate; durable; mcp:candidate] - Validate content/snippets marker structure and VS Code snippet output freshness.

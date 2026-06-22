@@ -31,7 +31,6 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 SRC_LUA_API_DIR = ROOT / "src" / "lua_api"
-LUA_API_JSON_PATH = ROOT / "logs" / "data" / "lua_api_data.json"
 LUREK_STUB_PATH = ROOT / "docs" / "api" / "lurek.lua"
 LIBRARY_STUB_PATH = ROOT / "docs" / "api" / "lureksome.lua"
 EXTENSION_API_PATH = ROOT / "extension" / "vscode" / "data" / "lurek-api.json"
@@ -41,6 +40,9 @@ MIN_LUA_CLASS_VISIBLE_CHARS = 30
 
 if str(DOCS_TOOLS_DIR) not in sys.path:
     sys.path.insert(0, str(DOCS_TOOLS_DIR))
+import module_registry
+
+LUA_API_JSON_PATH = module_registry.lua_api_json_path()
 
 METHOD_CALL_START = re.compile(r"\bmethods\.add_(?:method|method_mut|function|function_mut)\s*\(")
 SET_CALL_START = re.compile(r"\b\w+\s*\.\s*set\s*\(")

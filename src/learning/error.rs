@@ -1,6 +1,8 @@
-//! This file owns typed validation and safety errors shared by learning constructors, inference, serialization, and Lua-facing helpers.
-//! It keeps failure reasons explicit so safe `try_*` APIs can reject invalid shapes, counts, paths, and numeric inputs consistently.
-//! Open it when learning callers need clearer diagnostics or when a new learning owner starts participating in the shared safety contract.
+//! Owns the error taxonomy for the learning subsystem and keeps its rules local to this file.
+//! Centers the implementation around LearningError, fmt, with helpers kept close to their invariants.
+//! Defines how error data is validated, transformed, or stored before neighboring systems use it.
+//! Owns learning behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on error behavior while Lua registration stays elsewhere.
 
 use std::fmt;
 

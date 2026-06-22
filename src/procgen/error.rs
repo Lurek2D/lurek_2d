@@ -1,6 +1,9 @@
-//! This file owns procgen-local validation and resource-limit errors shared by generators in this module group.
-//! It keeps failure reasons typed so safe `try_*` constructors can reject invalid dimensions, options, bytes, and WFC rules consistently.
-//! Open it when procgen callers need clearer diagnostics or when a new generator starts participating in the shared safety contract.
+//! Owns procgen behavior with explicit state, validation, and crate-local integration boundaries.
+//! Centers the implementation around ProcgenError, fmt, with helpers kept close to their invariants.
+//! Defines how error data is validated, transformed, or stored before neighboring systems use it.
+//! Owns procgen behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on error behavior while Lua registration stays elsewhere.
+//! Documents the boundary where procgen code accepts inputs, reports errors, or updates state.
 
 use std::fmt;
 

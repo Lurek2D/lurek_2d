@@ -1,7 +1,8 @@
-//! Owns deferred draw-layer callbacks that are queued first and flushed later in depth-sorted order.
-//! Lets gameplay and UI code enqueue layered draw work cheaply without issuing immediate GPU commands.
-//! Acts as the ordering boundary between ad hoc producers and the final render dispatch pass.
-//! Open this file when layer sorting, queueing, flushing, or layer counts behave incorrectly.
+//! Owns the draw layer model for the render subsystem and keeps its rules local to this file.
+//! Centers the implementation around LayerEntry, DrawLayerError, fmt, with helpers kept close to their invariants.
+//! Defines how draw layer data is validated, transformed, or stored before neighboring systems use it.
+//! Owns render behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on draw layer behavior while Lua registration stays elsewhere.
 
 use std::cmp::Ordering;
 use std::fmt;

@@ -1,6 +1,8 @@
-//! This file owns `ActionDef` and `ActionMap`, the serializable action-binding data used by the input system.
-//! It stores ordered binding strings and optional category labels so menus and tools can group logical actions.
-//! Open this file when binding schema changes; live device polling and combo logic live in sibling modules.
+//! Owns input behavior with explicit state, validation, and crate-local integration boundaries.
+//! Centers the implementation around InputBinding, parse, to_canonical_string, with helpers kept close to their invariants.
+//! Defines how action def data is validated, transformed, or stored before neighboring systems use it.
+//! Owns input behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on action def behavior while Lua registration stays elsewhere.
 
 use super::keyboard::get_key_from_scancode;
 use serde::{Deserialize, Serialize};

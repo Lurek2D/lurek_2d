@@ -1,12 +1,14 @@
-//! This file owns `ParticleSystem`, the live particle pool plus emitter timers, attractors, bounds, and child sub-systems.
-//! It advances particles each frame by applying gravity, damping, orbit, turbulence, attractors, bounce bounds, and decay.
-//! Continuous emission and burst spawning live here because fractional accumulation, insert mode, and RNG mutate state.
-//! Death handling also lives here, including pending death records, recycled child systems, and death-emitter bursts.
-//! Render-instance construction is local because size, color, texture, and shape all derive from live particle state.
-//! State transitions for active, paused, and stopped emitters are managed here with warm-up, reset, and movement helpers.
-//! Attractor and bounds mutators stay here so callers change runtime forces without reaching into particle internals.
-//! `ParticleSystemStats` also lives here because only this file can summarize direct and nested live counts coherently.
-//! Open it when pool ownership or per-frame behavior changes; config schema, spawn math, and previews live elsewhere.
+//! Owns the emitter runtime for the particle subsystem and keeps its rules local to this file.
+//! Keeps particle data ownership and helper behavior clear for future engine maintenance. for engine changes.
+//! Defines how emitter data is validated, transformed, or stored before neighboring systems use it.
+//! Owns particle behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on emitter behavior while Lua registration stays elsewhere.
+//! Documents the boundary where particle code accepts inputs, reports errors, or updates state.
+//! Use this file when changing emitter defaults, lifecycle handling, validation, or data ownership.
+//! Keeps failure paths and edge cases near the particle state that can explain them while keeping call sites explicit.
+//! Preserves deterministic behavior by keeping emitter calculations explicit at their owner boundary.
+//! Owns particle behavior with explicit state, validation, and crate-local integration boundaries.
+//! Maintains small helper surfaces so broader engine modules can compose emitter behavior safely.
 
 use super::config::{
     Attractor, BounceBounds, EmissionShape, EmitterState, InsertMode, ParticleConfig,

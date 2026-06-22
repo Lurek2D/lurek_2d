@@ -1,9 +1,10 @@
-//! This file owns dense feed-forward networks, including activations, layer storage, and ordered network assembly.
-//! `NeuralLayer` stores row-major weights and biases, while `Activation` centralizes the elementwise output transforms.
-//! Layer-by-layer forward propagation lives here because dense inference and softmax handling define this model family.
-//! Flat parameter import and export also live here so optimizers and neuroevolution can rebuild dense models.
-//! `NeuralNet` owns layer ordering and whole-network weight packing, not exploration policy, tensors, or sequence state.
-//! Open it when dense-model behavior changes; recurrent, convolutional, and attention-based blocks live in sibling files.
+//! Owns the neural net owner for the learning subsystem and keeps its rules local to this file.
+//! Centers the implementation around Activation, from_str, as_str, with helpers kept close to their invariants.
+//! Defines how neural net data is validated, transformed, or stored before neighboring systems use it.
+//! Owns learning behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on neural net behavior while Lua registration stays elsewhere.
+//! Documents the boundary where learning code accepts inputs, reports errors, or updates state.
+//! Use this file when changing neural net defaults, lifecycle handling, validation, or data ownership.
 
 use crate::learning::{
     error::LearningError,

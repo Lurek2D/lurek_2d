@@ -1,11 +1,13 @@
-//! Defines the concrete interactive controls that sit on top of shared widget state inside the retained UI system.
-//! Owns buttons, labels, text inputs, checkboxes, sliders, radios, combos, lists, tabs, and spin-style widgets.
-//! Keeps control construction explicit so type identity, defaults, and base widget integration stay unambiguous.
-//! Implements text editing helpers that clamp cursor motion, insertion, deletion, and maximum-length constraints.
-//! Normalizes selection and numeric-value handling so dynamic option lists do not violate control invariants.
-//! Provides the control-layer boundary between generic widget nodes and user-facing interactive primitives.
-//! Feeds consistent layout, style, and interaction semantics into the context and renderer without extra adapters.
-//! Open this file when editable values, selection rules, or control defaults behave differently than expected.
+//! Owns the control widget model for the ui subsystem and keeps its rules local to this file.
+//! Centers the implementation around normalized_range_or, Button, new, with helpers kept close to their invariants.
+//! Defines how controls data is validated, transformed, or stored before neighboring systems use it.
+//! Owns ui behavior with explicit state, validation, and crate-local integration boundaries. for engine changes.
+//! Keeps public crate helpers focused on controls behavior while Lua registration stays elsewhere.
+//! Documents the boundary where ui code accepts inputs, reports errors, or updates state while keeping call sites explicit.
+//! Use this file when changing controls defaults, lifecycle handling, validation, or data ownership.
+//! Keeps failure paths and edge cases near the ui state that can explain them while keeping call sites explicit.
+//! Preserves deterministic behavior by keeping controls calculations explicit at their owner boundary.
+//! Provides the local adaptation layer that lets callers avoid duplicating ui rules while keeping call sites explicit.
 
 use crate::ui::widget::{WidgetBase, WidgetType};
 

@@ -1,8 +1,13 @@
-//! Owns front-end render input validation before commands reach GPU or software tessellation paths.
-//! Defines reusable finite-number, color, size, topology, and segment bounds for `RenderCommand` data.
-//! Keeps deterministic skip decisions centralized instead of scattering NaN and range checks across passes.
-//! Acts as the command-boundary sanitizer between gameplay draw intent and backend-specific render work.
-//! Open this file when public render commands need new input limits or stricter validation behavior.
+//! Owns the input validation owner for the render subsystem and keeps its rules local to this file.
+//! Keeps render data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+//! Defines how input validation data is validated, transformed, or stored before neighboring systems use it.
+//! Owns render behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on input validation behavior while Lua registration stays elsewhere.
+//! Documents the boundary where render code accepts inputs, reports errors, or updates state.
+//! Use this file when changing input validation defaults, lifecycle handling, validation, or data ownership.
+//! Keeps failure paths and edge cases near the render state that can explain them while keeping call sites explicit.
+//! Preserves deterministic behavior by keeping input validation calculations explicit at their owner boundary.
+//! Provides the local adaptation layer that lets callers avoid duplicating render rules while keeping call sites explicit.
 
 use crate::math::Vec2;
 use crate::render::renderer::{

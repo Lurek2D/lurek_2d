@@ -1,8 +1,9 @@
-//! This file owns population-based genetic optimization over flat chromosomes with ids, fitness, mutation, and elitism.
-//! `Chromosome` stores one genome, while `GeneticAlgorithm` owns the live population, RNG state, and generation counter.
-//! Tournament selection, crossover, mutation, and elite carryover all live here because they define reproduction semantics.
-//! Deterministic RNG is shared through a versioned learning RNG contract so repeated runs can reproduce the same evolution steps.
-//! Open it when genome evolution policy changes; neural decoding and bandit or Q-learning logic live in sibling files.
+//! Owns learning behavior with explicit state, validation, and crate-local integration boundaries.
+//! Centers the implementation around Chromosome, new, GeneticAlgorithm, with helpers kept close to their invariants.
+//! Defines how genetic data is validated, transformed, or stored before neighboring systems use it.
+//! Owns learning behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on genetic behavior while Lua registration stays elsewhere.
+//! Documents the boundary where learning code accepts inputs, reports errors, or updates state.
 
 use crate::learning::{
     error::LearningError,

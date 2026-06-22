@@ -1,7 +1,9 @@
-//! This file owns `PostFxEffect`, the runtime state object that couples one effect kind with mutable parameters.
-//! It stores the effect type, scalar parameter map, enable flag, optional shader id, and auto-uniform toggle.
-//! Construction helpers cover built-in and custom effects, while accessors expose parameter reads, writes, and names.
-//! Open this file when per-effect runtime semantics change; type catalogs, stacks, and image grouping live in siblings.
+//! Owns the effect owner for the effect subsystem and keeps its rules local to this file while keeping call sites explicit.
+//! Centers the implementation around PostFxEffect, new, new_custom, with helpers kept close to their invariants.
+//! Defines how effect data is validated, transformed, or stored before neighboring systems use it.
+//! Owns effect behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on effect behavior while Lua registration stays elsewhere.
+//! Documents the boundary where effect code accepts inputs, reports errors, or updates state.
 
 use super::contract::{PostFxDiagnostics, PostFxError, PostFxLimits};
 use super::effect_type::PostFxEffectType;

@@ -1,15 +1,17 @@
-//! This file owns `Terminal`, the main state machine for the character grid, cursor, widgets, and histories.
-//! It stores the row-major cell buffer, focus state, clipboard, command history, scrollback, and size overrides.
-//! Helper functions draw compact buttons, frames, cursor text, and bounded writes onto composed cell slices.
-//! Input handlers route keyboard, text, and mouse events to focused widgets and emit typed terminal events.
-//! Text-box editing covers cursor movement, selection replacement, clipboard shortcuts, and word deletes.
-//! List handling covers focus, selection, scrolling, and mouse hit resolution for terminal UI controls.
-//! Render composition overlays visible widgets on top of the base grid and reuses scratch buffers.
-//! Border rendering, panel child maintenance, and widget removal cleanup keep layered layouts consistent.
-//! Public grid APIs cover cell reads, writes, resizing, colored printing, default colors, and cursor moves.
-//! History APIs manage scrollback limits, command navigation, and durable memory beyond render output.
-//! Command builders translate the composed surface into batched render commands without duplicated logic.
-//! Open it when terminal interaction or surface semantics change; widgets and exporters depend on it.
+//! Owns the terminal state owner for the terminal subsystem and keeps its rules local to this file.
+//! Centers the implementation around MAX_COLS, MAX_ROWS, BUTTON_FG, with helpers kept close to their invariants.
+//! Defines how terminal state data is validated, transformed, or stored before neighboring systems use it.
+//! Owns terminal behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on terminal state behavior while Lua registration stays elsewhere.
+//! Documents the boundary where terminal code accepts inputs, reports errors, or updates state.
+//! Use this file when changing terminal state defaults, lifecycle handling, validation, or data ownership.
+//! Keeps failure paths and edge cases near the terminal state that can explain them while keeping call sites explicit.
+//! Preserves deterministic behavior by keeping terminal state calculations explicit at their owner boundary.
+//! Owns terminal behavior with explicit state, validation, and crate-local integration boundaries.
+//! Maintains small helper surfaces so broader engine modules can compose terminal state behavior safely.
+//! Protects subsystem contracts by keeping resource, cache, or state mutations visible in one place.
+//! Links adjacent concerns only where terminal state changes need coordination with owned engine data.
+//! Keeps terminal data ownership and helper behavior clear for future engine maintenance. for engine changes.
 
 use super::cell::{TCell, DEFAULT_BG, DEFAULT_CH, DEFAULT_FG};
 use super::text_utils::{byte_index, char_count, truncate_chars};

@@ -1,11 +1,12 @@
-//! Loads declarative TOML layout definitions into live widget trees built on the retained UI context.
-//! Maps textual widget kinds onto concrete constructors so authored layouts resolve to the same runtime widgets.
-//! Applies shared base properties and per-type fields to convert authored structure into usable live controls.
-//! Supports recursive child definitions that mirror the same parent-child composition used by code-built screens.
-//! Provides headless render-to-image helpers so declarative layouts can be snapshotted and verified offline.
-//! Keeps serde and parsing concerns local instead of spreading authored-layout decoding through widget modules.
-//! Acts as the data-driven boundary between TOML layout content and concrete UI tree construction.
-//! Open this file when authored layout files load with wrong structure, defaults, or snapshot rendering output.
+//! Owns ui behavior with explicit state, validation, and crate-local integration boundaries. for engine changes.
+//! Centers the implementation around DialogActionDef, WidgetDef, LayoutDef, with helpers kept close to their invariants.
+//! Defines how layout loader data is validated, transformed, or stored before neighboring systems use it.
+//! Owns ui behavior with explicit state, validation, and crate-local integration boundaries. for engine changes.
+//! Keeps public crate helpers focused on layout loader behavior while Lua registration stays elsewhere.
+//! Documents the boundary where ui code accepts inputs, reports errors, or updates state while keeping call sites explicit.
+//! Use this file when changing layout loader defaults, lifecycle handling, validation, or data ownership.
+//! Keeps failure paths and edge cases near the ui state that can explain them while keeping call sites explicit.
+//! Preserves deterministic behavior by keeping layout loader calculations explicit at their owner boundary.
 
 use crate::ui::context::{GuiContext, WidgetKind};
 use crate::ui::extras::{DialogAction, DialogActionRole};

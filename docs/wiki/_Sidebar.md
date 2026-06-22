@@ -15,9 +15,9 @@
 
 * [All Modules](Modules)
 * [Foundations](Modules#foundations)
+* [Core Runtime](Modules#core-runtime)
 * [Platform Services](Modules#platform-services)
 * [Feature Systems](Modules#feature-systems)
-* [Edge / Integration](Modules#edge-integration)
 
 **API Indexes**
 

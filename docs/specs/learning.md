@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/learning.md or source docstrings instead. -->
+
 # learning
 
 ## TL;DR
@@ -8,12 +10,12 @@
 ## General Info
 
 - Module group: `Feature Systems`
-- Source path: `src/learning/`
+- Source path: `src/learning`
 - Binding: `src/lua_api/learning_api.rs`
 - Namespace: `lurek.learning`
 - Lua API surface: `21` functions, `19` types, `137` methods
-- Rust test path(s): tests/rust/unit/learning_tests.rs
-- Lua test path(s): tests/lua/unit/test_learning_core_unit.lua
+- User-facing: `true`
+- Plugin tier: `tier_1_plugin`
 
 ## Summary
 
@@ -35,11 +37,19 @@
 
 This module is mostly self-contained inside the `Feature Systems` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
 
+## Ownership
+
+- Canonical source: `src/learning`
+- Owning tier: `Feature Systems`
+- Plugin tier: `tier_1_plugin`
+- Lua binding owner: `src/lua_api/learning_api.rs`
+- Referenced engine modules: None detected from Rust imports.
+
 ## Imports
 
 - No top-level `crate::<module>` imports were detected in this module's Rust source files.
 
-## Files
+## Source Files
 
 ### attention.rs
 
@@ -84,9 +94,11 @@ This module is mostly self-contained inside the `Feature Systems` group. Cross-m
 
 ### error.rs
 
-- This file owns typed validation and safety errors shared by learning constructors, inference, serialization, and Lua-facing helpers.
-- It keeps failure reasons explicit so safe `try_*` APIs can reject invalid shapes, counts, paths, and numeric inputs consistently.
-- Open it when learning callers need clearer diagnostics or when a new learning owner starts participating in the shared safety contract.
+- Owns the error taxonomy for the learning subsystem and keeps its rules local to this file.
+- Centers the implementation around LearningError, fmt, with helpers kept close to their invariants.
+- Defines how error data is validated, transformed, or stored before neighboring systems use it.
+- Owns learning behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on error behavior while Lua registration stays elsewhere.
 
 ### evolutionary.rs
 
@@ -96,17 +108,20 @@ This module is mostly self-contained inside the `Feature Systems` group. Cross-m
 
 ### genetic.rs
 
-- This file owns population-based genetic optimization over flat chromosomes with ids, fitness, mutation, and elitism.
-- `Chromosome` stores one genome, while `GeneticAlgorithm` owns the live population, RNG state, and generation counter.
-- Tournament selection, crossover, mutation, and elite carryover all live here because they define reproduction semantics.
-- Deterministic RNG is shared through a versioned learning RNG contract so repeated runs can reproduce the same evolution steps.
-- Open it when genome evolution policy changes; neural decoding and bandit or Q-learning logic live in sibling files.
+- Owns learning behavior with explicit state, validation, and crate-local integration boundaries.
+- Centers the implementation around Chromosome, new, GeneticAlgorithm, with helpers kept close to their invariants.
+- Defines how genetic data is validated, transformed, or stored before neighboring systems use it.
+- Owns learning behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on genetic behavior while Lua registration stays elsewhere.
+- Documents the boundary where learning code accepts inputs, reports errors, or updates state.
 
 ### limits.rs
 
-- This file owns shared learning sizing and validation limits used by safe constructors, inference, and persistence helpers.
-- It centralizes checked arithmetic and numeric policy so tensors, learners, genomes, and ONNX interop share one resource contract.
-- Open it when ceilings or validation rules change across learning modules.
+- Owns learning behavior with explicit state, validation, and crate-local integration boundaries.
+- Centers the implementation around LearningLimits, default, validate_finite, with helpers kept close to their invariants.
+- Defines how limits data is validated, transformed, or stored before neighboring systems use it.
+- Owns learning behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on limits behavior while Lua registration stays elsewhere.
 
 ### mod.rs
 
@@ -121,34 +136,40 @@ This module is mostly self-contained inside the `Feature Systems` group. Cross-m
 
 ### neural_net.rs
 
-- This file owns dense feed-forward networks, including activations, layer storage, and ordered network assembly.
-- `NeuralLayer` stores row-major weights and biases, while `Activation` centralizes the elementwise output transforms.
-- Layer-by-layer forward propagation lives here because dense inference and softmax handling define this model family.
-- Flat parameter import and export also live here so optimizers and neuroevolution can rebuild dense models.
-- `NeuralNet` owns layer ordering and whole-network weight packing, not exploration policy, tensors, or sequence state.
-- Open it when dense-model behavior changes; recurrent, convolutional, and attention-based blocks live in sibling files.
+- Owns the neural net owner for the learning subsystem and keeps its rules local to this file.
+- Centers the implementation around Activation, from_str, as_str, with helpers kept close to their invariants.
+- Defines how neural net data is validated, transformed, or stored before neighboring systems use it.
+- Owns learning behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on neural net behavior while Lua registration stays elsewhere.
+- Documents the boundary where learning code accepts inputs, reports errors, or updates state.
+- Use this file when changing neural net defaults, lifecycle handling, validation, or data ownership.
 
 ### neuroevolution.rs
 
-- This file owns the bridge between flat genetic chromosomes and concrete dense neural-network instances.
-- `Neuroevolution` stores the GA backend plus a layer template used to rebuild `NeuralNet` instances from genomes.
-- Fitness assignment and generation advancement live here because this wrapper coordinates model decoding with search.
-- Open it when genome-to-network mapping changes; dense layer math and raw genetic operators live in sibling files.
+- Owns the neuroevolution owner for the learning subsystem and keeps its rules local to this file.
+- Centers the implementation around Neuroevolution, new, try_new, with helpers kept close to their invariants.
+- Defines how neuroevolution data is validated, transformed, or stored before neighboring systems use it.
+- Owns learning behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on neuroevolution behavior while Lua registration stays elsewhere.
 
 ### onnx.rs
 
-- This file owns ONNX model loading and inference through tract, bridging `LurekTensor` data into runnable CPU plans.
-- `OnnxModel` stores the optimized tract plan plus cached input and output counts used for validation and inspection.
-- Safe load and run helpers live here because external model optimization, sandboxing, and tensor conversion are this boundary.
-- Open it when ONNX interop changes; native tensors and in-repo learning layers live in sibling files.
+- Owns the onnx owner for the learning subsystem and keeps its rules local to this file while keeping call sites explicit.
+- Centers the implementation around TractPlan, OnnxLoadOptions, default, with helpers kept close to their invariants.
+- Defines how onnx data is validated, transformed, or stored before neighboring systems use it.
+- Owns learning behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on onnx behavior while Lua registration stays elsewhere.
+- Documents the boundary where learning code accepts inputs, reports errors, or updates state.
 
 ### qlearner.rs
 
-- This file owns tabular Q-learning state, including the flat Q-table, exploration rate, and episode counters.
-- `QLearner` keeps discrete state-action values in one row-major table so updates and greedy lookups stay cheap.
-- Epsilon-greedy action choice, deterministic RNG state, and Bellman updates live here because they directly mutate learner-owned state.
-- Serialization and deserialization also stay here so saved tables preserve dimensions, hyperparameters, and RNG state on reload.
-- Open it when discrete RL policy changes; bandits, environments, and neural optimizers are owned by sibling files.
+- Owns the qlearner owner for the learning subsystem and keeps its rules local to this file.
+- Centers the implementation around QLearnerEnvelope, QLearner, new, with helpers kept close to their invariants.
+- Defines how qlearner data is validated, transformed, or stored before neighboring systems use it.
+- Owns learning behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on qlearner behavior while Lua registration stays elsewhere.
+- Documents the boundary where learning code accepts inputs, reports errors, or updates state.
+- Use this file when changing qlearner defaults, lifecycle handling, validation, or data ownership.
 
 ### recurrent.rs
 
@@ -161,16 +182,19 @@ This module is mostly self-contained inside the `Feature Systems` group. Cross-m
 
 ### rng.rs
 
-- This file owns the deterministic RNG contract shared by learning components that need seedable, replayable randomness.
-- It stores a small versioned state snapshot plus helpers for bounded integers, normalized floats, and Gaussian samples.
-- Open it when learning reproducibility, replay restoration, or shared RNG semantics change.
+- Owns learning behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps learning data ownership and helper behavior clear for future engine maintenance. for engine changes.
+- Defines how rng data is validated, transformed, or stored before neighboring systems use it.
+- Owns learning behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on rng behavior while Lua registration stays elsewhere.
 
 ### tensor.rs
 
-- This file owns `LurekTensor`, the row-major tensor container used by ONNX, attention, convolution, and transformer code.
-- It stores explicit shape metadata plus flat `f32` data, then offers indexing, flattening, zero allocation, and export.
-- `gemm` also lives here because basic matrix multiply with optional bias is a shared primitive across learning layers.
-- Open it when tensor layout or interop changes; model-specific forward logic lives in sibling learning files.
+- Owns learning behavior with explicit state, validation, and crate-local integration boundaries.
+- Centers the implementation around LurekTensor, new, try_new, with helpers kept close to their invariants.
+- Defines how tensor data is validated, transformed, or stored before neighboring systems use it.
+- Owns learning behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on tensor behavior while Lua registration stays elsewhere.
 
 ### transformer.rs
 
@@ -566,9 +590,22 @@ This module is mostly self-contained inside the `Feature Systems` group. Cross-m
 - `LTransformerEncoder:type() -> string`: Returns the Lua-visible type name for this wrapper.
 - `LTransformerEncoder:typeOf(name) -> boolean`: Returns whether this userdata matches the requested type string.
 
-## References
+## Examples
 
-- No top-level `crate::<module>` imports were detected in this module's Rust source files.
+- `content/examples/learning.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_learning_unit.lua` (present)
+- Rust: `tests/rust/unit/learning_tests.rs`
+
+## Evidence / Golden
+
+- No evidence or golden artifacts registered.
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

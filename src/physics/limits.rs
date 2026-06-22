@@ -1,6 +1,8 @@
-//! This file owns shared physics sizing and validation limits used by safe constructors, stepping, terrain, and shape helpers.
-//! It centralizes checked arithmetic and numeric policy so physics owners share one resource and finite-value contract.
-//! Open it when ceilings or validation rules change across world, body, shape, zone, or terrain code.
+//! Owns physics behavior with explicit state, validation, and crate-local integration boundaries.
+//! Centers the implementation around PhysicsLimits, default, validate_finite, with helpers kept close to their invariants.
+//! Defines how limits data is validated, transformed, or stored before neighboring systems use it.
+//! Owns physics behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on limits behavior while Lua registration stays elsewhere.
 
 use super::error::PhysicsError;
 

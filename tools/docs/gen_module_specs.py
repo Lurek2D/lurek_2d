@@ -1,22 +1,11 @@
 #!/usr/bin/env python3
-"""Generate merged docs/specs/<module>.md files for top-level src modules.
+"""Generate docs/specs/<module>.md from source facts and manual overlays.
 
-This tool treats docs/specs/<module>.md as the canonical long-form module
-reference. During the AGENT.md retirement migration it can seed missing manual
-content from src/<module>/AGENT.md or src/<module>/AGENT.legacy.md, but after
-that transition it continues to work from the existing spec plus source code.
+Manual content is read only from docs/specs/manual/<module>.md. Final
+docs/specs/*.md files are generated output; do not edit them directly.
 
-Manual sections preserved from the existing spec when present:
-- TL;DR
-- Summary
-
-Auto-collected sections rebuilt from source code and Lua binding data:
-- General Info
-- References
-- Files
-- Callbacks (when the module owns global engine callback contracts)
-- Lua API Reference
-- Notes
+Generated sections are rebuilt from source code, registry metadata, and docs
+data. Manual overlays can provide TL;DR, Summary, Notes, and Architecture Links.
 
 Usage:
 ```
@@ -47,76 +36,26 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Optional
 
+import module_registry
+
 
 ROOT = Path(__file__).resolve().parent.parent.parent
 SRC = ROOT / "src"
 SPECS = ROOT / "docs" / "specs"
+MANUAL_SPECS = SPECS / "manual"
 README = SPECS / "README.md"
 SESSION_DATA = ROOT / "work" / "module-specs-20260411" / "data" / "module_inventory.json"
+DOCS_DATA = module_registry.DOCS_DATA
+LEGACY_LOGS_DATA = module_registry.LEGACY_LOGS_DATA
+GENERATED_HEADER = "<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/<module>.md or source docstrings instead. -->"
 
 
-GROUPS = {
-    "Foundations": {
-        "math",
-        "log",
-        "data",
-        "serialize",
-        "compute",
-        "dataframe",
-        "graph",
-        "procgen",
-        "patterns",
-    },
-    "Core Runtime": {
-        "runtime",
-        "event",
-        "timer",
-        "thread",
-        "network",
-        "filesystem",
-    },
-    "Platform Services": {
-        "render",
-        "audio",
-        "physics",
-        "input",
-        "image",
-        "window",
-        "camera",
-        "light",
-        "effect",
-    },
-    "Feature Systems": {
-        "ecs",
-        "scene",
-        "animation",
-        "tween",
-        "particle",
-        "tilemap",
-        "parallax",
-        "minimap",
-        "raycaster",
-        "ui",
-        "terminal",
-        "ai",
-        "pathfind",
-        "save",
-        "mods",
-        "i18n",
-        "automation",
-        "sprite",
-        "spine",
-        "globe",
-    },
-    "Edge/Integration": {
-        "app",
-        "lua_api",
-        "devtools",
-        "debugbridge",
-        "docs",
-        "pipeline",
-        "bin",
-    },
+TIER_LABELS = {
+    "foundations": "Foundations",
+    "core_runtime": "Core Runtime",
+    "platform_services": "Platform Services",
+    "feature_systems": "Feature Systems",
+    "edge_integration": "Edge/Integration",
 }
 
 
@@ -130,6 +69,7 @@ SECTION_ALIASES = {
     "references": ["Imports", "References"],
     "notes": ["Notes", "Constraints"],
     "tldr": ["TL;DR"],
+    "architecture_links": ["Architecture Links"],
 }
 
 
@@ -155,11 +95,12 @@ ENUM_VARIANT_RE = re.compile(
     r'^\s*([A-Za-z_][A-Za-z0-9_]*)\s*(?:\(|\{|=|,|$)'
 )
 SET_RE = re.compile(r'\b(?:lurek|lurek)\.set\(\s*"([^\"]+)"')
-LUA_API_JSON = ROOT / "logs" / "data" / "lua_api_data.json"
+LUA_API_JSON = module_registry.lua_api_json_path()
 
 # Some Lua API bindings are grouped under legacy/top-level names that do not
 # match docs/specs module stems. Merge them into the target spec module.
 LUA_API_MODULE_ALIASES: dict[str, list[str]] = {
+    "app": ["engine"],
     "runtime": ["system", "engine"],
     "vector": ["svg"],
 }
@@ -183,10 +124,7 @@ def load_lua_parser():
 
 
 def module_group(module: str) -> str:
-    for group, modules in GROUPS.items():
-        if module in modules:
-            return group
-    return "Edge/Integration"
+    return TIER_LABELS.get(module_registry.module_tier(module), "Edge/Integration")
 
 
 def read_text(path: Path) -> str:
@@ -625,7 +563,8 @@ def collect_lua_api(module: str, lua_parser, seed_texts: list[str]) -> dict:
                     classes[owner] = {"description": "Lua-visible object type.", "fields": [], "methods": []}
                 classes[owner]["methods"].append(entry)
 
-    namespace = namespace_prefixes[0] if namespace_prefixes else ""
+    registry_namespace = module_registry.module_namespace(module)
+    namespace = namespace_prefixes[0] if namespace_prefixes else registry_namespace
     for text in seed_texts:
         if not text:
             continue
@@ -648,7 +587,7 @@ def collect_lua_api(module: str, lua_parser, seed_texts: list[str]) -> dict:
         if match:
             namespace = f"lurek.{match.group(1)}"
 
-    binding_path = ""
+    binding_path = module_registry.module_lua_binding_path(module)
     if api_file.exists():
         binding_path = api_file.relative_to(ROOT).as_posix()
     elif api_dir.is_dir():
@@ -829,23 +768,111 @@ def resolve_item_description(overrides: dict[str, str], *keys: str, fallback: st
     return fallback
 
 
-def format_general_info(module: str, group: str, rust_tests: str, lua_tests: str, lua_api: dict) -> str:
-    lua_paths = f"`{lua_api['binding_path']}`" if lua_api["binding_path"] else "None direct"
-    namespace = f"`{lua_api['namespace']}`" if lua_api["namespace"] else "None direct"
+def format_general_info(module: str, group: str, lua_api: dict) -> str:
+    meta = module_registry.get_module(module)
+    lua_paths = f"`{module_registry.module_lua_binding_path(module)}`" if meta["lua_binding"] else "None direct"
+    namespace = f"`{module_registry.module_namespace(module)}`" if meta["namespace"] else "None direct"
     function_count = len(lua_api.get("module_functions", []))
     type_count = len(lua_api.get("classes", {}))
     method_count = sum(len(meta.get("methods", [])) for meta in lua_api.get("classes", {}).values())
     return "\n".join(
         [
             f"- Module group: `{strip_backticks(group)}`",
-            f"- Source path: `src/{module}/`",
+            f"- Source path: `{module_registry.module_source_path(module)}`",
             f"- Binding: {lua_paths}",
             f"- Namespace: {namespace}",
             f"- Lua API surface: `{function_count}` functions, `{type_count}` types, `{method_count}` methods",
-            f"- Rust test path(s): {strip_backticks(rust_tests) or 'None found in the workspace'}",
-            f"- Lua test path(s): {strip_backticks(lua_tests) or 'None found in the workspace'}",
+            f"- User-facing: `{str(bool(meta['user_facing'])).lower()}`",
+            f"- Plugin tier: `{module_registry.module_plugin_tier(module)}`",
         ]
     )
+
+
+def format_ownership(module: str, group: str, refs: list[str]) -> str:
+    meta = module_registry.get_module(module)
+    lines = [
+        f"- Canonical source: `{module_registry.module_source_path(module)}`",
+        f"- Owning tier: `{group}`",
+        f"- Plugin tier: `{meta['plugin_tier']}`",
+    ]
+    if meta.get("lua_binding"):
+        lines.append(f"- Lua binding owner: `{meta['lua_binding']}`")
+    if refs:
+        lines.append("- Referenced engine modules: " + ", ".join(f"`{ref}`" for ref in refs))
+    else:
+        lines.append("- Referenced engine modules: None detected from Rust imports.")
+    return "\n".join(lines)
+
+
+def format_examples(module: str) -> str:
+    example = module_registry.module_example_file(module)
+    if not example:
+        return "- No user-facing example is registered for this module."
+    path = ROOT / example
+    status = "present" if path.exists() else "missing"
+    return f"- `{example}` ({status})"
+
+
+def discover_rust_tests(module: str) -> list[str]:
+    patterns = [
+        f"*{module}*_test*.rs",
+        f"test_{module}*.rs",
+        f"{module}_*.rs",
+    ]
+    found: set[str] = set()
+    for root in [ROOT / "tests" / "rust", SRC / module]:
+        if not root.exists():
+            continue
+        for pattern in patterns:
+            for path in root.rglob(pattern):
+                if path.is_file():
+                    found.add(path.relative_to(ROOT).as_posix())
+    return sorted(found)
+
+
+def format_tests(module: str) -> str:
+    lines: list[str] = []
+    lua_test = module_registry.module_lua_unit_test(module)
+    if lua_test:
+        status = "present" if (ROOT / lua_test).exists() else "missing"
+        lines.append(f"- Lua unit: `{lua_test}` ({status})")
+    else:
+        lines.append("- Lua unit: none registered.")
+    rust_tests = discover_rust_tests(module)
+    if rust_tests:
+        lines.extend(f"- Rust: `{path}`" for path in rust_tests)
+    else:
+        lines.append("- Rust: none detected.")
+    return "\n".join(lines)
+
+
+def load_evidence_manifest() -> dict:
+    path = module_registry.docs_data_file("evidence_manifest.json")
+    if not path.exists():
+        return {}
+    try:
+        data = json.loads(read_text(path))
+    except json.JSONDecodeError:
+        return {}
+    return data if isinstance(data, dict) else {}
+
+
+def format_evidence(module: str, manifest: dict) -> str:
+    entry = manifest.get(module) or {}
+    rows: list[tuple[str, str]] = []
+    for key, label in [
+        ("evidence_tests", "Evidence test"),
+        ("golden_tests", "Golden test"),
+        ("current_artifacts", "Current artifact"),
+        ("baseline_artifacts", "Baseline artifact"),
+    ]:
+        for path in entry.get(key, []) or []:
+            rows.append((label, path))
+    if not rows:
+        return "- No evidence or golden artifacts registered."
+    lines = ["| Kind | Path |", "|---|---|"]
+    lines.extend(f"| {kind} | `{path}` |" for kind, path in rows)
+    return "\n".join(lines)
 
 
 def format_files(file_rows: list[dict], overrides: dict[str, str]) -> str:
@@ -1199,32 +1226,15 @@ def discover_lua_tests(module: str) -> str:
 
 
 def build_spec(module: str, lua_parser) -> tuple[str, dict]:
-    spec_path = SPECS / f"{module}.md"
-    spec_text = read_text(spec_path)
-    agent_text = read_text(SRC / module / "AGENT.md")
-    legacy_text = read_text(SRC / module / "AGENT.legacy.md")
-
-    spec_sections = parse_doc_sections(spec_text)
-    agent_sections = parse_doc_sections(agent_text)
-    legacy_sections = parse_doc_sections(legacy_text)
+    manual_path = MANUAL_SPECS / f"{module}.md"
+    manual_text = read_text(manual_path)
+    manual_sections = parse_doc_sections(manual_text)
     source = scan_module_sources(module)
-    lua_api = collect_lua_api(module, lua_parser, [spec_text, agent_text, legacy_text])
+    lua_api = collect_lua_api(module, lua_parser, [manual_text])
     merge_generated_result_classes(lua_api)
 
-    info_maps = build_info_maps(spec_text, spec_sections, agent_text, agent_sections, legacy_text)
-    rust_tests = lookup_info(info_maps, "Rust test path(s)", "Rust Tests") or "None found in the workspace"
-    lua_tests = lookup_info(info_maps, "Lua test path(s)", "Lua Tests") or "None found in the workspace"
-    discovered_lua_tests = discover_lua_tests(module)
-    if discovered_lua_tests and lua_tests.lower().startswith("none found"):
-        lua_tests = discovered_lua_tests
-
     group = module_group(module)
-    if group == "Edge/Integration":
-        # Fall back to spec/agent metadata only if not explicitly in GROUPS
-        meta_group = lookup_info(info_maps, "Module group", "Group")
-        if meta_group and module not in {m for mods in GROUPS.values() for m in mods}:
-            group = meta_group
-    summary_text = first_non_empty(spec_sections["summary"], agent_sections["summary"], legacy_sections["summary"])
+    summary_text = first_non_empty(manual_sections["summary"])
     if not summary_text:
         summary_text = (
             f"The `{module}` module is documented from the current source tree and existing module reference data.\n\n"
@@ -1235,17 +1245,19 @@ def build_spec(module: str, lua_parser) -> tuple[str, dict]:
 
     # Legacy Rust Types/Functions sections are intentionally ignored.
     # Specs now focus on module contract, ownership, and Lua-visible API.
-    reference_overrides = combine_pair_maps(spec_sections["references"], legacy_sections["references"])
-    notes_text = first_non_empty(
-        spec_sections["notes"],
-        agent_sections["notes"],
-        legacy_sections["notes"],
-        build_default_notes(module, lua_api),
+    reference_overrides = combine_pair_maps(manual_sections["references"])
+    notes_text = first_non_empty(manual_sections["notes"], build_default_notes(module, lua_api))
+    tldr_text = first_non_empty(
+        manual_sections.get("tldr", ""),
+        f"`{module}` belongs to `{group}` and exposes `{module_registry.module_namespace(module) or 'no direct Lua namespace'}`.",
+    )
+    architecture_links = first_non_empty(
+        manual_sections.get("architecture_links", ""),
+        "- No module-specific architecture links registered.",
     )
 
-    tldr_text = first_non_empty(spec_sections.get("tldr", ""), agent_sections.get("tldr", ""), legacy_sections.get("tldr", ""))
-
-    general_info = format_general_info(module, group, rust_tests, lua_tests, lua_api)
+    general_info = format_general_info(module, group, lua_api)
+    ownership_text = format_ownership(module, group, source["references"])
     # Files should include file-level docs inline, no dedicated Source Documentation section.
     files_with_docs: list[dict] = []
     for row in source["files"]:
@@ -1264,9 +1276,13 @@ def build_spec(module: str, lua_parser) -> tuple[str, dict]:
     lua_api_for_spec = lua_api if module != "app" else with_global_callbacks(lua_api, [])
     lua_api_text = format_lua_api(lua_api_for_spec)
     imports_text = format_references(group, source["references"], reference_overrides)
-    references_text = format_references(group, source["references"], reference_overrides)
+    examples_text = format_examples(module)
+    tests_text = format_tests(module)
+    evidence_text = format_evidence(module, load_evidence_manifest())
 
-    content = f"""# {module}
+    content = f"""{GENERATED_HEADER.replace("<module>", module)}
+
+# {module}
 
 ## TL;DR
 
@@ -1280,11 +1296,15 @@ def build_spec(module: str, lua_parser) -> tuple[str, dict]:
 
 {summary_text}
 
+## Ownership
+
+{ownership_text}
+
 ## Imports
 
 {imports_text}
 
-## Files
+## Source Files
 
 {files_text}
 
@@ -1294,9 +1314,21 @@ def build_spec(module: str, lua_parser) -> tuple[str, dict]:
 
 {lua_api_text}
 
-## References
+## Examples
 
-{references_text}
+{examples_text}
+
+## Tests
+
+{tests_text}
+
+## Evidence / Golden
+
+{evidence_text}
+
+## Architecture Links
+
+{architecture_links}
 
 ## Notes
 
@@ -1306,8 +1338,8 @@ def build_spec(module: str, lua_parser) -> tuple[str, dict]:
     inventory = {
         "group": group,
         "namespace": lua_api["namespace"],
-        "rust_tests": rust_tests,
-        "lua_tests": lua_tests,
+        "rust_tests": discover_rust_tests(module),
+        "lua_tests": module_registry.module_lua_unit_test(module),
         "references": source["references"],
         "file_count": len(source["files"]),
         "type_count": sum(len(items) for items in source["types_by_file"].values()),
@@ -1350,7 +1382,7 @@ def build_callbacks_spec() -> tuple[str, dict]:
 
     summary = (
         "This spec documents global `lurek.*` lifecycle/input/render callbacks exposed by the engine runtime. "
-        "It is generated from `logs/data/lua_api_data.json` (`engine_callbacks`) so callback contracts stay in sync "
+        "It is generated from `build/docs-data/lua_api.json` (`engine_callbacks`) with `logs/data/lua_api_data.json` compatibility fallback so callback contracts stay in sync "
         "with Rust+Lua API extraction without hardcoded lists.\n\n"
         "Scope boundary: this file owns only callback inventory and ownership context. "
         "Detailed callback signatures/parameters belong to generated API references (`docs/api/lurek.md`, `docs/api/lurek.lua`)."
@@ -1363,7 +1395,7 @@ def build_callbacks_spec() -> tuple[str, dict]:
             callback_lines.append(format_callback_line(cb))
         callback_lines.append("")
     else:
-        callback_lines.append("- No callback metadata available in `logs/data/lua_api_data.json`.")
+        callback_lines.append("- No callback metadata available in generated Lua API data.")
 
     callback_lines.extend(
         [
@@ -1375,7 +1407,9 @@ def build_callbacks_spec() -> tuple[str, dict]:
         ]
     )
 
-    content = f"""# callbacks
+    content = f"""{GENERATED_HEADER.replace("<module>", "callbacks")}
+
+# callbacks
 
 ## TL;DR
 
@@ -1391,7 +1425,7 @@ Global `lurek.*` callbacks are documented here as a dedicated generated spec, in
 
 ## Imports
 
-- Global callback contracts are sourced from `logs/data/lua_api_data.json` (`engine_callbacks`).
+- Global callback contracts are sourced from generated Lua API data (`engine_callbacks`).
 
 ## Files
 
@@ -1447,9 +1481,11 @@ Examples:
     args = parser.parse_args()
 
     lua_parser = load_lua_parser()
-    modules = sorted(
-        p.name for p in SRC.iterdir() if p.is_dir() and p.name not in MODULE_SPEC_EXCLUDE
-    )
+    modules = [
+        name
+        for name in module_registry.list_modules(include_non_user_facing=True)
+        if name not in MODULE_SPEC_EXCLUDE
+    ]
     if args.module:
         selected = set(args.module)
         modules = [module for module in modules if module in selected]
@@ -1458,6 +1494,7 @@ Examples:
         emit_callbacks_spec = True
 
     SPECS.mkdir(parents=True, exist_ok=True)
+    MANUAL_SPECS.mkdir(parents=True, exist_ok=True)
     SESSION_DATA.parent.mkdir(parents=True, exist_ok=True)
 
     inventory: dict[str, dict] = {}
@@ -1478,7 +1515,7 @@ Examples:
 
     if not args.module:
         readme_modules = sorted(
-            [p.name for p in SRC.iterdir() if p.is_dir() and p.name not in MODULE_SPEC_EXCLUDE]
+            [name for name in module_registry.list_modules() if name not in MODULE_SPEC_EXCLUDE]
             + SPECIAL_SPECS
         )
         rewrite_readme(readme_modules)

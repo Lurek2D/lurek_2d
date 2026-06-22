@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate per-module MkDocs pages in docs/lua/ from:
+"""Generate per-module MkDocs pages in docs/modules/ from:
   - docs/specs/<module>.md  -> description (TL;DR + Summary)
   - docs/api/lurek.lua      -> function/method signatures + param/return docs
   - content/examples/<module>.lua -> code examples per symbol
@@ -13,10 +13,14 @@ import sys
 import json
 from pathlib import Path
 
+import module_registry
+
 ROOT = Path(__file__).resolve().parents[2]
 SPECS_DIR = ROOT / "docs" / "specs"
 STUB_FILE = ROOT / "docs" / "api" / "lurek.lua"
-LUA_API_JSON = ROOT / "logs" / "data" / "lua_api_data.json"
+DOCS_DATA = module_registry.DOCS_DATA
+LEGACY_LOGS_DATA = module_registry.LEGACY_LOGS_DATA
+LUA_API_JSON = module_registry.lua_api_json_path()
 EXAMPLES_DIR = ROOT / "content" / "examples"
 OUT_DIR = ROOT / "docs" / "modules"  # MkDocs input - Lua API module markdown documentation
 CALLBACKS_MD = ROOT / "docs" / "callbacks.md"
@@ -668,22 +672,8 @@ def build_callbacks_page() -> str:
 # Main
 # ---------------------------------------------------------------------------
 
-KNOWN_MODULES = [
-    "agent", "ai", "animation", "app", "audio", "automation", "binary",
-    "camera", "charts", "color", "compute", "cursor", "dataframe",
-    "debugbridge", "devtools", "dialog", "docs", "dsp", "ecs", "effect",
-    "event", "filesystem", "flownet", "font", "globe", "grep", "html",
-    "i18n", "image", "input", "layout", "learning", "light", "log",
-    "mapblock", "math", "midi", "minimap", "mods", "network", "overlay",
-    "parallax", "particle", "pathfind", "patterns", "physics", "pipeline",
-    "procgen", "province", "raycaster", "render", "repl", "runtime",
-    "save", "scene", "serialize", "spine", "sprite", "terminal", "thread",
-    "tilemap", "timer", "tween", "ui", "validator", "visibility", "window",
-]
-
-
 def main():
-    targets = sys.argv[1:] if len(sys.argv) > 1 else KNOWN_MODULES
+    targets = sys.argv[1:] if len(sys.argv) > 1 else module_registry.user_facing_modules()
 
     print("Parsing docs/api/lurek.lua ...")
     module_fns, module_fields, class_methods, class_fields = parse_stub(STUB_FILE)

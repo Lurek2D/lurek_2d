@@ -1,8 +1,9 @@
-//! Defines the registry of live GPU allocations, cached geometry, reusable frame buffers, readback state, and frame statistics.
-//! Stores textures, fonts, canvases, depth targets, and other handles in structured collections with stable keys.
-//! Keeps static geometry cache records, CPU frame buffers, and pending surface readbacks separate from the main renderer loop.
-//! Acts as the persistent state boundary for GPU resources shared across multiple render passes.
-//! Open this file when cached handles, depth targets, or readback bookkeeping state behaves incorrectly.
+//! Owns render behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps render data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+//! Defines how gpu state data is validated, transformed, or stored before neighboring systems use it.
+//! Owns render behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on gpu state behavior while Lua registration stays elsewhere.
+//! Documents the boundary where render code accepts inputs, reports errors, or updates state.
 
 use crate::render::gpu_types::{ColorVertex, InstanceData, PreparedDraw, TexVertex};
 use crate::runtime::resource_keys::{InstanceBufferKey, StaticGeometryKey};

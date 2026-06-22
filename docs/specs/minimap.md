@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/minimap.md or source docstrings instead. -->
+
 # minimap
 
 ## TL;DR
@@ -7,12 +9,12 @@
 ## General Info
 
 - Module group: `Feature Systems`
-- Source path: `src/minimap/`
+- Source path: `src/minimap`
 - Binding: `src/lua_api/minimap_api.rs`
 - Namespace: `lurek.minimap`
 - Lua API surface: `1` functions, `1` types, `86` methods
-- Rust test path(s): tests/rust/unit/minimap_tests.rs
-- Lua test path(s): tests/lua/unit/test_minimap_unit.lua, tests/lua/evidence/test_minimap_evidence.lua
+- User-facing: `true`
+- Plugin tier: `tier_2_plugin`
 
 ## Summary
 
@@ -28,28 +30,39 @@
 
 This module primarily collaborates with `camera`, `image`, `province`, `raycaster`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
 
+## Ownership
+
+- Canonical source: `src/minimap`
+- Owning tier: `Feature Systems`
+- Plugin tier: `tier_2_plugin`
+- Lua binding owner: `src/lua_api/minimap_api.rs`
+- Referenced engine modules: `camera`, `image`, `province`, `raycaster`, `render`, `runtime`
+
 ## Imports
 
 - `camera`: Imports or references `src/camera/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
-- `image`: Imports or references `image` from `src/image/`.
-- `province`: Imports or references `src/province/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
+- `image`: Imports or references `src/image/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
+- `province`: Imports or references `src/province/`. Dependency stays inside `Feature Systems` and should remain acyclic.
 - `raycaster`: Imports or references `src/raycaster/`. Dependency stays inside `Feature Systems` and should remain acyclic.
-- `render`: Imports or references `render` from `src/render/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `render`: Imports or references `src/render/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
+- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Feature Systems` into `Core Runtime`.
 
-## Files
+## Source Files
 
 ### minimap.rs
 
-- `src/minimap/minimap.rs` owns the `Minimap` state object that stores terrain, fog, markers, overlays, and view settings.
-- It is the main data and behavior boundary for minimap grids, terrain palettes, owner colors, icons, layers, and paths.
-- Object types, live objects, pings, marker animations, and viewport outlines are updated here with local state.
-- Camera tracking, pan and zoom, hover lookup, and grid-to-screen coordinate conversion also live in this implementation.
-- The file exposes mutation APIs for terrain, fog, objects, markers, overlays, paths, layers, and display configuration.
-- Export helpers such as `draw_to_image` and render-command entry points are defined here for sibling use.
-- Internal helpers resolve active cell colors and owner mappings so terrain and political display modes stay consistent.
-- This file does not import province data or compute raycast visibility; dedicated adapters handle those translations.
-- Read it when minimap ownership, per-frame updates, view math, or public state mutation behavior needs to change.
+- Owns minimap behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps minimap data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+- Defines how minimap data is validated, transformed, or stored before neighboring systems use it.
+- Owns minimap behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on minimap behavior while Lua registration stays elsewhere.
+- Documents the boundary where minimap code accepts inputs, reports errors, or updates state.
+- Use this file when changing minimap defaults, lifecycle handling, validation, or data ownership.
+- Keeps failure paths and edge cases near the minimap state that can explain them while keeping call sites explicit.
+- Preserves deterministic behavior by keeping minimap calculations explicit at their owner boundary.
+- Provides the local adaptation layer that lets callers avoid duplicating minimap rules while keeping call sites explicit.
+- Maintains small helper surfaces so broader engine modules can compose minimap behavior safely.
+- Protects subsystem contracts by keeping resource, cache, or state mutations visible in one place.
 
 ### mod.rs
 
@@ -69,29 +82,33 @@ This module primarily collaborates with `camera`, `image`, `province`, `raycaste
 
 ### raycaster_overlay.rs
 
-- `src/minimap/raycaster_overlay.rs` builds minimap overlays from raycaster walls, visibility, and lighting data.
-- It owns light sampling, reveal collection, raw pixel extraction, visibility checks, and player arrow rasterization.
-- The file is specific to raycaster scenes, keeping minimap helpers for FOV-driven views out of the generic minimap model.
-- `MinimapTileSample` lives here because wall, visibility, and luminance samples are produced together by these helpers.
-- Read it when line-of-sight reveal rules, minimap preview pixels, or player-direction overlay drawing needs to change.
-- General minimap storage and HUD command rendering stay elsewhere; this file produces sampled overlay data and images.
+- Owns the raycaster overlay owner for the minimap subsystem and keeps its rules local to this file.
+- Keeps minimap data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+- Defines how raycaster overlay data is validated, transformed, or stored before neighboring systems use it.
+- Owns minimap behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on raycaster overlay behavior while Lua registration stays elsewhere.
+- Documents the boundary where minimap code accepts inputs, reports errors, or updates state.
+- Use this file when changing raycaster overlay defaults, lifecycle handling, validation, or data ownership.
 
 ### render.rs
 
-- `src/minimap/render.rs` converts minimap state into ordered `RenderCommand` batches for HUD drawing.
-- It walks visible cells, fog, overlays, paths, viewport guides, pings, objects, and markers without mutating model state.
-- Screen projection from minimap grid space also happens here, using `Minimap` view settings to place each primitive.
-- This file owns draw ordering, fallback shapes, and icon emission so renderer integration stays out of state storage.
-- Read it when minimap visuals stack incorrectly, cell colors draw wrong, or HUD command generation needs new behavior.
-- Province imports and raycaster extraction stay elsewhere; this file only turns minimap state into rendering.
+- Owns minimap behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps minimap data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+- Defines how render data is validated, transformed, or stored before neighboring systems use it.
+- Owns minimap behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on render behavior while Lua registration stays elsewhere.
+- Documents the boundary where minimap code accepts inputs, reports errors, or updates state.
+- Use this file when changing render defaults, lifecycle handling, validation, or data ownership.
 
 ### types.rs
 
-- `src/minimap/types.rs` defines the shared enums and data structs that every minimap state and render file reuses.
-- It owns color mode, fog level, markers, pings, overlay geometry, raw layers, and object descriptors in one contract set.
-- Small parsing and conversion helpers also live here so value semantics stay close to the types they interpret.
-- This file carries data shapes only; it does not own minimap mutation, rendering order, or province import behavior.
-- Read it when minimap payload fields, cross-file data contracts, or serialized marker and overlay semantics need changes.
+- Owns the shared type model for the minimap subsystem and keeps its rules local to this file.
+- Centers the implementation around ColorMode, parse_mode, as_str, with helpers kept close to their invariants.
+- Defines how types data is validated, transformed, or stored before neighboring systems use it.
+- Owns minimap behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on types behavior while Lua registration stays elsewhere.
+- Documents the boundary where minimap code accepts inputs, reports errors, or updates state.
+- Use this file when changing types defaults, lifecycle handling, validation, or data ownership.
 
 
 
@@ -208,14 +225,50 @@ This module primarily collaborates with `camera`, `image`, `province`, `raycaste
 - `LMinimap:typeOf(name) -> boolean`: Returns whether this minimap handle matches a supported type name.
 - `LMinimap:update(dt) -> nil`: Advances minimap animations and timers.
 
-## References
+## Examples
 
-- `camera`: Imports or references `src/camera/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
-- `image`: Imports or references `image` from `src/image/`.
-- `province`: Imports or references `src/province/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
-- `raycaster`: Imports or references `src/raycaster/`. Dependency stays inside `Feature Systems` and should remain acyclic.
-- `render`: Imports or references `render` from `src/render/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `content/examples/minimap.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_minimap_unit.lua` (present)
+- Rust: `tests/rust/unit/minimap_tests.rs`
+
+## Evidence / Golden
+
+| Kind | Path |
+|---|---|
+| Evidence test | `tests/lua/evidence/test_minimap_evidence.lua` |
+| Golden test | `tests/lua/golden/test_minimap_golden.lua` |
+| Current artifact | `tests/artifacts/current/minimap/minimap_blips.png` |
+| Current artifact | `tests/artifacts/current/minimap/minimap_circular_border.png` |
+| Current artifact | `tests/artifacts/current/minimap/minimap_command_overlay_route.png` |
+| Current artifact | `tests/artifacts/current/minimap/minimap_floor_level0.png` |
+| Current artifact | `tests/artifacts/current/minimap/minimap_floor_level1_active.png` |
+| Current artifact | `tests/artifacts/current/minimap/minimap_floor_level2.png` |
+| Current artifact | `tests/artifacts/current/minimap/minimap_fog.png` |
+| Current artifact | `tests/artifacts/current/minimap/minimap_radar_sweep.png` |
+| Current artifact | `tests/artifacts/current/minimap/minimap_terrain.png` |
+| Current artifact | `tests/artifacts/current/minimap/minimap_unexplored_mask.png` |
+| Current artifact | `tests/artifacts/current/minimap/minimap_viewport_bounds.png` |
+| Current artifact | `tests/artifacts/current/minimap/minimap_waypoints.png` |
+| Current artifact | `tests/artifacts/current/minimap/minimap_zoomed_sector.png` |
+| Baseline artifact | `tests/artifacts/baselines/minimap/minimap_blips.png` |
+| Baseline artifact | `tests/artifacts/baselines/minimap/minimap_circular_border.png` |
+| Baseline artifact | `tests/artifacts/baselines/minimap/minimap_floor_level0.png` |
+| Baseline artifact | `tests/artifacts/baselines/minimap/minimap_floor_level1_active.png` |
+| Baseline artifact | `tests/artifacts/baselines/minimap/minimap_floor_level2.png` |
+| Baseline artifact | `tests/artifacts/baselines/minimap/minimap_fog.png` |
+| Baseline artifact | `tests/artifacts/baselines/minimap/minimap_radar_sweep.png` |
+| Baseline artifact | `tests/artifacts/baselines/minimap/minimap_terrain.png` |
+| Baseline artifact | `tests/artifacts/baselines/minimap/minimap_unexplored_mask.png` |
+| Baseline artifact | `tests/artifacts/baselines/minimap/minimap_viewport_bounds.png` |
+| Baseline artifact | `tests/artifacts/baselines/minimap/minimap_waypoints.png` |
+| Baseline artifact | `tests/artifacts/baselines/minimap/minimap_zoomed_sector.png` |
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

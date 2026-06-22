@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/overlay.md or source docstrings instead. -->
+
 # overlay
 
 ## TL;DR
@@ -7,13 +9,13 @@
 
 ## General Info
 
-- Module group: `Edge/Integration`
-- Source path: `src/overlay/`
+- Module group: `Feature Systems`
+- Source path: `src/overlay`
 - Binding: `src/lua_api/overlay_api.rs`
 - Namespace: `lurek.overlay`
 - Lua API surface: `2` functions, `3` types, `95` methods
-- Rust test path(s): None found in the workspace
-- Lua test path(s): tests/lua/unit/test_overlay_unit.lua
+- User-facing: `true`
+- Plugin tier: `core_keep`
 
 ## Summary
 
@@ -30,14 +32,22 @@
 
 This module primarily collaborates with `color`, `image`, `render`, `runtime`. Its responsibility should stay inside the `Edge/Integration` group rather than absorb behavior owned by those neighbors.
 
+## Ownership
+
+- Canonical source: `src/overlay`
+- Owning tier: `Feature Systems`
+- Plugin tier: `core_keep`
+- Lua binding owner: `src/lua_api/overlay_api.rs`
+- Referenced engine modules: `color`, `image`, `render`, `runtime`
+
 ## Imports
 
-- `color`: Imports or references `src/color/`. Dependency stays inside `Edge/Integration` and should remain acyclic.
-- `image`: Imports or references `src/image/`. Cross-group dependency from `Edge/Integration` into `Platform Services`.
-- `render`: Imports or references `src/render/`. Cross-group dependency from `Edge/Integration` into `Platform Services`.
-- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Edge/Integration` into `Core Runtime`.
+- `color`: Imports or references `src/color/`. Cross-group dependency from `Feature Systems` into `Foundations`.
+- `image`: Imports or references `src/image/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
+- `render`: Imports or references `src/render/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
+- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Feature Systems` into `Core Runtime`.
 
-## Files
+## Source Files
 
 ### ambient.rs
 
@@ -55,13 +65,19 @@ This module primarily collaborates with `color`, `image`, `render`, `runtime`. I
 
 ### controller.rs
 
-- This file owns `Overlay` plus its safety policies, diagnostics, render-plan reporting, and debug image helpers.
-- It stores dimensions plus ambient, weather, flash, shake, fade, clouds, fog, haze, vignette, grain, water, and optional shader intent.
-- `update` advances enabled subsystems, including ambient tint refresh, weather spawn/cull work, timed decay, cloud scrolling, and water time.
-- Local safety helpers sanitize direct public-state mutation, clamp reduced-motion-sensitive effects, validate custom shader names, and bound debug image allocation.
-- Query helpers expose shake offsets, flash and lightning alpha, dimensions, active-state checks, render responsibility, RNG-facing weather telemetry, and diagnostics snapshots.
-- Render helpers build full-screen commands for flash, fade, lightning, and vignette, then offer checked debug image variants for dashboards and docs workflows.
-- Open this file when overlay orchestration, safety policy, telemetry, or renderer-facing ownership changes; focused state structs and transition definitions live in siblings.
+- Owns the controller owner for the overlay subsystem and keeps its rules local to this file.
+- Keeps overlay data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+- Defines how controller data is validated, transformed, or stored before neighboring systems use it.
+- Owns overlay behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on controller behavior while Lua registration stays elsewhere.
+- Documents the boundary where overlay code accepts inputs, reports errors, or updates state.
+- Use this file when changing controller defaults, lifecycle handling, validation, or data ownership.
+- Keeps failure paths and edge cases near the overlay state that can explain them while keeping call sites explicit.
+- Preserves deterministic behavior by keeping controller calculations explicit at their owner boundary.
+- Provides the local adaptation layer that lets callers avoid duplicating overlay rules while keeping call sites explicit.
+- Maintains small helper surfaces so broader engine modules can compose controller behavior safely.
+- Protects subsystem contracts by keeping resource, cache, or state mutations visible in one place.
+- Links adjacent concerns only where controller changes need coordination with owned engine data.
 
 ### mod.rs
 
@@ -96,11 +112,13 @@ This module primarily collaborates with `color`, `image`, `render`, `runtime`. I
 
 ### weather.rs
 
-- This file owns `WeatherType`, `WeatherParticle`, `WeatherProfile`, and `WeatherState`, the screen-space weather data model.
-- It catalogs rain, snow, hail, dust, leaves, ash, and pollen behaviors with stable lowercase lookup names.
-- Runtime state stores intensity, wind, live particles, spawn timing, validated per-type profiles, and PRNG state used for variation.
-- The local helpers cover RNG sampling, seed/state control, and profile validation; particle spawning and motion updates live in the controller.
-- Open this file when weather data semantics change; overlay orchestration and other atmosphere blocks live in siblings.
+- Owns overlay behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps overlay data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+- Defines how weather data is validated, transformed, or stored before neighboring systems use it.
+- Owns overlay behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on weather behavior while Lua registration stays elsewhere.
+- Documents the boundary where overlay code accepts inputs, reports errors, or updates state.
+- Use this file when changing weather defaults, lifecycle handling, validation, or data ownership.
 
 
 
@@ -262,12 +280,43 @@ This module primarily collaborates with `color`, `image`, `render`, `runtime`. I
 - `LScreenTransition:typeOf(name) -> boolean`: Returns whether this transition handle matches a supported type name.
 - `LScreenTransition:update(dt) -> boolean`: Advances this transition timer and returns whether it remains active.
 
-## References
+## Examples
 
-- `color`: Imports or references `src/color/`. Dependency stays inside `Edge/Integration` and should remain acyclic.
-- `image`: Imports or references `src/image/`. Cross-group dependency from `Edge/Integration` into `Platform Services`.
-- `render`: Imports or references `src/render/`. Cross-group dependency from `Edge/Integration` into `Platform Services`.
-- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Edge/Integration` into `Core Runtime`.
+- `content/examples/overlay.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_overlay_unit.lua` (present)
+- Rust: `tests/rust/unit/overlay_tests.rs`
+
+## Evidence / Golden
+
+| Kind | Path |
+|---|---|
+| Evidence test | `tests/lua/evidence/test_overlay_evidence.lua` |
+| Golden test | `tests/lua/golden/test_overlay_golden.lua` |
+| Current artifact | `tests/artifacts/current/overlay/overlay_atmosphere_compositor.png` |
+| Current artifact | `tests/artifacts/current/overlay/overlay_environment_layers.gif` |
+| Current artifact | `tests/artifacts/current/overlay/overlay_flash_shake_fade_composite.gif` |
+| Current artifact | `tests/artifacts/current/overlay/overlay_screen_effects_timeline.gif` |
+| Current artifact | `tests/artifacts/current/overlay/overlay_storm_front_wind_sweep.gif` |
+| Current artifact | `tests/artifacts/current/overlay/overlay_transition_mask_atlas.png` |
+| Current artifact | `tests/artifacts/current/overlay/overlay_transition_modes.gif` |
+| Current artifact | `tests/artifacts/current/overlay/overlay_weather_state_trace.json` |
+| Current artifact | `tests/artifacts/current/overlay/overlay_weather_wind_field.png` |
+| Baseline artifact | `tests/artifacts/baselines/overlay/overlay_atmosphere_compositor.png` |
+| Baseline artifact | `tests/artifacts/baselines/overlay/overlay_environment_layers.gif` |
+| Baseline artifact | `tests/artifacts/baselines/overlay/overlay_flash_shake_fade_composite.gif` |
+| Baseline artifact | `tests/artifacts/baselines/overlay/overlay_screen_effects_timeline.gif` |
+| Baseline artifact | `tests/artifacts/baselines/overlay/overlay_storm_front_wind_sweep.gif` |
+| Baseline artifact | `tests/artifacts/baselines/overlay/overlay_transition_mask_atlas.png` |
+| Baseline artifact | `tests/artifacts/baselines/overlay/overlay_transition_modes.gif` |
+| Baseline artifact | `tests/artifacts/baselines/overlay/overlay_weather_state_trace.json` |
+| Baseline artifact | `tests/artifacts/baselines/overlay/overlay_weather_wind_field.png` |
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

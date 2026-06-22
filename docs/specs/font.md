@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/font.md or source docstrings instead. -->
+
 # font
 
 ## TL;DR
@@ -7,12 +9,12 @@
 ## General Info
 
 - Module group: `Platform Services`
-- Source path: `src/font/`
+- Source path: `src/font`
 - Binding: `src/lua_api/font_api.rs`
 - Namespace: `lurek.font`
 - Lua API surface: `11` functions, `1` types, `8` methods
-- Rust test path(s): tests/rust/unit/font_tests.rs
-- Lua test path(s): tests/lua/unit/test_font_unit.lua
+- User-facing: `true`
+- Plugin tier: `not_evaluated`
 
 ## Summary
 
@@ -23,11 +25,19 @@
 
 This module is mostly self-contained inside the `Platform Services` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
 
+## Ownership
+
+- Canonical source: `src/font`
+- Owning tier: `Platform Services`
+- Plugin tier: `not_evaluated`
+- Lua binding owner: `src/lua_api/font_api.rs`
+- Referenced engine modules: None detected from Rust imports.
+
 ## Imports
 
 - No top-level `crate::<module>` imports were detected in this module's Rust source files.
 
-## Files
+## Source Files
 
 ### bitmap_font.rs
 
@@ -116,9 +126,22 @@ This module is mostly self-contained inside the `Platform Services` group. Cross
 - `LFont:measure(text, scale?) -> number, number`: Measures the pixel dimensions of a text string at the given scale. This method is available to Lua scripts.
 - `LFont:wrapText(text, maxWidth, scale?) -> table`: Wraps text into lines fitting within the given max width. This method is available to Lua scripts.
 
-## References
+## Examples
 
-- No top-level `crate::<module>` imports were detected in this module's Rust source files.
+- `content/examples/font.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_font_unit.lua` (present)
+- Rust: `tests/rust/unit/font_tests.rs`
+
+## Evidence / Golden
+
+- No evidence or golden artifacts registered.
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

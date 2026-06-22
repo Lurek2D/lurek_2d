@@ -1,7 +1,7 @@
-//! `src/docs/error.rs` owns typed errors shared by catalog, export, schema, and quality-report workflows.
-//! It keeps failure reasons stable so tooling can distinguish duplicate entries, sandbox violations, size limits, and rule failures.
-//! Cross-cutting docs pipeline operations depend on these errors instead of ad hoc strings, while file I/O and JSON details are normalized here.
-//! Read this file when documentation pipeline failure semantics or caller-facing diagnostics need to change.
+//! Owns the error taxonomy for the docs subsystem and keeps its rules local to this file while keeping call sites explicit.
+//! Centers the implementation around DocsResult, DocsError, quality_failure, with helpers kept close to their invariants.
+//! Defines how error data is validated, transformed, or stored before neighboring systems use it.
+//! Owns docs behavior with explicit state, validation, and crate-local integration boundaries.
 
 /// Shared result type for docs subsystem operations that can fail with structured diagnostics.
 pub type DocsResult<T> = Result<T, DocsError>;

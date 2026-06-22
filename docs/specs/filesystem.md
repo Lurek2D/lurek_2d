@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/filesystem.md or source docstrings instead. -->
+
 # filesystem
 
 ## TL;DR
@@ -8,12 +10,12 @@
 ## General Info
 
 - Module group: `Core Runtime`
-- Source path: `src/filesystem/`
+- Source path: `src/filesystem`
 - Binding: `src/lua_api/filesystem_api.rs`
 - Namespace: `lurek.filesystem`
 - Lua API surface: `44` functions, `5` types, `23` methods
-- Rust test path(s): tests/rust/unit/filesystem_tests.rs
-- Lua test path(s): tests/lua/unit/test_filesystem_core_unit.lua, tests/lua/stress/test_filesystem_stress.lua
+- User-facing: `true`
+- Plugin tier: `not_evaluated`
 
 ## Summary
 
@@ -28,12 +30,20 @@
 
 This module primarily collaborates with `dataframe`, `runtime`. Its responsibility should stay inside the Core Runtime group rather than absorb behavior owned by those neighbors.
 
+## Ownership
+
+- Canonical source: `src/filesystem`
+- Owning tier: `Core Runtime`
+- Plugin tier: `not_evaluated`
+- Lua binding owner: `src/lua_api/filesystem_api.rs`
+- Referenced engine modules: `dataframe`, `runtime`
+
 ## Imports
 
 - `dataframe`: Imports or references `src/dataframe/`. Cross-group dependency from `Core Runtime` into `Foundations`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `runtime`: Imports or references `src/runtime/`. Dependency stays inside `Core Runtime` and should remain acyclic.
 
-## Files
+## Source Files
 
 ### async_loader.rs
 
@@ -241,10 +251,22 @@ This module primarily collaborates with `dataframe`, `runtime`. Its responsibili
 - `LZipMount:type() -> string`: Returns the Lua-visible type name for this ZIP mount handle.
 - `LZipMount:typeOf(name) -> boolean`: Returns whether this ZIP mount handle matches a supported type name.
 
-## References
+## Examples
 
-- `dataframe`: Imports or references `src/dataframe/`. Cross-group dependency from `Core Runtime` into `Foundations`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `content/examples/filesystem.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_filesystem_unit.lua` (present)
+- Rust: `tests/rust/unit/filesystem_tests.rs`
+
+## Evidence / Golden
+
+- No evidence or golden artifacts registered.
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

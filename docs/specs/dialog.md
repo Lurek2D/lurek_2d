@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/dialog.md or source docstrings instead. -->
+
 # dialog
 
 ## TL;DR
@@ -7,13 +9,13 @@
 
 ## General Info
 
-- Module group: `Edge/Integration`
-- Source path: `src/dialog/`
+- Module group: `Feature Systems`
+- Source path: `src/dialog`
 - Binding: `src/lua_api/dialog_api.rs`
 - Namespace: `lurek.dialog`
 - Lua API surface: `10` functions, `4` types, `48` methods
-- Rust test path(s): None found in the workspace
-- Lua test path(s): tests/lua/unit/test_dialog_sequencer_unit.lua
+- User-facing: `true`
+- Plugin tier: `not_evaluated`
 
 ## Summary
 
@@ -28,11 +30,19 @@
 
 This module is mostly self-contained inside the `Edge/Integration` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
 
+## Ownership
+
+- Canonical source: `src/dialog`
+- Owning tier: `Feature Systems`
+- Plugin tier: `not_evaluated`
+- Lua binding owner: `src/lua_api/dialog_api.rs`
+- Referenced engine modules: None detected from Rust imports.
+
 ## Imports
 
 - No top-level `crate::<module>` imports were detected in this module's Rust source files.
 
-## Files
+## Source Files
 
 ### condition.rs
 
@@ -208,9 +218,22 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 - `LSpeakerRegistry:type() -> string`: Returns the Lua-visible type name.
 - `LSpeakerRegistry:typeOf(name) -> boolean`: Returns whether this handle matches a supported type name.
 
-## References
+## Examples
 
-- No top-level `crate::<module>` imports were detected in this module's Rust source files.
+- `content/examples/dialog.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_dialog_unit.lua` (present)
+- Rust: none detected.
+
+## Evidence / Golden
+
+- No evidence or golden artifacts registered.
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

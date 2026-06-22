@@ -1,9 +1,7 @@
-//! Owns GPU canvas target synchronization and render-target dimension helpers.
-//! Keeps off-screen canvas lifecycle checks close to canvas pass concerns instead of the main frame loop.
-//! Recreates canvas backing textures when logical canvas dimensions change under a stable key.
-//! Reports invalid canvas allocation attempts through `RenderDiagnostics` while allowing the frame to continue.
-//! Resolves logical and GPU-backed target sizes for screen and canvas draw preparation.
-//! Open this file when canvas resize handling, canvas target dimensions, or canvas backing allocation is wrong.
+//! Owns the gpu canvas pass owner for the render subsystem and keeps its rules local to this file.
+//! Keeps render data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+//! Defines how gpu canvas pass data is validated, transformed, or stored before neighboring systems use it.
+//! Owns render behavior with explicit state, validation, and crate-local integration boundaries.
 
 use slotmap::SlotMap;
 

@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/repl.md or source docstrings instead. -->
+
 # repl
 
 ## TL;DR
@@ -7,12 +9,12 @@
 ## General Info
 
 - Module group: `Core Runtime`
-- Source path: `src/repl/`
+- Source path: `src/repl`
 - Binding: `src/lua_api/repl_api.rs`
 - Namespace: `lurek.repl`
 - Lua API surface: `1` functions, `1` types, `7` methods
-- Rust test path(s): tests/rust/unit/repl_tests.rs
-- Lua test path(s): tests/lua/unit/test_repl_unit.lua
+- User-facing: `true`
+- Plugin tier: `not_evaluated`
 
 ## Summary
 
@@ -22,11 +24,19 @@
 
 This module is mostly self-contained inside the `Core Runtime` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
 
+## Ownership
+
+- Canonical source: `src/repl`
+- Owning tier: `Core Runtime`
+- Plugin tier: `not_evaluated`
+- Lua binding owner: `src/lua_api/repl_api.rs`
+- Referenced engine modules: `runtime`
+
 ## Imports
 
-- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from ``Core Runtime`` into `Core Runtime`.
+- `runtime`: Imports or references `src/runtime/`. Dependency stays inside `Core Runtime` and should remain acyclic.
 
-## Files
+## Source Files
 
 ### commands.rs
 
@@ -101,9 +111,35 @@ This module is mostly self-contained inside the `Core Runtime` group. Cross-modu
 - `LReplSession:type() -> string`: Returns the Lua-visible type name for this REPL session handle.
 - `LReplSession:typeOf(name) -> boolean`: Returns whether this REPL session handle matches a supported type name.
 
-## References
+## Examples
 
-- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from ``Core Runtime`` into `Core Runtime`.
+- `content/examples/repl.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_repl_unit.lua` (present)
+- Rust: `tests/rust/unit/repl_tests.rs`
+
+## Evidence / Golden
+
+| Kind | Path |
+|---|---|
+| Evidence test | `tests/lua/evidence/test_repl_evidence.lua` |
+| Golden test | `tests/lua/golden/test_repl_golden.lua` |
+| Current artifact | `tests/artifacts/current/repl/repl_commands_ui.png` |
+| Current artifact | `tests/artifacts/current/repl/repl_completion_ui.png` |
+| Current artifact | `tests/artifacts/current/repl/repl_error_recovery_ui.png` |
+| Current artifact | `tests/artifacts/current/repl/repl_eval_session_ui.png` |
+| Current artifact | `tests/artifacts/current/repl/repl_history_ui.png` |
+| Baseline artifact | `tests/artifacts/baselines/repl/repl_commands_ui.png` |
+| Baseline artifact | `tests/artifacts/baselines/repl/repl_completion_ui.png` |
+| Baseline artifact | `tests/artifacts/baselines/repl/repl_error_recovery_ui.png` |
+| Baseline artifact | `tests/artifacts/baselines/repl/repl_eval_session_ui.png` |
+| Baseline artifact | `tests/artifacts/baselines/repl/repl_history_ui.png` |
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/save.md or source docstrings instead. -->
+
 # save
 
 ## TL;DR
@@ -7,12 +9,12 @@
 ## General Info
 
 - Module group: `Feature Systems`
-- Source path: `src/save/`
+- Source path: `src/save`
 - Binding: `src/lua_api/save_api.rs`
 - Namespace: `lurek.save`
 - Lua API surface: `1` functions, `3` types, `27` methods
-- Rust test path(s): tests/rust/unit/save_tests.rs
-- Lua test path(s): tests/lua/unit/test_save_unit.lua, tests/lua/stress/test_save_stress.lua, tests/lua/security/test_save_security.lua, tests/lua/integration/test_save_ecs_integration.lua, tests/lua/integration/test_save_tilemap_integration.lua, tests/lua/integration/test_save_ecs_scene_integration.lua
+- User-facing: `true`
+- Plugin tier: `not_evaluated`
 
 ## Summary
 
@@ -24,12 +26,20 @@
 
 This module primarily collaborates with `binary`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
 
+## Ownership
+
+- Canonical source: `src/save`
+- Owning tier: `Feature Systems`
+- Plugin tier: `not_evaluated`
+- Lua binding owner: `src/lua_api/save_api.rs`
+- Referenced engine modules: `binary`, `runtime`
+
 ## Imports
 
-- `binary`: Imports or references `src/binary/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `binary`: Imports or references `src/binary/`. Cross-group dependency from `Feature Systems` into `Foundations`.
+- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Feature Systems` into `Core Runtime`.
 
-## Files
+## Source Files
 
 ### mod.rs
 
@@ -42,14 +52,18 @@ This module primarily collaborates with `binary`, `runtime`. Its responsibility 
 
 ### save_manager.rs
 
-- `src/save/save_manager.rs` owns slot persistence: registration, dirty tracking, schema versioning, and restore flow.
-- `SaveManager` decides which Lua tables join a slot, when writes should happen, and which migrations must run.
-- The file also defines `SaveValue` and `SlotMeta`, so payload structure and save-select metadata share one owner.
-- Compression, decompression, table serialization, and parsing live here to keep format logic near persistence policy.
-- Auto-save timing and slot path construction are handled locally, keeping higher runtime layers free of save bookkeeping.
-- The internal parser reads the restricted Lua table format emitted here, keeping load behavior aligned with save output.
-- Neighboring systems matter here mainly at the runtime and binary utility boundary, not in modules that register state.
-- Open this file when save format, migration routing, compression policy, or slot lifecycle behavior needs to change.
+- Owns the save manager owner for the save subsystem and keeps its rules local to this file.
+- Keeps save data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+- Defines how save manager data is validated, transformed, or stored before neighboring systems use it.
+- Owns save behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on save manager behavior while Lua registration stays elsewhere.
+- Documents where save callers should change defaults, errors, or lifecycle behavior. with focused crate-local behavior.
+- Use this file when changing save manager defaults, lifecycle handling, validation, or data ownership.
+- Keeps failure paths and edge cases near the save state that can explain them while keeping call sites explicit.
+- Preserves deterministic behavior by keeping save manager calculations explicit at their owner boundary.
+- Provides the local adaptation layer that lets callers avoid duplicating save rules while keeping call sites explicit.
+- Maintains small helper surfaces so broader engine modules can compose save manager behavior safely.
+- Protects subsystem contracts by keeping resource, cache, or state mutations visible in one place.
 
 
 
@@ -141,10 +155,23 @@ This module primarily collaborates with `binary`, `runtime`. Its responsibility 
 
 - No documented methods.
 
-## References
+## Examples
 
-- `binary`: Imports or references `src/binary/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `content/examples/save.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_save_unit.lua` (present)
+- Rust: `src/save/save_manager.rs`
+- Rust: `tests/rust/unit/save_tests.rs`
+
+## Evidence / Golden
+
+- No evidence or golden artifacts registered.
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

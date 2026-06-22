@@ -1,7 +1,8 @@
-//! This file owns the Poisson disk sampler used to place 2D points with minimum separation and seeded randomness.
-//! The Bridson-style active list, acceleration grid, and distance checks stay here because they define point quality.
-//! It returns accepted coordinates only, keeping the file focused on sparse placement rather than map interpretation.
-//! Open it when scatter-placement semantics change; Voronoi and world-graph generation live in sibling modules.
+//! Owns procgen behavior with explicit state, validation, and crate-local integration boundaries.
+//! Centers the implementation around poisson_disk, try_poisson_disk, with helpers kept close to their invariants.
+//! Defines how poisson data is validated, transformed, or stored before neighboring systems use it.
+//! Owns procgen behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on poisson behavior while Lua registration stays elsewhere.
 
 use super::lcg::Lcg;
 use crate::procgen::{

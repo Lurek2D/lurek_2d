@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/raycaster.md or source docstrings instead. -->
+
 # raycaster
 
 ## TL;DR
@@ -10,12 +12,12 @@
 ## General Info
 
 - Module group: `Feature Systems`
-- Source path: `src/raycaster/`
+- Source path: `src/raycaster`
 - Binding: `src/lua_api/raycaster_api.rs`
 - Namespace: `lurek.raycaster`
 - Lua API surface: `16` functions, `21` types, `132` methods
-- Rust test path(s): tests/rust/unit/raycaster_tests.rs
-- Lua test path(s): tests/lua/unit/test_raycaster_core_unit.lua, tests/lua/evidence/test_raycaster_evidence.lua
+- User-facing: `true`
+- Plugin tier: `tier_1_plugin`
 
 ## Summary
 
@@ -42,16 +44,24 @@
 
 This module primarily collaborates with `color`, `image`, `math`, `physics`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
 
+## Ownership
+
+- Canonical source: `src/raycaster`
+- Owning tier: `Feature Systems`
+- Plugin tier: `tier_1_plugin`
+- Lua binding owner: `src/lua_api/raycaster_api.rs`
+- Referenced engine modules: `color`, `image`, `math`, `physics`, `render`, `runtime`
+
 ## Imports
 
-- `color`: Imports or references `src/color/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
-- `image`: Imports or references `image` from `src/image/`.
-- `math`: Imports or references `math` from `src/math/`.
+- `color`: Imports or references `src/color/`. Cross-group dependency from `Feature Systems` into `Foundations`.
+- `image`: Imports or references `src/image/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
+- `math`: Imports or references `src/math/`. Cross-group dependency from `Feature Systems` into `Foundations`.
 - `physics`: Imports or references `src/physics/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
-- `render`: Imports or references `render` from `src/render/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `render`: Imports or references `src/render/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
+- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Feature Systems` into `Core Runtime`.
 
-## Files
+## Source Files
 
 ### build_scene.rs
 
@@ -269,7 +279,7 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 - `lurek.raycaster.buildMultiLevelScene(params, levels, lights?, sprites?, wallTextures?, models?) -> integer`: Builds a multilevel raycaster scene from a stack of plain Lua level tables.
 - `lurek.raycaster.buildMultiLevelSceneFromAdapter(params, levels, adapter, wallTextures?) -> integer`: Builds a multilevel raycaster scene from a stack of plain Lua level tables using a runtime scene adapter.
 - `lurek.raycaster.distanceShade(distance, maxDistance) -> number`: Returns a brightness multiplier (0.0..1.0) based on distance for fog/darkness falloff.
-- `lurek.raycaster.getLastBuildStats() -> table?`: Returns stats for the last stored raycaster scene build.
+- `lurek.raycaster.getLastBuildStats() -> table`: Returns stats for the last stored raycaster scene build.
 - `lurek.raycaster.new(w, h) -> LRaycaster`: Creates a new raycaster map with the given grid dimensions.
 - `lurek.raycaster.newDoorManager() -> LDoorManager`: Creates a new door manager for tracking and animating sliding doors.
 - `lurek.raycaster.newHeightMap(w, h) -> LHeightMap`: Creates a new height map for variable floor/ceiling heights across the grid.
@@ -705,7 +715,7 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 ##### Methods
 
 - `LSceneAdapter:addDirectionalSprite(x, y, front, right, back, left?, opts?) -> nil`: Adds a static directional billboard sprite entry.
-- `LSceneAdapter:addLight(x, y, radius, opts?) -> nil`: Adds a static point light entry.
+- `LSceneAdapter:addLight(x, y, radius, opts?) -> nil`: Adds a static point light entry to the adapter.
 - `LSceneAdapter:addModel(model, x, y, opts?) -> nil`: Adds a static OBJ model instance entry.
 - `LSceneAdapter:addSprite(x, y, texture, opts?) -> nil`: Adds a static billboard sprite entry.
 - `LSceneAdapter:bindBodyDirectionalSprite(body, front, right, back, left?, opts?) -> nil`: Binds a directional billboard sprite to a live physics body.
@@ -714,7 +724,7 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 - `LSceneAdapter:bindBodySprite(body, texture, opts?) -> nil`: Binds a billboard sprite to a live physics body.
 - `LSceneAdapter:clear() -> nil`: Removes every tracked entry from the adapter.
 - `LSceneAdapter:clearLights() -> nil`: Removes every tracked light entry from the adapter.
-- `LSceneAdapter:clearModels() -> nil`: Clears models.
+- `LSceneAdapter:clearModels() -> nil`: Clears all loaded model entries from the adapter.
 - `LSceneAdapter:clearSprites() -> nil`: Removes every tracked sprite entry from the adapter.
 - `LSceneAdapter:sceneInputs() -> table`: Resolves the current runtime snapshot into `{ lights, sprites, models }` tables.
 - `LSceneAdapter:type() -> string`: Returns the type name of this object.
@@ -743,14 +753,45 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 - `LSpriteManager:type() -> string`: Returns the type name of this object ("LSpriteManager").
 - `LSpriteManager:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
 
-## References
+## Examples
 
-- `color`: Imports or references `src/color/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
-- `image`: Imports or references `image` from `src/image/`.
-- `math`: Imports or references `math` from `src/math/`.
-- `physics`: Imports or references `src/physics/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
-- `render`: Imports or references `render` from `src/render/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `content/examples/raycaster.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_raycaster_unit.lua` (present)
+- Rust: `tests/rust/unit/raycaster_tests.rs`
+
+## Evidence / Golden
+
+| Kind | Path |
+|---|---|
+| Evidence test | `tests/lua/evidence/test_raycaster_evidence.lua` |
+| Golden test | `tests/lua/golden/test_raycaster_golden.lua` |
+| Current artifact | `tests/artifacts/current/raycaster/raycaster_camera_sweep_atlas.png` |
+| Current artifact | `tests/artifacts/current/raycaster/raycaster_corridor_view_with_fov.png` |
+| Current artifact | `tests/artifacts/current/raycaster/raycaster_depth_columns_vs_view.png` |
+| Current artifact | `tests/artifacts/current/raycaster/raycaster_feature_walls_view_pick.png` |
+| Current artifact | `tests/artifacts/current/raycaster/raycaster_floor_ceiling_pick_uv.png` |
+| Current artifact | `tests/artifacts/current/raycaster/raycaster_los_wall_window_door.png` |
+| Current artifact | `tests/artifacts/current/raycaster/raycaster_minimap_reveal_lighting.png` |
+| Current artifact | `tests/artifacts/current/raycaster/raycaster_multilevel_hole_pick.png` |
+| Current artifact | `tests/artifacts/current/raycaster/raycaster_topdown_reveal_fov.png` |
+| Current artifact | `tests/artifacts/current/raycaster/raycaster_transparent_layered_hits.png` |
+| Baseline artifact | `tests/artifacts/baselines/raycaster/raycaster_camera_sweep_atlas.png` |
+| Baseline artifact | `tests/artifacts/baselines/raycaster/raycaster_corridor_view_with_fov.png` |
+| Baseline artifact | `tests/artifacts/baselines/raycaster/raycaster_depth_columns_vs_view.png` |
+| Baseline artifact | `tests/artifacts/baselines/raycaster/raycaster_feature_walls_view_pick.png` |
+| Baseline artifact | `tests/artifacts/baselines/raycaster/raycaster_floor_ceiling_pick_uv.png` |
+| Baseline artifact | `tests/artifacts/baselines/raycaster/raycaster_los_wall_window_door.png` |
+| Baseline artifact | `tests/artifacts/baselines/raycaster/raycaster_minimap_reveal_lighting.png` |
+| Baseline artifact | `tests/artifacts/baselines/raycaster/raycaster_multilevel_hole_pick.png` |
+| Baseline artifact | `tests/artifacts/baselines/raycaster/raycaster_topdown_reveal_fov.png` |
+| Baseline artifact | `tests/artifacts/baselines/raycaster/raycaster_transparent_layered_hits.png` |
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/grep.md or source docstrings instead. -->
+
 # grep
 
 ## TL;DR
@@ -6,13 +8,13 @@
 
 ## General Info
 
-- Module group: `Edge/Integration`
-- Source path: `src/grep/`
+- Module group: `Feature Systems`
+- Source path: `src/grep`
 - Binding: `src/lua_api/grep_api.rs`
 - Namespace: `lurek.grep`
 - Lua API surface: `7` functions, `2` types, `9` methods
-- Rust test path(s): tests/rust/unit/grep_tests.rs
-- Lua test path(s): tests/lua/unit/test_grep_unit.lua
+- User-facing: `true`
+- Plugin tier: `not_evaluated`
 
 ## Summary
 
@@ -24,11 +26,19 @@
 
 This module is mostly self-contained inside the `Edge/Integration` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
 
+## Ownership
+
+- Canonical source: `src/grep`
+- Owning tier: `Feature Systems`
+- Plugin tier: `not_evaluated`
+- Lua binding owner: `src/lua_api/grep_api.rs`
+- Referenced engine modules: None detected from Rust imports.
+
 ## Imports
 
 - No top-level `crate::<module>` imports were detected in this module's Rust source files.
 
-## Files
+## Source Files
 
 ### config.rs
 
@@ -122,10 +132,10 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 
 - `lurek.grep.jsonSearch(file, key) -> table`: Search a JSON file for every matching key name.
 - `lurek.grep.logSearch(file, level, pattern) -> table`: Search a structured log file by level and literal message pattern.
-- `lurek.grep.luaFilter() -> LFileFilter`: Create a filter for Lua files only.
+- `lurek.grep.luaFilter() -> LFileFilter`: Creates a file filter preconfigured for Lua files only.
 - `lurek.grep.newEngine() -> LGrepEngine`: Create a new grep engine with default settings.
 - `lurek.grep.newEngineOpts(opts) -> LGrepEngine`: Create a grep engine with custom options.
-- `lurek.grep.newFilter() -> LFileFilter`: Create an empty file filter.
+- `lurek.grep.newFilter() -> LFileFilter`: Creates an empty file filter for custom include rules.
 - `lurek.grep.search(path, pattern) -> table`: Search a directory for a literal pattern in game content files.
 
 ### Callbacks
@@ -169,9 +179,22 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 - `LGrepEngine:searchExt(path, pattern, extensions) -> table`: Search with a file extension filter.
 - `LGrepEngine:searchFiles(files, pattern) -> table`: Search a specific provided list of files for text matches.
 
-## References
+## Examples
 
-- No top-level `crate::<module>` imports were detected in this module's Rust source files.
+- `content/examples/grep.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_grep_unit.lua` (present)
+- Rust: `tests/rust/unit/grep_tests.rs`
+
+## Evidence / Golden
+
+- No evidence or golden artifacts registered.
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

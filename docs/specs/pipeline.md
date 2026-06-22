@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/pipeline.md or source docstrings instead. -->
+
 # pipeline
 
 ## TL;DR
@@ -8,13 +10,13 @@
 
 ## General Info
 
-- Module group: `Edge/Integration`
-- Source path: `src/pipeline/`
+- Module group: `Feature Systems`
+- Source path: `src/pipeline`
 - Binding: `src/lua_api/pipeline_api.rs`
 - Namespace: `lurek.pipeline`
 - Lua API surface: `3` functions, `5` types, `63` methods
-- Rust test path(s): tests/rust/unit/pipeline_tests.rs
-- Lua test path(s): tests/lua/unit/test_pipeline_core_unit.lua
+- User-facing: `true`
+- Plugin tier: `not_evaluated`
 
 ## Summary
 
@@ -30,11 +32,19 @@
 
 This module primarily collaborates with `runtime`. Its responsibility should stay inside the Edge/Integration group rather than absorb behavior owned by those neighbors.
 
+## Ownership
+
+- Canonical source: `src/pipeline`
+- Owning tier: `Feature Systems`
+- Plugin tier: `not_evaluated`
+- Lua binding owner: `src/lua_api/pipeline_api.rs`
+- Referenced engine modules: `runtime`
+
 ## Imports
 
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Feature Systems` into `Core Runtime`.
 
-## Files
+## Source Files
 
 ### dag.rs
 
@@ -246,9 +256,22 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 - No documented methods.
 
-## References
+## Examples
 
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `content/examples/pipeline.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_pipeline_unit.lua` (present)
+- Rust: `tests/rust/unit/pipeline_tests.rs`
+
+## Evidence / Golden
+
+- No evidence or golden artifacts registered.
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

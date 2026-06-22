@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """
-spec_docstring_apply.py -- Apply Source Documentation from specs to Rust //! docstrings.
+spec_docstring_apply.py -- deprecated legacy spec-to-docstring migration tool.
+
+This tool is deprecated. Documentation flow is source docstrings -> generated
+specs, not specs -> source docstrings.
 
 Reads each docs/specs/<module>.md, extracts the "## Source Documentation" section,
 maps each ### filename.rs entry to src/<module>/filename.rs, and replaces the
@@ -11,11 +14,7 @@ If a file in the spec has only 1 bullet and the file is large, the script will
 warn but still apply whatever the spec has.  Thin specs need human expansion first.
 
 Usage:
-    python tools/fix/spec_docstring_apply.py               # apply all
-    python tools/fix/spec_docstring_apply.py --dry-run     # show diffs, no write
-    python tools/fix/spec_docstring_apply.py --module agent  # one module only
-    python tools/fix/spec_docstring_apply.py --check-thin  # report modules with thin specs
-    python tools/fix/spec_docstring_apply.py --skip-thin N # skip files where spec has < N bullets
+    python tools/fix/spec_docstring_apply.py --legacy-one-time-migration --dry-run
 
 Exit codes: 0 OK, 1 some skipped/thin, 2 fatal error
 """
@@ -197,12 +196,24 @@ def find_rs_file(module_dir: Path, filename: str) -> Path | None:
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--legacy-one-time-migration", action="store_true",
+                    help="Allow this deprecated reverse-flow migration tool to run")
     ap.add_argument("--dry-run", action="store_true", help="Show what would change, no writes")
     ap.add_argument("--module", metavar="NAME", help="Process only this module (spec stem)")
     ap.add_argument("--check-thin", action="store_true", help="Report modules with avg < 2 bullets/file")
     ap.add_argument("--skip-thin", type=int, default=0, metavar="N",
                     help="Skip files where the spec section has fewer than N bullets")
     args = ap.parse_args()
+    if not args.legacy_one_time_migration:
+        print(
+            "This tool is deprecated. Documentation flow is source docstrings -> generated specs, not specs -> source docstrings.",
+            file=sys.stderr,
+        )
+        print(
+            "Use --legacy-one-time-migration only for a deliberate historical migration.",
+            file=sys.stderr,
+        )
+        return 2
 
     specs = sorted(SPECS_DIR.glob("*.md"))
     if args.module:

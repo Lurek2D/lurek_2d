@@ -1,4 +1,4 @@
-# Lurek2D — Philosophy and Design Assumptions
+# Lurek2D â€” Philosophy and Design Assumptions
 
 ## TL;DR
 
@@ -6,13 +6,13 @@
 
  All other architecture docs reference this file.
 
-Companion documents: [engine-architecture.md](engine-architecture.md) · [test-framework.md](test-framework.md)
+Companion documents: [engine-architecture.md](engine-architecture.md) Â· [quality-assurance.md](quality-assurance.md)
 
 ---
 
 ## Table of Contents
 
-- [Lurek2D — Philosophy and Design Assumptions](#lurek2d--philosophy-and-design-assumptions)
+- [Lurek2D â€” Philosophy and Design Assumptions](#lurek2d--philosophy-and-design-assumptions)
 	- [TL;DR](#tldr)
 	- [Table of Contents](#table-of-contents)
 	- [The Zen of Lurek 2.0](#the-zen-of-lurek-20)
@@ -28,16 +28,16 @@ Companion documents: [engine-architecture.md](engine-architecture.md) · [test-f
 	- [Constraint Status Model](#constraint-status-model)
 	- [Retired Decisions](#retired-decisions)
 		- [Retired: Strict Tier Numbering](#retired-strict-tier-numbering)
-		- [Retired: Baseline → Tier 1 → Tier 2 → Tier 3 Naming](#retired-baseline--tier-1--tier-2--tier-3-naming)
+		- [Retired: Baseline â†’ Tier 1 â†’ Tier 2 â†’ Tier 3 Naming](#retired-baseline--tier-1--tier-2--tier-3-naming)
 		- [Retired: Tier 4 as the Platform Integration Slot](#retired-tier-4-as-the-platform-integration-slot)
 
 ---
 
 ## The Zen of Lurek 2.0
 
-These fifteen rules are binding constraints. Every feature proposal, API design, and architectural decision must be checked against this list. If a choice violates a rule, the choice changes or the rule is formally amended — never silently overridden.
+These fifteen rules are binding constraints. Every feature proposal, API design, and architectural decision must be checked against this list. If a choice violates a rule, the choice changes or the rule is formally amended â€” never silently overridden.
 
-The module grouping (Foundations → Core Runtime → Platform Services → Feature Systems → Edge/Integration) is loose and practical. It does not ban same-group imports. It says: know what each module belongs to and what it should not do. The one hard invariant is **no cycles**.
+The module grouping (Foundations â†’ Core Runtime â†’ Platform Services â†’ Feature Systems â†’ Edge/Integration) is loose and practical. It does not ban same-group imports. It says: know what each module belongs to and what it should not do. The one hard invariant is **no cycles**.
 
 | # | Rule | Summary |
 |---|------|---------|
@@ -46,9 +46,9 @@ The module grouping (Foundations → Core Runtime → Platform Services → Feat
 | 3 | Depend on Contracts, Not Backends | Feature Systems depend on the `render` facade. Never on backend GPU details. |
 | 4 | Runtime Stays Boring | `runtime` owns errors, config, IDs, commands, and traits. It does not know about the event loop, VM boot, or debug overlays. |
 | 5 | World Is a Registry, Not a God Brain | `world` holds services and resources. Domain logic belongs in Feature Systems, not in `world`. |
-| 6 | Same-Group Imports Are Allowed When Stable and Acyclic | A `tilemap` importing scene state from `scene` is fine — both are Feature Systems and there is no cycle. |
+| 6 | Same-Group Imports Are Allowed When Stable and Acyclic | A `tilemap` importing scene state from `scene` is fine â€” both are Feature Systems and there is no cycle. |
 | 7 | Split by Reason to Change, Not by File Length | A new module is born when it has a different responsibility, not when a file hits 800 lines. |
-| 8 | Draw Is a Projection Layer | If a module has a complex state → render-commands transformation, extract a `draw.rs`. Do not do it ritually. |
+| 8 | Draw Is a Projection Layer | If a module has a complex state â†’ render-commands transformation, extract a `draw.rs`. Do not do it ritually. |
 | 9 | Pure Logic Stays Pure | `math`, `procgen`, `graph` must never need render, audio, input, or Lua. |
 | 10 | CPU State and Runtime Resources Must Stay Separate | Serialisable game state must not require a GPU handle, OS window, or VM reference. |
 | 11 | Tooling Lives at the Edge | `devtools`, `debugbridge`, `docs`, `automation` observe; they never own. |
@@ -75,8 +75,8 @@ The competitive landscape is dominated by multi-gigabyte engines with visual edi
 
 | Symbol | Meaning | Where It Appears |
 |--------|---------|-----------------|
-| Crescent Moon | Lua (Portuguese for "moon") — the scripting surface | Logo, splash screen |
-| Gear / Pacman shape | Rust engine core — industrial-strength | Logo (primary shape) |
+| Crescent Moon | Lua (Portuguese for "moon") â€” the scripting surface | Logo, splash screen |
+| Gear / Pacman shape | Rust engine core â€” industrial-strength | Logo (primary shape) |
 | Small Cube | Industry giants orbiting Lurek2D | Logo (accent) |
 | Deep blue + orange palette | Night sky + warm engine glow | All branding |
 
@@ -106,11 +106,11 @@ Active and binding. All code must comply. Do not propose changes without first o
 
 | ID | Status | Constraint |
 |----|--------|-----------|
-| **A-01** | Active | Lurek2D is a **runtime only** — no embedded visual editor or IDE. The VS Code extension is an opt-in developer layer, not part of the engine binary. |
-| **A-02** | Active | **Desktop only** — Windows / Linux / macOS, x86_64 + ARM. Mobile and WASM are out of scope. |
-| **A-03** | Active | **2D graphics only** — no 3D scene graph, no perspective projection pipeline. Raycasting and isometric rendering use 2D draw calls. |
+| **A-01** | Active | Lurek2D is a **runtime only** â€” no embedded visual editor or IDE. The VS Code extension is an opt-in developer layer, not part of the engine binary. |
+| **A-02** | Active | **Desktop only** â€” Windows / Linux / macOS, x86_64 + ARM. Mobile and WASM are out of scope. |
+| **A-03** | Active | **2D graphics only** â€” no 3D scene graph, no perspective projection pipeline. Raycasting and isometric rendering use 2D draw calls. |
 | **A-04** | Active | No platform SDK integration (Steam, Epic, itch.io) in the core binary. Wrappers live outside the five-group module stack. |
-| **A-05** | Proposed | Core binary stays ≤ 10 MB stripped on desktop targets. Optional subsystems ship as plugins. Becomes Active when the plugin system (see [plugins.md](plugins.md)) is accepted and a baseline measurement is recorded. |
+| **A-05** | Proposed | Core binary stays â‰¤ 10 MB stripped on desktop targets. Optional subsystems ship as plugins. Becomes Active when the plugin system (see [plugins.md](plugins.md)) is accepted and a baseline measurement is recorded. |
 
 ---
 
@@ -132,11 +132,11 @@ These constraints formalise the [module group model](engine-architecture.md#modu
 
 | ID | Status | Constraint |
 |----|--------|-----------|
-| **T-01** | Active | The active module structure uses **five responsibility groups**: Foundations, Core Runtime, Platform Services, Feature Systems, and Edge/Integration. See [engine-architecture.md](engine-architecture.md) § Module Group Model. |
+| **T-01** | Active | The active module structure uses **five responsibility groups**: Foundations, Core Runtime, Platform Services, Feature Systems, and Edge/Integration. See [engine-architecture.md](engine-architecture.md) Â§ Module Group Model. |
 | **T-02** | Active | `lua_api` (`src/lua_api/`) is the binding layer that registers `lurek.*`. It sits in Edge/Integration. No domain module may import `lua_api`. |
 | **T-03** | Active | **No cycles, ever.** The module import graph must be a DAG. Same-group imports are allowed when acyclic. |
 | **T-04** | Active | **Composition root is one-way.** `app` and `lua_api` may depend on any module below them. Nothing below them imports `app` or any `lua_api` binding module. |
-| **T-05** | Active | **Lureksome** (`library/`) is the pure-Lua standard library. It consumes only public `lurek.*` APIs — no Rust engine internals, no `require` of engine source files. |
+| **T-05** | Active | **Lureksome** (`library/`) is the pure-Lua standard library. It consumes only public `lurek.*` APIs â€” no Rust engine internals, no `require` of engine source files. |
 | **T-06** | Active | **Foundations group modules** (`math`, `log`, `data`, `serial`, `compute`, `dataframe`, `graph`, `procgen`, `patterns`) must never import render, audio, input, physics, or Lua APIs. |
 | **T-07** | Active | **Edge/Integration group modules** (`devtools`, `debugbridge`, `automation`) are never imported by domain modules. They are optional components compiled only for development builds. |
 | **T-08** | Active | Platform SDK integrations must not be imported by any module in Foundations, Core Runtime, Platform Services, or Feature Systems. They belong to external wrapping binaries only. |
@@ -152,7 +152,7 @@ These constraints formalise the [module group model](engine-architecture.md#modu
 | **C-03** | Active | API functions must have sensible defaults. Never require parameters a beginner would always pass as the same value. |
 | **C-04** | Active | Every callback (`lurek.init`, `lurek.ready`, `lurek.process`, `lurek.draw`, etc.) is **optional**. An empty `main.lua` is a valid game. |
 | **C-05** | Active | The Lua API is **synchronous from the script's perspective**. Async work happens in Rust threads and communicates results via `Channel`. The Lua VM never blocks on I/O or network. |
-| **C-06** | Active | **Callback names must not shadow API module keys.** If a planned callback key equals an existing API module name, the callback key must be renamed. Never work around the collision with a local alias in Lua scripts — that disguises an engine design bug. |
+| **C-06** | Active | **Callback names must not shadow API module keys.** If a planned callback key equals an existing API module name, the callback key must be renamed. Never work around the collision with a local alias in Lua scripts â€” that disguises an engine design bug. |
 
 ---
 
@@ -169,7 +169,7 @@ These constraints formalise test placement and layering rules. They are binding.
 | **TST-05** | Active | Demo tests: headless Lua tests live next to the game as `content/games/**/test.lua`. Screenshot tests live in `tests/demo_smoke_tests.rs` with `#[ignore]`. |
 | **TST-06** | Active | One test file per module per layer: `test_<module>_<layer>.lua`. No split per-sub-feature files within a layer. |
 
-See [test-framework.md](test-framework.md) for the decision tree and enforcement audit scripts.
+See [quality-assurance.md](quality-assurance.md) for the decision tree and enforcement audit scripts.
 
 ---
 
@@ -201,21 +201,21 @@ To change a constraint's status: open a discussion referencing the specific cons
 
 ### Retired: Strict Tier Numbering
 
-**Original (c. v0.4):** T-03 banned all same-tier imports. T-04 banned all Tier 2 ↔ Tier 2 imports.
+**Original (c. v0.4):** T-03 banned all same-tier imports. T-04 banned all Tier 2 â†” Tier 2 imports.
 
-**Why retired:** The ban was a proxy for the real invariant (no cycles). It was overly conservative and ruled out legitimate stable acyclic imports. For example, `tilemap` importing scene state from `scene` is correct design — both are Feature Systems and there is no cycle.
+**Why retired:** The ban was a proxy for the real invariant (no cycles). It was overly conservative and ruled out legitimate stable acyclic imports. For example, `tilemap` importing scene state from `scene` is correct design â€” both are Feature Systems and there is no cycle.
 
 **Replaced by:** T-03 (Active): No cycles, ever. Same-group imports allowed when stable and acyclic.
 
 ---
 
-### Retired: Baseline → Tier 1 → Tier 2 → Tier 3 Naming
+### Retired: Baseline â†’ Tier 1 â†’ Tier 2 â†’ Tier 3 Naming
 
 **Original (c. v0.4):** T-01 defined the stack as Baseline + Tier 1 + Tier 2 + Tier 3. Baseline was `src/math/` and `src/engine/`.
 
 **Why retired:** The Baseline/Tier nomenclature became misleading as the engine grew. The tier numbers implied a linear progression that did not match actual import topology.
 
-**Replaced by:** T-01 (Active): Five responsibility groups. See [engine-architecture.md](engine-architecture.md) § Module Group Model.
+**Replaced by:** T-01 (Active): Five responsibility groups. See [engine-architecture.md](engine-architecture.md) Â§ Module Group Model.
 
 ---
 
@@ -226,3 +226,4 @@ To change a constraint's status: open a discussion referencing the specific cons
 **Why retired:** "Tier 4" was never defined or implemented.
 
 **Replaced by:** T-08 (Active) and A-04 (Active).
+

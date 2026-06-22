@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/automation.md or source docstrings instead. -->
+
 # automation
 
 ## TL;DR
@@ -7,12 +9,12 @@
 ## General Info
 
 - Module group: `Feature Systems`
-- Source path: `src/automation/`
+- Source path: `src/automation`
 - Binding: `src/lua_api/automation_api.rs`
 - Namespace: `lurek.automation`
 - Lua API surface: `32` functions, `0` types, `0` methods
-- Rust test path(s): tests/rust/unit/automation_tests.rs
-- Lua test path(s): tests/lua/unit/test_automation_core_unit.lua, tests/lua/integration/test_automation_event.lua
+- User-facing: `true`
+- Plugin tier: `not_evaluated`
 
 ## Summary
 
@@ -24,14 +26,22 @@
 
 This module primarily collaborates with `event`, `input`, `runtime`, `timer`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
 
+## Ownership
+
+- Canonical source: `src/automation`
+- Owning tier: `Feature Systems`
+- Plugin tier: `not_evaluated`
+- Lua binding owner: `src/lua_api/automation_api.rs`
+- Referenced engine modules: `event`, `input`, `runtime`, `timer`
+
 ## Imports
 
-- `event`: Imports or references `event` from `src/event/`.
+- `event`: Imports or references `src/event/`. Cross-group dependency from `Feature Systems` into `Core Runtime`.
 - `input`: Imports or references `src/input/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Feature Systems` into `Core Runtime`.
 - `timer`: Imports or references `src/timer/`. Cross-group dependency from `Feature Systems` into `Core Runtime`.
 
-## Files
+## Source Files
 
 ### mod.rs
 
@@ -121,12 +131,31 @@ This module primarily collaborates with `event`, `input`, `runtime`, `timer`. It
 
 - No documented module types.
 
-## References
+## Examples
 
-- `event`: Imports or references `event` from `src/event/`.
-- `input`: Imports or references `src/input/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
-- `timer`: Imports or references `src/timer/`. Cross-group dependency from `Feature Systems` into `Core Runtime`.
+- `content/examples/automation.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_automation_unit.lua` (present)
+- Rust: none detected.
+
+## Evidence / Golden
+
+| Kind | Path |
+|---|---|
+| Evidence test | `tests/lua/evidence/test_automation_evidence.lua` |
+| Golden test | `tests/lua/golden/test_automation_golden.lua` |
+| Current artifact | `tests/artifacts/current/automation/automation_condition_gate_trace.txt` |
+| Current artifact | `tests/artifacts/current/automation/automation_macro_control_trace.txt` |
+| Current artifact | `tests/artifacts/current/automation/automation_timeline_trace.txt` |
+| Baseline artifact | `tests/artifacts/baselines/automation/automation_condition_gate_trace.txt` |
+| Baseline artifact | `tests/artifacts/baselines/automation/automation_macro_control_trace.txt` |
+| Baseline artifact | `tests/artifacts/baselines/automation/automation_timeline_trace.txt` |
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

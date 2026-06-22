@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/layout.md or source docstrings instead. -->
+
 # layout
 
 ## TL;DR
@@ -6,13 +8,13 @@
 
 ## General Info
 
-- Module group: `Edge/Integration`
-- Source path: `src/layout/`
+- Module group: `Foundations`
+- Source path: `src/layout`
 - Binding: `src/lua_api/layout_api.rs`
 - Namespace: `lurek.layout`
 - Lua API surface: `5` functions, `0` types, `0` methods
-- Rust test path(s): tests/rust/unit/layout_tests.rs
-- Lua test path(s): tests/lua/unit/test_layout_unit.lua
+- User-facing: `true`
+- Plugin tier: `not_evaluated`
 
 ## Summary
 
@@ -23,11 +25,19 @@
 
 This module is mostly self-contained inside the `Edge/Integration` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
 
+## Ownership
+
+- Canonical source: `src/layout`
+- Owning tier: `Foundations`
+- Plugin tier: `not_evaluated`
+- Lua binding owner: `src/lua_api/layout_api.rs`
+- Referenced engine modules: None detected from Rust imports.
+
 ## Imports
 
 - No top-level `crate::<module>` imports were detected in this module's Rust source files.
 
-## Files
+## Source Files
 
 ### dag.rs
 
@@ -101,9 +111,59 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 
 - No documented module types.
 
-## References
+## Examples
 
-- No top-level `crate::<module>` imports were detected in this module's Rust source files.
+- `content/examples/layout.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_layout_unit.lua` (present)
+- Rust: `tests/rust/unit/layout_tests.rs`
+
+## Evidence / Golden
+
+| Kind | Path |
+|---|---|
+| Evidence test | `tests/lua/evidence/test_layout_evidence.lua` |
+| Golden test | `tests/lua/golden/test_layout_golden.lua` |
+| Current artifact | `tests/artifacts/current/layout/layout_center_in_area.png` |
+| Current artifact | `tests/artifacts/current/layout/layout_dag_pipeline.png` |
+| Current artifact | `tests/artifacts/current/layout/layout_force_cluster.png` |
+| Current artifact | `tests/artifacts/current/layout/layout_snap_to_grid.png` |
+| Current artifact | `tests/artifacts/current/layout/layout_tree_hierarchy.png` |
+| Current artifact | `tests/artifacts/current/ui/layout_dashboard_compact_960x540.png` |
+| Current artifact | `tests/artifacts/current/ui/layout_dashboard_desktop_1280x720.png` |
+| Current artifact | `tests/artifacts/current/ui/layout_dashboard_fixture.png` |
+| Current artifact | `tests/artifacts/current/ui/layout_diplomacy_fixture.png` |
+| Current artifact | `tests/artifacts/current/ui/layout_gallery_manifest.txt` |
+| Current artifact | `tests/artifacts/current/ui/layout_inventory_fixture.png` |
+| Current artifact | `tests/artifacts/current/ui/layout_main_menu_fixture.png` |
+| Current artifact | `tests/artifacts/current/ui/layout_rpg_inventory_1280x720.png` |
+| Current artifact | `tests/artifacts/current/ui/layout_settings_desktop_1366x768.png` |
+| Current artifact | `tests/artifacts/current/ui/layout_settings_fixture.png` |
+| Current artifact | `tests/artifacts/current/ui/layout_settings_ultrawide_1920x1080.png` |
+| Current artifact | `tests/artifacts/current/ui/layout_strategy_diplomacy_1400x800.png` |
+| Baseline artifact | `tests/artifacts/baselines/layout/layout_center_in_area.png` |
+| Baseline artifact | `tests/artifacts/baselines/layout/layout_dag_pipeline.png` |
+| Baseline artifact | `tests/artifacts/baselines/layout/layout_force_cluster.png` |
+| Baseline artifact | `tests/artifacts/baselines/layout/layout_snap_to_grid.png` |
+| Baseline artifact | `tests/artifacts/baselines/layout/layout_tree_hierarchy.png` |
+| Baseline artifact | `tests/artifacts/baselines/ui/layout_dashboard_compact_960x540.png` |
+| Baseline artifact | `tests/artifacts/baselines/ui/layout_dashboard_desktop_1280x720.png` |
+| Baseline artifact | `tests/artifacts/baselines/ui/layout_dashboard_fixture.png` |
+| Baseline artifact | `tests/artifacts/baselines/ui/layout_diplomacy_fixture.png` |
+| Baseline artifact | `tests/artifacts/baselines/ui/layout_gallery_manifest.txt` |
+| Baseline artifact | `tests/artifacts/baselines/ui/layout_inventory_fixture.png` |
+| Baseline artifact | `tests/artifacts/baselines/ui/layout_main_menu_fixture.png` |
+| Baseline artifact | `tests/artifacts/baselines/ui/layout_rpg_inventory_1280x720.png` |
+| Baseline artifact | `tests/artifacts/baselines/ui/layout_settings_desktop_1366x768.png` |
+| Baseline artifact | `tests/artifacts/baselines/ui/layout_settings_fixture.png` |
+| Baseline artifact | `tests/artifacts/baselines/ui/layout_settings_ultrawide_1920x1080.png` |
+| Baseline artifact | `tests/artifacts/baselines/ui/layout_strategy_diplomacy_1400x800.png` |
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

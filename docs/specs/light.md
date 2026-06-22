@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/light.md or source docstrings instead. -->
+
 # light
 
 ## TL;DR
@@ -8,12 +10,12 @@
 ## General Info
 
 - Module group: `Platform Services`
-- Source path: `src/light/`
+- Source path: `src/light`
 - Binding: `src/lua_api/light_api.rs`
 - Namespace: `lurek.light`
 - Lua API surface: `20` functions, `4` types, `79` methods
-- Rust test path(s): tests/rust/unit/light_tests.rs
-- Lua test path(s): tests/lua/unit/test_light_unit.lua, tests/lua/stress/test_light_stress.lua, tests/lua/evidence/test_light_evidence.lua
+- User-facing: `true`
+- Plugin tier: `core_keep`
 
 ## Summary
 
@@ -32,14 +34,22 @@
 
 This module primarily collaborates with `color`, `image`, `math`, `runtime`. Its responsibility should stay inside the Platform Services group rather than absorb behavior owned by those neighbors.
 
+## Ownership
+
+- Canonical source: `src/light`
+- Owning tier: `Platform Services`
+- Plugin tier: `core_keep`
+- Lua binding owner: `src/lua_api/light_api.rs`
+- Referenced engine modules: `color`, `image`, `math`, `runtime`
+
 ## Imports
 
-- `color`: Imports or references `src/color/`. Cross-group dependency from `Platform Services` into `Edge/Integration`.
-- `image`: Imports or references `image` from `src/image/`.
-- `math`: Imports or references `math` from `src/math/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `color`: Imports or references `src/color/`. Cross-group dependency from `Platform Services` into `Foundations`.
+- `image`: Imports or references `src/image/`. Dependency stays inside `Platform Services` and should remain acyclic.
+- `math`: Imports or references `src/math/`. Cross-group dependency from `Platform Services` into `Foundations`.
+- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Platform Services` into `Core Runtime`.
 
-## Files
+## Source Files
 
 ### attenuation.rs
 
@@ -86,13 +96,14 @@ This module primarily collaborates with `color`, `image`, `math`, `runtime`. Its
 
 ### light_world.rs
 
-- This file owns `LightWorld`, the scene-level container for registered lights, occluders, ambient color, and limits.
-- It stores slotmaps, flicker indexes, and ambient settings, then exposes stable keys for runtime light ownership.
-- Mutation helpers add, remove, query, group-edit, clear, and count lights or occluders without leaking storage details.
-- Flicker stepping and reindexing live here so animated lights can advance efficiently across the whole scene.
-- Renderer-facing helpers emit debug images, ambient color hints, directional tuples, and normal-map light snapshots.
-- This file is the owner for scene lighting orchestration rather than for one light's individual option semantics.
-- Open it when collection behavior changes; per-light data definitions and shadow geometry live in sibling files.
+- Owns the light world owner for the light subsystem and keeps its rules local to this file.
+- Keeps light data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+- Defines how light world data is validated, transformed, or stored before neighboring systems use it.
+- Owns light behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on light world behavior while Lua registration stays elsewhere.
+- Documents where light callers should change defaults, errors, or lifecycle behavior. with focused crate-local behavior.
+- Use this file when changing light world defaults, lifecycle handling, validation, or data ownership.
+- Keeps failure paths and edge cases near the light state that can explain them while keeping call sites explicit.
 
 ### mod.rs
 
@@ -294,12 +305,43 @@ This module primarily collaborates with `color`, `image`, `math`, `runtime`. Its
 - `LOccluder:type() -> string`: Returns the Lua-visible type name for this occluder handle.
 - `LOccluder:typeOf(name) -> boolean`: Returns whether this occluder handle matches a supported type name.
 
-## References
+## Examples
 
-- `color`: Imports or references `src/color/`. Cross-group dependency from `Platform Services` into `Edge/Integration`.
-- `image`: Imports or references `image` from `src/image/`.
-- `math`: Imports or references `math` from `src/math/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `content/examples/light.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_light_unit.lua` (present)
+- Rust: `src/light/light_type.rs`
+- Rust: `src/light/light_world.rs`
+- Rust: `tests/rust/unit/light_tests.rs`
+
+## Evidence / Golden
+
+| Kind | Path |
+|---|---|
+| Evidence test | `tests/lua/evidence/test_light_evidence.lua` |
+| Golden test | `tests/lua/golden/test_light_golden.lua` |
+| Current artifact | `tests/artifacts/current/light/light_color_mix.png` |
+| Current artifact | `tests/artifacts/current/light/light_cone_spotlight.png` |
+| Current artifact | `tests/artifacts/current/light/light_falloff.png` |
+| Current artifact | `tests/artifacts/current/light/light_group_transition_flicker_trace.txt` |
+| Current artifact | `tests/artifacts/current/light/light_normal_map.png` |
+| Current artifact | `tests/artifacts/current/light/light_occluder_left.png` |
+| Current artifact | `tests/artifacts/current/light/light_occluder_right.png` |
+| Current artifact | `tests/artifacts/current/light/light_shadow_occlusion.png` |
+| Current artifact | `tests/artifacts/current/light/light_spotlight_sweep.gif` |
+| Current artifact | `tests/artifacts/current/light/light_vending_machine_occlusion.png` |
+| Baseline artifact | `tests/artifacts/baselines/light/light_color_mix.png` |
+| Baseline artifact | `tests/artifacts/baselines/light/light_cone_spotlight.png` |
+| Baseline artifact | `tests/artifacts/baselines/light/light_falloff.png` |
+| Baseline artifact | `tests/artifacts/baselines/light/light_normal_map.png` |
+| Baseline artifact | `tests/artifacts/baselines/light/light_shadow_occlusion.png` |
+| Baseline artifact | `tests/artifacts/baselines/light/light_spotlight_sweep.gif` |
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

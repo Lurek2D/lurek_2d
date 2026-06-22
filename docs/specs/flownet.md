@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/flownet.md or source docstrings instead. -->
+
 # flownet
 
 ## TL;DR
@@ -8,12 +10,12 @@
 ## General Info
 
 - Module group: `Foundations`
-- Source path: `src/flownet/`
+- Source path: `src/flownet`
 - Binding: `src/lua_api/flownet_api.rs`
 - Namespace: `lurek.graph`
 - Lua API surface: `1` functions, `7` types, `140` methods
-- Rust test path(s): tests/rust/unit/flownet_tests.rs plus inline flownet module tests
-- Lua test path(s): tests/lua/unit/test_flownet.lua and related flownet stress and golden suites
+- User-facing: `true`
+- Plugin tier: `not_evaluated`
 
 ## Summary
 
@@ -32,13 +34,21 @@
 
 This module primarily collaborates with `image`, `render`, `runtime`. Its responsibility should stay inside the `Foundations` group rather than absorb behavior owned by those neighbors.
 
+## Ownership
+
+- Canonical source: `src/flownet`
+- Owning tier: `Foundations`
+- Plugin tier: `not_evaluated`
+- Lua binding owner: `src/lua_api/flownet_api.rs`
+- Referenced engine modules: `image`, `render`, `runtime`
+
 ## Imports
 
-- `image`: Imports or references `image` from `src/image/`.
-- `render`: Imports or references `render` from `src/render/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `image`: Imports or references `src/image/`. Cross-group dependency from `Foundations` into `Platform Services`.
+- `render`: Imports or references `src/render/`. Cross-group dependency from `Foundations` into `Platform Services`.
+- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Foundations` into `Core Runtime`.
 
-## Files
+## Source Files
 
 ### algorithms.rs
 
@@ -394,11 +404,35 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 - `LGraphNode:type() -> string`: Returns the Lua-visible type name for this graph node handle.
 - `LGraphNode:typeOf(name) -> boolean`: Returns whether this graph node handle matches a supported type name.
 
-## References
+## Examples
 
-- `image`: Imports or references `image` from `src/image/`.
-- `render`: Imports or references `render` from `src/render/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `content/examples/flownet.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_flownet_unit.lua` (present)
+- Rust: `tests/rust/unit/flownet_tests.rs`
+
+## Evidence / Golden
+
+| Kind | Path |
+|---|---|
+| Evidence test | `tests/lua/evidence/test_flownet_evidence.lua` |
+| Golden test | `tests/lua/golden/test_flownet_golden.lua` |
+| Current artifact | `tests/artifacts/current/flownet/flownet_queue_overflow.png` |
+| Current artifact | `tests/artifacts/current/flownet/flownet_route_constraints.png` |
+| Current artifact | `tests/artifacts/current/flownet/flownet_supply_conversion.png` |
+| Current artifact | `tests/artifacts/current/flownet/flownet_topology_algorithms.png` |
+| Current artifact | `tests/artifacts/current/flownet/flownet_transit_capacity.png` |
+| Baseline artifact | `tests/artifacts/baselines/flownet/flownet_queue_overflow.png` |
+| Baseline artifact | `tests/artifacts/baselines/flownet/flownet_route_constraints.png` |
+| Baseline artifact | `tests/artifacts/baselines/flownet/flownet_supply_conversion.png` |
+| Baseline artifact | `tests/artifacts/baselines/flownet/flownet_topology_algorithms.png` |
+| Baseline artifact | `tests/artifacts/baselines/flownet/flownet_transit_capacity.png` |
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

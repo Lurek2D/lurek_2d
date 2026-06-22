@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/validator.md or source docstrings instead. -->
+
 # validator
 
 ## TL;DR
@@ -6,13 +8,13 @@
 
 ## General Info
 
-- Module group: `Edge/Integration`
-- Source path: `src/validator/`
+- Module group: `Feature Systems`
+- Source path: `src/validator`
 - Binding: `src/lua_api/validator_api.rs`
 - Namespace: `lurek.validator`
 - Lua API surface: `3` functions, `1` types, `9` methods
-- Rust test path(s): None found in the workspace
-- Lua test path(s): tests/lua/unit/test_validator_unit.lua
+- User-facing: `true`
+- Plugin tier: `not_evaluated`
 
 ## Summary
 
@@ -24,11 +26,19 @@
 
 This module is mostly self-contained inside the `Edge/Integration` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
 
+## Ownership
+
+- Canonical source: `src/validator`
+- Owning tier: `Feature Systems`
+- Plugin tier: `not_evaluated`
+- Lua binding owner: `src/lua_api/validator_api.rs`
+- Referenced engine modules: None detected from Rust imports.
+
 ## Imports
 
 - No top-level `crate::<module>` imports were detected in this module's Rust source files.
 
-## Files
+## Source Files
 
 ### api_check.rs
 
@@ -152,9 +162,22 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 - `LValidationEngine:run() -> table`: Run validation against all Lua files under root.
 - `LValidationEngine:runFile(path) -> table`: Run validation against a single file.
 
-## References
+## Examples
 
-- No top-level `crate::<module>` imports were detected in this module's Rust source files.
+- `content/examples/validator.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_validator_unit.lua` (present)
+- Rust: none detected.
+
+## Evidence / Golden
+
+- No evidence or golden artifacts registered.
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

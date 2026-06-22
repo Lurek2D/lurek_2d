@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/log.md or source docstrings instead. -->
+
 # log
 
 ## TL;DR
@@ -7,12 +9,12 @@
 ## General Info
 
 - Module group: `Foundations`
-- Source path: `src/log/`
+- Source path: `src/log`
 - Binding: `src/lua_api/log_api.rs`
 - Namespace: `lurek.log`
 - Lua API surface: `18` functions, `2` types, `0` methods
-- Rust test path(s): tests/rust/unit/log_tests.rs
-- Lua test path(s): tests/lua/unit/test_log_core_unit.lua
+- User-facing: `true`
+- Plugin tier: `not_evaluated`
 
 ## Summary
 
@@ -23,12 +25,20 @@
 
 This module primarily collaborates with `binary`, `runtime`. Its responsibility should stay inside the Foundations group rather than absorb behavior owned by those neighbors.
 
+## Ownership
+
+- Canonical source: `src/log`
+- Owning tier: `Foundations`
+- Plugin tier: `not_evaluated`
+- Lua binding owner: `src/lua_api/log_api.rs`
+- Referenced engine modules: `binary`, `runtime`
+
 ## Imports
 
-- `binary`: Imports or references `src/binary/`. Cross-group dependency from `Foundations` into `Edge/Integration`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `binary`: Imports or references `src/binary/`. Dependency stays inside `Foundations` and should remain acyclic.
+- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Foundations` into `Core Runtime`.
 
-## Files
+## Source Files
 
 ### facade.rs
 
@@ -122,10 +132,22 @@ This module primarily collaborates with `binary`, `runtime`. Its responsibility 
 
 - No documented methods.
 
-## References
+## Examples
 
-- `binary`: Imports or references `src/binary/`. Cross-group dependency from `Foundations` into `Edge/Integration`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `content/examples/log.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_log_unit.lua` (present)
+- Rust: `tests/rust/unit/log_tests.rs`
+
+## Evidence / Golden
+
+- No evidence or golden artifacts registered.
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

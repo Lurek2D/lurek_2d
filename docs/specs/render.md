@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/render.md or source docstrings instead. -->
+
 # render
 
 ## TL;DR
@@ -10,12 +12,12 @@
 ## General Info
 
 - Module group: `Platform Services`
-- Source path: `src/render/`
+- Source path: `src/render`
 - Binding: `src/lua_api/render_api.rs`
 - Namespace: `lurek.render`
 - Lua API surface: `117` functions, `14` types, `89` methods
-- Rust test path(s): src/render/ (inline #[cfg(test)] in canvas, decal_surface, draw_layer, font, image_effect, mesh, shader, shape), src/render/renderer_tests.rs, src/render/postfx_pipeline_tests.rs
-- Lua test path(s): tests/lua/unit/test_render_unit.lua
+- User-facing: `true`
+- Plugin tier: `not_evaluated`
 
 ## Summary
 
@@ -58,16 +60,24 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 - Shadow edge collection filters disabled, masked-out, and out-of-radius occluders before GPU upload, reuses per-occluder world-space edge caches for shadow lights in the same frame, and records rendered shadow rows plus collected and culled edge counts.
 - `SoftwareCaptureDiagnostics` records unsupported capture commands and bounded polygon fill behavior; software capture is evidence-oriented and does not promise pixel parity for GPU-only texture, shader, post-fx, layer, batch, or registered-resource commands.
 
+## Ownership
+
+- Canonical source: `src/render`
+- Owning tier: `Platform Services`
+- Plugin tier: `not_evaluated`
+- Lua binding owner: `src/lua_api/render_api.rs`
+- Referenced engine modules: `font`, `image`, `light`, `math`, `runtime`, `sprite`
+
 ## Imports
 
-- `font`: Imports or references `src/font/`. Cross-group dependency from `Platform Services` into `Edge/Integration`.
+- `font`: Imports or references `src/font/`. Dependency stays inside `Platform Services` and should remain acyclic.
 - `image`: Imports or references `src/image/`. Dependency stays inside `Platform Services` and should remain acyclic.
-- `light`: Imports or references `light` from `src/light/`.
-- `math`: Imports or references `math` from `src/math/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
-- `sprite`: Imports or references `sprite` from `src/sprite/`.
+- `light`: Imports or references `src/light/`. Dependency stays inside `Platform Services` and should remain acyclic.
+- `math`: Imports or references `src/math/`. Cross-group dependency from `Platform Services` into `Foundations`.
+- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Platform Services` into `Core Runtime`.
+- `sprite`: Imports or references `src/sprite/`. Cross-group dependency from `Platform Services` into `Feature Systems`.
 
-## Files
+## Source Files
 
 ### canvas.rs
 
@@ -83,10 +93,11 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 
 ### draw_layer.rs
 
-- Owns deferred draw-layer callbacks that are queued first and flushed later in depth-sorted order.
-- Lets gameplay and UI code enqueue layered draw work cheaply without issuing immediate GPU commands.
-- Acts as the ordering boundary between ad hoc producers and the final render dispatch pass.
-- Open this file when layer sorting, queueing, flushing, or layer counts behave incorrectly.
+- Owns the draw layer model for the render subsystem and keeps its rules local to this file.
+- Centers the implementation around LayerEntry, DrawLayerError, fmt, with helpers kept close to their invariants.
+- Defines how draw layer data is validated, transformed, or stored before neighboring systems use it.
+- Owns render behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on draw layer behavior while Lua registration stays elsewhere.
 
 ### extracted_blocks.rs
 
@@ -113,30 +124,27 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 
 ### gpu_canvas_pass.rs
 
-- Owns GPU canvas target synchronization and render-target dimension helpers.
-- Keeps off-screen canvas lifecycle checks close to canvas pass concerns instead of the main frame loop.
-- Recreates canvas backing textures when logical canvas dimensions change under a stable key.
-- Reports invalid canvas allocation attempts through `RenderDiagnostics` while allowing the frame to continue.
-- Resolves logical and GPU-backed target sizes for screen and canvas draw preparation.
-- Open this file when canvas resize handling, canvas target dimensions, or canvas backing allocation is wrong.
+- Owns the gpu canvas pass owner for the render subsystem and keeps its rules local to this file.
+- Keeps render data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+- Defines how gpu canvas pass data is validated, transformed, or stored before neighboring systems use it.
+- Owns render behavior with explicit state, validation, and crate-local integration boundaries.
 
 ### gpu_draw_encode.rs
 
-- Owns encoding prepared GPU draw calls into active wgpu render passes.
-- Resolves pipeline selection, default pipeline caches, texture bind groups, and draw-time resource diagnostics.
-- Keeps prepared-draw submission separate from frame command interpretation and high-level render orchestration.
-- Handles custom shader fallback to default pipelines without panicking when cache invariants are missing.
-- Applies scissor, stencil reference, vertex/index buffers, and instance ranges before issuing indexed draws.
-- Open this file when prepared draws bind the wrong resources, select the wrong pipeline, or skip unexpectedly.
+- Owns the gpu draw encode owner for the render subsystem and keeps its rules local to this file.
+- Keeps render data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+- Defines how gpu draw encode data is validated, transformed, or stored before neighboring systems use it.
+- Owns render behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on gpu draw encode behavior while Lua registration stays elsewhere.
+- Documents the boundary where render code accepts inputs, reports errors, or updates state.
+- Use this file when changing gpu draw encode defaults, lifecycle handling, validation, or data ownership.
 
 ### gpu_frame_builder.rs
 
-- Builds and rewrites per-frame prepared draw lists before GPU pass encoding.
-- Owns frame-local draw coalescing rules so batching remains testable outside the renderer.
-- Keeps compatibility checks close to `PreparedDraw` semantics instead of embedding them in frame orchestration.
-- Preserves high-water scratch allocation by draining into caller-owned buffers and swapping results back.
-- Acts as the CPU frame-list boundary between command tessellation and low-level render-pass encoding.
-- Open this file when compatible draw calls fail to batch or incompatible prepared draws merge incorrectly.
+- Owns the gpu frame builder owner for the render subsystem and keeps its rules local to this file.
+- Keeps render data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+- Defines how gpu frame builder data is validated, transformed, or stored before neighboring systems use it.
+- Owns render behavior with explicit state, validation, and crate-local integration boundaries.
 
 ### gpu_light.rs
 
@@ -176,32 +184,32 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 
 ### gpu_resources.rs
 
-- Owns persistent GPU resource lifetimes, uploads, and resizing for textures, fonts, canvases, and buffers.
-- Grows vertex, index, and instance buffers on demand so render workloads can scale without manual sizing.
-- Caches texture and sampler bind groups so compatible resources reuse stable GPU-side descriptors.
-- Creates raw textures and canvas resources while hiding wgpu allocation details from higher render layers.
-- Prunes stale resources to keep GPU memory usage bounded during long sessions or heavy content churn.
-- Uploads static geometry into dedicated buffers so later frames can reuse cached meshes efficiently.
-- Acts as the resource-allocation boundary rather than the owner of draw ordering or pass sequencing.
-- Open this file when GPU buffers, textures, samplers, or resource cleanup behavior looks incorrect.
+- Owns the gpu resources owner for the render subsystem and keeps its rules local to this file.
+- Keeps render data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+- Defines how gpu resources data is validated, transformed, or stored before neighboring systems use it.
+- Owns render behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on gpu resources behavior while Lua registration stays elsewhere.
+- Documents the boundary where render code accepts inputs, reports errors, or updates state.
+- Use this file when changing gpu resources defaults, lifecycle handling, validation, or data ownership.
+- Keeps failure paths and edge cases near the render state that can explain them while keeping call sites explicit.
+- Preserves deterministic behavior by keeping gpu resources calculations explicit at their owner boundary.
 
 ### gpu_screenshot_readback.rs
 
-- Owns GPU surface readback for screenshots and software-visible frame capture.
-- Copies a rendered surface texture into a mappable buffer with wgpu row-padding rules.
-- Maps the readback buffer after submission, strips padding, and converts supported surface formats to RGBA bytes.
-- Keeps readback error logging and format handling separate from the main render-frame orchestration.
-- Uses `PendingSurfaceReadback` as the short-lived handoff between command encoding and post-submit mapping.
-- Open this file when GPU screenshots fail, return wrong channel order, or mishandle readback padding.
+- Owns the gpu screenshot readback owner for the render subsystem and keeps its rules local to this file.
+- Keeps render data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+- Defines how gpu screenshot readback data is validated, transformed, or stored before neighboring systems use it.
+- Owns render behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on gpu screenshot readback behavior while Lua registration stays elsewhere.
 
 ### gpu_shader_cache.rs
 
-- Owns custom GPU shader cache rebuilds, uniform uploads, and custom pipeline lookup.
-- Keeps user shader lifecycle separate from the full-frame renderer orchestration loop.
-- Builds color and texture WGSL wrappers, uniform bind groups, and per-state render pipelines on demand.
-- Uses the renderer's device, queue, bind-group layouts, and surface format without owning frame state.
-- Records no draw commands itself; callers ask for cached pipelines and bind groups during render encoding.
-- Open this file when custom shader uniform upload, wrapper compilation, or pipeline reuse behaves incorrectly.
+- Owns the gpu shader cache owner for the render subsystem and keeps its rules local to this file.
+- Keeps render data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+- Defines how gpu shader cache data is validated, transformed, or stored before neighboring systems use it.
+- Owns render behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on gpu shader cache behavior while Lua registration stays elsewhere.
+- Documents the boundary where render code accepts inputs, reports errors, or updates state.
 
 ### gpu_shaders.rs
 
@@ -224,20 +232,21 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 
 ### gpu_shape_replay.rs
 
-- Replays registered compound shapes into GPU flat-color draw buffers.
-- Keeps reusable `ShapeCommand` interpretation separate from the main frame orchestration loop.
-- Applies draw-time transforms, wireframe override, color state, line width, scissor, shader, and stencil state.
-- Emits prepared color draw ranges directly into caller-owned frame buffers without allocating per command.
-- Acts as the compound-shape replay boundary between shape assets and GPU tessellation helpers.
-- Open this file when `DrawShape` output differs from equivalent immediate-mode shape commands.
+- Owns the gpu shape replay owner for the render subsystem and keeps its rules local to this file.
+- Centers the implementation around replay_compound_shape, with helpers kept close to their invariants.
+- Defines how gpu shape replay data is validated, transformed, or stored before neighboring systems use it.
+- Owns render behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on gpu shape replay behavior while Lua registration stays elsewhere.
+- Documents the boundary where render code accepts inputs, reports errors, or updates state.
 
 ### gpu_state.rs
 
-- Defines the registry of live GPU allocations, cached geometry, reusable frame buffers, readback state, and frame statistics.
-- Stores textures, fonts, canvases, depth targets, and other handles in structured collections with stable keys.
-- Keeps static geometry cache records, CPU frame buffers, and pending surface readbacks separate from the main renderer loop.
-- Acts as the persistent state boundary for GPU resources shared across multiple render passes.
-- Open this file when cached handles, depth targets, or readback bookkeeping state behaves incorrectly.
+- Owns render behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps render data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+- Defines how gpu state data is validated, transformed, or stored before neighboring systems use it.
+- Owns render behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on gpu state behavior while Lua registration stays elsewhere.
+- Documents the boundary where render code accepts inputs, reports errors, or updates state.
 
 ### gpu_tess.rs
 
@@ -253,12 +262,13 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 
 ### gpu_text_replay.rs
 
-- Replays text render commands into GPU font-atlas draw buffers.
-- Keeps glyph expansion, cursor advance, wrapping, alignment, span coloring, and font-atlas draw emission out of frame orchestration.
-- Uses caller-owned texture scratch buffers so plain, formatted, and rich text do not allocate per glyph.
-- Preserves current blend, scissor, shader, color mask, and stencil state when emitting prepared draws.
-- Acts as the GPU text boundary between font metrics and prepared textured draw ranges.
-- Open this file when plain, formatted, or rich text glyph output differs from font metrics or current draw state.
+- Owns the gpu text replay owner for the render subsystem and keeps its rules local to this file.
+- Keeps render data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+- Defines how gpu text replay data is validated, transformed, or stored before neighboring systems use it.
+- Owns render behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on gpu text replay behavior while Lua registration stays elsewhere.
+- Documents the boundary where render code accepts inputs, reports errors, or updates state.
+- Use this file when changing gpu text replay defaults, lifecycle handling, validation, or data ownership.
 
 ### gpu_types.rs
 
@@ -277,19 +287,25 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 
 ### input_validation.rs
 
-- Owns front-end render input validation before commands reach GPU or software tessellation paths.
-- Defines reusable finite-number, color, size, topology, and segment bounds for `RenderCommand` data.
-- Keeps deterministic skip decisions centralized instead of scattering NaN and range checks across passes.
-- Acts as the command-boundary sanitizer between gameplay draw intent and backend-specific render work.
-- Open this file when public render commands need new input limits or stricter validation behavior.
+- Owns the input validation owner for the render subsystem and keeps its rules local to this file.
+- Keeps render data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+- Defines how input validation data is validated, transformed, or stored before neighboring systems use it.
+- Owns render behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on input validation behavior while Lua registration stays elsewhere.
+- Documents the boundary where render code accepts inputs, reports errors, or updates state.
+- Use this file when changing input validation defaults, lifecycle handling, validation, or data ownership.
+- Keeps failure paths and edge cases near the render state that can explain them while keeping call sites explicit.
+- Preserves deterministic behavior by keeping input validation calculations explicit at their owner boundary.
+- Provides the local adaptation layer that lets callers avoid duplicating render rules while keeping call sites explicit.
 
 ### mesh.rs
 
-- Defines reusable 2D mesh data for custom vector geometry, imported models, and textured draw content.
-- Stores vertex positions, colors, uv maps, topology mode, and optional texture binding under one asset type.
-- Supports multiple draw topologies so callers can express lists, strips, fans, or related mesh patterns.
-- Acts as the mesh-asset boundary between content generation and later tessellation or draw submission code.
-- Open this file when mesh vertex data, topology choice, or texture attachment behavior looks incorrect.
+- Owns the mesh owner for the render subsystem and keeps its rules local to this file while keeping call sites explicit.
+- Centers the implementation around MeshDrawMode, MeshVertex, default, with helpers kept close to their invariants.
+- Defines how mesh data is validated, transformed, or stored before neighboring systems use it.
+- Owns render behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on mesh behavior while Lua registration stays elsewhere.
+- Documents the boundary where render code accepts inputs, reports errors, or updates state.
 
 ### mod.rs
 
@@ -339,22 +355,24 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 
 ### render_diagnostics.rs
 
-- Owns per-frame render diagnostics for skipped commands, missing resources, and invalid inputs.
-- Stores lightweight counters that make non-fatal renderer drops visible without forcing a frame error.
-- Sits beside frame statistics while keeping debug and reliability counters out of low-level GPU handles.
-- Open this file when adding a new controlled render skip or exposing renderer findings to diagnostics tools.
+- Owns the render diagnostics owner for the render subsystem and keeps its rules local to this file.
+- Keeps render data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+- Defines how render diagnostics data is validated, transformed, or stored before neighboring systems use it.
+- Owns render behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on render diagnostics behavior while Lua registration stays elsewhere.
 
 ### renderer.rs
 
-- Defines the front-end render command language consumed by the software and GPU renderer implementations.
-- Owns draw-mode enums, blend and stencil policy types, text alignment, gradients, and related draw metadata.
-- Packages shapes, sprites, particles, typography, and effect requests into structured command variants.
-- Standardizes sampler filters, repeat modes, depth behavior, and outline settings used across render paths.
-- Keeps the abstract rendering vocabulary separate from the backends that later execute or rasterize commands.
-- Provides adaptive circle and ellipse segment helpers used when front-end callers request curved primitives.
-- Acts as the semantic boundary between gameplay draw intent and the lower-level renderer implementations.
-- Open this file when command schema, blend semantics, or draw-mode vocabulary needs coordinated changes.
-- Read this owner first when multiple backends disagree, because they all interpret the command types defined here.
+- Owns render behavior with explicit state, validation, and crate-local integration boundaries.
+- Centers the implementation around CompareMode, StencilAction, StencilMode, with helpers kept close to their invariants.
+- Defines how renderer data is validated, transformed, or stored before neighboring systems use it.
+- Owns render behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on renderer behavior while Lua registration stays elsewhere.
+- Documents the boundary where render code accepts inputs, reports errors, or updates state.
+- Use this file when changing renderer defaults, lifecycle handling, validation, or data ownership.
+- Keeps failure paths and edge cases near the render state that can explain them while keeping call sites explicit.
+- Preserves deterministic behavior by keeping renderer calculations explicit at their owner boundary.
+- Provides the local adaptation layer that lets callers avoid duplicating render rules while keeping call sites explicit.
 
 ### shader.rs
 
@@ -376,20 +394,16 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 
 ### software_capture.rs
 
-- Implements CPU-side screenshot capture by replaying supported render commands into mutable ImageData output.
-- Exists as a fallback path for tests, headless evidence, and environments where GPU readback is unavailable.
-- Replays a practical subset of RenderCommand values so visual assertions can run without a live graphics device.
-- Includes local transform, pixel write, stencil, and line helpers needed to rasterize queued commands in software.
-- Keeps capture logic separate from the main GPU renderer so test-friendly output does not complicate frame code.
-- Acts as the software-capture boundary between front-end render commands and headless image generation.
-- Provides one owner for CPU replay semantics, making screenshot differences easier to debug in non-GPU runs.
-- Support matrix:
-- Supported state: color, line width, point size, transforms, scissor, color masks, and stencil controls.
-- Supported geometry: rectangles, rounded rectangles, circles, ellipses, triangles, polygons, lines, polylines, arcs, and points.
-- Approximated geometry: colored polygons, convex fans, and transient meshes render as solid CPU polygons.
-- Ignored and counted: GPU resources, textures, text, shaders, post-fx, layers, sort groups, batches, registered meshes, and physics/Spine debug paths.
-- Open this file when headless capture output differs from expected draw behavior or misses command coverage.
-- Use this owner before GPU renderer changes when only software screenshot evidence appears incorrect.
+- Owns the software capture owner for the render subsystem and keeps its rules local to this file.
+- Keeps render data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+- Defines how software capture data is validated, transformed, or stored before neighboring systems use it.
+- Owns render behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on software capture behavior while Lua registration stays elsewhere.
+- Documents the boundary where render code accepts inputs, reports errors, or updates state.
+- Use this file when changing software capture defaults, lifecycle handling, validation, or data ownership.
+- Keeps failure paths and edge cases near the render state that can explain them while keeping call sites explicit.
+- Preserves deterministic behavior by keeping software capture calculations explicit at their owner boundary.
+- Provides the local adaptation layer that lets callers avoid duplicating render rules while keeping call sites explicit.
 
 
 
@@ -789,14 +803,57 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 - `LSpriteBatch:type() -> string`: Returns the type name string for this sprite batch.
 - `LSpriteBatch:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
 
-## References
+## Examples
 
-- `font`: Imports or references `src/font/`. Cross-group dependency from `Platform Services` into `Edge/Integration`.
-- `image`: Imports or references `src/image/`. Dependency stays inside `Platform Services` and should remain acyclic.
-- `light`: Imports or references `light` from `src/light/`.
-- `math`: Imports or references `math` from `src/math/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
-- `sprite`: Imports or references `sprite` from `src/sprite/`.
+- `content/examples/render.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_render_unit.lua` (present)
+- Rust: `src/render/render_diagnostics.rs`
+- Rust: `tests/rust/unit/effect_render_tests.rs`
+- Rust: `tests/rust/unit/render_tests.rs`
+
+## Evidence / Golden
+
+| Kind | Path |
+|---|---|
+| Evidence test | `tests/lua/evidence/test_render_evidence.lua` |
+| Golden test | `tests/lua/golden/test_render_golden.lua` |
+| Current artifact | `tests/artifacts/current/render/render_advanced_vector_scene.png` |
+| Current artifact | `tests/artifacts/current/render/render_blend_alpha_scene.png` |
+| Current artifact | `tests/artifacts/current/render/render_canvas_composite_scene.png` |
+| Current artifact | `tests/artifacts/current/render/render_layers_sort_group_scene.png` |
+| Current artifact | `tests/artifacts/current/render/render_mesh_custom_geometry.png` |
+| Current artifact | `tests/artifacts/current/render/render_obj_model_preview.png` |
+| Current artifact | `tests/artifacts/current/render/render_primitive_family_scene.png` |
+| Current artifact | `tests/artifacts/current/render/render_retained_shape_instances.png` |
+| Current artifact | `tests/artifacts/current/render/render_scissor_nested_clip.png` |
+| Current artifact | `tests/artifacts/current/render/render_shader_uniform_scene.png` |
+| Current artifact | `tests/artifacts/current/render/render_spritebatch_grid_scene.png` |
+| Current artifact | `tests/artifacts/current/render/render_stencil_portal_scene.png` |
+| Current artifact | `tests/artifacts/current/render/render_text_font_layout.png` |
+| Current artifact | `tests/artifacts/current/render/render_texture_quad_nineslice_scene.png` |
+| Current artifact | `tests/artifacts/current/render/render_transform_hierarchy_scene.png` |
+| Baseline artifact | `tests/artifacts/baselines/render/render_advanced_vector_scene.png` |
+| Baseline artifact | `tests/artifacts/baselines/render/render_blend_alpha_scene.png` |
+| Baseline artifact | `tests/artifacts/baselines/render/render_canvas_composite_scene.png` |
+| Baseline artifact | `tests/artifacts/baselines/render/render_layers_sort_group_scene.png` |
+| Baseline artifact | `tests/artifacts/baselines/render/render_mesh_custom_geometry.png` |
+| Baseline artifact | `tests/artifacts/baselines/render/render_obj_model_preview.png` |
+| Baseline artifact | `tests/artifacts/baselines/render/render_primitive_family_scene.png` |
+| Baseline artifact | `tests/artifacts/baselines/render/render_retained_shape_instances.png` |
+| Baseline artifact | `tests/artifacts/baselines/render/render_scissor_nested_clip.png` |
+| Baseline artifact | `tests/artifacts/baselines/render/render_shader_uniform_scene.png` |
+| Baseline artifact | `tests/artifacts/baselines/render/render_spritebatch_grid_scene.png` |
+| Baseline artifact | `tests/artifacts/baselines/render/render_stencil_portal_scene.png` |
+| Baseline artifact | `tests/artifacts/baselines/render/render_text_font_layout.png` |
+| Baseline artifact | `tests/artifacts/baselines/render/render_texture_quad_nineslice_scene.png` |
+| Baseline artifact | `tests/artifacts/baselines/render/render_transform_hierarchy_scene.png` |
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/docs.md or source docstrings instead. -->
+
 # docs
 
 ## TL;DR
@@ -8,12 +10,12 @@
 ## General Info
 
 - Module group: `Edge/Integration`
-- Source path: `src/docs/`
+- Source path: `src/docs`
 - Binding: `src/lua_api/docs_api.rs`
 - Namespace: `lurek.docs`
 - Lua API surface: `26` functions, `15` types, `64` methods
-- Rust test path(s): tests/rust/unit/docs_tests.rs
-- Lua test path(s): tests/lua/unit/test_docs.lua
+- User-facing: `true`
+- Plugin tier: `not_evaluated`
 
 ## Summary
 
@@ -30,40 +32,55 @@
 
 This module is mostly self-contained inside the Edge/Integration group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
 
+## Ownership
+
+- Canonical source: `src/docs`
+- Owning tier: `Edge/Integration`
+- Plugin tier: `not_evaluated`
+- Lua binding owner: `src/lua_api/docs_api.rs`
+- Referenced engine modules: None detected from Rust imports.
+
 ## Imports
 
 - No top-level `crate::<module>` imports were detected in this module's Rust source files.
 
-## Files
+## Source Files
 
 ### catalog.rs
 
-- `src/docs/catalog.rs` owns the in-memory catalog that stores, groups, searches, merges, and clears doc entries.
-- It provides the collection boundary over `DocEntry`, preserving insertion order while exposing module and kind queries.
-- Merge, duplicate handling, and derived lookup caches live here so export and reporting stages can share one consistent documentation container.
-- Read it when catalog search, deduplication, module grouping, or entry aggregation behavior needs to change.
+- Owns the catalog owner for the docs subsystem and keeps its rules local to this file while keeping call sites explicit.
+- Centers the implementation around SearchOptions, Catalog, new, with helpers kept close to their invariants.
+- Defines how catalog data is validated, transformed, or stored before neighboring systems use it.
+- Owns docs behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on catalog behavior while Lua registration stays elsewhere.
 
 ### entry.rs
 
-- `src/docs/entry.rs` defines normalized documentation records for API symbols, parameters, returns, and metadata.
-- It owns `DocEntry`, `ParamInfo`, and `ReturnInfo`, plus completeness helpers used by docs quality checks and exports.
-- This file is the in-memory record contract for the docs pipeline; it does not own catalogs, export, or scoring logic.
-- Read it when docs field requirements, entry completeness rules, or symbol metadata shape needs to change.
+- Owns the catalog entry model for the docs subsystem and keeps its rules local to this file.
+- Centers the implementation around ParamInfo, ReturnInfo, DocEntry, with helpers kept close to their invariants.
+- Defines how entry data is validated, transformed, or stored before neighboring systems use it.
+- Owns docs behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on entry behavior while Lua registration stays elsewhere.
 
 ### error.rs
 
-- `src/docs/error.rs` owns typed errors shared by catalog, export, schema, and quality-report workflows.
-- It keeps failure reasons stable so tooling can distinguish duplicate entries, sandbox violations, size limits, and rule failures.
-- Cross-cutting docs pipeline operations depend on these errors instead of ad hoc strings, while file I/O and JSON details are normalized here.
-- Read this file when documentation pipeline failure semantics or caller-facing diagnostics need to change.
+- Owns the error taxonomy for the docs subsystem and keeps its rules local to this file while keeping call sites explicit.
+- Centers the implementation around DocsResult, DocsError, quality_failure, with helpers kept close to their invariants.
+- Defines how error data is validated, transformed, or stored before neighboring systems use it.
+- Owns docs behavior with explicit state, validation, and crate-local integration boundaries.
 
 ### export.rs
 
-- `src/docs/export.rs` transforms normalized doc entries into JSON payloads for completions, hovers, and signatures.
-- It owns completion-kind mapping, hover and signature builders, path-sandbox checks, payload limits, atomic file writes, and bundled export directory output.
-- Legacy payload functions remain available for compatibility, while typed options add versioned metadata and actionable export reports for stricter tooling.
-- This file is the serialization boundary for docs artifacts; it does not own entry collection or quality scoring.
-- Read it when docs JSON shape, file output behavior, or editor integration payload rules need to change.
+- Owns docs behavior with explicit state, validation, and crate-local integration boundaries.
+- Centers the implementation around DocsLimits, default, DocsExportOptions, with helpers kept close to their invariants.
+- Defines how export data is validated, transformed, or stored before neighboring systems use it.
+- Owns docs behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on export behavior while Lua registration stays elsewhere.
+- Documents where docs callers should change defaults, errors, or lifecycle behavior. with focused crate-local behavior.
+- Use this file when changing export defaults, lifecycle handling, validation, or data ownership.
+- Keeps failure paths and edge cases near the docs state that can explain them while keeping call sites explicit.
+- Preserves deterministic behavior by keeping export calculations explicit at their owner boundary.
+- Provides the local adaptation layer that lets callers avoid duplicating docs rules while keeping call sites explicit.
 
 ### mod.rs
 
@@ -76,11 +93,14 @@ This module is mostly self-contained inside the Edge/Integration group. Cross-mo
 
 ### report.rs
 
-- `src/docs/report.rs` evaluates documentation quality by scoring entries and aggregating validation-style issue reports.
-- It owns per-entry score calculation, rule-based diagnostics, validation issue metadata, module averages, and overall report synthesis.
-- `ValidationReport`, `QualityReport`, and `DocsIssue` live here because actionable rule output and score aggregation are linked products.
-- This file analyzes existing `DocEntry` and `Catalog` data; it does not own entry storage or export serialization.
-- Read it when docs grading policy, validation issue semantics, or module quality rollup behavior needs to change.
+- Owns the report owner for the docs subsystem and keeps its rules local to this file while keeping call sites explicit.
+- Centers the implementation around IssueSeverity, as_str, DocsIssueKind, with helpers kept close to their invariants.
+- Defines how report data is validated, transformed, or stored before neighboring systems use it.
+- Owns docs behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on report behavior while Lua registration stays elsewhere.
+- Documents where docs callers should change defaults, errors, or lifecycle behavior. with focused crate-local behavior.
+- Use this file when changing report defaults, lifecycle handling, validation, or data ownership.
+- Keeps failure paths and edge cases near the docs state that can explain them while keeping call sites explicit.
 
 ### schema.rs
 
@@ -407,9 +427,22 @@ This module is mostly self-contained inside the Edge/Integration group. Cross-mo
 
 - No documented methods.
 
-## References
+## Examples
 
-- No top-level `crate::<module>` imports were detected in this module's Rust source files.
+- `content/examples/docs.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_docs_unit.lua` (present)
+- Rust: `tests/rust/unit/docs_tests.rs`
+
+## Evidence / Golden
+
+- No evidence or golden artifacts registered.
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

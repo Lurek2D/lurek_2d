@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/bin.md or source docstrings instead. -->
+
 # bin
 
 ## TL;DR
@@ -7,12 +9,12 @@
 ## General Info
 
 - Module group: `Edge/Integration`
-- Source path: `src/bin/`
+- Source path: `src/bin`
 - Binding: None direct
 - Namespace: None direct
 - Lua API surface: `0` functions, `0` types, `0` methods
-- Rust test path(s): None found in the workspace
-- Lua test path(s): None found in the workspace
+- User-facing: `false`
+- Plugin tier: `not_evaluated`
 
 ## Summary
 
@@ -22,11 +24,18 @@
 
 This module is mostly self-contained inside the Edge/Integration group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
 
+## Ownership
+
+- Canonical source: `src/bin`
+- Owning tier: `Edge/Integration`
+- Plugin tier: `not_evaluated`
+- Referenced engine modules: None detected from Rust imports.
+
 ## Imports
 
 - No top-level `crate::<module>` imports were detected in this module's Rust source files.
 
-## Files
+## Source Files
 
 ### lurek_headless.rs
 
@@ -48,9 +57,22 @@ This module is mostly self-contained inside the Edge/Integration group. Cross-mo
 
 - No dedicated direct `lurek.*` namespace is exposed by this module.
 
-## References
+## Examples
 
-- No top-level `crate::<module>` imports were detected in this module's Rust source files.
+- No user-facing example is registered for this module.
+
+## Tests
+
+- Lua unit: none registered.
+- Rust: `tests/rust/unit/binary_tests.rs`
+
+## Evidence / Golden
+
+- No evidence or golden artifacts registered.
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

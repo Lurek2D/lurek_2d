@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/compute.md or source docstrings instead. -->
+
 # compute
 
 ## TL;DR
@@ -8,12 +10,12 @@
 ## General Info
 
 - Module group: `Foundations`
-- Source path: `src/compute/`
+- Source path: `src/compute`
 - Binding: `src/lua_api/compute_api.rs`
 - Namespace: `lurek.compute`
 - Lua API surface: `13` functions, `6` types, `80` methods
-- Rust test path(s): tests/rust/unit/compute_tests.rs; tests/rust/stress/compute_stress_tests.rs; inline tests in src/compute/array.rs, src/compute/spatial.rs
-- Lua test path(s): tests/lua/unit/test_compute.lua; tests/lua/stress/test_compute_stress.lua; tests/lua/integration/test_data_compute.lua; tests/lua/integration/test_compute_dataframe.lua; tests/lua/golden/test_compute_golden.lua
+- User-facing: `true`
+- Plugin tier: `tier_2_plugin`
 
 ## Summary
 
@@ -29,11 +31,19 @@
 
 This module is mostly self-contained inside the Foundations group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
 
+## Ownership
+
+- Canonical source: `src/compute`
+- Owning tier: `Foundations`
+- Plugin tier: `tier_2_plugin`
+- Lua binding owner: `src/lua_api/compute_api.rs`
+- Referenced engine modules: None detected from Rust imports.
+
 ## Imports
 
 - No top-level `crate::<module>` imports were detected in this module's Rust source files.
 
-## Files
+## Source Files
 
 ### analytics.rs
 
@@ -293,9 +303,51 @@ This module is mostly self-contained inside the Foundations group. Cross-module 
 
 - No documented methods.
 
-## References
+## Examples
 
-- No top-level `crate::<module>` imports were detected in this module's Rust source files.
+- `content/examples/compute.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_compute_unit.lua` (present)
+- Rust: `tests/rust/unit/compute_tests.rs`
+
+## Evidence / Golden
+
+| Kind | Path |
+|---|---|
+| Evidence test | `tests/lua/evidence/test_compute_evidence.lua` |
+| Golden test | `tests/lua/golden/test_compute_golden.lua` |
+| Current artifact | `tests/artifacts/current/compute/compute_affine_transform_snapshot.txt` |
+| Current artifact | `tests/artifacts/current/compute/compute_array_constructor_snapshot.txt` |
+| Current artifact | `tests/artifacts/current/compute/compute_covariance_projection_trace.txt` |
+| Current artifact | `tests/artifacts/current/compute/compute_feature_engineering_trace.txt` |
+| Current artifact | `tests/artifacts/current/compute/compute_fft_roundtrip_snapshot.txt` |
+| Current artifact | `tests/artifacts/current/compute/compute_gaussian_kernel_heatmap.png` |
+| Current artifact | `tests/artifacts/current/compute/compute_linear_model_solve_trace.txt` |
+| Current artifact | `tests/artifacts/current/compute/compute_ndarray_fill_summary.txt` |
+| Current artifact | `tests/artifacts/current/compute/compute_parallel_threshold_trace.txt` |
+| Current artifact | `tests/artifacts/current/compute/compute_range_rotation_snapshot.txt` |
+| Current artifact | `tests/artifacts/current/compute/compute_region_morphology_trace.txt` |
+| Current artifact | `tests/artifacts/current/compute/compute_signal_analysis_pipeline.txt` |
+| Current artifact | `tests/artifacts/current/compute/compute_spatial_segmentation_atlas.png` |
+| Baseline artifact | `tests/artifacts/baselines/compute/compute_affine_transform_snapshot.txt` |
+| Baseline artifact | `tests/artifacts/baselines/compute/compute_array_constructor_snapshot.txt` |
+| Baseline artifact | `tests/artifacts/baselines/compute/compute_covariance_projection_trace.txt` |
+| Baseline artifact | `tests/artifacts/baselines/compute/compute_feature_engineering_trace.txt` |
+| Baseline artifact | `tests/artifacts/baselines/compute/compute_fft_roundtrip_snapshot.txt` |
+| Baseline artifact | `tests/artifacts/baselines/compute/compute_gaussian_kernel_heatmap.png` |
+| Baseline artifact | `tests/artifacts/baselines/compute/compute_linear_model_solve_trace.txt` |
+| Baseline artifact | `tests/artifacts/baselines/compute/compute_ndarray_fill_summary.txt` |
+| Baseline artifact | `tests/artifacts/baselines/compute/compute_parallel_threshold_trace.txt` |
+| Baseline artifact | `tests/artifacts/baselines/compute/compute_range_rotation_snapshot.txt` |
+| Baseline artifact | `tests/artifacts/baselines/compute/compute_region_morphology_trace.txt` |
+| Baseline artifact | `tests/artifacts/baselines/compute/compute_signal_analysis_pipeline.txt` |
+| Baseline artifact | `tests/artifacts/baselines/compute/compute_spatial_segmentation_atlas.png` |
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

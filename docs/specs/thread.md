@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/thread.md or source docstrings instead. -->
+
 # thread
 
 ## TL;DR
@@ -7,12 +9,12 @@
 ## General Info
 
 - Module group: `Core Runtime`
-- Source path: `src/thread/`
+- Source path: `src/thread`
 - Binding: `src/lua_api/thread_api.rs`
 - Namespace: `lurek.thread`
 - Lua API surface: `7` functions, `4` types, `34` methods
-- Rust test path(s): tests/rust/unit/thread_tests.rs, plus inline unit coverage in src/thread/channel.rs, src/thread/promise.rs, src/thread/pool.rs, src/thread/worker.rs
-- Lua test path(s): tests/lua/unit/test_thread.lua, tests/lua/stress/test_thread_stress.lua, tests/lua/integration/test_thread_data.lua
+- User-facing: `true`
+- Plugin tier: `not_evaluated`
 
 ## Summary
 
@@ -26,11 +28,19 @@
 
 This module primarily collaborates with `runtime`. Its responsibility should stay inside the Core Runtime group rather than absorb behavior owned by those neighbors.
 
+## Ownership
+
+- Canonical source: `src/thread`
+- Owning tier: `Core Runtime`
+- Plugin tier: `not_evaluated`
+- Lua binding owner: `src/lua_api/thread_api.rs`
+- Referenced engine modules: `runtime`
+
 ## Imports
 
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `runtime`: Imports or references `src/runtime/`. Dependency stays inside `Core Runtime` and should remain acyclic.
 
-## Files
+## Source Files
 
 ### channel.rs
 
@@ -174,9 +184,22 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - `LThreadPool:type() -> string`: Returns the type name of this object.
 - `LThreadPool:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
 
-## References
+## Examples
 
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `content/examples/thread.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_thread_unit.lua` (present)
+- Rust: `tests/rust/unit/thread_tests.rs`
+
+## Evidence / Golden
+
+- No evidence or golden artifacts registered.
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

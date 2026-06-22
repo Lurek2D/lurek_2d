@@ -297,7 +297,7 @@ lurek.mapblock.newScript(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name?` | string | Script name. |
+| `name?` | string | Optional script name, defaulting to `default`. |
 
 **Returns**
 

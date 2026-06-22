@@ -1,9 +1,10 @@
-//! Owns encoding prepared GPU draw calls into active wgpu render passes.
-//! Resolves pipeline selection, default pipeline caches, texture bind groups, and draw-time resource diagnostics.
-//! Keeps prepared-draw submission separate from frame command interpretation and high-level render orchestration.
-//! Handles custom shader fallback to default pipelines without panicking when cache invariants are missing.
-//! Applies scissor, stencil reference, vertex/index buffers, and instance ranges before issuing indexed draws.
-//! Open this file when prepared draws bind the wrong resources, select the wrong pipeline, or skip unexpectedly.
+//! Owns the gpu draw encode owner for the render subsystem and keeps its rules local to this file.
+//! Keeps render data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+//! Defines how gpu draw encode data is validated, transformed, or stored before neighboring systems use it.
+//! Owns render behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on gpu draw encode behavior while Lua registration stays elsewhere.
+//! Documents the boundary where render code accepts inputs, reports errors, or updates state.
+//! Use this file when changing gpu draw encode defaults, lifecycle handling, validation, or data ownership.
 
 use slotmap::SlotMap;
 

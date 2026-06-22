@@ -45,11 +45,12 @@ These links are for people extending the Rust engine, bindings, tooling, docs, t
 | Philosophy and constraints | [docs/architecture/philosophy.md](docs/architecture/philosophy.md) | Source of truth for architecture rules, platform scope, and binding constraints. |
 | Engine architecture | [docs/architecture/engine-architecture.md](docs/architecture/engine-architecture.md) | Module groups, runtime composition, boot flow, and dependency direction. |
 | CAG and AI workflow | [docs/architecture/cag-system.md](docs/architecture/cag-system.md) | How AI-assisted engine work is structured in the main repository. |
+| Documentation system | [docs/architecture/docs-system.md](docs/architecture/docs-system.md) | Canonical editable docs sources, generated outputs, and source-to-docs flow. |
 | VS Code extension architecture | [docs/architecture/vscode-architecture.md](docs/architecture/vscode-architecture.md) | How the extension, debug bridge, MCP, and webview tooling fit together. |
 | Rust API reference | [docs/api/rust.md](docs/api/rust.md) | Generated contributor-facing Rust API surface. |
 | Specs index | [docs/specs/README.md](docs/specs/README.md) | Canonical module-by-module contract list. |
 | Build, onboarding, and contribution | [docs/handbook.md](docs/handbook.md) · [CONTRIBUTING.md](CONTRIBUTING.md) | First setup, quality gates, contribution rules, and engine workflow. |
-| Tests and quality gates | [tests/README.md](tests/README.md) · [docs/architecture/test-framework.md](docs/architecture/test-framework.md) | Rust/Lua test model and the Lua-first placement rules. |
+| Tests and quality gates | [tests/README.md](tests/README.md) · [docs/architecture/quality-assurance.md](docs/architecture/quality-assurance.md) | Rust/Lua test model and the Lua-first placement rules. |
 | AI-assisted engine work in practice | [extension/vscode/README.md](extension/vscode/README.md) · [.github/agents/README.md](.github/agents/README.md) | Extension capabilities, local AI workflow, and the engine-side agent roster. |
 
 ## For Game Developers

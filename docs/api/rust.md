@@ -126,7 +126,7 @@ pub fn write_global_config()  // Replaces the global LLM config.
 
 ### `agent::client`
 
-> This file owns `AgentClient`, the background prompt transport that keeps model HTTP work off the frame loop. It tracks bounded queued and in-flight work, exposes diagnostics, and keeps cancellation Lua-safe. Send logic uses a fixed worker pool instead of per-request thread spawn and retries only transient failures. Polling returns finished `AgentResponse` values in batches, letting Lua runtimes drain work at safe update points. Open this file when transport lifecycle changes; payload contracts and request shaping live in sibling files.
+> Owns agent behavior with explicit state, validation, and crate-local integration boundaries. Keeps agent data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior. Defines how client data is validated, transformed, or stored before neighboring systems use it. Owns agent behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on client behavior while Lua registration stays elsewhere. Documents where agent callers should change defaults, errors, or lifecycle behavior. with focused crate-local behavior. Use this file when changing client defaults, lifecycle handling, validation, or data ownership. Keeps failure paths and edge cases near the agent state that can explain them while keeping call sites explicit.
 
 *[src/agent/client.rs](src/agent/client.rs) — 5/5 documented (100%)*
 
@@ -140,7 +140,7 @@ pub trait AgentTransport  // Transport abstraction used by [`AgentClient`] to ex
 
 ### `agent::memory`
 
-> This file owns layered agent memory: bounded working slots, append-only episodes, semantic facts, and persistence. `WorkingMemory` keeps recent key-value context with capacity-based eviction so prompt state stays compact and fresh. `EpisodicMemory` records tick-stamped event snapshots and supports equality-filter queries plus age-based pruning. `SemanticMemory` stores named JSON facts for durable recall and object-field filtering outside immediate chat turns. `AgentMemory` bundles the three stores, safe disk persistence policy, and schema-validated save or load paths. Persistence uses atomic writes, a versioned envelope, and a sandbox rooted in the current workspace directory. Open this file when recall semantics change; request transport and prompt assembly live in sibling files.
+> Owns the memory store for the agent subsystem and keeps its rules local to this file while keeping call sites explicit. Keeps agent data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior. Defines how memory data is validated, transformed, or stored before neighboring systems use it. Owns agent behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on memory behavior while Lua registration stays elsewhere. Documents where agent callers should change defaults, errors, or lifecycle behavior. with focused crate-local behavior. Use this file when changing memory defaults, lifecycle handling, validation, or data ownership. Keeps failure paths and edge cases near the agent state that can explain them while keeping call sites explicit.
 
 *[src/agent/memory.rs](src/agent/memory.rs) — 7/7 documented (100%)*
 
@@ -156,7 +156,7 @@ pub struct WorkingMemory  // Bounded FIFO key-value working memory.  When the ca
 
 ### `agent::ollama`
 
-> This file owns `OllamaManager`, plus model and pull result structs for local backend lifecycle control. It checks server reachability, reports versions, lists local models, and tests whether specific models are present. Process helpers start, stop, and restart `ollama serve` through an explicit process policy with health checks. Pull operations run through a bounded worker pool and validate model names against the configured model policy. Deletion supports protected models and explicit confirmation tokens for destructive actions. Open this file when local backend control changes; synchronous chat calls and async prompt transport live nearby.
+> Owns the ollama owner for the agent subsystem and keeps its rules local to this file while keeping call sites explicit. Keeps agent data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior. Defines how ollama data is validated, transformed, or stored before neighboring systems use it. Owns agent behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on ollama behavior while Lua registration stays elsewhere. Documents where agent callers should change defaults, errors, or lifecycle behavior. with focused crate-local behavior. Use this file when changing ollama defaults, lifecycle handling, validation, or data ownership. Keeps failure paths and edge cases near the agent state that can explain them while keeping call sites explicit. Preserves deterministic behavior by keeping ollama calculations explicit at their owner boundary.
 
 *[src/agent/ollama.rs](src/agent/ollama.rs) — 7/7 documented (100%)*
 
@@ -186,7 +186,7 @@ pub fn unpack_batch_callback_id()  // Decodes a packed callback ID back into `(b
 
 ### `agent::state`
 
-> This file owns `AgentState`, `SystemSkill`, and `AISystemState`, the mutable config layer behind agent requests. `AgentState` stores validated endpoint, model, prompt, format, options, skills, retries, and timeout for one caller. Request builders turn that state into stable `AgentRequest` payloads and reject unsafe URLs, options, or oversized context. `AISystemState` holds shared system prompts, named instruction blocks, and keyword-matched skills with provenance. Context assembly merges explicit instructions and matched skills into structured prompt text for downstream agents. Open it when request-shaping rules change; background delivery and memory behavior live in sibling modules.
+> Owns agent behavior with explicit state, validation, and crate-local integration boundaries. Keeps agent data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior. Defines how state data is validated, transformed, or stored before neighboring systems use it. Owns agent behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on state behavior while Lua registration stays elsewhere. Documents where agent callers should change defaults, errors, or lifecycle behavior. with focused crate-local behavior. Use this file when changing state defaults, lifecycle handling, validation, or data ownership. Keeps failure paths and edge cases near the agent state that can explain them while keeping call sites explicit. Preserves deterministic behavior by keeping state calculations explicit at their owner boundary.
 
 *[src/agent/state.rs](src/agent/state.rs) — 8/8 documented (100%)*
 
@@ -203,7 +203,7 @@ pub fn validate_agent_url()  // Validate the outbound agent URL under the given 
 
 ### `agent::types`
 
-> This file owns `AgentError`, `AgentRequest`, and `AgentResponse`, the shared payload contract for agent I/O. It keeps callback ids, prompt envelopes, response bodies, and stable error codes aligned across runtime layers. Error helpers classify retryable failures and expose Lua-safe codes without coupling callers to transport details. Open this file when request or response structure changes; client execution and state assembly live in siblings.
+> Owns the shared type model for the agent subsystem and keeps its rules local to this file. Centers the implementation around AgentResponseFormat, parse, as_str, with helpers kept close to their invariants. Defines how types data is validated, transformed, or stored before neighboring systems use it. Owns agent behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on types behavior while Lua registration stays elsewhere.
 
 *[src/agent/types.rs](src/agent/types.rs) — 4/4 documented (100%)*
 
@@ -307,7 +307,7 @@ pub enum ContextBehaviorKind  // Behavior kind used by context steering slots.
 
 ### `ai::diagnostics`
 
-> Owns lightweight diagnostics and decision traces shared by AI scorers, planners, search, and callback wrappers. It keeps last-decision evidence structured so Lua bindings, tests, and debugging tools can inspect what an AI subsystem just did. Open it when new AI owners need to expose traceable decisions or callback failures.
+> Owns ai behavior with explicit state, validation, and crate-local integration boundaries. for engine changes. Keeps ai data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior. Defines how diagnostics data is validated, transformed, or stored before neighboring systems use it. Owns ai behavior with explicit state, validation, and crate-local integration boundaries. for engine changes.
 
 *[src/ai/diagnostics.rs](src/ai/diagnostics.rs) — 6/6 documented (100%)*
 
@@ -345,7 +345,7 @@ pub struct EmotionModel  // Collection of named emotions for one agent.
 
 ### `ai::error`
 
-> Owns typed validation and safety errors shared by AI planners, steering, scoring, and Lua-facing helpers. It keeps failure reasons explicit so AI owners can reject invalid numeric input, unsafe tree shapes, and bad budgets consistently. Open it when AI callers need clearer diagnostics or when a new AI subsystem joins the shared validation contract.
+> Owns the error taxonomy for the ai subsystem and keeps its rules local to this file while keeping call sites explicit. Centers the implementation around AiError, fmt, with helpers kept close to their invariants. Defines how error data is validated, transformed, or stored before neighboring systems use it. Owns ai behavior with explicit state, validation, and crate-local integration boundaries. for engine changes.
 
 *[src/ai/error.rs](src/ai/error.rs) — 1/1 documented (100%)*
 
@@ -367,7 +367,7 @@ pub struct Transition  // One transition rule between FSM states.
 
 ### `ai::goap`
 
-> Implements goal-oriented action planning over boolean world facts, action effects, and prioritized desired states. Owns GOAP actions, goals, bounded best-first search nodes, and the iteration cap that keeps planning tractable. Searches forward from the current world state, reconstructing ordered action names once a goal state is satisfied. Also exposes mutators for action preconditions, effects, and goal facts so planners can be assembled incrementally. Provides the deliberative planning boundary between symbolic world state and executable action chains. Open this owner when plan search cost, iteration ceilings, or goal satisfaction semantics need shared fixes.
+> Owns the goap owner for the ai subsystem and keeps its rules local to this file while keeping call sites explicit. Centers the implementation around PlanFailureReason, as_str, GOAPAction, with helpers kept close to their invariants. Defines how goap data is validated, transformed, or stored before neighboring systems use it. Owns ai behavior with explicit state, validation, and crate-local integration boundaries. for engine changes. Keeps public crate helpers focused on goap behavior while Lua registration stays elsewhere. Documents the boundary where ai code accepts inputs, reports errors, or updates state while keeping call sites explicit. Use this file when changing goap defaults, lifecycle handling, validation, or data ownership.
 
 *[src/ai/goap.rs](src/ai/goap.rs) — 4/4 documented (100%)*
 
@@ -464,7 +464,7 @@ pub enum FormationType  // Supported squad formation shapes.
 
 ### `ai::steering`
 
-> Owns the continuous steering runtime that turns many movement influences into one bounded force for an agent. Defines seek, flee, arrive, wander, pursue, evade, flock, and custom behavior variants with shared base state. Combines behavior outputs under weighted or priority blending so path following and reactive forces can coexist. Stores waypoint path progress, named entity context, and last-force output beside the behavior collection itself. Provides the movement boundary between high-level intent and low-level velocity updates driven every frame. This file matters when acceleration shaping, blend semantics, or path-follow steering interaction is incorrect. Neighboring changes usually involve agent movement data, context steering, ORCA, and authored path waypoints. Open this owner when motion quality is wrong even though the chosen decision and destination are already correct. It is the right file for steering-force bugs because no sibling module owns the final force synthesis contract.
+> Owns the steering owner for the ai subsystem and keeps its rules local to this file while keeping call sites explicit. Centers the implementation around Force, SteeringEntity, FlockParams, with helpers kept close to their invariants. Defines how steering data is validated, transformed, or stored before neighboring systems use it. Owns ai behavior with explicit state, validation, and crate-local integration boundaries. for engine changes. Keeps public crate helpers focused on steering behavior while Lua registration stays elsewhere. Documents the boundary where ai code accepts inputs, reports errors, or updates state while keeping call sites explicit. Use this file when changing steering defaults, lifecycle handling, validation, or data ownership. Keeps failure paths and edge cases near the ai state that can explain them while keeping call sites explicit. Preserves deterministic behavior by keeping steering calculations explicit at their owner boundary. Provides the local adaptation layer that lets callers avoid duplicating ai rules while keeping call sites explicit.
 
 *[src/ai/steering.rs](src/ai/steering.rs) — 6/6 documented (100%)*
 
@@ -502,7 +502,7 @@ pub struct TraitProfile  // Base trait values plus active temporary modifiers fo
 
 ### `ai::utility_ai`
 
-> Owns the utility-AI scorer that ranks candidate actions through response curves and per-action consideration data. Defines response-curve variants, considerations, actions, and the last-evaluation score snapshot for inspection. Calls action scorers, applies momentum bonuses, and records the chosen action so later systems can read results. Provides the continuous scoring boundary between raw Lua evaluations and one selected utility-driven action. Open this owner when nonlinear score shaping, momentum behavior, or action-evaluation bookkeeping needs changes.
+> Owns the utility ai owner for the ai subsystem and keeps its rules local to this file while keeping call sites explicit. Centers the implementation around ResponseCurve, parse_str, apply, with helpers kept close to their invariants. Defines how utility ai data is validated, transformed, or stored before neighboring systems use it. Owns ai behavior with explicit state, validation, and crate-local integration boundaries. for engine changes. Keeps public crate helpers focused on utility ai behavior while Lua registration stays elsewhere. Documents the boundary where ai code accepts inputs, reports errors, or updates state while keeping call sites explicit. Use this file when changing utility ai defaults, lifecycle handling, validation, or data ownership.
 
 *[src/ai/utility_ai.rs](src/ai/utility_ai.rs) — 4/4 documented (100%)*
 
@@ -515,7 +515,7 @@ pub enum ResponseCurve  // Response-curve variant used to transform raw consider
 
 ### `ai::validation`
 
-> Owns shared AI sizing, traversal, and numeric validation limits used by planners, steering, trees, and scoring helpers. It centralizes checked counts and finite-value policy so AI owners share one narrow validation contract. Open it when AI ceilings or numeric hardening rules change across the subsystem.
+> Owns ai behavior with explicit state, validation, and crate-local integration boundaries. for engine changes. Centers the implementation around AiValidationLimits, default, finite_f32, with helpers kept close to their invariants. Defines how validation data is validated, transformed, or stored before neighboring systems use it. Owns ai behavior with explicit state, validation, and crate-local integration boundaries. for engine changes. Keeps public crate helpers focused on validation behavior while Lua registration stays elsewhere.
 
 *[src/ai/validation.rs](src/ai/validation.rs) — 7/7 documented (100%)*
 
@@ -778,7 +778,7 @@ pub fn format_frame_profile_line()  // Format one `FrameProfile` sample as a com
 
 ### `app::lua_callbacks`
 
-> This file owns guarded `lurek.*` callback invocation helpers used by the desktop app runtime and UI bridges. It exposes logging and checked variants, probes callback presence, and resolves functions from the active Lua VM. Optional timeout wrappers install instruction hooks so runaway callbacks abort with a named runtime error. The file is the safety boundary between host events and Lua execution, keeping timeout policy in one owner. Open it when callback guard semantics change; frame orchestration and input dispatch live in sibling modules.
+> Owns the lua callbacks owner for the app subsystem and keeps its rules local to this file. Keeps app data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior. Defines how lua callbacks data is validated, transformed, or stored before neighboring systems use it. Owns app behavior with explicit state, validation, and crate-local integration boundaries.
 
 *[src/app/lua_callbacks.rs](src/app/lua_callbacks.rs) — 6/6 documented (100%)*
 
@@ -2083,7 +2083,7 @@ pub mod schema  // Re-export shared schema model types used by documentation too
 
 ### `docs::catalog`
 
-> `src/docs/catalog.rs` owns the in-memory catalog that stores, groups, searches, merges, and clears doc entries. It provides the collection boundary over `DocEntry`, preserving insertion order while exposing module and kind queries. Merge, duplicate handling, and derived lookup caches live here so export and reporting stages can share one consistent documentation container. Read it when catalog search, deduplication, module grouping, or entry aggregation behavior needs to change.
+> Owns the catalog owner for the docs subsystem and keeps its rules local to this file while keeping call sites explicit. Centers the implementation around SearchOptions, Catalog, new, with helpers kept close to their invariants. Defines how catalog data is validated, transformed, or stored before neighboring systems use it. Owns docs behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on catalog behavior while Lua registration stays elsewhere.
 
 *[src/docs/catalog.rs](src/docs/catalog.rs) — 2/2 documented (100%)*
 
@@ -2094,7 +2094,7 @@ pub struct SearchOptions  // Search behavior options for catalog queries that ma
 
 ### `docs::entry`
 
-> `src/docs/entry.rs` defines normalized documentation records for API symbols, parameters, returns, and metadata. It owns `DocEntry`, `ParamInfo`, and `ReturnInfo`, plus completeness helpers used by docs quality checks and exports. This file is the in-memory record contract for the docs pipeline; it does not own catalogs, export, or scoring logic. Read it when docs field requirements, entry completeness rules, or symbol metadata shape needs to change.
+> Owns the catalog entry model for the docs subsystem and keeps its rules local to this file. Centers the implementation around ParamInfo, ReturnInfo, DocEntry, with helpers kept close to their invariants. Defines how entry data is validated, transformed, or stored before neighboring systems use it. Owns docs behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on entry behavior while Lua registration stays elsewhere.
 
 *[src/docs/entry.rs](src/docs/entry.rs) — 3/3 documented (100%)*
 
@@ -2106,7 +2106,7 @@ pub struct ReturnInfo  // Hold one return value description extracted for a call
 
 ### `docs::error`
 
-> `src/docs/error.rs` owns typed errors shared by catalog, export, schema, and quality-report workflows. It keeps failure reasons stable so tooling can distinguish duplicate entries, sandbox violations, size limits, and rule failures. Cross-cutting docs pipeline operations depend on these errors instead of ad hoc strings, while file I/O and JSON details are normalized here. Read this file when documentation pipeline failure semantics or caller-facing diagnostics need to change.
+> Owns the error taxonomy for the docs subsystem and keeps its rules local to this file while keeping call sites explicit. Centers the implementation around DocsResult, DocsError, quality_failure, with helpers kept close to their invariants. Defines how error data is validated, transformed, or stored before neighboring systems use it. Owns docs behavior with explicit state, validation, and crate-local integration boundaries.
 
 *[src/docs/error.rs](src/docs/error.rs) — 2/2 documented (100%)*
 
@@ -2117,7 +2117,7 @@ pub type DocsResult  // Shared result type for docs subsystem operations that ca
 
 ### `docs::export`
 
-> `src/docs/export.rs` transforms normalized doc entries into JSON payloads for completions, hovers, and signatures. It owns completion-kind mapping, hover and signature builders, path-sandbox checks, payload limits, atomic file writes, and bundled export directory output. Legacy payload functions remain available for compatibility, while typed options add versioned metadata and actionable export reports for stricter tooling. This file is the serialization boundary for docs artifacts; it does not own entry collection or quality scoring. Read it when docs JSON shape, file output behavior, or editor integration payload rules need to change.
+> Owns docs behavior with explicit state, validation, and crate-local integration boundaries. Centers the implementation around DocsLimits, default, DocsExportOptions, with helpers kept close to their invariants. Defines how export data is validated, transformed, or stored before neighboring systems use it. Owns docs behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on export behavior while Lua registration stays elsewhere. Documents where docs callers should change defaults, errors, or lifecycle behavior. with focused crate-local behavior. Use this file when changing export defaults, lifecycle handling, validation, or data ownership. Keeps failure paths and edge cases near the docs state that can explain them while keeping call sites explicit. Preserves deterministic behavior by keeping export calculations explicit at their owner boundary. Provides the local adaptation layer that lets callers avoid duplicating docs rules while keeping call sites explicit.
 
 *[src/docs/export.rs](src/docs/export.rs) — 12/12 documented (100%)*
 
@@ -2138,7 +2138,7 @@ pub fn export_signatures_with_options()  // Export signature payloads with typed
 
 ### `docs::report`
 
-> `src/docs/report.rs` evaluates documentation quality by scoring entries and aggregating validation-style issue reports. It owns per-entry score calculation, rule-based diagnostics, validation issue metadata, module averages, and overall report synthesis. `ValidationReport`, `QualityReport`, and `DocsIssue` live here because actionable rule output and score aggregation are linked products. This file analyzes existing `DocEntry` and `Catalog` data; it does not own entry storage or export serialization. Read it when docs grading policy, validation issue semantics, or module quality rollup behavior needs to change.
+> Owns the report owner for the docs subsystem and keeps its rules local to this file while keeping call sites explicit. Centers the implementation around IssueSeverity, as_str, DocsIssueKind, with helpers kept close to their invariants. Defines how report data is validated, transformed, or stored before neighboring systems use it. Owns docs behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on report behavior while Lua registration stays elsewhere. Documents where docs callers should change defaults, errors, or lifecycle behavior. with focused crate-local behavior. Use this file when changing report defaults, lifecycle handling, validation, or data ownership. Keeps failure paths and edge cases near the docs state that can explain them while keeping call sites explicit.
 
 *[src/docs/report.rs](src/docs/report.rs) — 9/9 documented (100%)*
 
@@ -2344,7 +2344,7 @@ pub mod stack  // Ordered post-effect stack management utilities.
 
 ### `effect::contract`
 
-> This file owns the shared post-effect validation contract: limits, parameter schemas, errors, and diagnostics. It keeps post-fx safety policy centralized so effect instances, stacks, debug images, and Lua bindings agree. Open this file when post-fx validation semantics, dimension ceilings, or diagnostic vocabulary need to change.
+> Owns the contract surface for the effect subsystem and keeps its rules local to this file. Keeps effect data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior. Defines how contract data is validated, transformed, or stored before neighboring systems use it. Owns effect behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on contract behavior while Lua registration stays elsewhere. Documents the boundary where effect code accepts inputs, reports errors, or updates state. Use this file when changing contract defaults, lifecycle handling, validation, or data ownership. Keeps failure paths and edge cases near the effect state that can explain them while keeping call sites explicit.
 
 *[src/effect/contract.rs](src/effect/contract.rs) — 10/10 documented (100%)*
 
@@ -2363,7 +2363,7 @@ pub const POSTFX_AUTO_UNIFORMS  // Auto-populated uniform names supported by pos
 
 ### `effect::effect`
 
-> This file owns `PostFxEffect`, the runtime state object that couples one effect kind with mutable parameters. It stores the effect type, scalar parameter map, enable flag, optional shader id, and auto-uniform toggle. Construction helpers cover built-in and custom effects, while accessors expose parameter reads, writes, and names. Open this file when per-effect runtime semantics change; type catalogs, stacks, and image grouping live in siblings.
+> Owns the effect owner for the effect subsystem and keeps its rules local to this file while keeping call sites explicit. Centers the implementation around PostFxEffect, new, new_custom, with helpers kept close to their invariants. Defines how effect data is validated, transformed, or stored before neighboring systems use it. Owns effect behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on effect behavior while Lua registration stays elsewhere. Documents the boundary where effect code accepts inputs, reports errors, or updates state.
 
 *[src/effect/effect.rs](src/effect/effect.rs) — 1/1 documented (100%)*
 
@@ -2383,7 +2383,7 @@ pub enum PostFxEffectType  // Enumerates the built-in post-processing effect imp
 
 ### `effect::image_effect`
 
-> This file owns `ImageEffect`, the image-scoped pipeline that groups shared `PostFxEffect` handles into pass chains. It stores owned or shared effect references, supports add and remove workflows, and resolves entries by index or name. The `to_passes` helper converts active effect state into `ShaderPassDescriptor` values for downstream execution. Open this file when image-level effect composition changes; effect instances, presets, and stacks live in siblings.
+> Owns the image effect owner for the effect subsystem and keeps its rules local to this file. Centers the implementation around ImageEffect, new, add_effect, with helpers kept close to their invariants. Defines how image effect data is validated, transformed, or stored before neighboring systems use it. Owns effect behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on image effect behavior while Lua registration stays elsewhere.
 
 *[src/effect/image_effect.rs](src/effect/image_effect.rs) — 1/1 documented (100%)*
 
@@ -2405,7 +2405,7 @@ pub fn preset_names()  // Returns the canonical names of all built-in post-effec
 
 ### `effect::render`
 
-> This file owns `PostFxStack` render-command generation for post-effect capture, end, and apply orchestration. It emits deterministic renderer commands only when the stack has effects and at least one entry is enabled. Open this file when post-effect command sequencing changes; stack storage and debug previews live in siblings.
+> Owns effect behavior with explicit state, validation, and crate-local integration boundaries. Keeps effect data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior. Defines how render data is validated, transformed, or stored before neighboring systems use it. Owns effect behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on render behavior while Lua registration stays elsewhere.
 
 *[src/effect/render.rs](src/effect/render.rs) — 2/2 documented (100%)*
 
@@ -2416,7 +2416,7 @@ pub struct PostFxPassPlan  // Resolved post-fx passes together with any planning
 
 ### `effect::stack`
 
-> This file owns `PostFxStack`, the ordered effect-index container that tracks enable flags, size, and capture state. It stores application order in parallel vectors, supports insertion and removal, and toggles entries efficiently. Query helpers report enabled subsets, one-based positions, dimensions, emptiness, and deduplicated index counts. Resize and clear operations keep render-target bookkeeping local so post-effect callers do not manage raw vectors. Dedup logic preserves first occurrence order while cleaning repeated effect references from dynamic compositions. Several debug image helpers also live here because they visualize stack entries, labels, params, and effect catalogs. Open this file when stack orchestration changes; effect instances, presets, and render commands live in siblings.
+> Owns the stack owner for the effect subsystem and keeps its rules local to this file while keeping call sites explicit. Centers the implementation around PostFxStack, new, try_new, with helpers kept close to their invariants. Defines how stack data is validated, transformed, or stored before neighboring systems use it. Owns effect behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on stack behavior while Lua registration stays elsewhere. Documents the boundary where effect code accepts inputs, reports errors, or updates state. Use this file when changing stack defaults, lifecycle handling, validation, or data ownership. Keeps failure paths and edge cases near the effect state that can explain them while keeping call sites explicit.
 
 *[src/effect/stack.rs](src/effect/stack.rs) — 1/1 documented (100%)*
 
@@ -3567,7 +3567,7 @@ pub mod touch  // Touch-point state tracking for multi-touch surfaces.
 
 ### `input::action_def`
 
-> This file owns `ActionDef` and `ActionMap`, the serializable action-binding data used by the input system. It stores ordered binding strings and optional category labels so menus and tools can group logical actions. Open this file when binding schema changes; live device polling and combo logic live in sibling modules.
+> Owns input behavior with explicit state, validation, and crate-local integration boundaries. Centers the implementation around InputBinding, parse, to_canonical_string, with helpers kept close to their invariants. Defines how action def data is validated, transformed, or stored before neighboring systems use it. Owns input behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on action def behavior while Lua registration stays elsewhere.
 
 *[src/input/action_def.rs](src/input/action_def.rs) — 5/5 documented (100%)*
 
@@ -3639,7 +3639,7 @@ pub fn winit_scancode_to_string()  // Map a winit physical `KeyCode` to its Lure
 
 ### `input::mouse`
 
-> This file owns `MouseState`, `SystemCursor`, `CursorKind`, and `CursorHandle`, the runtime mouse model. It stores cursor position, button hold state, frame-local press and release deltas, visibility, grab, and scroll. Request helpers also queue cursor warps and track relative mode so window integration can apply OS-side changes. Cursor enums separate built-in OS shapes from custom RGBA cursor images with explicit hotspot coordinates. The file keeps pointer state and cursor policy together, but leaves host event dispatch to the app runtime owner. Open it when mouse semantics change; touch, keyboard, and combo logic live in sibling input modules.
+> Owns the mouse owner for the input subsystem and keeps its rules local to this file while keeping call sites explicit. Centers the implementation around CursorImageLimits, default, SystemCursor, with helpers kept close to their invariants. Defines how mouse data is validated, transformed, or stored before neighboring systems use it. Owns input behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on mouse behavior while Lua registration stays elsewhere. Documents where input callers should change defaults, errors, or lifecycle behavior. with focused crate-local behavior. Use this file when changing mouse defaults, lifecycle handling, validation, or data ownership.
 
 *[src/input/mouse.rs](src/input/mouse.rs) — 7/7 documented (100%)*
 
@@ -3655,7 +3655,7 @@ pub fn validate_cursor_image()  // Validate a custom RGBA cursor image against d
 
 ### `input::recorder`
 
-> This file owns `InputEvent`, `RecordedFrame`, `InputRecording`, and `InputRecorder` replay state. It stores sparse frame activity, total frame counts, playback cursors, and recorder lifecycle booleans. Serialization uses a versioned JSON envelope so persisted recordings can be validated on load and save. Recording helpers append per-frame events and mouse positions, while playback re-emits events on original frames. The owner boundary is about deterministic capture and replay, not about collecting raw device state itself. Open this file when replay schema or playback semantics change; live device polling lives in sibling files.
+> Owns input behavior with explicit state, validation, and crate-local integration boundaries. Keeps input data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior. Defines how recorder data is validated, transformed, or stored before neighboring systems use it. Owns input behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on recorder behavior while Lua registration stays elsewhere. Documents where input callers should change defaults, errors, or lifecycle behavior. with focused crate-local behavior. Use this file when changing recorder defaults, lifecycle handling, validation, or data ownership.
 
 *[src/input/recorder.rs](src/input/recorder.rs) — 7/7 documented (100%)*
 
@@ -3842,7 +3842,7 @@ pub struct SpaceSpec  // Space descriptor shared by observation and action space
 
 ### `learning::error`
 
-> This file owns typed validation and safety errors shared by learning constructors, inference, serialization, and Lua-facing helpers. It keeps failure reasons explicit so safe `try_*` APIs can reject invalid shapes, counts, paths, and numeric inputs consistently. Open it when learning callers need clearer diagnostics or when a new learning owner starts participating in the shared safety contract.
+> Owns the error taxonomy for the learning subsystem and keeps its rules local to this file. Centers the implementation around LearningError, fmt, with helpers kept close to their invariants. Defines how error data is validated, transformed, or stored before neighboring systems use it. Owns learning behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on error behavior while Lua registration stays elsewhere.
 
 *[src/learning/error.rs](src/learning/error.rs) — 1/1 documented (100%)*
 
@@ -3862,7 +3862,7 @@ pub trait EvolutionaryLayer  // Contract for layers usable in neuroevolution wor
 
 ### `learning::genetic`
 
-> This file owns population-based genetic optimization over flat chromosomes with ids, fitness, mutation, and elitism. `Chromosome` stores one genome, while `GeneticAlgorithm` owns the live population, RNG state, and generation counter. Tournament selection, crossover, mutation, and elite carryover all live here because they define reproduction semantics. Deterministic RNG is shared through a versioned learning RNG contract so repeated runs can reproduce the same evolution steps. Open it when genome evolution policy changes; neural decoding and bandit or Q-learning logic live in sibling files.
+> Owns learning behavior with explicit state, validation, and crate-local integration boundaries. Centers the implementation around Chromosome, new, GeneticAlgorithm, with helpers kept close to their invariants. Defines how genetic data is validated, transformed, or stored before neighboring systems use it. Owns learning behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on genetic behavior while Lua registration stays elsewhere. Documents the boundary where learning code accepts inputs, reports errors, or updates state.
 
 *[src/learning/genetic.rs](src/learning/genetic.rs) — 2/2 documented (100%)*
 
@@ -3873,7 +3873,7 @@ pub struct GeneticAlgorithm  // Population-based genetic optimizer.
 
 ### `learning::limits`
 
-> This file owns shared learning sizing and validation limits used by safe constructors, inference, and persistence helpers. It centralizes checked arithmetic and numeric policy so tensors, learners, genomes, and ONNX interop share one resource contract. Open it when ceilings or validation rules change across learning modules.
+> Owns learning behavior with explicit state, validation, and crate-local integration boundaries. Centers the implementation around LearningLimits, default, validate_finite, with helpers kept close to their invariants. Defines how limits data is validated, transformed, or stored before neighboring systems use it. Owns learning behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on limits behavior while Lua registration stays elsewhere.
 
 *[src/learning/limits.rs](src/learning/limits.rs) — 1/1 documented (100%)*
 
@@ -3883,7 +3883,7 @@ pub struct LearningLimits  // Shared safety limits for learning tensors, model a
 
 ### `learning::neural_net`
 
-> This file owns dense feed-forward networks, including activations, layer storage, and ordered network assembly. `NeuralLayer` stores row-major weights and biases, while `Activation` centralizes the elementwise output transforms. Layer-by-layer forward propagation lives here because dense inference and softmax handling define this model family. Flat parameter import and export also live here so optimizers and neuroevolution can rebuild dense models. `NeuralNet` owns layer ordering and whole-network weight packing, not exploration policy, tensors, or sequence state. Open it when dense-model behavior changes; recurrent, convolutional, and attention-based blocks live in sibling files.
+> Owns the neural net owner for the learning subsystem and keeps its rules local to this file. Centers the implementation around Activation, from_str, as_str, with helpers kept close to their invariants. Defines how neural net data is validated, transformed, or stored before neighboring systems use it. Owns learning behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on neural net behavior while Lua registration stays elsewhere. Documents the boundary where learning code accepts inputs, reports errors, or updates state. Use this file when changing neural net defaults, lifecycle handling, validation, or data ownership.
 
 *[src/learning/neural_net.rs](src/learning/neural_net.rs) — 3/3 documented (100%)*
 
@@ -3895,7 +3895,7 @@ pub enum Activation  // Activation function used by a layer.
 
 ### `learning::neuroevolution`
 
-> This file owns the bridge between flat genetic chromosomes and concrete dense neural-network instances. `Neuroevolution` stores the GA backend plus a layer template used to rebuild `NeuralNet` instances from genomes. Fitness assignment and generation advancement live here because this wrapper coordinates model decoding with search. Open it when genome-to-network mapping changes; dense layer math and raw genetic operators live in sibling files.
+> Owns the neuroevolution owner for the learning subsystem and keeps its rules local to this file. Centers the implementation around Neuroevolution, new, try_new, with helpers kept close to their invariants. Defines how neuroevolution data is validated, transformed, or stored before neighboring systems use it. Owns learning behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on neuroevolution behavior while Lua registration stays elsewhere.
 
 *[src/learning/neuroevolution.rs](src/learning/neuroevolution.rs) — 1/1 documented (100%)*
 
@@ -3905,7 +3905,7 @@ pub struct Neuroevolution  // GA-backed neural-network population manager.
 
 ### `learning::onnx`
 
-> This file owns ONNX model loading and inference through tract, bridging `LurekTensor` data into runnable CPU plans. `OnnxModel` stores the optimized tract plan plus cached input and output counts used for validation and inspection. Safe load and run helpers live here because external model optimization, sandboxing, and tensor conversion are this boundary. Open it when ONNX interop changes; native tensors and in-repo learning layers live in sibling files.
+> Owns the onnx owner for the learning subsystem and keeps its rules local to this file while keeping call sites explicit. Centers the implementation around TractPlan, OnnxLoadOptions, default, with helpers kept close to their invariants. Defines how onnx data is validated, transformed, or stored before neighboring systems use it. Owns learning behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on onnx behavior while Lua registration stays elsewhere. Documents the boundary where learning code accepts inputs, reports errors, or updates state.
 
 *[src/learning/onnx.rs](src/learning/onnx.rs) — 2/2 documented (100%)*
 
@@ -3916,7 +3916,7 @@ pub struct OnnxModel  // Loaded and optimised ONNX model wrapped around a tract 
 
 ### `learning::qlearner`
 
-> This file owns tabular Q-learning state, including the flat Q-table, exploration rate, and episode counters. `QLearner` keeps discrete state-action values in one row-major table so updates and greedy lookups stay cheap. Epsilon-greedy action choice, deterministic RNG state, and Bellman updates live here because they directly mutate learner-owned state. Serialization and deserialization also stay here so saved tables preserve dimensions, hyperparameters, and RNG state on reload. Open it when discrete RL policy changes; bandits, environments, and neural optimizers are owned by sibling files.
+> Owns the qlearner owner for the learning subsystem and keeps its rules local to this file. Centers the implementation around QLearnerEnvelope, QLearner, new, with helpers kept close to their invariants. Defines how qlearner data is validated, transformed, or stored before neighboring systems use it. Owns learning behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on qlearner behavior while Lua registration stays elsewhere. Documents the boundary where learning code accepts inputs, reports errors, or updates state. Use this file when changing qlearner defaults, lifecycle handling, validation, or data ownership.
 
 *[src/learning/qlearner.rs](src/learning/qlearner.rs) — 1/1 documented (100%)*
 
@@ -3937,7 +3937,7 @@ pub struct LstmLayer  // CPU LSTM layer with combined gate matrices.
 
 ### `learning::rng`
 
-> This file owns the deterministic RNG contract shared by learning components that need seedable, replayable randomness. It stores a small versioned state snapshot plus helpers for bounded integers, normalized floats, and Gaussian samples. Open it when learning reproducibility, replay restoration, or shared RNG semantics change.
+> Owns learning behavior with explicit state, validation, and crate-local integration boundaries. Keeps learning data ownership and helper behavior clear for future engine maintenance. for engine changes. Defines how rng data is validated, transformed, or stored before neighboring systems use it. Owns learning behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on rng behavior while Lua registration stays elsewhere.
 
 *[src/learning/rng.rs](src/learning/rng.rs) — 3/3 documented (100%)*
 
@@ -3949,7 +3949,7 @@ pub const LEARNING_RNG_VERSION  // Current snapshot format version for the learn
 
 ### `learning::tensor`
 
-> This file owns `LurekTensor`, the row-major tensor container used by ONNX, attention, convolution, and transformer code. It stores explicit shape metadata plus flat `f32` data, then offers indexing, flattening, zero allocation, and export. `gemm` also lives here because basic matrix multiply with optional bias is a shared primitive across learning layers. Open it when tensor layout or interop changes; model-specific forward logic lives in sibling learning files.
+> Owns learning behavior with explicit state, validation, and crate-local integration boundaries. Centers the implementation around LurekTensor, new, try_new, with helpers kept close to their invariants. Defines how tensor data is validated, transformed, or stored before neighboring systems use it. Owns learning behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on tensor behavior while Lua registration stays elsewhere.
 
 *[src/learning/tensor.rs](src/learning/tensor.rs) — 3/3 documented (100%)*
 
@@ -4058,7 +4058,7 @@ pub enum LightType  // Discriminant for the geometric illumination model used by
 
 ### `light::light_world`
 
-> This file owns `LightWorld`, the scene-level container for registered lights, occluders, ambient color, and limits. It stores slotmaps, flicker indexes, and ambient settings, then exposes stable keys for runtime light ownership. Mutation helpers add, remove, query, group-edit, clear, and count lights or occluders without leaking storage details. Flicker stepping and reindexing live here so animated lights can advance efficiently across the whole scene. Renderer-facing helpers emit debug images, ambient color hints, directional tuples, and normal-map light snapshots. This file is the owner for scene lighting orchestration rather than for one light's individual option semantics. Open it when collection behavior changes; per-light data definitions and shadow geometry live in sibling files.
+> Owns the light world owner for the light subsystem and keeps its rules local to this file. Keeps light data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior. Defines how light world data is validated, transformed, or stored before neighboring systems use it. Owns light behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on light world behavior while Lua registration stays elsewhere. Documents where light callers should change defaults, errors, or lifecycle behavior. with focused crate-local behavior. Use this file when changing light world defaults, lifecycle handling, validation, or data ownership. Keeps failure paths and edge cases near the light state that can explain them while keeping call sites explicit.
 
 *[src/light/light_world.rs](src/light/light_world.rs) — 2/2 documented (100%)*
 
@@ -4146,7 +4146,7 @@ pub enum SinkLevel  // Minimum severity level for a sink; messages below this le
 
 ### `mapblock`
 
-> This module is the mapblock index, exposing authored blocks, constraints, scripts, placement, and output conversion. It reexports `MapBlockGenerator`, block types, script data, placement state, and result carriers as one surface. `block.rs` owns atomic block geometry, while `placement.rs` and `generator.rs` own legality checks and execution flow. `config.rs`, `maptile.rs`, `layer.rs`, and `tileset_ref.rs` define the slot, tile, and tileset contracts here. `output.rs` and `multilevel.rs` handle built-map materialization, while `group.rs` and `script.rs` organize content. Open this file to navigate ownership quickly; actual generation logic, transforms, and storage live in sibling files.
+> Indexes the mapblock subsystem and keeps exported submodules discoverable from one crate entry. Keeps mapblock data ownership and helper behavior clear for future engine maintenance. for engine changes. Separates navigation and module wiring from implementation so feature files own behavior directly. Owns mapblock behavior with explicit state, validation, and crate-local integration boundaries. Keeps crate callers pointed at stable mapblock entrypoints while internals stay organized. Documents where mapblock callers should change defaults, errors, or lifecycle behavior. for engine changes. Indexes the mapblock subsystem and keeps exported submodules discoverable from one crate entry. Keeps mapblock data ownership and helper behavior clear for future engine maintenance. for engine changes.
 
 *[src/mapblock/mod.rs](src/mapblock/mod.rs) — 13/13 documented (100%)*
 
@@ -4168,7 +4168,7 @@ pub mod tileset_ref  // Tileset reference linking block slots to tile ID ranges 
 
 ### `mapblock::block`
 
-> This file owns the atomic mapblock model, combining tile layers, edge sockets, footprint cells, and author metadata. `MapBlock` stores dimensions, layers, slot count, side rules, custom sockets, weight flags, and vertical span data. `Edge` also lives here because block-local side identity is part of geometry and compatibility ownership. Legacy construction remains here so old raw layer data can be upgraded into the modern layered block structure. Tile setters and getters stay here because `MapBlock` is the first owner above `BlockLayer` for authored content. Footprint normalization and transformed socket maps belong here because rotation and mirroring start at block scope. Segment counts, transformed sizes, and legacy socket derivation stay local because they describe one block's geometry. Open it when block semantics change; candidate search, scripts, and result export build directly on this owner.
+> Owns mapblock behavior with explicit state, validation, and crate-local integration boundaries. Centers the implementation around Edge, MapBlockLimits, default, with helpers kept close to their invariants. Defines how block data is validated, transformed, or stored before neighboring systems use it. Owns mapblock behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on block behavior while Lua registration stays elsewhere. Documents the boundary where mapblock code accepts inputs, reports errors, or updates state. Use this file when changing block defaults, lifecycle handling, validation, or data ownership. Keeps failure paths and edge cases near the mapblock state that can explain them while keeping call sites explicit. Preserves deterministic behavior by keeping block calculations explicit at their owner boundary. Owns mapblock behavior with explicit state, validation, and crate-local integration boundaries.
 
 *[src/mapblock/block.rs](src/mapblock/block.rs) — 4/4 documented (100%)*
 
@@ -4204,7 +4204,7 @@ pub fn opposite_edge()  // Return the opposite edge direction.
 
 ### `mapblock::generator`
 
-> This file owns the operational mapblock engine that runs scripts, tracks RNG, and mutates placement state over time. `MapBlockGenerator` stores config, grid, rules, orientation, groups, levels, paint ops, and output tile sizing knobs. It reuses the shared `procgen::Lcg` so deterministic picks follow one engine-wide RNG contract. `generate` orchestrates the whole build, resetting state, running each script step, and then materializing output. Random, fixed, edge, auto, rectangle-paint, and shape-solver step handlers all live here as runtime control flow. Weighted block choice and candidate ordering stay here because authored content selection is step execution logic. Backtracking shape solving stays local because it recursively consumes placement candidates against the live grid state. `MapBlockReport` and `place_candidate` bridge execution outcomes into diagnostics, `PlacementGrid`, and `MultiLevelMap`. Open it when generation behavior changes; blocks, scripts, legality checks, and result export live in sibling owners.
+> Owns the generation pipeline for the mapblock subsystem and keeps its rules local to this file. Keeps mapblock data ownership and helper behavior clear for future engine maintenance. for engine changes. Defines how generator data is validated, transformed, or stored before neighboring systems use it. Owns mapblock behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on generator behavior while Lua registration stays elsewhere. Documents the boundary where mapblock code accepts inputs, reports errors, or updates state. Use this file when changing generator defaults, lifecycle handling, validation, or data ownership. Keeps failure paths and edge cases near the mapblock state that can explain them while keeping call sites explicit. Preserves deterministic behavior by keeping generator calculations explicit at their owner boundary. Owns mapblock behavior with explicit state, validation, and crate-local integration boundaries.
 
 *[src/mapblock/generator.rs](src/mapblock/generator.rs) — 5/5 documented (100%)*
 
@@ -4228,7 +4228,7 @@ pub struct MapGroup  // A named collection of blocks and scripts used together f
 
 ### `mapblock::layer`
 
-> This file owns one 2D block layer, storing width, height, slot count, and row-major `MapTile` cells. `BlockLayer` exposes bounds-checked tile reads, mutable access, slot writes, fill, clear, and slot-count inspection. Layer-wide mutation lives here because tile-grid indexing and reset behavior belong below `MapBlock` orchestration. Open it when per-layer tile storage changes; block footprints, placement logic, and export passes live in siblings.
+> Owns mapblock behavior with explicit state, validation, and crate-local integration boundaries. Centers the implementation around BlockLayer, new, try_new, with helpers kept close to their invariants. Defines how layer data is validated, transformed, or stored before neighboring systems use it. Owns mapblock behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on layer behavior while Lua registration stays elsewhere.
 
 *[src/mapblock/layer.rs](src/mapblock/layer.rs) — 1/1 documented (100%)*
 
@@ -4283,7 +4283,7 @@ pub struct PlacementRecord  // Placement export summary for Lua callers.
 
 ### `mapblock::placement`
 
-> This file owns grid-shape state and candidate legality checks for placing transformed blocks onto available cells. `PlacementGrid` stores available cells, occupied cells, placed-block records, and a reverse map from cell to placement. `PlacedBlock`, `PlacementCandidate`, and `PlacementSearch` live here because they describe the search and commit states. Rectangular and arbitrary-shape grid setup belongs here because map shape is separate from authored block geometry. `find_valid_placements` also stays here, combining transformed footprints, edge-only rules, and occupied-cell checks. Neighbor compatibility evaluation is local because socket matching depends on grid state plus `NeighborRules` policy. Open it when placement legality changes; block definitions, scripted execution, and output building live in siblings.
+> Owns the placement owner for the mapblock subsystem and keeps its rules local to this file. Keeps mapblock data ownership and helper behavior clear for future engine maintenance. for engine changes. Defines how placement data is validated, transformed, or stored before neighboring systems use it. Owns mapblock behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on placement behavior while Lua registration stays elsewhere. Documents the boundary where mapblock code accepts inputs, reports errors, or updates state. Use this file when changing placement defaults, lifecycle handling, validation, or data ownership. Keeps failure paths and edge cases near the mapblock state that can explain them while keeping call sites explicit.
 
 *[src/mapblock/placement.rs](src/mapblock/placement.rs) — 8/8 documented (100%)*
 
@@ -4635,7 +4635,7 @@ pub mod types  // Shared data types for markers, layers, overlays, fog, and ping
 
 ### `minimap::minimap`
 
-> `src/minimap/minimap.rs` owns the `Minimap` state object that stores terrain, fog, markers, overlays, and view settings. It is the main data and behavior boundary for minimap grids, terrain palettes, owner colors, icons, layers, and paths. Object types, live objects, pings, marker animations, and viewport outlines are updated here with local state. Camera tracking, pan and zoom, hover lookup, and grid-to-screen coordinate conversion also live in this implementation. The file exposes mutation APIs for terrain, fog, objects, markers, overlays, paths, layers, and display configuration. Export helpers such as `draw_to_image` and render-command entry points are defined here for sibling use. Internal helpers resolve active cell colors and owner mappings so terrain and political display modes stay consistent. This file does not import province data or compute raycast visibility; dedicated adapters handle those translations. Read it when minimap ownership, per-frame updates, view math, or public state mutation behavior needs to change.
+> Owns minimap behavior with explicit state, validation, and crate-local integration boundaries. Keeps minimap data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior. Defines how minimap data is validated, transformed, or stored before neighboring systems use it. Owns minimap behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on minimap behavior while Lua registration stays elsewhere. Documents the boundary where minimap code accepts inputs, reports errors, or updates state. Use this file when changing minimap defaults, lifecycle handling, validation, or data ownership. Keeps failure paths and edge cases near the minimap state that can explain them while keeping call sites explicit. Preserves deterministic behavior by keeping minimap calculations explicit at their owner boundary. Provides the local adaptation layer that lets callers avoid duplicating minimap rules while keeping call sites explicit. Maintains small helper surfaces so broader engine modules can compose minimap behavior safely. Protects subsystem contracts by keeping resource, cache, or state mutations visible in one place.
 
 *[src/minimap/minimap.rs](src/minimap/minimap.rs) — 1/1 documented (100%)*
 
@@ -4657,7 +4657,7 @@ pub fn apply_visibility()  // Translate province `visibility_state` bytes into `
 
 ### `minimap::raycaster_overlay`
 
-> `src/minimap/raycaster_overlay.rs` builds minimap overlays from raycaster walls, visibility, and lighting data. It owns light sampling, reveal collection, raw pixel extraction, visibility checks, and player arrow rasterization. The file is specific to raycaster scenes, keeping minimap helpers for FOV-driven views out of the generic minimap model. `MinimapTileSample` lives here because wall, visibility, and luminance samples are produced together by these helpers. Read it when line-of-sight reveal rules, minimap preview pixels, or player-direction overlay drawing needs to change. General minimap storage and HUD command rendering stay elsewhere; this file produces sampled overlay data and images.
+> Owns the raycaster overlay owner for the minimap subsystem and keeps its rules local to this file. Keeps minimap data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior. Defines how raycaster overlay data is validated, transformed, or stored before neighboring systems use it. Owns minimap behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on raycaster overlay behavior while Lua registration stays elsewhere. Documents the boundary where minimap code accepts inputs, reports errors, or updates state. Use this file when changing raycaster overlay defaults, lifecycle handling, validation, or data ownership.
 
 *[src/minimap/raycaster_overlay.rs](src/minimap/raycaster_overlay.rs) — 8/8 documented (100%)*
 
@@ -4674,7 +4674,7 @@ pub fn try_extract_minimap()  // Render a `view_radius`-tile minimap pixel grid 
 
 ### `minimap::types`
 
-> `src/minimap/types.rs` defines the shared enums and data structs that every minimap state and render file reuses. It owns color mode, fog level, markers, pings, overlay geometry, raw layers, and object descriptors in one contract set. Small parsing and conversion helpers also live here so value semantics stay close to the types they interpret. This file carries data shapes only; it does not own minimap mutation, rendering order, or province import behavior. Read it when minimap payload fields, cross-file data contracts, or serialized marker and overlay semantics need changes.
+> Owns the shared type model for the minimap subsystem and keeps its rules local to this file. Centers the implementation around ColorMode, parse_mode, as_str, with helpers kept close to their invariants. Defines how types data is validated, transformed, or stored before neighboring systems use it. Owns minimap behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on types behavior while Lua registration stays elsewhere. Documents the boundary where minimap code accepts inputs, reports errors, or updates state. Use this file when changing types defaults, lifecycle handling, validation, or data ownership.
 
 *[src/minimap/types.rs](src/minimap/types.rs) — 14/14 documented (100%)*
 
@@ -4754,7 +4754,7 @@ pub fn load_instances_from_toml_with_options()  // Load mod instances from a TOM
 
 ### `mods::mod_manager`
 
-> `src/mods/mod_manager.rs` owns the runtime registry for discovered mods, manifest metadata, reload queues, and order. It stores `ModInfo` records with dependencies, capabilities, asset paths, config schema, checksum metadata, and session state. Registration, lookup, enable-state tracking, capability queries, structured scans, and atomic hot reloads all live here. Dependency validation and topological ordering stay here so mod startup remains deterministic and cycle-aware. Manifest parsing from `mod.toml` also happens here, including limits, schema checks, checksum checks, and asset conflicts. Folder scanning and hot-reload processing are coordinated here so disk changes can update registered mods safely. This file is the lifecycle and integrity boundary for mods; it does not define schema types or sandbox policy details. Read it when manifest semantics, reload behavior, dependency resolution, or mod registry ownership needs to change. Higher layers should treat this file as the source of truth for mod discovery and effective runtime load order.
+> Owns mods behavior with explicit state, validation, and crate-local integration boundaries. Centers the implementation around ModInfo, new, from_parts, with helpers kept close to their invariants. Defines how mod manager data is validated, transformed, or stored before neighboring systems use it. Owns mods behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on mod manager behavior while Lua registration stays elsewhere. Documents where mods callers should change defaults, errors, or lifecycle behavior. with focused crate-local behavior. Use this file when changing mod manager defaults, lifecycle handling, validation, or data ownership. Keeps failure paths and edge cases near the mods state that can explain them while keeping call sites explicit. Preserves deterministic behavior by keeping mod manager calculations explicit at their owner boundary. Provides the local adaptation layer that lets callers avoid duplicating mods rules while keeping call sites explicit. Maintains small helper surfaces so broader engine modules can compose mod manager behavior safely. Protects subsystem contracts by keeping resource, cache, or state mutations visible in one place. Links adjacent concerns only where mod manager changes need coordination with owned engine data.
 
 *[src/mods/mod_manager.rs](src/mods/mod_manager.rs) — 2/2 documented (100%)*
 
@@ -4765,7 +4765,7 @@ pub struct ModManager  // Registry of all known mods, their custom load order, a
 
 ### `mods::mod_sandbox`
 
-> `src/mods/mod_sandbox.rs` defines the capability sandbox that filters what a mod may call, read, write, or hook into. It owns allowlist policy modes, blocked operations, hook permissions, memory and network flags, and canonical read roots. `HookPoint` parsing and canonical names live here so manifest declarations and runtime checks use one hook vocabulary. This file does not load mods or resolve dependencies; it only describes and answers capability checks for mod execution. Read it when sandbox defaults, hook permissions, or file and API access rules for mods need to change.
+> Owns mods behavior with explicit state, validation, and crate-local integration boundaries. Centers the implementation around SandboxListMode, from_name, as_str, with helpers kept close to their invariants. Defines how mod sandbox data is validated, transformed, or stored before neighboring systems use it. Owns mods behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on mod sandbox behavior while Lua registration stays elsewhere. Documents where mods callers should change defaults, errors, or lifecycle behavior. with focused crate-local behavior. Use this file when changing mod sandbox defaults, lifecycle handling, validation, or data ownership.
 
 *[src/mods/mod_sandbox.rs](src/mods/mod_sandbox.rs) — 3/3 documented (100%)*
 
@@ -4777,7 +4777,7 @@ pub enum SandboxListMode  // List-policy mode used by API, hook, and read allowl
 
 ### `mods::types`
 
-> `src/mods/types.rs` defines shared error, limit, policy, and report types for the mods subsystem. It owns the structured vocabulary used by sandbox checks, manifest scanning, dependency planning, and hot reloads. Default limits and policies live here so loaders and managers can share one safety baseline instead of hard-coding copies. This file does not parse manifests, touch Lua, or mutate runtime state; it only describes contracts and diagnostics. Read it when mod safety defaults, scan reports, or lifecycle validation payloads need to change.
+> Owns mods behavior with explicit state, validation, and crate-local integration boundaries. Keeps mods data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior. Defines how types data is validated, transformed, or stored before neighboring systems use it. Owns mods behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on types behavior while Lua registration stays elsewhere. Documents where mods callers should change defaults, errors, or lifecycle behavior. with focused crate-local behavior. Use this file when changing types defaults, lifecycle handling, validation, or data ownership.
 
 *[src/mods/types.rs](src/mods/types.rs) — 9/9 documented (100%)*
 
@@ -5058,7 +5058,7 @@ pub struct VignetteState  // Controls vignette darkening around the screen edges
 
 ### `overlay::controller`
 
-> This file owns `Overlay` plus its safety policies, diagnostics, render-plan reporting, and debug image helpers. It stores dimensions plus ambient, weather, flash, shake, fade, clouds, fog, haze, vignette, grain, water, and optional shader intent. `update` advances enabled subsystems, including ambient tint refresh, weather spawn/cull work, timed decay, cloud scrolling, and water time. Local safety helpers sanitize direct public-state mutation, clamp reduced-motion-sensitive effects, validate custom shader names, and bound debug image allocation. Query helpers expose shake offsets, flash and lightning alpha, dimensions, active-state checks, render responsibility, RNG-facing weather telemetry, and diagnostics snapshots. Render helpers build full-screen commands for flash, fade, lightning, and vignette, then offer checked debug image variants for dashboards and docs workflows. Open this file when overlay orchestration, safety policy, telemetry, or renderer-facing ownership changes; focused state structs and transition definitions live in siblings.
+> Owns the controller owner for the overlay subsystem and keeps its rules local to this file. Keeps overlay data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior. Defines how controller data is validated, transformed, or stored before neighboring systems use it. Owns overlay behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on controller behavior while Lua registration stays elsewhere. Documents the boundary where overlay code accepts inputs, reports errors, or updates state. Use this file when changing controller defaults, lifecycle handling, validation, or data ownership. Keeps failure paths and edge cases near the overlay state that can explain them while keeping call sites explicit. Preserves deterministic behavior by keeping controller calculations explicit at their owner boundary. Provides the local adaptation layer that lets callers avoid duplicating overlay rules while keeping call sites explicit. Maintains small helper surfaces so broader engine modules can compose controller behavior safely. Protects subsystem contracts by keeping resource, cache, or state mutations visible in one place. Links adjacent concerns only where controller changes need coordination with owned engine data.
 
 *[src/overlay/controller.rs](src/overlay/controller.rs) — 10/10 documented (100%)*
 
@@ -5110,7 +5110,7 @@ pub struct WaterOverlayState  // Stores parameters for animated water distortion
 
 ### `overlay::weather`
 
-> This file owns `WeatherType`, `WeatherParticle`, `WeatherProfile`, and `WeatherState`, the screen-space weather data model. It catalogs rain, snow, hail, dust, leaves, ash, and pollen behaviors with stable lowercase lookup names. Runtime state stores intensity, wind, live particles, spawn timing, validated per-type profiles, and PRNG state used for variation. The local helpers cover RNG sampling, seed/state control, and profile validation; particle spawning and motion updates live in the controller. Open this file when weather data semantics change; overlay orchestration and other atmosphere blocks live in siblings.
+> Owns overlay behavior with explicit state, validation, and crate-local integration boundaries. Keeps overlay data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior. Defines how weather data is validated, transformed, or stored before neighboring systems use it. Owns overlay behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on weather behavior while Lua registration stays elsewhere. Documents the boundary where overlay code accepts inputs, reports errors, or updates state. Use this file when changing weather defaults, lifecycle handling, validation, or data ownership.
 
 *[src/overlay/weather.rs](src/overlay/weather.rs) — 5/5 documented (100%)*
 
@@ -5212,7 +5212,7 @@ pub mod visualization  // Debug/editor visualisation overlays for emitter bounds
 
 ### `particle::config`
 
-> This file owns the particle configuration schema, including emission rates, lifetimes, forces, shapes, and sub-emitters. It defines enums and helper structs for area distribution, insert order, emitter state, spawn shapes, and relative mode. `ParticleConfig` centralizes every serializable knob so scripts and data files can describe one emitter without code. Sanitization lives here because malformed inputs must be clamped before the emitter update loop consumes them. Default values also live here so callers get a stable fountain-like baseline even when configs omit most fields. Shape-specific normalization for rings, rays, shrapnel, and nested death emitters is handled here, not during rendering. `from_toml_str` and `normalized` make this file the boundary between external config text and runtime-safe values. Open it when option semantics change; spawning, pool simulation, and render-command generation live elsewhere.
+> Owns the configuration model for the particle subsystem and keeps its rules local to this file. Keeps particle data ownership and helper behavior clear for future engine maintenance. for engine changes. Defines how config data is validated, transformed, or stored before neighboring systems use it. Owns particle behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on config behavior while Lua registration stays elsewhere. Documents the boundary where particle code accepts inputs, reports errors, or updates state. Use this file when changing config defaults, lifecycle handling, validation, or data ownership. Keeps failure paths and edge cases near the particle state that can explain them while keeping call sites explicit. Preserves deterministic behavior by keeping config calculations explicit at their owner boundary. Owns particle behavior with explicit state, validation, and crate-local integration boundaries. Maintains small helper surfaces so broader engine modules can compose config behavior safely.
 
 *[src/particle/config.rs](src/particle/config.rs) — 10/10 documented (100%)*
 
@@ -5242,7 +5242,7 @@ pub fn emission_shape_offset()  // Return a random spawn offset `(dx, dy)` sampl
 
 ### `particle::emitter`
 
-> This file owns `ParticleSystem`, the live particle pool plus emitter timers, attractors, bounds, and child sub-systems. It advances particles each frame by applying gravity, damping, orbit, turbulence, attractors, bounce bounds, and decay. Continuous emission and burst spawning live here because fractional accumulation, insert mode, and RNG mutate state. Death handling also lives here, including pending death records, recycled child systems, and death-emitter bursts. Render-instance construction is local because size, color, texture, and shape all derive from live particle state. State transitions for active, paused, and stopped emitters are managed here with warm-up, reset, and movement helpers. Attractor and bounds mutators stay here so callers change runtime forces without reaching into particle internals. `ParticleSystemStats` also lives here because only this file can summarize direct and nested live counts coherently. Open it when pool ownership or per-frame behavior changes; config schema, spawn math, and previews live elsewhere.
+> Owns the emitter runtime for the particle subsystem and keeps its rules local to this file. Keeps particle data ownership and helper behavior clear for future engine maintenance. for engine changes. Defines how emitter data is validated, transformed, or stored before neighboring systems use it. Owns particle behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on emitter behavior while Lua registration stays elsewhere. Documents the boundary where particle code accepts inputs, reports errors, or updates state. Use this file when changing emitter defaults, lifecycle handling, validation, or data ownership. Keeps failure paths and edge cases near the particle state that can explain them while keeping call sites explicit. Preserves deterministic behavior by keeping emitter calculations explicit at their owner boundary. Owns particle behavior with explicit state, validation, and crate-local integration boundaries. Maintains small helper surfaces so broader engine modules can compose emitter behavior safely.
 
 *[src/particle/emitter.rs](src/particle/emitter.rs) — 4/4 documented (100%)*
 
@@ -5255,7 +5255,7 @@ pub enum ParticleRngVersion  // Version tag for the emitter-local particle RNG c
 
 ### `particle::error`
 
-> This file owns typed particle validation and safety errors used by strict constructors and bounded helpers. It keeps failure reasons structured so config parsing, runtime limit checks, and strict mutators report the same contract. Open it when particle callers need clearer diagnostics or when new safety ceilings are introduced.
+> Owns the error taxonomy for the particle subsystem and keeps its rules local to this file. Centers the implementation around ParticleError, invalid_config, fmt, with helpers kept close to their invariants. Defines how error data is validated, transformed, or stored before neighboring systems use it. Owns particle behavior with explicit state, validation, and crate-local integration boundaries.
 
 *[src/particle/error.rs](src/particle/error.rs) — 1/1 documented (100%)*
 
@@ -5265,7 +5265,7 @@ pub enum ParticleError  // Error returned by strict particle constructors, parse
 
 ### `particle::limits`
 
-> This file owns shared particle safety ceilings used by strict config parsing and runtime helpers. It centralizes pool, recursion, parser, and render budgets so particle callers share one bounded contract. Open it when particle resource ceilings or validation policy changes.
+> Owns particle behavior with explicit state, validation, and crate-local integration boundaries. Centers the implementation around ParticleLimits, default, with helpers kept close to their invariants. Defines how limits data is validated, transformed, or stored before neighboring systems use it. Owns particle behavior with explicit state, validation, and crate-local integration boundaries.
 
 *[src/particle/limits.rs](src/particle/limits.rs) — 1/1 documented (100%)*
 
@@ -5892,7 +5892,7 @@ pub mod zone  // Spatial trigger zones with gravity and event tracking.
 
 ### `physics::body`
 
-> This file owns `BodyType`, `BodyShape`, and `Body`, the authored body descriptor used before and during world use. It stores simulation role, primitive shape, material settings, filters, pose, velocity, and optional extended geometry. Constructors cover rectangles, circles, polygons, edges, and chains so tools and gameplay code share one body surface. Geometry helpers expose bounding boxes plus local or world point conversion without requiring a live solver context. This file is the boundary between authored rigid-body intent and the runtime world that simulates those bodies. Open it when body payloads or authoring semantics change; stepping, queries, and zones live in sibling owners.
+> Owns the body owner for the physics subsystem and keeps its rules local to this file while keeping call sites explicit. Centers the implementation around BodyType, BodyShape, Body, with helpers kept close to their invariants. Defines how body data is validated, transformed, or stored before neighboring systems use it. Owns physics behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on body behavior while Lua registration stays elsewhere. Documents the boundary where physics code accepts inputs, reports errors, or updates state. Use this file when changing body defaults, lifecycle handling, validation, or data ownership. Keeps failure paths and edge cases near the physics state that can explain them while keeping call sites explicit. Preserves deterministic behavior by keeping body calculations explicit at their owner boundary.
 
 *[src/physics/body.rs](src/physics/body.rs) — 3/3 documented (100%)*
 
@@ -5927,7 +5927,7 @@ pub fn test_point_aabb()  // Return true when point `(px,py)` lies inside the AA
 
 ### `physics::error`
 
-> This file owns typed validation and safety errors shared by physics constructors, stepping, terrain, and Lua-facing helpers. It keeps failure reasons explicit so `try_*` APIs can reject invalid geometry, ids, bytes, and time-step inputs consistently. Open it when physics callers need clearer diagnostics or when a new owner starts participating in the shared safety contract.
+> Owns physics behavior with explicit state, validation, and crate-local integration boundaries. Centers the implementation around PhysicsError, fmt, with helpers kept close to their invariants. Defines how error data is validated, transformed, or stored before neighboring systems use it. Owns physics behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on error behavior while Lua registration stays elsewhere. Documents the boundary where physics code accepts inputs, reports errors, or updates state.
 
 *[src/physics/error.rs](src/physics/error.rs) — 1/1 documented (100%)*
 
@@ -5937,7 +5937,7 @@ pub enum PhysicsError  // Error returned by safe physics constructors, bounded h
 
 ### `physics::limits`
 
-> This file owns shared physics sizing and validation limits used by safe constructors, stepping, terrain, and shape helpers. It centralizes checked arithmetic and numeric policy so physics owners share one resource and finite-value contract. Open it when ceilings or validation rules change across world, body, shape, zone, or terrain code.
+> Owns physics behavior with explicit state, validation, and crate-local integration boundaries. Centers the implementation around PhysicsLimits, default, validate_finite, with helpers kept close to their invariants. Defines how limits data is validated, transformed, or stored before neighboring systems use it. Owns physics behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on limits behavior while Lua registration stays elsewhere.
 
 *[src/physics/limits.rs](src/physics/limits.rs) — 1/1 documented (100%)*
 
@@ -5947,7 +5947,7 @@ pub struct PhysicsLimits  // Shared safety limits for physics geometry, terrain 
 
 ### `physics::shape`
 
-> This file owns `Shape` and `StandaloneShape`, the geometry vocabulary used by bodies and standalone collision pieces. It stores circles, rectangles, polygons, edges, and chains, then converts valid inputs into Rapier colliders. Parsing helpers and regular-polygon generation let scripts or data describe intent without building raw engine types. Standalone shapes keep density, friction, restitution, and sensor flags next to geometry for authored test fixtures. Local bounding-box helpers make shapes inspectable in tools and previews without a live body or physics world. Open this file when geometry semantics change; body ownership and world stepping remain in sibling files.
+> Owns the shape owner for the physics subsystem and keeps its rules local to this file while keeping call sites explicit. Centers the implementation around Shape, polygon_area2, is_convex_polygon, with helpers kept close to their invariants. Defines how shape data is validated, transformed, or stored before neighboring systems use it. Owns physics behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on shape behavior while Lua registration stays elsewhere. Documents the boundary where physics code accepts inputs, reports errors, or updates state. Use this file when changing shape defaults, lifecycle handling, validation, or data ownership.
 
 *[src/physics/shape.rs](src/physics/shape.rs) — 2/2 documented (100%)*
 
@@ -5958,7 +5958,7 @@ pub enum Shape  // Physics primitive shape used in `Body` and `StandaloneShape`.
 
 ### `physics::terrain`
 
-> This file owns `TerrainMap`, a chunked solid-cell grid that rebuilds static physics bodies only where edits occur. It stores map dimensions, cell scale, world offsets, per-cell solidity, spawned chunk body ids, and dirty chunks. Editing helpers flip single cells or fill circles, rectangles, and whole maps so gameplay can carve or restore terrain. Flush logic removes stale chunk colliders, merges horizontal solid runs, and respawns compact static bodies in `World`. Collapse and debris helpers support destructible terrain flows by pruning unsupported cells and spawning fragments. Image and byte serialization make the same terrain usable for previews, saves, reloads, and external authoring tools. Open this file when terrain editing or sync semantics change; body simulation and contact solving live in siblings.
+> Owns physics behavior with explicit state, validation, and crate-local integration boundaries. Keeps physics data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior. Defines how terrain data is validated, transformed, or stored before neighboring systems use it. Owns physics behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on terrain behavior while Lua registration stays elsewhere. Documents the boundary where physics code accepts inputs, reports errors, or updates state. Use this file when changing terrain defaults, lifecycle handling, validation, or data ownership. Keeps failure paths and edge cases near the physics state that can explain them while keeping call sites explicit.
 
 *[src/physics/terrain.rs](src/physics/terrain.rs) — 2/2 documented (100%)*
 
@@ -5996,7 +5996,7 @@ pub struct World  // Full rapier2d-backed simulation world. # Fields - `bodies`:
 
 ### `physics::zone`
 
-> This file owns `PhysicsZone`, `ZoneBoundary`, `ZoneGravityMode`, and tracker events for area-based rule overrides. It stores zone shape, gravity behavior, damping overrides, priority, filters, and enabled state in one owner. Zone helpers configure rectangles or circles, directional gravity, point attraction, repulsion, and zero-gravity fields. The tracker caches body membership so enter and leave transitions can feed gameplay events as well as force changes. This file is the boundary for area effects driven by position rather than by rigid contact against solid geometry. Open it when zone semantics change; body descriptors and world stepping rules live in sibling owners.
+> Owns the zone owner for the physics subsystem and keeps its rules local to this file while keeping call sites explicit. Centers the implementation around ZoneId, ZonePriority, ZoneGravityMode, with helpers kept close to their invariants. Defines how zone data is validated, transformed, or stored before neighboring systems use it. Owns physics behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on zone behavior while Lua registration stays elsewhere. Documents the boundary where physics code accepts inputs, reports errors, or updates state. Use this file when changing zone defaults, lifecycle handling, validation, or data ownership.
 
 *[src/physics/zone.rs](src/physics/zone.rs) — 8/8 documented (100%)*
 
@@ -6137,7 +6137,7 @@ pub fn bsp_dungeon_with_prefabs()  // Generate a BSP dungeon and centre-place `p
 
 ### `procgen::cellular`
 
-> This file owns the cellular-automata cave generator that evolves random occupancy into enclosed cavern maps. `CellularOpts` stores fill probability, rule thresholds, iterations, and seed for one reproducible generation run. Neighbor counting and border-as-solid behavior stay here because they define the resulting cave texture directly. Open it when cave evolution rules change; flood fill and sandbox material simulation live in sibling modules.
+> Owns procgen behavior with explicit state, validation, and crate-local integration boundaries. Centers the implementation around CellularOpts, default, validate, with helpers kept close to their invariants. Defines how cellular data is validated, transformed, or stored before neighboring systems use it. Owns procgen behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on cellular behavior while Lua registration stays elsewhere.
 
 *[src/procgen/cellular.rs](src/procgen/cellular.rs) — 3/3 documented (100%)*
 
@@ -6149,7 +6149,7 @@ pub fn try_cellular_automata()  // Run cellular automata after validating dimens
 
 ### `procgen::cellular_world`
 
-> This file owns the falling-material sandbox that simulates sand, water, rock, fire, gas, and empty space on a grid. `CellType` defines the material vocabulary, while `CellularWorld` owns cells, fire lifetimes, tick parity, and RNG. Paint helpers such as rectangle and circle fills stay here because direct authoring of test or gameplay setups is local. Step logic also belongs here since per-material movement, spread, and bias reduction define world-update semantics. Serialization, region export, palette rendering, and cell queries remain local because they expose owned grid state. Open it when material interaction rules change; static cave generation lives in `cellular.rs` instead. This file is the runtime simulation owner, not a generic renderer, physics system, or authored content container.
+> Owns the cellular world owner for the procgen subsystem and keeps its rules local to this file. Keeps procgen data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior. Defines how cellular world data is validated, transformed, or stored before neighboring systems use it. Owns procgen behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on cellular world behavior while Lua registration stays elsewhere. Documents the boundary where procgen code accepts inputs, reports errors, or updates state. Use this file when changing cellular world defaults, lifecycle handling, validation, or data ownership. Keeps failure paths and edge cases near the procgen state that can explain them while keeping call sites explicit. Preserves deterministic behavior by keeping cellular world calculations explicit at their owner boundary.
 
 *[src/procgen/cellular_world.rs](src/procgen/cellular_world.rs) — 5/5 documented (100%)*
 
@@ -6173,7 +6173,7 @@ pub fn scalar_map_to_rgba_bytes()  // Convert a normalised float slice to a flat
 
 ### `procgen::error`
 
-> This file owns procgen-local validation and resource-limit errors shared by generators in this module group. It keeps failure reasons typed so safe `try_*` constructors can reject invalid dimensions, options, bytes, and WFC rules consistently. Open it when procgen callers need clearer diagnostics or when a new generator starts participating in the shared safety contract.
+> Owns procgen behavior with explicit state, validation, and crate-local integration boundaries. Centers the implementation around ProcgenError, fmt, with helpers kept close to their invariants. Defines how error data is validated, transformed, or stored before neighboring systems use it. Owns procgen behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on error behavior while Lua registration stays elsewhere. Documents the boundary where procgen code accepts inputs, reports errors, or updates state.
 
 *[src/procgen/error.rs](src/procgen/error.rs) — 1/1 documented (100%)*
 
@@ -6194,7 +6194,7 @@ pub fn try_flood_fill()  // Flood-fill from `(sx, sy)` after validating the grid
 
 ### `procgen::heightmap`
 
-> This file owns the normalized heightmap model used to build terrain fields from noise or binary cellular sources. `HeightmapOpts` stores noise parameters and erosion passes, while `Heightmap` owns width, height, and cell storage. Generation from FBM noise stays here because map options, normalization, and seed-driven reproducibility are local. Simple erosion also belongs here since it mutates terrain cells in-place and defines the file's smoothing behavior. RGBA export and sampled access remain local because they expose the heightmap as usable terrain data to callers.
+> Owns the heightmap owner for the procgen subsystem and keeps its rules local to this file. Keeps procgen data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior. Defines how heightmap data is validated, transformed, or stored before neighboring systems use it. Owns procgen behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on heightmap behavior while Lua registration stays elsewhere. Documents the boundary where procgen code accepts inputs, reports errors, or updates state. Use this file when changing heightmap defaults, lifecycle handling, validation, or data ownership.
 
 *[src/procgen/heightmap.rs](src/procgen/heightmap.rs) — 4/4 documented (100%)*
 
@@ -6207,7 +6207,7 @@ pub enum ErosionMode  // Erosion update order mode used by `Heightmap`.
 
 ### `procgen::lcg`
 
-> This file owns the tiny deterministic LCG used by multiple generators that need repeatable pseudo-random stepping. `Lcg` stores only the current state, making seeded advancement and normalized float sampling its core contract. Open it when baseline RNG semantics change; higher-level noise and layout generators live in sibling modules.
+> Owns the lcg owner for the procgen subsystem and keeps its rules local to this file while keeping call sites explicit. Centers the implementation around LCG_ALGORITHM_VERSION, Lcg, new, with helpers kept close to their invariants. Defines how lcg data is validated, transformed, or stored before neighboring systems use it. Owns procgen behavior with explicit state, validation, and crate-local integration boundaries.
 
 *[src/procgen/lcg.rs](src/procgen/lcg.rs) — 2/2 documented (100%)*
 
@@ -6218,7 +6218,7 @@ pub const LCG_ALGORITHM_VERSION  // Stable identifier for the current procgen LC
 
 ### `procgen::limits`
 
-> This file owns shared procgen sizing and validation limits used by safe constructors across generators. It centralizes checked cell-count arithmetic, byte-budget checks, and common option validation helpers. Open it when procgen resource ceilings or shared validation policy changes.
+> Owns procgen behavior with explicit state, validation, and crate-local integration boundaries. Keeps procgen data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior. Defines how limits data is validated, transformed, or stored before neighboring systems use it. Owns procgen behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on limits behavior while Lua registration stays elsewhere.
 
 *[src/procgen/limits.rs](src/procgen/limits.rs) — 1/1 documented (100%)*
 
@@ -6272,7 +6272,7 @@ pub fn try_generate_noise_map_parallel()  // Generate a noise map in parallel af
 
 ### `procgen::poisson`
 
-> This file owns the Poisson disk sampler used to place 2D points with minimum separation and seeded randomness. The Bridson-style active list, acceleration grid, and distance checks stay here because they define point quality. It returns accepted coordinates only, keeping the file focused on sparse placement rather than map interpretation. Open it when scatter-placement semantics change; Voronoi and world-graph generation live in sibling modules.
+> Owns procgen behavior with explicit state, validation, and crate-local integration boundaries. Centers the implementation around poisson_disk, try_poisson_disk, with helpers kept close to their invariants. Defines how poisson data is validated, transformed, or stored before neighboring systems use it. Owns procgen behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on poisson behavior while Lua registration stays elsewhere.
 
 *[src/procgen/poisson.rs](src/procgen/poisson.rs) — 2/2 documented (100%)*
 
@@ -6283,7 +6283,7 @@ pub fn try_poisson_disk()  // Generate a Poisson disk sample set after validatin
 
 ### `procgen::render`
 
-> This file owns the sampled noise-grid wrapper used to store tileable scalar fields and export them as pixels. `NoiseGrid` stores width, height, and cells, while `from_perlin` builds values from periodic Perlin sampling. RGBA conversion also belongs here because preview-oriented export is part of the grid wrapper's contract.
+> Owns procgen behavior with explicit state, validation, and crate-local integration boundaries. Centers the implementation around NoiseGrid, from_perlin, try_from_perlin, with helpers kept close to their invariants. Defines how render data is validated, transformed, or stored before neighboring systems use it. Owns procgen behavior with explicit state, validation, and crate-local integration boundaries.
 
 *[src/procgen/render.rs](src/procgen/render.rs) — 1/1 documented (100%)*
 
@@ -6320,7 +6320,7 @@ pub fn try_rooms_dungeon()  // Generate a rooms dungeon after validating grid al
 
 ### `procgen::voronoi`
 
-> This file owns the Voronoi diagram helper that assigns each cell to its nearest feature point and distance fields. `VoronoiOpts` stores optional domain-warp parameters so clean tessellation can be roughened without new APIs. The diagram routine stays here because nearest-point ownership and first or second distance extraction are local. Hash-based warp noise also belongs here since boundary distortion is part of Voronoi output semantics.
+> Owns procgen behavior with explicit state, validation, and crate-local integration boundaries. Centers the implementation around VoronoiOpts, default, validate, with helpers kept close to their invariants. Defines how voronoi data is validated, transformed, or stored before neighboring systems use it. Owns procgen behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on voronoi behavior while Lua registration stays elsewhere.
 
 *[src/procgen/voronoi.rs](src/procgen/voronoi.rs) — 4/4 documented (100%)*
 
@@ -6333,7 +6333,7 @@ pub fn voronoi_diagram()  // Compute a Voronoi diagram for `points` on a `width 
 
 ### `procgen::wfc`
 
-> This file owns the Wave Function Collapse generator that resolves tile grids from weighted adjacency constraints. `WfcTile`, `WfcRules`, `WfcOpts`, and `WfcGrid` define the tile vocabulary, rule set, run inputs, and result cells. Entropy-style cell choice and weighted collapse stay here because tile selection policy is core WFC behavior. Constraint propagation also belongs here since neighbor pruning and contradiction detection define valid outcomes. Retry logic remains local because contradiction recovery is part of the generator contract, not caller plumbing.
+> Owns the wfc owner for the procgen subsystem and keeps its rules local to this file while keeping call sites explicit. Centers the implementation around WfcTile, WfcRules, WfcOpts, with helpers kept close to their invariants. Defines how wfc data is validated, transformed, or stored before neighboring systems use it. Owns procgen behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on wfc behavior while Lua registration stays elsewhere. Documents the boundary where procgen code accepts inputs, reports errors, or updates state.
 
 *[src/procgen/wfc.rs](src/procgen/wfc.rs) — 8/8 documented (100%)*
 
@@ -6350,7 +6350,7 @@ pub fn wfc_generate()  // Run WFC on `opts`, retrying up to `max_attempts` times
 
 ### `procgen::wfc_llm`
 
-> This file owns the JSON parsing bridge from LLM-produced tile specs into concrete WFC options and constraints. It converts response objects into `WfcTile`, `WfcRules`, and `WfcOpts` so generation stays deterministic. Strict schema and parser limits remain local because malformed or oversized LLM output must stop at one boundary. Open it when AI-assisted tiling input changes; the actual collapse algorithm lives in `wfc.rs`.
+> Owns procgen behavior with explicit state, validation, and crate-local integration boundaries. Keeps procgen data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior. Defines how wfc llm data is validated, transformed, or stored before neighboring systems use it. Owns procgen behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on wfc llm behavior while Lua registration stays elsewhere.
 
 *[src/procgen/wfc_llm.rs](src/procgen/wfc_llm.rs) — 4/4 documented (100%)*
 
@@ -6960,7 +6960,7 @@ pub struct DecalSurface  // Paint-target surface for persistent world decals; ho
 
 ### `render::draw_layer`
 
-> Owns deferred draw-layer callbacks that are queued first and flushed later in depth-sorted order. Lets gameplay and UI code enqueue layered draw work cheaply without issuing immediate GPU commands. Acts as the ordering boundary between ad hoc producers and the final render dispatch pass. Open this file when layer sorting, queueing, flushing, or layer counts behave incorrectly.
+> Owns the draw layer model for the render subsystem and keeps its rules local to this file. Centers the implementation around LayerEntry, DrawLayerError, fmt, with helpers kept close to their invariants. Defines how draw layer data is validated, transformed, or stored before neighboring systems use it. Owns render behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on draw layer behavior while Lua registration stays elsewhere.
 
 *[src/render/draw_layer.rs](src/render/draw_layer.rs) — 5/5 documented (100%)*
 
@@ -7014,7 +7014,7 @@ pub fn validate_dynamic_font_point_size()  // Validate and normalize a dynamic f
 
 ### `render::gpu_frame_builder`
 
-> Builds and rewrites per-frame prepared draw lists before GPU pass encoding. Owns frame-local draw coalescing rules so batching remains testable outside the renderer. Keeps compatibility checks close to `PreparedDraw` semantics instead of embedding them in frame orchestration. Preserves high-water scratch allocation by draining into caller-owned buffers and swapping results back. Acts as the CPU frame-list boundary between command tessellation and low-level render-pass encoding. Open this file when compatible draw calls fail to batch or incompatible prepared draws merge incorrectly.
+> Owns the gpu frame builder owner for the render subsystem and keeps its rules local to this file. Keeps render data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior. Defines how gpu frame builder data is validated, transformed, or stored before neighboring systems use it. Owns render behavior with explicit state, validation, and crate-local integration boundaries.
 
 *[src/render/gpu_frame_builder.rs](src/render/gpu_frame_builder.rs) — 1/1 documented (100%)*
 
@@ -7065,7 +7065,7 @@ pub struct GpuRenderer  // Concrete hardware-accelerated 2D renderer backing all
 
 ### `render::gpu_resources`
 
-> Owns persistent GPU resource lifetimes, uploads, and resizing for textures, fonts, canvases, and buffers. Grows vertex, index, and instance buffers on demand so render workloads can scale without manual sizing. Caches texture and sampler bind groups so compatible resources reuse stable GPU-side descriptors. Creates raw textures and canvas resources while hiding wgpu allocation details from higher render layers. Prunes stale resources to keep GPU memory usage bounded during long sessions or heavy content churn. Uploads static geometry into dedicated buffers so later frames can reuse cached meshes efficiently. Acts as the resource-allocation boundary rather than the owner of draw ordering or pass sequencing. Open this file when GPU buffers, textures, samplers, or resource cleanup behavior looks incorrect.
+> Owns the gpu resources owner for the render subsystem and keeps its rules local to this file. Keeps render data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior. Defines how gpu resources data is validated, transformed, or stored before neighboring systems use it. Owns render behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on gpu resources behavior while Lua registration stays elsewhere. Documents the boundary where render code accepts inputs, reports errors, or updates state. Use this file when changing gpu resources defaults, lifecycle handling, validation, or data ownership. Keeps failure paths and edge cases near the render state that can explain them while keeping call sites explicit. Preserves deterministic behavior by keeping gpu resources calculations explicit at their owner boundary.
 
 *[src/render/gpu_resources.rs](src/render/gpu_resources.rs) — 5/5 documented (100%)*
 
@@ -7104,7 +7104,7 @@ pub fn collect_shadow_edges_with_stats()  // Converts occluder polygons into lig
 
 ### `render::gpu_state`
 
-> Defines the registry of live GPU allocations, cached geometry, reusable frame buffers, readback state, and frame statistics. Stores textures, fonts, canvases, depth targets, and other handles in structured collections with stable keys. Keeps static geometry cache records, CPU frame buffers, and pending surface readbacks separate from the main renderer loop. Acts as the persistent state boundary for GPU resources shared across multiple render passes. Open this file when cached handles, depth targets, or readback bookkeeping state behaves incorrectly.
+> Owns render behavior with explicit state, validation, and crate-local integration boundaries. Keeps render data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior. Defines how gpu state data is validated, transformed, or stored before neighboring systems use it. Owns render behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on gpu state behavior while Lua registration stays elsewhere. Documents the boundary where render code accepts inputs, reports errors, or updates state.
 
 *[src/render/gpu_state.rs](src/render/gpu_state.rs) — 8/8 documented (100%)*
 
@@ -7173,7 +7173,7 @@ pub struct ShaderPassDescriptor  // One named shader pass in a post-processing c
 
 ### `render::input_validation`
 
-> Owns front-end render input validation before commands reach GPU or software tessellation paths. Defines reusable finite-number, color, size, topology, and segment bounds for `RenderCommand` data. Keeps deterministic skip decisions centralized instead of scattering NaN and range checks across passes. Acts as the command-boundary sanitizer between gameplay draw intent and backend-specific render work. Open this file when public render commands need new input limits or stricter validation behavior.
+> Owns the input validation owner for the render subsystem and keeps its rules local to this file. Keeps render data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior. Defines how input validation data is validated, transformed, or stored before neighboring systems use it. Owns render behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on input validation behavior while Lua registration stays elsewhere. Documents the boundary where render code accepts inputs, reports errors, or updates state. Use this file when changing input validation defaults, lifecycle handling, validation, or data ownership. Keeps failure paths and edge cases near the render state that can explain them while keeping call sites explicit. Preserves deterministic behavior by keeping input validation calculations explicit at their owner boundary. Provides the local adaptation layer that lets callers avoid duplicating render rules while keeping call sites explicit.
 
 *[src/render/input_validation.rs](src/render/input_validation.rs) — 6/6 documented (100%)*
 
@@ -7188,7 +7188,7 @@ pub fn validate_render_command_with_category()  // Validate one render command a
 
 ### `render::mesh`
 
-> Defines reusable 2D mesh data for custom vector geometry, imported models, and textured draw content. Stores vertex positions, colors, uv maps, topology mode, and optional texture binding under one asset type. Supports multiple draw topologies so callers can express lists, strips, fans, or related mesh patterns. Acts as the mesh-asset boundary between content generation and later tessellation or draw submission code. Open this file when mesh vertex data, topology choice, or texture attachment behavior looks incorrect.
+> Owns the mesh owner for the render subsystem and keeps its rules local to this file while keeping call sites explicit. Centers the implementation around MeshDrawMode, MeshVertex, default, with helpers kept close to their invariants. Defines how mesh data is validated, transformed, or stored before neighboring systems use it. Owns render behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on mesh behavior while Lua registration stays elsewhere. Documents the boundary where render code accepts inputs, reports errors, or updates state.
 
 *[src/render/mesh.rs](src/render/mesh.rs) — 4/4 documented (100%)*
 
@@ -7241,7 +7241,7 @@ pub struct ProvinceMapUniforms  // Uniforms used by the province map fullscreen 
 
 ### `render::render_diagnostics`
 
-> Owns per-frame render diagnostics for skipped commands, missing resources, and invalid inputs. Stores lightweight counters that make non-fatal renderer drops visible without forcing a frame error. Sits beside frame statistics while keeping debug and reliability counters out of low-level GPU handles. Open this file when adding a new controlled render skip or exposing renderer findings to diagnostics tools.
+> Owns the render diagnostics owner for the render subsystem and keeps its rules local to this file. Keeps render data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior. Defines how render diagnostics data is validated, transformed, or stored before neighboring systems use it. Owns render behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on render diagnostics behavior while Lua registration stays elsewhere.
 
 *[src/render/render_diagnostics.rs](src/render/render_diagnostics.rs) — 1/1 documented (100%)*
 
@@ -7251,7 +7251,7 @@ pub struct RenderDiagnostics  // Per-frame counters for non-fatal render issues 
 
 ### `render::renderer`
 
-> Defines the front-end render command language consumed by the software and GPU renderer implementations. Owns draw-mode enums, blend and stencil policy types, text alignment, gradients, and related draw metadata. Packages shapes, sprites, particles, typography, and effect requests into structured command variants. Standardizes sampler filters, repeat modes, depth behavior, and outline settings used across render paths. Keeps the abstract rendering vocabulary separate from the backends that later execute or rasterize commands. Provides adaptive circle and ellipse segment helpers used when front-end callers request curved primitives. Acts as the semantic boundary between gameplay draw intent and the lower-level renderer implementations. Open this file when command schema, blend semantics, or draw-mode vocabulary needs coordinated changes. Read this owner first when multiple backends disagree, because they all interpret the command types defined here.
+> Owns render behavior with explicit state, validation, and crate-local integration boundaries. Centers the implementation around CompareMode, StencilAction, StencilMode, with helpers kept close to their invariants. Defines how renderer data is validated, transformed, or stored before neighboring systems use it. Owns render behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on renderer behavior while Lua registration stays elsewhere. Documents the boundary where render code accepts inputs, reports errors, or updates state. Use this file when changing renderer defaults, lifecycle handling, validation, or data ownership. Keeps failure paths and edge cases near the render state that can explain them while keeping call sites explicit. Preserves deterministic behavior by keeping renderer calculations explicit at their owner boundary. Provides the local adaptation layer that lets callers avoid duplicating render rules while keeping call sites explicit.
 
 *[src/render/renderer.rs](src/render/renderer.rs) — 23/23 documented (100%)*
 
@@ -7307,7 +7307,7 @@ pub enum ShapeCommand  // One drawing operation stored inside a `CompoundShape`.
 
 ### `render::software_capture`
 
-> Implements CPU-side screenshot capture by replaying supported render commands into mutable ImageData output. Exists as a fallback path for tests, headless evidence, and environments where GPU readback is unavailable. Replays a practical subset of RenderCommand values so visual assertions can run without a live graphics device. Includes local transform, pixel write, stencil, and line helpers needed to rasterize queued commands in software. Keeps capture logic separate from the main GPU renderer so test-friendly output does not complicate frame code. Acts as the software-capture boundary between front-end render commands and headless image generation. Provides one owner for CPU replay semantics, making screenshot differences easier to debug in non-GPU runs. Support matrix: - Supported state: color, line width, point size, transforms, scissor, color masks, and stencil controls. - Supported geometry: rectangles, rounded rectangles, circles, ellipses, triangles, polygons, lines, polylines, arcs, and points. - Approximated geometry: colored polygons, convex fans, and transient meshes render as solid CPU polygons. - Ignored and counted: GPU resources, textures, text, shaders, post-fx, layers, sort groups, batches, registered meshes, and physics/Spine debug paths. Open this file when headless capture output differs from expected draw behavior or misses command coverage. Use this owner before GPU renderer changes when only software screenshot evidence appears incorrect.
+> Owns the software capture owner for the render subsystem and keeps its rules local to this file. Keeps render data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior. Defines how software capture data is validated, transformed, or stored before neighboring systems use it. Owns render behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on software capture behavior while Lua registration stays elsewhere. Documents the boundary where render code accepts inputs, reports errors, or updates state. Use this file when changing software capture defaults, lifecycle handling, validation, or data ownership. Keeps failure paths and edge cases near the render state that can explain them while keeping call sites explicit. Preserves deterministic behavior by keeping software capture calculations explicit at their owner boundary. Provides the local adaptation layer that lets callers avoid duplicating render rules while keeping call sites explicit.
 
 *[src/render/software_capture.rs](src/render/software_capture.rs) — 3/3 documented (100%)*
 
@@ -7400,7 +7400,7 @@ pub mod shared_state  // Shared mutable runtime state consumed by app and Lua ca
 
 ### `runtime::config`
 
-> This file owns the typed runtime configuration schema that turns `conf.toml` into deterministic startup policy. It stores top-level config plus mode, window, render, module, performance, TUI, CLI, and headless sections. Default implementations define the baseline engine shape used when projects omit config or provide partial data. Module validation lives here because feature toggles must disable unsupported dependency combinations centrally. Headless-profile helpers also live here so no-window startup can force a supported subset of enabled modules. Load helpers merge file overrides over defaults, log read or parse problems, and preserve a usable config result. Serde support is part of the boundary because this data moves between disk, runtime defaults, and inspections. Open it when startup policy changes; shared mutable state and execution modes consume these contracts elsewhere.
+> Owns the configuration model for the runtime subsystem and keeps its rules local to this file. Keeps runtime data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior. Defines how config data is validated, transformed, or stored before neighboring systems use it. Owns runtime behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on config behavior while Lua registration stays elsewhere. Documents the boundary where runtime code accepts inputs, reports errors, or updates state. Use this file when changing config defaults, lifecycle handling, validation, or data ownership. Keeps failure paths and edge cases near the runtime state that can explain them while keeping call sites explicit. Preserves deterministic behavior by keeping config calculations explicit at their owner boundary. Provides the local adaptation layer that lets callers avoid duplicating runtime rules while keeping call sites explicit. Maintains small helper surfaces so broader engine modules can compose config behavior safely.
 
 *[src/runtime/config.rs](src/runtime/config.rs) — 12/12 documented (100%)*
 
@@ -7721,7 +7721,7 @@ pub fn set_log_level()  // Set the global runtime log level from a string name (
 
 ### `runtime::lua_execution`
 
-> This file owns shared Lua execution policy used by GUI app, headless runs, and other host-side callers. `LuaExecutionPolicy` centralizes callback timeout configuration and instruction-hook cadence. The helper executes already-resolved Lua functions and removes timeout hooks with RAII cleanup. Keeping this logic in runtime avoids diverging timeout semantics between GUI and headless hosts. Open it when Lua callback timeout policy or hook cleanup behavior changes.
+> Owns the Lua execution bridge for the runtime subsystem and keeps its rules local to this file. Keeps runtime data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior. Defines how lua execution data is validated, transformed, or stored before neighboring systems use it. Owns runtime behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on lua execution behavior while Lua registration stays elsewhere.
 
 *[src/runtime/lua_execution.rs](src/runtime/lua_execution.rs) — 6/6 documented (100%)*
 
@@ -7780,7 +7780,7 @@ pub fn open_url()  // Opens a URL in the default system browser. Only `http://`,
 
 ### `runtime::shared_state`
 
-> This file owns `SharedState`, the mutable runtime hub that lets separate engine systems coordinate each frame. It stores render commands, resource pools, timers, window state, input snapshots, and many subsystem handles. Resource ownership for textures, fonts, canvases, meshes, shaders, particles, and related assets lives here. Frame-level services include timing, default fonts, render settings, screenshot requests, and debug overlays. Async file operations, filesystem identity, and poll helpers live here so background I/O shares one runtime hub. Budget enforcement and LRU eviction stay here because they require a global view of runtime-managed resources. Window, fullscreen, scaling, and error snapshot state also live here for Lua bindings and app-loop coordination. Helper methods cover construction, timer stepping, resource touching, memory stats, async requests, and fonts. Open it when cross-system runtime ownership changes; app, Lua bindings, and headless flow depend on this file.
+> Owns the shared state owner for the runtime subsystem and keeps its rules local to this file. Centers the implementation around FullscreenType, WindowState, default, with helpers kept close to their invariants. Defines how shared state data is validated, transformed, or stored before neighboring systems use it. Owns runtime behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on shared state behavior while Lua registration stays elsewhere. Documents the boundary where runtime code accepts inputs, reports errors, or updates state. Use this file when changing shared state defaults, lifecycle handling, validation, or data ownership. Keeps failure paths and edge cases near the runtime state that can explain them while keeping call sites explicit. Preserves deterministic behavior by keeping shared state calculations explicit at their owner boundary. Provides the local adaptation layer that lets callers avoid duplicating runtime rules while keeping call sites explicit. Maintains small helper surfaces so broader engine modules can compose shared state behavior safely.
 
 *[src/runtime/shared_state.rs](src/runtime/shared_state.rs) — 12/12 documented (100%)*
 
@@ -7805,7 +7805,7 @@ pub enum FullscreenType  // Runtime enum for FullscreenType.
 
 ### `save::save_manager`
 
-> `src/save/save_manager.rs` owns slot persistence: registration, dirty tracking, schema versioning, and restore flow. `SaveManager` decides which Lua tables join a slot, when writes should happen, and which migrations must run. The file also defines `SaveValue` and `SlotMeta`, so payload structure and save-select metadata share one owner. Compression, decompression, table serialization, and parsing live here to keep format logic near persistence policy. Auto-save timing and slot path construction are handled locally, keeping higher runtime layers free of save bookkeeping. The internal parser reads the restricted Lua table format emitted here, keeping load behavior aligned with save output. Neighboring systems matter here mainly at the runtime and binary utility boundary, not in modules that register state. Open this file when save format, migration routing, compression policy, or slot lifecycle behavior needs to change.
+> Owns the save manager owner for the save subsystem and keeps its rules local to this file. Keeps save data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior. Defines how save manager data is validated, transformed, or stored before neighboring systems use it. Owns save behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on save manager behavior while Lua registration stays elsewhere. Documents where save callers should change defaults, errors, or lifecycle behavior. with focused crate-local behavior. Use this file when changing save manager defaults, lifecycle handling, validation, or data ownership. Keeps failure paths and edge cases near the save state that can explain them while keeping call sites explicit. Preserves deterministic behavior by keeping save manager calculations explicit at their owner boundary. Provides the local adaptation layer that lets callers avoid duplicating save rules while keeping call sites explicit. Maintains small helper surfaces so broader engine modules can compose save manager behavior safely. Protects subsystem contracts by keeping resource, cache, or state mutations visible in one place.
 
 *[src/save/save_manager.rs](src/save/save_manager.rs) — 20/20 documented (100%)*
 
@@ -7929,7 +7929,7 @@ pub mod xml  // XML decoding. This module is publicly re-exported.
 
 ### `serialize::codec`
 
-> This file owns the format-agnostic serialization front door for text and binary payloads across supported formats. It defines `SerialFormat`, encode or decode options, and the `EncodedValue` result used by top-level callers. Format detection inspects text content, while explicit routing sends MessagePack through byte decoding only. Encode and decode helpers centralize dispatch so callers do not need per-format branching spread across modules. Open this file when top-level serialization routing changes; concrete format implementations live in siblings.
+> Owns serialize behavior with explicit state, validation, and crate-local integration boundaries. Centers the implementation around SerialFormat, parse, all, with helpers kept close to their invariants. Defines how codec data is validated, transformed, or stored before neighboring systems use it. Owns serialize behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on codec behavior while Lua registration stays elsewhere. Documents the boundary where serialize code accepts inputs, reports errors, or updates state. Use this file when changing codec defaults, lifecycle handling, validation, or data ownership. Keeps failure paths and edge cases near the serialize state that can explain them while keeping call sites explicit. Preserves deterministic behavior by keeping codec calculations explicit at their owner boundary.
 
 *[src/serialize/codec.rs](src/serialize/codec.rs) — 18/18 documented (100%)*
 
@@ -7956,7 +7956,7 @@ pub fn encode()  // Encode a `SerialValue` into the specified format.
 
 ### `serialize::csv`
 
-> This file owns CSV translation between delimited rows and the shared `SerialValue` tree used by the engine. It defines `CsvOptions`, parses header-aware or positional records, and serializes row sequences back to text. Header mode maps columns into ordered maps, while headerless mode keeps each record as a plain value sequence. Encoding enforces compatible row shapes so CSV assumptions stay aligned between read and write operations. Open this file when tabular serialization rules change; generic dispatch and value-tree ownership live nearby.
+> Owns the csv owner for the serialize subsystem and keeps its rules local to this file while keeping call sites explicit. Keeps serialize data ownership and helper behavior clear for future engine maintenance. for engine changes. Defines how csv data is validated, transformed, or stored before neighboring systems use it. Owns serialize behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on csv behavior while Lua registration stays elsewhere. Documents the boundary where serialize code accepts inputs, reports errors, or updates state. Use this file when changing csv defaults, lifecycle handling, validation, or data ownership.
 
 *[src/serialize/csv.rs](src/serialize/csv.rs) — 4/4 documented (100%)*
 
@@ -7990,7 +7990,7 @@ pub fn to_json()  // Encode a `SerialValue` tree to a JSON string.
 
 ### `serialize::lua_table`
 
-> This file owns `SerialValue` plus Lua conversion helpers that bridge dynamic Lua values into serializable Rust data. It decides whether Lua tables become sequences or maps, while preserving scalars, nulls, and string-keyed content. `to_lua` rebuilds Lua primitives and tables from decoded values so serialized data can round-trip through scripts. Array detection is structural and automatic, which keeps callers from tagging plain Lua tables before encoding. Open this file when shared value semantics change; concrete text and binary codecs live in sibling modules.
+> Owns the lua table owner for the serialize subsystem and keeps its rules local to this file. Centers the implementation around SerialValue, fmt, to_lua, with helpers kept close to their invariants. Defines how lua table data is validated, transformed, or stored before neighboring systems use it. Owns serialize behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on lua table behavior while Lua registration stays elsewhere. Documents the boundary where serialize code accepts inputs, reports errors, or updates state. Use this file when changing lua table defaults, lifecycle handling, validation, or data ownership.
 
 *[src/serialize/lua_table.rs](src/serialize/lua_table.rs) — 5/5 documented (100%)*
 
@@ -8017,7 +8017,7 @@ pub fn encode_json()  // Encode a serde_json Value into MessagePack bytes.
 
 ### `serialize::schema`
 
-> This file owns schema validation and default application for decoded `SerialValue` trees before runtime use. Validation checks required fields, declared types, numeric limits, string lengths, nested fields, and array items. Errors include dotted paths so content authors can find the exact subtree that violates a schema contract. Default application walks the same tree shape, filling missing fields or items from schema-provided fallback values. Schema pass and fail logging also lives here because validation is a common content-ingestion debugging boundary. Open this file when structural validation rules change; format parsers and Lua conversion live in sibling files.
+> Owns serialize behavior with explicit state, validation, and crate-local integration boundaries. Centers the implementation around DefaultsApplied, child_path, item_path, with helpers kept close to their invariants. Defines how schema data is validated, transformed, or stored before neighboring systems use it. Owns serialize behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on schema behavior while Lua registration stays elsewhere. Documents the boundary where serialize code accepts inputs, reports errors, or updates state. Use this file when changing schema defaults, lifecycle handling, validation, or data ownership.
 
 *[src/serialize/schema.rs](src/serialize/schema.rs) — 5/5 documented (100%)*
 
@@ -8293,7 +8293,7 @@ pub fn highlight_spans()  // Split `text` into `ColoredSpan`s by applying `rules
 
 ### `terminal::terminal_state`
 
-> This file owns `Terminal`, the main state machine for the character grid, cursor, widgets, and histories. It stores the row-major cell buffer, focus state, clipboard, command history, scrollback, and size overrides. Helper functions draw compact buttons, frames, cursor text, and bounded writes onto composed cell slices. Input handlers route keyboard, text, and mouse events to focused widgets and emit typed terminal events. Text-box editing covers cursor movement, selection replacement, clipboard shortcuts, and word deletes. List handling covers focus, selection, scrolling, and mouse hit resolution for terminal UI controls. Render composition overlays visible widgets on top of the base grid and reuses scratch buffers. Border rendering, panel child maintenance, and widget removal cleanup keep layered layouts consistent. Public grid APIs cover cell reads, writes, resizing, colored printing, default colors, and cursor moves. History APIs manage scrollback limits, command navigation, and durable memory beyond render output. Command builders translate the composed surface into batched render commands without duplicated logic. Open it when terminal interaction or surface semantics change; widgets and exporters depend on it.
+> Owns the terminal state owner for the terminal subsystem and keeps its rules local to this file. Centers the implementation around MAX_COLS, MAX_ROWS, BUTTON_FG, with helpers kept close to their invariants. Defines how terminal state data is validated, transformed, or stored before neighboring systems use it. Owns terminal behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on terminal state behavior while Lua registration stays elsewhere. Documents the boundary where terminal code accepts inputs, reports errors, or updates state. Use this file when changing terminal state defaults, lifecycle handling, validation, or data ownership. Keeps failure paths and edge cases near the terminal state that can explain them while keeping call sites explicit. Preserves deterministic behavior by keeping terminal state calculations explicit at their owner boundary. Owns terminal behavior with explicit state, validation, and crate-local integration boundaries. Maintains small helper surfaces so broader engine modules can compose terminal state behavior safely. Protects subsystem contracts by keeping resource, cache, or state mutations visible in one place. Links adjacent concerns only where terminal state changes need coordination with owned engine data. Keeps terminal data ownership and helper behavior clear for future engine maintenance. for engine changes.
 
 *[src/terminal/terminal_state.rs](src/terminal/terminal_state.rs) — 16/16 documented (100%)*
 
@@ -8318,7 +8318,7 @@ pub const DEFAULT_MAX_WIDGET_TEXT_CHARS  // Default hard cap for widget text pay
 
 ### `terminal::widget`
 
-> This file owns the terminal widget model used to build labels, buttons, text boxes, lists, borders, and panels. `BorderStyle` defines frame glyph choices, while `WidgetBase` centralizes position, size, visibility, and tags. `WidgetKind` stores kind-specific data for text, selection, scroll, border styling, and panel child membership. `Widget` constructors create grid-aligned UI parts with size clamping that matches terminal row limits. Mutation helpers keep text, color, max-length, selection, border style, and title updates in one owner. List helpers manage item addition, removal, scroll, and 1-based selection semantics used by input handlers. Kind-check helpers let callers branch on widget behavior without matching all enum payloads at each call site. Open it when terminal UI object semantics change; event dispatch and rendering integration live in state.
+> Owns the widget runtime for the terminal subsystem and keeps its rules local to this file. Centers the implementation around BorderStyle, from_str_name, as_str, with helpers kept close to their invariants. Defines how widget data is validated, transformed, or stored before neighboring systems use it. Owns terminal behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on widget behavior while Lua registration stays elsewhere. Documents the boundary where terminal code accepts inputs, reports errors, or updates state. Use this file when changing widget defaults, lifecycle handling, validation, or data ownership. Keeps failure paths and edge cases near the terminal state that can explain them while keeping call sites explicit. Preserves deterministic behavior by keeping widget calculations explicit at their owner boundary. Owns terminal behavior with explicit state, validation, and crate-local integration boundaries.
 
 *[src/terminal/widget.rs](src/terminal/widget.rs) — 4/4 documented (100%)*
 
@@ -8441,7 +8441,7 @@ pub fn layout_name()  // Return the stable Lua/API name for an autotile sheet la
 
 ### `tilemap::chunk`
 
-> Implements sparse chunk storage for very large tile worlds that should not allocate one full dense grid. Keeps world-to-chunk and local-cell transforms precise so reads, writes, and clears hit stable addresses. Provides visible-chunk queries and range updates used by streaming, culling, and large-map maintenance paths. Acts as the storage boundary between raw world tile access and higher-level render or generation systems. Open this file when chunk loading, addressing, fill ranges, or visible-region selection behaves incorrectly.
+> Owns the chunk owner for the tilemap subsystem and keeps its rules local to this file while keeping call sites explicit. Centers the implementation around ChunkMap, DEFAULT_GID, new, with helpers kept close to their invariants. Defines how chunk data is validated, transformed, or stored before neighboring systems use it. Owns tilemap behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on chunk behavior while Lua registration stays elsewhere. Documents the boundary where tilemap code accepts inputs, reports errors, or updates state.
 
 *[src/tilemap/chunk.rs](src/tilemap/chunk.rs) — 1/1 documented (100%)*
 
@@ -8476,7 +8476,7 @@ pub fn to_screen_iso()  // Convert tile coordinates `(tx, ty)` to isometric scre
 
 ### `tilemap::error`
 
-> Owns typed validation and safety errors shared by tilemap constructors, queries, and import helpers. It keeps failure reasons explicit so safe `try_*` APIs can reject invalid dimensions, limits, and paths consistently. Open this file when tilemap callers need clearer diagnostics or when a new tilemap owner joins the shared safety contract.
+> Owns tilemap behavior with explicit state, validation, and crate-local integration boundaries. Centers the implementation around TileMapError, fmt, with helpers kept close to their invariants. Defines how error data is validated, transformed, or stored before neighboring systems use it. Owns tilemap behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on error behavior while Lua registration stays elsewhere. Documents the boundary where tilemap code accepts inputs, reports errors, or updates state.
 
 *[src/tilemap/error.rs](src/tilemap/error.rs) — 1/1 documented (100%)*
 
@@ -8523,7 +8523,7 @@ pub fn load_ldtk_with_limits()  // Parse `json_str` as an LDtk project using exp
 
 ### `tilemap::limits`
 
-> Owns shared tilemap sizing and validation limits used by safe constructors, importers, and bounded queries. It centralizes checked arithmetic and default safety ceilings so tilemap owners share one resource policy. Open this file when tilemap budgets or query guards change across storage, rendering, and importer code.
+> Owns tilemap behavior with explicit state, validation, and crate-local integration boundaries. Keeps tilemap data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior. Defines how limits data is validated, transformed, or stored before neighboring systems use it. Owns tilemap behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on limits behavior while Lua registration stays elsewhere.
 
 *[src/tilemap/limits.rs](src/tilemap/limits.rs) — 1/1 documented (100%)*
 
@@ -8584,7 +8584,7 @@ pub enum Facing  // Cardinal facing direction for a grid-aligned entity.
 
 ### `tilemap::tilemap`
 
-> Defines the core layered tilemap data model used by simulation, collision, generation, and rendering paths. Stores per-cell gids, per-layer visibility, tint, parallax, and geometry settings under one coherent runtime. Resolves global ids through attached tilesets so tile ownership and atlas lookup stay deterministic. Computes autotile neighborhood masks and substitution results that preserve terrain continuity across edits. Performs swept collision checks against solid tiles for movement systems that need stable tile-based blocking. Advances animated tile timelines from tileset frame data so visual state updates stay tied to map content. Converts between world and tile coordinates using the active map geometry instead of hardcoded projection math. Emits culled draw commands for viewport-scoped debug or runtime visualization without duplicating map scans. Acts as the operational boundary for layered tile storage rather than external import or large-map chunk policy. Open this file when layered map state, autotiling, collisions, or coordinate conversion behaves incorrectly.
+> Owns tilemap behavior with explicit state, validation, and crate-local integration boundaries. Centers the implementation around TileLayer, index, try_new, with helpers kept close to their invariants. Defines how tilemap data is validated, transformed, or stored before neighboring systems use it. Owns tilemap behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on tilemap behavior while Lua registration stays elsewhere. Documents the boundary where tilemap code accepts inputs, reports errors, or updates state. Use this file when changing tilemap defaults, lifecycle handling, validation, or data ownership. Keeps failure paths and edge cases near the tilemap state that can explain them while keeping call sites explicit. Preserves deterministic behavior by keeping tilemap calculations explicit at their owner boundary. Provides the local adaptation layer that lets callers avoid duplicating tilemap rules while keeping call sites explicit. Maintains small helper surfaces so broader engine modules can compose tilemap behavior safely. Protects subsystem contracts by keeping resource, cache, or state mutations visible in one place.
 
 *[src/tilemap/tilemap.rs](src/tilemap/tilemap.rs) — 5/5 documented (100%)*
 
@@ -8598,7 +8598,7 @@ pub enum TileIndexPolicy  // Policy controlling when the reverse GID index is ma
 
 ### `tilemap::tileset`
 
-> Defines tileset geometry and metadata that map gids onto atlas rectangles, solidity, and animation sequences. Computes source quads from local ids so renderer code can sample the correct sprite region deterministically. Stores per-tile solidity and animation data used by collision, filtering, and animated map presentation. Acts as the atlas-metadata boundary between raw tilesheet images and higher-level map storage owners. Open this file when tile quad lookup, solid flags, or animated tileset frame data behaves incorrectly.
+> Owns tilemap behavior with explicit state, validation, and crate-local integration boundaries. Centers the implementation around TileAnimFrame, TileSet, new, with helpers kept close to their invariants. Defines how tileset data is validated, transformed, or stored before neighboring systems use it. Owns tilemap behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on tileset behavior while Lua registration stays elsewhere. Documents the boundary where tilemap code accepts inputs, reports errors, or updates state.
 
 *[src/tilemap/tileset.rs](src/tilemap/tileset.rs) — 2/2 documented (100%)*
 
@@ -8609,7 +8609,7 @@ pub struct TileSet  // A tileset slice of a sprite-sheet texture with collision,
 
 ### `tilemap::tmx`
 
-> Loads Tiled TMX maps into engine tile structures while preserving orientation, layers, objects, and tilesets. Supports TMX orientation modes so authored content can target orthogonal, isometric, and hex-style layouts. Decodes csv, xml, and compressed base64 tile payloads into stable gid streams used by runtime map storage. Parses tileset geometry and metadata required for atlas lookup, collision filtering, and tile animation. Ingests object layers so placement, sizing, and semantic type annotations survive the import boundary. Strips flip flags from raw gids so stored tile identity remains clean, comparable, and easy to post-process. Keeps TMX-specific error handling local instead of mixing format policy into procedural or LDtk importers. Open this file when TMX import, gid decoding, orientation handling, or object-layer parsing is incorrect.
+> Owns the tmx owner for the tilemap subsystem and keeps its rules local to this file while keeping call sites explicit. Keeps tilemap data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior. Defines how tmx data is validated, transformed, or stored before neighboring systems use it. Owns tilemap behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on tmx behavior while Lua registration stays elsewhere. Documents the boundary where tilemap code accepts inputs, reports errors, or updates state. Use this file when changing tmx defaults, lifecycle handling, validation, or data ownership. Keeps failure paths and edge cases near the tilemap state that can explain them while keeping call sites explicit. Preserves deterministic behavior by keeping tmx calculations explicit at their owner boundary.
 
 *[src/tilemap/tmx.rs](src/tilemap/tmx.rs) — 12/12 documented (100%)*
 
@@ -8819,7 +8819,7 @@ pub enum WidgetKind  // Discriminated union of all concrete widget types stored 
 
 ### `ui::controls`
 
-> Defines the concrete interactive controls that sit on top of shared widget state inside the retained UI system. Owns buttons, labels, text inputs, checkboxes, sliders, radios, combos, lists, tabs, and spin-style widgets. Keeps control construction explicit so type identity, defaults, and base widget integration stay unambiguous. Implements text editing helpers that clamp cursor motion, insertion, deletion, and maximum-length constraints. Normalizes selection and numeric-value handling so dynamic option lists do not violate control invariants. Provides the control-layer boundary between generic widget nodes and user-facing interactive primitives. Feeds consistent layout, style, and interaction semantics into the context and renderer without extra adapters. Open this file when editable values, selection rules, or control defaults behave differently than expected.
+> Owns the control widget model for the ui subsystem and keeps its rules local to this file. Centers the implementation around normalized_range_or, Button, new, with helpers kept close to their invariants. Defines how controls data is validated, transformed, or stored before neighboring systems use it. Owns ui behavior with explicit state, validation, and crate-local integration boundaries. for engine changes. Keeps public crate helpers focused on controls behavior while Lua registration stays elsewhere. Documents the boundary where ui code accepts inputs, reports errors, or updates state while keeping call sites explicit. Use this file when changing controls defaults, lifecycle handling, validation, or data ownership. Keeps failure paths and edge cases near the ui state that can explain them while keeping call sites explicit. Preserves deterministic behavior by keeping controls calculations explicit at their owner boundary. Provides the local adaptation layer that lets callers avoid duplicating ui rules while keeping call sites explicit.
 
 *[src/ui/controls.rs](src/ui/controls.rs) — 13/13 documented (100%)*
 
@@ -8841,7 +8841,7 @@ pub struct TextInput  // Single-line editable text field with cursor tracking, s
 
 ### `ui::diagnostics`
 
-> Defines lightweight accessibility snapshots and UX diagnostics for the retained UI system. Keeps report payload types separate from the live context owner so diagnostics APIs stay readable. Provides stable data shapes used by Lua bindings, tests, and tooling that inspect UI semantics. Acts as the type boundary for validation output without owning tree traversal or interaction logic. Open this file when accessibility dumps or diagnostics payloads need to grow without bloating `context.rs`.
+> Owns ui behavior with explicit state, validation, and crate-local integration boundaries. for engine changes. Centers the implementation around UiAccessibilityNode, UiDiagnostic, new, with helpers kept close to their invariants. Defines how diagnostics data is validated, transformed, or stored before neighboring systems use it.
 
 *[src/ui/diagnostics.rs](src/ui/diagnostics.rs) — 2/2 documented (100%)*
 
@@ -8884,7 +8884,7 @@ pub enum DialogActionRole  // Semantic role of a dialog action button.
 
 ### `ui::layout_loader`
 
-> Loads declarative TOML layout definitions into live widget trees built on the retained UI context. Maps textual widget kinds onto concrete constructors so authored layouts resolve to the same runtime widgets. Applies shared base properties and per-type fields to convert authored structure into usable live controls. Supports recursive child definitions that mirror the same parent-child composition used by code-built screens. Provides headless render-to-image helpers so declarative layouts can be snapshotted and verified offline. Keeps serde and parsing concerns local instead of spreading authored-layout decoding through widget modules. Acts as the data-driven boundary between TOML layout content and concrete UI tree construction. Open this file when authored layout files load with wrong structure, defaults, or snapshot rendering output.
+> Owns ui behavior with explicit state, validation, and crate-local integration boundaries. for engine changes. Centers the implementation around DialogActionDef, WidgetDef, LayoutDef, with helpers kept close to their invariants. Defines how layout loader data is validated, transformed, or stored before neighboring systems use it. Owns ui behavior with explicit state, validation, and crate-local integration boundaries. for engine changes. Keeps public crate helpers focused on layout loader behavior while Lua registration stays elsewhere. Documents the boundary where ui code accepts inputs, reports errors, or updates state while keeping call sites explicit. Use this file when changing layout loader defaults, lifecycle handling, validation, or data ownership. Keeps failure paths and edge cases near the ui state that can explain them while keeping call sites explicit. Preserves deterministic behavior by keeping layout loader calculations explicit at their owner boundary.
 
 *[src/ui/layout_loader.rs](src/ui/layout_loader.rs) — 6/6 documented (100%)*
 
@@ -8923,7 +8923,7 @@ pub enum ThemeToken  // A named semantic design token value used for consistent 
 
 ### `ui::widget`
 
-> Defines the core widget primitives that carry identity, layout, state flags, and transition semantics. Owns shared enums and records for widget type, mouse filtering, easing, alignment, and common widget fields. Represents the tree unit that context, layout, and renderer code all consume, mutate, and traverse. Keeps parent-child composition explicit so ownership and traversal remain stable across retained updates. Stores transition-facing values like alpha, position, and scale that drive hover, press, and animated visuals. Provides parsing and helper accessors that normalize widget metadata before higher layers inspect it. Acts as the contract boundary between concrete control variants and the shared state every widget carries. Open this file when widget identity, state flags, or transition values fail before control-specific logic runs. It is the base owner for UI node semantics, so upstream layout and render bugs often start with this shape.
+> Owns the widget runtime for the ui subsystem and keeps its rules local to this file while keeping call sites explicit. Centers the implementation around TextVAlign, parse_str, as_str, with helpers kept close to their invariants. Defines how widget data is validated, transformed, or stored before neighboring systems use it. Owns ui behavior with explicit state, validation, and crate-local integration boundaries. for engine changes. Keeps public crate helpers focused on widget behavior while Lua registration stays elsewhere. Documents the boundary where ui code accepts inputs, reports errors, or updates state while keeping call sites explicit. Use this file when changing widget defaults, lifecycle handling, validation, or data ownership. Keeps failure paths and edge cases near the ui state that can explain them while keeping call sites explicit. Preserves deterministic behavior by keeping widget calculations explicit at their owner boundary. Provides the local adaptation layer that lets callers avoid duplicating ui rules while keeping call sites explicit.
 
 *[src/ui/widget.rs](src/ui/widget.rs) — 8/8 documented (100%)*
 

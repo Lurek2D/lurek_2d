@@ -1,8 +1,9 @@
-//! Defines reusable 2D mesh data for custom vector geometry, imported models, and textured draw content.
-//! Stores vertex positions, colors, uv maps, topology mode, and optional texture binding under one asset type.
-//! Supports multiple draw topologies so callers can express lists, strips, fans, or related mesh patterns.
-//! Acts as the mesh-asset boundary between content generation and later tessellation or draw submission code.
-//! Open this file when mesh vertex data, topology choice, or texture attachment behavior looks incorrect.
+//! Owns the mesh owner for the render subsystem and keeps its rules local to this file while keeping call sites explicit.
+//! Centers the implementation around MeshDrawMode, MeshVertex, default, with helpers kept close to their invariants.
+//! Defines how mesh data is validated, transformed, or stored before neighboring systems use it.
+//! Owns render behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on mesh behavior while Lua registration stays elsewhere.
+//! Documents the boundary where render code accepts inputs, reports errors, or updates state.
 
 use crate::log_msg;
 use crate::runtime::log_messages::MS01;

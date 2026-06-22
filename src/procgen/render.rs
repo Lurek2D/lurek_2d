@@ -1,6 +1,7 @@
-//! This file owns the sampled noise-grid wrapper used to store tileable scalar fields and export them as pixels.
-//! `NoiseGrid` stores width, height, and cells, while `from_perlin` builds values from periodic Perlin sampling.
-//! RGBA conversion also belongs here because preview-oriented export is part of the grid wrapper's contract.
+//! Owns procgen behavior with explicit state, validation, and crate-local integration boundaries.
+//! Centers the implementation around NoiseGrid, from_perlin, try_from_perlin, with helpers kept close to their invariants.
+//! Defines how render data is validated, transformed, or stored before neighboring systems use it.
+//! Owns procgen behavior with explicit state, validation, and crate-local integration boundaries.
 
 use crate::procgen::noise::perlin_noise_periodic;
 use crate::procgen::scalar_map_to_rgba_bytes;

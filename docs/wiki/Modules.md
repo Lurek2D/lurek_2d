@@ -9,9 +9,9 @@
 ## Table of Contents
 
 - [Foundations](#foundations)
+- [Core Runtime](#core-runtime)
 - [Platform Services](#platform-services)
 - [Feature Systems](#feature-systems)
-- [Edge / Integration](#edge-integration)
 - [Other](#other)
 
 Modules are grouped by runtime layer. Each module page includes its spec Purpose, spec Summary, examples, API overview, and related modules.
@@ -20,87 +20,87 @@ Modules are grouped by runtime layer. Each module page includes its spec Purpose
 
 | Module | Namespace | Purpose |
 |---|---|---|
-| [binary](Module-binary) | `lurek.binary` | Binary data toolkit: byte buffers, compression, hashing, encoding, structured pack / unpack. |
-| [color](Module-color) | `lurek.color` | RGBA color primitives with color-space conversions, blending modes, and predefined palettes. |
-| [compute](Module-compute) | `lurek.compute` | Dense N-D numerical array library exposed as lurek.compute.*; CPU-only matrix / signal workloads. |
-| [dataframe](Module-dataframe) | `lurek.dataframe` | In-memory column-major tabular data with lightweight SQL-style queries (lurek.dataframe.*). |
-| [event](Module-event) | `lurek.event` | Centralised event queue: OS input, window state, custom Lua events, automation injections. |
-| [filesystem](Module-filesystem) | `lurek.filesystem` | Sandboxed virtual filesystem (GameFS); blocks path-traversal escape from the game directory. |
-| [graph](Module-flownet) | `lurek.graph` | Directed flow-simulation graph: typed items flow through nodes, accumulate, decay, react. |
-| [globe](Module-globe) | `lurek.globe` | XCOM-style Geoscape province sphere: topology, orbit camera, fog-of-war, markers, day/night. |
-| [layout](Module-layout) | `lurek.layout` | Generic graph/tree/DAG layout algorithms for positioning nodes in 2D space. |
-| [log](Module-log) | `lurek.log` | Lua-accessible logging facade over the Rust log crate, controlled via RUST_LOG. |
-| [math](Module-math) | `lurek.math` | Foundational 2D math, geometry, and color types. Leaf of the engine dependency graph. |
-| [network](Module-network) | `lurek.network` | Multiplayer stack: ENet, raw TCP, async HTTP, WebSocket. Heavy crate tree. |
-| [patterns](Module-patterns) | `lurek.patterns` | Twelve classic game-programming design patterns exposed as lurek.patterns.*. |
-| [repl](Module-repl) | `lurek.repl` | Release-safe Lua REPL core used by the GUI CLI mode and devtools wrappers; headless also reuses its value-formatting helper. |
-| [runtime](Module-runtime) | `lurek.runtime` | Foundational shared state, engine config, error types, resource keys, log catalogue. Root of the dep tree. |
-| [serial](Module-serialize) | `lurek.serial` | Format-agnostic text serialisation centred on the recursive SerialValue enum. |
-| [thread](Module-thread) | `lurek.thread` | Background threading with per-thread isolated Lua VMs (B-04: VMs cannot be shared). |
-| [timer](Module-timer) | `lurek.timer` | Frame-timing (Clock) and deferred / repeating callback scheduling (Scheduler). |
+| [binary](Module-binary) | `lurek.binary` | The binary module is the byte-oriented data surface for users who need exact control over compact formats, protocol payloads, and structured runtime interchange. |
+| [color](Module-color) | `lurek.color` | The color module is the shared toolbox for defining, converting, and reusing runtime color values across the engine. |
+| [compute](Module-compute) | `lurek.compute` | The compute module is the dense numeric workspace for users who want array-heavy processing, analysis, and transformation logic inside the engine. |
+| [dataframe](Module-dataframe) | `lurek.dataframe` | The dataframe module is the engine's tabular-data workspace for users who want table-shaped information to be loaded, queried, transformed, summarized, and exported without leaving the runtime. |
+| [graph](Module-flownet) | `lurek.graph` | The flownet module is the logistics-graph simulation surface for users who want resources, items, queues, routes, and transformation rules to behave as one explicit networked system. |
+| [globe](Module-globe) | `lurek.globe` | The globe module is the planetary-map surface for users who want a world-scale spherical view to behave as a full gameplay and tooling system instead of a decorative background. |
+| [layout](Module-layout) | `lurek.layout` | The layout module is the automatic placement layer for users who need graph-like structures to become readable 2D diagrams without hand-positioning every node. |
+| [log](Module-log) | `lurek.log` | The log module is the common script-facing path for runtime diagnostics, so users can emit messages through one consistent logging surface instead of mixing ad hoc print styles. |
+| [math](Module-math) | `lurek.math` | The math module is the engine's shared numerical and geometric foundation for users who need consistent rules for coordinates, shapes, transforms, interpolation, sampling, and spatial reasoning across many feature areas. |
+| [patterns](Module-patterns) | `lurek.patterns` | The patterns module is the engine's reusable architectural toolkit for users who want common coordination, control-flow, storage, and utility structures implemented once and then reused across gameplay, tools, UI, AI, and automation features. |
+| [procgen](Module-procgen) | `lurek.procgen` | The procgen module is the engine's procedural-content creation toolkit for users who want maps, regions, structures, names, distributions, and generated support data to be produced inside the engine from reusable algorithms. |
+| [serial](Module-serialize) | `lurek.serial` | The serialize module is the format-translation surface for users who want several external data formats to map into one shared runtime value model. |
+| [svg](Module-vector) | `lurek.svg` | The vector module is the engine surface for scalable vector artwork, aimed at users who want SVG-style content to stay editable and resolution-independent for as long as possible. |
+
+## Core Runtime
+
+| Module | Namespace | Purpose |
+|---|---|---|
+| [event](Module-event) | `lurek.event` | The event module is the central message-routing layer for users who want runtime systems to communicate without hardwiring direct dependencies. |
+| [filesystem](Module-filesystem) | `lurek.filesystem` | The filesystem module is the sandboxed storage surface for users who need file access without giving every script raw platform path power. |
+| [network](Module-network) | `lurek.network` | The network module is the engine's communication and session surface for users who need game state, tool messages, service calls, telemetry, or multiplayer traffic to move between processes or machines. |
+| [repl](Module-repl) | `lurek.repl` | The repl module is the interactive evaluation surface for users who want to inspect or execute Lua code live inside a running engine context. |
+| [runtime](Module-runtime) | `lurek.runtime` | The runtime module is the shared engine-state surface that many other modules depend on before they expose their own user-facing features. |
+| [thread](Module-thread) | `lurek.thread` | The thread module is the isolated-concurrency surface for projects that want background Lua work without violating the engine's VM and runtime-safety rules. |
+| [timer](Module-timer) | `lurek.timer` | The timer module is the shared time-management surface for users who need clocks, delayed callbacks, repeating work, and timing queries to behave consistently. |
 
 ## Platform Services
 
 | Module | Namespace | Purpose |
 |---|---|---|
-| [audio](Module-audio) | `lurek.audio` | Sound loading and playback wrapping rodio; Mixer / Bus instances live in SharedState. |
-| [camera](Module-camera) | `lurek.camera` | 2D camera and viewport types. Pure data; no GPU resources. |
-| [dsp](Module-dsp) | `lurek.dsp` | Digital signal processing: real-time effects chains, offline batch processing, audio visualization. |
-| [effect](Module-effect) | `lurek.effect` | Post-processing pipeline: blur, bloom, distortion, color grading, custom WGSL passes. |
-| [font](Module-font) | `lurek.font` | CPU-side font loading, glyph metrics, text measurement, and shaping for bitmap fonts. |
-| [image](Module-image) | `lurek.image` | CPU-side ImageData (RGBA8 buffer) with blit, resize, fill, region, diff, PNG encode. |
-| [input](Module-input) | `lurek.input` | Per-frame keyboard / mouse / gamepad / touch state translated from winit events. |
-| [light](Module-light) | `lurek.light` | 2D point-light data model. Pure container; renderer owns all GPU work. |
-| [midi](Module-midi) | `lurek.midi` | MIDI file playback via software synthesis using SoundFont data; transport and per-channel controls. |
-| [physics](Module-physics) | `lurek.physics` | Rigid-body 2D physics on top of rapier2d. Heavy dependency tree. |
-| [render](Module-render) | `lurek.render` | wgpu 22 renderer with deferred RenderCommand queue; nothing executes during Lua callbacks. |
-| [visibility](Module-visibility) | `lurek.visibility` | Universal fog-of-war / discovery / line-of-sight system; geometry-agnostic, consumed by province/globe/minimap. |
-| [window](Module-window) | `lurek.window` | Window control via deferred WindowState writes; winit ops applied at frame start on the main thread. |
+| [audio](Module-audio) | `lurek.audio` | The audio module is the engine's main runtime sound system for users who need playback, routing, source state, timing, and mix control to live under one API. |
+| [camera](Module-camera) | `lurek.camera` | The camera module is the engine's shared view-control surface for users who need world motion to become readable player-facing framing. |
+| [dsp](Module-dsp) | `lurek.dsp` | The dsp module is the programmable signal-processing layer for users who need audio to be transformed, analyzed, or synthesized at runtime. |
+| [effect](Module-effect) | `lurek.effect` | The effect module is the post-processing surface for users who want final-frame styling to be configurable at runtime instead of buried in renderer internals. |
+| [font](Module-font) | `lurek.font` | The font module is the typography layer for users who need predictable text behavior in UI, HUDs, overlays, or retro-style screens. |
+| [image](Module-image) | `lurek.image` | The image module is the engine's CPU-side image workbench for users who need pixel data to be loaded, transformed, composed, inspected, compared, and exported under one coherent API. |
+| [input](Module-input) | `lurek.input` | The input module is the engine's unified control surface for users who need keyboard, mouse, gamepad, and touch state to behave as one coherent runtime system. |
+| [light](Module-light) | `lurek.light` | The light module is the engine's shared 2D lighting-data surface for users who need lights, occluders, shadows, and illumination behavior to remain structured before rendering. |
+| [midi](Module-midi) | `lurek.midi` | The midi module is the playback surface for projects that want symbolic music control instead of treating every cue as rendered audio. |
+| [physics](Module-physics) | `lurek.physics` | The physics module is the engine's 2D simulation authority for users who want motion, contact, shapes, joints, and collision queries to live inside one consistent world model. |
+| [render](Module-render) | `lurek.render` | The render module is the engine's central visual execution layer, responsible for turning high-level drawing intent from many other systems into concrete frame output on GPU-backed and software-backed paths. |
+| [visibility](Module-visibility) | `lurek.visibility` | The visibility module is the shared answer to fog-of-war, line-of-sight, and remembered exploration for users building map-aware gameplay. |
+| [window](Module-window) | `lurek.window` | The window module is the desktop-window control surface for users who need display selection, viewport scaling, mode changes, and OS-facing window behavior under one runtime API. |
 
 ## Feature Systems
 
 | Module | Namespace | Purpose |
 |---|---|---|
-| [agent](Module-agent) | `lurek.agent` | LLM agent runtime: async prompt dispatch, skill-context assembly, batch polling, and Lua callback delivery. |
-| [ai](Module-ai) | `lurek.ai` | Game AI toolkit: FSMs, behaviour trees, GOAP, steering, utility AI, blackboards. Pure CPU. |
-| [animation](Module-animation) | `lurek.animation` | Sprite animation: source-rect changes over time. Imports only math; headless-testable. |
-| [asset](Module-asset) | `lurek.asset` | Ref-counted media cache: load images, fonts, audio, and text assets by path; hold LAssetHandle values to keep them alive. |
-| [automation](Module-automation) | `lurek.automation` | Automated input simulation for headless tests, QA replay, recorded sessions. |
-| [charts](Module-charts) | `lurek.charts` | Software-rasterized chart renderers (line, bar, scatter, pie, area) to RGBA8 pixel buffers. |
-| [dialog](Module-dialog) | `lurek.dialog` | Dialog/conversation engine: weighted topic/branch selection, state tracking, speaker registry. |
-| [ecs](Module-ecs) | `lurek.ecs` | Entity-Component-System: identity / data / behaviour separation for runtime composition. |
-| [grep](Module-grep) | `lurek.grep` | Literal-first text search engine for game content with lightweight regex/glob/fuzzy helpers. |
-| [i18n](Module-i18n) | `lurek.i18n` | Internationalisation and localisation; user-facing text in locale data files (lurek.i18n.*). |
-| [learning](Module-learning) | `lurek.learning` | Machine learning and evolutionary computation: neural nets, genetic algorithms, Q-learning, bandits. |
-| [mapblock](Module-mapblock) | `lurek.mapblock` | Procedural map block generation: configurable tiles, constraints, multi-level, scripted pipelines. |
-| [minimap](Module-minimap) | `lurek.minimap` | Grid-based minimap data model: fog of war, tracked objects, pings, viewport overlay. |
-| [mods](Module-mods) | `lurek.mods` | Mod-loading framework: virtual filesystem mounts + sandboxed runtime config. |
-| [overlay](Module-overlay) | `lurek.overlay` | Screen overlay system: weather, atmosphere, screen effects, and transitions. |
-| [parallax](Module-parallax) | `lurek.parallax` | Multi-layer scrolling backgrounds with camera-relative scroll factors and blend modes. |
-| [particle](Module-particle) | `lurek.particle` | Emitter-based 2D particle systems with bounded pools and Euler integration. |
-| [pathfind](Module-pathfind) | `lurek.pathfind` | Grid / hex / iso / hierarchical / flow-field pathfinding. CPU-only, headless. Couples to ai. |
-| [pipeline](Module-pipeline) | `lurek.pipeline` | DAG-based workflow orchestration: analytics, test sequences, asset / mod processing. |
-| [procgen](Module-procgen) | `lurek.procgen` | Procedural content generation: noise, L-systems, WFC, BSP, dungeon gen, cellular worlds. |
-| [province](Module-province) | `lurek.province` | Engine-native province runtime: topology, style state, revisioned deltas, geometry cache, Lua bridge. |
-| [raycaster](Module-raycaster) | `lurek.raycaster` | Wolfenstein-style 2D grid raycaster: textured walls, billboard sprites, doors, lighting. |
-| [save](Module-save) | `lurek.save` | Save / load lifecycle: schema versioning, migrations, auto-save. Bytes belong to serial. |
-| [scene](Module-scene) | `lurek.scene` | Named, stackable scenes with transitions for menu / gameplay / pause / cutscene state changes. |
-| [spine](Module-spine) | `lurek.spine` | Hierarchical skeletal animation (own implementation; not the official Spine SDK â€” A-02 + licensing). |
-| [sprite](Module-sprite) | `lurek.sprite` | Sprite and sprite-batch rendering above the render command queue. |
-| [terminal](Module-terminal) | `lurek.terminal` | Character-cell text-mode terminal for roguelikes, debug consoles, ASCII rendering. |
-| [physics](Module-tilemap) | `lurek.physics` | Single- to multi-layer tile maps with animated tiles, TMX/LDtk import, autotile, iso sort. |
-| [tween](Module-tween) | `lurek.tween` | Property animation: interpolated transitions on Lua table fields without per-frame lerp code. |
-| [ui](Module-ui) | `lurek.ui` | Retained-mode widget system; rendering deferred through RenderCommand. |
-| [validator](Module-validator) | `lurek.validator` | Content validation engine: asset checks, import resolution, API compliance, custom rules. |
-
-## Edge / Integration
-
-| Module | Namespace | Purpose |
-|---|---|---|
-| [input](Module-app) | `lurek.input` | Application entry-point: winit event loop, wgpu surface / device, Lua VM, frame pacing. |
-| [debugbridge](Module-debugbridge) | `lurek.debugbridge` | TCP debug bridge (127.0.0.1, JSON-over-TCP) for the VS Code extension and MCP server. |
-| [devtools](Module-devtools) | `lurek.devtools` | In-process logger, frame profiler, rolling stats, hot-reload file watcher (lurek.devtools.*). |
-| [docs](Module-docs) | `lurek.docs` | In-engine API docs-general catalog and lightweight schema validation for structured game data. |
+| [agent](Module-agent) | `lurek.agent` | The agent module is the engine's AI-assistant surface for users who want LLM-backed behavior inside the runtime without building transport, memory, and orchestration infrastructure from scratch. |
+| [ai](Module-ai) | `lurek.ai` | The ai module is the engine's gameplay-intelligence surface for users who need actors to perceive, decide, coordinate, and adapt in ways that go far beyond hard-coded if-then behavior. |
+| [animation](Module-animation) | `lurek.animation` | The animation module is the engine's time-based motion system for users who need sprites, poses, and related visual states to advance through structured runtime playback. |
+| [asset](Module-asset) | `lurek.asset` | The asset module is the shared runtime catalog for loaded resources, so users can work with stable handles instead of repeatedly reopening raw file paths. |
+| [automation](Module-automation) | `lurek.automation` | The automation module is the scripted replay layer for users who want deterministic QA, repeatable demos, or regression-oriented gameplay checks. |
+| [charts](Module-charts) | `lurek.charts` | The charts module is the engine's in-runtime data-visualization surface for users who want tables, counters, time series, and distributions to become readable graphics. |
+| [cinematic](Module-cinematic) | `lurek.cinematic` | The cinematic module is the timeline authoring surface for cutscenes, scripted reveals, and other multi-system sequences. |
+| [cursor](Module-cursor) | `lurek.cursor` | The cursor module is the pointer-behavior surface for users who want the cursor to feel like part of the game UX rather than a fixed OS artifact. |
+| [dialog](Module-dialog) | `lurek.dialog` | The dialog module is the conversation-runtime surface for users building branching narrative, tutorial flows, reactive chatter, or choice-driven exchanges. |
+| [ecs](Module-ecs) | `lurek.ecs` | The ecs module is the engine's entity-component world model for users who want gameplay state to scale through entities, components, queries, and scheduled systems. |
+| [grep](Module-grep) | `lurek.grep` | The grep module is the scriptable text-search surface for users who want to scan project files, logs, or structured content from inside the engine environment. |
+| [html](Module-html) | `lurek.html` | The html module is the in-engine document-style UI surface for users who want markup, styles, and DOM-like interaction inside the runtime. |
+| [i18n](Module-i18n) | `lurek.i18n` | The i18n module is the localization surface for projects that want translated text, locale-aware formatting, and language switching to behave as one system. |
+| [learning](Module-learning) | `lurek.learning` | The learning module is the engine's machine-learning and adaptive-policy surface for users who want experimentation, inference, and lightweight training loops to live inside the same runtime as gameplay and tooling code. |
+| [mapblock](Module-mapblock) | `lurek.mapblock` | The mapblock module is the engine's modular map-assembly surface for users who want larger spaces built from reusable authored blocks instead of from one monolithic generator. |
+| [minimap](Module-minimap) | `lurek.minimap` | The minimap module is the HUD-scale map surface for users who want world state, fog, markers, and view tracking to become a compact readable overlay. |
+| [mods](Module-mods) | `lurek.mods` | The mods module is the governed extension surface for projects that want external content packs to behave like controlled runtime extensions instead of unrestricted code drops. |
+| [overlay](Module-overlay) | `lurek.overlay` | The overlay module is the engine's screen-layer presentation surface for users who want weather, atmosphere, transitions, and other scene-wide visual treatments to behave as one coherent system. |
+| [parallax](Module-parallax) | `lurek.parallax` | The parallax module is the layered-background surface for projects that want depth and atmospheric motion without full 3D simulation. |
+| [particle](Module-particle) | `lurek.particle` | The particle module is the pooled visual-effects system for users who want smoke, sparks, rain, trails, bursts, and other transient visuals to behave like one reusable runtime feature. |
+| [pathfind](Module-pathfind) | `lurek.pathfind` | The pathfind module is the engine's navigation and movement-analysis surface for users who need more than one hard-coded shortest-path helper. |
+| [pipeline](Module-pipeline) | `lurek.pipeline` | The pipeline module is the engine's workflow-orchestration surface for users who want multi-step processing to behave like explicit directed workflows instead of loosely nested call sequences. |
+| [province](Module-province) | `lurek.province` | The province module is the engine's territory-region system for users who want named areas, borders, ownership, routing, and province-like gameplay state to behave as one native feature. |
+| [raycaster](Module-raycaster) | `lurek.raycaster` | The raycaster module is the engine's pseudo-3D first-person view system for users who want corridor shooters, dungeon crawlers, exploration views, or tactical previews built from structured 2D world data instead of from a full freeform 3D engine stack. |
+| [save](Module-save) | `lurek.save` | The save module is the persistence-lifecycle surface for users who want game state to be stored, versioned, and restored as a managed workflow instead of a raw file dump. |
+| [scene](Module-scene) | `lurek.scene` | The scene module is the high-level flow coordinator for users who want menus, gameplay states, overlays, pause layers, and transitions to behave like one ordered stack instead of a collection of unrelated toggles. |
+| [spine](Module-spine) | `lurek.spine` | The spine module is the skeletal-animation surface for users who want bone-based rigs, slots, skins, and timeline-driven pose changes inside the engine. |
+| [sprite](Module-sprite) | `lurek.sprite` | The sprite module is the engine's textured-2D surface for users who want single sprites, sheets, atlases, scalable panels, and batched instances to share one coherent runtime model. |
+| [terminal](Module-terminal) | `lurek.terminal` | The terminal module is the engine's character-grid interface surface for users who want text-mode displays, debug consoles, command panels, or roguelike-style presentation. |
+| [tilemap](Module-tilemap) | `lurek.tilemap` | The tilemap module is the engine's full grid-world framework for users who want tile-based spaces to be authored, generated, rendered, queried, and traversed through one reusable system rather than through several disconnected helpers. |
+| [tween](Module-tween) | `lurek.tween` | The tween module is the engine's interpolation and motion-sequencing surface for users who want values to change over time without hand-writing frame-by-frame update loops. |
+| [ui](Module-ui) | `lurek.ui` | The ui module is the engine's retained-interface system for users who want menus, HUDs, editors, overlays, and tool panels to behave like one persistent application layer instead of a loose pile of draw calls and ad hoc click tests. |
+| [validator](Module-validator) | `lurek.validator` | The validator module is the content-checking surface for users who want assets, imports, and API usage to be verified as a structured workflow instead of informal manual review. |
 
 ## Other
 

@@ -12,8 +12,9 @@
 
 ## Rules
 - Do not edit generated API outputs directly; update source doc comments under `src/lua_api/`.
+- Do not edit generated module specs directly; update `docs/specs/manual/<module>.md` for durable intent.
 - Keep Markdown links valid after moves or renames.
-- Preserve hand-written spec `## Summary` sections during regeneration.
+- Treat `docs/meta/modules.toml` as the module metadata source of truth.
 - Write contributor docs for developers and modders in clear terms.
 
 ## Workflow

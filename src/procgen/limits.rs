@@ -1,6 +1,8 @@
-//! This file owns shared procgen sizing and validation limits used by safe constructors across generators.
-//! It centralizes checked cell-count arithmetic, byte-budget checks, and common option validation helpers.
-//! Open it when procgen resource ceilings or shared validation policy changes.
+//! Owns procgen behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps procgen data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+//! Defines how limits data is validated, transformed, or stored before neighboring systems use it.
+//! Owns procgen behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on limits behavior while Lua registration stays elsewhere.
 
 use super::error::ProcgenError;
 

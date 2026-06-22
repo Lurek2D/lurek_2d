@@ -14717,7 +14717,7 @@
             {
               "name": "name",
               "type": "string",
-              "description": "Script name.",
+              "description": "Optional script name, defaulting to `default`.",
               "optional": true
             }
           ],

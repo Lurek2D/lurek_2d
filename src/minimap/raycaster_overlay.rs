@@ -1,9 +1,10 @@
-//! `src/minimap/raycaster_overlay.rs` builds minimap overlays from raycaster walls, visibility, and lighting data.
-//! It owns light sampling, reveal collection, raw pixel extraction, visibility checks, and player arrow rasterization.
-//! The file is specific to raycaster scenes, keeping minimap helpers for FOV-driven views out of the generic minimap model.
-//! `MinimapTileSample` lives here because wall, visibility, and luminance samples are produced together by these helpers.
-//! Read it when line-of-sight reveal rules, minimap preview pixels, or player-direction overlay drawing needs to change.
-//! General minimap storage and HUD command rendering stay elsewhere; this file produces sampled overlay data and images.
+//! Owns the raycaster overlay owner for the minimap subsystem and keeps its rules local to this file.
+//! Keeps minimap data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+//! Defines how raycaster overlay data is validated, transformed, or stored before neighboring systems use it.
+//! Owns minimap behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on raycaster overlay behavior while Lua registration stays elsewhere.
+//! Documents the boundary where minimap code accepts inputs, reports errors, or updates state.
+//! Use this file when changing raycaster overlay defaults, lifecycle handling, validation, or data ownership.
 
 use super::types::{MinimapError, MinimapLimits};
 use crate::raycaster::dda::Raycaster2D;

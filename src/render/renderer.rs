@@ -1,12 +1,13 @@
-//! Defines the front-end render command language consumed by the software and GPU renderer implementations.
-//! Owns draw-mode enums, blend and stencil policy types, text alignment, gradients, and related draw metadata.
-//! Packages shapes, sprites, particles, typography, and effect requests into structured command variants.
-//! Standardizes sampler filters, repeat modes, depth behavior, and outline settings used across render paths.
-//! Keeps the abstract rendering vocabulary separate from the backends that later execute or rasterize commands.
-//! Provides adaptive circle and ellipse segment helpers used when front-end callers request curved primitives.
-//! Acts as the semantic boundary between gameplay draw intent and the lower-level renderer implementations.
-//! Open this file when command schema, blend semantics, or draw-mode vocabulary needs coordinated changes.
-//! Read this owner first when multiple backends disagree, because they all interpret the command types defined here.
+//! Owns render behavior with explicit state, validation, and crate-local integration boundaries.
+//! Centers the implementation around CompareMode, StencilAction, StencilMode, with helpers kept close to their invariants.
+//! Defines how renderer data is validated, transformed, or stored before neighboring systems use it.
+//! Owns render behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on renderer behavior while Lua registration stays elsewhere.
+//! Documents the boundary where render code accepts inputs, reports errors, or updates state.
+//! Use this file when changing renderer defaults, lifecycle handling, validation, or data ownership.
+//! Keeps failure paths and edge cases near the render state that can explain them while keeping call sites explicit.
+//! Preserves deterministic behavior by keeping renderer calculations explicit at their owner boundary.
+//! Provides the local adaptation layer that lets callers avoid duplicating render rules while keeping call sites explicit.
 
 use crate::math::Vec2;
 use crate::render::image_effect::ShaderPassDescriptor;

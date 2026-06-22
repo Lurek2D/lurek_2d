@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/tween.md or source docstrings instead. -->
+
 # tween
 
 ## TL;DR
@@ -7,12 +9,12 @@
 ## General Info
 
 - Module group: `Feature Systems`
-- Source path: `src/tween/`
+- Source path: `src/tween`
 - Binding: `src/lua_api/tween_api.rs`
 - Namespace: `lurek.tween`
 - Lua API surface: `15` functions, `6` types, `82` methods
-- Rust test path(s): tests/rust/unit/tween_tests.rs
-- Lua test path(s): tests/lua/unit/test_tween.lua, tests/lua/stress/test_tween_stress.lua, tests/lua/integration/test_tween_ecs.lua, tests/lua/integration/test_tween_camera.lua, tests/lua/integration/test_tween_animation.lua
+- User-facing: `true`
+- Plugin tier: `not_evaluated`
 
 ## Summary
 
@@ -33,11 +35,19 @@
 
 This module primarily collaborates with `math`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
 
+## Ownership
+
+- Canonical source: `src/tween`
+- Owning tier: `Feature Systems`
+- Plugin tier: `not_evaluated`
+- Lua binding owner: `src/lua_api/tween_api.rs`
+- Referenced engine modules: `math`
+
 ## Imports
 
-- `math`: Imports or references `math` from `src/math/`.
+- `math`: Imports or references `src/math/`. Cross-group dependency from `Feature Systems` into `Foundations`.
 
-## Files
+## Source Files
 
 ### chain.rs
 
@@ -292,9 +302,75 @@ This module primarily collaborates with `math`. Its responsibility should stay i
 - `LTweenState:type() -> string`: Returns the type name of this object.
 - `LTweenState:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
 
-## References
+## Examples
 
-- `math`: Imports or references `math` from `src/math/`.
+- `content/examples/tween.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_tween_unit.lua` (present)
+- Rust: `tests/rust/unit/tween_tests.rs`
+
+## Evidence / Golden
+
+| Kind | Path |
+|---|---|
+| Evidence test | `tests/lua/evidence/test_tween_evidence.lua` |
+| Golden test | `tests/lua/golden/test_tween_golden.lua` |
+| Current artifact | `tests/artifacts/current/tween/tween_easing_inCubic.png` |
+| Current artifact | `tests/artifacts/current/tween/tween_easing_inCubic.txt` |
+| Current artifact | `tests/artifacts/current/tween/tween_easing_inExpo.png` |
+| Current artifact | `tests/artifacts/current/tween/tween_easing_inExpo.txt` |
+| Current artifact | `tests/artifacts/current/tween/tween_easing_inOutCubic.png` |
+| Current artifact | `tests/artifacts/current/tween/tween_easing_inOutCubic.txt` |
+| Current artifact | `tests/artifacts/current/tween/tween_easing_inOutQuad.png` |
+| Current artifact | `tests/artifacts/current/tween/tween_easing_inOutQuad.txt` |
+| Current artifact | `tests/artifacts/current/tween/tween_easing_inOutSine.png` |
+| Current artifact | `tests/artifacts/current/tween/tween_easing_inOutSine.txt` |
+| Current artifact | `tests/artifacts/current/tween/tween_easing_inQuad.png` |
+| Current artifact | `tests/artifacts/current/tween/tween_easing_inQuad.txt` |
+| Current artifact | `tests/artifacts/current/tween/tween_easing_inSine.png` |
+| Current artifact | `tests/artifacts/current/tween/tween_easing_inSine.txt` |
+| Current artifact | `tests/artifacts/current/tween/tween_easing_linear.png` |
+| Current artifact | `tests/artifacts/current/tween/tween_easing_linear.txt` |
+| Current artifact | `tests/artifacts/current/tween/tween_easing_outCubic.png` |
+| Current artifact | `tests/artifacts/current/tween/tween_easing_outCubic.txt` |
+| Current artifact | `tests/artifacts/current/tween/tween_easing_outExpo.png` |
+| Current artifact | `tests/artifacts/current/tween/tween_easing_outExpo.txt` |
+| Current artifact | `tests/artifacts/current/tween/tween_easing_outQuad.png` |
+| Current artifact | `tests/artifacts/current/tween/tween_easing_outQuad.txt` |
+| Current artifact | `tests/artifacts/current/tween/tween_easing_outSine.png` |
+| Current artifact | `tests/artifacts/current/tween/tween_easing_outSine.txt` |
+| Current artifact | `tests/artifacts/current/tween/tween_pause_resume_scrub_trace.txt` |
+| Baseline artifact | `tests/artifacts/baselines/tween/tween_easing_inCubic.png` |
+| Baseline artifact | `tests/artifacts/baselines/tween/tween_easing_inCubic.txt` |
+| Baseline artifact | `tests/artifacts/baselines/tween/tween_easing_inExpo.png` |
+| Baseline artifact | `tests/artifacts/baselines/tween/tween_easing_inExpo.txt` |
+| Baseline artifact | `tests/artifacts/baselines/tween/tween_easing_inOutCubic.png` |
+| Baseline artifact | `tests/artifacts/baselines/tween/tween_easing_inOutCubic.txt` |
+| Baseline artifact | `tests/artifacts/baselines/tween/tween_easing_inOutQuad.png` |
+| Baseline artifact | `tests/artifacts/baselines/tween/tween_easing_inOutQuad.txt` |
+| Baseline artifact | `tests/artifacts/baselines/tween/tween_easing_inOutSine.png` |
+| Baseline artifact | `tests/artifacts/baselines/tween/tween_easing_inOutSine.txt` |
+| Baseline artifact | `tests/artifacts/baselines/tween/tween_easing_inQuad.png` |
+| Baseline artifact | `tests/artifacts/baselines/tween/tween_easing_inQuad.txt` |
+| Baseline artifact | `tests/artifacts/baselines/tween/tween_easing_inSine.png` |
+| Baseline artifact | `tests/artifacts/baselines/tween/tween_easing_inSine.txt` |
+| Baseline artifact | `tests/artifacts/baselines/tween/tween_easing_linear.png` |
+| Baseline artifact | `tests/artifacts/baselines/tween/tween_easing_linear.txt` |
+| Baseline artifact | `tests/artifacts/baselines/tween/tween_easing_outCubic.png` |
+| Baseline artifact | `tests/artifacts/baselines/tween/tween_easing_outCubic.txt` |
+| Baseline artifact | `tests/artifacts/baselines/tween/tween_easing_outExpo.png` |
+| Baseline artifact | `tests/artifacts/baselines/tween/tween_easing_outExpo.txt` |
+| Baseline artifact | `tests/artifacts/baselines/tween/tween_easing_outQuad.png` |
+| Baseline artifact | `tests/artifacts/baselines/tween/tween_easing_outQuad.txt` |
+| Baseline artifact | `tests/artifacts/baselines/tween/tween_easing_outSine.png` |
+| Baseline artifact | `tests/artifacts/baselines/tween/tween_easing_outSine.txt` |
+| Baseline artifact | `tests/artifacts/baselines/tween/tween_pause_resume_scrub_trace.txt` |
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

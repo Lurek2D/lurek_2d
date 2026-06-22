@@ -19,6 +19,9 @@ import pathlib
 import argparse
 
 ROOT = pathlib.Path(__file__).parent.parent.parent
+sys.path.insert(0, str(ROOT / "tools" / "docs"))
+import module_registry
+
 SRC = ROOT / "src"
 SPECS = ROOT / "docs" / "specs"
 SPECS_README = SPECS / "README.md"
@@ -48,8 +51,8 @@ Examples:
 
     # --- Gather ground truth ---
     src_modules = sorted(
-        d.name for d in SRC.iterdir()
-        if d.is_dir() and not d.name.startswith(".") and d.name not in SRC_SPEC_EXCLUDE
+        name for name in module_registry.list_modules()
+        if name not in SRC_SPEC_EXCLUDE
     )
 
     # Specs that intentionally have no matching src/<module>/ dir

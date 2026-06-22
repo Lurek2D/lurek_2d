@@ -1,9 +1,10 @@
-//! This file owns schema validation and default application for decoded `SerialValue` trees before runtime use.
-//! Validation checks required fields, declared types, numeric limits, string lengths, nested fields, and array items.
-//! Errors include dotted paths so content authors can find the exact subtree that violates a schema contract.
-//! Default application walks the same tree shape, filling missing fields or items from schema-provided fallback values.
-//! Schema pass and fail logging also lives here because validation is a common content-ingestion debugging boundary.
-//! Open this file when structural validation rules change; format parsers and Lua conversion live in sibling files.
+//! Owns serialize behavior with explicit state, validation, and crate-local integration boundaries.
+//! Centers the implementation around DefaultsApplied, child_path, item_path, with helpers kept close to their invariants.
+//! Defines how schema data is validated, transformed, or stored before neighboring systems use it.
+//! Owns serialize behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on schema behavior while Lua registration stays elsewhere.
+//! Documents the boundary where serialize code accepts inputs, reports errors, or updates state.
+//! Use this file when changing schema defaults, lifecycle handling, validation, or data ownership.
 
 use super::lua_table::SerialValue;
 use crate::log_msg;

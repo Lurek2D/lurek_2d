@@ -1,6 +1,8 @@
-//! Owns shared AI sizing, traversal, and numeric validation limits used by planners, steering, trees, and scoring helpers.
-//! It centralizes checked counts and finite-value policy so AI owners share one narrow validation contract.
-//! Open it when AI ceilings or numeric hardening rules change across the subsystem.
+//! Owns ai behavior with explicit state, validation, and crate-local integration boundaries. for engine changes.
+//! Centers the implementation around AiValidationLimits, default, finite_f32, with helpers kept close to their invariants.
+//! Defines how validation data is validated, transformed, or stored before neighboring systems use it.
+//! Owns ai behavior with explicit state, validation, and crate-local integration boundaries. for engine changes.
+//! Keeps public crate helpers focused on validation behavior while Lua registration stays elsewhere.
 
 use super::error::AiError;
 

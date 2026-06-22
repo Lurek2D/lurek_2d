@@ -257,6 +257,199 @@ class LuaBindingToolTests(unittest.TestCase):
         self.assertGreater(report.summary.extraction_uncertain_count, 0)
         self.assertEqual(report.summary.unsupported_pattern_count, 0)
 
+    def test_validation_treats_lua_method_normalization_as_uncertain(self) -> None:
+        expected = self.tool.BindingSnapshot(
+            source="code",
+            source_dir="src/lua_api",
+            entries=[
+                self.tool.BindingEntry(
+                    module="ui",
+                    namespace="LButton",
+                    name="getText",
+                    qualified_name="LButton:getText",
+                    kind="method",
+                    call_style=":",
+                    owner="LButton",
+                    parameters=[
+                        self.tool.BindingParam("self", "any", "LuaValue", False, False, True),
+                    ],
+                    source_file="src/lua_api/ui_api.rs",
+                    line=10,
+                ),
+                self.tool.BindingEntry(
+                    module="mapblock",
+                    namespace="LMapBlockGenerator",
+                    name="setGrid",
+                    qualified_name="LMapBlockGenerator:setGrid",
+                    kind="method",
+                    call_style=":",
+                    owner="LMapBlockGenerator",
+                    parameters=[
+                        self.tool.BindingParam("grid", "userdata", "LuaAnyUserData", False, False, True),
+                    ],
+                    source_file="src/lua_api/mapblock_api.rs",
+                    line=20,
+                ),
+                self.tool.BindingEntry(
+                    module="learning",
+                    namespace="LFrameStack",
+                    name="push",
+                    qualified_name="LFrameStack:push",
+                    kind="method",
+                    call_style=":",
+                    owner="LFrameStack",
+                    parameters=[
+                        self.tool.BindingParam("frame", "table", "LuaTable", False, False, True),
+                    ],
+                    source_file="src/lua_api/learning_api.rs",
+                    line=30,
+                ),
+                self.tool.BindingEntry(
+                    module="dsp",
+                    namespace="lurek.dsp",
+                    name="analyzeFft",
+                    qualified_name="lurek.dsp.analyzeFft",
+                    kind="function",
+                    call_style=".",
+                    owner="",
+                    returns=[
+                        self.tool.BindingReturn("LResult<LuaTable<'lua>> {", "LuaResult<LuaTable>", False, True),
+                    ],
+                    source_file="src/lua_api/dsp_api.rs",
+                    line=40,
+                ),
+                self.tool.BindingEntry(
+                    module="serialize",
+                    namespace="lurek.serial",
+                    name="encodeMsgPack",
+                    qualified_name="lurek.serial.encodeMsgPack",
+                    kind="function",
+                    call_style=".",
+                    owner="",
+                    parameters=[],
+                    source_signature="fn encode_msgpack_value<'lua>(lua: &'lua Lua, value: LuaValue<'lua>) -> LuaResult<LuaString<'lua>> {",
+                    source_file="src/lua_api/serialize_api.rs",
+                    line=50,
+                ),
+                self.tool.BindingEntry(
+                    module="raycaster",
+                    namespace="LSpriteManager",
+                    name="addDirectional",
+                    qualified_name="LSpriteManager:addDirectional",
+                    kind="method",
+                    call_style=":",
+                    owner="LSpriteManager",
+                    parameters=[
+                        self.tool.BindingParam(
+                            "(x, y, front)",
+                            "LDirectionalSpriteArgs<'_>",
+                            "LuaDirectionalSpriteArgs<'_>",
+                            False,
+                            False,
+                            True,
+                        ),
+                    ],
+                    source_file="src/lua_api/raycaster_api.rs",
+                    line=60,
+                ),
+            ],
+        )
+        actual = self.tool.BindingSnapshot(
+            source="docstrings",
+            source_dir="src/lua_api",
+            entries=[
+                self.tool.BindingEntry(
+                    module="ui",
+                    namespace="LButton",
+                    name="getText",
+                    qualified_name="LButton:getText",
+                    kind="method",
+                    call_style=":",
+                    owner="LButton",
+                    parameters=[],
+                    source_file="src/lua_api/ui_api.rs",
+                    line=10,
+                ),
+                self.tool.BindingEntry(
+                    module="mapblock",
+                    namespace="LMapBlockGenerator",
+                    name="setGrid",
+                    qualified_name="LMapBlockGenerator:setGrid",
+                    kind="method",
+                    call_style=":",
+                    owner="LMapBlockGenerator",
+                    parameters=[
+                        self.tool.BindingParam("grid", "PlacementGrid", "PlacementGrid", False, False, True),
+                    ],
+                    source_file="src/lua_api/mapblock_api.rs",
+                    line=20,
+                ),
+                self.tool.BindingEntry(
+                    module="learning",
+                    namespace="LFrameStack",
+                    name="push",
+                    qualified_name="LFrameStack:push",
+                    kind="method",
+                    call_style=":",
+                    owner="LFrameStack",
+                    parameters=[
+                        self.tool.BindingParam("frame", "number[]", "number[]", False, False, True),
+                    ],
+                    source_file="src/lua_api/learning_api.rs",
+                    line=30,
+                ),
+                self.tool.BindingEntry(
+                    module="dsp",
+                    namespace="lurek.dsp",
+                    name="analyzeFft",
+                    qualified_name="lurek.dsp.analyzeFft",
+                    kind="function",
+                    call_style=".",
+                    owner="",
+                    returns=[
+                        self.tool.BindingReturn("table", "table", False, True),
+                    ],
+                    source_file="src/lua_api/dsp_api.rs",
+                    line=40,
+                ),
+                self.tool.BindingEntry(
+                    module="serialize",
+                    namespace="lurek.serial",
+                    name="encodeMsgPack",
+                    qualified_name="lurek.serial.encodeMsgPack",
+                    kind="function",
+                    call_style=".",
+                    owner="",
+                    parameters=[
+                        self.tool.BindingParam("value", "table", "table", False, False, True),
+                    ],
+                    source_file="src/lua_api/serialize_api.rs",
+                    line=50,
+                ),
+                self.tool.BindingEntry(
+                    module="raycaster",
+                    namespace="LSpriteManager",
+                    name="addDirectional",
+                    qualified_name="LSpriteManager:addDirectional",
+                    kind="method",
+                    call_style=":",
+                    owner="LSpriteManager",
+                    parameters=[
+                        self.tool.BindingParam("x", "number", "number", False, False, True),
+                        self.tool.BindingParam("y", "number", "number", False, False, True),
+                        self.tool.BindingParam("front", "any", "any", False, False, True),
+                    ],
+                    source_file="src/lua_api/raycaster_api.rs",
+                    line=60,
+                ),
+            ],
+        )
+
+        report = self.tool.validate_binding_snapshots(expected, actual)
+        self.assertFalse(report.has_blocking_issues())
+        self.assertEqual(report.summary.confirmed_doc_bug_count, 0)
+        self.assertGreaterEqual(report.summary.extraction_uncertain_count, 6)
+
 
 if __name__ == "__main__":
     unittest.main()

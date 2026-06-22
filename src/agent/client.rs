@@ -1,8 +1,11 @@
-//! This file owns `AgentClient`, the background prompt transport that keeps model HTTP work off the frame loop.
-//! It tracks bounded queued and in-flight work, exposes diagnostics, and keeps cancellation Lua-safe.
-//! Send logic uses a fixed worker pool instead of per-request thread spawn and retries only transient failures.
-//! Polling returns finished `AgentResponse` values in batches, letting Lua runtimes drain work at safe update points.
-//! Open this file when transport lifecycle changes; payload contracts and request shaping live in sibling files.
+//! Owns agent behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps agent data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+//! Defines how client data is validated, transformed, or stored before neighboring systems use it.
+//! Owns agent behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on client behavior while Lua registration stays elsewhere.
+//! Documents where agent callers should change defaults, errors, or lifecycle behavior. with focused crate-local behavior.
+//! Use this file when changing client defaults, lifecycle handling, validation, or data ownership.
+//! Keeps failure paths and edge cases near the agent state that can explain them while keeping call sites explicit.
 
 use crate::agent::types::{AgentError, AgentRequest, AgentResponse};
 use crate::network::http::HttpResponse;

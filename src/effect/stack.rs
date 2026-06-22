@@ -1,10 +1,11 @@
-//! This file owns `PostFxStack`, the ordered effect-index container that tracks enable flags, size, and capture state.
-//! It stores application order in parallel vectors, supports insertion and removal, and toggles entries efficiently.
-//! Query helpers report enabled subsets, one-based positions, dimensions, emptiness, and deduplicated index counts.
-//! Resize and clear operations keep render-target bookkeeping local so post-effect callers do not manage raw vectors.
-//! Dedup logic preserves first occurrence order while cleaning repeated effect references from dynamic compositions.
-//! Several debug image helpers also live here because they visualize stack entries, labels, params, and effect catalogs.
-//! Open this file when stack orchestration changes; effect instances, presets, and render commands live in siblings.
+//! Owns the stack owner for the effect subsystem and keeps its rules local to this file while keeping call sites explicit.
+//! Centers the implementation around PostFxStack, new, try_new, with helpers kept close to their invariants.
+//! Defines how stack data is validated, transformed, or stored before neighboring systems use it.
+//! Owns effect behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on stack behavior while Lua registration stays elsewhere.
+//! Documents the boundary where effect code accepts inputs, reports errors, or updates state.
+//! Use this file when changing stack defaults, lifecycle handling, validation, or data ownership.
+//! Keeps failure paths and edge cases near the effect state that can explain them while keeping call sites explicit.
 
 use super::contract::{
     PostFxDebugImageLimits, PostFxDiagnostics, PostFxDuplicatePolicy, PostFxError, PostFxLimits,

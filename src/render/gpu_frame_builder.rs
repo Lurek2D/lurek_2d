@@ -1,9 +1,7 @@
-//! Builds and rewrites per-frame prepared draw lists before GPU pass encoding.
-//! Owns frame-local draw coalescing rules so batching remains testable outside the renderer.
-//! Keeps compatibility checks close to `PreparedDraw` semantics instead of embedding them in frame orchestration.
-//! Preserves high-water scratch allocation by draining into caller-owned buffers and swapping results back.
-//! Acts as the CPU frame-list boundary between command tessellation and low-level render-pass encoding.
-//! Open this file when compatible draw calls fail to batch or incompatible prepared draws merge incorrectly.
+//! Owns the gpu frame builder owner for the render subsystem and keeps its rules local to this file.
+//! Keeps render data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+//! Defines how gpu frame builder data is validated, transformed, or stored before neighboring systems use it.
+//! Owns render behavior with explicit state, validation, and crate-local integration boundaries.
 
 use crate::render::gpu_types::PreparedDraw;
 

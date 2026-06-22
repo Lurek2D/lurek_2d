@@ -1,8 +1,10 @@
-//! This file owns CSV translation between delimited rows and the shared `SerialValue` tree used by the engine.
-//! It defines `CsvOptions`, parses header-aware or positional records, and serializes row sequences back to text.
-//! Header mode maps columns into ordered maps, while headerless mode keeps each record as a plain value sequence.
-//! Encoding enforces compatible row shapes so CSV assumptions stay aligned between read and write operations.
-//! Open this file when tabular serialization rules change; generic dispatch and value-tree ownership live nearby.
+//! Owns the csv owner for the serialize subsystem and keeps its rules local to this file while keeping call sites explicit.
+//! Keeps serialize data ownership and helper behavior clear for future engine maintenance. for engine changes.
+//! Defines how csv data is validated, transformed, or stored before neighboring systems use it.
+//! Owns serialize behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on csv behavior while Lua registration stays elsewhere.
+//! Documents the boundary where serialize code accepts inputs, reports errors, or updates state.
+//! Use this file when changing csv defaults, lifecycle handling, validation, or data ownership.
 
 use super::codec::{SerializeError, SerializeLimitKind};
 use super::json::to_json;

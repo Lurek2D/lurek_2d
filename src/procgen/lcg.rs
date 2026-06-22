@@ -1,6 +1,7 @@
-//! This file owns the tiny deterministic LCG used by multiple generators that need repeatable pseudo-random stepping.
-//! `Lcg` stores only the current state, making seeded advancement and normalized float sampling its core contract.
-//! Open it when baseline RNG semantics change; higher-level noise and layout generators live in sibling modules.
+//! Owns the lcg owner for the procgen subsystem and keeps its rules local to this file while keeping call sites explicit.
+//! Centers the implementation around LCG_ALGORITHM_VERSION, Lcg, new, with helpers kept close to their invariants.
+//! Defines how lcg data is validated, transformed, or stored before neighboring systems use it.
+//! Owns procgen behavior with explicit state, validation, and crate-local integration boundaries.
 
 /// Stable identifier for the current procgen LCG stepping contract.
 pub const LCG_ALGORITHM_VERSION: u32 = 1;

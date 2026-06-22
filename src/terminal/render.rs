@@ -1,8 +1,10 @@
-//! This file owns terminal-to-render export helpers that flatten the composed cell surface into visual outputs.
-//! `generate_render_commands` translates cells into `RenderCommand` streams with colored backgrounds and glyphs.
-//! `draw_to_image` rasterizes the same terminal surface into a readable `ImageData` snapshot for tools or previews.
-//! Both paths read the composed grid through terminal helpers, so widget overlays are included automatically.
-//! Open it when terminal visual export changes; core grid mutation and widget layout live in sibling state files.
+//! Owns the rendering path for the terminal subsystem and keeps its rules local to this file.
+//! Centers the implementation around LineGlyph, fn, color_channel, with helpers kept close to their invariants.
+//! Defines how render data is validated, transformed, or stored before neighboring systems use it.
+//! Owns terminal behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on render behavior while Lua registration stays elsewhere.
+//! Documents the boundary where terminal code accepts inputs, reports errors, or updates state.
+//! Use this file when changing render defaults, lifecycle handling, validation, or data ownership.
 
 use super::{terminal_state::Terminal, TCell};
 use crate::image::ImageData;

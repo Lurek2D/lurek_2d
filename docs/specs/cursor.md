@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/cursor.md or source docstrings instead. -->
+
 # cursor
 
 ## TL;DR
@@ -6,13 +8,13 @@
 
 ## General Info
 
-- Module group: `Edge/Integration`
-- Source path: `src/cursor/`
+- Module group: `Feature Systems`
+- Source path: `src/cursor`
 - Binding: `src/lua_api/cursor_api.rs`
 - Namespace: `lurek.cursor`
 - Lua API surface: `4` functions, `3` types, `30` methods
-- Rust test path(s): tests/rust/unit/cursor_tests.rs
-- Lua test path(s): tests/lua/unit/test_cursor_unit.lua
+- User-facing: `true`
+- Plugin tier: `not_evaluated`
 
 ## Summary
 
@@ -24,11 +26,19 @@
 
 This module is mostly self-contained inside the `Edge/Integration` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
 
+## Ownership
+
+- Canonical source: `src/cursor`
+- Owning tier: `Feature Systems`
+- Plugin tier: `not_evaluated`
+- Lua binding owner: `src/lua_api/cursor_api.rs`
+- Referenced engine modules: None detected from Rust imports.
+
 ## Imports
 
 - No top-level `crate::<module>` imports were detected in this module's Rust source files.
 
-## Files
+## Source Files
 
 ### animated_cursor.rs
 
@@ -175,9 +185,22 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 - `LCustomCursor:getSize() -> integer`: Get the pixel width and height of the cursor image.
 - `LCustomCursor:setPixel(x, y, r, g, b, a) -> nil`: Set a pixel color â€” Lua userdata object exposed by the engine.
 
-## References
+## Examples
 
-- No top-level `crate::<module>` imports were detected in this module's Rust source files.
+- `content/examples/cursor.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_cursor_unit.lua` (present)
+- Rust: `tests/rust/unit/cursor_tests.rs`
+
+## Evidence / Golden
+
+- No evidence or golden artifacts registered.
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

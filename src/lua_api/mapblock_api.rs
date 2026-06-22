@@ -984,7 +984,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     )?;
 
     /// Create a new map script exposed by the lurek engine.
-    /// @param | name | string | Script name.
+    /// @param | name | string? | Optional script name, defaulting to `default`.
     /// @return | MapScript | New script.
     module.set(
         "newScript",

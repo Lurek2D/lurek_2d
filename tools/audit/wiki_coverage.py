@@ -22,10 +22,13 @@ import sys
 from pathlib import Path
 
 ROOT = Path(".").resolve()
+sys.path.insert(0, str(ROOT / "tools" / "docs"))
+import module_registry
+
 WIKI_DIR = ROOT / "docs" / "wiki"
 SRC_DIR = ROOT / "src"
 LIBRARY_DIR = ROOT / "library"
-API_JSON = ROOT / "logs" / "data" / "lua_api_data.json"
+API_JSON = module_registry.lua_api_json_path()
 
 # Modules that are internal and don't need dedicated coverage checks
 INTERNAL_MODULES = {

@@ -1,10 +1,11 @@
-//! This file owns layered agent memory: bounded working slots, append-only episodes, semantic facts, and persistence.
-//! `WorkingMemory` keeps recent key-value context with capacity-based eviction so prompt state stays compact and fresh.
-//! `EpisodicMemory` records tick-stamped event snapshots and supports equality-filter queries plus age-based pruning.
-//! `SemanticMemory` stores named JSON facts for durable recall and object-field filtering outside immediate chat turns.
-//! `AgentMemory` bundles the three stores, safe disk persistence policy, and schema-validated save or load paths.
-//! Persistence uses atomic writes, a versioned envelope, and a sandbox rooted in the current workspace directory.
-//! Open this file when recall semantics change; request transport and prompt assembly live in sibling files.
+//! Owns the memory store for the agent subsystem and keeps its rules local to this file while keeping call sites explicit.
+//! Keeps agent data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+//! Defines how memory data is validated, transformed, or stored before neighboring systems use it.
+//! Owns agent behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on memory behavior while Lua registration stays elsewhere.
+//! Documents where agent callers should change defaults, errors, or lifecycle behavior. with focused crate-local behavior.
+//! Use this file when changing memory defaults, lifecycle handling, validation, or data ownership.
+//! Keeps failure paths and edge cases near the agent state that can explain them while keeping call sites explicit.
 
 use std::collections::{HashMap, VecDeque};
 use std::path::{Path, PathBuf};

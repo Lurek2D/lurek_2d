@@ -1,11 +1,13 @@
-//! This file owns the atomic mapblock model, combining tile layers, edge sockets, footprint cells, and author metadata.
-//! `MapBlock` stores dimensions, layers, slot count, side rules, custom sockets, weight flags, and vertical span data.
-//! `Edge` also lives here because block-local side identity is part of geometry and compatibility ownership.
-//! Legacy construction remains here so old raw layer data can be upgraded into the modern layered block structure.
-//! Tile setters and getters stay here because `MapBlock` is the first owner above `BlockLayer` for authored content.
-//! Footprint normalization and transformed socket maps belong here because rotation and mirroring start at block scope.
-//! Segment counts, transformed sizes, and legacy socket derivation stay local because they describe one block's geometry.
-//! Open it when block semantics change; candidate search, scripts, and result export build directly on this owner.
+//! Owns mapblock behavior with explicit state, validation, and crate-local integration boundaries.
+//! Centers the implementation around Edge, MapBlockLimits, default, with helpers kept close to their invariants.
+//! Defines how block data is validated, transformed, or stored before neighboring systems use it.
+//! Owns mapblock behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on block behavior while Lua registration stays elsewhere.
+//! Documents the boundary where mapblock code accepts inputs, reports errors, or updates state.
+//! Use this file when changing block defaults, lifecycle handling, validation, or data ownership.
+//! Keeps failure paths and edge cases near the mapblock state that can explain them while keeping call sites explicit.
+//! Preserves deterministic behavior by keeping block calculations explicit at their owner boundary.
+//! Owns mapblock behavior with explicit state, validation, and crate-local integration boundaries.
 
 use super::config::MapBlockConfig;
 use super::constraints::EdgeConstraint;

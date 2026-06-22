@@ -8,73 +8,73 @@
 
 ## Table of Contents
 
-- [uncategorized](#uncategorized)
-  - [cannon_fodder](#cannonfodder)
-  - [dungeon_crawler](#dungeoncrawler)
-  - [eu2](#eu2)
-  - [finance_app](#financeapp)
-  - [hex_logistics](#hexlogistics)
-  - [music_composer](#musiccomposer)
-  - [sensible_soccer](#sensiblesoccer)
+- [games](#games)
+  - [Cannon Fodder](#cannon-fodder)
+  - [Dungeon Crawler](#dungeon-crawler)
+  - [Europa Universalis 2 Lite](#europa-universalis-2-lite)
+  - [Hex Logistics](#hex-logistics)
+  - [Household Finance Lab](#household-finance-lab)
+  - [Music Composer](#music-composer)
+  - [Sensible Soccer](#sensible-soccer)
 
 Reference games come from the generated catalog in `content/games/README.md` and `content/games/catalog.json`.
 Only public catalog candidates are listed here; skeletons, feature-only examples, and duplicate migration work stay out of the ready-games wiki page.
 
 Catalog source: [content/games/README.md](../blob/main/content/games/README.md)
 
-## uncategorized
+## games
 
-### [cannon_fodder](../tree/main/content/games/cannon_fodder)
+### [Cannon Fodder](../tree/main/content/games/cannon_fodder)
 
-![cannon_fodder screenshot](../raw/main/content/games/cannon_fodder/screen.png)
+![Cannon Fodder screenshot](../raw/main/content/games/cannon_fodder/screen.png)
 
 _Dowodź oddziałem żołnierzy w niebezpiecznej dżungli — kieruj ruchem, prowadź ogień zaporowy i rzucaj granatami taktycznymi, pamiętając, że każda strata w ludziach jest bezpowrotna._
 
 **Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [ui](Module-ui), [window](Module-window)
 
-### [dungeon_crawler](../tree/main/content/games/dungeon_crawler)
+### [Dungeon Crawler](../tree/main/content/games/dungeon_crawler)
 
-![dungeon_crawler screenshot](../raw/main/content/games/dungeon_crawler/screen.png)
+![Dungeon Crawler screenshot](../raw/main/content/games/dungeon_crawler/screen.png)
 
 _Eksploruj trójwymiarowe korytarze lochów z perspektywy pierwszej osoby (FPP) — przemierzaj labirynt przy świetle pochodni, odkrywaj mgłę wojny na minimapie i zbieraj mistyczne kule._
 
 **Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [raycaster](Module-raycaster), [render](Module-render), [timer](Module-timer), [ui](Module-ui), [window](Module-window)
 
-### [eu2](../tree/main/content/games/eu2)
+### [Europa Universalis 2 Lite](../tree/main/content/games/eu2)
 
-![eu2 screenshot](../raw/main/content/games/eu2/screen.png)
+![Europa Universalis 2 Lite screenshot](../raw/main/content/games/eu2/screen.png)
 
-**Category:** Strategy / Grand Strategy **Engine:** Lurek2D
+**Engine:** Lurek2D
 
 **Modules:** [automation](Module-automation), [event](Module-event), [filesystem](Module-filesystem), [input](Module-input), [log](Module-log), [province](Module-province), [render](Module-render), [ui](Module-ui), +1
 
-### [finance_app](../tree/main/content/games/finance_app)
+### [Hex Logistics](../tree/main/content/games/hex_logistics)
 
-![finance_app screenshot](../raw/main/content/games/finance_app/screen.png)
+![Hex Logistics screenshot](../raw/main/content/games/hex_logistics/screen.png)
+
+Hex Logistics is a Lurek2D port of a Gemini React canvas prototype. Fly a construction ship over a procedural hex sector, pay metal to construct buildings, queue drones from factories, and tune building priorities while
+
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [math](Module-math), [render](Module-render), [tilemap](Module-tilemap), [timer](Module-timer), [window](Module-window)
+
+### [Household Finance Lab](../tree/main/content/games/finance_app)
+
+![Household Finance Lab screenshot](../raw/main/content/games/finance_app/screen.png)
 
 _Kompleksowe laboratorium finansów domowych — analityczny dashboard oparty o bazy danych SQL, biblioteki Dataframe, zaawansowane wykresy statystyczne oraz interaktywne widżety UI._
 
 **Modules:** [filesystem](Module-filesystem), [render](Module-render), [save](Module-save), [ui](Module-ui), [window](Module-window)
 
-### [hex_logistics](../tree/main/content/games/hex_logistics)
+### [Music Composer](../tree/main/content/games/music_composer)
 
-![hex_logistics screenshot](../raw/main/content/games/hex_logistics/screen.png)
+![Music Composer screenshot](../raw/main/content/games/music_composer/screen.png)
 
-**Category:** strategy
-
-**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [math](Module-math), [render](Module-render), [tilemap](Module-tilemap), [timer](Module-timer), [window](Module-window)
-
-### [music_composer](../tree/main/content/games/music_composer)
-
-![music_composer screenshot](../raw/main/content/games/music_composer/screen.png)
-
-Visual piano roll music sequencer.
+Visual piano roll music sequencer. Place and remove notes on a 32-beat × 24-note grid across three colored tracks, then play back in a looping sweep with smooth cursor animation and particle effects.
 
 **Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [window](Module-window)
 
-### [sensible_soccer](../tree/main/content/games/sensible_soccer)
+### [Sensible Soccer](../tree/main/content/games/sensible_soccer)
 
-![sensible_soccer screenshot](../raw/main/content/games/sensible_soccer/screen.png)
+![Sensible Soccer screenshot](../raw/main/content/games/sensible_soccer/screen.png)
 
 _Niezwykle szybka, dynamiczna retro-gra piłkarska — przejmij kontrolę nad 5-osobową drużyną, stosuj podania i wślizgi taktyczne, i pokonaj komputer w emocjonującym meczu z fizyką piłki._
 

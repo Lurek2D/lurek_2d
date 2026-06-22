@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/patterns.md or source docstrings instead. -->
+
 # patterns
 
 ## TL;DR
@@ -10,12 +12,12 @@
 ## General Info
 
 - Module group: `Foundations`
-- Source path: `src/patterns/`
+- Source path: `src/patterns`
 - Binding: `src/lua_api/patterns_api.rs`
 - Namespace: `lurek.patterns`
 - Lua API surface: `24` functions, `27` types, `218` methods
-- Rust test path(s): tests/rust/unit/patterns_tests.rs
-- Lua test path(s): tests/lua/unit/test_patterns_core_unit.lua; tests/lua/stress/test_patterns_stress.lua
+- User-facing: `true`
+- Plugin tier: `not_evaluated`
 
 ## Summary
 
@@ -43,11 +45,19 @@
 
 This module primarily collaborates with `runtime`. Its responsibility should stay inside the Foundations group rather than absorb behavior owned by those neighbors.
 
+## Ownership
+
+- Canonical source: `src/patterns`
+- Owning tier: `Foundations`
+- Plugin tier: `not_evaluated`
+- Lua binding owner: `src/lua_api/patterns_api.rs`
+- Referenced engine modules: `runtime`
+
 ## Imports
 
 - `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Foundations` into `Core Runtime`.
 
-## Files
+## Source Files
 
 ### behavior_tree.rs
 
@@ -798,9 +808,22 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - `LWeightedRandom:setWeight(id, weight) -> boolean`: Change the weight of an existing entry.
 - `LWeightedRandom:totalWeight() -> number`: Return the sum of all entry weights.
 
-## References
+## Examples
 
-- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Foundations` into `Core Runtime`.
+- `content/examples/patterns.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_patterns_unit.lua` (present)
+- Rust: `tests/rust/unit/patterns_tests.rs`
+
+## Evidence / Golden
+
+- No evidence or golden artifacts registered.
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

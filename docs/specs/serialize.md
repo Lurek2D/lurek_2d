@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/serialize.md or source docstrings instead. -->
+
 # serialize
 
 ## TL;DR
@@ -9,12 +11,12 @@
 ## General Info
 
 - Module group: `Foundations`
-- Source path: `src/serialize/`
+- Source path: `src/serialize`
 - Binding: `src/lua_api/serialize_api.rs`
 - Namespace: `lurek.serial`
 - Lua API surface: `16` functions, `0` types, `0` methods
-- Rust test path(s): tests/rust/unit/serialize_tests.rs
-- Lua test path(s): tests/lua/unit/test_serialize_unit.lua
+- User-facing: `true`
+- Plugin tier: `core_keep`
 
 ## Summary
 
@@ -29,27 +31,41 @@
 
 This module primarily collaborates with `runtime`. Its responsibility should stay inside the Foundations group rather than absorb behavior owned by those neighbors.
 
+## Ownership
+
+- Canonical source: `src/serialize`
+- Owning tier: `Foundations`
+- Plugin tier: `core_keep`
+- Lua binding owner: `src/lua_api/serialize_api.rs`
+- Referenced engine modules: `runtime`
+
 ## Imports
 
 - `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Foundations` into `Core Runtime`.
 
-## Files
+## Source Files
 
 ### codec.rs
 
-- This file owns the format-agnostic serialization front door for text and binary payloads across supported formats.
-- It defines `SerialFormat`, encode or decode options, and the `EncodedValue` result used by top-level callers.
-- Format detection inspects text content, while explicit routing sends MessagePack through byte decoding only.
-- Encode and decode helpers centralize dispatch so callers do not need per-format branching spread across modules.
-- Open this file when top-level serialization routing changes; concrete format implementations live in siblings.
+- Owns serialize behavior with explicit state, validation, and crate-local integration boundaries.
+- Centers the implementation around SerialFormat, parse, all, with helpers kept close to their invariants.
+- Defines how codec data is validated, transformed, or stored before neighboring systems use it.
+- Owns serialize behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on codec behavior while Lua registration stays elsewhere.
+- Documents the boundary where serialize code accepts inputs, reports errors, or updates state.
+- Use this file when changing codec defaults, lifecycle handling, validation, or data ownership.
+- Keeps failure paths and edge cases near the serialize state that can explain them while keeping call sites explicit.
+- Preserves deterministic behavior by keeping codec calculations explicit at their owner boundary.
 
 ### csv.rs
 
-- This file owns CSV translation between delimited rows and the shared `SerialValue` tree used by the engine.
-- It defines `CsvOptions`, parses header-aware or positional records, and serializes row sequences back to text.
-- Header mode maps columns into ordered maps, while headerless mode keeps each record as a plain value sequence.
-- Encoding enforces compatible row shapes so CSV assumptions stay aligned between read and write operations.
-- Open this file when tabular serialization rules change; generic dispatch and value-tree ownership live nearby.
+- Owns the csv owner for the serialize subsystem and keeps its rules local to this file while keeping call sites explicit.
+- Keeps serialize data ownership and helper behavior clear for future engine maintenance. for engine changes.
+- Defines how csv data is validated, transformed, or stored before neighboring systems use it.
+- Owns serialize behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on csv behavior while Lua registration stays elsewhere.
+- Documents the boundary where serialize code accepts inputs, reports errors, or updates state.
+- Use this file when changing csv defaults, lifecycle handling, validation, or data ownership.
 
 ### ini.rs
 
@@ -67,11 +83,13 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 ### lua_table.rs
 
-- This file owns `SerialValue` plus Lua conversion helpers that bridge dynamic Lua values into serializable Rust data.
-- It decides whether Lua tables become sequences or maps, while preserving scalars, nulls, and string-keyed content.
-- `to_lua` rebuilds Lua primitives and tables from decoded values so serialized data can round-trip through scripts.
-- Array detection is structural and automatic, which keeps callers from tagging plain Lua tables before encoding.
-- Open this file when shared value semantics change; concrete text and binary codecs live in sibling modules.
+- Owns the lua table owner for the serialize subsystem and keeps its rules local to this file.
+- Centers the implementation around SerialValue, fmt, to_lua, with helpers kept close to their invariants.
+- Defines how lua table data is validated, transformed, or stored before neighboring systems use it.
+- Owns serialize behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on lua table behavior while Lua registration stays elsewhere.
+- Documents the boundary where serialize code accepts inputs, reports errors, or updates state.
+- Use this file when changing lua table defaults, lifecycle handling, validation, or data ownership.
 
 ### mod.rs
 
@@ -92,12 +110,13 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 ### schema.rs
 
-- This file owns schema validation and default application for decoded `SerialValue` trees before runtime use.
-- Validation checks required fields, declared types, numeric limits, string lengths, nested fields, and array items.
-- Errors include dotted paths so content authors can find the exact subtree that violates a schema contract.
-- Default application walks the same tree shape, filling missing fields or items from schema-provided fallback values.
-- Schema pass and fail logging also lives here because validation is a common content-ingestion debugging boundary.
-- Open this file when structural validation rules change; format parsers and Lua conversion live in sibling files.
+- Owns serialize behavior with explicit state, validation, and crate-local integration boundaries.
+- Centers the implementation around DefaultsApplied, child_path, item_path, with helpers kept close to their invariants.
+- Defines how schema data is validated, transformed, or stored before neighboring systems use it.
+- Owns serialize behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on schema behavior while Lua registration stays elsewhere.
+- Documents the boundary where serialize code accepts inputs, reports errors, or updates state.
+- Use this file when changing schema defaults, lifecycle handling, validation, or data ownership.
 
 ### toml.rs
 
@@ -148,9 +167,24 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 - No documented module types.
 
-## References
+## Examples
 
-- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Foundations` into `Core Runtime`.
+- `content/examples/serialize.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_serialize_unit.lua` (present)
+- Rust: `tests/rust/unit/serialize_tests.rs`
+
+## Evidence / Golden
+
+| Kind | Path |
+|---|---|
+| Golden test | `tests/lua/golden/test_serialize_golden.lua` |
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

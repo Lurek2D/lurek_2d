@@ -1,6 +1,8 @@
-//! This file owns shared learning sizing and validation limits used by safe constructors, inference, and persistence helpers.
-//! It centralizes checked arithmetic and numeric policy so tensors, learners, genomes, and ONNX interop share one resource contract.
-//! Open it when ceilings or validation rules change across learning modules.
+//! Owns learning behavior with explicit state, validation, and crate-local integration boundaries.
+//! Centers the implementation around LearningLimits, default, validate_finite, with helpers kept close to their invariants.
+//! Defines how limits data is validated, transformed, or stored before neighboring systems use it.
+//! Owns learning behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on limits behavior while Lua registration stays elsewhere.
 
 use super::error::LearningError;
 

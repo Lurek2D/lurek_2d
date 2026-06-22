@@ -1,9 +1,11 @@
-//! This module is the mapblock index, exposing authored blocks, constraints, scripts, placement, and output conversion.
-//! It reexports `MapBlockGenerator`, block types, script data, placement state, and result carriers as one surface.
-//! `block.rs` owns atomic block geometry, while `placement.rs` and `generator.rs` own legality checks and execution flow.
-//! `config.rs`, `maptile.rs`, `layer.rs`, and `tileset_ref.rs` define the slot, tile, and tileset contracts here.
-//! `output.rs` and `multilevel.rs` handle built-map materialization, while `group.rs` and `script.rs` organize content.
-//! Open this file to navigate ownership quickly; actual generation logic, transforms, and storage live in sibling files.
+//! Indexes the mapblock subsystem and keeps exported submodules discoverable from one crate entry.
+//! Keeps mapblock data ownership and helper behavior clear for future engine maintenance. for engine changes.
+//! Separates navigation and module wiring from implementation so feature files own behavior directly.
+//! Owns mapblock behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps crate callers pointed at stable mapblock entrypoints while internals stay organized.
+//! Documents where mapblock callers should change defaults, errors, or lifecycle behavior. for engine changes.
+//! Indexes the mapblock subsystem and keeps exported submodules discoverable from one crate entry.
+//! Keeps mapblock data ownership and helper behavior clear for future engine maintenance. for engine changes.
 
 /// Map block definition: tile slots, metadata, and per-block configuration.
 pub mod block;

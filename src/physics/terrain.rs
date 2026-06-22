@@ -1,10 +1,11 @@
-//! This file owns `TerrainMap`, a chunked solid-cell grid that rebuilds static physics bodies only where edits occur.
-//! It stores map dimensions, cell scale, world offsets, per-cell solidity, spawned chunk body ids, and dirty chunks.
-//! Editing helpers flip single cells or fill circles, rectangles, and whole maps so gameplay can carve or restore terrain.
-//! Flush logic removes stale chunk colliders, merges horizontal solid runs, and respawns compact static bodies in `World`.
-//! Collapse and debris helpers support destructible terrain flows by pruning unsupported cells and spawning fragments.
-//! Image and byte serialization make the same terrain usable for previews, saves, reloads, and external authoring tools.
-//! Open this file when terrain editing or sync semantics change; body simulation and contact solving live in siblings.
+//! Owns physics behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps physics data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+//! Defines how terrain data is validated, transformed, or stored before neighboring systems use it.
+//! Owns physics behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on terrain behavior while Lua registration stays elsewhere.
+//! Documents the boundary where physics code accepts inputs, reports errors, or updates state.
+//! Use this file when changing terrain defaults, lifecycle handling, validation, or data ownership.
+//! Keeps failure paths and edge cases near the physics state that can explain them while keeping call sites explicit.
 
 use super::body::{Body, BodyType};
 use super::error::PhysicsError;

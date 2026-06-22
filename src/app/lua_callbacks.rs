@@ -1,8 +1,7 @@
-//! This file owns guarded `lurek.*` callback invocation helpers used by the desktop app runtime and UI bridges.
-//! It exposes logging and checked variants, probes callback presence, and resolves functions from the active Lua VM.
-//! Optional timeout wrappers install instruction hooks so runaway callbacks abort with a named runtime error.
-//! The file is the safety boundary between host events and Lua execution, keeping timeout policy in one owner.
-//! Open it when callback guard semantics change; frame orchestration and input dispatch live in sibling modules.
+//! Owns the lua callbacks owner for the app subsystem and keeps its rules local to this file.
+//! Keeps app data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+//! Defines how lua callbacks data is validated, transformed, or stored before neighboring systems use it.
+//! Owns app behavior with explicit state, validation, and crate-local integration boundaries.
 
 use crate::runtime::{call_function_with_policy, LuaExecutionPolicy};
 use mlua::prelude::*;

@@ -1,7 +1,8 @@
-//! This file owns the cellular-automata cave generator that evolves random occupancy into enclosed cavern maps.
-//! `CellularOpts` stores fill probability, rule thresholds, iterations, and seed for one reproducible generation run.
-//! Neighbor counting and border-as-solid behavior stay here because they define the resulting cave texture directly.
-//! Open it when cave evolution rules change; flood fill and sandbox material simulation live in sibling modules.
+//! Owns procgen behavior with explicit state, validation, and crate-local integration boundaries.
+//! Centers the implementation around CellularOpts, default, validate, with helpers kept close to their invariants.
+//! Defines how cellular data is validated, transformed, or stored before neighboring systems use it.
+//! Owns procgen behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on cellular behavior while Lua registration stays elsewhere.
 
 use super::lcg::Lcg;
 use crate::procgen::{

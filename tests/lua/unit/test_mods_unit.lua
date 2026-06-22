@@ -250,7 +250,8 @@ describe("lurek.mods", function()
 
     -- @covers LMod:setSandbox
     it("stores sandbox configuration tables", function()
-        local root = "save/_mods_sandbox_unit/"
+        local root = "save/_mods_sandbox_unit"
+        local root_abs = lurek.filesystem.getSaveDirectory() .. "/_mods_sandbox_unit"
         remove_if_exists(root, true)
         lurek.filesystem.createDirectory(root)
 
@@ -262,7 +263,7 @@ describe("lurek.mods", function()
                 hook_mode = "allow_list",
                 hooks = { "on_load" },
                 read_mode = "allow_list",
-                read_roots = { root },
+                read_roots = { root_abs },
                 blocked_ops = { "filesystem.remove" },
                 allow_network = false,
                 allow_file_write = false,
@@ -275,7 +276,8 @@ describe("lurek.mods", function()
 
     -- @covers LMod:getSandbox
     it("returns sandbox configuration tables", function()
-        local root = "save/_mods_sandbox_unit/"
+        local root = "save/_mods_sandbox_unit"
+        local root_abs = lurek.filesystem.getSaveDirectory() .. "/_mods_sandbox_unit"
         remove_if_exists(root, true)
         lurek.filesystem.createDirectory(root)
 
@@ -286,7 +288,7 @@ describe("lurek.mods", function()
             hook_mode = "allow_list",
             hooks = { "on_load" },
             read_mode = "allow_list",
-            read_roots = { root },
+            read_roots = { root_abs },
             blocked_ops = { "filesystem.remove" },
             allow_network = false,
             allow_file_write = false,

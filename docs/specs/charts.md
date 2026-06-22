@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/charts.md or source docstrings instead. -->
+
 # charts
 
 ## TL;DR
@@ -7,12 +9,12 @@
 ## General Info
 
 - Module group: `Feature Systems`
-- Source path: `src/charts/`
+- Source path: `src/charts`
 - Binding: `src/lua_api/charts_api.rs`
 - Namespace: `lurek.charts`
 - Lua API surface: `9` functions, `7` types, `146` methods
-- Rust test path(s): tests/rust/unit/charts_tests.rs
-- Lua test path(s): tests/lua/unit/test_charts_core_unit.lua
+- User-facing: `true`
+- Plugin tier: `tier_2_plugin`
 
 ## Summary
 
@@ -31,13 +33,21 @@
 
 This module primarily collaborates with `color`, `dataframe`, `image`. Its responsibility should stay inside the `Feature Systems` group rather than absorb behavior owned by those neighbors.
 
+## Ownership
+
+- Canonical source: `src/charts`
+- Owning tier: `Feature Systems`
+- Plugin tier: `tier_2_plugin`
+- Lua binding owner: `src/lua_api/charts_api.rs`
+- Referenced engine modules: `color`, `dataframe`, `image`
+
 ## Imports
 
-- `color`: Imports or references `src/color/`. Cross-group dependency from ``Feature Systems`` into `Edge/Integration`.
-- `dataframe`: Imports or references `src/dataframe/`. Cross-group dependency from ``Feature Systems`` into `Foundations`.
-- `image`: Imports or references `src/image/`. Cross-group dependency from ``Feature Systems`` into `Platform Services`.
+- `color`: Imports or references `src/color/`. Cross-group dependency from `Feature Systems` into `Foundations`.
+- `dataframe`: Imports or references `src/dataframe/`. Cross-group dependency from `Feature Systems` into `Foundations`.
+- `image`: Imports or references `src/image/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
 
-## Files
+## Source Files
 
 ### area.rs
 
@@ -138,15 +148,15 @@ This module primarily collaborates with `color`, `dataframe`, `image`. Its respo
 
 ### Functions
 
-- `lurek.charts.defaultPalette() -> nil`: Default palette.
-- `lurek.charts.newArea(config?) -> nil`: New area.
-- `lurek.charts.newBar(config?) -> nil`: New bar.
-- `lurek.charts.newHeatmap(config?) -> nil`: New heatmap.
-- `lurek.charts.newHistogram(config?) -> nil`: New histogram.
-- `lurek.charts.newLine(config?) -> nil`: New line.
-- `lurek.charts.newPie(config?) -> nil`: New pie.
-- `lurek.charts.newScatter(config?) -> nil`: New scatter.
-- `lurek.charts.seriesColor(index) -> nil`: Series color.
+- `lurek.charts.defaultPalette() -> table`: Returns the default chart color palette.
+- `lurek.charts.newArea(config?) -> LAreaChart`: Creates a new area chart userdata instance.
+- `lurek.charts.newBar(config?) -> LBarChart`: Creates a new bar chart userdata instance.
+- `lurek.charts.newHeatmap(config?) -> LHeatmapChart`: Creates a new heatmap chart userdata instance.
+- `lurek.charts.newHistogram(config?) -> LHistogramChart`: Creates a new histogram chart userdata instance.
+- `lurek.charts.newLine(config?) -> LLineChart`: Creates a new line chart userdata instance.
+- `lurek.charts.newPie(config?) -> LPieChart`: Creates a new pie chart userdata instance.
+- `lurek.charts.newScatter(config?) -> LScatterPlot`: Creates a new scatter plot userdata instance.
+- `lurek.charts.seriesColor(index) -> table`: Returns the palette color for a series index.
 
 ### Callbacks
 
@@ -169,26 +179,26 @@ This module primarily collaborates with `color`, `dataframe`, `image`. Its respo
 ##### Methods
 
 - `LAreaChart:addLayer(name, values, color?) -> nil`: Adds one filled area layer from a numeric value list.
-- `LAreaChart:addLayerFromDataFrame() -> nil`: Builds one filled area layer from a dataframe value column.
+- `LAreaChart:addLayerFromDataFrame(name, df, value_col, color?, opts?) -> nil`: Builds one filled area layer from a dataframe value column.
 - `LAreaChart:addSeries(name, data, color?) -> nil`: Adds a named area series from an array-style Lua table of points.
 - `LAreaChart:appendPoint(name, x, y, color?) -> nil`: Appends one finite point to a named area series.
-- `LAreaChart:clear() -> nil`: Clears the state.
+- `LAreaChart:clear() -> nil`: Clears all series and cached chart state.
 - `LAreaChart:draw(x, y, opts?) -> nil`: Draws the area chart at world or screen coordinates using optional transform options.
-- `LAreaChart:drawToImage(target) -> nil`: Draw to image.
-- `LAreaChart:getHeight() -> nil`: Returns the height.
-- `LAreaChart:getWidth() -> nil`: Returns the width.
-- `LAreaChart:render() -> nil`: Render.
-- `LAreaChart:renderImage() -> nil`: Render image.
-- `LAreaChart:setShowLegend(value) -> nil`: Sets the show legend.
-- `LAreaChart:setTitle(title) -> nil`: Sets the title.
-- `LAreaChart:setWindow(max_points?) -> nil`: Sets the window.
-- `LAreaChart:setXLabel(label) -> nil`: Sets the x label.
-- `LAreaChart:setXTickCount(count) -> nil`: Sets the x tick count.
-- `LAreaChart:setYLabel(label) -> nil`: Sets the y label.
-- `LAreaChart:setYMax(value) -> nil`: Sets the y max.
-- `LAreaChart:setYTickCount(count) -> nil`: Sets the y tick count.
-- `LAreaChart:type() -> nil`: Type.
-- `LAreaChart:typeOf(name) -> nil`: Type of.
+- `LAreaChart:drawToImage(target) -> nil`: Draws the rendered chart into an existing image.
+- `LAreaChart:getHeight() -> integer`: Returns the configured chart height in pixels.
+- `LAreaChart:getWidth() -> integer`: Returns the configured chart width in pixels.
+- `LAreaChart:render() -> integer, integer, string`: Renders the chart into raw RGBA image bytes.
+- `LAreaChart:renderImage() -> nil`: Renders the chart into a new LImage userdata.
+- `LAreaChart:setShowLegend(value) -> nil`: Controls whether the chart legend is rendered.
+- `LAreaChart:setTitle(title) -> nil`: Sets the chart title text shown in rendered output.
+- `LAreaChart:setWindow(max_points?) -> nil`: Sets the maximum retained sample window for this chart.
+- `LAreaChart:setXLabel(label) -> nil`: Sets the X axis label text for rendered output.
+- `LAreaChart:setXTickCount(count) -> nil`: Sets the number of X axis ticks drawn for this chart.
+- `LAreaChart:setYLabel(label) -> nil`: Sets the Y axis label text for rendered output.
+- `LAreaChart:setYMax(value) -> nil`: Sets the explicit Y axis maximum for chart scaling.
+- `LAreaChart:setYTickCount(count) -> nil`: Sets the number of Y axis ticks drawn for this chart.
+- `LAreaChart:type() -> string`: Returns the runtime userdata type name for this chart.
+- `LAreaChart:typeOf(name) -> boolean`: Checks whether a type name matches this chart userdata.
 
 #### LBarChart Type
 
@@ -200,25 +210,25 @@ This module primarily collaborates with `color`, `dataframe`, `image`. Its respo
 
 ##### Methods
 
-- `LBarChart:addCategoriesFromDataFrame() -> nil`: Adds grouped bar categories by reading one label column and one or more value columns from a dataframe.
+- `LBarChart:addCategoriesFromDataFrame(df, label_col, value_cols, opts?) -> nil`: Adds grouped bar categories by reading one label column and one or more value columns from a dataframe.
 - `LBarChart:addCategory(label, values) -> nil`: Adds one category label with a numeric value list for grouped bars.
 - `LBarChart:addSeries(name, data, color?) -> nil`: Adds a named bar series from an array-style Lua table of values or points.
-- `LBarChart:clear() -> nil`: Clears the state.
+- `LBarChart:clear() -> nil`: Clears all series and cached chart state.
 - `LBarChart:draw(x, y, opts?) -> nil`: Draws the bar chart at world or screen coordinates using optional transform options.
-- `LBarChart:drawToImage(target) -> nil`: Draw to image.
-- `LBarChart:getHeight() -> nil`: Returns the height.
-- `LBarChart:getWidth() -> nil`: Returns the width.
-- `LBarChart:render() -> nil`: Render.
-- `LBarChart:renderImage() -> nil`: Render image.
-- `LBarChart:setBarWidth(width) -> nil`: Sets the bar width.
-- `LBarChart:setShowLegend(value) -> nil`: Sets the show legend.
-- `LBarChart:setTitle(title) -> nil`: Sets the title.
-- `LBarChart:setXLabel(label) -> nil`: Sets the x label.
-- `LBarChart:setXTickCount(count) -> nil`: Sets the x tick count.
-- `LBarChart:setYLabel(label) -> nil`: Sets the y label.
-- `LBarChart:setYTickCount(count) -> nil`: Sets the y tick count.
-- `LBarChart:type() -> nil`: Type.
-- `LBarChart:typeOf(name) -> nil`: Type of.
+- `LBarChart:drawToImage(target) -> nil`: Draws the rendered chart into an existing image.
+- `LBarChart:getHeight() -> integer`: Returns the configured chart height in pixels.
+- `LBarChart:getWidth() -> integer`: Returns the configured chart width in pixels.
+- `LBarChart:render() -> integer, integer, string`: Renders the chart into raw RGBA image bytes.
+- `LBarChart:renderImage() -> nil`: Renders the chart into a new LImage userdata.
+- `LBarChart:setBarWidth(width) -> nil`: Sets the rendered width used for each bar.
+- `LBarChart:setShowLegend(value) -> nil`: Controls whether the chart legend is rendered.
+- `LBarChart:setTitle(title) -> nil`: Sets the chart title text shown in rendered output.
+- `LBarChart:setXLabel(label) -> nil`: Sets the X axis label text for rendered output.
+- `LBarChart:setXTickCount(count) -> nil`: Sets the number of X axis ticks drawn for this chart.
+- `LBarChart:setYLabel(label) -> nil`: Sets the Y axis label text for rendered output.
+- `LBarChart:setYTickCount(count) -> nil`: Sets the number of Y axis ticks drawn for this chart.
+- `LBarChart:type() -> string`: Returns the runtime userdata type name for this chart.
+- `LBarChart:typeOf(name) -> boolean`: Checks whether a type name matches this chart userdata.
 
 #### LHeatmapChart Type
 
@@ -230,27 +240,27 @@ This module primarily collaborates with `color`, `dataframe`, `image`. Its respo
 
 ##### Methods
 
-- `LHeatmapChart:clear() -> nil`: Clears the state.
-- `LHeatmapChart:clearValueRange() -> nil`: Clears value range.
+- `LHeatmapChart:clear() -> nil`: Clears all series and cached chart state.
+- `LHeatmapChart:clearValueRange() -> nil`: Clears the explicit heatmap value range.
 - `LHeatmapChart:draw(x, y, opts?) -> nil`: Draws the heatmap at world or screen coordinates using optional transform options.
-- `LHeatmapChart:drawToImage(target) -> nil`: Draw to image.
-- `LHeatmapChart:getHeight() -> nil`: Returns the height.
-- `LHeatmapChart:getWidth() -> nil`: Returns the width.
-- `LHeatmapChart:render() -> nil`: Render.
-- `LHeatmapChart:renderImage() -> nil`: Render image.
-- `LHeatmapChart:resize(rows, cols) -> nil`: Resize.
-- `LHeatmapChart:setCell(row, col, value) -> nil`: Sets the cell.
+- `LHeatmapChart:drawToImage(target) -> nil`: Draws the rendered chart into an existing image.
+- `LHeatmapChart:getHeight() -> integer`: Returns the configured chart height in pixels.
+- `LHeatmapChart:getWidth() -> integer`: Returns the configured chart width in pixels.
+- `LHeatmapChart:render() -> integer, integer, string`: Renders the chart into raw RGBA image bytes.
+- `LHeatmapChart:renderImage() -> nil`: Renders the chart into a new LImage userdata.
+- `LHeatmapChart:resize(rows, cols) -> nil`: Resizes the heatmap grid dimensions.
+- `LHeatmapChart:setCell(row, col, value) -> nil`: Sets a numeric heatmap cell value by row and column.
 - `LHeatmapChart:setColorRange(low, high) -> nil`: Sets the low and high RGBA colors used for the heatmap gradient.
-- `LHeatmapChart:setColumnLabels(labels) -> nil`: Sets the column labels.
+- `LHeatmapChart:setColumnLabels(labels) -> nil`: Sets labels displayed for heatmap columns.
 - `LHeatmapChart:setMatrix(matrix, row_labels?, col_labels?) -> nil`: Replaces the heatmap contents from a numeric matrix with optional row and column labels.
-- `LHeatmapChart:setMatrixFromDataFrame() -> nil`: Builds the heatmap contents from dataframe row, column, and value fields.
-- `LHeatmapChart:setRowLabels(labels) -> nil`: Sets the row labels.
-- `LHeatmapChart:setShowLegend(value) -> nil`: Sets the show legend.
-- `LHeatmapChart:setShowValues(value) -> nil`: Sets the show values.
-- `LHeatmapChart:setTitle(title) -> nil`: Sets the title.
-- `LHeatmapChart:setValueRange(min, max) -> nil`: Sets the value range.
-- `LHeatmapChart:type() -> nil`: Type.
-- `LHeatmapChart:typeOf(name) -> nil`: Type of.
+- `LHeatmapChart:setMatrixFromDataFrame(df, row_col, col_col, value_col, opts?) -> nil`: Builds the heatmap contents from dataframe row, column, and value fields.
+- `LHeatmapChart:setRowLabels(labels) -> nil`: Sets labels displayed for heatmap rows.
+- `LHeatmapChart:setShowLegend(value) -> nil`: Controls whether the chart legend is rendered.
+- `LHeatmapChart:setShowValues(value) -> nil`: Controls whether heatmap cell values are rendered.
+- `LHeatmapChart:setTitle(title) -> nil`: Sets the chart title text shown in rendered output.
+- `LHeatmapChart:setValueRange(min, max) -> nil`: Sets the explicit heatmap value range.
+- `LHeatmapChart:type() -> string`: Returns the runtime userdata type name for this chart.
+- `LHeatmapChart:typeOf(name) -> boolean`: Checks whether a type name matches this chart userdata.
 
 #### LHistogramChart Type
 
@@ -262,30 +272,30 @@ This module primarily collaborates with `color`, `dataframe`, `image`. Its respo
 
 ##### Methods
 
-- `LHistogramChart:addSeries(name, values, color?) -> nil`: Adds a named histogram sample series from a numeric value list.
-- `LHistogramChart:addSeriesFromDataFrame() -> nil`: Builds a named histogram sample series from one dataframe value column.
+- `LHistogramChart:addSeries(name, data, color?) -> nil`: Adds a named histogram sample series from a numeric value list.
+- `LHistogramChart:addSeriesFromDataFrame(name, df, x_col, y_col, color?, opts?) -> nil`: Builds a named histogram sample series from one dataframe value column.
 - `LHistogramChart:appendValue(name, value, color?) -> nil`: Appends one finite numeric sample to a named histogram series.
-- `LHistogramChart:clear() -> nil`: Clears the state.
-- `LHistogramChart:clearRange() -> nil`: Clears range.
+- `LHistogramChart:clear() -> nil`: Clears all series and cached chart state.
+- `LHistogramChart:clearRange() -> nil`: Clears the explicit histogram value range.
 - `LHistogramChart:draw(x, y, opts?) -> nil`: Draws the histogram at world or screen coordinates using optional transform options.
-- `LHistogramChart:drawToImage(target) -> nil`: Draw to image.
-- `LHistogramChart:getHeight() -> nil`: Returns the height.
-- `LHistogramChart:getWidth() -> nil`: Returns the width.
-- `LHistogramChart:render() -> nil`: Render.
-- `LHistogramChart:renderImage() -> nil`: Render image.
-- `LHistogramChart:replaceSeries(name, values, color?) -> nil`: Replaces a named histogram sample series with a new numeric value list.
-- `LHistogramChart:setBinCount(bins) -> nil`: Sets the bin count.
-- `LHistogramChart:setDensity(enabled) -> nil`: Sets the density.
-- `LHistogramChart:setRange(min, max) -> nil`: Sets the range.
-- `LHistogramChart:setShowLegend(value) -> nil`: Sets the show legend.
-- `LHistogramChart:setTitle(title) -> nil`: Sets the title.
-- `LHistogramChart:setWindow(max_points?) -> nil`: Sets the window.
-- `LHistogramChart:setXLabel(label) -> nil`: Sets the x label.
-- `LHistogramChart:setXTickCount(count) -> nil`: Sets the x tick count.
-- `LHistogramChart:setYLabel(label) -> nil`: Sets the y label.
-- `LHistogramChart:setYTickCount(count) -> nil`: Sets the y tick count.
-- `LHistogramChart:type() -> nil`: Type.
-- `LHistogramChart:typeOf(name) -> nil`: Type of.
+- `LHistogramChart:drawToImage(target) -> nil`: Draws the rendered chart into an existing image.
+- `LHistogramChart:getHeight() -> integer`: Returns the configured chart height in pixels.
+- `LHistogramChart:getWidth() -> integer`: Returns the configured chart width in pixels.
+- `LHistogramChart:render() -> integer, integer, string`: Renders the chart into raw RGBA image bytes.
+- `LHistogramChart:renderImage() -> nil`: Renders the chart into a new LImage userdata.
+- `LHistogramChart:replaceSeries(name, data, color?) -> nil`: Replaces a named histogram sample series with a new numeric value list.
+- `LHistogramChart:setBinCount(bins) -> nil`: Sets the number of histogram bins used for samples.
+- `LHistogramChart:setDensity(enabled) -> nil`: Controls whether histogram bins render as density values.
+- `LHistogramChart:setRange(min, max) -> nil`: Sets the explicit histogram value range.
+- `LHistogramChart:setShowLegend(value) -> nil`: Controls whether the chart legend is rendered.
+- `LHistogramChart:setTitle(title) -> nil`: Sets the chart title text shown in rendered output.
+- `LHistogramChart:setWindow(max_points?) -> nil`: Sets the maximum retained sample window for this chart.
+- `LHistogramChart:setXLabel(label) -> nil`: Sets the X axis label text for rendered output.
+- `LHistogramChart:setXTickCount(count) -> nil`: Sets the number of X axis ticks drawn for this chart.
+- `LHistogramChart:setYLabel(label) -> nil`: Sets the Y axis label text for rendered output.
+- `LHistogramChart:setYTickCount(count) -> nil`: Sets the number of Y axis ticks drawn for this chart.
+- `LHistogramChart:type() -> string`: Returns the runtime userdata type name for this chart.
+- `LHistogramChart:typeOf(name) -> boolean`: Checks whether a type name matches this chart userdata.
 
 #### LLineChart Type
 
@@ -298,28 +308,28 @@ This module primarily collaborates with `color`, `dataframe`, `image`. Its respo
 ##### Methods
 
 - `LLineChart:addSeries(name, data, color?) -> nil`: Adds a named line series from an array-style Lua table of points.
-- `LLineChart:addSeriesFromDataFrame() -> nil`: Builds a named line series from x and y columns in a dataframe.
+- `LLineChart:addSeriesFromDataFrame(name, df, x_col, y_col, color?, opts?) -> nil`: Builds a named line series from x and y columns in a dataframe.
 - `LLineChart:appendPoint(name, x, y, color?) -> nil`: Appends one finite point to a named line series.
-- `LLineChart:clear() -> nil`: Clears the state.
+- `LLineChart:clear() -> nil`: Clears all series and cached chart state.
 - `LLineChart:draw(x, y, opts?) -> nil`: Draws the line chart at world or screen coordinates using optional transform options.
-- `LLineChart:drawToImage(target) -> nil`: Draw to image.
-- `LLineChart:getHeight() -> nil`: Returns the height.
-- `LLineChart:getWidth() -> nil`: Returns the width.
-- `LLineChart:nearest(x, y) -> nil`: Nearest.
-- `LLineChart:render() -> nil`: Render.
-- `LLineChart:renderImage() -> nil`: Render image.
+- `LLineChart:drawToImage(target) -> nil`: Draws the rendered chart into an existing image.
+- `LLineChart:getHeight() -> integer`: Returns the configured chart height in pixels.
+- `LLineChart:getWidth() -> integer`: Returns the configured chart width in pixels.
+- `LLineChart:nearest(x, y) -> table`: Finds the nearest plotted point to screen coordinates.
+- `LLineChart:render() -> integer, integer, string`: Renders the chart into raw RGBA image bytes.
+- `LLineChart:renderImage() -> nil`: Renders the chart into a new LImage userdata.
 - `LLineChart:replaceSeries(name, data, color?) -> nil`: Replaces a named line series with a new array-style Lua table of points.
-- `LLineChart:setShowLegend(value) -> nil`: Sets the show legend.
-- `LLineChart:setTitle(title) -> nil`: Sets the title.
-- `LLineChart:setWindow(max_points?) -> nil`: Sets the window.
-- `LLineChart:setXLabel(label) -> nil`: Sets the x label.
-- `LLineChart:setXMax(value) -> nil`: Sets the x max.
-- `LLineChart:setXTickCount(count) -> nil`: Sets the x tick count.
-- `LLineChart:setYLabel(label) -> nil`: Sets the y label.
-- `LLineChart:setYMax(value) -> nil`: Sets the y max.
-- `LLineChart:setYTickCount(count) -> nil`: Sets the y tick count.
-- `LLineChart:type() -> nil`: Type.
-- `LLineChart:typeOf(name) -> nil`: Type of.
+- `LLineChart:setShowLegend(value) -> nil`: Controls whether the chart legend is rendered.
+- `LLineChart:setTitle(title) -> nil`: Sets the chart title text shown in rendered output.
+- `LLineChart:setWindow(max_points?) -> nil`: Sets the maximum retained sample window for this chart.
+- `LLineChart:setXLabel(label) -> nil`: Sets the X axis label text for rendered output.
+- `LLineChart:setXMax(value) -> nil`: Sets the explicit X axis maximum for chart scaling.
+- `LLineChart:setXTickCount(count) -> nil`: Sets the number of X axis ticks drawn for this chart.
+- `LLineChart:setYLabel(label) -> nil`: Sets the Y axis label text for rendered output.
+- `LLineChart:setYMax(value) -> nil`: Sets the explicit Y axis maximum for chart scaling.
+- `LLineChart:setYTickCount(count) -> nil`: Sets the number of Y axis ticks drawn for this chart.
+- `LLineChart:type() -> string`: Returns the runtime userdata type name for this chart.
+- `LLineChart:typeOf(name) -> boolean`: Checks whether a type name matches this chart userdata.
 
 #### LPieChart Type
 
@@ -332,19 +342,19 @@ This module primarily collaborates with `color`, `dataframe`, `image`. Its respo
 ##### Methods
 
 - `LPieChart:addSegment(label, value, color?) -> nil`: Adds one pie segment with a non-negative value.
-- `LPieChart:addSegmentsFromDataFrame() -> nil`: Adds pie segments by reading label and value columns from a dataframe.
+- `LPieChart:addSegmentsFromDataFrame(df, label_col, value_col, opts?) -> nil`: Adds pie segments by reading label and value columns from a dataframe.
 - `LPieChart:addSlice(label, value, color?) -> nil`: Legacy alias that adds one pie slice with a non-negative value.
-- `LPieChart:clear() -> nil`: Clears the state.
+- `LPieChart:clear() -> nil`: Clears all series and cached chart state.
 - `LPieChart:draw(x, y, opts?) -> nil`: Draws the pie chart at world or screen coordinates using optional transform options.
-- `LPieChart:drawToImage(target) -> nil`: Draw to image.
-- `LPieChart:getHeight() -> nil`: Returns the height.
-- `LPieChart:getWidth() -> nil`: Returns the width.
-- `LPieChart:render() -> nil`: Render.
-- `LPieChart:renderImage() -> nil`: Render image.
-- `LPieChart:setShowLegend(value) -> nil`: Sets the show legend.
-- `LPieChart:setTitle(title) -> nil`: Sets the title.
-- `LPieChart:type() -> nil`: Type.
-- `LPieChart:typeOf(name) -> nil`: Type of.
+- `LPieChart:drawToImage(target) -> nil`: Draws the rendered chart into an existing image.
+- `LPieChart:getHeight() -> integer`: Returns the configured chart height in pixels.
+- `LPieChart:getWidth() -> integer`: Returns the configured chart width in pixels.
+- `LPieChart:render() -> integer, integer, string`: Renders the chart into raw RGBA image bytes.
+- `LPieChart:renderImage() -> nil`: Renders the chart into a new LImage userdata.
+- `LPieChart:setShowLegend(value) -> nil`: Controls whether the chart legend is rendered.
+- `LPieChart:setTitle(title) -> nil`: Sets the chart title text shown in rendered output.
+- `LPieChart:type() -> string`: Returns the runtime userdata type name for this chart.
+- `LPieChart:typeOf(name) -> boolean`: Checks whether a type name matches this chart userdata.
 
 #### LScatterPlot Type
 
@@ -357,35 +367,73 @@ This module primarily collaborates with `color`, `dataframe`, `image`. Its respo
 ##### Methods
 
 - `LScatterPlot:addSeries(name, data, color?) -> nil`: Adds a named scatter series from an array-style Lua table of points.
-- `LScatterPlot:addSeriesFromDataFrame() -> nil`: Builds a named scatter series from x and y columns in a dataframe.
+- `LScatterPlot:addSeriesFromDataFrame(name, df, x_col, y_col, color?, opts?) -> nil`: Builds a named scatter series from x and y columns in a dataframe.
 - `LScatterPlot:appendPoint(name, x, y, color?) -> nil`: Appends one finite point to a named scatter series.
-- `LScatterPlot:clear() -> nil`: Clears the state.
+- `LScatterPlot:clear() -> nil`: Clears all series and cached chart state.
 - `LScatterPlot:draw(x, y, opts?) -> nil`: Draws the scatter plot at world or screen coordinates using optional transform options.
-- `LScatterPlot:drawToImage(target) -> nil`: Draw to image.
-- `LScatterPlot:getHeight() -> nil`: Returns the height.
-- `LScatterPlot:getWidth() -> nil`: Returns the width.
-- `LScatterPlot:nearest(x, y) -> nil`: Nearest.
-- `LScatterPlot:render() -> nil`: Render.
-- `LScatterPlot:renderImage() -> nil`: Render image.
+- `LScatterPlot:drawToImage(target) -> nil`: Draws the rendered chart into an existing image.
+- `LScatterPlot:getHeight() -> integer`: Returns the configured chart height in pixels.
+- `LScatterPlot:getWidth() -> integer`: Returns the configured chart width in pixels.
+- `LScatterPlot:nearest(x, y) -> table`: Finds the nearest plotted point to screen coordinates.
+- `LScatterPlot:render() -> integer, integer, string`: Renders the chart into raw RGBA image bytes.
+- `LScatterPlot:renderImage() -> nil`: Renders the chart into a new LImage userdata.
 - `LScatterPlot:replaceSeries(name, data, color?) -> nil`: Replaces a named scatter series with a new array-style Lua table of points.
-- `LScatterPlot:setDotRadius(radius) -> nil`: Sets the dot radius.
-- `LScatterPlot:setShowLegend(value) -> nil`: Sets the show legend.
-- `LScatterPlot:setTitle(title) -> nil`: Sets the title.
-- `LScatterPlot:setWindow(max_points?) -> nil`: Sets the window.
-- `LScatterPlot:setXLabel(label) -> nil`: Sets the x label.
-- `LScatterPlot:setXRange(min_x, max_x) -> nil`: Sets the x range.
-- `LScatterPlot:setXTickCount(count) -> nil`: Sets the x tick count.
-- `LScatterPlot:setYLabel(label) -> nil`: Sets the y label.
-- `LScatterPlot:setYRange(min_y, max_y) -> nil`: Sets the y range.
-- `LScatterPlot:setYTickCount(count) -> nil`: Sets the y tick count.
-- `LScatterPlot:type() -> nil`: Type.
-- `LScatterPlot:typeOf(name) -> nil`: Type of.
+- `LScatterPlot:setDotRadius(radius) -> nil`: Sets the rendered radius used for scatter dots.
+- `LScatterPlot:setShowLegend(value) -> nil`: Controls whether the chart legend is rendered.
+- `LScatterPlot:setTitle(title) -> nil`: Sets the chart title text shown in rendered output.
+- `LScatterPlot:setWindow(max_points?) -> nil`: Sets the maximum retained sample window for this chart.
+- `LScatterPlot:setXLabel(label) -> nil`: Sets the X axis label text for rendered output.
+- `LScatterPlot:setXRange(min_x, max_x) -> nil`: Sets the explicit X axis range for plotted points.
+- `LScatterPlot:setXTickCount(count) -> nil`: Sets the number of X axis ticks drawn for this chart.
+- `LScatterPlot:setYLabel(label) -> nil`: Sets the Y axis label text for rendered output.
+- `LScatterPlot:setYRange(min_y, max_y) -> nil`: Sets the explicit Y axis range for plotted points.
+- `LScatterPlot:setYTickCount(count) -> nil`: Sets the number of Y axis ticks drawn for this chart.
+- `LScatterPlot:type() -> string`: Returns the runtime userdata type name for this chart.
+- `LScatterPlot:typeOf(name) -> boolean`: Checks whether a type name matches this chart userdata.
 
-## References
+## Examples
 
-- `color`: Imports or references `src/color/`. Cross-group dependency from ``Feature Systems`` into `Edge/Integration`.
-- `dataframe`: Imports or references `src/dataframe/`. Cross-group dependency from ``Feature Systems`` into `Foundations`.
-- `image`: Imports or references `src/image/`. Cross-group dependency from ``Feature Systems`` into `Platform Services`.
+- `content/examples/charts.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_charts_unit.lua` (present)
+- Rust: none detected.
+
+## Evidence / Golden
+
+| Kind | Path |
+|---|---|
+| Evidence test | `tests/lua/evidence/test_charts_evidence.lua` |
+| Golden test | `tests/lua/golden/test_charts_golden.lua` |
+| Current artifact | `tests/artifacts/current/charts/charts_area_layered_usage.png` |
+| Current artifact | `tests/artifacts/current/charts/charts_bar_category_revenue.png` |
+| Current artifact | `tests/artifacts/current/charts/charts_dataframe_heatmap.png` |
+| Current artifact | `tests/artifacts/current/charts/charts_dataframe_histogram.png` |
+| Current artifact | `tests/artifacts/current/charts/charts_dataframe_line.png` |
+| Current artifact | `tests/artifacts/current/charts/charts_dataframe_pie.png` |
+| Current artifact | `tests/artifacts/current/charts/charts_heatmap_region_load.png` |
+| Current artifact | `tests/artifacts/current/charts/charts_histogram_latency_distribution.png` |
+| Current artifact | `tests/artifacts/current/charts/charts_line_revenue_trend.png` |
+| Current artifact | `tests/artifacts/current/charts/charts_nearest_trace.json` |
+| Current artifact | `tests/artifacts/current/charts/charts_pie_market_share.png` |
+| Current artifact | `tests/artifacts/current/charts/charts_scatter_player_scores.png` |
+| Baseline artifact | `tests/artifacts/baselines/charts/charts_area_layered_usage.png` |
+| Baseline artifact | `tests/artifacts/baselines/charts/charts_bar_category_revenue.png` |
+| Baseline artifact | `tests/artifacts/baselines/charts/charts_dataframe_heatmap.png` |
+| Baseline artifact | `tests/artifacts/baselines/charts/charts_dataframe_histogram.png` |
+| Baseline artifact | `tests/artifacts/baselines/charts/charts_dataframe_line.png` |
+| Baseline artifact | `tests/artifacts/baselines/charts/charts_dataframe_pie.png` |
+| Baseline artifact | `tests/artifacts/baselines/charts/charts_heatmap_region_load.png` |
+| Baseline artifact | `tests/artifacts/baselines/charts/charts_histogram_latency_distribution.png` |
+| Baseline artifact | `tests/artifacts/baselines/charts/charts_line_revenue_trend.png` |
+| Baseline artifact | `tests/artifacts/baselines/charts/charts_nearest_trace.json` |
+| Baseline artifact | `tests/artifacts/baselines/charts/charts_pie_market_share.png` |
+| Baseline artifact | `tests/artifacts/baselines/charts/charts_scatter_player_scores.png` |
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

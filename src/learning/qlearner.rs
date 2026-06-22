@@ -1,8 +1,10 @@
-//! This file owns tabular Q-learning state, including the flat Q-table, exploration rate, and episode counters.
-//! `QLearner` keeps discrete state-action values in one row-major table so updates and greedy lookups stay cheap.
-//! Epsilon-greedy action choice, deterministic RNG state, and Bellman updates live here because they directly mutate learner-owned state.
-//! Serialization and deserialization also stay here so saved tables preserve dimensions, hyperparameters, and RNG state on reload.
-//! Open it when discrete RL policy changes; bandits, environments, and neural optimizers are owned by sibling files.
+//! Owns the qlearner owner for the learning subsystem and keeps its rules local to this file.
+//! Centers the implementation around QLearnerEnvelope, QLearner, new, with helpers kept close to their invariants.
+//! Defines how qlearner data is validated, transformed, or stored before neighboring systems use it.
+//! Owns learning behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on qlearner behavior while Lua registration stays elsewhere.
+//! Documents the boundary where learning code accepts inputs, reports errors, or updates state.
+//! Use this file when changing qlearner defaults, lifecycle handling, validation, or data ownership.
 
 use crate::learning::{
     error::LearningError,

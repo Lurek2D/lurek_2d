@@ -1,10 +1,10 @@
-# Luaâ€“Rust Boundary Architecture
+# LuaĂ˘â‚¬â€śRust Boundary Architecture
 
 ## TL;DR
 
 Defines how the Rust engine exposes functionality to Lua scripts: module registration, state management, the handle pattern, security sandbox, and testing strategy.
 
-Companion documents: [engine-core.md](engine-core.md) Â· [philosophy.md](philosophy.md) Â· [test-framework.md](test-framework.md)
+Companion documents: [engine-core.md](engine-core.md) Ă‚Â· [philosophy.md](philosophy.md) Ă‚Â· [quality-assurance.md](quality-assurance.md)
 
 ---
 
@@ -23,7 +23,7 @@ Companion documents: [engine-core.md](engine-core.md) Â· [philosophy.md](philo
 
 ## Overview
 
-`src/lua_api/` lives in the **Edge/Integration** layer â€” the top of the module DAG. It is the sole bridge between Lua game scripts and the Rust engine. No other layer may import `mlua` types.
+`src/lua_api/` lives in the **Edge/Integration** layer Ă˘â‚¬â€ť the top of the module DAG. It is the sole bridge between Lua game scripts and the Rust engine. No other layer may import `mlua` types.
 
 The boundary is **one-directional**: Rust calls into Lua (callbacks), and Lua calls into Rust (API functions). Lua never directly accesses Rust memory; Rust never directly accesses Lua internals outside `mlua`.
 
@@ -133,7 +133,7 @@ Rc<RefCell<SharedState>>
 
 ### GC Interaction
 
-Lua's garbage collector cannot see into Rust-owned resources. The engine tracks resource liveness in Rust (via `SlotMap` keys). When Lua drops a handle (the u64 ID goes out of scope), nothing happens immediately â€” Rust continues to own the resource. Explicit `release` calls or LRU eviction reclaim memory. This decouples GC pressure from GPU resource teardown.
+Lua's garbage collector cannot see into Rust-owned resources. The engine tracks resource liveness in Rust (via `SlotMap` keys). When Lua drops a handle (the u64 ID goes out of scope), nothing happens immediately Ă˘â‚¬â€ť Rust continues to own the resource. Explicit `release` calls or LRU eviction reclaim memory. This decouples GC pressure from GPU resource teardown.
 
 ---
 
@@ -161,27 +161,27 @@ Lua never holds raw pointers or Rust references. Every resource visible to Lua i
 ### Architecture
 
 ```
-â”Śâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”       â”Śâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-â”‚  Lua script          â”‚       â”‚  Rust (SharedState)              â”‚
-â”‚                      â”‚       â”‚                                  â”‚
-â”‚  local tex = 42      â”‚â”€â”€IDâ”€â”€â–¶â”‚  textures: SlotMap<Key, Data>    â”‚
-â”‚  lurek.sprite.draw(  â”‚       â”‚                                  â”‚
-â”‚    tex, 100, 200)    â”‚       â”‚  tex = textures[Key::from(42)]   â”‚
-â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”       â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+Ă˘â€ťĹšĂ˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťÂ       Ă˘â€ťĹšĂ˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťÂ
+Ă˘â€ťâ€š  Lua script          Ă˘â€ťâ€š       Ă˘â€ťâ€š  Rust (SharedState)              Ă˘â€ťâ€š
+Ă˘â€ťâ€š                      Ă˘â€ťâ€š       Ă˘â€ťâ€š                                  Ă˘â€ťâ€š
+Ă˘â€ťâ€š  local tex = 42      Ă˘â€ťâ€šĂ˘â€ťâ‚¬Ă˘â€ťâ‚¬IDĂ˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€“Â¶Ă˘â€ťâ€š  textures: SlotMap<Key, Data>    Ă˘â€ťâ€š
+Ă˘â€ťâ€š  lurek.sprite.draw(  Ă˘â€ťâ€š       Ă˘â€ťâ€š                                  Ă˘â€ťâ€š
+Ă˘â€ťâ€š    tex, 100, 200)    Ă˘â€ťâ€š       Ă˘â€ťâ€š  tex = textures[Key::from(42)]   Ă˘â€ťâ€š
+Ă˘â€ťâ€ťĂ˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťÂ       Ă˘â€ťâ€ťĂ˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťÂ
 ```
 
 ### Resource Lifecycle
 
-1. **Create** â€” Lua calls `lurek.image.load("player.png")`. Rust loads the image, inserts it into `textures: SlotMap<TextureKey, TextureData>`, converts the `TextureKey` to its `u64` representation via `key.data().as_ffi()`, and returns the ID to Lua.
-2. **Use** â€” Lua passes the ID to draw calls. Rust looks up the key, validates it exists, and issues render commands.
-3. **Release** â€” Lua calls `lurek.image.release(tex)` or the engine evicts via LRU. Rust removes the entry from the `SlotMap` and records the key in `released_texture_handles: HashSet<u64>` to detect stale-handle use.
+1. **Create** Ă˘â‚¬â€ť Lua calls `lurek.image.load("player.png")`. Rust loads the image, inserts it into `textures: SlotMap<TextureKey, TextureData>`, converts the `TextureKey` to its `u64` representation via `key.data().as_ffi()`, and returns the ID to Lua.
+2. **Use** Ă˘â‚¬â€ť Lua passes the ID to draw calls. Rust looks up the key, validates it exists, and issues render commands.
+3. **Release** Ă˘â‚¬â€ť Lua calls `lurek.image.release(tex)` or the engine evicts via LRU. Rust removes the entry from the `SlotMap` and records the key in `released_texture_handles: HashSet<u64>` to detect stale-handle use.
 
 ### Why Handles?
 
-- **GC safety** â€” Lua can copy IDs freely without triggering Rust borrow issues.
-- **Validation** â€” Stale handles are detectable (key no longer in `SlotMap`).
-- **No lifetimes** â€” Avoids Rust lifetime annotations in `mlua` userdata.
-- **Serialisable** â€” IDs survive save/load boundaries.
+- **GC safety** Ă˘â‚¬â€ť Lua can copy IDs freely without triggering Rust borrow issues.
+- **Validation** Ă˘â‚¬â€ť Stale handles are detectable (key no longer in `SlotMap`).
+- **No lifetimes** Ă˘â‚¬â€ť Avoids Rust lifetime annotations in `mlua` userdata.
+- **Serialisable** Ă˘â‚¬â€ť IDs survive save/load boundaries.
 
 ---
 
@@ -201,14 +201,14 @@ Lua never holds raw pointers or Rust references. Every resource visible to Lua i
 ```
 
 This supports two scenarios:
-- **Development** â€” `cargo run` from the repo root; CWD-relative paths resolve library and content modules.
-- **Distribution** â€” The packaged binary resolves relative to the executable directory, allowing games to ship alongside the binary.
+- **Development** Ă˘â‚¬â€ť `cargo run` from the repo root; CWD-relative paths resolve library and content modules.
+- **Distribution** Ă˘â‚¬â€ť The packaged binary resolves relative to the executable directory, allowing games to ship alongside the binary.
 
 ---
 
 ## Testing Strategy
 
-The Luaâ€“Rust boundary uses a three-layer testing approach (detailed in [test-framework.md](test-framework.md)):
+The LuaĂ˘â‚¬â€śRust boundary uses a three-layer testing approach (detailed in [quality-assurance.md](quality-assurance.md)):
 
 ### Layer 1: Rust Unit Tests
 
@@ -230,7 +230,7 @@ Tests verify that Rust functions are correctly exposed, types marshal properly, 
 
 ### Layer 3: Lua Integration Tests
 
-Scripts in `tests/lua/` exercise the `lurek.*` API from the game-author perspective. These run through the engine's test harness in headless mode â€” no window, no GPU context required. CI executes these without a display server.
+Scripts in `tests/lua/` exercise the `lurek.*` API from the game-author perspective. These run through the engine's test harness in headless mode Ă˘â‚¬â€ť no window, no GPU context required. CI executes these without a display server.
 
 ### Headless Mode
 
@@ -253,10 +253,10 @@ These are planned improvements, not current state:
 
 ## Related Documents
 
-- [engine-core.md](engine-core.md) â€” Full runtime architecture
-- [philosophy.md](philosophy.md) â€” Design constraints and binding rules
-- [test-framework.md](test-framework.md) â€” Test placement and layer rules
-- [render-pipeline.md](render-pipeline.md) â€” GPU pipeline details
+- [engine-core.md](engine-core.md) Ă˘â‚¬â€ť Full runtime architecture
+- [philosophy.md](philosophy.md) Ă˘â‚¬â€ť Design constraints and binding rules
+- [quality-assurance.md](quality-assurance.md) Ă˘â‚¬â€ť Test placement and layer rules
+- [render-pipeline.md](render-pipeline.md) Ă˘â‚¬â€ť GPU pipeline details
 
 ---
 
@@ -337,13 +337,13 @@ Paths must be relative to the game's content root (the folder with `conf.lua`). 
 ## Appendix: Complete LuaUserData Example
 
 ```rust
-//! `lurek.shape` — Shape creation and collision query bindings.
+//! `lurek.shape` â€” Shape creation and collision query bindings.
 
 use super::SharedState;
 use crate::shape::{Circle, Rect};
 use mlua::prelude::*;
 
-// ── LuaCircle ────────────────────────────────────────────────────────────────
+// â”€â”€ LuaCircle â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /// Lua-visible handle for a circle shape used in queries and collision checks.
 pub struct LuaCircle {
@@ -415,7 +415,7 @@ impl LuaUserData for LuaCircle {
     }
 }
 
-// ── Registration ─────────────────────────────────────────────────────────────
+// â”€â”€ Registration â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /// Registers the `lurek.shape` table and all its constructor functions into the Lua VM.
 pub fn register(lua: &Lua, _state: &SharedState) -> mlua::Result<()> {
@@ -726,3 +726,4 @@ Rules:
 - Do not insert unrelated comments between separator, doc block, and registered function.
 - Keep `@return` syntax fixed-width and free of optional-return markers.
 - If a method accepts optional Lua values, express that in `@param`, not `@return`.
+

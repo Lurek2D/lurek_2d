@@ -26,7 +26,10 @@ import sys
 from pathlib import Path
 
 WORKSPACE_ROOT = Path(__file__).resolve().parent.parent.parent
-INPUT_FILE = WORKSPACE_ROOT / "logs" / "data" / "rust_api_data.json"
+sys.path.insert(0, str(WORKSPACE_ROOT / "tools" / "docs"))
+import module_registry
+
+INPUT_FILE = module_registry.rust_api_json_path()
 OUTPUT_FILE = WORKSPACE_ROOT / "docs" / "api" / "rust.md"
 
 # Modules to skip (test utilities, build scripts, etc.)

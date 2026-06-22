@@ -1,6 +1,7 @@
-//! Owns typed validation and safety errors shared by AI planners, steering, scoring, and Lua-facing helpers.
-//! It keeps failure reasons explicit so AI owners can reject invalid numeric input, unsafe tree shapes, and bad budgets consistently.
-//! Open it when AI callers need clearer diagnostics or when a new AI subsystem joins the shared validation contract.
+//! Owns the error taxonomy for the ai subsystem and keeps its rules local to this file while keeping call sites explicit.
+//! Centers the implementation around AiError, fmt, with helpers kept close to their invariants.
+//! Defines how error data is validated, transformed, or stored before neighboring systems use it.
+//! Owns ai behavior with explicit state, validation, and crate-local integration boundaries. for engine changes.
 
 use std::fmt;
 

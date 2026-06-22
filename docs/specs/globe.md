@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/globe.md or source docstrings instead. -->
+
 # globe
 
 ## TL;DR
@@ -7,13 +9,13 @@
 
 ## General Info
 
-- Module group: `Feature Systems`
-- Source path: `src/globe/`
+- Module group: `Foundations`
+- Source path: `src/globe`
 - Binding: `src/lua_api/globe_api.rs`
 - Namespace: `lurek.globe`
 - Lua API surface: `12` functions, `4` types, `92` methods
-- Rust test path(s): tests/rust/unit/globe_tests.rs
-- Lua test path(s): tests/lua/unit/test_globe_unit.lua
+- User-facing: `true`
+- Plugin tier: `not_evaluated`
 
 ## Summary
 
@@ -32,15 +34,23 @@
 
 This module primarily collaborates with `math`, `pathfind`, `province`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
 
+## Ownership
+
+- Canonical source: `src/globe`
+- Owning tier: `Foundations`
+- Plugin tier: `not_evaluated`
+- Lua binding owner: `src/lua_api/globe_api.rs`
+- Referenced engine modules: `math`, `pathfind`, `province`, `render`, `runtime`
+
 ## Imports
 
-- `math`: Imports or references `src/math/`. Cross-group dependency from `Edge/Integration` into `Foundations`.
-- `pathfind`: Imports or references `src/pathfind/`. Cross-group dependency from `Edge/Integration` into `Feature Systems`.
-- `province`: Imports or references `src/province/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
-- `render`: Imports or references `src/render/`. Cross-group dependency from `Edge/Integration` into `Platform Services`.
-- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Edge/Integration` into `Core Runtime`.
+- `math`: Imports or references `src/math/`. Dependency stays inside `Foundations` and should remain acyclic.
+- `pathfind`: Imports or references `src/pathfind/`. Cross-group dependency from `Foundations` into `Feature Systems`.
+- `province`: Imports or references `src/province/`. Cross-group dependency from `Foundations` into `Feature Systems`.
+- `render`: Imports or references `src/render/`. Cross-group dependency from `Foundations` into `Platform Services`.
+- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Foundations` into `Core Runtime`.
 
-## Files
+## Source Files
 
 ### composition.rs
 
@@ -308,12 +318,12 @@ This module primarily collaborates with `math`, `pathfind`, `province`, `render`
 - `LGlobe:setLayerColor(layer, id, r, g, b, a) -> boolean`: Sets a province color override inside a render layer.
 - `LGlobe:setLayerVisible(name, vis) -> boolean`: Shows or hides a render layer. This method is available to Lua scripts.
 - `LGlobe:setMarkerAttr(id, key, val) -> boolean`: Sets a string attribute on a marker.
-- `LGlobe:setMarkerColor(id, r, g, b, a?) -> boolean`: Sets marker tint color.
+- `LGlobe:setMarkerColor(id, r, g, b, a?) -> boolean`: Sets the RGBA tint color used to render a marker.
 - `LGlobe:setMarkerIconTexture(id, tex_raw?) -> boolean`: Assigns or clears a raw texture handle for a marker icon.
 - `LGlobe:setMarkerPulse(id, hz, amp) -> boolean`: Sets marker pulse frequency and amplitude.
 - `LGlobe:setMarkerRotation(id, dps) -> boolean`: Sets marker rotation speed. This method is available to Lua scripts.
 - `LGlobe:setMarkerShape(id, shape) -> boolean`: Sets the vector fallback shape used by a marker.
-- `LGlobe:setMarkerSize(id, size) -> boolean`: Sets marker size in screen units.
+- `LGlobe:setMarkerSize(id, size) -> boolean`: Sets the marker size in screen units for rendering.
 - `LGlobe:setMarkerVisible(id, vis) -> boolean`: Shows or hides a marker. This method is available to Lua scripts.
 - `LGlobe:setProvinceAttr(id, key, val) -> boolean`: Sets a string attribute on a province.
 - `LGlobe:setProvinceSector(id, sector) -> boolean`: Assigns a province to a named sector.
@@ -370,13 +380,45 @@ This module primarily collaborates with `math`, `pathfind`, `province`, `render`
 - `LGlobeRegistry:type() -> string`: Returns the Lua-visible type name for this globe registry handle.
 - `LGlobeRegistry:typeOf(name) -> boolean`: Returns whether this registry handle matches a supported type name.
 
-## References
+## Examples
 
-- `math`: Imports or references `src/math/`. Cross-group dependency from `Edge/Integration` into `Foundations`.
-- `pathfind`: Imports or references `src/pathfind/`. Cross-group dependency from `Edge/Integration` into `Feature Systems`.
-- `province`: Imports or references `src/province/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
-- `render`: Imports or references `src/render/`. Cross-group dependency from `Edge/Integration` into `Platform Services`.
-- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Edge/Integration` into `Core Runtime`.
+- `content/examples/globe.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_globe_unit.lua` (present)
+- Rust: `tests/rust/unit/globe_tests.rs`
+
+## Evidence / Golden
+
+| Kind | Path |
+|---|---|
+| Evidence test | `tests/lua/evidence/test_globe_evidence.lua` |
+| Golden test | `tests/lua/golden/test_globe_golden.lua` |
+| Current artifact | `tests/artifacts/current/globe/globe_camera_fog_registry_trace.txt` |
+| Current artifact | `tests/artifacts/current/globe/globe_camera_lod_panels.png` |
+| Current artifact | `tests/artifacts/current/globe/globe_great_circle_metrics.txt` |
+| Current artifact | `tests/artifacts/current/globe/globe_great_circle_route.png` |
+| Current artifact | `tests/artifacts/current/globe/globe_layer_heat_fog_composite.png` |
+| Current artifact | `tests/artifacts/current/globe/globe_marker_pick_surface.png` |
+| Current artifact | `tests/artifacts/current/globe/globe_province_projection.png` |
+| Current artifact | `tests/artifacts/current/globe/globe_region_trace.txt` |
+| Current artifact | `tests/artifacts/current/globe/globe_semantic_region_holes.png` |
+| Current artifact | `tests/artifacts/current/globe/globe_topology_cost_route.png` |
+| Baseline artifact | `tests/artifacts/baselines/globe/globe_camera_fog_registry_trace.txt` |
+| Baseline artifact | `tests/artifacts/baselines/globe/globe_camera_lod_panels.png` |
+| Baseline artifact | `tests/artifacts/baselines/globe/globe_great_circle_metrics.txt` |
+| Baseline artifact | `tests/artifacts/baselines/globe/globe_great_circle_route.png` |
+| Baseline artifact | `tests/artifacts/baselines/globe/globe_layer_heat_fog_composite.png` |
+| Baseline artifact | `tests/artifacts/baselines/globe/globe_marker_pick_surface.png` |
+| Baseline artifact | `tests/artifacts/baselines/globe/globe_province_projection.png` |
+| Baseline artifact | `tests/artifacts/baselines/globe/globe_region_trace.txt` |
+| Baseline artifact | `tests/artifacts/baselines/globe/globe_semantic_region_holes.png` |
+| Baseline artifact | `tests/artifacts/baselines/globe/globe_topology_cost_route.png` |
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

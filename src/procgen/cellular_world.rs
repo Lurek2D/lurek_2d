@@ -1,10 +1,12 @@
-//! This file owns the falling-material sandbox that simulates sand, water, rock, fire, gas, and empty space on a grid.
-//! `CellType` defines the material vocabulary, while `CellularWorld` owns cells, fire lifetimes, tick parity, and RNG.
-//! Paint helpers such as rectangle and circle fills stay here because direct authoring of test or gameplay setups is local.
-//! Step logic also belongs here since per-material movement, spread, and bias reduction define world-update semantics.
-//! Serialization, region export, palette rendering, and cell queries remain local because they expose owned grid state.
-//! Open it when material interaction rules change; static cave generation lives in `cellular.rs` instead.
-//! This file is the runtime simulation owner, not a generic renderer, physics system, or authored content container.
+//! Owns the cellular world owner for the procgen subsystem and keeps its rules local to this file.
+//! Keeps procgen data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+//! Defines how cellular world data is validated, transformed, or stored before neighboring systems use it.
+//! Owns procgen behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on cellular world behavior while Lua registration stays elsewhere.
+//! Documents the boundary where procgen code accepts inputs, reports errors, or updates state.
+//! Use this file when changing cellular world defaults, lifecycle handling, validation, or data ownership.
+//! Keeps failure paths and edge cases near the procgen state that can explain them while keeping call sites explicit.
+//! Preserves deterministic behavior by keeping cellular world calculations explicit at their owner boundary.
 
 use crate::procgen::{
     limits::{checked_cell_count, checked_output_bytes, validate_non_zero_dimensions},

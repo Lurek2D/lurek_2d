@@ -1,8 +1,11 @@
-//! `src/docs/report.rs` evaluates documentation quality by scoring entries and aggregating validation-style issue reports.
-//! It owns per-entry score calculation, rule-based diagnostics, validation issue metadata, module averages, and overall report synthesis.
-//! `ValidationReport`, `QualityReport`, and `DocsIssue` live here because actionable rule output and score aggregation are linked products.
-//! This file analyzes existing `DocEntry` and `Catalog` data; it does not own entry storage or export serialization.
-//! Read it when docs grading policy, validation issue semantics, or module quality rollup behavior needs to change.
+//! Owns the report owner for the docs subsystem and keeps its rules local to this file while keeping call sites explicit.
+//! Centers the implementation around IssueSeverity, as_str, DocsIssueKind, with helpers kept close to their invariants.
+//! Defines how report data is validated, transformed, or stored before neighboring systems use it.
+//! Owns docs behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on report behavior while Lua registration stays elsewhere.
+//! Documents where docs callers should change defaults, errors, or lifecycle behavior. with focused crate-local behavior.
+//! Use this file when changing report defaults, lifecycle handling, validation, or data ownership.
+//! Keeps failure paths and edge cases near the docs state that can explain them while keeping call sites explicit.
 
 use crate::docs::catalog::Catalog;
 use crate::docs::entry::DocEntry;

@@ -6867,7 +6867,7 @@ lurek.mapblock.newGenerator( config : MapBlockConfig ) -> MapBlockGenerator  -- 
 lurek.mapblock.newGrid( width : integer, height : integer ) -> PlacementGrid  -- Create a rectangular placement grid
 lurek.mapblock.newGroup( name : string ) -> MapGroup  -- Create a new map group exposed by the lurek engine
 lurek.mapblock.newRules() -> NeighborRules  -- Create new neighbor rules exposed by the lurek engine
-lurek.mapblock.newScript( name : string ) -> MapScript  -- Create a new map script exposed by the lurek engine
+lurek.mapblock.newScript( name : string? ) -> MapScript  -- Create a new map script exposed by the lurek engine
 lurek.mapblock.newTilesetRef( id : integer, name : string, tile_count : integer, columns : integer, tile_width : integer, tile_height : integer ) -> TilesetRef  -- Create a tileset reference exposed by the lurek engine
 ```
 

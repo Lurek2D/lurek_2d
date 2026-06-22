@@ -1,6 +1,7 @@
-//! Owns lightweight diagnostics and decision traces shared by AI scorers, planners, search, and callback wrappers.
-//! It keeps last-decision evidence structured so Lua bindings, tests, and debugging tools can inspect what an AI subsystem just did.
-//! Open it when new AI owners need to expose traceable decisions or callback failures.
+//! Owns ai behavior with explicit state, validation, and crate-local integration boundaries. for engine changes.
+//! Keeps ai data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+//! Defines how diagnostics data is validated, transformed, or stored before neighboring systems use it.
+//! Owns ai behavior with explicit state, validation, and crate-local integration boundaries. for engine changes.
 
 /// One recorded callback error emitted by an AI subsystem.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]

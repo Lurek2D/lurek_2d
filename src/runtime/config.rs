@@ -1,11 +1,14 @@
-//! This file owns the typed runtime configuration schema that turns `conf.toml` into deterministic startup policy.
-//! It stores top-level config plus mode, window, render, module, performance, TUI, CLI, and headless sections.
-//! Default implementations define the baseline engine shape used when projects omit config or provide partial data.
-//! Module validation lives here because feature toggles must disable unsupported dependency combinations centrally.
-//! Headless-profile helpers also live here so no-window startup can force a supported subset of enabled modules.
-//! Load helpers merge file overrides over defaults, log read or parse problems, and preserve a usable config result.
-//! Serde support is part of the boundary because this data moves between disk, runtime defaults, and inspections.
-//! Open it when startup policy changes; shared mutable state and execution modes consume these contracts elsewhere.
+//! Owns the configuration model for the runtime subsystem and keeps its rules local to this file.
+//! Keeps runtime data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+//! Defines how config data is validated, transformed, or stored before neighboring systems use it.
+//! Owns runtime behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on config behavior while Lua registration stays elsewhere.
+//! Documents the boundary where runtime code accepts inputs, reports errors, or updates state.
+//! Use this file when changing config defaults, lifecycle handling, validation, or data ownership.
+//! Keeps failure paths and edge cases near the runtime state that can explain them while keeping call sites explicit.
+//! Preserves deterministic behavior by keeping config calculations explicit at their owner boundary.
+//! Provides the local adaptation layer that lets callers avoid duplicating runtime rules while keeping call sites explicit.
+//! Maintains small helper surfaces so broader engine modules can compose config behavior safely.
 
 #[allow(unused_imports)]
 use crate::log_msg;

@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/mods.md or source docstrings instead. -->
+
 # mods
 
 ## TL;DR
@@ -7,12 +9,12 @@
 ## General Info
 
 - Module group: `Feature Systems`
-- Source path: `src/mods/`
+- Source path: `src/mods`
 - Binding: `src/lua_api/mods_api.rs`
 - Namespace: `lurek.mods`
 - Lua API surface: `4` functions, `8` types, `54` methods
-- Rust test path(s): none found in the workspace
-- Lua test path(s): tests/lua/unit/test_mods_unit.lua
+- User-facing: `true`
+- Plugin tier: `tier_2_plugin`
 
 ## Summary
 
@@ -33,11 +35,19 @@
 
 This module primarily collaborates with `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
 
+## Ownership
+
+- Canonical source: `src/mods`
+- Owning tier: `Feature Systems`
+- Plugin tier: `tier_2_plugin`
+- Lua binding owner: `src/lua_api/mods_api.rs`
+- Referenced engine modules: `runtime`
+
 ## Imports
 
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Feature Systems` into `Core Runtime`.
 
-## Files
+## Source Files
 
 ### api_registry.rs
 
@@ -75,31 +85,39 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 ### mod_manager.rs
 
-- `src/mods/mod_manager.rs` owns the runtime registry for discovered mods, manifest metadata, reload queues, and order.
-- It stores `ModInfo` records with dependencies, capabilities, asset paths, config schema, checksum metadata, and session state.
-- Registration, lookup, enable-state tracking, capability queries, structured scans, and atomic hot reloads all live here.
-- Dependency validation and topological ordering stay here so mod startup remains deterministic and cycle-aware.
-- Manifest parsing from `mod.toml` also happens here, including limits, schema checks, checksum checks, and asset conflicts.
-- Folder scanning and hot-reload processing are coordinated here so disk changes can update registered mods safely.
-- This file is the lifecycle and integrity boundary for mods; it does not define schema types or sandbox policy details.
-- Read it when manifest semantics, reload behavior, dependency resolution, or mod registry ownership needs to change.
-- Higher layers should treat this file as the source of truth for mod discovery and effective runtime load order.
+- Owns mods behavior with explicit state, validation, and crate-local integration boundaries.
+- Centers the implementation around ModInfo, new, from_parts, with helpers kept close to their invariants.
+- Defines how mod manager data is validated, transformed, or stored before neighboring systems use it.
+- Owns mods behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on mod manager behavior while Lua registration stays elsewhere.
+- Documents where mods callers should change defaults, errors, or lifecycle behavior. with focused crate-local behavior.
+- Use this file when changing mod manager defaults, lifecycle handling, validation, or data ownership.
+- Keeps failure paths and edge cases near the mods state that can explain them while keeping call sites explicit.
+- Preserves deterministic behavior by keeping mod manager calculations explicit at their owner boundary.
+- Provides the local adaptation layer that lets callers avoid duplicating mods rules while keeping call sites explicit.
+- Maintains small helper surfaces so broader engine modules can compose mod manager behavior safely.
+- Protects subsystem contracts by keeping resource, cache, or state mutations visible in one place.
+- Links adjacent concerns only where mod manager changes need coordination with owned engine data.
 
 ### mod_sandbox.rs
 
-- `src/mods/mod_sandbox.rs` defines the capability sandbox that filters what a mod may call, read, write, or hook into.
-- It owns allowlist policy modes, blocked operations, hook permissions, memory and network flags, and canonical read roots.
-- `HookPoint` parsing and canonical names live here so manifest declarations and runtime checks use one hook vocabulary.
-- This file does not load mods or resolve dependencies; it only describes and answers capability checks for mod execution.
-- Read it when sandbox defaults, hook permissions, or file and API access rules for mods need to change.
+- Owns mods behavior with explicit state, validation, and crate-local integration boundaries.
+- Centers the implementation around SandboxListMode, from_name, as_str, with helpers kept close to their invariants.
+- Defines how mod sandbox data is validated, transformed, or stored before neighboring systems use it.
+- Owns mods behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on mod sandbox behavior while Lua registration stays elsewhere.
+- Documents where mods callers should change defaults, errors, or lifecycle behavior. with focused crate-local behavior.
+- Use this file when changing mod sandbox defaults, lifecycle handling, validation, or data ownership.
 
 ### types.rs
 
-- `src/mods/types.rs` defines shared error, limit, policy, and report types for the mods subsystem.
-- It owns the structured vocabulary used by sandbox checks, manifest scanning, dependency planning, and hot reloads.
-- Default limits and policies live here so loaders and managers can share one safety baseline instead of hard-coding copies.
-- This file does not parse manifests, touch Lua, or mutate runtime state; it only describes contracts and diagnostics.
-- Read it when mod safety defaults, scan reports, or lifecycle validation payloads need to change.
+- Owns mods behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps mods data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+- Defines how types data is validated, transformed, or stored before neighboring systems use it.
+- Owns mods behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on types behavior while Lua registration stays elsewhere.
+- Documents where mods callers should change defaults, errors, or lifecycle behavior. with focused crate-local behavior.
+- Use this file when changing types defaults, lifecycle handling, validation, or data ownership.
 
 
 
@@ -168,7 +186,7 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - `LMod:isEnabled() -> boolean`: Returns whether the mod is enabled.
 - `LMod:isLoaded() -> boolean`: Returns whether the mod is loaded. This method is available to Lua scripts.
 - `LMod:releaseRefs() -> nil`: Releases stored Lua registry references for hooks and config.
-- `LMod:runHook(name) -> any`: Executes one registered hook under the mod's configured sandbox policy.
+- `LMod:runHook(name) -> table`: Executes one registered hook under the mod's configured sandbox policy.
 - `LMod:setApiVersion(api_version) -> nil`: Sets the required API version string.
 - `LMod:setCapabilities(caps) -> nil`: Sets capability names from an array table.
 - `LMod:setConfig(value) -> nil`: Stores a Lua config value for this mod.
@@ -299,9 +317,22 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 - No documented methods.
 
-## References
+## Examples
 
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `content/examples/mods.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_mods_unit.lua` (present)
+- Rust: `tests/rust/unit/mods_tests.rs`
+
+## Evidence / Golden
+
+- No evidence or golden artifacts registered.
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

@@ -1,7 +1,8 @@
-//! Owns per-frame render diagnostics for skipped commands, missing resources, and invalid inputs.
-//! Stores lightweight counters that make non-fatal renderer drops visible without forcing a frame error.
-//! Sits beside frame statistics while keeping debug and reliability counters out of low-level GPU handles.
-//! Open this file when adding a new controlled render skip or exposing renderer findings to diagnostics tools.
+//! Owns the render diagnostics owner for the render subsystem and keeps its rules local to this file.
+//! Keeps render data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+//! Defines how render diagnostics data is validated, transformed, or stored before neighboring systems use it.
+//! Owns render behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on render diagnostics behavior while Lua registration stays elsewhere.
 
 /// Per-frame counters for non-fatal render issues observed while preparing or encoding a frame.
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]

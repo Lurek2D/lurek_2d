@@ -1,7 +1,8 @@
-//! This file owns the Voronoi diagram helper that assigns each cell to its nearest feature point and distance fields.
-//! `VoronoiOpts` stores optional domain-warp parameters so clean tessellation can be roughened without new APIs.
-//! The diagram routine stays here because nearest-point ownership and first or second distance extraction are local.
-//! Hash-based warp noise also belongs here since boundary distortion is part of Voronoi output semantics.
+//! Owns procgen behavior with explicit state, validation, and crate-local integration boundaries.
+//! Centers the implementation around VoronoiOpts, default, validate, with helpers kept close to their invariants.
+//! Defines how voronoi data is validated, transformed, or stored before neighboring systems use it.
+//! Owns procgen behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on voronoi behavior while Lua registration stays elsewhere.
 
 use super::lcg::Lcg;
 use crate::procgen::{

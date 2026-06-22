@@ -1,8 +1,10 @@
-//! `src/mods/types.rs` defines shared error, limit, policy, and report types for the mods subsystem.
-//! It owns the structured vocabulary used by sandbox checks, manifest scanning, dependency planning, and hot reloads.
-//! Default limits and policies live here so loaders and managers can share one safety baseline instead of hard-coding copies.
-//! This file does not parse manifests, touch Lua, or mutate runtime state; it only describes contracts and diagnostics.
-//! Read it when mod safety defaults, scan reports, or lifecycle validation payloads need to change.
+//! Owns mods behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps mods data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+//! Defines how types data is validated, transformed, or stored before neighboring systems use it.
+//! Owns mods behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on types behavior while Lua registration stays elsewhere.
+//! Documents where mods callers should change defaults, errors, or lifecycle behavior. with focused crate-local behavior.
+//! Use this file when changing types defaults, lifecycle handling, validation, or data ownership.
 
 use std::fmt;
 use std::path::PathBuf;

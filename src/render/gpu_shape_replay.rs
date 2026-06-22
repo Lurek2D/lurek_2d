@@ -1,9 +1,9 @@
-//! Replays registered compound shapes into GPU flat-color draw buffers.
-//! Keeps reusable `ShapeCommand` interpretation separate from the main frame orchestration loop.
-//! Applies draw-time transforms, wireframe override, color state, line width, scissor, shader, and stencil state.
-//! Emits prepared color draw ranges directly into caller-owned frame buffers without allocating per command.
-//! Acts as the compound-shape replay boundary between shape assets and GPU tessellation helpers.
-//! Open this file when `DrawShape` output differs from equivalent immediate-mode shape commands.
+//! Owns the gpu shape replay owner for the render subsystem and keeps its rules local to this file.
+//! Centers the implementation around replay_compound_shape, with helpers kept close to their invariants.
+//! Defines how gpu shape replay data is validated, transformed, or stored before neighboring systems use it.
+//! Owns render behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on gpu shape replay behavior while Lua registration stays elsewhere.
+//! Documents the boundary where render code accepts inputs, reports errors, or updates state.
 
 use slotmap::SlotMap;
 

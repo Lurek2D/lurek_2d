@@ -1,9 +1,10 @@
-//! `src/minimap/render.rs` converts minimap state into ordered `RenderCommand` batches for HUD drawing.
-//! It walks visible cells, fog, overlays, paths, viewport guides, pings, objects, and markers without mutating model state.
-//! Screen projection from minimap grid space also happens here, using `Minimap` view settings to place each primitive.
-//! This file owns draw ordering, fallback shapes, and icon emission so renderer integration stays out of state storage.
-//! Read it when minimap visuals stack incorrectly, cell colors draw wrong, or HUD command generation needs new behavior.
-//! Province imports and raycaster extraction stay elsewhere; this file only turns minimap state into rendering.
+//! Owns minimap behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps minimap data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+//! Defines how render data is validated, transformed, or stored before neighboring systems use it.
+//! Owns minimap behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on render behavior while Lua registration stays elsewhere.
+//! Documents the boundary where minimap code accepts inputs, reports errors, or updates state.
+//! Use this file when changing render defaults, lifecycle handling, validation, or data ownership.
 
 use super::minimap::Minimap;
 use super::types::{FogLevel, MinimapRenderStats, OverlayShape};

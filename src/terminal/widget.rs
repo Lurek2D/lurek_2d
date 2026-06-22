@@ -1,11 +1,13 @@
-//! This file owns the terminal widget model used to build labels, buttons, text boxes, lists, borders, and panels.
-//! `BorderStyle` defines frame glyph choices, while `WidgetBase` centralizes position, size, visibility, and tags.
-//! `WidgetKind` stores kind-specific data for text, selection, scroll, border styling, and panel child membership.
-//! `Widget` constructors create grid-aligned UI parts with size clamping that matches terminal row limits.
-//! Mutation helpers keep text, color, max-length, selection, border style, and title updates in one owner.
-//! List helpers manage item addition, removal, scroll, and 1-based selection semantics used by input handlers.
-//! Kind-check helpers let callers branch on widget behavior without matching all enum payloads at each call site.
-//! Open it when terminal UI object semantics change; event dispatch and rendering integration live in state.
+//! Owns the widget runtime for the terminal subsystem and keeps its rules local to this file.
+//! Centers the implementation around BorderStyle, from_str_name, as_str, with helpers kept close to their invariants.
+//! Defines how widget data is validated, transformed, or stored before neighboring systems use it.
+//! Owns terminal behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on widget behavior while Lua registration stays elsewhere.
+//! Documents the boundary where terminal code accepts inputs, reports errors, or updates state.
+//! Use this file when changing widget defaults, lifecycle handling, validation, or data ownership.
+//! Keeps failure paths and edge cases near the terminal state that can explain them while keeping call sites explicit.
+//! Preserves deterministic behavior by keeping widget calculations explicit at their owner boundary.
+//! Owns terminal behavior with explicit state, validation, and crate-local integration boundaries.
 
 use super::cell::DEFAULT_FG;
 use super::terminal_state::{

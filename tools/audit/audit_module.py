@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-audit_module.py — Lurek2D module quality audit tool.
+audit_module.py â€” Lurek2D module quality audit tool.
 
 Runs automated structural, docstring, architecture, and code-quality checks
 on one or more src/ modules and produces a PASS/WARNING/ERROR verdict per
@@ -32,34 +32,46 @@ from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 WORKSPACE = Path(__file__).resolve().parent.parent.parent
+sys.path.insert(0, str(WORKSPACE / "tools" / "docs"))
+import module_registry
+
 SRC = WORKSPACE / "src"
 LUA_API = SRC / "lua_api"
-LUA_API_DATA = WORKSPACE / "logs" / "data" / "lua_api_data.json"
+DOCS_DATA = module_registry.DOCS_DATA
+LEGACY_LOGS_DATA = module_registry.LEGACY_LOGS_DATA
+LUA_API_DATA = module_registry.lua_api_json_path()
 TESTS_RUST = WORKSPACE / "tests" / "rust"
 TESTS_LUA = WORKSPACE / "tests" / "lua"
 DOCS_API = WORKSPACE / "docs" / "API"
 WIKI = WORKSPACE / "docs" / "wiki"
 
-# ── Tier assignments (keep in sync with docs/architecture/architecture.md) ──
+# Tier assignments are loaded from docs/meta/modules.toml.
 
-FOUNDATIONS = {'math', 'log', 'data', 'serial', 'compute', 'dataframe', 'graph', 'procgen', 'patterns'}
-CORE_RUNTIME = {'runtime', 'event', 'timer', 'thread', 'network', 'filesystem'}
-PLATFORM_SERVICES = {'render', 'audio', 'physics', 'input', 'image', 'window', 'camera', 'light', 'effect'}
-FEATURE_SYSTEMS = {'ecs', 'scene', 'animation', 'tween', 'particle', 'tilemap', 'parallax', 'minimap', 'raycaster', 'ui', 'terminal', 'ai', 'pathfind', 'save', 'mods', 'i18n', 'automation', 'sprite', 'spine'}
-EDGE_INTEGRATION = {'app', 'lua_api', 'devtools', 'debugbridge', 'docs', 'pipeline', 'bin'}
+def _modules_in_tier(tier: str) -> set[str]:
+    return {
+        name
+        for name, meta in module_registry.load_modules().items()
+        if meta.get("tier") == tier
+    }
+
+
+FOUNDATIONS = _modules_in_tier("foundations")
+CORE_RUNTIME = _modules_in_tier("core_runtime")
+PLATFORM_SERVICES = _modules_in_tier("platform_services")
+FEATURE_SYSTEMS = _modules_in_tier("feature_systems")
+EDGE_INTEGRATION = _modules_in_tier("edge_integration")
 CRATE_ROOT_EXPORTS = {'log_msg'}
 ALL_TIERS = FOUNDATIONS | CORE_RUNTIME | PLATFORM_SERVICES | FEATURE_SYSTEMS | EDGE_INTEGRATION
-
-# ── Explicit cross-tier exemptions ────────────────────────────────────────────
+# â”€â”€ Explicit cross-tier exemptions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 # Format: {(importer_module, imported_module): "reason"}
 # Only list exemptions that have an explicit architectural justification
 # documented in docs/architecture/engine-architecture.md or the module docs/specs.
 CROSS_TIER_EXEMPTIONS: dict = {
     # automation/simulator.rs pushes synthetic events into EventQueue.
     # EventQueue is a core data structure that both modules share; the
-    # dependency direction (automation → event) is intentional and documented
+    # dependency direction (automation â†’ event) is intentional and documented
     # in src/automation/docs/specs.
-    ("automation", "event"): "Simulator injects synthetic input events into EventQueue — intentional by design",
+    ("automation", "event"): "Simulator injects synthetic input events into EventQueue â€” intentional by design",
     ("camera", "tilemap"): "Camera walker intentionally depends on TileMap collision for tile-follow movement",
     ("image", "animation"): "Image visualization intentionally renders animation state into debug images",
     ("runtime", "audio"): "SharedState intentionally owns audio mixer handles for runtime-wide coordination",
@@ -84,23 +96,25 @@ LUA_USERDATA_DOMAIN_EXEMPTIONS: dict = {
 
 
 def get_tier(module: str) -> str:
-    if module in FOUNDATIONS: return 'Foundations'
-    if module in CORE_RUNTIME: return 'Core Runtime'
-    if module in PLATFORM_SERVICES: return 'Platform Services'
-    if module in FEATURE_SYSTEMS: return 'Feature Systems'
-    if module in EDGE_INTEGRATION: return 'Edge/Integration'
+    tier = module_registry.module_tier(module)
+    if tier == "foundations": return 'Foundations'
+    if tier == "core_runtime": return 'Core Runtime'
+    if tier == "platform_services": return 'Platform Services'
+    if tier == "feature_systems": return 'Feature Systems'
+    if tier == "edge_integration": return 'Edge/Integration'
     return 'unassigned'
 
 def get_tier_level(module: str) -> int:
-    if module in FOUNDATIONS: return 0
-    if module in CORE_RUNTIME: return 1
-    if module in PLATFORM_SERVICES: return 2
-    if module in FEATURE_SYSTEMS: return 3
-    if module in EDGE_INTEGRATION: return 4
-    return 99
+    return {
+        "foundations": 0,
+        "core_runtime": 1,
+        "platform_services": 2,
+        "feature_systems": 3,
+        "edge_integration": 4,
+    }.get(module_registry.module_tier(module), 99)
 
 
-# ── Verdict helpers ──
+# â”€â”€ Verdict helpers â”€â”€
 
 PASS = "PASS"
 WARN = "WARNING"
@@ -125,7 +139,7 @@ class Check:
 
 
 # Module-level file cache: each .rs file is read from disk exactly once per
-# audit run regardless of how many checks inspect it.  Eliminates the 8×
+# audit run regardless of how many checks inspect it.  Eliminates the 8Ă—
 # redundant reads that caused the VS Code extension-host to run out of memory
 # when auditing large module batches.
 _FILE_CACHE: dict = {}
@@ -184,7 +198,7 @@ def get_module_binding_names(module: str) -> list[str]:
     return sorted(set(re.findall(r'tbl\.set\(\s*"([^"]+)"', read_text(api_file))))
 
 
-# ── Single-pass per-file analysis ─────────────────────────────────────────────
+# â”€â”€ Single-pass per-file analysis â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 #
 # All checks that iterate over src/<module>/*.rs files previously each called
 # rglob() and read every file independently (up to 8 separate passes).  This
@@ -226,7 +240,7 @@ def _analyze_module_files(module: str) -> ModuleFileAnalysis:
         stem = rs.stem
         n_lines = len(lines)
 
-        # ── file-size check ────────────────────────────────────────
+        # â”€â”€ file-size check â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         if n_lines > 3000:
             analysis.large_files.append((rel, n_lines))
         elif n_lines > 2900:
@@ -235,12 +249,12 @@ def _analyze_module_files(module: str) -> ModuleFileAnalysis:
         if not content.strip():
             continue
 
-        # ── D-01: module-level //! doc ─────────────────────────────
+        # â”€â”€ D-01: module-level //! doc â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         first_real = [l.strip() for l in lines[:15] if l.strip()]
         if not any(l.startswith("//!") for l in first_real):
             analysis.files_no_mod_doc.append(rel)
 
-        # ── inline state for the line-by-line scan ─────────────────
+        # â”€â”€ inline state for the line-by-line scan â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         prev_was_attr_or_blank = False
         preceding_doc = False
 
@@ -249,7 +263,7 @@ def _analyze_module_files(module: str) -> ModuleFileAnalysis:
             is_comment = stripped.startswith("//")
             is_doc = stripped.startswith("///") or stripped.startswith("//!")
 
-            # ── D-02: undocumented pub items ───────────────────────
+            # â”€â”€ D-02: undocumented pub items â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             if _PUB_ITEM_RE.match(stripped):
                 has_doc = False
                 for j in range(i - 1, max(i - 6, -1), -1):
@@ -265,28 +279,28 @@ def _analyze_module_files(module: str) -> ModuleFileAnalysis:
                     if m:
                         analysis.undocumented_items.append(f"{stem}::{m.group(2)}")
 
-            # ── D-04: stub docs ─────────────────────────────────────
+            # â”€â”€ D-04: stub docs â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             if is_doc:
                 for pat in _STUB_PATTERNS:
                     if pat.lower() in stripped.lower():
                         analysis.stub_docs.append(f"{stem}:{i+1}")
                         break
 
-            # ── Q-01: println! ─────────────────────────────────────
+            # â”€â”€ Q-01: println! â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             if not is_comment and ("println!" in stripped or "eprintln!" in stripped):
                 analysis.println_hits.append(f"{stem}:{i+1}")
 
-            # ── Q-03: unsafe without SAFETY ────────────────────────
+            # â”€â”€ Q-03: unsafe without SAFETY â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             if "unsafe " in raw and not is_comment:
                 ctx = "\n".join(lines[max(0, i - 3):i + 1])
                 if "SAFETY:" not in ctx and "SAFETY :" not in ctx:
                     analysis.unsafe_violations.append(f"{stem}:{i+1}")
 
-            # ── Q-04: unwrap ───────────────────────────────────────
+            # â”€â”€ Q-04: unwrap â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             if not is_comment and ".unwrap()" in stripped:
                 analysis.unwrap_hits.append(f"{stem}:{i+1}")
 
-        # ── R-02 / R-03: dependency direction ─────────────────────
+        # â”€â”€ R-02 / R-03: dependency direction â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         for imp in re.findall(r'use crate::(\w+)', content):
             if imp == module: continue
             if imp == 'lua_api':
@@ -307,7 +321,7 @@ def _analyze_module_files(module: str) -> ModuleFileAnalysis:
 
 
 
-# ── Phase 1: Structure & Registration ──
+# â”€â”€ Phase 1: Structure & Registration â”€â”€
 
 
 def check_lib_rs_registration(module: str) -> Check:
@@ -318,7 +332,7 @@ def check_lib_rs_registration(module: str) -> Check:
         return Check("S-01", "lib.rs registration", ERROR,
                       f"`pub mod {module};` not found in src/lib.rs")
 
-    # Check lua_api registration (optional — some modules have no Lua API)
+    # Check lua_api registration (optional â€” some modules have no Lua API)
     lua_mod = read_text(LUA_API / "mod.rs")
     api_name = f"{module}_api"
     has_lua_api = re.search(rf"pub\s+mod\s+{re.escape(api_name)}", lua_mod)
@@ -360,17 +374,17 @@ def check_mod_rs_simplicity(module: str) -> Check:
 
     if logic_lines > 100:
         return Check("S-02", "mod.rs simplicity", ERROR,
-                      f"mod.rs has {logic_lines} logic lines — extract to named files")
+                      f"mod.rs has {logic_lines} logic lines â€” extract to named files")
     if logic_lines > 30:
         return Check("S-02", "mod.rs simplicity", WARN,
-                      f"mod.rs has {logic_lines} logic lines — consider extracting")
+                      f"mod.rs has {logic_lines} logic lines â€” consider extracting")
     return Check("S-02", "mod.rs simplicity", PASS,
                   f"mod.rs is a thin barrel file ({logic_lines} logic lines)")
 
 
 def check_file_sizes(analysis: ModuleFileAnalysis) -> Check:
     """S-03: (Removed) File size limits no longer tracked."""
-    return Check("S-03", "File size limits", PASS, "Skipped — file sizes no longer tracked")
+    return Check("S-03", "File size limits", PASS, "Skipped â€” file sizes no longer tracked")
 
 
 def check_file_naming(module: str) -> Check:
@@ -387,7 +401,7 @@ def check_file_naming(module: str) -> Check:
     return Check("S-04", "File naming", PASS, "File names follow conventions")
 
 
-# ── Phase 2: docs/specs Quality ──
+# â”€â”€ Phase 2: docs/specs Quality â”€â”€
 
 # Canonical docs/specs sections (must match docs-specs skill and actual src/<module>/docs/specs files).
 # See .github/skills/docs-specs/SKILL.md for the authoritative template.
@@ -432,7 +446,7 @@ def check_doc_stubs(analysis: ModuleFileAnalysis) -> Check:
     return Check("D-04", "Doc quality", PASS, "No stub docs found")
 
 
-# ── Phase 4: Architecture Compliance ──
+# â”€â”€ Phase 4: Architecture Compliance â”€â”€
 
 
 def check_dependency_direction(module: str, analysis: ModuleFileAnalysis) -> Check:
@@ -449,10 +463,10 @@ def check_dependency_direction(module: str, analysis: ModuleFileAnalysis) -> Che
 def check_no_lua_api_import(module: str, analysis: ModuleFileAnalysis) -> Check:
     """R-03: Domain modules never import lua_api."""
     if module == "lua_api":
-        return Check("R-03", "No lua_api import", PASS, "Module IS lua_api — skip")
+        return Check("R-03", "No lua_api import", PASS, "Module IS lua_api â€” skip")
     if module in EDGE_INTEGRATION or module in CORE_RUNTIME:
         return Check("R-03", "No lua_api import", PASS,
-                     "Bootstrapping module — may import lua_api")
+                     "Bootstrapping module â€” may import lua_api")
     hits = analysis.lua_api_imports
     if hits:
         return Check("R-03", "No lua_api import", ERROR,
@@ -462,10 +476,10 @@ def check_no_lua_api_import(module: str, analysis: ModuleFileAnalysis) -> Check:
 
 
 
-# ── Phase 5: Test Coverage ──
+# â”€â”€ Phase 5: Test Coverage â”€â”€
 
 
-# ── Phase 3b: Technical Specification ──
+# â”€â”€ Phase 3b: Technical Specification â”€â”€
 
 
 def check_spec_file(module: str) -> List[Check]:
@@ -479,12 +493,12 @@ def check_spec_file(module: str) -> List[Check]:
     # SP-01: spec file exists
     if not spec_path.exists():
         results.append(Check("SP-01", "Spec file exists", ERROR,
-                              f"docs/specs/{module}.md is missing — create from template"))
+                              f"docs/specs/{module}.md is missing â€” create from template"))
         for code, name in [("SP-02", "Required spec sections"),
                             ("SP-03", "Summary quality"),
                             ("SP-04", "Lua API completeness"),
                             ("SP-05", "Spec quality")]:
-            results.append(Check(code, name, ERROR, "Skipped — no spec file"))
+            results.append(Check(code, name, ERROR, "Skipped â€” no spec file"))
         return results
 
     results.append(Check("SP-01", "Spec file exists", PASS, f"docs/specs/{module}.md exists"))
@@ -512,9 +526,9 @@ def check_spec_file(module: str) -> List[Check]:
                               "All required sections present"))
 
     # SP-03: summary quality
-    results.append(Check("SP-03", "Summary quality", PASS, "Skipped — summary length no longer tracked"))
+    results.append(Check("SP-03", "Summary quality", PASS, "Skipped â€” summary length no longer tracked"))
 
-    # SP-04: Lua API completeness — bidirectional diff
+    # SP-04: Lua API completeness â€” bidirectional diff
     if has_lua_api and api_file.exists():
         bound_fns = get_module_binding_names(module)
         missing_fns = [fn for fn in bound_fns if fn not in content]
@@ -538,10 +552,10 @@ def check_spec_file(module: str) -> List[Check]:
             shown = missing_fns[:5]
             extra = f" (+{len(missing_fns)-5} more)" if len(missing_fns) > 5 else ""
             details.append(
-                f"Missing from spec: {', '.join(shown)}{extra} — add to ## Lua API Ref in docs/specs/{module}.md"
+                f"Missing from spec: {', '.join(shown)}{extra} â€” add to ## Lua API Ref in docs/specs/{module}.md"
             )
         if stale_fns:
-            details.append(f"Stale in spec (not in code): {', '.join(stale_fns[:4])} — remove from spec")
+            details.append(f"Stale in spec (not in code): {', '.join(stale_fns[:4])} â€” remove from spec")
         if details:
             results.append(Check("SP-04", "Lua API completeness", ERROR, " | ".join(details)))
         elif bound_fns:
@@ -552,10 +566,10 @@ def check_spec_file(module: str) -> List[Check]:
                                   "No tbl.set() bindings found"))
     else:
         results.append(Check("SP-04", "Lua API completeness", PASS,
-                              "No Lua API file — skip"
-                              if not has_lua_api else "api/ dir layout — manual check"))
+                              "No Lua API file â€” skip"
+                              if not has_lua_api else "api/ dir layout â€” manual check"))
 
-    # SP-05: Key Types cross-reference — types in spec vs types in source
+    # SP-05: Key Types cross-reference â€” types in spec vs types in source
     key_types_section = re.search(r"## Key Types(.*?)(?=\n## |\Z)", content, re.DOTALL)
     mod_dir = SRC / module
     code_types = set()
@@ -584,10 +598,10 @@ def check_spec_file(module: str) -> List[Check]:
             results.append(Check("SP-05", "Key Types accuracy", WARN, " | ".join(type_issues)))
         else:
             results.append(Check("SP-05", "Key Types accuracy", PASS,
-                                  f"{len(code_types)} types — spec Key Types in sync"))
+                                  f"{len(code_types)} types â€” spec Key Types in sync"))
     else:
         results.append(Check("SP-05", "Key Types accuracy", PASS,
-                              "No Key Types section or no public types — skip"))
+                              "No Key Types section or no public types â€” skip"))
 
     # SP-06: spec quality (no stubs)
     # Use exact case matching: PLACEHOLDER and FIXME are all-caps technical markers;
@@ -604,7 +618,7 @@ def check_spec_file(module: str) -> List[Check]:
     return results
 
 
-# ── Phase 4b: Structured Doc Sections ──
+# â”€â”€ Phase 4b: Structured Doc Sections â”€â”€
 
 
 def check_structured_sections(module: str) -> Check:
@@ -635,7 +649,7 @@ def check_structured_sections(module: str) -> Check:
                   "All pub structs/enums have structured doc sections")
 
 
-# ── Phase 4c: Lua API File Docstrings ──
+# â”€â”€ Phase 4c: Lua API File Docstrings â”€â”€
 
 
 def check_lua_api_docs(module: str) -> List[Check]:
@@ -717,7 +731,7 @@ def check_lua_api_docs(module: str) -> List[Check]:
     return results
 
 
-# ── Phase 5: Lua\u2194Rust Bridge Integrity ──
+# â”€â”€ Phase 5: Lua\u2194Rust Bridge Integrity â”€â”€
 
 
 def check_lua_bridge(module: str) -> List[Check]:
@@ -756,7 +770,7 @@ def check_lua_bridge(module: str) -> List[Check]:
     # B-02: Only register() as pub fn; also detect struct definitions
     extra_pub_fns = [f for f in re.findall(r"^pub\s+fn\s+(\w+)", content, re.MULTILINE)
                      if f != "register"]
-    # Lua<X> wrapper structs are EXPECTED in lua_api — do NOT flag them as errors.
+    # Lua<X> wrapper structs are EXPECTED in lua_api â€” do NOT flag them as errors.
     # Only flag non-wrapper structs (those whose name does not start with "Lua").
     all_pub_structs = re.findall(r"^pub\s+struct\s+(\w+)", content, re.MULTILINE)
     non_wrapper_structs = [s for s in all_pub_structs if not s.startswith("Lua")]
@@ -772,7 +786,7 @@ def check_lua_bridge(module: str) -> List[Check]:
         results.append(Check("B-02", "Registration-only", PASS,
                               "Only register() is pub fn (Lua<X> wrapper structs allowed)"))
 
-    # B-03: impl LuaUserData MUST be in lua_api — check domain module for violations.
+    # B-03: impl LuaUserData MUST be in lua_api â€” check domain module for violations.
     # Scan src/<module>/**/*.rs for any impl LuaUserData (they must NOT be there).
     domain_dir = SRC / module
     domain_violations: List[str] = []
@@ -810,7 +824,7 @@ def check_lua_bridge(module: str) -> List[Check]:
     for i, raw in enumerate(lines):
         stripped = raw.strip()
 
-        # Detect start of a new binding — grab the function name from the nearby tbl.set
+        # Detect start of a new binding â€” grab the function name from the nearby tbl.set
         if re.search(r"lua\.create_(?:function|method)\b", stripped):
             # Look backward for the tbl.set("name", ...) on the same or preceding lines
             name_m = None
@@ -839,10 +853,10 @@ def check_lua_bridge(module: str) -> List[Check]:
                 if loc > 15:
                     large_closures.append(
                         f"'{closure_fn_name}' ({loc} LOC, line {closure_start_line}) "
-                        f"— extract body to src/{module}/")
+                        f"â€” extract body to src/{module}/")
                 elif has_flow:
                     logic_closures.append(
-                        f"'{closure_fn_name}' has if/match/for — extract to src/{module}/")
+                        f"'{closure_fn_name}' has if/match/for â€” extract to src/{module}/")
                 in_closure = False
 
     b04_issues = large_closures[:4] + logic_closures[:2]
@@ -851,7 +865,7 @@ def check_lua_bridge(module: str) -> List[Check]:
                               " | ".join(b04_issues)))
     else:
         results.append(Check("B-04", "No business logic in closures", PASS,
-                              "Closures appear thin (≤15 LOC, no control flow)"))
+                              "Closures appear thin (â‰¤15 LOC, no control flow)"))
 
     # B-05: state.clone() before move |
     # Check only real state capture assignments (ignore prose/doc lines containing the word "state").
@@ -912,13 +926,13 @@ def check_lua_bridge(module: str) -> List[Check]:
     return results
 
 
-# ── Phase 6b: Tier Label ──
+# â”€â”€ Phase 6b: Tier Label â”€â”€
 
 
 def check_tier_label(module: str) -> Check:
     spec_path = WORKSPACE / 'docs' / 'specs' / f'{module}.md'
     if not spec_path.exists():
-        return Check('R-01', 'Tier placement', WARN, 'No docs/specs file — cannot verify')
+        return Check('R-01', 'Tier placement', WARN, 'No docs/specs file â€” cannot verify')
     content = read_text(spec_path)
     expected_group = get_tier(module)
     match = re.search(r'- Module group:\s*(.*)', content)
@@ -930,7 +944,7 @@ def check_tier_label(module: str) -> Check:
     return Check('R-01', 'Tier placement', PASS, f'Module group {expected_group} verified')
 
 
-# ── Phase 7b: Test Conventions ──
+# â”€â”€ Phase 7b: Test Conventions â”€â”€
 
 
 def check_test_conventions(module: str) -> Check:
@@ -954,7 +968,7 @@ def _float_in_second_arg(line: str) -> bool:
     """Return True only if assert_eq!'s EXPECTED (second) arg contains a float literal.
 
     Floats that appear only in the first argument (e.g. as a function input like
-    ``assert_eq!(quality_grade(0.0), "F")``) are NOT violations — the comparison
+    ``assert_eq!(quality_grade(0.0), "F")``) are NOT violations â€” the comparison
     target is a string, not a float.  We walk past the first top-level comma before
     scanning for floats.
     """
@@ -998,7 +1012,7 @@ def check_float_comparisons(module: str) -> Check:
     return Check("T-04", "Float comparisons", PASS, "No Rust test file \u2014 skip")
 
 
-# ── Phase 8b: Example File & API Coverage ──
+# â”€â”€ Phase 8b: Example File & API Coverage â”€â”€
 
 
 def check_example_file(module: str) -> List[Check]:
@@ -1010,9 +1024,9 @@ def check_example_file(module: str) -> List[Check]:
 
     if not has_lua_api:
         results.append(Check("W-01", "Example file exists", PASS,
-                              "No dedicated Lua API binding file — example file not required"))
+                              "No dedicated Lua API binding file â€” example file not required"))
         results.append(Check("W-02", "API surface coverage", PASS,
-                              "No dedicated Lua API binding file — skip"))
+                              "No dedicated Lua API binding file â€” skip"))
         return results
 
     example_file = WORKSPACE / "content" / "examples" / f"{module}.lua"
@@ -1047,7 +1061,7 @@ def check_example_file(module: str) -> List[Check]:
     return results
 
 
-# ── Phase 11b: Config Integration ──
+# â”€â”€ Phase 11b: Config Integration â”€â”€
 
 
 def check_config_integration(module: str) -> Check:
@@ -1088,7 +1102,7 @@ def check_rust_test_exists(module: str) -> Check:
             "T-01",
             "Rust test file",
             PASS,
-            "No Rust test file found — acceptable for Lua-first APIs or modules without private test seams",
+            "No Rust test file found â€” acceptable for Lua-first APIs or modules without private test seams",
         )
 
     # Check Cargo.toml registration or inclusion through a top-level aggregator test.
@@ -1117,7 +1131,7 @@ def check_lua_test_exists(module: str) -> Check:
     has_lua_api = api_file.exists() or api_dir.is_dir()
 
     if not has_lua_api:
-        return Check("T-02", "Lua test file", PASS, "Module has no Lua API — skip")
+        return Check("T-02", "Lua test file", PASS, "Module has no Lua API â€” skip")
 
     harness = read_text(WORKSPACE / "tests" / "lua_tests.rs")
 
@@ -1146,10 +1160,10 @@ def check_lua_test_exists(module: str) -> Check:
                   f"Module has Lua API but no tests/lua/unit/test_{module}_unit.lua")
 
 
-# ── Phase 7: Code Quality ──
+# â”€â”€ Phase 7: Code Quality â”€â”€
 
 
-# ── Phase 7: Code Quality ──
+# â”€â”€ Phase 7: Code Quality â”€â”€
 
 
 def check_no_println(analysis: ModuleFileAnalysis) -> Check:
@@ -1183,7 +1197,7 @@ def check_unwrap(analysis: ModuleFileAnalysis) -> Check:
 
 
 
-# ── Phase 6: Docs & Wiki ──
+# â”€â”€ Phase 6: Docs & Wiki â”€â”€
 
 
 def check_wiki_page(module: str) -> Check:
@@ -1192,7 +1206,7 @@ def check_wiki_page(module: str) -> Check:
         "W-05",
         "Wiki page",
         PASS,
-        "Optional — canonical API docs live in docs/specs/ and docs/api/",
+        "Optional â€” canonical API docs live in docs/specs/ and docs/api/",
     )
 
 
@@ -1233,7 +1247,7 @@ def check_test_adequacy(module: str) -> Check:
     for rs in mod_dir.rglob("*.rs"):
         pub_fn_count += len(re.findall(r"^    pub\s+fn\s+\w+", read_text(rs), re.MULTILINE))
     if pub_fn_count == 0:
-        return Check("T-05", "Test adequacy", PASS, "No pub methods counted — skip")
+        return Check("T-05", "Test adequacy", PASS, "No pub methods counted â€” skip")
 
     test_file = None
     for d in [TESTS_RUST / "unit", TESTS_RUST / "ext"]:
@@ -1243,13 +1257,13 @@ def check_test_adequacy(module: str) -> Check:
             break
     if not test_file:
         return Check("T-05", "Test adequacy", WARN,
-                      f"{pub_fn_count} pub methods, 0 Rust tests — create test file")
+                      f"{pub_fn_count} pub methods, 0 Rust tests â€” create test file")
 
     test_count = len(re.findall(r"#\[test\]", read_text(test_file)))
     ratio = test_count / pub_fn_count if pub_fn_count else 1.0
     if ratio < 0.3:
         return Check("T-05", "Test adequacy", WARN,
-                      f"{test_count} tests / {pub_fn_count} pub methods ({ratio:.0%}) — low coverage")
+                      f"{test_count} tests / {pub_fn_count} pub methods ({ratio:.0%}) â€” low coverage")
     return Check("T-05", "Test adequacy", PASS,
                   f"{test_count} tests / {pub_fn_count} pub methods ({ratio:.0%})")
 
@@ -1282,14 +1296,14 @@ def check_example_spec_sync(module: str) -> Check:
     example_file = WORKSPACE / "content" / "examples" / f"{module}.lua"
     api_file = LUA_API / f"{module}_api.rs"
     if not api_file.exists():
-        return Check("W-04", "Example–spec sync", PASS, "No Lua API — skip")
+        return Check("W-04", "Exampleâ€“spec sync", PASS, "No Lua API â€” skip")
     if not spec_path.exists() or not example_file.exists():
-        return Check("W-04", "Example–spec sync", PASS, "Missing spec or example — other checks cover this")
+        return Check("W-04", "Exampleâ€“spec sync", PASS, "Missing spec or example â€” other checks cover this")
 
     api_content = read_text(api_file)
     bound_fns = set(re.findall(r'tbl\.set\(\s*"([^"]+)"', api_content))
     if not bound_fns:
-        return Check("W-04", "Example–spec sync", PASS, "No bound functions")
+        return Check("W-04", "Exampleâ€“spec sync", PASS, "No bound functions")
 
     example_content = read_text(example_file)
     spec_content = read_text(spec_path)
@@ -1301,19 +1315,19 @@ def check_example_spec_sync(module: str) -> Check:
 
     issues: List[str] = []
     if only_in_example:
-        issues.append(f"In example but not spec: {', '.join(sorted(only_in_example)[:4])} — add to ## Lua API in docs/specs/{module}.md")
+        issues.append(f"In example but not spec: {', '.join(sorted(only_in_example)[:4])} â€” add to ## Lua API in docs/specs/{module}.md")
     if only_in_spec:
-        issues.append(f"In spec but not example: {', '.join(sorted(only_in_spec)[:4])} — add to content/examples/{module}.lua")
+        issues.append(f"In spec but not example: {', '.join(sorted(only_in_spec)[:4])} â€” add to content/examples/{module}.lua")
     if issues:
-        return Check("W-04", "Example–spec sync", WARN, " | ".join(issues))
-    return Check("W-04", "Example–spec sync", PASS,
+        return Check("W-04", "Exampleâ€“spec sync", WARN, " | ".join(issues))
+    return Check("W-04", "Exampleâ€“spec sync", PASS,
                   f"All {len(in_spec)} functions consistent across spec and example")
 
 
 def check_agent_source_files_complete(module: str) -> Check:
     return Check('A-04b', 'Source Files completeness', PASS, 'Skipped')
 
-# ── Orchestrator ──
+# â”€â”€ Orchestrator â”€â”€
 
 
 def audit_module(module: str) -> Tuple[str, List[Check], str]:
@@ -1322,7 +1336,7 @@ def audit_module(module: str) -> Tuple[str, List[Check], str]:
 
     # Single-pass analysis: read every .rs file exactly once and gather all
     # per-file findings.  Individual check functions query this result instead of
-    # re-opening files, reducing disk I/O from O(files × checks) to O(files).
+    # re-opening files, reducing disk I/O from O(files Ă— checks) to O(files).
     analysis = _analyze_module_files(module)
 
     # Phase 1: Structure & Registration
@@ -1331,14 +1345,14 @@ def audit_module(module: str) -> Tuple[str, List[Check], str]:
     checks.append(check_file_sizes(analysis))
     checks.append(check_file_naming(module))
     checks.append(Check("S-05", "Module necessity", MANUAL,
-                          "Requires manual review — could this be pure Lua?"))
+                          "Requires manual review â€” could this be pure Lua?"))
     checks.append(Check("S-06", "Large crate deps", MANUAL,
-                          "Requires manual review — check Cargo.toml for heavy crates"))
+                          "Requires manual review â€” check Cargo.toml for heavy crates"))
 
     # Phase 3: Technical Specification (docs/specs/<module>.md)
     checks.extend(check_spec_file(module))
 
-    # Phase 4: Docstrings — domain module files
+    # Phase 4: Docstrings â€” domain module files
     checks.append(check_module_level_docs(analysis))
     checks.append(check_pub_item_docs(analysis))
     checks.append(check_structured_sections(module))
@@ -1346,10 +1360,10 @@ def audit_module(module: str) -> Tuple[str, List[Check], str]:
     checks.append(Check("D-05", "Validation tool", MANUAL,
                           "Run: python tools/docs/collect_docs.py --report-missing | grep src/<module>"))
 
-    # Phase 4: Docstrings — Lua API file
+    # Phase 4: Docstrings â€” Lua API file
     checks.extend(check_lua_api_docs(module))
 
-    # Phase 5: Lua↔Rust Bridge Integrity
+    # Phase 5: Luaâ†”Rust Bridge Integrity
     checks.extend(check_lua_bridge(module))
 
     # Phase 6: Architecture Compliance
@@ -1395,7 +1409,7 @@ def audit_module(module: str) -> Tuple[str, List[Check], str]:
 
     # Phase 10: Performance
     checks.append(Check("P-01", "Performance doc", MANUAL,
-                          "Check docs/ for this module’s performance notes"))
+                          "Check docs/ for this moduleâ€™s performance notes"))
     checks.append(Check("P-02", "Hot-path allocations", MANUAL,
                           "Review update/draw/step paths for heap allocations"))
     checks.append(Check("P-03", "Buffer pre-allocation", MANUAL,
@@ -1436,14 +1450,14 @@ def format_quality_report(module: str, checks: List[Check], result: str, date: s
     passes = [c for c in checks if c.verdict == PASS]
     manual = [c for c in checks if c.verdict == MANUAL]
 
-    badge = "🔴 FAIL" if result == "FAIL" else "🟢 PASS"
+    badge = "đź”´ FAIL" if result == "FAIL" else "đźź˘ PASS"
     lines: List[str] = [
         f"# Module Quality Report: `{module}`",
         "",
         f"> **Status**: {badge}  |  "
         f"**Date**: {date}  |  "
-        f"**Score**: {len(passes)} ✅ / {len(warnings)} ⚠️ / "
-        f"{len(errors)} ❌ / {len(manual)} 🔵",
+        f"**Score**: {len(passes)} âś… / {len(warnings)} âš ď¸Ź / "
+        f"{len(errors)} âťŚ / {len(manual)} đź”µ",
         "",
         "---",
         "",
@@ -1452,28 +1466,28 @@ def format_quality_report(module: str, checks: List[Check], result: str, date: s
     if errors or warnings:
         lines += ["## Action Items", ""]
         if errors:
-            lines += ["### 🔴 Errors — Must Fix Before Merge", ""]
+            lines += ["### đź”´ Errors â€” Must Fix Before Merge", ""]
             for c in errors:
-                lines.append(f"- [ ] **{c.code}** — {c.name}: {c.detail}")
+                lines.append(f"- [ ] **{c.code}** â€” {c.name}: {c.detail}")
             lines.append("")
         if warnings:
-            lines += ["### 🟡 Warnings — Should Fix", ""]
+            lines += ["### đźźˇ Warnings â€” Should Fix", ""]
             for c in warnings:
-                lines.append(f"- [ ] **{c.code}** — {c.name}: {c.detail}")
+                lines.append(f"- [ ] **{c.code}** â€” {c.name}: {c.detail}")
             lines.append("")
 
     phase_groups = [
-        ("Phase 1 — Structure & Registration",    ["S-"]),
-        ("Phase 3 — Technical Specification",     ["SP-"]),
-        ("Phase 4 — Docstrings",                  ["D-"]),
-        ("Phase 5 — Lua↔Rust Bridge",        ["B-"]),
-        ("Phase 6 — Architecture Compliance",     ["R-"]),
-        ("Phase 7 — Test Coverage",               ["T-"]),
-        ("Phase 8 — Documentation & Wiki",        ["W-"]),
-        ("Phase 9 — Code Quality",                ["Q-"]),
-        ("Phase 10 — Performance",                ["P-"]),
-        ("Phase 11 — Integration & Extension",    ["I-"]),
-        ("Phase 12 — Localization & Logging",     ["L-"]),
+        ("Phase 1 â€” Structure & Registration",    ["S-"]),
+        ("Phase 3 â€” Technical Specification",     ["SP-"]),
+        ("Phase 4 â€” Docstrings",                  ["D-"]),
+        ("Phase 5 â€” Luaâ†”Rust Bridge",        ["B-"]),
+        ("Phase 6 â€” Architecture Compliance",     ["R-"]),
+        ("Phase 7 â€” Test Coverage",               ["T-"]),
+        ("Phase 8 â€” Documentation & Wiki",        ["W-"]),
+        ("Phase 9 â€” Code Quality",                ["Q-"]),
+        ("Phase 10 â€” Performance",                ["P-"]),
+        ("Phase 11 â€” Integration & Extension",    ["I-"]),
+        ("Phase 12 â€” Localization & Logging",     ["L-"]),
     ]
 
     lines += ["## Full Check Results", ""]
@@ -1487,7 +1501,7 @@ def format_quality_report(module: str, checks: List[Check], result: str, date: s
             "| Check | Verdict | Details |",
             "|-------|---------|---------|",
         ]
-        icons = {PASS: "✅", WARN: "⚠️", ERROR: "❌", MANUAL: "🔵"}
+        icons = {PASS: "âś…", WARN: "âš ď¸Ź", ERROR: "âťŚ", MANUAL: "đź”µ"}
         for c in phase_checks:
             detail = c.detail.replace("|", r"\|")
             lines.append(f"| **{c.code}** {c.name} | {icons[c.verdict]} {c.verdict} | {detail} |")
@@ -1504,7 +1518,7 @@ def format_quality_report(module: str, checks: List[Check], result: str, date: s
         f"python tools/audit/audit_module.py {module} --docs-quality",
         "```",
         "",
-        "Fix all ❌ Errors, then address ⚠️ Warnings until status shows **PASS**.",
+        "Fix all âťŚ Errors, then address âš ď¸Ź Warnings until status shows **PASS**.",
         "",
         "_Auto-generated by `tools/audit/audit_module.py`. Do not edit manually._",
     ]
@@ -1515,11 +1529,19 @@ def format_quality_report(module: str, checks: List[Check], result: str, date: s
 def resolve_modules(args: argparse.Namespace) -> List[str]:
     """Resolve module list from CLI arguments."""
     if args.all:
-        return sorted(m.name for m in SRC.iterdir()
-                      if m.is_dir() and not m.name.startswith(".")
-                      and m.name not in ("bin", "lua_api"))
+        return sorted(
+            name
+            for name in module_registry.list_modules()
+            if name not in ("bin", "lua_api")
+        )
     if args.tier is not None:
-        tier_map = {0: FOUNDATIONS, 1: CORE_RUNTIME, 2: PLATFORM_SERVICES}
+        tier_map = {
+            0: FOUNDATIONS,
+            1: CORE_RUNTIME,
+            2: PLATFORM_SERVICES,
+            3: FEATURE_SYSTEMS,
+            4: EDGE_INTEGRATION,
+        }
         return sorted(tier_map.get(args.tier, set()))
     if args.modules:
         return args.modules
@@ -1535,8 +1557,8 @@ def main() -> int:
     parser.add_argument("modules", nargs="*", help="Module name(s) to audit")
     parser.add_argument("--all", action="store_true",
                         help="Audit all src/ modules")
-    parser.add_argument("--tier", type=int, choices=[0, 1, 2],
-                        help="Audit all modules in a tier (0=baseline, 1, 2)")
+    parser.add_argument("--tier", type=int, choices=[0, 1, 2, 3, 4],
+                        help="Audit all modules in a registry tier (0=foundations, 1=core, 2=platform, 3=features, 4=edge)")
     parser.add_argument("--json", action="store_true",
                         help="Output structured JSON")
     parser.add_argument("--output", metavar="FILE",
@@ -1557,7 +1579,7 @@ def main() -> int:
     for mod in modules:
         mod_dir = SRC / mod
         if not mod_dir.is_dir():
-            print(f"Warning: src/{mod}/ does not exist — skipping", file=sys.stderr, flush=True)
+            print(f"Warning: src/{mod}/ does not exist â€” skipping", file=sys.stderr, flush=True)
             continue
 
         module_name, checks, result = audit_module(mod)
@@ -1574,7 +1596,7 @@ def main() -> int:
             qr = format_quality_report(module_name, checks, result, date_str)
             qpath = quality_dir / f"{module_name}.md"
             qpath.write_text(qr, encoding="utf-8")
-            # One short line — never fills the pipe.
+            # One short line â€” never fills the pipe.
             print(f"logs/quality/{module_name}.md [{result}]", flush=True)
 
         # Release cached file content between modules so memory stays bounded.
@@ -1583,7 +1605,7 @@ def main() -> int:
     if len(modules) > 1 and not args.json:
         passed = sum(1 for r in results if r["result"] == "PASS")
         failed = len(results) - passed
-        print(f"\n{passed}/{len(results)} passed — {failed} failed — reports in logs/reports/module-quality/",
+        print(f"\n{passed}/{len(results)} passed â€” {failed} failed â€” reports in logs/reports/module-quality/",
               flush=True)
 
     if args.json:
@@ -1601,7 +1623,7 @@ def main() -> int:
 if __name__ == "__main__":
     # Reconfigure the EXISTING stdout/stderr wrappers to use UTF-8.
     # This avoids the cp1250 encoding crash on Windows WITHOUT replacing the
-    # wrapper objects — replacing them creates a new block-buffered
+    # wrapper objects â€” replacing them creates a new block-buffered
     # io.TextIOWrapper whose flush on sys.exit() deadlocks VS Code's pipe.
     try:
         sys.stdout.reconfigure(encoding="utf-8", errors="replace")  # type: ignore[attr-defined]
@@ -1616,3 +1638,4 @@ if __name__ == "__main__":
             sys.stdout.flush()
         except Exception:
             pass
+

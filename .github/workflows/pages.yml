@@ -29,6 +29,12 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Check generated docs freshness
+        run: python tools/docs/check_freshness.py
+
+      - name: Check docs quality
+        run: python tools/audit/docs_quality.py
+
       - name: Install MkDocs + Material
         run: pip install mkdocs mkdocs-material
 

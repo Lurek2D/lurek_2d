@@ -1,12 +1,14 @@
-//! This file owns `SharedState`, the mutable runtime hub that lets separate engine systems coordinate each frame.
-//! It stores render commands, resource pools, timers, window state, input snapshots, and many subsystem handles.
-//! Resource ownership for textures, fonts, canvases, meshes, shaders, particles, and related assets lives here.
-//! Frame-level services include timing, default fonts, render settings, screenshot requests, and debug overlays.
-//! Async file operations, filesystem identity, and poll helpers live here so background I/O shares one runtime hub.
-//! Budget enforcement and LRU eviction stay here because they require a global view of runtime-managed resources.
-//! Window, fullscreen, scaling, and error snapshot state also live here for Lua bindings and app-loop coordination.
-//! Helper methods cover construction, timer stepping, resource touching, memory stats, async requests, and fonts.
-//! Open it when cross-system runtime ownership changes; app, Lua bindings, and headless flow depend on this file.
+//! Owns the shared state owner for the runtime subsystem and keeps its rules local to this file.
+//! Centers the implementation around FullscreenType, WindowState, default, with helpers kept close to their invariants.
+//! Defines how shared state data is validated, transformed, or stored before neighboring systems use it.
+//! Owns runtime behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on shared state behavior while Lua registration stays elsewhere.
+//! Documents the boundary where runtime code accepts inputs, reports errors, or updates state.
+//! Use this file when changing shared state defaults, lifecycle handling, validation, or data ownership.
+//! Keeps failure paths and edge cases near the runtime state that can explain them while keeping call sites explicit.
+//! Preserves deterministic behavior by keeping shared state calculations explicit at their owner boundary.
+//! Provides the local adaptation layer that lets callers avoid duplicating runtime rules while keeping call sites explicit.
+//! Maintains small helper surfaces so broader engine modules can compose shared state behavior safely.
 
 use crate::audio::Mixer;
 use crate::camera::Camera;

@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/ecs.md or source docstrings instead. -->
+
 # ecs
 
 ## TL;DR
@@ -8,12 +10,12 @@
 ## General Info
 
 - Module group: `Feature Systems`
-- Source path: `src/ecs/`
+- Source path: `src/ecs`
 - Binding: `src/lua_api/ecs_api.rs`
 - Namespace: `lurek.ecs`
 - Lua API surface: `2` functions, `6` types, `86` methods
-- Rust test path(s): tests/rust/unit/ecs_tests.rs
-- Lua test path(s): tests/lua/unit/test_ecs_core_unit.lua
+- User-facing: `true`
+- Plugin tier: `not_evaluated`
 
 ## Summary
 
@@ -32,11 +34,19 @@
 
 This module primarily collaborates with `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
 
+## Ownership
+
+- Canonical source: `src/ecs`
+- Owning tier: `Feature Systems`
+- Plugin tier: `not_evaluated`
+- Lua binding owner: `src/lua_api/ecs_api.rs`
+- Referenced engine modules: `runtime`
+
 ## Imports
 
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Feature Systems` into `Core Runtime`.
 
-## Files
+## Source Files
 
 ### generational_id.rs
 
@@ -162,7 +172,7 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 - `LRelationshipManager:adjustValue(a, b, delta) -> nil`: Adds a delta to the numeric relationship value between two entity ids.
 - `LRelationshipManager:defineType(name, levels, default_level?) -> nil`: Defines a named relationship type with ordered level labels and an optional default level for new pairs.
-- `LRelationshipManager:getLevel(a, b, type_name) -> string?`: Returns the effective named level for one relationship type on a pair, falling back to the type default when no explicit level exists.
+- `LRelationshipManager:getLevel(a, b, type_name) -> string`: Returns the effective named level for one relationship type on a pair, falling back to the type default when no explicit level exists.
 - `LRelationshipManager:getValue(a, b) -> number`: Returns the numeric relationship value between two entity ids.
 - `LRelationshipManager:pairCount() -> integer`: Returns how many entity-id pairs currently have tracked relationship data.
 - `LRelationshipManager:removePair(a, b) -> nil`: Removes all tracked relationship data between two entity ids.
@@ -297,9 +307,32 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 - No documented methods.
 
-## References
+## Examples
 
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `content/examples/ecs.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_ecs_unit.lua` (present)
+- Rust: `tests/rust/unit/ecs_tests.rs`
+
+## Evidence / Golden
+
+| Kind | Path |
+|---|---|
+| Evidence test | `tests/lua/evidence/test_ecs_evidence.lua` |
+| Golden test | `tests/lua/golden/test_ecs_golden.lua` |
+| Current artifact | `tests/artifacts/current/ecs/ecs_blueprint_snapshot.txt` |
+| Current artifact | `tests/artifacts/current/ecs/ecs_component_query_snapshot.txt` |
+| Current artifact | `tests/artifacts/current/ecs/ecs_entity_lifecycle_snapshot.txt` |
+| Current artifact | `tests/artifacts/current/ecs/ecs_hierarchy_relation_observer_trace.txt` |
+| Current artifact | `tests/artifacts/current/ecs/ecs_system_snapshot_trace.txt` |
+| Current artifact | `tests/artifacts/current/ecs/ecs_tag_layer_snapshot.txt` |
+| Baseline artifact | `tests/artifacts/baselines/ecs/ecs_entity_lifecycle_snapshot.txt` |
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

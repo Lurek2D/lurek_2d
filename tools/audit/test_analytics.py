@@ -31,9 +31,12 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Set, Tuple
 
 WORKSPACE_ROOT = Path(__file__).resolve().parent.parent.parent
-LUA_API_DATA = WORKSPACE_ROOT / "logs" / "data" / "lua_api_data.json"
+sys.path.insert(0, str(WORKSPACE_ROOT / "tools" / "docs"))
+import module_registry
+
+LUA_API_DATA = module_registry.lua_api_json_path()
 LUA_TESTS_DIR = WORKSPACE_ROOT / "tests" / "lua"
-COVERAGE_JSON = WORKSPACE_ROOT / "logs" / "data" / "lua_api_test_coverage.json"
+COVERAGE_JSON = module_registry.lua_api_test_coverage_json_path()
 OUTPUT_JSON = WORKSPACE_ROOT / "logs" / "data" / "test_analytics.json"
 OUTPUT_HTML = WORKSPACE_ROOT / "logs" / "reports" / "test_analytics.html"
 

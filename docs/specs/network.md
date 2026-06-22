@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/network.md or source docstrings instead. -->
+
 # network
 
 ## TL;DR
@@ -8,12 +10,12 @@
 ## General Info
 
 - Module group: `Core Runtime`
-- Source path: `src/network/`
+- Source path: `src/network`
 - Binding: `src/lua_api/network_api.rs`
 - Namespace: `lurek.network`
 - Lua API surface: `30` functions, `17` types, `61` methods
-- Rust test path(s): tests/rust/unit/network_tests.rs
-- Lua test path(s): tests/lua/unit/test_network.lua, tests/lua/unit/test_network_constants.lua, tests/lua/unit/test_network_pack_unpack.lua, tests/lua/unit/test_network_roles.lua, tests/lua/unit/test_network_runtimer.lua, tests/lua/security/test_network_security.lua
+- User-facing: `true`
+- Plugin tier: `tier_1_plugin`
 
 ## Summary
 
@@ -34,11 +36,19 @@
 
 This module primarily collaborates with `runtime`. Its responsibility should stay inside the Core Runtime group rather than absorb behavior owned by those neighbors.
 
+## Ownership
+
+- Canonical source: `src/network`
+- Owning tier: `Core Runtime`
+- Plugin tier: `tier_1_plugin`
+- Lua binding owner: `src/lua_api/network_api.rs`
+- Referenced engine modules: `runtime`
+
 ## Imports
 
-- `runtime`: Imports runtime config from `src/runtime/`.
+- `runtime`: Imports or references `src/runtime/`. Dependency stays inside `Core Runtime` and should remain acyclic.
 
-## Files
+## Source Files
 
 ### constants.rs
 
@@ -540,9 +550,22 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - `LSseStream:type() -> string`: Returns the Lua-visible type name for this SSE stream handle.
 - `LSseStream:typeOf(name) -> boolean`: Returns whether this SSE stream handle matches a supported type name.
 
-## References
+## Examples
 
-- `runtime`: Imports runtime config from `src/runtime/`.
+- `content/examples/network.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_network_unit.lua` (present)
+- Rust: `tests/rust/unit/network_tests.rs`
+
+## Evidence / Golden
+
+- No evidence or golden artifacts registered.
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

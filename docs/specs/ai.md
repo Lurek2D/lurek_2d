@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/ai.md or source docstrings instead. -->
+
 # ai
 
 ## TL;DR
@@ -11,12 +13,12 @@
 ## General Info
 
 - Module group: `Feature Systems`
-- Source path: `src/ai/`
+- Source path: `src/ai`
 - Binding: `src/lua_api/ai_api.rs`
 - Namespace: `lurek.ai`
 - Lua API surface: `31` functions, `24` types, `247` methods
-- Rust test path(s): tests/rust/unit/ai_tests.rs, tests/rust/game/ai_tests.rs
-- Lua test path(s): tests/lua/unit/test_ai.lua, tests/lua/golden/test_ai_golden.lua, tests/lua/integration/test_ecs_ai.lua, tests/lua/integration/test_ai_physics.lua, tests/lua/integration/test_ai_pathfind.lua, tests/lua/integration/test_ai_ecs_scene.lua, tests/lua/stress/test_ai_stress.lua
+- User-facing: `true`
+- Plugin tier: `tier_1_plugin`
 
 ## Summary
 
@@ -47,15 +49,23 @@
 
 This module primarily collaborates with `dialog`, `image`, `learning`, `patterns`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
 
+## Ownership
+
+- Canonical source: `src/ai`
+- Owning tier: `Feature Systems`
+- Plugin tier: `tier_1_plugin`
+- Lua binding owner: `src/lua_api/ai_api.rs`
+- Referenced engine modules: `dialog`, `image`, `patterns`, `render`, `runtime`
+
 ## Imports
 
-- `dialog`: Imports or references `src/dialog/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
-- `image`: Imports or references `image` from `src/image/`.
+- `dialog`: Imports or references `src/dialog/`. Dependency stays inside `Feature Systems` and should remain acyclic.
+- `image`: Imports or references `src/image/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
 - `patterns`: Imports or references `src/patterns/`. Cross-group dependency from `Feature Systems` into `Foundations`.
-- `render`: Imports or references `render` from `src/render/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `render`: Imports or references `src/render/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
+- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Feature Systems` into `Core Runtime`.
 
-## Files
+## Source Files
 
 ### agent.rs
 
@@ -94,9 +104,10 @@ This module primarily collaborates with `dialog`, `image`, `learning`, `patterns
 
 ### diagnostics.rs
 
-- Owns lightweight diagnostics and decision traces shared by AI scorers, planners, search, and callback wrappers.
-- It keeps last-decision evidence structured so Lua bindings, tests, and debugging tools can inspect what an AI subsystem just did.
-- Open it when new AI owners need to expose traceable decisions or callback failures.
+- Owns ai behavior with explicit state, validation, and crate-local integration boundaries. for engine changes.
+- Keeps ai data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+- Defines how diagnostics data is validated, transformed, or stored before neighboring systems use it.
+- Owns ai behavior with explicit state, validation, and crate-local integration boundaries. for engine changes.
 
 ### director.rs
 
@@ -117,9 +128,10 @@ This module primarily collaborates with `dialog`, `image`, `learning`, `patterns
 
 ### error.rs
 
-- Owns typed validation and safety errors shared by AI planners, steering, scoring, and Lua-facing helpers.
-- It keeps failure reasons explicit so AI owners can reject invalid numeric input, unsafe tree shapes, and bad budgets consistently.
-- Open it when AI callers need clearer diagnostics or when a new AI subsystem joins the shared validation contract.
+- Owns the error taxonomy for the ai subsystem and keeps its rules local to this file while keeping call sites explicit.
+- Centers the implementation around AiError, fmt, with helpers kept close to their invariants.
+- Defines how error data is validated, transformed, or stored before neighboring systems use it.
+- Owns ai behavior with explicit state, validation, and crate-local integration boundaries. for engine changes.
 
 ### fsm.rs
 
@@ -131,12 +143,13 @@ This module primarily collaborates with `dialog`, `image`, `learning`, `patterns
 
 ### goap.rs
 
-- Implements goal-oriented action planning over boolean world facts, action effects, and prioritized desired states.
-- Owns GOAP actions, goals, bounded best-first search nodes, and the iteration cap that keeps planning tractable.
-- Searches forward from the current world state, reconstructing ordered action names once a goal state is satisfied.
-- Also exposes mutators for action preconditions, effects, and goal facts so planners can be assembled incrementally.
-- Provides the deliberative planning boundary between symbolic world state and executable action chains.
-- Open this owner when plan search cost, iteration ceilings, or goal satisfaction semantics need shared fixes.
+- Owns the goap owner for the ai subsystem and keeps its rules local to this file while keeping call sites explicit.
+- Centers the implementation around PlanFailureReason, as_str, GOAPAction, with helpers kept close to their invariants.
+- Defines how goap data is validated, transformed, or stored before neighboring systems use it.
+- Owns ai behavior with explicit state, validation, and crate-local integration boundaries. for engine changes.
+- Keeps public crate helpers focused on goap behavior while Lua registration stays elsewhere.
+- Documents the boundary where ai code accepts inputs, reports errors, or updates state while keeping call sites explicit.
+- Use this file when changing goap defaults, lifecycle handling, validation, or data ownership.
 
 ### htn.rs
 
@@ -221,15 +234,16 @@ This module primarily collaborates with `dialog`, `image`, `learning`, `patterns
 
 ### steering.rs
 
-- Owns the continuous steering runtime that turns many movement influences into one bounded force for an agent.
-- Defines seek, flee, arrive, wander, pursue, evade, flock, and custom behavior variants with shared base state.
-- Combines behavior outputs under weighted or priority blending so path following and reactive forces can coexist.
-- Stores waypoint path progress, named entity context, and last-force output beside the behavior collection itself.
-- Provides the movement boundary between high-level intent and low-level velocity updates driven every frame.
-- This file matters when acceleration shaping, blend semantics, or path-follow steering interaction is incorrect.
-- Neighboring changes usually involve agent movement data, context steering, ORCA, and authored path waypoints.
-- Open this owner when motion quality is wrong even though the chosen decision and destination are already correct.
-- It is the right file for steering-force bugs because no sibling module owns the final force synthesis contract.
+- Owns the steering owner for the ai subsystem and keeps its rules local to this file while keeping call sites explicit.
+- Centers the implementation around Force, SteeringEntity, FlockParams, with helpers kept close to their invariants.
+- Defines how steering data is validated, transformed, or stored before neighboring systems use it.
+- Owns ai behavior with explicit state, validation, and crate-local integration boundaries. for engine changes.
+- Keeps public crate helpers focused on steering behavior while Lua registration stays elsewhere.
+- Documents the boundary where ai code accepts inputs, reports errors, or updates state while keeping call sites explicit.
+- Use this file when changing steering defaults, lifecycle handling, validation, or data ownership.
+- Keeps failure paths and edge cases near the ai state that can explain them while keeping call sites explicit.
+- Preserves deterministic behavior by keeping steering calculations explicit at their owner boundary.
+- Provides the local adaptation layer that lets callers avoid duplicating ai rules while keeping call sites explicit.
 
 ### strategy.rs
 
@@ -250,17 +264,21 @@ This module primarily collaborates with `dialog`, `image`, `learning`, `patterns
 
 ### utility_ai.rs
 
-- Owns the utility-AI scorer that ranks candidate actions through response curves and per-action consideration data.
-- Defines response-curve variants, considerations, actions, and the last-evaluation score snapshot for inspection.
-- Calls action scorers, applies momentum bonuses, and records the chosen action so later systems can read results.
-- Provides the continuous scoring boundary between raw Lua evaluations and one selected utility-driven action.
-- Open this owner when nonlinear score shaping, momentum behavior, or action-evaluation bookkeeping needs changes.
+- Owns the utility ai owner for the ai subsystem and keeps its rules local to this file while keeping call sites explicit.
+- Centers the implementation around ResponseCurve, parse_str, apply, with helpers kept close to their invariants.
+- Defines how utility ai data is validated, transformed, or stored before neighboring systems use it.
+- Owns ai behavior with explicit state, validation, and crate-local integration boundaries. for engine changes.
+- Keeps public crate helpers focused on utility ai behavior while Lua registration stays elsewhere.
+- Documents the boundary where ai code accepts inputs, reports errors, or updates state while keeping call sites explicit.
+- Use this file when changing utility ai defaults, lifecycle handling, validation, or data ownership.
 
 ### validation.rs
 
-- Owns shared AI sizing, traversal, and numeric validation limits used by planners, steering, trees, and scoring helpers.
-- It centralizes checked counts and finite-value policy so AI owners share one narrow validation contract.
-- Open it when AI ceilings or numeric hardening rules change across the subsystem.
+- Owns ai behavior with explicit state, validation, and crate-local integration boundaries. for engine changes.
+- Centers the implementation around AiValidationLimits, default, finite_f32, with helpers kept close to their invariants.
+- Defines how validation data is validated, transformed, or stored before neighboring systems use it.
+- Owns ai behavior with explicit state, validation, and crate-local integration boundaries. for engine changes.
+- Keeps public crate helpers focused on validation behavior while Lua registration stays elsewhere.
 
 ### world.rs
 
@@ -846,13 +864,32 @@ This module primarily collaborates with `dialog`, `image`, `learning`, `patterns
 - `LUtilityAI:type() -> string`: Returns the Lua-visible type name for this utility AI handle.
 - `LUtilityAI:typeOf(name) -> boolean`: Returns whether this utility AI handle matches a supported type name.
 
-## References
+## Examples
 
-- `dialog`: Imports or references `src/dialog/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
-- `image`: Imports or references `image` from `src/image/`.
-- `patterns`: Imports or references `src/patterns/`. Cross-group dependency from `Feature Systems` into `Foundations`.
-- `render`: Imports or references `render` from `src/render/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `content/examples/ai.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_ai_unit.lua` (present)
+- Rust: `tests/rust/unit/ai_tests.rs`
+
+## Evidence / Golden
+
+| Kind | Path |
+|---|---|
+| Evidence test | `tests/lua/evidence/test_ai_evidence.lua` |
+| Golden test | `tests/lua/golden/test_ai_golden.lua` |
+| Current artifact | `tests/artifacts/current/ai/ai_behavior_tree_debug.json` |
+| Current artifact | `tests/artifacts/current/ai/ai_blackboard_snapshot.json` |
+| Current artifact | `tests/artifacts/current/ai/ai_constructor_surface_snapshot.txt` |
+| Current artifact | `tests/artifacts/current/ai/ai_goap_plan_trace.json` |
+| Current artifact | `tests/artifacts/current/ai/ai_state_machine_transitions.txt` |
+| Current artifact | `tests/artifacts/current/ai/ai_utility_scorecard.json` |
+| Baseline artifact | `tests/artifacts/baselines/ai/ai_state_machine_transitions.txt` |
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

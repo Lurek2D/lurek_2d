@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/color.md or source docstrings instead. -->
+
 # color
 
 ## TL;DR
@@ -7,12 +9,12 @@
 ## General Info
 
 - Module group: `Foundations`
-- Source path: `src/color/`
+- Source path: `src/color`
 - Binding: `src/lua_api/color_api.rs`
 - Namespace: `lurek.color`
 - Lua API surface: `19` functions, `0` types, `0` methods
-- Rust test path(s): tests/rust/unit/color_tests.rs
-- Lua test path(s): tests/lua/unit/test_color_unit.lua
+- User-facing: `true`
+- Plugin tier: `not_evaluated`
 
 ## Summary
 
@@ -23,11 +25,19 @@
 
 This module is mostly self-contained inside the `Foundations` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
 
+## Ownership
+
+- Canonical source: `src/color`
+- Owning tier: `Foundations`
+- Plugin tier: `not_evaluated`
+- Lua binding owner: `src/lua_api/color_api.rs`
+- Referenced engine modules: None detected from Rust imports.
+
 ## Imports
 
 - No top-level `crate::<module>` imports were detected in this module's Rust source files.
 
-## Files
+## Source Files
 
 ### blend.rs
 
@@ -101,9 +111,46 @@ This module is mostly self-contained inside the `Foundations` group. Cross-modul
 
 - No documented module types.
 
-## References
+## Examples
 
-- No top-level `crate::<module>` imports were detected in this module's Rust source files.
+- `content/examples/color.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_color_unit.lua` (present)
+- Rust: `src/color/color_core.rs`
+- Rust: `tests/rust/unit/color_tests.rs`
+
+## Evidence / Golden
+
+| Kind | Path |
+|---|---|
+| Evidence test | `tests/lua/evidence/test_color_evidence.lua` |
+| Golden test | `tests/lua/golden/test_color_golden.lua` |
+| Current artifact | `tests/artifacts/current/color/color_base_a.png` |
+| Current artifact | `tests/artifacts/current/color/color_base_b.png` |
+| Current artifact | `tests/artifacts/current/color/color_blend_additive.png` |
+| Current artifact | `tests/artifacts/current/color/color_blend_alpha_blend.png` |
+| Current artifact | `tests/artifacts/current/color/color_blend_invert_a.png` |
+| Current artifact | `tests/artifacts/current/color/color_blend_multiply.png` |
+| Current artifact | `tests/artifacts/current/color/color_blend_overlay.png` |
+| Current artifact | `tests/artifacts/current/color/color_blend_screen.png` |
+| Current artifact | `tests/artifacts/current/color/color_conversion_trace.txt` |
+| Current artifact | `tests/artifacts/current/color/color_hsl_hue_band.png` |
+| Baseline artifact | `tests/artifacts/baselines/color/color_base_a.png` |
+| Baseline artifact | `tests/artifacts/baselines/color/color_base_b.png` |
+| Baseline artifact | `tests/artifacts/baselines/color/color_blend_additive.png` |
+| Baseline artifact | `tests/artifacts/baselines/color/color_blend_alpha_blend.png` |
+| Baseline artifact | `tests/artifacts/baselines/color/color_blend_invert_a.png` |
+| Baseline artifact | `tests/artifacts/baselines/color/color_blend_multiply.png` |
+| Baseline artifact | `tests/artifacts/baselines/color/color_blend_overlay.png` |
+| Baseline artifact | `tests/artifacts/baselines/color/color_blend_screen.png` |
+| Baseline artifact | `tests/artifacts/baselines/color/color_conversion_trace.txt` |
+| Baseline artifact | `tests/artifacts/baselines/color/color_hsl_hue_band.png` |
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

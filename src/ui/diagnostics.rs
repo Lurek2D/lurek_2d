@@ -1,8 +1,6 @@
-//! Defines lightweight accessibility snapshots and UX diagnostics for the retained UI system.
-//! Keeps report payload types separate from the live context owner so diagnostics APIs stay readable.
-//! Provides stable data shapes used by Lua bindings, tests, and tooling that inspect UI semantics.
-//! Acts as the type boundary for validation output without owning tree traversal or interaction logic.
-//! Open this file when accessibility dumps or diagnostics payloads need to grow without bloating `context.rs`.
+//! Owns ui behavior with explicit state, validation, and crate-local integration boundaries. for engine changes.
+//! Centers the implementation around UiAccessibilityNode, UiDiagnostic, new, with helpers kept close to their invariants.
+//! Defines how diagnostics data is validated, transformed, or stored before neighboring systems use it.
 
 /// A flattened accessibility snapshot entry describing one live widget.
 #[derive(Debug, Clone, PartialEq, Eq)]

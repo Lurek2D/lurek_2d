@@ -1,6 +1,8 @@
-//! This file owns the deterministic RNG contract shared by learning components that need seedable, replayable randomness.
-//! It stores a small versioned state snapshot plus helpers for bounded integers, normalized floats, and Gaussian samples.
-//! Open it when learning reproducibility, replay restoration, or shared RNG semantics change.
+//! Owns learning behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps learning data ownership and helper behavior clear for future engine maintenance. for engine changes.
+//! Defines how rng data is validated, transformed, or stored before neighboring systems use it.
+//! Owns learning behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on rng behavior while Lua registration stays elsewhere.
 
 use super::error::LearningError;
 

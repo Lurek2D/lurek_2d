@@ -17,113 +17,57 @@ import json, re, sys
 from pathlib import Path
 
 ROOT = Path('.').resolve()
-API_JSON = ROOT / 'logs' / 'data' / 'lua_api_data.json'
+sys.path.insert(0, str(ROOT / "tools" / "docs"))
+import module_registry
+
+DOCS_DATA = module_registry.DOCS_DATA
+LEGACY_LOGS_DATA = module_registry.LEGACY_LOGS_DATA
+API_JSON = module_registry.lua_api_json_path()
 EXAMPLES_DIR = ROOT / 'content' / 'examples'
 
-MODULE_TO_EXAMPLE = {
-    'agent': 'agent.lua',
-    'ai': 'ai.lua',
-    'animation': 'animation.lua',
-    'asset': 'asset.lua',
-    'audio': 'audio.lua',
-    'automation': 'automation.lua',
-    'binary': 'binary.lua',
-    'camera': 'camera.lua',
-    'charts': 'charts.lua',
-    'cinematic': 'cinematic.lua',
-    'color': 'color.lua',
-    'compute': 'compute.lua',
-    'cursor': 'cursor.lua',
-    'dataframe': 'dataframe.lua',
-    'debugbridge': 'debugbridge.lua',
-    'devtools': 'devtools.lua',
-    'dialog': 'dialog.lua',
-    'docs': 'docs.lua',
-    'dsp': 'dsp.lua',
-    'ecs': 'ecs.lua',
-    'engine': 'engine.lua',
-    'effect': 'effect.lua',
-    'event': 'event.lua',
-    'filesystem': 'filesystem.lua',
-    'flownet': 'flownet.lua',
-    'font': 'font.lua',
-    'globe': 'globe.lua',
-    'grep': 'grep.lua',
-    'html': 'html.lua',
-    'i18n': 'i18n.lua',
-    'image': 'image.lua',
-    'input': 'input.lua',
-    'layout': 'layout.lua',
-    'learning': 'learning.lua',
-    'light': 'light.lua',
-    'log': 'log.lua',
-    'mapblock': 'mapblock.lua',
-    'math': 'math.lua',
-    'midi': 'midi.lua',
-    'minimap': 'minimap.lua',
-    'mods': 'mods.lua',
-    'network': 'network.lua',
-    'overlay': 'overlay.lua',
-    'parallax': 'parallax.lua',
-    'particle': 'particle.lua',
-    'pathfind': 'pathfind.lua',
-    'patterns': 'patterns.lua',
-    'physics': 'physics.lua',
-    'pipeline': 'pipeline.lua',
-    'procgen': 'procgen.lua',
-    'province': 'province.lua',
-    'raycaster': 'raycaster.lua',
-    'render': 'render.lua',
-    'repl': 'repl.lua',
-    'save': 'save.lua',
-    'scene': 'scene.lua',
-    'serialize': 'serialize.lua',
-    'spine': 'spine.lua',
-    'sprite': 'sprite.lua',
-    'svg': 'svg.lua',
-    'system': 'runtime.lua',
-    'terminal': 'terminal.lua',
-    'thread': 'thread.lua',
-    'tilemap': 'tilemap.lua',
-    'timer': 'timer.lua',
-    'tween': 'tween.lua',
-    'ui': 'ui.lua',
-    'validator': 'validator.lua',
-    'visibility': 'visibility.lua',
-    'window': 'window.lua',
+API_MODULE_TO_REGISTRY_MODULE = {
+    'engine': 'app',
+    'system': 'runtime',
+    'svg': 'vector',
 }
 
-NAMESPACE_MAP = {
-    'filesystem': 'filesystem',
-    'flownet': 'graph',
-    'render': 'render',
-    'serialize': 'serial',
-    'system': 'runtime',
+
+def registry_module_for_api_module(module_name: str) -> str:
+    return API_MODULE_TO_REGISTRY_MODULE.get(module_name, module_name)
+
+
+def example_file_for_module(module_name: str) -> str:
+    registry_module = registry_module_for_api_module(module_name)
+    path = module_registry.module_example_file(registry_module)
+    return Path(path).name if path else f"{registry_module}.lua"
+
+
+def namespace_for_module(module_name: str) -> str:
+    registry_module = registry_module_for_api_module(module_name)
+    namespace = module_registry.module_namespace(registry_module)
+    return namespace.removeprefix("lurek.") if namespace else module_name
+
+
+MODULE_TO_EXAMPLE = {
+    name: example_file_for_module(name)
+    for name in module_registry.list_modules()
+    if module_registry.module_example_file(name)
 }
+MODULE_TO_EXAMPLE.update({alias: example_file_for_module(alias) for alias in API_MODULE_TO_REGISTRY_MODULE})
 
 OWNER_EXAMPLE_MODULES = {
-    'LAreaChart': ['charts'],
-    'LBarChart': ['charts'],
     'LBehaviorTree': ['patterns', 'ai'],
-    'LHeatmapChart': ['charts'],
-    'LHistogramChart': ['charts'],
-    'LImageData': ['image', 'render'],
     'LLayout': ['ui', 'layout'],
-    'LLineChart': ['charts'],
-    'LPieChart': ['charts'],
-    'LScatterPlot': ['charts'],
-    'LMapBlock': ['mapblock'],
-    'LMapGroup': ['mapblock'],
-    'LMapScript': ['mapblock'],
     'LTween': ['tween', 'math'],
 }
 
 
 def _example_files_for(example_module: str, owner_type: str = '') -> list[str]:
-    modules = OWNER_EXAMPLE_MODULES.get(owner_type, [example_module])
+    canonical_owner = module_registry.canonical_owner(owner_type) if owner_type else None
+    modules = OWNER_EXAMPLE_MODULES.get(owner_type, [canonical_owner or example_module])
     files = []
     for module in modules:
-        file_name = MODULE_TO_EXAMPLE.get(module, f"{module}.lua")
+        file_name = example_file_for_module(module)
         if file_name not in files:
             files.append(file_name)
     return files
@@ -140,7 +84,7 @@ mods = data.get('lua_api', {}).get('modules', {})
 expected_apis = []
 seen_expected = set()
 for mod_name, mod_data in mods.items():
-    ns = NAMESPACE_MAP.get(mod_name, mod_name)
+    ns = namespace_for_module(mod_name)
     example_module = mod_name
     for fn in mod_data.get('functions', []):
         api_id = fn.get('lua_name') or f"lurek.{ns}.{fn['name']}"

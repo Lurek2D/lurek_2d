@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/math.md or source docstrings instead. -->
+
 # math
 
 ## TL;DR
@@ -9,12 +11,12 @@
 ## General Info
 
 - Module group: `Foundations`
-- Source path: `src/math/`
+- Source path: `src/math`
 - Binding: `src/lua_api/math_api.rs`
 - Namespace: `lurek.math`
 - Lua API surface: `99` functions, `19` types, `164` methods
-- Rust test path(s): tests/rust/unit/math_tests.rs; inline tests in src/math/vec2.rs, src/math/vec3.rs, src/math/mat3.rs, src/math/rect.rs, src/math/bezier.rs, src/math/easing.rs, src/math/geometry.rs, src/math/noise_functions.rs, src/math/noise_generator.rs, src/math/polygon.rs, src/math/random.rs, src/math/spatial_hash.rs, src/math/transform.rs, src/math/tween.rs, src/math/voronoi.rs, src/math/mod.rs; sibling test file src/math/aabb_tree_tests.rs; inline tests in src/math/spline.rs
-- Lua test path(s): tests/lua/unit/test_math.lua
+- User-facing: `true`
+- Plugin tier: `not_evaluated`
 
 ## Summary
 
@@ -38,12 +40,20 @@
 
 This module primarily collaborates with `globe`, `image`. Its responsibility should stay inside the Foundations group rather than absorb behavior owned by those neighbors.
 
+## Ownership
+
+- Canonical source: `src/math`
+- Owning tier: `Foundations`
+- Plugin tier: `not_evaluated`
+- Lua binding owner: `src/lua_api/math_api.rs`
+- Referenced engine modules: `globe`, `image`
+
 ## Imports
 
-- `globe`: Imports or references `src/globe/`. Cross-group dependency from `Foundations` into `Feature Systems`.
+- `globe`: Imports or references `src/globe/`. Dependency stays inside `Foundations` and should remain acyclic.
 - `image`: Imports or references `src/image/`. Cross-group dependency from `Foundations` into `Platform Services`.
 
-## Files
+## Source Files
 
 ### aabb_tree.rs
 
@@ -709,10 +719,69 @@ This module primarily collaborates with `globe`, `image`. Its responsibility sho
 - `LVec3:type() -> string`: Returns the Lua-visible type name for this vector handle.
 - `LVec3:typeOf(name) -> boolean`: Returns whether this vector handle matches a supported type name.
 
-## References
+## Examples
 
-- `globe`: Imports or references `src/globe/`. Cross-group dependency from `Foundations` into `Feature Systems`.
-- `image`: Imports or references `src/image/`. Cross-group dependency from `Foundations` into `Platform Services`.
+- `content/examples/math.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_math_unit.lua` (present)
+- Rust: none detected.
+
+## Evidence / Golden
+
+| Kind | Path |
+|---|---|
+| Evidence test | `tests/lua/evidence/test_math_evidence.lua` |
+| Golden test | `tests/lua/golden/test_math_golden.lua` |
+| Current artifact | `tests/artifacts/current/math/math_bezier_crossing_pair.png` |
+| Current artifact | `tests/artifacts/current/math/math_bezier_cubic_showcase.png` |
+| Current artifact | `tests/artifacts/current/math/math_bezier_cubic_tangent.png` |
+| Current artifact | `tests/artifacts/current/math/math_bezier_quadratic.png` |
+| Current artifact | `tests/artifacts/current/math/math_bresenham_rays.png` |
+| Current artifact | `tests/artifacts/current/math/math_distance_heatmap.png` |
+| Current artifact | `tests/artifacts/current/math/math_easing_apply_inout_quad.png` |
+| Current artifact | `tests/artifacts/current/math/math_easing_apply_linear.png` |
+| Current artifact | `tests/artifacts/current/math/math_easing_apply_out_bounce.png` |
+| Current artifact | `tests/artifacts/current/math/math_easing_apply_out_elastic.png` |
+| Current artifact | `tests/artifacts/current/math/math_easing_in_cubic.png` |
+| Current artifact | `tests/artifacts/current/math/math_easing_in_quad.png` |
+| Current artifact | `tests/artifacts/current/math/math_easing_inout_quad.png` |
+| Current artifact | `tests/artifacts/current/math/math_easing_linear.png` |
+| Current artifact | `tests/artifacts/current/math/math_easing_out_bounce.png` |
+| Current artifact | `tests/artifacts/current/math/math_easing_out_cubic.png` |
+| Current artifact | `tests/artifacts/current/math/math_easing_out_quad.png` |
+| Current artifact | `tests/artifacts/current/math/math_line_intersection_report.txt` |
+| Current artifact | `tests/artifacts/current/math/math_polygon_algorithms_report.txt` |
+| Current artifact | `tests/artifacts/current/math/math_polygon_metrics.png` |
+| Current artifact | `tests/artifacts/current/math/math_segment_intersections.png` |
+| Current artifact | `tests/artifacts/current/math/math_vec2_unit_circle.png` |
+| Baseline artifact | `tests/artifacts/baselines/math/math_bezier_crossing_pair.png` |
+| Baseline artifact | `tests/artifacts/baselines/math/math_bezier_cubic_showcase.png` |
+| Baseline artifact | `tests/artifacts/baselines/math/math_bezier_cubic_tangent.png` |
+| Baseline artifact | `tests/artifacts/baselines/math/math_bezier_quadratic.png` |
+| Baseline artifact | `tests/artifacts/baselines/math/math_bresenham_rays.png` |
+| Baseline artifact | `tests/artifacts/baselines/math/math_distance_heatmap.png` |
+| Baseline artifact | `tests/artifacts/baselines/math/math_easing_apply_inout_quad.png` |
+| Baseline artifact | `tests/artifacts/baselines/math/math_easing_apply_linear.png` |
+| Baseline artifact | `tests/artifacts/baselines/math/math_easing_apply_out_bounce.png` |
+| Baseline artifact | `tests/artifacts/baselines/math/math_easing_apply_out_elastic.png` |
+| Baseline artifact | `tests/artifacts/baselines/math/math_easing_in_cubic.png` |
+| Baseline artifact | `tests/artifacts/baselines/math/math_easing_in_quad.png` |
+| Baseline artifact | `tests/artifacts/baselines/math/math_easing_inout_quad.png` |
+| Baseline artifact | `tests/artifacts/baselines/math/math_easing_linear.png` |
+| Baseline artifact | `tests/artifacts/baselines/math/math_easing_out_bounce.png` |
+| Baseline artifact | `tests/artifacts/baselines/math/math_easing_out_cubic.png` |
+| Baseline artifact | `tests/artifacts/baselines/math/math_easing_out_quad.png` |
+| Baseline artifact | `tests/artifacts/baselines/math/math_line_intersection_report.txt` |
+| Baseline artifact | `tests/artifacts/baselines/math/math_polygon_algorithms_report.txt` |
+| Baseline artifact | `tests/artifacts/baselines/math/math_polygon_metrics.png` |
+| Baseline artifact | `tests/artifacts/baselines/math/math_segment_intersections.png` |
+| Baseline artifact | `tests/artifacts/baselines/math/math_vec2_unit_circle.png` |
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

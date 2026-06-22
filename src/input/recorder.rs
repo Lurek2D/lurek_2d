@@ -1,9 +1,10 @@
-//! This file owns `InputEvent`, `RecordedFrame`, `InputRecording`, and `InputRecorder` replay state.
-//! It stores sparse frame activity, total frame counts, playback cursors, and recorder lifecycle booleans.
-//! Serialization uses a versioned JSON envelope so persisted recordings can be validated on load and save.
-//! Recording helpers append per-frame events and mouse positions, while playback re-emits events on original frames.
-//! The owner boundary is about deterministic capture and replay, not about collecting raw device state itself.
-//! Open this file when replay schema or playback semantics change; live device polling lives in sibling files.
+//! Owns input behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps input data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+//! Defines how recorder data is validated, transformed, or stored before neighboring systems use it.
+//! Owns input behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on recorder behavior while Lua registration stays elsewhere.
+//! Documents where input callers should change defaults, errors, or lifecycle behavior. with focused crate-local behavior.
+//! Use this file when changing recorder defaults, lifecycle handling, validation, or data ownership.
 
 /// A single input event with a kind tag and a key/button name.
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, PartialEq)]

@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/animation.md or source docstrings instead. -->
+
 # animation
 
 ## TL;DR
@@ -9,12 +11,12 @@
 ## General Info
 
 - Module group: `Feature Systems`
-- Source path: `src/animation/`
+- Source path: `src/animation`
 - Binding: `src/lua_api/animation_api.rs`
 - Namespace: `lurek.animation`
 - Lua API surface: `7` functions, `8` types, `65` methods
-- Rust test path(s): tests/rust/unit/animation_tests.rs
-- Lua test path(s): tests/lua/unit/test_animation.lua, tests/lua/stress/test_animation_stress.lua, tests/lua/integration/test_tween_animation.lua, tests/lua/integration/test_render_animation.lua, tests/lua/integration/test_animation_timer.lua, tests/lua/golden/test_animation_golden.lua
+- User-facing: `true`
+- Plugin tier: `not_evaluated`
 
 ## Summary
 
@@ -31,15 +33,23 @@
 
 This module primarily collaborates with `image`, `math`, `render`, `runtime`, `spine`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
 
+## Ownership
+
+- Canonical source: `src/animation`
+- Owning tier: `Feature Systems`
+- Plugin tier: `not_evaluated`
+- Lua binding owner: `src/lua_api/animation_api.rs`
+- Referenced engine modules: `image`, `math`, `render`, `runtime`, `spine`
+
 ## Imports
 
-- `image`: Imports or references `src/image/`. Cross-group dependency from ``Feature Systems`` into `Platform Services`.
-- `math`: Imports or references `math` from `src/math/`.
-- `render`: Imports or references `render` from `src/render/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `image`: Imports or references `src/image/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
+- `math`: Imports or references `src/math/`. Cross-group dependency from `Feature Systems` into `Foundations`.
+- `render`: Imports or references `src/render/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
+- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Feature Systems` into `Core Runtime`.
 - `spine`: Imports or references `src/spine/`. Dependency stays inside `Feature Systems` and should remain acyclic.
 
-## Files
+## Source Files
 
 ### aseprite.rs
 
@@ -321,13 +331,40 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`, `s
 
 - No documented methods.
 
-## References
+## Examples
 
-- `image`: Imports or references `src/image/`. Cross-group dependency from ``Feature Systems`` into `Platform Services`.
-- `math`: Imports or references `math` from `src/math/`.
-- `render`: Imports or references `render` from `src/render/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
-- `spine`: Imports or references `src/spine/`. Dependency stays inside `Feature Systems` and should remain acyclic.
+- `content/examples/animation.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_animation_unit.lua` (present)
+- Rust: `tests/rust/unit/animation_tests.rs`
+
+## Evidence / Golden
+
+| Kind | Path |
+|---|---|
+| Evidence test | `tests/lua/evidence/test_animation_evidence.lua` |
+| Golden test | `tests/lua/golden/test_animation_golden.lua` |
+| Current artifact | `tests/artifacts/current/animation/animation_clip_control_trace.txt` |
+| Current artifact | `tests/artifacts/current/animation/animation_clip_preview_frames.gif` |
+| Current artifact | `tests/artifacts/current/animation/animation_crossfade_transition.gif` |
+| Current artifact | `tests/artifacts/current/animation/animation_current_frame_walk.png` |
+| Current artifact | `tests/artifacts/current/animation/animation_curve_eased.png` |
+| Current artifact | `tests/artifacts/current/animation/animation_curve_linear.png` |
+| Current artifact | `tests/artifacts/current/animation/animation_state_machine_transition_trace.txt` |
+| Current artifact | `tests/artifacts/current/animation/animation_walk_cycle_preview.gif` |
+| Baseline artifact | `tests/artifacts/baselines/animation/animation_clip_preview_frames.gif` |
+| Baseline artifact | `tests/artifacts/baselines/animation/animation_crossfade_transition.gif` |
+| Baseline artifact | `tests/artifacts/baselines/animation/animation_current_frame_walk.png` |
+| Baseline artifact | `tests/artifacts/baselines/animation/animation_curve_eased.png` |
+| Baseline artifact | `tests/artifacts/baselines/animation/animation_curve_linear.png` |
+| Baseline artifact | `tests/artifacts/baselines/animation/animation_state_machine_transition_trace.txt` |
+| Baseline artifact | `tests/artifacts/baselines/animation/animation_walk_cycle_preview.gif` |
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

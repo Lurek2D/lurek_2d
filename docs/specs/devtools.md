@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/devtools.md or source docstrings instead. -->
+
 # devtools
 
 ## TL;DR
@@ -8,12 +10,12 @@
 ## General Info
 
 - Module group: `Edge/Integration`
-- Source path: `src/devtools/`
+- Source path: `src/devtools`
 - Binding: `src/lua_api/devtools_api.rs`
 - Namespace: `lurek.devtools`
 - Lua API surface: `50` functions, `9` types, `12` methods
-- Rust test path(s): tests/rust/unit/devtools_tests.rs
-- Lua test path(s): tests/lua/unit/test_devtools.lua; tests/lua/integration/test_devtools.lua
+- User-facing: `true`
+- Plugin tier: `not_evaluated`
 
 ## Summary
 
@@ -29,12 +31,20 @@
 
 This module primarily collaborates with `filesystem`, `repl`. Its responsibility should stay inside the Edge/Integration group rather than absorb behavior owned by those neighbors.
 
+## Ownership
+
+- Canonical source: `src/devtools`
+- Owning tier: `Edge/Integration`
+- Plugin tier: `not_evaluated`
+- Lua binding owner: `src/lua_api/devtools_api.rs`
+- Referenced engine modules: `filesystem`, `repl`
+
 ## Imports
 
 - `filesystem`: Imports or references `src/filesystem/`. Cross-group dependency from `Edge/Integration` into `Core Runtime`.
-- `repl`: Imports or references `src/repl/`. Dependency stays inside `Edge/Integration` and should remain acyclic.
+- `repl`: Imports or references `src/repl/`. Cross-group dependency from `Edge/Integration` into `Core Runtime`.
 
-## Files
+## Source Files
 
 ### frame_stats.rs
 
@@ -318,10 +328,22 @@ This module primarily collaborates with `filesystem`, `repl`. Its responsibility
 - `LReplConsole:type() -> string`: Returns the Lua-visible type name for this REPL console handle.
 - `LReplConsole:typeOf(name) -> boolean`: Returns whether this REPL console handle matches a supported type name.
 
-## References
+## Examples
 
-- `filesystem`: Imports or references `src/filesystem/`. Cross-group dependency from `Edge/Integration` into `Core Runtime`.
-- `repl`: Imports or references `src/repl/`. Dependency stays inside `Edge/Integration` and should remain acyclic.
+- `content/examples/devtools.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_devtools_unit.lua` (present)
+- Rust: none detected.
+
+## Evidence / Golden
+
+- No evidence or golden artifacts registered.
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

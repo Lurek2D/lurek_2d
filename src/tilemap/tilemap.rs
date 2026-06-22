@@ -1,13 +1,15 @@
-//! Defines the core layered tilemap data model used by simulation, collision, generation, and rendering paths.
-//! Stores per-cell gids, per-layer visibility, tint, parallax, and geometry settings under one coherent runtime.
-//! Resolves global ids through attached tilesets so tile ownership and atlas lookup stay deterministic.
-//! Computes autotile neighborhood masks and substitution results that preserve terrain continuity across edits.
-//! Performs swept collision checks against solid tiles for movement systems that need stable tile-based blocking.
-//! Advances animated tile timelines from tileset frame data so visual state updates stay tied to map content.
-//! Converts between world and tile coordinates using the active map geometry instead of hardcoded projection math.
-//! Emits culled draw commands for viewport-scoped debug or runtime visualization without duplicating map scans.
-//! Acts as the operational boundary for layered tile storage rather than external import or large-map chunk policy.
-//! Open this file when layered map state, autotiling, collisions, or coordinate conversion behaves incorrectly.
+//! Owns tilemap behavior with explicit state, validation, and crate-local integration boundaries.
+//! Centers the implementation around TileLayer, index, try_new, with helpers kept close to their invariants.
+//! Defines how tilemap data is validated, transformed, or stored before neighboring systems use it.
+//! Owns tilemap behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on tilemap behavior while Lua registration stays elsewhere.
+//! Documents the boundary where tilemap code accepts inputs, reports errors, or updates state.
+//! Use this file when changing tilemap defaults, lifecycle handling, validation, or data ownership.
+//! Keeps failure paths and edge cases near the tilemap state that can explain them while keeping call sites explicit.
+//! Preserves deterministic behavior by keeping tilemap calculations explicit at their owner boundary.
+//! Provides the local adaptation layer that lets callers avoid duplicating tilemap rules while keeping call sites explicit.
+//! Maintains small helper surfaces so broader engine modules can compose tilemap behavior safely.
+//! Protects subsystem contracts by keeping resource, cache, or state mutations visible in one place.
 
 use super::autotile_sheet::AutoTileMode;
 use super::error::TileMapError;

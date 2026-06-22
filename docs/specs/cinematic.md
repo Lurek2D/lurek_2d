@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/cinematic.md or source docstrings instead. -->
+
 # cinematic
 
 ## TL;DR
@@ -7,13 +9,13 @@
 
 ## General Info
 
-- Module group: `Edge/Integration`
-- Source path: `src/cinematic/`
+- Module group: `Feature Systems`
+- Source path: `src/cinematic`
 - Binding: `src/lua_api/cinematic_api.rs`
 - Namespace: `lurek.cinematic`
 - Lua API surface: `2` functions, `2` types, `23` methods
-- Rust test path(s): None found in the workspace
-- Lua test path(s): tests/lua/unit/test_cinematic_timeline_unit.lua
+- User-facing: `true`
+- Plugin tier: `not_evaluated`
 
 ## Summary
 
@@ -21,11 +23,19 @@ The `cinematic` module is the timeline authoring surface for cutscenes, scripted
 
 This module is mostly self-contained inside the `Edge/Integration` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
 
+## Ownership
+
+- Canonical source: `src/cinematic`
+- Owning tier: `Feature Systems`
+- Plugin tier: `not_evaluated`
+- Lua binding owner: `src/lua_api/cinematic_api.rs`
+- Referenced engine modules: None detected from Rust imports.
+
 ## Imports
 
 - No top-level `crate::<module>` imports were detected in this module's Rust source files.
 
-## Files
+## Source Files
 
 ### cinematic_legacy.rs
 
@@ -116,9 +126,37 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 - `LCinematicTimeline:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
 - `LCinematicTimeline:update(dt) -> nil`: Advances time by dt (only if playing).
 
-## References
+## Examples
 
-- No top-level `crate::<module>` imports were detected in this module's Rust source files.
+- `content/examples/cinematic.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_cinematic_unit.lua` (present)
+- Rust: `src/cinematic/cinematic_legacy.rs`
+
+## Evidence / Golden
+
+| Kind | Path |
+|---|---|
+| Evidence test | `tests/lua/evidence/test_cinematic_evidence.lua` |
+| Golden test | `tests/lua/golden/test_cinematic_golden.lua` |
+| Current artifact | `tests/artifacts/current/cinematic/cinematic_completion_controls.png` |
+| Current artifact | `tests/artifacts/current/cinematic/cinematic_labels_branching.png` |
+| Current artifact | `tests/artifacts/current/cinematic/cinematic_legacy_cut_list.png` |
+| Current artifact | `tests/artifacts/current/cinematic/cinematic_multitrack_schedule.png` |
+| Current artifact | `tests/artifacts/current/cinematic/cinematic_playhead_controls.gif` |
+| Current artifact | `tests/artifacts/current/cinematic/cinematic_signal_audio_sequence.png` |
+| Baseline artifact | `tests/artifacts/baselines/cinematic/cinematic_completion_controls.png` |
+| Baseline artifact | `tests/artifacts/baselines/cinematic/cinematic_labels_branching.png` |
+| Baseline artifact | `tests/artifacts/baselines/cinematic/cinematic_legacy_cut_list.png` |
+| Baseline artifact | `tests/artifacts/baselines/cinematic/cinematic_multitrack_schedule.png` |
+| Baseline artifact | `tests/artifacts/baselines/cinematic/cinematic_playhead_controls.gif` |
+| Baseline artifact | `tests/artifacts/baselines/cinematic/cinematic_signal_audio_sequence.png` |
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

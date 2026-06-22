@@ -1,8 +1,10 @@
-//! This file owns the normalized heightmap model used to build terrain fields from noise or binary cellular sources.
-//! `HeightmapOpts` stores noise parameters and erosion passes, while `Heightmap` owns width, height, and cell storage.
-//! Generation from FBM noise stays here because map options, normalization, and seed-driven reproducibility are local.
-//! Simple erosion also belongs here since it mutates terrain cells in-place and defines the file's smoothing behavior.
-//! RGBA export and sampled access remain local because they expose the heightmap as usable terrain data to callers.
+//! Owns the heightmap owner for the procgen subsystem and keeps its rules local to this file.
+//! Keeps procgen data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+//! Defines how heightmap data is validated, transformed, or stored before neighboring systems use it.
+//! Owns procgen behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on heightmap behavior while Lua registration stays elsewhere.
+//! Documents the boundary where procgen code accepts inputs, reports errors, or updates state.
+//! Use this file when changing heightmap defaults, lifecycle handling, validation, or data ownership.
 
 use crate::procgen::noise::{FractalType, MapGenOptions, NoiseGenerator, NoiseKind};
 use crate::procgen::scalar_map_to_rgba_bytes;

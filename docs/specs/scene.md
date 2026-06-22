@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/scene.md or source docstrings instead. -->
+
 # scene
 
 ## TL;DR
@@ -9,12 +11,12 @@
 ## General Info
 
 - Module group: `Feature Systems`
-- Source path: `src/scene/`
+- Source path: `src/scene`
 - Binding: `src/lua_api/scene_api.rs`
 - Namespace: `lurek.scene`
 - Lua API surface: `60` functions, `10` types, `21` methods
-- Rust test path(s): none found in the workspace
-- Lua test path(s): tests/lua/unit/test_scene_unit.lua
+- User-facing: `true`
+- Plugin tier: `not_evaluated`
 
 ## Summary
 
@@ -32,14 +34,22 @@
 
 This module primarily collaborates with `image`, `math`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
 
+## Ownership
+
+- Canonical source: `src/scene`
+- Owning tier: `Feature Systems`
+- Plugin tier: `not_evaluated`
+- Lua binding owner: `src/lua_api/scene_api.rs`
+- Referenced engine modules: `image`, `math`, `render`, `runtime`
+
 ## Imports
 
-- `image`: Imports or references `image` from `src/image/`.
+- `image`: Imports or references `src/image/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
 - `math`: Imports or references `src/math/`. Cross-group dependency from `Feature Systems` into `Foundations`.
-- `render`: Imports or references `render` from `src/render/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `render`: Imports or references `src/render/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
+- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Feature Systems` into `Core Runtime`.
 
-## Files
+## Source Files
 
 ### depth_sorter.rs
 
@@ -318,12 +328,41 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 
 - No documented methods.
 
-## References
+## Examples
 
-- `image`: Imports or references `image` from `src/image/`.
-- `math`: Imports or references `src/math/`. Cross-group dependency from `Feature Systems` into `Foundations`.
-- `render`: Imports or references `render` from `src/render/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `content/examples/scene.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_scene_unit.lua` (present)
+- Rust: none detected.
+
+## Evidence / Golden
+
+| Kind | Path |
+|---|---|
+| Evidence test | `tests/lua/evidence/test_scene_evidence.lua` |
+| Golden test | `tests/lua/golden/test_scene_golden.lua` |
+| Current artifact | `tests/artifacts/current/scene/scene_depth_sort_ascending.txt` |
+| Current artifact | `tests/artifacts/current/scene/scene_depth_sort_bands.png` |
+| Current artifact | `tests/artifacts/current/scene/scene_depth_sort_object_entries.txt` |
+| Current artifact | `tests/artifacts/current/scene/scene_depth_sort_stable_equal_depth.txt` |
+| Current artifact | `tests/artifacts/current/scene/scene_object_container_layer_trace.txt` |
+| Current artifact | `tests/artifacts/current/scene/scene_state_preload_overlay_trace.txt` |
+| Current artifact | `tests/artifacts/current/scene/scene_transition_progress_step01.png` |
+| Current artifact | `tests/artifacts/current/scene/scene_transition_progress_step02.png` |
+| Current artifact | `tests/artifacts/current/scene/scene_transition_progress_step03.png` |
+| Current artifact | `tests/artifacts/current/scene/scene_transition_progress_step04.png` |
+| Current artifact | `tests/artifacts/current/scene/scene_transition_queue_trace.txt` |
+| Baseline artifact | `tests/artifacts/baselines/scene/scene_depth_sort_ascending.txt` |
+| Baseline artifact | `tests/artifacts/baselines/scene/scene_depth_sort_bands.png` |
+| Baseline artifact | `tests/artifacts/baselines/scene/scene_depth_sort_object_entries.txt` |
+| Baseline artifact | `tests/artifacts/baselines/scene/scene_depth_sort_stable_equal_depth.txt` |
+| Baseline artifact | `tests/artifacts/baselines/scene/scene_transition_queue_trace.txt` |
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

@@ -30,7 +30,10 @@ import sys
 from pathlib import Path
 
 WORKSPACE_ROOT = Path(__file__).resolve().parent.parent.parent
-INPUT_FILE = WORKSPACE_ROOT / "logs" / "data" / "lua_api_data.json"
+sys.path.insert(0, str(WORKSPACE_ROOT / "tools" / "docs"))
+import module_registry
+
+INPUT_FILE = module_registry.lua_api_json_path()
 OUTPUT_FILE = WORKSPACE_ROOT / "docs" / "wiki" / "API-Reference.md"
 
 # Canonical module display order

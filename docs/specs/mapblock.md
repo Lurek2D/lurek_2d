@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/mapblock.md or source docstrings instead. -->
+
 # mapblock
 
 ## TL;DR
@@ -6,13 +8,13 @@
 
 ## General Info
 
-- Module group: `Edge/Integration`
-- Source path: `src/mapblock/`
+- Module group: `Feature Systems`
+- Source path: `src/mapblock`
 - Binding: `src/lua_api/mapblock_api.rs`
 - Namespace: `lurek.mapblock`
 - Lua API surface: `10` functions, `10` types, `67` methods
-- Rust test path(s): tests/rust/unit/mapblock_tests.rs
-- Lua test path(s): tests/lua/unit/test_mapblock_unit.lua, tests/lua/evidence/test_mapblock_evidence.lua
+- User-facing: `true`
+- Plugin tier: `not_evaluated`
 
 ## Summary
 
@@ -32,22 +34,32 @@
 
 This module primarily collaborates with `procgen`. Its responsibility should stay inside the `Edge/Integration` group rather than absorb behavior owned by those neighbors.
 
+## Ownership
+
+- Canonical source: `src/mapblock`
+- Owning tier: `Feature Systems`
+- Plugin tier: `not_evaluated`
+- Lua binding owner: `src/lua_api/mapblock_api.rs`
+- Referenced engine modules: `procgen`
+
 ## Imports
 
-- `procgen`: Imports or references `src/procgen/`. Cross-group dependency from ``Edge/Integration`` into `Foundations`.
+- `procgen`: Imports or references `src/procgen/`. Cross-group dependency from `Feature Systems` into `Foundations`.
 
-## Files
+## Source Files
 
 ### block.rs
 
-- This file owns the atomic mapblock model, combining tile layers, edge sockets, footprint cells, and author metadata.
-- `MapBlock` stores dimensions, layers, slot count, side rules, custom sockets, weight flags, and vertical span data.
-- `Edge` also lives here because block-local side identity is part of geometry and compatibility ownership.
-- Legacy construction remains here so old raw layer data can be upgraded into the modern layered block structure.
-- Tile setters and getters stay here because `MapBlock` is the first owner above `BlockLayer` for authored content.
-- Footprint normalization and transformed socket maps belong here because rotation and mirroring start at block scope.
-- Segment counts, transformed sizes, and legacy socket derivation stay local because they describe one block's geometry.
-- Open it when block semantics change; candidate search, scripts, and result export build directly on this owner.
+- Owns mapblock behavior with explicit state, validation, and crate-local integration boundaries.
+- Centers the implementation around Edge, MapBlockLimits, default, with helpers kept close to their invariants.
+- Defines how block data is validated, transformed, or stored before neighboring systems use it.
+- Owns mapblock behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on block behavior while Lua registration stays elsewhere.
+- Documents the boundary where mapblock code accepts inputs, reports errors, or updates state.
+- Use this file when changing block defaults, lifecycle handling, validation, or data ownership.
+- Keeps failure paths and edge cases near the mapblock state that can explain them while keeping call sites explicit.
+- Preserves deterministic behavior by keeping block calculations explicit at their owner boundary.
+- Owns mapblock behavior with explicit state, validation, and crate-local integration boundaries.
 
 ### config.rs
 
@@ -67,15 +79,16 @@ This module primarily collaborates with `procgen`. Its responsibility should sta
 
 ### generator.rs
 
-- This file owns the operational mapblock engine that runs scripts, tracks RNG, and mutates placement state over time.
-- `MapBlockGenerator` stores config, grid, rules, orientation, groups, levels, paint ops, and output tile sizing knobs.
-- It reuses the shared `procgen::Lcg` so deterministic picks follow one engine-wide RNG contract.
-- `generate` orchestrates the whole build, resetting state, running each script step, and then materializing output.
-- Random, fixed, edge, auto, rectangle-paint, and shape-solver step handlers all live here as runtime control flow.
-- Weighted block choice and candidate ordering stay here because authored content selection is step execution logic.
-- Backtracking shape solving stays local because it recursively consumes placement candidates against the live grid state.
-- `MapBlockReport` and `place_candidate` bridge execution outcomes into diagnostics, `PlacementGrid`, and `MultiLevelMap`.
-- Open it when generation behavior changes; blocks, scripts, legality checks, and result export live in sibling owners.
+- Owns the generation pipeline for the mapblock subsystem and keeps its rules local to this file.
+- Keeps mapblock data ownership and helper behavior clear for future engine maintenance. for engine changes.
+- Defines how generator data is validated, transformed, or stored before neighboring systems use it.
+- Owns mapblock behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on generator behavior while Lua registration stays elsewhere.
+- Documents the boundary where mapblock code accepts inputs, reports errors, or updates state.
+- Use this file when changing generator defaults, lifecycle handling, validation, or data ownership.
+- Keeps failure paths and edge cases near the mapblock state that can explain them while keeping call sites explicit.
+- Preserves deterministic behavior by keeping generator calculations explicit at their owner boundary.
+- Owns mapblock behavior with explicit state, validation, and crate-local integration boundaries.
 
 ### group.rs
 
@@ -86,10 +99,11 @@ This module primarily collaborates with `procgen`. Its responsibility should sta
 
 ### layer.rs
 
-- This file owns one 2D block layer, storing width, height, slot count, and row-major `MapTile` cells.
-- `BlockLayer` exposes bounds-checked tile reads, mutable access, slot writes, fill, clear, and slot-count inspection.
-- Layer-wide mutation lives here because tile-grid indexing and reset behavior belong below `MapBlock` orchestration.
-- Open it when per-layer tile storage changes; block footprints, placement logic, and export passes live in siblings.
+- Owns mapblock behavior with explicit state, validation, and crate-local integration boundaries.
+- Centers the implementation around BlockLayer, new, try_new, with helpers kept close to their invariants.
+- Defines how layer data is validated, transformed, or stored before neighboring systems use it.
+- Owns mapblock behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on layer behavior while Lua registration stays elsewhere.
 
 ### maptile.rs
 
@@ -100,12 +114,14 @@ This module primarily collaborates with `procgen`. Its responsibility should sta
 
 ### mod.rs
 
-- This module is the mapblock index, exposing authored blocks, constraints, scripts, placement, and output conversion.
-- It reexports `MapBlockGenerator`, block types, script data, placement state, and result carriers as one surface.
-- `block.rs` owns atomic block geometry, while `placement.rs` and `generator.rs` own legality checks and execution flow.
-- `config.rs`, `maptile.rs`, `layer.rs`, and `tileset_ref.rs` define the slot, tile, and tileset contracts here.
-- `output.rs` and `multilevel.rs` handle built-map materialization, while `group.rs` and `script.rs` organize content.
-- Open this file to navigate ownership quickly; actual generation logic, transforms, and storage live in sibling files.
+- Indexes the mapblock subsystem and keeps exported submodules discoverable from one crate entry.
+- Keeps mapblock data ownership and helper behavior clear for future engine maintenance. for engine changes.
+- Separates navigation and module wiring from implementation so feature files own behavior directly.
+- Owns mapblock behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps crate callers pointed at stable mapblock entrypoints while internals stay organized.
+- Documents where mapblock callers should change defaults, errors, or lifecycle behavior. for engine changes.
+- Indexes the mapblock subsystem and keeps exported submodules discoverable from one crate entry.
+- Keeps mapblock data ownership and helper behavior clear for future engine maintenance. for engine changes.
 
 ### multilevel.rs
 
@@ -133,13 +149,14 @@ This module primarily collaborates with `procgen`. Its responsibility should sta
 
 ### placement.rs
 
-- This file owns grid-shape state and candidate legality checks for placing transformed blocks onto available cells.
-- `PlacementGrid` stores available cells, occupied cells, placed-block records, and a reverse map from cell to placement.
-- `PlacedBlock`, `PlacementCandidate`, and `PlacementSearch` live here because they describe the search and commit states.
-- Rectangular and arbitrary-shape grid setup belongs here because map shape is separate from authored block geometry.
-- `find_valid_placements` also stays here, combining transformed footprints, edge-only rules, and occupied-cell checks.
-- Neighbor compatibility evaluation is local because socket matching depends on grid state plus `NeighborRules` policy.
-- Open it when placement legality changes; block definitions, scripted execution, and output building live in siblings.
+- Owns the placement owner for the mapblock subsystem and keeps its rules local to this file.
+- Keeps mapblock data ownership and helper behavior clear for future engine maintenance. for engine changes.
+- Defines how placement data is validated, transformed, or stored before neighboring systems use it.
+- Owns mapblock behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on placement behavior while Lua registration stays elsewhere.
+- Documents the boundary where mapblock code accepts inputs, reports errors, or updates state.
+- Use this file when changing placement defaults, lifecycle handling, validation, or data ownership.
+- Keeps failure paths and edge cases near the mapblock state that can explain them while keeping call sites explicit.
 
 ### script.rs
 
@@ -360,9 +377,51 @@ This module primarily collaborates with `procgen`. Its responsibility should sta
 - `LTilesetRef:getName() -> string`: Get tileset name â€” Lua userdata object exposed by the engine.
 - `LTilesetRef:setImagePath(path) -> nil`: Set the image file path for this tileset reference.
 
-## References
+## Examples
 
-- `procgen`: Imports or references `src/procgen/`. Cross-group dependency from ``Edge/Integration`` into `Foundations`.
+- `content/examples/mapblock.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_mapblock_unit.lua` (present)
+- Rust: `tests/rust/unit/mapblock_tests.rs`
+
+## Evidence / Golden
+
+| Kind | Path |
+|---|---|
+| Evidence test | `tests/lua/evidence/test_mapblock_evidence.lua` |
+| Golden test | `tests/lua/golden/test_mapblock_golden.lua` |
+| Current artifact | `tests/artifacts/current/mapblock/mapblock_detail_level0.png` |
+| Current artifact | `tests/artifacts/current/mapblock/mapblock_detail_level1.png` |
+| Current artifact | `tests/artifacts/current/mapblock/mapblock_edge_interior_constraints.png` |
+| Current artifact | `tests/artifacts/current/mapblock/mapblock_generation_timeline.gif` |
+| Current artifact | `tests/artifacts/current/mapblock/mapblock_macro_placement.png` |
+| Current artifact | `tests/artifacts/current/mapblock/mapblock_multilevel_layers.png` |
+| Current artifact | `tests/artifacts/current/mapblock/mapblock_result_contract_histogram.png` |
+| Current artifact | `tests/artifacts/current/mapblock/mapblock_script_pipeline_storyboard.png` |
+| Current artifact | `tests/artifacts/current/mapblock/mapblock_scripted_paint_diagnostics.png` |
+| Current artifact | `tests/artifacts/current/mapblock/mapblock_socket_constraints.png` |
+| Current artifact | `tests/artifacts/current/mapblock/mapblock_solver_footprints.png` |
+| Current artifact | `tests/artifacts/current/mapblock/mapblock_strategic_tactical_split.png` |
+| Current artifact | `tests/artifacts/current/mapblock/mapblock_transform_export.png` |
+| Current artifact | `tests/artifacts/current/mapblock/mapblock_two_level_cutaway.png` |
+| Current artifact | `tests/artifacts/current/mapblock/mapblock_two_stage_manifest.json` |
+| Baseline artifact | `tests/artifacts/baselines/mapblock/mapblock_edge_interior_constraints.png` |
+| Baseline artifact | `tests/artifacts/baselines/mapblock/mapblock_generation_timeline.gif` |
+| Baseline artifact | `tests/artifacts/baselines/mapblock/mapblock_multilevel_layers.png` |
+| Baseline artifact | `tests/artifacts/baselines/mapblock/mapblock_result_contract_histogram.png` |
+| Baseline artifact | `tests/artifacts/baselines/mapblock/mapblock_script_pipeline_storyboard.png` |
+| Baseline artifact | `tests/artifacts/baselines/mapblock/mapblock_scripted_paint_diagnostics.png` |
+| Baseline artifact | `tests/artifacts/baselines/mapblock/mapblock_socket_constraints.png` |
+| Baseline artifact | `tests/artifacts/baselines/mapblock/mapblock_solver_footprints.png` |
+| Baseline artifact | `tests/artifacts/baselines/mapblock/mapblock_strategic_tactical_split.png` |
+| Baseline artifact | `tests/artifacts/baselines/mapblock/mapblock_transform_export.png` |
+| Baseline artifact | `tests/artifacts/baselines/mapblock/mapblock_two_level_cutaway.png` |
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

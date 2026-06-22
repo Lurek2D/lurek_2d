@@ -1,9 +1,10 @@
-//! This file owns `MouseState`, `SystemCursor`, `CursorKind`, and `CursorHandle`, the runtime mouse model.
-//! It stores cursor position, button hold state, frame-local press and release deltas, visibility, grab, and scroll.
-//! Request helpers also queue cursor warps and track relative mode so window integration can apply OS-side changes.
-//! Cursor enums separate built-in OS shapes from custom RGBA cursor images with explicit hotspot coordinates.
-//! The file keeps pointer state and cursor policy together, but leaves host event dispatch to the app runtime owner.
-//! Open it when mouse semantics change; touch, keyboard, and combo logic live in sibling input modules.
+//! Owns the mouse owner for the input subsystem and keeps its rules local to this file while keeping call sites explicit.
+//! Centers the implementation around CursorImageLimits, default, SystemCursor, with helpers kept close to their invariants.
+//! Defines how mouse data is validated, transformed, or stored before neighboring systems use it.
+//! Owns input behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on mouse behavior while Lua registration stays elsewhere.
+//! Documents where input callers should change defaults, errors, or lifecycle behavior. with focused crate-local behavior.
+//! Use this file when changing mouse defaults, lifecycle handling, validation, or data ownership.
 
 /// Limits enforced for custom cursor image validation.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

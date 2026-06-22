@@ -1,8 +1,10 @@
-//! `src/mods/mod_sandbox.rs` defines the capability sandbox that filters what a mod may call, read, write, or hook into.
-//! It owns allowlist policy modes, blocked operations, hook permissions, memory and network flags, and canonical read roots.
-//! `HookPoint` parsing and canonical names live here so manifest declarations and runtime checks use one hook vocabulary.
-//! This file does not load mods or resolve dependencies; it only describes and answers capability checks for mod execution.
-//! Read it when sandbox defaults, hook permissions, or file and API access rules for mods need to change.
+//! Owns mods behavior with explicit state, validation, and crate-local integration boundaries.
+//! Centers the implementation around SandboxListMode, from_name, as_str, with helpers kept close to their invariants.
+//! Defines how mod sandbox data is validated, transformed, or stored before neighboring systems use it.
+//! Owns mods behavior with explicit state, validation, and crate-local integration boundaries.
+//! Keeps public crate helpers focused on mod sandbox behavior while Lua registration stays elsewhere.
+//! Documents where mods callers should change defaults, errors, or lifecycle behavior. with focused crate-local behavior.
+//! Use this file when changing mod sandbox defaults, lifecycle handling, validation, or data ownership.
 
 use super::{ModError, ModLimits, ModResult};
 use std::collections::HashSet;

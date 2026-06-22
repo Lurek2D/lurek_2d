@@ -1,3 +1,5 @@
+<!-- GENERATED FILE. Do not edit directly. Edit docs/specs/manual/procgen.md or source docstrings instead. -->
+
 # procgen
 
 ## TL;DR
@@ -9,12 +11,12 @@
 ## General Info
 
 - Module group: `Foundations`
-- Source path: `src/procgen/`
+- Source path: `src/procgen`
 - Binding: `src/lua_api/procgen_api.rs`
 - Namespace: `lurek.procgen`
 - Lua API surface: `33` functions, `15` types, `37` methods
-- Rust test path(s): src/procgen/noise_tests.rs (sibling), plus inline #[cfg(test)] in all other .rs files
-- Lua test path(s): tests/lua/unit/test_procgen_unit.lua
+- User-facing: `true`
+- Plugin tier: `tier_2_plugin`
 
 ## Summary
 
@@ -36,11 +38,19 @@
 
 This module is mostly self-contained inside the Foundations group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
 
+## Ownership
+
+- Canonical source: `src/procgen`
+- Owning tier: `Foundations`
+- Plugin tier: `tier_2_plugin`
+- Lua binding owner: `src/lua_api/procgen_api.rs`
+- Referenced engine modules: None detected from Rust imports.
+
 ## Imports
 
 - No top-level `crate::<module>` imports were detected in this module's Rust source files.
 
-## Files
+## Source Files
 
 ### biome.rs
 
@@ -62,20 +72,23 @@ This module is mostly self-contained inside the Foundations group. Cross-module 
 
 ### cellular.rs
 
-- This file owns the cellular-automata cave generator that evolves random occupancy into enclosed cavern maps.
-- `CellularOpts` stores fill probability, rule thresholds, iterations, and seed for one reproducible generation run.
-- Neighbor counting and border-as-solid behavior stay here because they define the resulting cave texture directly.
-- Open it when cave evolution rules change; flood fill and sandbox material simulation live in sibling modules.
+- Owns procgen behavior with explicit state, validation, and crate-local integration boundaries.
+- Centers the implementation around CellularOpts, default, validate, with helpers kept close to their invariants.
+- Defines how cellular data is validated, transformed, or stored before neighboring systems use it.
+- Owns procgen behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on cellular behavior while Lua registration stays elsewhere.
 
 ### cellular_world.rs
 
-- This file owns the falling-material sandbox that simulates sand, water, rock, fire, gas, and empty space on a grid.
-- `CellType` defines the material vocabulary, while `CellularWorld` owns cells, fire lifetimes, tick parity, and RNG.
-- Paint helpers such as rectangle and circle fills stay here because direct authoring of test or gameplay setups is local.
-- Step logic also belongs here since per-material movement, spread, and bias reduction define world-update semantics.
-- Serialization, region export, palette rendering, and cell queries remain local because they expose owned grid state.
-- Open it when material interaction rules change; static cave generation lives in `cellular.rs` instead.
-- This file is the runtime simulation owner, not a generic renderer, physics system, or authored content container.
+- Owns the cellular world owner for the procgen subsystem and keeps its rules local to this file.
+- Keeps procgen data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+- Defines how cellular world data is validated, transformed, or stored before neighboring systems use it.
+- Owns procgen behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on cellular world behavior while Lua registration stays elsewhere.
+- Documents the boundary where procgen code accepts inputs, reports errors, or updates state.
+- Use this file when changing cellular world defaults, lifecycle handling, validation, or data ownership.
+- Keeps failure paths and edge cases near the procgen state that can explain them while keeping call sites explicit.
+- Preserves deterministic behavior by keeping cellular world calculations explicit at their owner boundary.
 
 ### color.rs
 
@@ -85,9 +98,12 @@ This module is mostly self-contained inside the Foundations group. Cross-module 
 
 ### error.rs
 
-- This file owns procgen-local validation and resource-limit errors shared by generators in this module group.
-- It keeps failure reasons typed so safe `try_*` constructors can reject invalid dimensions, options, bytes, and WFC rules consistently.
-- Open it when procgen callers need clearer diagnostics or when a new generator starts participating in the shared safety contract.
+- Owns procgen behavior with explicit state, validation, and crate-local integration boundaries.
+- Centers the implementation around ProcgenError, fmt, with helpers kept close to their invariants.
+- Defines how error data is validated, transformed, or stored before neighboring systems use it.
+- Owns procgen behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on error behavior while Lua registration stays elsewhere.
+- Documents the boundary where procgen code accepts inputs, reports errors, or updates state.
 
 ### flood_fill.rs
 
@@ -98,23 +114,28 @@ This module is mostly self-contained inside the Foundations group. Cross-module 
 
 ### heightmap.rs
 
-- This file owns the normalized heightmap model used to build terrain fields from noise or binary cellular sources.
-- `HeightmapOpts` stores noise parameters and erosion passes, while `Heightmap` owns width, height, and cell storage.
-- Generation from FBM noise stays here because map options, normalization, and seed-driven reproducibility are local.
-- Simple erosion also belongs here since it mutates terrain cells in-place and defines the file's smoothing behavior.
-- RGBA export and sampled access remain local because they expose the heightmap as usable terrain data to callers.
+- Owns the heightmap owner for the procgen subsystem and keeps its rules local to this file.
+- Keeps procgen data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+- Defines how heightmap data is validated, transformed, or stored before neighboring systems use it.
+- Owns procgen behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on heightmap behavior while Lua registration stays elsewhere.
+- Documents the boundary where procgen code accepts inputs, reports errors, or updates state.
+- Use this file when changing heightmap defaults, lifecycle handling, validation, or data ownership.
 
 ### lcg.rs
 
-- This file owns the tiny deterministic LCG used by multiple generators that need repeatable pseudo-random stepping.
-- `Lcg` stores only the current state, making seeded advancement and normalized float sampling its core contract.
-- Open it when baseline RNG semantics change; higher-level noise and layout generators live in sibling modules.
+- Owns the lcg owner for the procgen subsystem and keeps its rules local to this file while keeping call sites explicit.
+- Centers the implementation around LCG_ALGORITHM_VERSION, Lcg, new, with helpers kept close to their invariants.
+- Defines how lcg data is validated, transformed, or stored before neighboring systems use it.
+- Owns procgen behavior with explicit state, validation, and crate-local integration boundaries.
 
 ### limits.rs
 
-- This file owns shared procgen sizing and validation limits used by safe constructors across generators.
-- It centralizes checked cell-count arithmetic, byte-budget checks, and common option validation helpers.
-- Open it when procgen resource ceilings or shared validation policy changes.
+- Owns procgen behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps procgen data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+- Defines how limits data is validated, transformed, or stored before neighboring systems use it.
+- Owns procgen behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on limits behavior while Lua registration stays elsewhere.
 
 ### lsystem.rs
 
@@ -157,16 +178,18 @@ This module is mostly self-contained inside the Foundations group. Cross-module 
 
 ### poisson.rs
 
-- This file owns the Poisson disk sampler used to place 2D points with minimum separation and seeded randomness.
-- The Bridson-style active list, acceleration grid, and distance checks stay here because they define point quality.
-- It returns accepted coordinates only, keeping the file focused on sparse placement rather than map interpretation.
-- Open it when scatter-placement semantics change; Voronoi and world-graph generation live in sibling modules.
+- Owns procgen behavior with explicit state, validation, and crate-local integration boundaries.
+- Centers the implementation around poisson_disk, try_poisson_disk, with helpers kept close to their invariants.
+- Defines how poisson data is validated, transformed, or stored before neighboring systems use it.
+- Owns procgen behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on poisson behavior while Lua registration stays elsewhere.
 
 ### render.rs
 
-- This file owns the sampled noise-grid wrapper used to store tileable scalar fields and export them as pixels.
-- `NoiseGrid` stores width, height, and cells, while `from_perlin` builds values from periodic Perlin sampling.
-- RGBA conversion also belongs here because preview-oriented export is part of the grid wrapper's contract.
+- Owns procgen behavior with explicit state, validation, and crate-local integration boundaries.
+- Centers the implementation around NoiseGrid, from_perlin, try_from_perlin, with helpers kept close to their invariants.
+- Defines how render data is validated, transformed, or stored before neighboring systems use it.
+- Owns procgen behavior with explicit state, validation, and crate-local integration boundaries.
 
 ### report.rs
 
@@ -185,25 +208,28 @@ This module is mostly self-contained inside the Foundations group. Cross-module 
 
 ### voronoi.rs
 
-- This file owns the Voronoi diagram helper that assigns each cell to its nearest feature point and distance fields.
-- `VoronoiOpts` stores optional domain-warp parameters so clean tessellation can be roughened without new APIs.
-- The diagram routine stays here because nearest-point ownership and first or second distance extraction are local.
-- Hash-based warp noise also belongs here since boundary distortion is part of Voronoi output semantics.
+- Owns procgen behavior with explicit state, validation, and crate-local integration boundaries.
+- Centers the implementation around VoronoiOpts, default, validate, with helpers kept close to their invariants.
+- Defines how voronoi data is validated, transformed, or stored before neighboring systems use it.
+- Owns procgen behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on voronoi behavior while Lua registration stays elsewhere.
 
 ### wfc.rs
 
-- This file owns the Wave Function Collapse generator that resolves tile grids from weighted adjacency constraints.
-- `WfcTile`, `WfcRules`, `WfcOpts`, and `WfcGrid` define the tile vocabulary, rule set, run inputs, and result cells.
-- Entropy-style cell choice and weighted collapse stay here because tile selection policy is core WFC behavior.
-- Constraint propagation also belongs here since neighbor pruning and contradiction detection define valid outcomes.
-- Retry logic remains local because contradiction recovery is part of the generator contract, not caller plumbing.
+- Owns the wfc owner for the procgen subsystem and keeps its rules local to this file while keeping call sites explicit.
+- Centers the implementation around WfcTile, WfcRules, WfcOpts, with helpers kept close to their invariants.
+- Defines how wfc data is validated, transformed, or stored before neighboring systems use it.
+- Owns procgen behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on wfc behavior while Lua registration stays elsewhere.
+- Documents the boundary where procgen code accepts inputs, reports errors, or updates state.
 
 ### wfc_llm.rs
 
-- This file owns the JSON parsing bridge from LLM-produced tile specs into concrete WFC options and constraints.
-- It converts response objects into `WfcTile`, `WfcRules`, and `WfcOpts` so generation stays deterministic.
-- Strict schema and parser limits remain local because malformed or oversized LLM output must stop at one boundary.
-- Open it when AI-assisted tiling input changes; the actual collapse algorithm lives in `wfc.rs`.
+- Owns procgen behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps procgen data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
+- Defines how wfc llm data is validated, transformed, or stored before neighboring systems use it.
+- Owns procgen behavior with explicit state, validation, and crate-local integration boundaries.
+- Keeps public crate helpers focused on wfc llm behavior while Lua registration stays elsewhere.
 
 ### world_graph.rs
 
@@ -506,9 +532,72 @@ This module is mostly self-contained inside the Foundations group. Cross-module 
 
 - No documented methods.
 
-## References
+## Examples
 
-- No top-level `crate::<module>` imports were detected in this module's Rust source files.
+- `content/examples/procgen.lua` (present)
+
+## Tests
+
+- Lua unit: `tests/lua/unit/test_procgen_unit.lua` (present)
+- Rust: `tests/rust/unit/procgen_tests.rs`
+
+## Evidence / Golden
+
+| Kind | Path |
+|---|---|
+| Evidence test | `tests/lua/evidence/test_procgen_evidence.lua` |
+| Golden test | `tests/lua/golden/test_procgen_golden.lua` |
+| Current artifact | `tests/artifacts/current/procgen/procgen_bsp_dungeon.png` |
+| Current artifact | `tests/artifacts/current/procgen/procgen_cellular_cave_map.png` |
+| Current artifact | `tests/artifacts/current/procgen/procgen_cellular_cave_map_stats.txt` |
+| Current artifact | `tests/artifacts/current/procgen/procgen_cellular_dense_map.png` |
+| Current artifact | `tests/artifacts/current/procgen/procgen_cellular_flood.png` |
+| Current artifact | `tests/artifacts/current/procgen/procgen_cellular_material_sandbox.gif` |
+| Current artifact | `tests/artifacts/current/procgen/procgen_climate_biome_world.png` |
+| Current artifact | `tests/artifacts/current/procgen/procgen_extended_api_trace.txt` |
+| Current artifact | `tests/artifacts/current/procgen/procgen_height_worldgraph.png` |
+| Current artifact | `tests/artifacts/current/procgen/procgen_lsystem_river_settlement.png` |
+| Current artifact | `tests/artifacts/current/procgen/procgen_noise_heightmap_colored.png` |
+| Current artifact | `tests/artifacts/current/procgen/procgen_noise_map.png` |
+| Current artifact | `tests/artifacts/current/procgen/procgen_noise_map_parallel.png` |
+| Current artifact | `tests/artifacts/current/procgen/procgen_perlin_grid.json` |
+| Current artifact | `tests/artifacts/current/procgen/procgen_perlin_strip.png` |
+| Current artifact | `tests/artifacts/current/procgen/procgen_poisson_voronoi.png` |
+| Current artifact | `tests/artifacts/current/procgen/procgen_prefab_dungeon_stamps.png` |
+| Current artifact | `tests/artifacts/current/procgen/procgen_rooms_dungeon.png` |
+| Current artifact | `tests/artifacts/current/procgen/procgen_seeded_noise_grid.json` |
+| Current artifact | `tests/artifacts/current/procgen/procgen_simplex2d_strip.png` |
+| Current artifact | `tests/artifacts/current/procgen/procgen_simplex3d_strip.png` |
+| Current artifact | `tests/artifacts/current/procgen/procgen_simplex_grid.json` |
+| Current artifact | `tests/artifacts/current/procgen/procgen_wfc_constraint_world.png` |
+| Current artifact | `tests/artifacts/current/procgen/procgen_wfc_lsystem_names.png` |
+| Baseline artifact | `tests/artifacts/baselines/procgen/procgen_bsp_dungeon.png` |
+| Baseline artifact | `tests/artifacts/baselines/procgen/procgen_cellular_cave_map.png` |
+| Baseline artifact | `tests/artifacts/baselines/procgen/procgen_cellular_cave_map_stats.txt` |
+| Baseline artifact | `tests/artifacts/baselines/procgen/procgen_cellular_dense_map.png` |
+| Baseline artifact | `tests/artifacts/baselines/procgen/procgen_cellular_flood.png` |
+| Baseline artifact | `tests/artifacts/baselines/procgen/procgen_cellular_material_sandbox.gif` |
+| Baseline artifact | `tests/artifacts/baselines/procgen/procgen_climate_biome_world.png` |
+| Baseline artifact | `tests/artifacts/baselines/procgen/procgen_height_worldgraph.png` |
+| Baseline artifact | `tests/artifacts/baselines/procgen/procgen_lsystem_river_settlement.png` |
+| Baseline artifact | `tests/artifacts/baselines/procgen/procgen_noise_heightmap_colored.png` |
+| Baseline artifact | `tests/artifacts/baselines/procgen/procgen_noise_map.png` |
+| Baseline artifact | `tests/artifacts/baselines/procgen/procgen_noise_map_parallel.png` |
+| Baseline artifact | `tests/artifacts/baselines/procgen/procgen_perlin_grid.json` |
+| Baseline artifact | `tests/artifacts/baselines/procgen/procgen_perlin_strip.png` |
+| Baseline artifact | `tests/artifacts/baselines/procgen/procgen_poisson_voronoi.png` |
+| Baseline artifact | `tests/artifacts/baselines/procgen/procgen_prefab_dungeon_stamps.png` |
+| Baseline artifact | `tests/artifacts/baselines/procgen/procgen_rooms_dungeon.png` |
+| Baseline artifact | `tests/artifacts/baselines/procgen/procgen_seeded_noise_grid.json` |
+| Baseline artifact | `tests/artifacts/baselines/procgen/procgen_simplex2d_strip.png` |
+| Baseline artifact | `tests/artifacts/baselines/procgen/procgen_simplex3d_strip.png` |
+| Baseline artifact | `tests/artifacts/baselines/procgen/procgen_simplex_grid.json` |
+| Baseline artifact | `tests/artifacts/baselines/procgen/procgen_wfc_constraint_world.png` |
+| Baseline artifact | `tests/artifacts/baselines/procgen/procgen_wfc_lsystem_names.png` |
+
+## Architecture Links
+
+- Intentionally empty.
 
 ## Notes
 

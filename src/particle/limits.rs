@@ -1,6 +1,7 @@
-//! This file owns shared particle safety ceilings used by strict config parsing and runtime helpers.
-//! It centralizes pool, recursion, parser, and render budgets so particle callers share one bounded contract.
-//! Open it when particle resource ceilings or validation policy changes.
+//! Owns particle behavior with explicit state, validation, and crate-local integration boundaries.
+//! Centers the implementation around ParticleLimits, default, with helpers kept close to their invariants.
+//! Defines how limits data is validated, transformed, or stored before neighboring systems use it.
+//! Owns particle behavior with explicit state, validation, and crate-local integration boundaries.
 
 /// Shared safety limits for particle configs, emitters, and render extraction.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
