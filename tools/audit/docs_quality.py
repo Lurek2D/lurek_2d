@@ -79,6 +79,20 @@ def check_coverage(errors: list[str]) -> None:
             errors.append(f"TEST_COVERAGE_MISSING {module_name}: {len(uncovered)} APIs")
 
 
+def check_module_pages_indexed(errors: list[str]) -> None:
+    mkdocs_text = (ROOT / "mkdocs.yml").read_text(encoding="utf-8")
+    guide_text = (ROOT / "docs" / "module-guides.md").read_text(encoding="utf-8")
+    for module in module_registry.user_facing_modules():
+        module_path = ROOT / "docs" / "modules" / f"{module}.md"
+        module_ref = f"modules/{module}.md"
+        if not module_path.exists():
+            errors.append(f"MISSING_MODULE_PAGE docs/modules/{module}.md")
+        if module_ref not in mkdocs_text:
+            errors.append(f"MISSING_MKDOCS_MODULE_NAV {module_ref}")
+        if f"]({module_ref})" not in guide_text:
+            errors.append(f"MISSING_MODULE_GUIDE_LINK {module_ref}")
+
+
 def check_dead_architecture_links(errors: list[str]) -> None:
     target = ROOT / "docs" / "architecture" / "test-framework.md"
     if target.exists():
@@ -100,6 +114,7 @@ def main() -> int:
     errors: list[str] = []
     check_specs(errors)
     check_coverage(errors)
+    check_module_pages_indexed(errors)
     check_dead_architecture_links(errors)
     if errors:
         print("Docs quality failed:")
