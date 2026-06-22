@@ -588,7 +588,7 @@ function lurek.init()
     apply_map_to_raycaster()
     reveal_from_rays()
 
-    lurek.ui.loadLayoutFile("content/games/retro/dungeon_crawler/ui.toml")
+    lurek.ui.loadLayoutFile("content/games/dungeon_crawler/ui.toml")
     local ui_root = lurek.ui.getRoot()
     app_ui = {}
     app_ui.score_label = ui_root:findById("score_label")

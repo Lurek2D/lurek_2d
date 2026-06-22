@@ -135,8 +135,11 @@ fn stats_to_table<'lua>(lua: &'lua Lua, stats: PhysicsWorldStats) -> LuaResult<L
     tbl.set("invalidOperations", stats.invalid_operations)?;
     tbl.set("bodiesScanned", stats.bodies_scanned)?;
     tbl.set("collidersRebuilt", stats.colliders_rebuilt)?;
+    /// Number of zone overlap checks performed by the last simulation step.
     tbl.set("zoneChecks", stats.zone_checks)?;
+    /// Number of active contacts reported by the physics world.
     tbl.set("contacts", stats.contacts)?;
+    /// Number of body transforms synchronized back to runtime state.
     tbl.set("syncedBodies", stats.synced_bodies)?;
     Ok(tbl)
 }

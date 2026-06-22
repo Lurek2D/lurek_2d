@@ -12,7 +12,7 @@
 - Namespace: `lurek.mapblock`
 - Lua API surface: `10` functions, `10` types, `67` methods
 - Rust test path(s): tests/rust/unit/mapblock_tests.rs
-- Lua test path(s): tests/lua/unit/test_mapblock_unit.lua, tests/lua/evidence/test_mapblock_evidence.lua, content/games/puzzle/mapblock_labyrinth/test.lua
+- Lua test path(s): tests/lua/unit/test_mapblock_unit.lua, tests/lua/evidence/test_mapblock_evidence.lua
 
 ## Summary
 

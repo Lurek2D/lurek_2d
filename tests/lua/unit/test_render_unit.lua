@@ -1383,6 +1383,12 @@ describe("render strict: LShader methods", function()
         expect_type("boolean", shader:hasUniform("u_time"))
     end)
 
+    -- @covers LShader:getId
+    it("LShader getId returns a numeric shader handle", function()
+        local shader = lurek.render.newShader(minimal_shader_code())
+        expect_type("number", shader:getId())
+    end)
+
     -- @covers LShader:release
     it("LShader release is callable without error", function()
         local shader = lurek.render.newShader(minimal_shader_code())

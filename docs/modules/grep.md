@@ -88,7 +88,7 @@ end
 
 ### `lurek.grep.luaFilter`
 
-Create a filter for Lua files only.
+Creates a file filter preconfigured for Lua files only.
 
 ```lua
 lurek.grep.luaFilter()
@@ -183,7 +183,7 @@ end
 
 ### `lurek.grep.newFilter`
 
-Create an empty file filter.
+Creates an empty file filter for custom include rules.
 
 ```lua
 lurek.grep.newFilter()

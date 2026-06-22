@@ -464,6 +464,8 @@ impl UserData for LuaAISystem {
         );
 
         /// Builds context and returns both the rendered text and provenance list.
+        /// @param | instruction | string | User instruction used to build the context report.
+        /// @param | opts | table? | Optional table containing instruction filters and agent selection.
         /// @return | table | `{ text = string, provenance = { ... } }`.
         methods.add_method(
             "buildContextReport",

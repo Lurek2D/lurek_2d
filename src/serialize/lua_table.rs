@@ -249,7 +249,7 @@ fn from_lua_inner(
                                 limits,
                                 state,
                                 depth + 1,
-                                &map_field_path(path, key_text.as_ref()),
+                                &map_field_path(path, key_text),
                             )?;
                             is_sequence = false;
                             map.insert(key_text.to_string(), child);

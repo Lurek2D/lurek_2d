@@ -4418,7 +4418,7 @@ impl LuaUserData for LuaRaycasterSceneAdapter {
             },
         );
         // -- addLight --
-        /// Adds a static point light entry.
+        /// Adds a static point light entry to the adapter.
         /// @param | x | number | World X position.
         /// @param | y | number | World Y position.
         /// @param | radius | number | Light falloff radius.
@@ -4601,7 +4601,7 @@ impl LuaUserData for LuaRaycasterSceneAdapter {
             Ok(())
         });
         #[cfg(feature = "obj-loader")]
-        /// Clears models.
+        /// Clears all loaded model entries from the adapter.
         ///
         methods.add_method_mut("clearModels", |_, this, ()| {
             this.inner.clear_models();
@@ -5695,7 +5695,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// Returns stats for the last stored raycaster scene build.
     /// This reports the most recent scene saved by buildScene, buildSceneFromAdapter, buildMultiLevelScene,
     /// buildMultiLevelSceneFromAdapter, or their userdata equivalents.
-    /// @return | table? | Nil if no raycaster scene has been built yet; otherwise a stats table.
+    /// @return | table | Nil if no raycaster scene has been built yet; otherwise a stats table.
     /// @field | lightingSamples | integer | Total lighting samples requested during the last build.
     /// @field | lightingCacheHits | integer | Number of reused lighting samples served from the per-build cache.
     /// @field | lightingCacheMisses | integer | Number of unique lighting samples computed during the last build.

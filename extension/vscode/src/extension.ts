@@ -743,30 +743,25 @@ window.addEventListener('resize',draw);
   });
 
   // ─── Run Variant Commands ─────────────────────────────────
-  const SHOWCASE_GAMES = [
-    { label: "Hello World",       value: "content/games/showcase/hello_world" },
-    { label: "Sprites",           value: "content/games/showcase/sprites" },
-    { label: "Scene Demo",        value: "content/games/showcase/scene_demo" },
-    { label: "Particles Demo",    value: "content/games/showcase/particles_demo" },
-    { label: "Light Demo",        value: "content/games/showcase/light_demo" },
-    { label: "Globe Demo",        value: "content/games/showcase/globe_demo" },
-    { label: "Terminal Demo",     value: "content/games/showcase/terminal_demo" },
-    { label: "Hacking Game",      value: "content/games/showcase/hacking_game" },
-    { label: "Tween Demo",        value: "content/games/showcase/tween_demo" },
-    { label: "PostFX Demo",       value: "content/games/showcase/postfx_demo" },
-    { label: "Minimap Demo",      value: "content/games/showcase/minimap_demo" },
-    { label: "Demo Game",         value: "content/games/showcase/demo_game" },
+  const REFERENCE_GAMES = [
+    { label: "Cannon Fodder",             value: "content/games/cannon_fodder" },
+    { label: "Dungeon Crawler",           value: "content/games/dungeon_crawler" },
+    { label: "Europa Universalis 2 Lite", value: "content/games/eu2" },
+    { label: "Finance App",               value: "content/games/finance_app" },
+    { label: "Hex Logistics",             value: "content/games/hex_logistics" },
+    { label: "Music Composer",            value: "content/games/music_composer" },
+    { label: "Sensible Soccer",           value: "content/games/sensible_soccer" },
   ];
 
   registerCommand(context, "lurek.run.debugPickDemo", async () => {
-    const picked = await vscode.window.showQuickPick(SHOWCASE_GAMES, { title: "Pick Demo (Debug)" });
+    const picked = await vscode.window.showQuickPick(REFERENCE_GAMES, { title: "Pick Game (Debug)" });
     if (!picked) return;
     const t = getOrCreateBuildTerminal();
     t.show();
     t.sendText(buildRunCommand("debug", [picked.value]));
   });
   registerCommand(context, "lurek.run.releasePickDemo", async () => {
-    const picked = await vscode.window.showQuickPick(SHOWCASE_GAMES, { title: "Pick Demo (Release)" });
+    const picked = await vscode.window.showQuickPick(REFERENCE_GAMES, { title: "Pick Game (Release)" });
     if (!picked) return;
     const t = getOrCreateBuildTerminal();
     t.show();

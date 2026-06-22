@@ -330,7 +330,7 @@ lurek.raycaster.getLastBuildStats()
 
 | Type | Description |
 |------|-------------|
-| table? | Nil if no raycaster scene has been built yet; otherwise a stats table. |
+| LRaycasterGetLastBuildStatsResult | Nil if no raycaster scene has been built yet; otherwise a stats table. |
 
 **Example**
 
@@ -5217,7 +5217,7 @@ end
 
 #### `LSceneAdapter:addLight`
 
-Adds a static point light entry.
+Adds a static point light entry to the adapter.
 
 ```lua
 LSceneAdapter:addLight(x, y, radius, opts)
@@ -5522,7 +5522,7 @@ end
 
 #### `LSceneAdapter:clearModels`
 
-Clears models.
+Clears all loaded model entries from the adapter.
 
 ```lua
 LSceneAdapter:clearModels()

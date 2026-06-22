@@ -534,10 +534,10 @@ impl LuaUserData for LuaLineChart {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         /// Adds a named line series from an array-style Lua table of points.
         ///
-        /// @param name : string
-        /// @param data : table
-        /// @param color : table?
-        /// @return nil
+        /// @param | name | string | Parameter value for this chart operation.
+        /// @param | data | table | Parameter value for this chart operation.
+        /// @param | color | table? | Parameter value for this chart operation.
+        /// @return | nil | Return value produced by this chart operation.
         methods.add_method(
             "addSeries",
             |_, this, (name, data, color): (String, LuaTable, Option<LuaTable>)| {
@@ -553,13 +553,13 @@ impl LuaUserData for LuaLineChart {
         );
         /// Builds a named line series from x and y columns in a dataframe.
         ///
-        /// @param name : string
-        /// @param df : userdata
-        /// @param x_col : string
-        /// @param y_col : string
-        /// @param color : table?
-        /// @param opts : table?
-        /// @return nil
+        /// @param | name | string | Parameter value for this chart operation.
+        /// @param | df | userdata | Parameter value for this chart operation.
+        /// @param | x_col | string | Parameter value for this chart operation.
+        /// @param | y_col | string | Parameter value for this chart operation.
+        /// @param | color | table? | Parameter value for this chart operation.
+        /// @param | opts | table? | Parameter value for this chart operation.
+        /// @return | nil | Return value produced by this chart operation.
         methods.add_method(
             "addSeriesFromDataFrame",
             |_,
@@ -601,10 +601,10 @@ impl LuaUserData for LuaLineChart {
         );
         /// Replaces a named line series with a new array-style Lua table of points.
         ///
-        /// @param name : string
-        /// @param data : table
-        /// @param color : table?
-        /// @return nil
+        /// @param | name | string | Parameter value for this chart operation.
+        /// @param | data | table | Parameter value for this chart operation.
+        /// @param | color | table? | Parameter value for this chart operation.
+        /// @return | nil | Return value produced by this chart operation.
         methods.add_method(
             "replaceSeries",
             |_, this, (name, data, color): (String, LuaTable, Option<LuaTable>)| {
@@ -619,11 +619,11 @@ impl LuaUserData for LuaLineChart {
         );
         /// Appends one finite point to a named line series.
         ///
-        /// @param name : string
-        /// @param x : number
-        /// @param y : number
-        /// @param color : table?
-        /// @return nil
+        /// @param | name | string | Parameter value for this chart operation.
+        /// @param | x | number | Parameter value for this chart operation.
+        /// @param | y | number | Parameter value for this chart operation.
+        /// @param | color | table? | Parameter value for this chart operation.
+        /// @return | nil | Return value produced by this chart operation.
         methods.add_method(
             "appendPoint",
             |_, this, (name, x, y, color): (String, f32, f32, Option<LuaTable>)| {
@@ -640,15 +640,15 @@ impl LuaUserData for LuaLineChart {
                 Ok(())
             },
         );
-        /// Sets the window.
+        /// Sets the maximum retained sample window for this chart.
         ///
-        /// @param max_points : integer?
+        /// @param | max_points | integer? | Parameter value for this chart operation.
         methods.add_method("setWindow", |_, this, max_points: Option<usize>| {
             this.inner.borrow_mut().set_max_points(max_points);
             this.dirty.set(true);
             Ok(())
         });
-        /// Clears the state.
+        /// Clears all series and cached chart state.
         ///
         methods.add_method("clear", |_, this, ()| {
             this.inner.borrow_mut().clear();
@@ -656,73 +656,73 @@ impl LuaUserData for LuaLineChart {
             this.dirty.set(true);
             Ok(())
         });
-        /// Sets the title.
+        /// Sets the chart title text shown in rendered output.
         ///
-        /// @param title : string
+        /// @param | title | string | Parameter value for this chart operation.
         methods.add_method("setTitle", |_, this, title: String| {
             this.inner.borrow_mut().config.title = Some(title);
             this.dirty.set(true);
             Ok(())
         });
-        /// Sets the y max.
+        /// Sets the explicit Y axis maximum for chart scaling.
         ///
-        /// @param value : number
+        /// @param | value | number | Parameter value for this chart operation.
         methods.add_method("setYMax", |_, this, value: f32| {
             this.inner.borrow_mut().y_max = value;
             this.dirty.set(true);
             Ok(())
         });
-        /// Sets the x max.
+        /// Sets the explicit X axis maximum for chart scaling.
         ///
-        /// @param value : number
+        /// @param | value | number | Parameter value for this chart operation.
         methods.add_method("setXMax", |_, this, value: f32| {
             this.inner.borrow_mut().x_max = value;
             this.dirty.set(true);
             Ok(())
         });
-        /// Sets the x label.
+        /// Sets the X axis label text for rendered output.
         ///
-        /// @param label : string
+        /// @param | label | string | Parameter value for this chart operation.
         methods.add_method("setXLabel", |_, this, label: String| {
             this.inner.borrow_mut().config.x_label = Some(label);
             this.dirty.set(true);
             Ok(())
         });
-        /// Sets the y label.
+        /// Sets the Y axis label text for rendered output.
         ///
-        /// @param label : string
+        /// @param | label | string | Parameter value for this chart operation.
         methods.add_method("setYLabel", |_, this, label: String| {
             this.inner.borrow_mut().config.y_label = Some(label);
             this.dirty.set(true);
             Ok(())
         });
-        /// Sets the x tick count.
+        /// Sets the number of X axis ticks drawn for this chart.
         ///
-        /// @param count : integer
+        /// @param | count | integer | Parameter value for this chart operation.
         methods.add_method("setXTickCount", |_, this, count: u32| {
             this.inner.borrow_mut().config.x_tick_count = count.max(2);
             this.dirty.set(true);
             Ok(())
         });
-        /// Sets the y tick count.
+        /// Sets the number of Y axis ticks drawn for this chart.
         ///
-        /// @param count : integer
+        /// @param | count | integer | Parameter value for this chart operation.
         methods.add_method("setYTickCount", |_, this, count: u32| {
             this.inner.borrow_mut().config.y_tick_count = count.max(2);
             this.dirty.set(true);
             Ok(())
         });
-        /// Sets the show legend.
+        /// Controls whether the chart legend is rendered.
         ///
-        /// @param value : boolean
+        /// @param | value | boolean | Parameter value for this chart operation.
         methods.add_method("setShowLegend", |_, this, value: bool| {
             this.inner.borrow_mut().config.show_legend = value;
             this.dirty.set(true);
             Ok(())
         });
-        /// Render.
+        /// Renders the chart into raw RGBA image bytes.
         ///
-        /// @return any
+        /// @return | integer, integer, string | Width, height, and RGBA image bytes for the rendered chart.
         methods.add_method("render", |lua, this, ()| {
             let chart = this.inner.borrow();
             let width = chart.config.width;
@@ -733,7 +733,7 @@ impl LuaUserData for LuaLineChart {
                 })?;
             Ok((width, height, lua.create_string(&buffer)?))
         });
-        /// Render image.
+        /// Renders the chart into a new LImage userdata.
         ///
         methods.add_method("renderImage", |lua, this, ()| {
             let chart = this.inner.borrow();
@@ -747,9 +747,9 @@ impl LuaUserData for LuaLineChart {
                 },
             )
         });
-        /// Draw to image.
+        /// Draws the rendered chart into an existing image.
         ///
-        /// @param target : userdata
+        /// @param | target | userdata | Parameter value for this chart operation.
         methods.add_method("drawToImage", |_, this, target: LuaAnyUserData| {
             let chart = this.inner.borrow();
             let mut image = target.borrow_mut::<ImageData>()?;
@@ -763,10 +763,10 @@ impl LuaUserData for LuaLineChart {
         });
         /// Draws the line chart at world or screen coordinates using optional transform options.
         ///
-        /// @param x : number
-        /// @param y : number
-        /// @param opts : table?
-        /// @return nil
+        /// @param | x | number | Parameter value for this chart operation.
+        /// @param | y | number | Parameter value for this chart operation.
+        /// @param | opts | table? | Parameter value for this chart operation.
+        /// @return | nil | Return value produced by this chart operation.
         methods.add_method(
             "draw",
             |_, this, (x, y, opts): (f32, f32, Option<LuaTable>)| {
@@ -782,11 +782,11 @@ impl LuaUserData for LuaLineChart {
                 )
             },
         );
-        /// Nearest.
+        /// Finds the nearest plotted point to screen coordinates.
         ///
-        /// @param x : number
-        /// @param y : number
-        /// @return any
+        /// @param | x | number | Parameter value for this chart operation.
+        /// @param | y | number | Parameter value for this chart operation.
+        /// @return | table | Nearest point table, or nil when no point is available.
         methods.add_method("nearest", |lua, this, (x, y): (f32, f32)| {
             let chart = this.inner.borrow();
             let margin = chart.config.margin;
@@ -831,26 +831,26 @@ impl LuaUserData for LuaLineChart {
                 ),
             )
         });
-        /// Returns the width.
+        /// Returns the configured chart width in pixels.
         ///
-        /// @return any
+        /// @return | integer | Configured chart dimension in pixels.
         methods.add_method("getWidth", |_, this, ()| {
             Ok(this.inner.borrow().config.width)
         });
-        /// Returns the height.
+        /// Returns the configured chart height in pixels.
         ///
-        /// @return any
+        /// @return | integer | Configured chart dimension in pixels.
         methods.add_method("getHeight", |_, this, ()| {
             Ok(this.inner.borrow().config.height)
         });
-        /// Type.
+        /// Returns the runtime userdata type name for this chart.
         ///
-        /// @return any
+        /// @return | string | Runtime userdata type name.
         methods.add_method("type", |_, _, ()| Ok("LLineChart"));
-        /// Type of.
+        /// Checks whether a type name matches this chart userdata.
         ///
-        /// @param name : string
-        /// @return any
+        /// @param | name | string | Parameter value for this chart operation.
+        /// @return | boolean | True when the supplied type name matches this chart userdata.
         methods.add_method("typeOf", |_, _, name: String| {
             Ok(name == "LLineChart" || name == "LObject")
         });
@@ -861,10 +861,10 @@ impl LuaUserData for LuaBarChart {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         /// Adds a named bar series from an array-style Lua table of values or points.
         ///
-        /// @param name : string
-        /// @param data : table
-        /// @param color : table?
-        /// @return nil
+        /// @param | name | string | Parameter value for this chart operation.
+        /// @param | data | table | Parameter value for this chart operation.
+        /// @param | color | table? | Parameter value for this chart operation.
+        /// @return | nil | Return value produced by this chart operation.
         methods.add_method(
             "addSeries",
             |_, this, (name, data, color): (String, LuaTable, Option<LuaTable>)| {
@@ -880,9 +880,9 @@ impl LuaUserData for LuaBarChart {
         );
         /// Adds one category label with a numeric value list for grouped bars.
         ///
-        /// @param label : string
-        /// @param values : table
-        /// @return nil
+        /// @param | label | string | Parameter value for this chart operation.
+        /// @param | values | table | Parameter value for this chart operation.
+        /// @return | nil | Return value produced by this chart operation.
         methods.add_method(
             "addCategory",
             |_, this, (label, values): (String, LuaTable)| {
@@ -894,11 +894,11 @@ impl LuaUserData for LuaBarChart {
         );
         /// Adds grouped bar categories by reading one label column and one or more value columns from a dataframe.
         ///
-        /// @param df : userdata
-        /// @param label_col : string
-        /// @param value_cols : table
-        /// @param opts : table?
-        /// @return nil
+        /// @param | df | userdata | Parameter value for this chart operation.
+        /// @param | label_col | string | Parameter value for this chart operation.
+        /// @param | value_cols | table | Parameter value for this chart operation.
+        /// @param | opts | table? | Parameter value for this chart operation.
+        /// @return | nil | Return value produced by this chart operation.
         methods.add_method(
             "addCategoriesFromDataFrame",
             |_,
@@ -928,7 +928,7 @@ impl LuaUserData for LuaBarChart {
                 Ok(added)
             },
         );
-        /// Clears the state.
+        /// Clears all series and cached chart state.
         ///
         methods.add_method("clear", |_, this, ()| {
             this.inner.borrow_mut().clear();
@@ -936,65 +936,65 @@ impl LuaUserData for LuaBarChart {
             this.dirty.set(true);
             Ok(())
         });
-        /// Sets the bar width.
+        /// Sets the rendered width used for each bar.
         ///
-        /// @param width : number
+        /// @param | width | number | Parameter value for this chart operation.
         methods.add_method("setBarWidth", |_, this, width: f32| {
             this.inner.borrow_mut().set_bar_width(width);
             this.dirty.set(true);
             Ok(())
         });
-        /// Sets the title.
+        /// Sets the chart title text shown in rendered output.
         ///
-        /// @param title : string
+        /// @param | title | string | Parameter value for this chart operation.
         methods.add_method("setTitle", |_, this, title: String| {
             this.inner.borrow_mut().config.title = Some(title);
             this.dirty.set(true);
             Ok(())
         });
-        /// Sets the x label.
+        /// Sets the X axis label text for rendered output.
         ///
-        /// @param label : string
+        /// @param | label | string | Parameter value for this chart operation.
         methods.add_method("setXLabel", |_, this, label: String| {
             this.inner.borrow_mut().config.x_label = Some(label);
             this.dirty.set(true);
             Ok(())
         });
-        /// Sets the y label.
+        /// Sets the Y axis label text for rendered output.
         ///
-        /// @param label : string
+        /// @param | label | string | Parameter value for this chart operation.
         methods.add_method("setYLabel", |_, this, label: String| {
             this.inner.borrow_mut().config.y_label = Some(label);
             this.dirty.set(true);
             Ok(())
         });
-        /// Sets the x tick count.
+        /// Sets the number of X axis ticks drawn for this chart.
         ///
-        /// @param count : integer
+        /// @param | count | integer | Parameter value for this chart operation.
         methods.add_method("setXTickCount", |_, this, count: u32| {
             this.inner.borrow_mut().config.x_tick_count = count.max(2);
             this.dirty.set(true);
             Ok(())
         });
-        /// Sets the y tick count.
+        /// Sets the number of Y axis ticks drawn for this chart.
         ///
-        /// @param count : integer
+        /// @param | count | integer | Parameter value for this chart operation.
         methods.add_method("setYTickCount", |_, this, count: u32| {
             this.inner.borrow_mut().config.y_tick_count = count.max(2);
             this.dirty.set(true);
             Ok(())
         });
-        /// Sets the show legend.
+        /// Controls whether the chart legend is rendered.
         ///
-        /// @param value : boolean
+        /// @param | value | boolean | Parameter value for this chart operation.
         methods.add_method("setShowLegend", |_, this, value: bool| {
             this.inner.borrow_mut().config.show_legend = value;
             this.dirty.set(true);
             Ok(())
         });
-        /// Render.
+        /// Renders the chart into raw RGBA image bytes.
         ///
-        /// @return any
+        /// @return | integer, integer, string | Width, height, and RGBA image bytes for the rendered chart.
         methods.add_method("render", |lua, this, ()| {
             let chart = this.inner.borrow();
             let width = chart.config.width;
@@ -1005,7 +1005,7 @@ impl LuaUserData for LuaBarChart {
                 })?;
             Ok((width, height, lua.create_string(&buffer)?))
         });
-        /// Render image.
+        /// Renders the chart into a new LImage userdata.
         ///
         methods.add_method("renderImage", |lua, this, ()| {
             let chart = this.inner.borrow();
@@ -1019,9 +1019,9 @@ impl LuaUserData for LuaBarChart {
                 },
             )
         });
-        /// Draw to image.
+        /// Draws the rendered chart into an existing image.
         ///
-        /// @param target : userdata
+        /// @param | target | userdata | Parameter value for this chart operation.
         methods.add_method("drawToImage", |_, this, target: LuaAnyUserData| {
             let chart = this.inner.borrow();
             let mut image = target.borrow_mut::<ImageData>()?;
@@ -1035,10 +1035,10 @@ impl LuaUserData for LuaBarChart {
         });
         /// Draws the bar chart at world or screen coordinates using optional transform options.
         ///
-        /// @param x : number
-        /// @param y : number
-        /// @param opts : table?
-        /// @return nil
+        /// @param | x | number | Parameter value for this chart operation.
+        /// @param | y | number | Parameter value for this chart operation.
+        /// @param | opts | table? | Parameter value for this chart operation.
+        /// @return | nil | Return value produced by this chart operation.
         methods.add_method(
             "draw",
             |_, this, (x, y, opts): (f32, f32, Option<LuaTable>)| {
@@ -1054,26 +1054,26 @@ impl LuaUserData for LuaBarChart {
                 )
             },
         );
-        /// Returns the width.
+        /// Returns the configured chart width in pixels.
         ///
-        /// @return any
+        /// @return | integer | Configured chart dimension in pixels.
         methods.add_method("getWidth", |_, this, ()| {
             Ok(this.inner.borrow().config.width)
         });
-        /// Returns the height.
+        /// Returns the configured chart height in pixels.
         ///
-        /// @return any
+        /// @return | integer | Configured chart dimension in pixels.
         methods.add_method("getHeight", |_, this, ()| {
             Ok(this.inner.borrow().config.height)
         });
-        /// Type.
+        /// Returns the runtime userdata type name for this chart.
         ///
-        /// @return any
+        /// @return | string | Runtime userdata type name.
         methods.add_method("type", |_, _, ()| Ok("LBarChart"));
-        /// Type of.
+        /// Checks whether a type name matches this chart userdata.
         ///
-        /// @param name : string
-        /// @return any
+        /// @param | name | string | Parameter value for this chart operation.
+        /// @return | boolean | True when the supplied type name matches this chart userdata.
         methods.add_method("typeOf", |_, _, name: String| {
             Ok(name == "LBarChart" || name == "LObject")
         });
@@ -1084,10 +1084,10 @@ impl LuaUserData for LuaScatterPlot {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         /// Adds a named scatter series from an array-style Lua table of points.
         ///
-        /// @param name : string
-        /// @param data : table
-        /// @param color : table?
-        /// @return nil
+        /// @param | name | string | Parameter value for this chart operation.
+        /// @param | data | table | Parameter value for this chart operation.
+        /// @param | color | table? | Parameter value for this chart operation.
+        /// @return | nil | Return value produced by this chart operation.
         methods.add_method(
             "addSeries",
             |_, this, (name, data, color): (String, LuaTable, Option<LuaTable>)| {
@@ -1103,13 +1103,13 @@ impl LuaUserData for LuaScatterPlot {
         );
         /// Builds a named scatter series from x and y columns in a dataframe.
         ///
-        /// @param name : string
-        /// @param df : userdata
-        /// @param x_col : string
-        /// @param y_col : string
-        /// @param color : table?
-        /// @param opts : table?
-        /// @return nil
+        /// @param | name | string | Parameter value for this chart operation.
+        /// @param | df | userdata | Parameter value for this chart operation.
+        /// @param | x_col | string | Parameter value for this chart operation.
+        /// @param | y_col | string | Parameter value for this chart operation.
+        /// @param | color | table? | Parameter value for this chart operation.
+        /// @param | opts | table? | Parameter value for this chart operation.
+        /// @return | nil | Return value produced by this chart operation.
         methods.add_method(
             "addSeriesFromDataFrame",
             |_,
@@ -1151,10 +1151,10 @@ impl LuaUserData for LuaScatterPlot {
         );
         /// Replaces a named scatter series with a new array-style Lua table of points.
         ///
-        /// @param name : string
-        /// @param data : table
-        /// @param color : table?
-        /// @return nil
+        /// @param | name | string | Parameter value for this chart operation.
+        /// @param | data | table | Parameter value for this chart operation.
+        /// @param | color | table? | Parameter value for this chart operation.
+        /// @return | nil | Return value produced by this chart operation.
         methods.add_method(
             "replaceSeries",
             |_, this, (name, data, color): (String, LuaTable, Option<LuaTable>)| {
@@ -1169,11 +1169,11 @@ impl LuaUserData for LuaScatterPlot {
         );
         /// Appends one finite point to a named scatter series.
         ///
-        /// @param name : string
-        /// @param x : number
-        /// @param y : number
-        /// @param color : table?
-        /// @return nil
+        /// @param | name | string | Parameter value for this chart operation.
+        /// @param | x | number | Parameter value for this chart operation.
+        /// @param | y | number | Parameter value for this chart operation.
+        /// @param | color | table? | Parameter value for this chart operation.
+        /// @return | nil | Return value produced by this chart operation.
         methods.add_method(
             "appendPoint",
             |_, this, (name, x, y, color): (String, f32, f32, Option<LuaTable>)| {
@@ -1190,15 +1190,15 @@ impl LuaUserData for LuaScatterPlot {
                 Ok(())
             },
         );
-        /// Sets the window.
+        /// Sets the maximum retained sample window for this chart.
         ///
-        /// @param max_points : integer?
+        /// @param | max_points | integer? | Parameter value for this chart operation.
         methods.add_method("setWindow", |_, this, max_points: Option<usize>| {
             this.inner.borrow_mut().set_max_points(max_points);
             this.dirty.set(true);
             Ok(())
         });
-        /// Clears the state.
+        /// Clears all series and cached chart state.
         ///
         methods.add_method("clear", |_, this, ()| {
             this.inner.borrow_mut().clear();
@@ -1206,83 +1206,83 @@ impl LuaUserData for LuaScatterPlot {
             this.dirty.set(true);
             Ok(())
         });
-        /// Sets the dot radius.
+        /// Sets the rendered radius used for scatter dots.
         ///
-        /// @param radius : number
+        /// @param | radius | number | Parameter value for this chart operation.
         methods.add_method("setDotRadius", |_, this, radius: f32| {
             this.inner.borrow_mut().set_dot_radius(radius);
             this.dirty.set(true);
             Ok(())
         });
-        /// Sets the title.
+        /// Sets the chart title text shown in rendered output.
         ///
-        /// @param title : string
+        /// @param | title | string | Parameter value for this chart operation.
         methods.add_method("setTitle", |_, this, title: String| {
             this.inner.borrow_mut().config.title = Some(title);
             this.dirty.set(true);
             Ok(())
         });
-        /// Sets the x range.
+        /// Sets the explicit X axis range for plotted points.
         ///
-        /// @param min_x : number
-        /// @param max_x : number
+        /// @param | min_x | number | Parameter value for this chart operation.
+        /// @param | max_x | number | Parameter value for this chart operation.
         methods.add_method("setXRange", |_, this, (min_x, max_x): (f32, f32)| {
             this.inner.borrow_mut().x_range = (min_x, max_x);
             this.dirty.set(true);
             Ok(())
         });
-        /// Sets the y range.
+        /// Sets the explicit Y axis range for plotted points.
         ///
-        /// @param min_y : number
-        /// @param max_y : number
+        /// @param | min_y | number | Parameter value for this chart operation.
+        /// @param | max_y | number | Parameter value for this chart operation.
         methods.add_method("setYRange", |_, this, (min_y, max_y): (f32, f32)| {
             this.inner.borrow_mut().y_range = (min_y, max_y);
             this.dirty.set(true);
             Ok(())
         });
-        /// Sets the x label.
+        /// Sets the X axis label text for rendered output.
         ///
-        /// @param label : string
+        /// @param | label | string | Parameter value for this chart operation.
         methods.add_method("setXLabel", |_, this, label: String| {
             this.inner.borrow_mut().config.x_label = Some(label);
             this.dirty.set(true);
             Ok(())
         });
-        /// Sets the y label.
+        /// Sets the Y axis label text for rendered output.
         ///
-        /// @param label : string
+        /// @param | label | string | Parameter value for this chart operation.
         methods.add_method("setYLabel", |_, this, label: String| {
             this.inner.borrow_mut().config.y_label = Some(label);
             this.dirty.set(true);
             Ok(())
         });
-        /// Sets the x tick count.
+        /// Sets the number of X axis ticks drawn for this chart.
         ///
-        /// @param count : integer
+        /// @param | count | integer | Parameter value for this chart operation.
         methods.add_method("setXTickCount", |_, this, count: u32| {
             this.inner.borrow_mut().config.x_tick_count = count.max(2);
             this.dirty.set(true);
             Ok(())
         });
-        /// Sets the y tick count.
+        /// Sets the number of Y axis ticks drawn for this chart.
         ///
-        /// @param count : integer
+        /// @param | count | integer | Parameter value for this chart operation.
         methods.add_method("setYTickCount", |_, this, count: u32| {
             this.inner.borrow_mut().config.y_tick_count = count.max(2);
             this.dirty.set(true);
             Ok(())
         });
-        /// Sets the show legend.
+        /// Controls whether the chart legend is rendered.
         ///
-        /// @param value : boolean
+        /// @param | value | boolean | Parameter value for this chart operation.
         methods.add_method("setShowLegend", |_, this, value: bool| {
             this.inner.borrow_mut().config.show_legend = value;
             this.dirty.set(true);
             Ok(())
         });
-        /// Render.
+        /// Renders the chart into raw RGBA image bytes.
         ///
-        /// @return any
+        /// @return | integer, integer, string | Width, height, and RGBA image bytes for the rendered chart.
         methods.add_method("render", |lua, this, ()| {
             let chart = this.inner.borrow();
             let width = chart.config.width;
@@ -1297,7 +1297,7 @@ impl LuaUserData for LuaScatterPlot {
             )?;
             Ok((width, height, lua.create_string(&buffer)?))
         });
-        /// Render image.
+        /// Renders the chart into a new LImage userdata.
         ///
         methods.add_method("renderImage", |lua, this, ()| {
             let chart = this.inner.borrow();
@@ -1309,9 +1309,9 @@ impl LuaUserData for LuaScatterPlot {
                 |buffer| chart.render(buffer),
             )
         });
-        /// Draw to image.
+        /// Draws the rendered chart into an existing image.
         ///
-        /// @param target : userdata
+        /// @param | target | userdata | Parameter value for this chart operation.
         methods.add_method("drawToImage", |_, this, target: LuaAnyUserData| {
             let chart = this.inner.borrow();
             let mut image = target.borrow_mut::<ImageData>()?;
@@ -1325,10 +1325,10 @@ impl LuaUserData for LuaScatterPlot {
         });
         /// Draws the scatter plot at world or screen coordinates using optional transform options.
         ///
-        /// @param x : number
-        /// @param y : number
-        /// @param opts : table?
-        /// @return nil
+        /// @param | x | number | Parameter value for this chart operation.
+        /// @param | y | number | Parameter value for this chart operation.
+        /// @param | opts | table? | Parameter value for this chart operation.
+        /// @return | nil | Return value produced by this chart operation.
         methods.add_method(
             "draw",
             |_, this, (x, y, opts): (f32, f32, Option<LuaTable>)| {
@@ -1344,11 +1344,11 @@ impl LuaUserData for LuaScatterPlot {
                 )
             },
         );
-        /// Nearest.
+        /// Finds the nearest plotted point to screen coordinates.
         ///
-        /// @param x : number
-        /// @param y : number
-        /// @return any
+        /// @param | x | number | Parameter value for this chart operation.
+        /// @param | y | number | Parameter value for this chart operation.
+        /// @return | table | Nearest point table, or nil when no point is available.
         methods.add_method("nearest", |lua, this, (x, y): (f32, f32)| {
             let chart = this.inner.borrow();
             let margin = chart.config.margin;
@@ -1393,26 +1393,26 @@ impl LuaUserData for LuaScatterPlot {
                 ),
             )
         });
-        /// Returns the width.
+        /// Returns the configured chart width in pixels.
         ///
-        /// @return any
+        /// @return | integer | Configured chart dimension in pixels.
         methods.add_method("getWidth", |_, this, ()| {
             Ok(this.inner.borrow().config.width)
         });
-        /// Returns the height.
+        /// Returns the configured chart height in pixels.
         ///
-        /// @return any
+        /// @return | integer | Configured chart dimension in pixels.
         methods.add_method("getHeight", |_, this, ()| {
             Ok(this.inner.borrow().config.height)
         });
-        /// Type.
+        /// Returns the runtime userdata type name for this chart.
         ///
-        /// @return any
+        /// @return | string | Runtime userdata type name.
         methods.add_method("type", |_, _, ()| Ok("LScatterPlot"));
-        /// Type of.
+        /// Checks whether a type name matches this chart userdata.
         ///
-        /// @param name : string
-        /// @return any
+        /// @param | name | string | Parameter value for this chart operation.
+        /// @return | boolean | True when the supplied type name matches this chart userdata.
         methods.add_method("typeOf", |_, _, name: String| {
             Ok(name == "LScatterPlot" || name == "LObject")
         });
@@ -1423,10 +1423,10 @@ impl LuaUserData for LuaPieChart {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         /// Legacy alias that adds one pie slice with a non-negative value.
         ///
-        /// @param label : string
-        /// @param value : number
-        /// @param color : table?
-        /// @return nil
+        /// @param | label | string | Parameter value for this chart operation.
+        /// @param | value | number | Parameter value for this chart operation.
+        /// @param | color | table? | Parameter value for this chart operation.
+        /// @return | nil | Return value produced by this chart operation.
         methods.add_method(
             "addSlice",
             |_, this, (label, value, color): (String, f32, Option<LuaTable>)| {
@@ -1441,10 +1441,10 @@ impl LuaUserData for LuaPieChart {
         );
         /// Adds one pie segment with a non-negative value.
         ///
-        /// @param label : string
-        /// @param value : number
-        /// @param color : table?
-        /// @return nil
+        /// @param | label | string | Parameter value for this chart operation.
+        /// @param | value | number | Parameter value for this chart operation.
+        /// @param | color | table? | Parameter value for this chart operation.
+        /// @return | nil | Return value produced by this chart operation.
         methods.add_method(
             "addSegment",
             |_, this, (label, value, color): (String, f32, Option<LuaTable>)| {
@@ -1459,11 +1459,11 @@ impl LuaUserData for LuaPieChart {
         );
         /// Adds pie segments by reading label and value columns from a dataframe.
         ///
-        /// @param df : userdata
-        /// @param label_col : string
-        /// @param value_col : string
-        /// @param opts : table?
-        /// @return nil
+        /// @param | df | userdata | Parameter value for this chart operation.
+        /// @param | label_col | string | Parameter value for this chart operation.
+        /// @param | value_col | string | Parameter value for this chart operation.
+        /// @param | opts | table? | Parameter value for this chart operation.
+        /// @return | nil | Return value produced by this chart operation.
         methods.add_method(
             "addSegmentsFromDataFrame",
             |_,
@@ -1493,7 +1493,7 @@ impl LuaUserData for LuaPieChart {
                 Ok(added)
             },
         );
-        /// Clears the state.
+        /// Clears all series and cached chart state.
         ///
         methods.add_method("clear", |_, this, ()| {
             this.inner.borrow_mut().clear();
@@ -1501,25 +1501,25 @@ impl LuaUserData for LuaPieChart {
             this.dirty.set(true);
             Ok(())
         });
-        /// Sets the title.
+        /// Sets the chart title text shown in rendered output.
         ///
-        /// @param title : string
+        /// @param | title | string | Parameter value for this chart operation.
         methods.add_method("setTitle", |_, this, title: String| {
             this.inner.borrow_mut().config.title = Some(title);
             this.dirty.set(true);
             Ok(())
         });
-        /// Sets the show legend.
+        /// Controls whether the chart legend is rendered.
         ///
-        /// @param value : boolean
+        /// @param | value | boolean | Parameter value for this chart operation.
         methods.add_method("setShowLegend", |_, this, value: bool| {
             this.inner.borrow_mut().config.show_legend = value;
             this.dirty.set(true);
             Ok(())
         });
-        /// Render.
+        /// Renders the chart into raw RGBA image bytes.
         ///
-        /// @return any
+        /// @return | integer, integer, string | Width, height, and RGBA image bytes for the rendered chart.
         methods.add_method("render", |lua, this, ()| {
             let chart = this.inner.borrow();
             let width = chart.config.width;
@@ -1530,7 +1530,7 @@ impl LuaUserData for LuaPieChart {
                 })?;
             Ok((width, height, lua.create_string(&buffer)?))
         });
-        /// Render image.
+        /// Renders the chart into a new LImage userdata.
         ///
         methods.add_method("renderImage", |lua, this, ()| {
             let chart = this.inner.borrow();
@@ -1544,9 +1544,9 @@ impl LuaUserData for LuaPieChart {
                 },
             )
         });
-        /// Draw to image.
+        /// Draws the rendered chart into an existing image.
         ///
-        /// @param target : userdata
+        /// @param | target | userdata | Parameter value for this chart operation.
         methods.add_method("drawToImage", |_, this, target: LuaAnyUserData| {
             let chart = this.inner.borrow();
             let mut image = target.borrow_mut::<ImageData>()?;
@@ -1560,10 +1560,10 @@ impl LuaUserData for LuaPieChart {
         });
         /// Draws the pie chart at world or screen coordinates using optional transform options.
         ///
-        /// @param x : number
-        /// @param y : number
-        /// @param opts : table?
-        /// @return nil
+        /// @param | x | number | Parameter value for this chart operation.
+        /// @param | y | number | Parameter value for this chart operation.
+        /// @param | opts | table? | Parameter value for this chart operation.
+        /// @return | nil | Return value produced by this chart operation.
         methods.add_method(
             "draw",
             |_, this, (x, y, opts): (f32, f32, Option<LuaTable>)| {
@@ -1579,26 +1579,26 @@ impl LuaUserData for LuaPieChart {
                 )
             },
         );
-        /// Returns the width.
+        /// Returns the configured chart width in pixels.
         ///
-        /// @return any
+        /// @return | integer | Configured chart dimension in pixels.
         methods.add_method("getWidth", |_, this, ()| {
             Ok(this.inner.borrow().config.width)
         });
-        /// Returns the height.
+        /// Returns the configured chart height in pixels.
         ///
-        /// @return any
+        /// @return | integer | Configured chart dimension in pixels.
         methods.add_method("getHeight", |_, this, ()| {
             Ok(this.inner.borrow().config.height)
         });
-        /// Type.
+        /// Returns the runtime userdata type name for this chart.
         ///
-        /// @return any
+        /// @return | string | Runtime userdata type name.
         methods.add_method("type", |_, _, ()| Ok("LPieChart"));
-        /// Type of.
+        /// Checks whether a type name matches this chart userdata.
         ///
-        /// @param name : string
-        /// @return any
+        /// @param | name | string | Parameter value for this chart operation.
+        /// @return | boolean | True when the supplied type name matches this chart userdata.
         methods.add_method("typeOf", |_, _, name: String| {
             Ok(name == "LPieChart" || name == "LObject")
         });
@@ -1609,10 +1609,10 @@ impl LuaUserData for LuaAreaChart {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         /// Adds a named area series from an array-style Lua table of points.
         ///
-        /// @param name : string
-        /// @param data : table
-        /// @param color : table?
-        /// @return nil
+        /// @param | name | string | Parameter value for this chart operation.
+        /// @param | data | table | Parameter value for this chart operation.
+        /// @param | color | table? | Parameter value for this chart operation.
+        /// @return | nil | Return value produced by this chart operation.
         methods.add_method(
             "addSeries",
             |_, this, (name, data, color): (String, LuaTable, Option<LuaTable>)| {
@@ -1630,10 +1630,10 @@ impl LuaUserData for LuaAreaChart {
         );
         /// Adds one filled area layer from a numeric value list.
         ///
-        /// @param name : string
-        /// @param values : table
-        /// @param color : table?
-        /// @return nil
+        /// @param | name | string | Parameter value for this chart operation.
+        /// @param | values | table | Parameter value for this chart operation.
+        /// @param | color | table? | Parameter value for this chart operation.
+        /// @return | nil | Return value produced by this chart operation.
         methods.add_method(
             "addLayer",
             |_, this, (name, values, color): (String, LuaTable, Option<LuaTable>)| {
@@ -1649,12 +1649,12 @@ impl LuaUserData for LuaAreaChart {
         );
         /// Builds one filled area layer from a dataframe value column.
         ///
-        /// @param name : string
-        /// @param df : userdata
-        /// @param value_col : string
-        /// @param color : table?
-        /// @param opts : table?
-        /// @return nil
+        /// @param | name | string | Parameter value for this chart operation.
+        /// @param | df | userdata | Parameter value for this chart operation.
+        /// @param | value_col | string | Parameter value for this chart operation.
+        /// @param | color | table? | Parameter value for this chart operation.
+        /// @param | opts | table? | Parameter value for this chart operation.
+        /// @return | nil | Return value produced by this chart operation.
         methods.add_method(
             "addLayerFromDataFrame",
             |_,
@@ -1694,11 +1694,11 @@ impl LuaUserData for LuaAreaChart {
         );
         /// Appends one finite point to a named area series.
         ///
-        /// @param name : string
-        /// @param x : number
-        /// @param y : number
-        /// @param color : table?
-        /// @return nil
+        /// @param | name | string | Parameter value for this chart operation.
+        /// @param | x | number | Parameter value for this chart operation.
+        /// @param | y | number | Parameter value for this chart operation.
+        /// @param | color | table? | Parameter value for this chart operation.
+        /// @return | nil | Return value produced by this chart operation.
         methods.add_method(
             "appendPoint",
             |_, this, (name, x, y, color): (String, f32, f32, Option<LuaTable>)| {
@@ -1715,15 +1715,15 @@ impl LuaUserData for LuaAreaChart {
                 Ok(())
             },
         );
-        /// Sets the window.
+        /// Sets the maximum retained sample window for this chart.
         ///
-        /// @param max_points : integer?
+        /// @param | max_points | integer? | Parameter value for this chart operation.
         methods.add_method("setWindow", |_, this, max_points: Option<usize>| {
             this.inner.borrow_mut().set_max_points(max_points);
             this.dirty.set(true);
             Ok(())
         });
-        /// Clears the state.
+        /// Clears all series and cached chart state.
         ///
         methods.add_method("clear", |_, this, ()| {
             this.inner.borrow_mut().clear();
@@ -1731,65 +1731,65 @@ impl LuaUserData for LuaAreaChart {
             this.dirty.set(true);
             Ok(())
         });
-        /// Sets the title.
+        /// Sets the chart title text shown in rendered output.
         ///
-        /// @param title : string
+        /// @param | title | string | Parameter value for this chart operation.
         methods.add_method("setTitle", |_, this, title: String| {
             this.inner.borrow_mut().config.title = Some(title);
             this.dirty.set(true);
             Ok(())
         });
-        /// Sets the y max.
+        /// Sets the explicit Y axis maximum for chart scaling.
         ///
-        /// @param value : number
+        /// @param | value | number | Parameter value for this chart operation.
         methods.add_method("setYMax", |_, this, value: f32| {
             this.inner.borrow_mut().y_max = value;
             this.dirty.set(true);
             Ok(())
         });
-        /// Sets the x label.
+        /// Sets the X axis label text for rendered output.
         ///
-        /// @param label : string
+        /// @param | label | string | Parameter value for this chart operation.
         methods.add_method("setXLabel", |_, this, label: String| {
             this.inner.borrow_mut().config.x_label = Some(label);
             this.dirty.set(true);
             Ok(())
         });
-        /// Sets the y label.
+        /// Sets the Y axis label text for rendered output.
         ///
-        /// @param label : string
+        /// @param | label | string | Parameter value for this chart operation.
         methods.add_method("setYLabel", |_, this, label: String| {
             this.inner.borrow_mut().config.y_label = Some(label);
             this.dirty.set(true);
             Ok(())
         });
-        /// Sets the x tick count.
+        /// Sets the number of X axis ticks drawn for this chart.
         ///
-        /// @param count : integer
+        /// @param | count | integer | Parameter value for this chart operation.
         methods.add_method("setXTickCount", |_, this, count: u32| {
             this.inner.borrow_mut().config.x_tick_count = count.max(2);
             this.dirty.set(true);
             Ok(())
         });
-        /// Sets the y tick count.
+        /// Sets the number of Y axis ticks drawn for this chart.
         ///
-        /// @param count : integer
+        /// @param | count | integer | Parameter value for this chart operation.
         methods.add_method("setYTickCount", |_, this, count: u32| {
             this.inner.borrow_mut().config.y_tick_count = count.max(2);
             this.dirty.set(true);
             Ok(())
         });
-        /// Sets the show legend.
+        /// Controls whether the chart legend is rendered.
         ///
-        /// @param value : boolean
+        /// @param | value | boolean | Parameter value for this chart operation.
         methods.add_method("setShowLegend", |_, this, value: bool| {
             this.inner.borrow_mut().config.show_legend = value;
             this.dirty.set(true);
             Ok(())
         });
-        /// Render.
+        /// Renders the chart into raw RGBA image bytes.
         ///
-        /// @return any
+        /// @return | integer, integer, string | Width, height, and RGBA image bytes for the rendered chart.
         methods.add_method("render", |lua, this, ()| {
             let chart = this.inner.borrow();
             let width = chart.config.width;
@@ -1800,7 +1800,7 @@ impl LuaUserData for LuaAreaChart {
                 })?;
             Ok((width, height, lua.create_string(&buffer)?))
         });
-        /// Render image.
+        /// Renders the chart into a new LImage userdata.
         ///
         methods.add_method("renderImage", |lua, this, ()| {
             let chart = this.inner.borrow();
@@ -1814,9 +1814,9 @@ impl LuaUserData for LuaAreaChart {
                 },
             )
         });
-        /// Draw to image.
+        /// Draws the rendered chart into an existing image.
         ///
-        /// @param target : userdata
+        /// @param | target | userdata | Parameter value for this chart operation.
         methods.add_method("drawToImage", |_, this, target: LuaAnyUserData| {
             let chart = this.inner.borrow();
             let mut image = target.borrow_mut::<ImageData>()?;
@@ -1830,10 +1830,10 @@ impl LuaUserData for LuaAreaChart {
         });
         /// Draws the area chart at world or screen coordinates using optional transform options.
         ///
-        /// @param x : number
-        /// @param y : number
-        /// @param opts : table?
-        /// @return nil
+        /// @param | x | number | Parameter value for this chart operation.
+        /// @param | y | number | Parameter value for this chart operation.
+        /// @param | opts | table? | Parameter value for this chart operation.
+        /// @return | nil | Return value produced by this chart operation.
         methods.add_method(
             "draw",
             |_, this, (x, y, opts): (f32, f32, Option<LuaTable>)| {
@@ -1849,26 +1849,26 @@ impl LuaUserData for LuaAreaChart {
                 )
             },
         );
-        /// Returns the width.
+        /// Returns the configured chart width in pixels.
         ///
-        /// @return any
+        /// @return | integer | Configured chart dimension in pixels.
         methods.add_method("getWidth", |_, this, ()| {
             Ok(this.inner.borrow().config.width)
         });
-        /// Returns the height.
+        /// Returns the configured chart height in pixels.
         ///
-        /// @return any
+        /// @return | integer | Configured chart dimension in pixels.
         methods.add_method("getHeight", |_, this, ()| {
             Ok(this.inner.borrow().config.height)
         });
-        /// Type.
+        /// Returns the runtime userdata type name for this chart.
         ///
-        /// @return any
+        /// @return | string | Runtime userdata type name.
         methods.add_method("type", |_, _, ()| Ok("LAreaChart"));
-        /// Type of.
+        /// Checks whether a type name matches this chart userdata.
         ///
-        /// @param name : string
-        /// @return any
+        /// @param | name | string | Parameter value for this chart operation.
+        /// @return | boolean | True when the supplied type name matches this chart userdata.
         methods.add_method("typeOf", |_, _, name: String| {
             Ok(name == "LAreaChart" || name == "LObject")
         });
@@ -1879,10 +1879,10 @@ impl LuaUserData for LuaHistogramChart {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         /// Adds a named histogram sample series from a numeric value list.
         ///
-        /// @param name : string
-        /// @param data : table
-        /// @param color : table?
-        /// @return nil
+        /// @param | name | string | Parameter value for this chart operation.
+        /// @param | data | table | Parameter value for this chart operation.
+        /// @param | color | table? | Parameter value for this chart operation.
+        /// @return | nil | Return value produced by this chart operation.
         methods.add_method(
             "addSeries",
             |_, this, (name, values, color): (String, LuaTable, Option<LuaTable>)| {
@@ -1906,13 +1906,13 @@ impl LuaUserData for LuaHistogramChart {
         );
         /// Builds a named histogram sample series from one dataframe value column.
         ///
-        /// @param name : string
-        /// @param df : userdata
-        /// @param x_col : string
-        /// @param y_col : string
-        /// @param color : table?
-        /// @param opts : table?
-        /// @return nil
+        /// @param | name | string | Parameter value for this chart operation.
+        /// @param | df | userdata | Parameter value for this chart operation.
+        /// @param | x_col | string | Parameter value for this chart operation.
+        /// @param | y_col | string | Parameter value for this chart operation.
+        /// @param | color | table? | Parameter value for this chart operation.
+        /// @param | opts | table? | Parameter value for this chart operation.
+        /// @return | nil | Return value produced by this chart operation.
         methods.add_method(
             "addSeriesFromDataFrame",
             |_,
@@ -1960,10 +1960,10 @@ impl LuaUserData for LuaHistogramChart {
         );
         /// Replaces a named histogram sample series with a new numeric value list.
         ///
-        /// @param name : string
-        /// @param data : table
-        /// @param color : table?
-        /// @return nil
+        /// @param | name | string | Parameter value for this chart operation.
+        /// @param | data | table | Parameter value for this chart operation.
+        /// @param | color | table? | Parameter value for this chart operation.
+        /// @return | nil | Return value produced by this chart operation.
         methods.add_method(
             "replaceSeries",
             |_, this, (name, values, color): (String, LuaTable, Option<LuaTable>)| {
@@ -1988,10 +1988,10 @@ impl LuaUserData for LuaHistogramChart {
         );
         /// Appends one finite numeric sample to a named histogram series.
         ///
-        /// @param name : string
-        /// @param value : number
-        /// @param color : table?
-        /// @return nil
+        /// @param | name | string | Parameter value for this chart operation.
+        /// @param | value | number | Parameter value for this chart operation.
+        /// @param | color | table? | Parameter value for this chart operation.
+        /// @return | nil | Return value produced by this chart operation.
         methods.add_method(
             "appendValue",
             |_, this, (name, value, color): (String, f32, Option<LuaTable>)| {
@@ -2017,15 +2017,15 @@ impl LuaUserData for LuaHistogramChart {
                 Ok(())
             },
         );
-        /// Sets the window.
+        /// Sets the maximum retained sample window for this chart.
         ///
-        /// @param max_points : integer?
+        /// @param | max_points | integer? | Parameter value for this chart operation.
         methods.add_method("setWindow", |_, this, max_points: Option<usize>| {
             this.inner.borrow_mut().set_max_points(max_points);
             this.dirty.set(true);
             Ok(())
         });
-        /// Clears the state.
+        /// Clears all series and cached chart state.
         ///
         methods.add_method("clear", |_, this, ()| {
             this.inner.borrow_mut().clear();
@@ -2033,89 +2033,89 @@ impl LuaUserData for LuaHistogramChart {
             this.dirty.set(true);
             Ok(())
         });
-        /// Sets the bin count.
+        /// Sets the number of histogram bins used for samples.
         ///
-        /// @param bins : integer
+        /// @param | bins | integer | Parameter value for this chart operation.
         methods.add_method("setBinCount", |_, this, bins: u32| {
             this.inner.borrow_mut().set_bin_count(bins as usize);
             this.dirty.set(true);
             Ok(())
         });
-        /// Sets the range.
+        /// Sets the explicit histogram value range.
         ///
-        /// @param min : number
-        /// @param max : number
+        /// @param | min | number | Parameter value for this chart operation.
+        /// @param | max | number | Parameter value for this chart operation.
         methods.add_method("setRange", |_, this, (min, max): (f32, f32)| {
             this.inner.borrow_mut().set_range(min, max);
             this.dirty.set(true);
             Ok(())
         });
-        /// Clears range.
+        /// Clears the explicit histogram value range.
         ///
         methods.add_method("clearRange", |_, this, ()| {
             this.inner.borrow_mut().clear_range();
             this.dirty.set(true);
             Ok(())
         });
-        /// Sets the density.
+        /// Controls whether histogram bins render as density values.
         ///
-        /// @param enabled : boolean
+        /// @param | enabled | boolean | Parameter value for this chart operation.
         methods.add_method("setDensity", |_, this, enabled: bool| {
             this.inner.borrow_mut().set_density(enabled);
             this.dirty.set(true);
             Ok(())
         });
-        /// Sets the title.
+        /// Sets the chart title text shown in rendered output.
         ///
-        /// @param title : string
+        /// @param | title | string | Parameter value for this chart operation.
         methods.add_method("setTitle", |_, this, title: String| {
             this.inner.borrow_mut().config.title = Some(title);
             this.dirty.set(true);
             Ok(())
         });
-        /// Sets the x label.
+        /// Sets the X axis label text for rendered output.
         ///
-        /// @param label : string
+        /// @param | label | string | Parameter value for this chart operation.
         methods.add_method("setXLabel", |_, this, label: String| {
             this.inner.borrow_mut().config.x_label = Some(label);
             this.dirty.set(true);
             Ok(())
         });
-        /// Sets the y label.
+        /// Sets the Y axis label text for rendered output.
         ///
-        /// @param label : string
+        /// @param | label | string | Parameter value for this chart operation.
         methods.add_method("setYLabel", |_, this, label: String| {
             this.inner.borrow_mut().config.y_label = Some(label);
             this.dirty.set(true);
             Ok(())
         });
-        /// Sets the x tick count.
+        /// Sets the number of X axis ticks drawn for this chart.
         ///
-        /// @param count : integer
+        /// @param | count | integer | Parameter value for this chart operation.
         methods.add_method("setXTickCount", |_, this, count: u32| {
             this.inner.borrow_mut().config.x_tick_count = count.max(2);
             this.dirty.set(true);
             Ok(())
         });
-        /// Sets the y tick count.
+        /// Sets the number of Y axis ticks drawn for this chart.
         ///
-        /// @param count : integer
+        /// @param | count | integer | Parameter value for this chart operation.
         methods.add_method("setYTickCount", |_, this, count: u32| {
             this.inner.borrow_mut().config.y_tick_count = count.max(2);
             this.dirty.set(true);
             Ok(())
         });
-        /// Sets the show legend.
+        /// Controls whether the chart legend is rendered.
         ///
-        /// @param value : boolean
+        /// @param | value | boolean | Parameter value for this chart operation.
         methods.add_method("setShowLegend", |_, this, value: bool| {
             this.inner.borrow_mut().config.show_legend = value;
             this.dirty.set(true);
             Ok(())
         });
-        /// Render.
+        /// Renders the chart into raw RGBA image bytes.
         ///
-        /// @return any
+        /// @return | integer, integer, string | Width, height, and RGBA image bytes for the rendered chart.
         methods.add_method("render", |lua, this, ()| {
             let chart = this.inner.borrow();
             let width = chart.config.width;
@@ -2130,7 +2130,7 @@ impl LuaUserData for LuaHistogramChart {
             )?;
             Ok((width, height, lua.create_string(&buffer)?))
         });
-        /// Render image.
+        /// Renders the chart into a new LImage userdata.
         ///
         methods.add_method("renderImage", |lua, this, ()| {
             let chart = this.inner.borrow();
@@ -2142,9 +2142,9 @@ impl LuaUserData for LuaHistogramChart {
                 |buffer| chart.render(buffer),
             )
         });
-        /// Draw to image.
+        /// Draws the rendered chart into an existing image.
         ///
-        /// @param target : userdata
+        /// @param | target | userdata | Parameter value for this chart operation.
         methods.add_method("drawToImage", |_, this, target: LuaAnyUserData| {
             let chart = this.inner.borrow();
             let mut image = target.borrow_mut::<ImageData>()?;
@@ -2158,10 +2158,10 @@ impl LuaUserData for LuaHistogramChart {
         });
         /// Draws the histogram at world or screen coordinates using optional transform options.
         ///
-        /// @param x : number
-        /// @param y : number
-        /// @param opts : table?
-        /// @return nil
+        /// @param | x | number | Parameter value for this chart operation.
+        /// @param | y | number | Parameter value for this chart operation.
+        /// @param | opts | table? | Parameter value for this chart operation.
+        /// @return | nil | Return value produced by this chart operation.
         methods.add_method(
             "draw",
             |_, this, (x, y, opts): (f32, f32, Option<LuaTable>)| {
@@ -2177,26 +2177,26 @@ impl LuaUserData for LuaHistogramChart {
                 )
             },
         );
-        /// Returns the width.
+        /// Returns the configured chart width in pixels.
         ///
-        /// @return any
+        /// @return | integer | Configured chart dimension in pixels.
         methods.add_method("getWidth", |_, this, ()| {
             Ok(this.inner.borrow().config.width)
         });
-        /// Returns the height.
+        /// Returns the configured chart height in pixels.
         ///
-        /// @return any
+        /// @return | integer | Configured chart dimension in pixels.
         methods.add_method("getHeight", |_, this, ()| {
             Ok(this.inner.borrow().config.height)
         });
-        /// Type.
+        /// Returns the runtime userdata type name for this chart.
         ///
-        /// @return any
+        /// @return | string | Runtime userdata type name.
         methods.add_method("type", |_, _, ()| Ok("LHistogramChart"));
-        /// Type of.
+        /// Checks whether a type name matches this chart userdata.
         ///
-        /// @param name : string
-        /// @return any
+        /// @param | name | string | Parameter value for this chart operation.
+        /// @return | boolean | True when the supplied type name matches this chart userdata.
         methods.add_method("typeOf", |_, _, name: String| {
             Ok(name == "LHistogramChart" || name == "LObject")
         });
@@ -2207,10 +2207,10 @@ impl LuaUserData for LuaHeatmapChart {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         /// Replaces the heatmap contents from a numeric matrix with optional row and column labels.
         ///
-        /// @param matrix : table
-        /// @param row_labels : table?
-        /// @param col_labels : table?
-        /// @return nil
+        /// @param | matrix | table | Parameter value for this chart operation.
+        /// @param | row_labels | table? | Parameter value for this chart operation.
+        /// @param | col_labels | table? | Parameter value for this chart operation.
+        /// @return | nil | Return value produced by this chart operation.
         methods.add_method(
             "setMatrix",
             |_,
@@ -2235,12 +2235,12 @@ impl LuaUserData for LuaHeatmapChart {
         );
         /// Builds the heatmap contents from dataframe row, column, and value fields.
         ///
-        /// @param df : userdata
-        /// @param row_col : string
-        /// @param col_col : string
-        /// @param value_col : string
-        /// @param opts : table?
-        /// @return nil
+        /// @param | df | userdata | Parameter value for this chart operation.
+        /// @param | row_col | string | Parameter value for this chart operation.
+        /// @param | col_col | string | Parameter value for this chart operation.
+        /// @param | value_col | string | Parameter value for this chart operation.
+        /// @param | opts | table? | Parameter value for this chart operation.
+        /// @return | nil | Return value produced by this chart operation.
         methods.add_method(
             "setMatrixFromDataFrame",
             |_,
@@ -2268,20 +2268,20 @@ impl LuaUserData for LuaHeatmapChart {
                 Ok(added)
             },
         );
-        /// Resize.
+        /// Resizes the heatmap grid dimensions.
         ///
-        /// @param rows : integer
-        /// @param cols : integer
+        /// @param | rows | integer | Parameter value for this chart operation.
+        /// @param | cols | integer | Parameter value for this chart operation.
         methods.add_method("resize", |_, this, (rows, cols): (u32, u32)| {
             this.inner.borrow_mut().resize(rows as usize, cols as usize);
             this.dirty.set(true);
             Ok(())
         });
-        /// Sets the cell.
+        /// Sets a numeric heatmap cell value by row and column.
         ///
-        /// @param row : integer
-        /// @param col : integer
-        /// @param value : number
+        /// @param | row | integer | Parameter value for this chart operation.
+        /// @param | col | integer | Parameter value for this chart operation.
+        /// @param | value | number | Parameter value for this chart operation.
         methods.add_method("setCell", |_, this, (row, col, value): (u32, u32, f32)| {
             if row == 0 || col == 0 {
                 return Err(LuaError::RuntimeError(
@@ -2299,16 +2299,16 @@ impl LuaUserData for LuaHeatmapChart {
             this.dirty.set(true);
             Ok(())
         });
-        /// Clears the state.
+        /// Clears all series and cached chart state.
         ///
         methods.add_method("clear", |_, this, ()| {
             this.inner.borrow_mut().clear();
             this.dirty.set(true);
             Ok(())
         });
-        /// Sets the row labels.
+        /// Sets labels displayed for heatmap rows.
         ///
-        /// @param labels : table
+        /// @param | labels | table | Parameter value for this chart operation.
         methods.add_method("setRowLabels", |_, this, labels: LuaTable| {
             this.inner
                 .borrow_mut()
@@ -2316,9 +2316,9 @@ impl LuaUserData for LuaHeatmapChart {
             this.dirty.set(true);
             Ok(())
         });
-        /// Sets the column labels.
+        /// Sets labels displayed for heatmap columns.
         ///
-        /// @param labels : table
+        /// @param | labels | table | Parameter value for this chart operation.
         methods.add_method("setColumnLabels", |_, this, labels: LuaTable| {
             this.inner
                 .borrow_mut()
@@ -2326,16 +2326,16 @@ impl LuaUserData for LuaHeatmapChart {
             this.dirty.set(true);
             Ok(())
         });
-        /// Sets the value range.
+        /// Sets the explicit heatmap value range.
         ///
-        /// @param min : number
-        /// @param max : number
+        /// @param | min | number | Parameter value for this chart operation.
+        /// @param | max | number | Parameter value for this chart operation.
         methods.add_method("setValueRange", |_, this, (min, max): (f32, f32)| {
             this.inner.borrow_mut().set_value_range(min, max);
             this.dirty.set(true);
             Ok(())
         });
-        /// Clears value range.
+        /// Clears the explicit heatmap value range.
         ///
         methods.add_method("clearValueRange", |_, this, ()| {
             this.inner.borrow_mut().clear_value_range();
@@ -2344,9 +2344,9 @@ impl LuaUserData for LuaHeatmapChart {
         });
         /// Sets the low and high RGBA colors used for the heatmap gradient.
         ///
-        /// @param low : table
-        /// @param high : table
-        /// @return nil
+        /// @param | low | table | Parameter value for this chart operation.
+        /// @param | high | table | Parameter value for this chart operation.
+        /// @return | nil | Return value produced by this chart operation.
         methods.add_method(
             "setColorRange",
             |_, this, (low, high): (LuaTable, LuaTable)| {
@@ -2357,33 +2357,33 @@ impl LuaUserData for LuaHeatmapChart {
                 Ok(())
             },
         );
-        /// Sets the show values.
+        /// Controls whether heatmap cell values are rendered.
         ///
-        /// @param value : boolean
+        /// @param | value | boolean | Parameter value for this chart operation.
         methods.add_method("setShowValues", |_, this, value: bool| {
             this.inner.borrow_mut().set_show_values(value);
             this.dirty.set(true);
             Ok(())
         });
-        /// Sets the title.
+        /// Sets the chart title text shown in rendered output.
         ///
-        /// @param title : string
+        /// @param | title | string | Parameter value for this chart operation.
         methods.add_method("setTitle", |_, this, title: String| {
             this.inner.borrow_mut().config.title = Some(title);
             this.dirty.set(true);
             Ok(())
         });
-        /// Sets the show legend.
+        /// Controls whether the chart legend is rendered.
         ///
-        /// @param value : boolean
+        /// @param | value | boolean | Parameter value for this chart operation.
         methods.add_method("setShowLegend", |_, this, value: bool| {
             this.inner.borrow_mut().config.show_legend = value;
             this.dirty.set(true);
             Ok(())
         });
-        /// Render.
+        /// Renders the chart into raw RGBA image bytes.
         ///
-        /// @return any
+        /// @return | integer, integer, string | Width, height, and RGBA image bytes for the rendered chart.
         methods.add_method("render", |lua, this, ()| {
             let chart = this.inner.borrow();
             let width = chart.config.width;
@@ -2398,7 +2398,7 @@ impl LuaUserData for LuaHeatmapChart {
             )?;
             Ok((width, height, lua.create_string(&buffer)?))
         });
-        /// Render image.
+        /// Renders the chart into a new LImage userdata.
         ///
         methods.add_method("renderImage", |lua, this, ()| {
             let chart = this.inner.borrow();
@@ -2410,9 +2410,9 @@ impl LuaUserData for LuaHeatmapChart {
                 |buffer| chart.render(buffer),
             )
         });
-        /// Draw to image.
+        /// Draws the rendered chart into an existing image.
         ///
-        /// @param target : userdata
+        /// @param | target | userdata | Parameter value for this chart operation.
         methods.add_method("drawToImage", |_, this, target: LuaAnyUserData| {
             let chart = this.inner.borrow();
             let mut image = target.borrow_mut::<ImageData>()?;
@@ -2426,10 +2426,10 @@ impl LuaUserData for LuaHeatmapChart {
         });
         /// Draws the heatmap at world or screen coordinates using optional transform options.
         ///
-        /// @param x : number
-        /// @param y : number
-        /// @param opts : table?
-        /// @return nil
+        /// @param | x | number | Parameter value for this chart operation.
+        /// @param | y | number | Parameter value for this chart operation.
+        /// @param | opts | table? | Parameter value for this chart operation.
+        /// @return | nil | Return value produced by this chart operation.
         methods.add_method(
             "draw",
             |_, this, (x, y, opts): (f32, f32, Option<LuaTable>)| {
@@ -2445,26 +2445,26 @@ impl LuaUserData for LuaHeatmapChart {
                 )
             },
         );
-        /// Returns the width.
+        /// Returns the configured chart width in pixels.
         ///
-        /// @return any
+        /// @return | integer | Configured chart dimension in pixels.
         methods.add_method("getWidth", |_, this, ()| {
             Ok(this.inner.borrow().config.width)
         });
-        /// Returns the height.
+        /// Returns the configured chart height in pixels.
         ///
-        /// @return any
+        /// @return | integer | Configured chart dimension in pixels.
         methods.add_method("getHeight", |_, this, ()| {
             Ok(this.inner.borrow().config.height)
         });
-        /// Type.
+        /// Returns the runtime userdata type name for this chart.
         ///
-        /// @return any
+        /// @return | string | Runtime userdata type name.
         methods.add_method("type", |_, _, ()| Ok("LHeatmapChart"));
-        /// Type of.
+        /// Checks whether a type name matches this chart userdata.
         ///
-        /// @param name : string
-        /// @return any
+        /// @param | name | string | Parameter value for this chart operation.
+        /// @return | boolean | True when the supplied type name matches this chart userdata.
         methods.add_method("typeOf", |_, _, name: String| {
             Ok(name == "LHeatmapChart" || name == "LObject")
         });
@@ -2475,10 +2475,10 @@ impl LuaUserData for LuaHeatmapChart {
 pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let charts = lua.create_table()?;
 
-    /// New line.
+    /// Creates a new line chart userdata instance.
     ///
-    /// @param config : table?
-    /// @return any
+    /// @param | config | table? | Parameter value for this chart operation.
+    /// @return | LLineChart | New line chart userdata.
     charts.set(
         "newLine",
         lua.create_function({
@@ -2495,10 +2495,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    /// New bar.
+    /// Creates a new bar chart userdata instance.
     ///
-    /// @param config : table?
-    /// @return any
+    /// @param | config | table? | Parameter value for this chart operation.
+    /// @return | LBarChart | New bar chart userdata.
     charts.set(
         "newBar",
         lua.create_function({
@@ -2515,10 +2515,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    /// New scatter.
+    /// Creates a new scatter plot userdata instance.
     ///
-    /// @param config : table?
-    /// @return any
+    /// @param | config | table? | Parameter value for this chart operation.
+    /// @return | LScatterPlot | New scatter plot userdata.
     charts.set(
         "newScatter",
         lua.create_function({
@@ -2535,10 +2535,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    /// New pie.
+    /// Creates a new pie chart userdata instance.
     ///
-    /// @param config : table?
-    /// @return any
+    /// @param | config | table? | Parameter value for this chart operation.
+    /// @return | LPieChart | New pie chart userdata.
     charts.set(
         "newPie",
         lua.create_function({
@@ -2555,10 +2555,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    /// New area.
+    /// Creates a new area chart userdata instance.
     ///
-    /// @param config : table?
-    /// @return any
+    /// @param | config | table? | Parameter value for this chart operation.
+    /// @return | LAreaChart | New area chart userdata.
     charts.set(
         "newArea",
         lua.create_function({
@@ -2575,10 +2575,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    /// New histogram.
+    /// Creates a new histogram chart userdata instance.
     ///
-    /// @param config : table?
-    /// @return any
+    /// @param | config | table? | Parameter value for this chart operation.
+    /// @return | LHistogramChart | New histogram chart userdata.
     charts.set(
         "newHistogram",
         lua.create_function({
@@ -2595,10 +2595,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    /// New heatmap.
+    /// Creates a new heatmap chart userdata instance.
     ///
-    /// @param config : table?
-    /// @return any
+    /// @param | config | table? | Parameter value for this chart operation.
+    /// @return | LHeatmapChart | New heatmap chart userdata.
     charts.set(
         "newHeatmap",
         lua.create_function({
@@ -2614,9 +2614,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    /// Default palette.
+    /// Returns the default chart color palette.
     ///
-    /// @return any
+    /// @return | table | Default color palette as RGB tables.
     charts.set(
         "defaultPalette",
         lua.create_function(|lua, ()| {
@@ -2633,10 +2633,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    /// Series color.
+    /// Returns the palette color for a series index.
     ///
-    /// @param index : integer
-    /// @return any
+    /// @param | index | integer | Parameter value for this chart operation.
+    /// @return | table | Palette color table for the requested series.
     charts.set(
         "seriesColor",
         lua.create_function(|lua, index: usize| {

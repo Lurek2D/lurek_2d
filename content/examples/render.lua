@@ -736,6 +736,15 @@ do
     example_print_log("has u_time after send = " .. tostring(shader:hasUniform("u_time")))
 end
 
+--@api: LShader:getId
+do
+    local code = "@fragment fn fs() -> @location(0) vec4<f32> { return vec4<f32>(1.0); }"
+    local shader = lurek.render.newShader(code)
+    local id = shader:getId()
+    example_print_log("shader id = " .. tostring(id))
+    example_print_log("shader id numeric = " .. tostring(type(id) == "number"))
+end
+
 --@api: LShader:setShader
 do
     local code = "@fragment fn fs() -> @location(0) vec4<f32> { return vec4<f32>(1.0); }"

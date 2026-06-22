@@ -24,5 +24,5 @@
 ## Workflow
 - Classify legacy content first with `tools/python.cmd tools/demos/audit_games.py`.
 - Keep only catalog-ready `KEEP` entries in the generated README; backlog and migration work belongs in `work/games-audit.*`.
-- Run one game with `tools/python.cmd tools/dev/parallel_cargo.py run debug -- content/games/<category>/<name>/main.lua`.
+- Run one game with `tools/python.cmd tools/dev/parallel_cargo.py run debug -- content/games/<name>`.
 - Run all game smoke checks with `tools/python.cmd tools/demos/smoke_sweep.py --kind game`.

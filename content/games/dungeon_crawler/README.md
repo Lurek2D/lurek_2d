@@ -19,7 +19,7 @@ Gra przechodzi w stan `COMPLETE` po pomyślnym zebraniu wszystkich 10 kul rozrzu
 Uruchom grę na silniku Lurek za pomocą poniższego polecenia:
 
 ```powershell
-cargo run -- content/games/retro/dungeon_crawler
+cargo run -- content/games/dungeon_crawler
 ```
 
 ## 🕹️ Sterowanie (Controls)

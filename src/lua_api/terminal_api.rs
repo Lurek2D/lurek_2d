@@ -483,7 +483,7 @@ impl LuaUserData for LuaTerminal {
         /// @param | bg | number? | Background green (0-1, default 0).
         /// @param | bb | number? | Background blue (0-1, default 0).
         /// @param | ba | number? | Background alpha (0-1, default 0).
-        /// @return | boolean, string? | True on success, otherwise false and a reason string.
+        /// @return | boolean, string | True on success, otherwise false and a reason string.
         methods.add_method("trySet", |_, this, args: LuaMultiValue| {
             let mut values = args.into_iter();
             let col = usize_from_value(values.next());
@@ -608,7 +608,7 @@ impl LuaUserData for LuaTerminal {
         });
         // -- validateWidgets --
         /// Validates panel child ownership, stale references, cycles, and the current focus target.
-        /// @return | boolean, string[]? | True when valid, otherwise false plus an array of validation messages.
+        /// @return | boolean, table | True when valid, otherwise false plus an array of validation messages.
         methods.add_method("validateWidgets", |lua: &Lua, this, ()| {
             let errors = this.binding.terminal.borrow().validate_widgets();
             if errors.is_empty() {
@@ -944,7 +944,7 @@ impl LuaUserData for LuaWidget {
         // -- trySetText --
         /// Strictly sets widget text and returns an explicit error string instead of silently truncating.
         /// @param | text | string | The new text content.
-        /// @return | boolean, string? | True on success, otherwise false and a reason string.
+        /// @return | boolean, string | True on success, otherwise false and a reason string.
         methods.add_method("trySetText", |_, this, text: String| {
             if let Some((terminal, index)) = attached_location(&this.binding) {
                 match terminal
@@ -1547,7 +1547,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// Strictly appends a line of text to the terminal scrollback buffer.
     /// @param | terminal | LTerminal | The terminal to push to.
     /// @param | line | string | The text line to append.
-    /// @return | boolean, string? | True on success, otherwise false and a reason string.
+    /// @return | boolean, string | True on success, otherwise false and a reason string.
     tbl.set(
         "tryPushScrollback",
         lua.create_function(move |_, (term_ud, line): (LuaAnyUserData, String)| {
@@ -1635,7 +1635,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// Strictly appends a command string to the terminal command history.
     /// @param | terminal | LTerminal | The terminal to push to.
     /// @param | cmd | string | The command string to store.
-    /// @return | boolean, string? | True on success, otherwise false and a reason string.
+    /// @return | boolean, string | True on success, otherwise false and a reason string.
     tbl.set(
         "tryPushCmdHistory",
         lua.create_function(|_, (term_ud, cmd): (LuaAnyUserData, String)| {

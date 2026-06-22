@@ -200,12 +200,13 @@ def _bucket_example_output(lines: list[str]) -> tuple[str, str]:
 
 
 def discover(games_root: Path, examples_root: Path) -> list[Target]:
-    """Enumerate game projects (content/games/<cat>/<demo>/main.lua) and
-    single-file examples (content/examples/*.lua)."""
+    """Enumerate game projects and single-file examples."""
     out: list[Target] = []
     if games_root.is_dir():
-        for main_lua in sorted(games_root.glob("*/*/main.lua")):
+        for main_lua in sorted(games_root.rglob("main.lua")):
             project_dir = main_lua.parent
+            if any(part.startswith("_") for part in project_dir.relative_to(games_root).parts):
+                continue
             rel = project_dir.relative_to(REPO_ROOT).as_posix()
             out.append(
                 Target(

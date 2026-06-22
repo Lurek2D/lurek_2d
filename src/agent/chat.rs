@@ -80,8 +80,10 @@ pub fn validate_global_config(cfg: &GlobalLlmConfig) -> Result<(), String> {
         ));
     }
 
-    let mut network_policy = AgentNetworkPolicy::default();
-    network_policy.allow_external_hosts = cfg.allow_external_hosts;
+    let network_policy = AgentNetworkPolicy {
+        allow_external_hosts: cfg.allow_external_hosts,
+        ..AgentNetworkPolicy::default()
+    };
     let generate_url = format!("{}/api/generate", cfg.base_url.trim_end_matches('/'));
     validate_agent_url(&generate_url, &network_policy).map_err(|error| error.to_string())
 }

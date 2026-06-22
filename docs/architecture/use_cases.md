@@ -319,10 +319,8 @@ This is where Lurek2D differentiates from Love2D and Godot: the `province`, `glo
 
 ### Examples Already in Repo
 
-- `content/games/simulation/province_economy_demo/` — province economy loop
-- `content/games/strategy/eu2/` — EU-style strategy map
-- `content/games/strategy/hex_strategy/` — hex grid strategy
-- `content/games/strategy/wargame/` — wargame decision layer
+- `content/games/eu2/` — EU-style strategy map
+- `content/games/hex_logistics/` — hex-grid logistics loop
 - `ideas/IDEA.txt` — full digital twin / supply chain simulator design
 
 ### Build Variant
@@ -827,7 +825,7 @@ Python (Gymnasium, PyTorch) is the standard. Lurek2D's advantage: single binary,
 
 A developer rebuilds a classic arcade game (Pong, Tetris, Pac-Man, Space Invaders, Asteroids, Boulder Dash, Donkey Kong, Galaga, Snake) as a teaching exercise or portfolio piece, or creates an original 2D game inspired by the classics.
 
-The repo includes reference implementations in `content/games/arcade/` (11 titles) and `content/games/retro/` (12 titles including raycaster FPS, Lemmings, and Sensible Soccer). These serve as starting points and teaching artefacts.
+The repo includes reference implementations such as `content/games/cannon_fodder/`, `content/games/dungeon_crawler/`, and `content/games/sensible_soccer/`. These serve as starting points and teaching artefacts.
 
 ### Build Variant
 
@@ -868,7 +866,7 @@ Pico-8 and TIC-80 are popular for retro games but have artificial constraints (1
 
 ### Description
 
-A writer or small studio builds a dialogue-driven game: visual novel, courtroom drama, social deduction game, or narrative adventure. The repo includes reference implementations in `content/games/rpg/` (visual_novel, courtroom, dialog_demo, social_deduction, adventure).
+A writer or small studio builds a dialogue-driven game: visual novel, courtroom drama, social deduction game, or narrative adventure. Use `content/examples/dialog.lua` and `content/examples/scene.lua` for API-level references, then promote complete playable work to `content/games/<name>/`.
 
 The `library/dialog` and `library/narrative` Lureksome modules provide pre-built conversation graph and story state management.
 
@@ -913,7 +911,7 @@ The `library/dialog` and `library/narrative` Lureksome modules provide pre-built
 
 ### Description
 
-Physics-heavy sports or arcade games: golf, pinball, billiards, bowling, drift racing, ski jump, trajectory-based sports, boxing, tennis. The repo includes `content/games/sports/` (12 titles).
+Physics-heavy sports or arcade games: golf, pinball, billiards, bowling, drift racing, ski jump, trajectory-based sports, boxing, tennis. The repo includes `content/games/sensible_soccer/` as the current sports reference.
 
 The `rapier2d` physics backend handles rigid bodies, joints, and collision detection; the Lua API wraps this cleanly via `lurek.physics.*`.
 
@@ -1139,7 +1137,7 @@ A developer or researcher builds an interactive visualisation of a graph: networ
 
 ### Description
 
-A desktop application for personal finance management: budget tracking, expense categorisation, multi-year trend analysis, anomaly detection, and KPI dashboards. The repo includes a working reference implementation: `content/games/apps/household_finance_lab/` — a complete 5-person household finance dashboard with:
+A desktop application for personal finance management: budget tracking, expense categorisation, multi-year trend analysis, anomaly detection, and KPI dashboards. The repo includes a working reference implementation: `content/games/finance_app/` — a complete 5-person household finance dashboard with:
 
 - Deterministic CSV generation (5 years, 2021–2025, multiple transaction types)
 - In-memory SQL database (`LDatabase`) with parameterised queries from external `.sql` files
@@ -1193,7 +1191,7 @@ A desktop application for personal finance management: budget tracking, expense 
 
 A trader or analyst builds a real-time stock tracking dashboard: candlestick charts, technical indicators (SMA, EMA, RSI, Bollinger Bands), portfolio performance, watchlists, and price alerts. Data arrives via HTTP polling or WebSocket from a market data API (or a local mock).
 
-The `content/games/apps/README.md` explicitly documents "Stock Market Dashboard" as a target application.
+Use `content/games/finance_app/` as the current app-style dashboard reference.
 
 ### Build Variant
 
@@ -1227,7 +1225,7 @@ The `content/games/apps/README.md` explicitly documents "Stock Market Dashboard"
 
 ### Description
 
-An analyst or scientist builds an interactive data exploration tool: upload CSV/JSON, select chart type (bar, line, scatter, pie, heatmap), apply filters, zoom/pan, export. The `content/games/apps/README.md` documents "Data Visualization Studio" as a target application.
+An analyst or scientist builds an interactive data exploration tool: upload CSV/JSON, select chart type (bar, line, scatter, pie, heatmap), apply filters, zoom/pan, export. Use `content/games/finance_app/` and `content/examples/charts.lua` as current references.
 
 ### Build Variant
 
@@ -1262,7 +1260,7 @@ An analyst or scientist builds an interactive data exploration tool: upload CSV/
 
 ### Description
 
-An artist or developer builds a CPU-side image processing tool: apply filters (blur, sharpen, colour correction, edge detection), layer blending, pixel-level manipulation, batch processing across hundreds of files. The `content/games/apps/README.md` documents "Image Processing Workbench" as a target application.
+An artist or developer builds a CPU-side image processing tool: apply filters (blur, sharpen, colour correction, edge detection), layer blending, pixel-level manipulation, batch processing across hundreds of files. Use `content/examples/image.lua` as the current API reference before promoting a complete app to `content/games/<name>/`.
 
 ### Build Variant
 

@@ -960,8 +960,8 @@ LAISystem:buildContextReport(instruction, opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `instruction` | any |  |
-| `opts?` | any |  |
+| `instruction` | string | User instruction used to build the context report. |
+| `opts?` | table | Optional table containing instruction filters and agent selection. |
 
 **Returns**
 

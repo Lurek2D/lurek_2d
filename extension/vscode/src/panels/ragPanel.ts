@@ -344,11 +344,11 @@ export class RagPanel {
           clearResults();
           break;
         case "error":
-          setStatus(`Error: ${sanitizeText(message.error)}`);
+          setStatus("Error: " + sanitizeText(message.error));
           break;
         case "results":
           const results = Array.isArray(message.results) ? message.results : [];
-          setStatus(`${results.length} results found.`);
+          setStatus(String(results.length) + " results found.");
           clearResults();
           results.forEach((result) => {
             resultsDiv.appendChild(renderResult(result));

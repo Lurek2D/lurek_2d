@@ -633,7 +633,7 @@ impl LuaUserData for LuaMod {
         // -- runHook --
         /// Executes one registered hook under the mod's configured sandbox policy.
         /// @param | name | string | Hook name.
-        /// @return | any | Hook return values.
+        /// @return | table | Hook return values passed through from Lua.
         methods.add_method("runHook", |lua, this, args: LuaMultiValue| {
             let mut values = args.into_iter();
             let hook_name = match values.next() {

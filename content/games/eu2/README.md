@@ -12,7 +12,7 @@ movement.
 ## Run
 
 ```powershell
-cargo run -- content/games/strategy/eu2
+cargo run -- content/games/eu2
 ```
 
 ## What Is Playable
@@ -62,7 +62,7 @@ cargo run -- content/games/strategy/eu2
 ## Validation
 
 ```powershell
-tools\python.cmd tools\validate\validate_game.py content/games/strategy/eu2
+tools\python.cmd tools\validate\validate_game.py content/games/eu2
 cargo test --test games_load_test -- --nocapture
 ```
 

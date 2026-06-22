@@ -497,7 +497,7 @@ LAISystem:addInstruction(key: string, text: string) -- Adds a named instruction 
 LAISystem:addSkill(name: string, keywords: table, prompt: string) -- Adds a keyword-gated system skill that Lurek auto-injects when the prompt overlaps with its keywords.
 LAISystem:agentCount() -> integer -- Returns the number of registered agents.
 LAISystem:buildContext(instruction: string, [opts]: table) -> string -- Builds and returns the full context string that would be sent for a given prompt.
-LAISystem:buildContextReport(instruction: any, [opts]: any) -> table -- Builds context and returns both the rendered text and provenance list.
+LAISystem:buildContextReport(instruction: string, [opts]: table) -> table -- Builds context and returns both the rendered text and provenance list.
 LAISystem:getDiagnostics() -> table -- Returns transport diagnostics for the AI system runtime.
 LAISystem:hasAgent(name: string) -> boolean -- Returns `true` if an agent with `name` is registered.
 LAISystem:hasInstruction(key: string) -> boolean -- Returns `true` if an instruction with `key` is registered.
@@ -1660,196 +1660,196 @@ LCameraWalker:update([dt]: number) -- Updates camera state and advances smooth i
 [Module page](Module-charts)
 
 ```lua
-lurek.charts.defaultPalette() -- Default palette.
-lurek.charts.newArea([config]: any) -- New area.
-lurek.charts.newBar([config]: any) -- New bar.
-lurek.charts.newHeatmap([config]: any) -- New heatmap.
-lurek.charts.newHistogram([config]: any) -- New histogram.
-lurek.charts.newLine([config]: any) -- New line.
-lurek.charts.newPie([config]: any) -- New pie.
-lurek.charts.newScatter([config]: any) -- New scatter.
-lurek.charts.seriesColor(index: any) -- Series color.
+lurek.charts.defaultPalette() -> table -- Returns the default chart color palette.
+lurek.charts.newArea([config]: table) -> LAreaChart -- Creates a new area chart userdata instance.
+lurek.charts.newBar([config]: table) -> LBarChart -- Creates a new bar chart userdata instance.
+lurek.charts.newHeatmap([config]: table) -> LHeatmapChart -- Creates a new heatmap chart userdata instance.
+lurek.charts.newHistogram([config]: table) -> LHistogramChart -- Creates a new histogram chart userdata instance.
+lurek.charts.newLine([config]: table) -> LLineChart -- Creates a new line chart userdata instance.
+lurek.charts.newPie([config]: table) -> LPieChart -- Creates a new pie chart userdata instance.
+lurek.charts.newScatter([config]: table) -> LScatterPlot -- Creates a new scatter plot userdata instance.
+lurek.charts.seriesColor(index: integer) -> table -- Returns the palette color for a series index.
 ```
 
 ### LAreaChart
 
 ```lua
-LAreaChart:addLayer(name: any, values: any, [color]: any) -- Adds one filled area layer from a numeric value list.
-LAreaChart:addLayerFromDataFrame() -- Builds one filled area layer from a dataframe value column.
-LAreaChart:addSeries(name: any, data: any, [color]: any) -- Adds a named area series from an array-style Lua table of points.
-LAreaChart:appendPoint(name: any, x: any, y: any, [color]: any) -- Appends one finite point to a named area series.
-LAreaChart:clear() -- Clears the state.
-LAreaChart:draw(x: any, y: any, [opts]: any) -- Draws the area chart at world or screen coordinates using optional transform options.
-LAreaChart:drawToImage(target: any) -- Draw to image.
-LAreaChart:getHeight() -- Returns the height.
-LAreaChart:getWidth() -- Returns the width.
-LAreaChart:render() -- Render.
-LAreaChart:renderImage() -- Render image.
-LAreaChart:setShowLegend(value: any) -- Sets the show legend.
-LAreaChart:setTitle(title: any) -- Sets the title.
-LAreaChart:setWindow([max_points]: any) -- Sets the window.
-LAreaChart:setXLabel(label: any) -- Sets the x label.
-LAreaChart:setXTickCount(count: any) -- Sets the x tick count.
-LAreaChart:setYLabel(label: any) -- Sets the y label.
-LAreaChart:setYMax(value: any) -- Sets the y max.
-LAreaChart:setYTickCount(count: any) -- Sets the y tick count.
-LAreaChart:type() -- Type.
-LAreaChart:typeOf(name: any) -- Type of.
+LAreaChart:addLayer(name: string, values: table, [color]: table) -- Adds one filled area layer from a numeric value list.
+LAreaChart:addLayerFromDataFrame(name: string, df: userdata, value_col: string, [color]: table, [opts]: table) -- Builds one filled area layer from a dataframe value column.
+LAreaChart:addSeries(name: string, data: table, [color]: table) -- Adds a named area series from an array-style Lua table of points.
+LAreaChart:appendPoint(name: string, x: number, y: number, [color]: table) -- Appends one finite point to a named area series.
+LAreaChart:clear() -- Clears all series and cached chart state.
+LAreaChart:draw(x: number, y: number, [opts]: table) -- Draws the area chart at world or screen coordinates using optional transform options.
+LAreaChart:drawToImage(target: userdata) -- Draws the rendered chart into an existing image.
+LAreaChart:getHeight() -> integer -- Returns the configured chart height in pixels.
+LAreaChart:getWidth() -> integer -- Returns the configured chart width in pixels.
+LAreaChart:render() -> integer, integer, string -- Renders the chart into raw RGBA image bytes.
+LAreaChart:renderImage() -- Renders the chart into a new LImage userdata.
+LAreaChart:setShowLegend(value: boolean) -- Controls whether the chart legend is rendered.
+LAreaChart:setTitle(title: string) -- Sets the chart title text shown in rendered output.
+LAreaChart:setWindow([max_points]: integer) -- Sets the maximum retained sample window for this chart.
+LAreaChart:setXLabel(label: string) -- Sets the X axis label text for rendered output.
+LAreaChart:setXTickCount(count: integer) -- Sets the number of X axis ticks drawn for this chart.
+LAreaChart:setYLabel(label: string) -- Sets the Y axis label text for rendered output.
+LAreaChart:setYMax(value: number) -- Sets the explicit Y axis maximum for chart scaling.
+LAreaChart:setYTickCount(count: integer) -- Sets the number of Y axis ticks drawn for this chart.
+LAreaChart:type() -> string -- Returns the runtime userdata type name for this chart.
+LAreaChart:typeOf(name: string) -> boolean -- Checks whether a type name matches this chart userdata.
 ```
 
 ### LBarChart
 
 ```lua
-LBarChart:addCategoriesFromDataFrame() -- Adds grouped bar categories by reading one label column and one or more value columns from a dataframe.
-LBarChart:addCategory(label: any, values: any) -- Adds one category label with a numeric value list for grouped bars.
-LBarChart:addSeries(name: any, data: any, [color]: any) -- Adds a named bar series from an array-style Lua table of values or points.
-LBarChart:clear() -- Clears the state.
-LBarChart:draw(x: any, y: any, [opts]: any) -- Draws the bar chart at world or screen coordinates using optional transform options.
-LBarChart:drawToImage(target: any) -- Draw to image.
-LBarChart:getHeight() -- Returns the height.
-LBarChart:getWidth() -- Returns the width.
-LBarChart:render() -- Render.
-LBarChart:renderImage() -- Render image.
-LBarChart:setBarWidth(width: any) -- Sets the bar width.
-LBarChart:setShowLegend(value: any) -- Sets the show legend.
-LBarChart:setTitle(title: any) -- Sets the title.
-LBarChart:setXLabel(label: any) -- Sets the x label.
-LBarChart:setXTickCount(count: any) -- Sets the x tick count.
-LBarChart:setYLabel(label: any) -- Sets the y label.
-LBarChart:setYTickCount(count: any) -- Sets the y tick count.
-LBarChart:type() -- Type.
-LBarChart:typeOf(name: any) -- Type of.
+LBarChart:addCategoriesFromDataFrame(df: userdata, label_col: string, value_cols: table, [opts]: table) -- Adds grouped bar categories by reading one label column and one or more value columns from a dataframe.
+LBarChart:addCategory(label: string, values: table) -- Adds one category label with a numeric value list for grouped bars.
+LBarChart:addSeries(name: string, data: table, [color]: table) -- Adds a named bar series from an array-style Lua table of values or points.
+LBarChart:clear() -- Clears all series and cached chart state.
+LBarChart:draw(x: number, y: number, [opts]: table) -- Draws the bar chart at world or screen coordinates using optional transform options.
+LBarChart:drawToImage(target: userdata) -- Draws the rendered chart into an existing image.
+LBarChart:getHeight() -> integer -- Returns the configured chart height in pixels.
+LBarChart:getWidth() -> integer -- Returns the configured chart width in pixels.
+LBarChart:render() -> integer, integer, string -- Renders the chart into raw RGBA image bytes.
+LBarChart:renderImage() -- Renders the chart into a new LImage userdata.
+LBarChart:setBarWidth(width: number) -- Sets the rendered width used for each bar.
+LBarChart:setShowLegend(value: boolean) -- Controls whether the chart legend is rendered.
+LBarChart:setTitle(title: string) -- Sets the chart title text shown in rendered output.
+LBarChart:setXLabel(label: string) -- Sets the X axis label text for rendered output.
+LBarChart:setXTickCount(count: integer) -- Sets the number of X axis ticks drawn for this chart.
+LBarChart:setYLabel(label: string) -- Sets the Y axis label text for rendered output.
+LBarChart:setYTickCount(count: integer) -- Sets the number of Y axis ticks drawn for this chart.
+LBarChart:type() -> string -- Returns the runtime userdata type name for this chart.
+LBarChart:typeOf(name: string) -> boolean -- Checks whether a type name matches this chart userdata.
 ```
 
 ### LHeatmapChart
 
 ```lua
-LHeatmapChart:clear() -- Clears the state.
-LHeatmapChart:clearValueRange() -- Clears value range.
-LHeatmapChart:draw(x: any, y: any, [opts]: any) -- Draws the heatmap at world or screen coordinates using optional transform options.
-LHeatmapChart:drawToImage(target: any) -- Draw to image.
-LHeatmapChart:getHeight() -- Returns the height.
-LHeatmapChart:getWidth() -- Returns the width.
-LHeatmapChart:render() -- Render.
-LHeatmapChart:renderImage() -- Render image.
-LHeatmapChart:resize(rows: any, cols: any) -- Resize.
-LHeatmapChart:setCell(row: any, col: any, value: any) -- Sets the cell.
-LHeatmapChart:setColorRange(low: any, high: any) -- Sets the low and high RGBA colors used for the heatmap gradient.
-LHeatmapChart:setColumnLabels(labels: any) -- Sets the column labels.
-LHeatmapChart:setMatrix(matrix: any, [row_labels]: any, [col_labels]: any) -- Replaces the heatmap contents from a numeric matrix with optional row and column labels.
-LHeatmapChart:setMatrixFromDataFrame() -- Builds the heatmap contents from dataframe row, column, and value fields.
-LHeatmapChart:setRowLabels(labels: any) -- Sets the row labels.
-LHeatmapChart:setShowLegend(value: any) -- Sets the show legend.
-LHeatmapChart:setShowValues(value: any) -- Sets the show values.
-LHeatmapChart:setTitle(title: any) -- Sets the title.
-LHeatmapChart:setValueRange(min: any, max: any) -- Sets the value range.
-LHeatmapChart:type() -- Type.
-LHeatmapChart:typeOf(name: any) -- Type of.
+LHeatmapChart:clear() -- Clears all series and cached chart state.
+LHeatmapChart:clearValueRange() -- Clears the explicit heatmap value range.
+LHeatmapChart:draw(x: number, y: number, [opts]: table) -- Draws the heatmap at world or screen coordinates using optional transform options.
+LHeatmapChart:drawToImage(target: userdata) -- Draws the rendered chart into an existing image.
+LHeatmapChart:getHeight() -> integer -- Returns the configured chart height in pixels.
+LHeatmapChart:getWidth() -> integer -- Returns the configured chart width in pixels.
+LHeatmapChart:render() -> integer, integer, string -- Renders the chart into raw RGBA image bytes.
+LHeatmapChart:renderImage() -- Renders the chart into a new LImage userdata.
+LHeatmapChart:resize(rows: integer, cols: integer) -- Resizes the heatmap grid dimensions.
+LHeatmapChart:setCell(row: integer, col: integer, value: number) -- Sets a numeric heatmap cell value by row and column.
+LHeatmapChart:setColorRange(low: table, high: table) -- Sets the low and high RGBA colors used for the heatmap gradient.
+LHeatmapChart:setColumnLabels(labels: table) -- Sets labels displayed for heatmap columns.
+LHeatmapChart:setMatrix(matrix: table, [row_labels]: table, [col_labels]: table) -- Replaces the heatmap contents from a numeric matrix with optional row and column labels.
+LHeatmapChart:setMatrixFromDataFrame(df: userdata, row_col: string, col_col: string, value_col: string, [opts]: table) -- Builds the heatmap contents from dataframe row, column, and value fields.
+LHeatmapChart:setRowLabels(labels: table) -- Sets labels displayed for heatmap rows.
+LHeatmapChart:setShowLegend(value: boolean) -- Controls whether the chart legend is rendered.
+LHeatmapChart:setShowValues(value: boolean) -- Controls whether heatmap cell values are rendered.
+LHeatmapChart:setTitle(title: string) -- Sets the chart title text shown in rendered output.
+LHeatmapChart:setValueRange(min: number, max: number) -- Sets the explicit heatmap value range.
+LHeatmapChart:type() -> string -- Returns the runtime userdata type name for this chart.
+LHeatmapChart:typeOf(name: string) -> boolean -- Checks whether a type name matches this chart userdata.
 ```
 
 ### LHistogramChart
 
 ```lua
-LHistogramChart:addSeries(name: any, values: any, [color]: any) -- Adds a named histogram sample series from a numeric value list.
-LHistogramChart:addSeriesFromDataFrame() -- Builds a named histogram sample series from one dataframe value column.
-LHistogramChart:appendValue(name: any, value: any, [color]: any) -- Appends one finite numeric sample to a named histogram series.
-LHistogramChart:clear() -- Clears the state.
-LHistogramChart:clearRange() -- Clears range.
-LHistogramChart:draw(x: any, y: any, [opts]: any) -- Draws the histogram at world or screen coordinates using optional transform options.
-LHistogramChart:drawToImage(target: any) -- Draw to image.
-LHistogramChart:getHeight() -- Returns the height.
-LHistogramChart:getWidth() -- Returns the width.
-LHistogramChart:render() -- Render.
-LHistogramChart:renderImage() -- Render image.
-LHistogramChart:replaceSeries(name: any, values: any, [color]: any) -- Replaces a named histogram sample series with a new numeric value list.
-LHistogramChart:setBinCount(bins: any) -- Sets the bin count.
-LHistogramChart:setDensity(enabled: any) -- Sets the density.
-LHistogramChart:setRange(min: any, max: any) -- Sets the range.
-LHistogramChart:setShowLegend(value: any) -- Sets the show legend.
-LHistogramChart:setTitle(title: any) -- Sets the title.
-LHistogramChart:setWindow([max_points]: any) -- Sets the window.
-LHistogramChart:setXLabel(label: any) -- Sets the x label.
-LHistogramChart:setXTickCount(count: any) -- Sets the x tick count.
-LHistogramChart:setYLabel(label: any) -- Sets the y label.
-LHistogramChart:setYTickCount(count: any) -- Sets the y tick count.
-LHistogramChart:type() -- Type.
-LHistogramChart:typeOf(name: any) -- Type of.
+LHistogramChart:addSeries(name: string, data: table, [color]: table) -- Adds a named histogram sample series from a numeric value list.
+LHistogramChart:addSeriesFromDataFrame(name: string, df: userdata, x_col: string, y_col: string, [color]: table, [opts]: table) -- Builds a named histogram sample series from one dataframe value column.
+LHistogramChart:appendValue(name: string, value: number, [color]: table) -- Appends one finite numeric sample to a named histogram series.
+LHistogramChart:clear() -- Clears all series and cached chart state.
+LHistogramChart:clearRange() -- Clears the explicit histogram value range.
+LHistogramChart:draw(x: number, y: number, [opts]: table) -- Draws the histogram at world or screen coordinates using optional transform options.
+LHistogramChart:drawToImage(target: userdata) -- Draws the rendered chart into an existing image.
+LHistogramChart:getHeight() -> integer -- Returns the configured chart height in pixels.
+LHistogramChart:getWidth() -> integer -- Returns the configured chart width in pixels.
+LHistogramChart:render() -> integer, integer, string -- Renders the chart into raw RGBA image bytes.
+LHistogramChart:renderImage() -- Renders the chart into a new LImage userdata.
+LHistogramChart:replaceSeries(name: string, data: table, [color]: table) -- Replaces a named histogram sample series with a new numeric value list.
+LHistogramChart:setBinCount(bins: integer) -- Sets the number of histogram bins used for samples.
+LHistogramChart:setDensity(enabled: boolean) -- Controls whether histogram bins render as density values.
+LHistogramChart:setRange(min: number, max: number) -- Sets the explicit histogram value range.
+LHistogramChart:setShowLegend(value: boolean) -- Controls whether the chart legend is rendered.
+LHistogramChart:setTitle(title: string) -- Sets the chart title text shown in rendered output.
+LHistogramChart:setWindow([max_points]: integer) -- Sets the maximum retained sample window for this chart.
+LHistogramChart:setXLabel(label: string) -- Sets the X axis label text for rendered output.
+LHistogramChart:setXTickCount(count: integer) -- Sets the number of X axis ticks drawn for this chart.
+LHistogramChart:setYLabel(label: string) -- Sets the Y axis label text for rendered output.
+LHistogramChart:setYTickCount(count: integer) -- Sets the number of Y axis ticks drawn for this chart.
+LHistogramChart:type() -> string -- Returns the runtime userdata type name for this chart.
+LHistogramChart:typeOf(name: string) -> boolean -- Checks whether a type name matches this chart userdata.
 ```
 
 ### LLineChart
 
 ```lua
-LLineChart:addSeries(name: any, data: any, [color]: any) -- Adds a named line series from an array-style Lua table of points.
-LLineChart:addSeriesFromDataFrame() -- Builds a named line series from x and y columns in a dataframe.
-LLineChart:appendPoint(name: any, x: any, y: any, [color]: any) -- Appends one finite point to a named line series.
-LLineChart:clear() -- Clears the state.
-LLineChart:draw(x: any, y: any, [opts]: any) -- Draws the line chart at world or screen coordinates using optional transform options.
-LLineChart:drawToImage(target: any) -- Draw to image.
-LLineChart:getHeight() -- Returns the height.
-LLineChart:getWidth() -- Returns the width.
-LLineChart:nearest(x: any, y: any) -- Nearest.
-LLineChart:render() -- Render.
-LLineChart:renderImage() -- Render image.
-LLineChart:replaceSeries(name: any, data: any, [color]: any) -- Replaces a named line series with a new array-style Lua table of points.
-LLineChart:setShowLegend(value: any) -- Sets the show legend.
-LLineChart:setTitle(title: any) -- Sets the title.
-LLineChart:setWindow([max_points]: any) -- Sets the window.
-LLineChart:setXLabel(label: any) -- Sets the x label.
-LLineChart:setXMax(value: any) -- Sets the x max.
-LLineChart:setXTickCount(count: any) -- Sets the x tick count.
-LLineChart:setYLabel(label: any) -- Sets the y label.
-LLineChart:setYMax(value: any) -- Sets the y max.
-LLineChart:setYTickCount(count: any) -- Sets the y tick count.
-LLineChart:type() -- Type.
-LLineChart:typeOf(name: any) -- Type of.
+LLineChart:addSeries(name: string, data: table, [color]: table) -- Adds a named line series from an array-style Lua table of points.
+LLineChart:addSeriesFromDataFrame(name: string, df: userdata, x_col: string, y_col: string, [color]: table, [opts]: table) -- Builds a named line series from x and y columns in a dataframe.
+LLineChart:appendPoint(name: string, x: number, y: number, [color]: table) -- Appends one finite point to a named line series.
+LLineChart:clear() -- Clears all series and cached chart state.
+LLineChart:draw(x: number, y: number, [opts]: table) -- Draws the line chart at world or screen coordinates using optional transform options.
+LLineChart:drawToImage(target: userdata) -- Draws the rendered chart into an existing image.
+LLineChart:getHeight() -> integer -- Returns the configured chart height in pixels.
+LLineChart:getWidth() -> integer -- Returns the configured chart width in pixels.
+LLineChart:nearest(x: number, y: number) -> table -- Finds the nearest plotted point to screen coordinates.
+LLineChart:render() -> integer, integer, string -- Renders the chart into raw RGBA image bytes.
+LLineChart:renderImage() -- Renders the chart into a new LImage userdata.
+LLineChart:replaceSeries(name: string, data: table, [color]: table) -- Replaces a named line series with a new array-style Lua table of points.
+LLineChart:setShowLegend(value: boolean) -- Controls whether the chart legend is rendered.
+LLineChart:setTitle(title: string) -- Sets the chart title text shown in rendered output.
+LLineChart:setWindow([max_points]: integer) -- Sets the maximum retained sample window for this chart.
+LLineChart:setXLabel(label: string) -- Sets the X axis label text for rendered output.
+LLineChart:setXMax(value: number) -- Sets the explicit X axis maximum for chart scaling.
+LLineChart:setXTickCount(count: integer) -- Sets the number of X axis ticks drawn for this chart.
+LLineChart:setYLabel(label: string) -- Sets the Y axis label text for rendered output.
+LLineChart:setYMax(value: number) -- Sets the explicit Y axis maximum for chart scaling.
+LLineChart:setYTickCount(count: integer) -- Sets the number of Y axis ticks drawn for this chart.
+LLineChart:type() -> string -- Returns the runtime userdata type name for this chart.
+LLineChart:typeOf(name: string) -> boolean -- Checks whether a type name matches this chart userdata.
 ```
 
 ### LPieChart
 
 ```lua
-LPieChart:addSegment(label: any, value: any, [color]: any) -- Adds one pie segment with a non-negative value.
-LPieChart:addSegmentsFromDataFrame() -- Adds pie segments by reading label and value columns from a dataframe.
-LPieChart:addSlice(label: any, value: any, [color]: any) -- Legacy alias that adds one pie slice with a non-negative value.
-LPieChart:clear() -- Clears the state.
-LPieChart:draw(x: any, y: any, [opts]: any) -- Draws the pie chart at world or screen coordinates using optional transform options.
-LPieChart:drawToImage(target: any) -- Draw to image.
-LPieChart:getHeight() -- Returns the height.
-LPieChart:getWidth() -- Returns the width.
-LPieChart:render() -- Render.
-LPieChart:renderImage() -- Render image.
-LPieChart:setShowLegend(value: any) -- Sets the show legend.
-LPieChart:setTitle(title: any) -- Sets the title.
-LPieChart:type() -- Type.
-LPieChart:typeOf(name: any) -- Type of.
+LPieChart:addSegment(label: string, value: number, [color]: table) -- Adds one pie segment with a non-negative value.
+LPieChart:addSegmentsFromDataFrame(df: userdata, label_col: string, value_col: string, [opts]: table) -- Adds pie segments by reading label and value columns from a dataframe.
+LPieChart:addSlice(label: string, value: number, [color]: table) -- Legacy alias that adds one pie slice with a non-negative value.
+LPieChart:clear() -- Clears all series and cached chart state.
+LPieChart:draw(x: number, y: number, [opts]: table) -- Draws the pie chart at world or screen coordinates using optional transform options.
+LPieChart:drawToImage(target: userdata) -- Draws the rendered chart into an existing image.
+LPieChart:getHeight() -> integer -- Returns the configured chart height in pixels.
+LPieChart:getWidth() -> integer -- Returns the configured chart width in pixels.
+LPieChart:render() -> integer, integer, string -- Renders the chart into raw RGBA image bytes.
+LPieChart:renderImage() -- Renders the chart into a new LImage userdata.
+LPieChart:setShowLegend(value: boolean) -- Controls whether the chart legend is rendered.
+LPieChart:setTitle(title: string) -- Sets the chart title text shown in rendered output.
+LPieChart:type() -> string -- Returns the runtime userdata type name for this chart.
+LPieChart:typeOf(name: string) -> boolean -- Checks whether a type name matches this chart userdata.
 ```
 
 ### LScatterPlot
 
 ```lua
-LScatterPlot:addSeries(name: any, data: any, [color]: any) -- Adds a named scatter series from an array-style Lua table of points.
-LScatterPlot:addSeriesFromDataFrame() -- Builds a named scatter series from x and y columns in a dataframe.
-LScatterPlot:appendPoint(name: any, x: any, y: any, [color]: any) -- Appends one finite point to a named scatter series.
-LScatterPlot:clear() -- Clears the state.
-LScatterPlot:draw(x: any, y: any, [opts]: any) -- Draws the scatter plot at world or screen coordinates using optional transform options.
-LScatterPlot:drawToImage(target: any) -- Draw to image.
-LScatterPlot:getHeight() -- Returns the height.
-LScatterPlot:getWidth() -- Returns the width.
-LScatterPlot:nearest(x: any, y: any) -- Nearest.
-LScatterPlot:render() -- Render.
-LScatterPlot:renderImage() -- Render image.
-LScatterPlot:replaceSeries(name: any, data: any, [color]: any) -- Replaces a named scatter series with a new array-style Lua table of points.
-LScatterPlot:setDotRadius(radius: any) -- Sets the dot radius.
-LScatterPlot:setShowLegend(value: any) -- Sets the show legend.
-LScatterPlot:setTitle(title: any) -- Sets the title.
-LScatterPlot:setWindow([max_points]: any) -- Sets the window.
-LScatterPlot:setXLabel(label: any) -- Sets the x label.
-LScatterPlot:setXRange(min_x: any, max_x: any) -- Sets the x range.
-LScatterPlot:setXTickCount(count: any) -- Sets the x tick count.
-LScatterPlot:setYLabel(label: any) -- Sets the y label.
-LScatterPlot:setYRange(min_y: any, max_y: any) -- Sets the y range.
-LScatterPlot:setYTickCount(count: any) -- Sets the y tick count.
-LScatterPlot:type() -- Type.
-LScatterPlot:typeOf(name: any) -- Type of.
+LScatterPlot:addSeries(name: string, data: table, [color]: table) -- Adds a named scatter series from an array-style Lua table of points.
+LScatterPlot:addSeriesFromDataFrame(name: string, df: userdata, x_col: string, y_col: string, [color]: table, [opts]: table) -- Builds a named scatter series from x and y columns in a dataframe.
+LScatterPlot:appendPoint(name: string, x: number, y: number, [color]: table) -- Appends one finite point to a named scatter series.
+LScatterPlot:clear() -- Clears all series and cached chart state.
+LScatterPlot:draw(x: number, y: number, [opts]: table) -- Draws the scatter plot at world or screen coordinates using optional transform options.
+LScatterPlot:drawToImage(target: userdata) -- Draws the rendered chart into an existing image.
+LScatterPlot:getHeight() -> integer -- Returns the configured chart height in pixels.
+LScatterPlot:getWidth() -> integer -- Returns the configured chart width in pixels.
+LScatterPlot:nearest(x: number, y: number) -> table -- Finds the nearest plotted point to screen coordinates.
+LScatterPlot:render() -> integer, integer, string -- Renders the chart into raw RGBA image bytes.
+LScatterPlot:renderImage() -- Renders the chart into a new LImage userdata.
+LScatterPlot:replaceSeries(name: string, data: table, [color]: table) -- Replaces a named scatter series with a new array-style Lua table of points.
+LScatterPlot:setDotRadius(radius: number) -- Sets the rendered radius used for scatter dots.
+LScatterPlot:setShowLegend(value: boolean) -- Controls whether the chart legend is rendered.
+LScatterPlot:setTitle(title: string) -- Sets the chart title text shown in rendered output.
+LScatterPlot:setWindow([max_points]: integer) -- Sets the maximum retained sample window for this chart.
+LScatterPlot:setXLabel(label: string) -- Sets the X axis label text for rendered output.
+LScatterPlot:setXRange(min_x: number, max_x: number) -- Sets the explicit X axis range for plotted points.
+LScatterPlot:setXTickCount(count: integer) -- Sets the number of X axis ticks drawn for this chart.
+LScatterPlot:setYLabel(label: string) -- Sets the Y axis label text for rendered output.
+LScatterPlot:setYRange(min_y: number, max_y: number) -- Sets the explicit Y axis range for plotted points.
+LScatterPlot:setYTickCount(count: integer) -- Sets the number of Y axis ticks drawn for this chart.
+LScatterPlot:type() -> string -- Returns the runtime userdata type name for this chart.
+LScatterPlot:typeOf(name: string) -> boolean -- Checks whether a type name matches this chart userdata.
 ```
 
 ## lurek.cinematic
@@ -2707,7 +2707,7 @@ LQueryView:typeOf(name: string) -> boolean -- Returns whether this cached query-
 ```lua
 LRelationshipManager:adjustValue(a: integer, b: integer, delta: number) -- Adds a delta to the numeric relationship value between two entity ids.
 LRelationshipManager:defineType(name: string, levels: string[], [default_level]: string) -- Defines a named relationship type with ordered level labels and an optional default level for new pairs.
-LRelationshipManager:getLevel(a: integer, b: integer, type_name: string) -> string? -- Returns the effective named level for one relationship type on a pair, falling back to the type default whe...
+LRelationshipManager:getLevel(a: integer, b: integer, type_name: string) -> string -- Returns the effective named level for one relationship type on a pair, falling back to the type default whe...
 LRelationshipManager:getValue(a: integer, b: integer) -> number -- Returns the numeric relationship value between two entity ids.
 LRelationshipManager:pairCount() -> integer -- Returns how many entity-id pairs currently have tracked relationship data.
 LRelationshipManager:removePair(a: integer, b: integer) -- Removes all tracked relationship data between two entity ids.
@@ -3327,12 +3327,12 @@ LGlobe:setLayerAlpha(name: string, alpha: number) -> boolean -- Sets render laye
 LGlobe:setLayerColor(layer: string, id: integer, r: number, g: number, b: number, a: number) -> boolean -- Sets a province color override inside a render layer.
 LGlobe:setLayerVisible(name: string, vis: boolean) -> boolean -- Shows or hides a render layer. This method is available to Lua scripts.
 LGlobe:setMarkerAttr(id: integer, key: string, val: string) -> boolean -- Sets a string attribute on a marker.
-LGlobe:setMarkerColor(id: integer, r: number, g: number, b: number, [a]: number) -> boolean -- Sets marker tint color.
+LGlobe:setMarkerColor(id: integer, r: number, g: number, b: number, [a]: number) -> boolean -- Sets the RGBA tint color used to render a marker.
 LGlobe:setMarkerIconTexture(id: integer, [tex_raw]: integer) -> boolean -- Assigns or clears a raw texture handle for a marker icon.
 LGlobe:setMarkerPulse(id: integer, hz: number, amp: number) -> boolean -- Sets marker pulse frequency and amplitude.
 LGlobe:setMarkerRotation(id: integer, dps: number) -> boolean -- Sets marker rotation speed. This method is available to Lua scripts.
 LGlobe:setMarkerShape(id: integer, shape: string) -> boolean -- Sets the vector fallback shape used by a marker.
-LGlobe:setMarkerSize(id: integer, size: number) -> boolean -- Sets marker size in screen units.
+LGlobe:setMarkerSize(id: integer, size: number) -> boolean -- Sets the marker size in screen units for rendering.
 LGlobe:setMarkerVisible(id: integer, vis: boolean) -> boolean -- Shows or hides a marker. This method is available to Lua scripts.
 LGlobe:setProvinceAttr(id: integer, key: string, val: string) -> boolean -- Sets a string attribute on a province.
 LGlobe:setProvinceSector(id: integer, sector: string) -> boolean -- Assigns a province to a named sector.
@@ -3364,10 +3364,10 @@ LGlobeRegistry:typeOf(name: string) -> boolean -- Returns whether this registry 
 ```lua
 lurek.grep.jsonSearch(file: string, key: string) -> table -- Search a JSON file for every matching key name.
 lurek.grep.logSearch(file: string, level: string, pattern: string) -> table -- Search a structured log file by level and literal message pattern.
-lurek.grep.luaFilter() -> LFileFilter -- Create a filter for Lua files only.
+lurek.grep.luaFilter() -> LFileFilter -- Creates a file filter preconfigured for Lua files only.
 lurek.grep.newEngine() -> LGrepEngine -- Create a new grep engine with default settings.
 lurek.grep.newEngineOpts(opts: table) -> LGrepEngine -- Create a grep engine with custom options.
-lurek.grep.newFilter() -> LFileFilter -- Create an empty file filter.
+lurek.grep.newFilter() -> LFileFilter -- Creates an empty file filter for custom include rules.
 lurek.grep.search(path: string, pattern: string) -> table -- Search a directory for a literal pattern in game content files.
 ```
 
@@ -4813,7 +4813,7 @@ LMod:hasHook(name: string) -> boolean -- Returns whether a hook name is register
 LMod:isEnabled() -> boolean -- Returns whether the mod is enabled.
 LMod:isLoaded() -> boolean -- Returns whether the mod is loaded. This method is available to Lua scripts.
 LMod:releaseRefs() -- Releases stored Lua registry references for hooks and config.
-LMod:runHook(name: string) -> any -- Executes one registered hook under the mod's configured sandbox policy.
+LMod:runHook(name: string) -> table -- Executes one registered hook under the mod's configured sandbox policy.
 LMod:setApiVersion(api_version: string) -- Sets the required API version string.
 LMod:setCapabilities(caps: table) -- Sets capability names from an array table.
 LMod:setConfig(value: any) -- Stores a Lua config value for this mod.
@@ -6300,7 +6300,7 @@ lurek.raycaster.applyLitShade(baseShade: number, r: number, g: number, b: number
 lurek.raycaster.buildMultiLevelScene(params: table, levels: table|LMultiLevelGrid, [lights]: table, [sprites]: table|LSpriteManager, [wallTextures]: table, [models]: table) -> integer -- Builds a multilevel raycaster scene from a stack of plain Lua level tables.
 lurek.raycaster.buildMultiLevelSceneFromAdapter(params: table, levels: table|LMultiLevelGrid, adapter: LSceneAdapter, [wallTextures]: table) -> integer -- Builds a multilevel raycaster scene from a stack of plain Lua level tables using a runtime scene adapter.
 lurek.raycaster.distanceShade(distance: number, maxDistance: number) -> number -- Returns a brightness multiplier (0.0..1.0) based on distance for fog/darkness falloff.
-lurek.raycaster.getLastBuildStats() -> table? -- Returns stats for the last stored raycaster scene build.
+lurek.raycaster.getLastBuildStats() -> table -- Returns stats for the last stored raycaster scene build.
 lurek.raycaster.new(w: integer, h: integer) -> LRaycaster -- Creates a new raycaster map with the given grid dimensions.
 lurek.raycaster.newDoorManager() -> LDoorManager -- Creates a new door manager for tracking and animating sliding doors.
 lurek.raycaster.newHeightMap(w: integer, h: integer) -> LHeightMap -- Creates a new height map for variable floor/ceiling heights across the grid.
@@ -6448,7 +6448,7 @@ LRaycaster:width() -> integer -- Returns the map width in grid cells.
 
 ```lua
 LSceneAdapter:addDirectionalSprite(x: number, y: number, front: LImage|integer, right: LImage|integer, back: LImage|integer, [left]: LImage|integer, [opts]: table) -- Adds a static directional billboard sprite entry.
-LSceneAdapter:addLight(x: number, y: number, radius: number, [opts]: table) -- Adds a static point light entry.
+LSceneAdapter:addLight(x: number, y: number, radius: number, [opts]: table) -- Adds a static point light entry to the adapter.
 LSceneAdapter:addModel(model: LObjModel, x: number, y: number, [opts]: table) -- Adds a static OBJ model instance entry.
 LSceneAdapter:addSprite(x: number, y: number, texture: LImage|integer, [opts]: table) -- Adds a static billboard sprite entry.
 LSceneAdapter:bindBodyDirectionalSprite(body: LBody, front: LImage|integer, right: LImage|integer, back: LImage|integer, [left]: LImage|integer, [opts]: table) -- Binds a directional billboard sprite to a live physics body.
@@ -6457,7 +6457,7 @@ LSceneAdapter:bindBodyModel(body: LBody, model: LObjModel, [opts]: table) -- Bin
 LSceneAdapter:bindBodySprite(body: LBody, texture: LImage|integer, [opts]: table) -- Binds a billboard sprite to a live physics body.
 LSceneAdapter:clear() -- Removes every tracked entry from the adapter.
 LSceneAdapter:clearLights() -- Removes every tracked light entry from the adapter.
-LSceneAdapter:clearModels() -- Clears models.
+LSceneAdapter:clearModels() -- Clears all loaded model entries from the adapter.
 LSceneAdapter:clearSprites() -- Removes every tracked sprite entry from the adapter.
 LSceneAdapter:sceneInputs() -> table -- Resolves the current runtime snapshot into `{ lights, sprites, models }` tables.
 LSceneAdapter:type() -> string -- Returns the type name of this object.
@@ -7188,8 +7188,8 @@ lurek.terminal.resetCompletion() -- Resets the completion cycling state so the n
 lurek.terminal.scrollbackLen(terminal: LTerminal) -> integer -- Returns the number of lines currently stored in the terminal scrollback buffer.
 lurek.terminal.setScrollbackCap(terminal: LTerminal, cap: integer) -- Sets the maximum number of lines retained in the terminal scrollback buffer. Older lines are discarded when...
 lurek.terminal.stripAnsi(text: string) -> string -- Removes all ANSI escape sequences from a string, returning plain text.
-lurek.terminal.tryPushCmdHistory(terminal: LTerminal, cmd: string) -> boolean, string? -- Strictly appends a command string to the terminal command history.
-lurek.terminal.tryPushScrollback(terminal: LTerminal, line: string) -> boolean, string? -- Strictly appends a line of text to the terminal scrollback buffer.
+lurek.terminal.tryPushCmdHistory(terminal: LTerminal, cmd: string) -> boolean, string -- Strictly appends a command string to the terminal command history.
+lurek.terminal.tryPushScrollback(terminal: LTerminal, line: string) -> boolean, string -- Strictly appends a line of text to the terminal scrollback buffer.
 ```
 
 ### LTerminal
@@ -7219,10 +7219,10 @@ LTerminal:setCellSize(w: number, h: number) -- Overrides the cell width and heig
 LTerminal:setFocus([widget]: LWidget) -- Sets which widget currently has keyboard focus, or clears focus when nil is passed.
 LTerminal:setFont(height: integer) -- Selects the nearest built-in bitmap font by pixel height and refits the window to the terminal grid.
 LTerminal:textinput(text: string) -> boolean -- Forwards a text input event to the terminal for character entry into focused widgets.
-LTerminal:trySet(col: integer, row: integer, ch: string|number, [fr]: number, [fg]: number, [fb]: number, [fa]: number, [br]: number, [bg]: number, [bb]: number, [ba]: number) -> boolean, string? -- Strictly writes a character with colors to a specific cell and returns an explicit error string on invalid...
+LTerminal:trySet(col: integer, row: integer, ch: string|number, [fr]: number, [fg]: number, [fb]: number, [fa]: number, [br]: number, [bg]: number, [bb]: number, [ba]: number) -> boolean, string -- Strictly writes a character with colors to a specific cell and returns an explicit error string on invalid...
 LTerminal:type() -> string -- Returns the type name string "LTerminal".
 LTerminal:typeOf(name: string) -> boolean -- Checks whether this object matches a given type name. Accepts "LTerminal" or "Object".
-LTerminal:validateWidgets() -> boolean, string[]? -- Validates panel child ownership, stale references, cycles, and the current focus target.
+LTerminal:validateWidgets() -> boolean, table -- Validates panel child ownership, stale references, cycles, and the current focus target.
 ```
 
 ### LWidget
@@ -7263,7 +7263,7 @@ LWidget:setTag(tag: string) -- Assigns an arbitrary string tag to the widget for
 LWidget:setText(text: string) -- Sets the display text of a label, button, or text box widget. Fires the onChange callback if the text actua...
 LWidget:setTitle(title: string) -- Sets the title text displayed in the border of a border or panel widget.
 LWidget:setVisible(visible: boolean) -- Controls whether the widget is drawn and receives input events.
-LWidget:trySetText(text: string) -> boolean, string? -- Strictly sets widget text and returns an explicit error string instead of silently truncating.
+LWidget:trySetText(text: string) -> boolean, string -- Strictly sets widget text and returns an explicit error string instead of silently truncating.
 LWidget:type() -> string -- Returns the type name string "LWidget".
 LWidget:typeOf(name: string) -> boolean -- Checks whether this object matches a given type name. Accepts "LWidget" or "Object".
 ```
@@ -7559,11 +7559,11 @@ LTileMap:sweepRect(layer: integer, x: number, y: number, w: number, h: number, d
 LTileMap:tileToWorld(tx: integer, ty: integer) -> number -- Converts tile-grid coordinates to world-space pixel coordinates (top-left corner of the tile).
 LTileMap:tileTypeIndex(layer: integer) -> table -- Builds an index mapping each GID present on a layer to an array of `{x, y}` positions.
 LTileMap:toNavGrid(layer: integer, gids: table) -> boolean[] -- Converts a layer into a 2D boolean grid for pathfinding. Tiles with GIDs in the given list are marked walka...
-LTileMap:tryAddLayer(name: string, w: integer, h: integer) -> integer? -- Creates a new tile layer and returns `nil, error` instead of throwing on invalid dimensions or layer limits.
-LTileMap:tryGetTile(layer: integer, x: integer, y: integer) -> integer? -- Returns the tile GID at a specific grid position, or `nil, error` when the layer or coord is invalid.
+LTileMap:tryAddLayer(name: string, w: integer, h: integer) -> integer -- Creates a new tile layer and returns `nil, error` instead of throwing on invalid dimensions or layer limits.
+LTileMap:tryGetTile(layer: integer, x: integer, y: integer) -> integer -- Returns the tile GID at a specific grid position, or `nil, error` when the layer or coord is invalid.
 LTileMap:trySetTile(layer: integer, x: integer, y: integer, gid: integer) -> boolean -- Sets a tile and returns `false, error` instead of throwing on invalid layer or coordinate input.
-LTileMap:trySetTileTint(layer: any, x: any, y: any, r: any, g: any, b: any, a: any) -- Sets a per-cell tint override and returns `false, error` instead of throwing on invalid input.
-LTileMap:tryWorldToTile(wx: number, wy: number) -> integer? -- Converts world-space pixel coordinates to tile-grid coordinates, returning nils for negative or non-finite...
+LTileMap:trySetTileTint(layer: integer, x: integer, y: integer, r: number, g: number, b: number, a: number) -> boolean -- Sets a per-cell tint override and returns `false, error` instead of throwing on invalid input.
+LTileMap:tryWorldToTile(wx: number, wy: number) -> integer -- Converts world-space pixel coordinates to tile-grid coordinates, returning nils for negative or non-finite...
 LTileMap:type() -> string -- Returns the type name of this userdata.
 LTileMap:typeOf(name: string) -> boolean -- Checks whether this object matches the given type name.
 LTileMap:update(dt: number) -- Advances tile animations by the given delta time.

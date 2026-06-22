@@ -102,31 +102,31 @@ suite("MCP Tools — lurek2d.listExamples", () => {
     stubs.length = 0;
   });
 
-  test("returns non-empty list of example directories", async () => {
+  test("returns non-empty list of example files", async () => {
     stubs.push(stub(fs, "existsSync", () => true));
     stubs.push(stub(fs, "readdirSync", () => [
-      { name: "hello_world", isDirectory: () => true },
-      { name: "platformer", isDirectory: () => true },
+      { name: "render.lua", isFile: () => true },
+      { name: "audio.lua", isFile: () => true },
     ]));
 
     const handler = handleListExamples(WORKSPACE_ROOT);
     const result = await handler({});
 
-    assert.ok(result.includes("hello_world"));
-    assert.ok(result.includes("platformer"));
+    assert.ok(result.includes("render"));
+    assert.ok(result.includes("audio"));
   });
 
-  test("each entry is a directory name excluding files", async () => {
+  test("each entry is a Lua file stem excluding non-Lua files", async () => {
     stubs.push(stub(fs, "existsSync", () => true));
     stubs.push(stub(fs, "readdirSync", () => [
-      { name: "demo_game", isDirectory: () => true },
-      { name: "README.md", isDirectory: () => false },
+      { name: "scene.lua", isFile: () => true },
+      { name: "README.md", isFile: () => true },
     ]));
 
     const handler = handleListExamples(WORKSPACE_ROOT);
     const result = await handler({});
 
-    assert.ok(result.includes("demo_game"));
+    assert.ok(result.includes("scene"));
     assert.ok(!result.includes("README.md"));
   });
 
@@ -136,7 +136,7 @@ suite("MCP Tools — lurek2d.listExamples", () => {
     const handler = handleListExamples(WORKSPACE_ROOT);
     const result = await handler({});
 
-    assert.ok(result.includes("No showcase games found"));
+    assert.ok(result.includes("No examples found"));
   });
 });
 

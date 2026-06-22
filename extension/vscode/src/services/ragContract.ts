@@ -229,4 +229,8 @@ export function loadRagContract(workspaceRoot: string): RagContract {
   }
 }
 
+export function getRagContract(workspaceRoot: string): RagContract {
+  return loadRagContract(workspaceRoot);
+}
+
 export const DEFAULT_RAG_CONTRACT = cloneRagContract(BASE_RAG_CONTRACT);

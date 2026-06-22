@@ -730,7 +730,7 @@ pub fn compress_save_content_with_limits(
     plain: &str,
     limits: &SaveCompressionLimits,
 ) -> Result<String, SaveError> {
-    let plain_len = plain.as_bytes().len();
+    let plain_len = plain.len();
     enforce_compression_limit(
         "decompressed bytes",
         plain_len,
@@ -755,7 +755,7 @@ pub fn compress_save_content_with_limits(
         COMPRESSED_HEADER_SUFFIX
     );
     let out = format!("{}\nreturn \"{}\"\n", header, encoded);
-    enforce_compression_limit("raw bytes", out.as_bytes().len(), limits.max_raw_bytes)?;
+    enforce_compression_limit("raw bytes", out.len(), limits.max_raw_bytes)?;
     Ok(out)
 }
 
@@ -770,7 +770,7 @@ pub fn decompress_save_content_with_limits(
     raw: &str,
     limits: &SaveCompressionLimits,
 ) -> Result<String, SaveError> {
-    enforce_compression_limit("raw bytes", raw.as_bytes().len(), limits.max_raw_bytes)?;
+    enforce_compression_limit("raw bytes", raw.len(), limits.max_raw_bytes)?;
 
     let compressed_header = if raw.starts_with(COMPRESSED_HEADER_PREFIX) {
         Some(parse_compressed_header(raw)?)
@@ -812,11 +812,11 @@ pub fn decompress_save_content_with_limits(
     let text = String::from_utf8(bytes)
         .map_err(|error| SaveError::Compression(format!("utf8: {}", error)))?;
     if let Some(header) = compressed_header {
-        if header.size != text.as_bytes().len() {
+        if header.size != text.len() {
             return Err(SaveError::Integrity(format!(
                 "compressed header size mismatch: expected {} bytes, got {}",
                 header.size,
-                text.as_bytes().len()
+                text.len()
             )));
         }
         let actual = hash(HashAlgorithm::Sha256, text.as_bytes());
@@ -852,7 +852,7 @@ fn parse_save_string_with_limits(
     content: &str,
     limits: &SaveParseLimits,
 ) -> Result<String, SaveError> {
-    let bytes = content.as_bytes().len();
+    let bytes = content.len();
     if content.trim().is_empty() {
         return Err(SaveError::Parse("save file is empty".to_string()));
     }

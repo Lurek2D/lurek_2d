@@ -142,8 +142,8 @@ impl Drop for LuaJitGuard<'_> {
     }
 }
 
-fn with_timeout<'lua, Return>(
-    lua: &'lua Lua,
+fn with_timeout<Return>(
+    lua: &Lua,
     label: &str,
     timeout_ms: f32,
     policy: LuaExecutionPolicy,

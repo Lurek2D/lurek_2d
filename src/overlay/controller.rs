@@ -272,11 +272,7 @@ impl OverlayShaderPolicy {
                 trimmed
             )));
         }
-        if policy.allow_builtin_postfx_shaders
-            && BUILTIN_OVERLAY_SHADER_NAMES
-                .iter()
-                .any(|candidate| *candidate == trimmed)
-        {
+        if policy.allow_builtin_postfx_shaders && BUILTIN_OVERLAY_SHADER_NAMES.contains(&trimmed) {
             return Ok(());
         }
         Err(OverlayError::UnsupportedShader(trimmed.to_string()))
@@ -465,14 +461,14 @@ fn checked_debug_image_request(
     width: u32,
     height: u32,
 ) -> Result<(), OverlayError> {
-    let pixels = u64::from(width)
-        .checked_mul(u64::from(height))
-        .ok_or_else(|| OverlayError::DebugImageTooLarge {
+    let pixels = u64::from(width).checked_mul(u64::from(height)).ok_or(
+        OverlayError::DebugImageTooLarge {
             width,
             height,
             pixels: u64::MAX,
             bytes: usize::MAX,
-        })?;
+        },
+    )?;
     let bytes =
         ImageData::rgba_byte_len(width, height).map_err(|_| OverlayError::DebugImageTooLarge {
             width,
@@ -1649,7 +1645,7 @@ impl Overlay {
         panel_w: u32,
         height: u32,
     ) -> Result<ImageData, OverlayError> {
-        let total_w = panel_w.checked_mul(steps.len() as u32).ok_or_else(|| {
+        let total_w = panel_w.checked_mul(steps.len() as u32).ok_or({
             OverlayError::DebugImageTooLarge {
                 width: panel_w,
                 height,
@@ -1729,7 +1725,7 @@ impl Overlay {
         panel_w: u32,
         height: u32,
     ) -> Result<ImageData, OverlayError> {
-        let total_w = panel_w.checked_mul(steps.len() as u32).ok_or_else(|| {
+        let total_w = panel_w.checked_mul(steps.len() as u32).ok_or({
             OverlayError::DebugImageTooLarge {
                 width: panel_w,
                 height,

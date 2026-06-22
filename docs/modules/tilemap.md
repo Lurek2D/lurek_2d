@@ -7375,8 +7375,8 @@ LTileMap:tryAddLayer(name, w, h)
 
 | Type | Description |
 |------|-------------|
-| number? | Index of the new layer (1-based). |
-| string? | Error message when validation fails. |
+| number | Index of the new layer (1-based). |
+| string | Error message when validation fails. |
 
 **Example**
 
@@ -7412,8 +7412,8 @@ LTileMap:tryGetTile(layer, x, y)
 
 | Type | Description |
 |------|-------------|
-| number? | Global tile ID at that position. |
-| string? | Error message on failure. |
+| number | Global tile ID at that position. |
+| string | Error message on failure. |
 
 **Example**
 
@@ -7451,7 +7451,7 @@ LTileMap:trySetTile(layer, x, y, gid)
 | Type | Description |
 |------|-------------|
 | boolean | True on success. |
-| string? | Error message on failure. |
+| string | Error message on failure. |
 
 **Example**
 
@@ -7479,13 +7479,20 @@ LTileMap:trySetTileTint(layer, x, y, r, g, b, a)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `layer` | any |  |
-| `x` | any |  |
-| `y` | any |  |
-| `r` | any |  |
-| `g` | any |  |
-| `b` | any |  |
-| `a` | any |  |
+| `layer` | number | Layer index (1-based). |
+| `x` | number | Column (1-based). |
+| `y` | number | Row (1-based). |
+| `r` | number | Red tint channel. |
+| `g` | number | Green tint channel. |
+| `b` | number | Blue tint channel. |
+| `a` | number | Alpha tint channel. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True on success. |
+| string | Error message on failure. |
 
 **Example**
 
@@ -7521,8 +7528,8 @@ LTileMap:tryWorldToTile(wx, wy)
 
 | Type | Description |
 |------|-------------|
-| number? | Tile column (1-based). |
-| number? | Tile row (1-based). |
+| number | Tile column (1-based). |
+| number | Tile row (1-based). |
 
 **Example**
 

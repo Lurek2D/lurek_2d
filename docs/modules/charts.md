@@ -21,11 +21,17 @@ This module primarily collaborates with `color`, `dataframe`, `image`. Its respo
 
 ### `lurek.charts.defaultPalette`
 
-Default palette.
+Returns the default chart color palette.
 
 ```lua
 lurek.charts.defaultPalette()
 ```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Default color palette as RGB tables. |
 
 **Example**
 
@@ -43,7 +49,7 @@ end
 
 ### `lurek.charts.newArea`
 
-New area.
+Creates a new area chart userdata instance.
 
 ```lua
 lurek.charts.newArea(config)
@@ -53,7 +59,13 @@ lurek.charts.newArea(config)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `config?` | any |  |
+| `config?` | table | Parameter value for this chart operation. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LAreaChart](#lareachart) | New area chart userdata. |
 
 **Example**
 
@@ -72,7 +84,7 @@ end
 
 ### `lurek.charts.newBar`
 
-New bar.
+Creates a new bar chart userdata instance.
 
 ```lua
 lurek.charts.newBar(config)
@@ -82,7 +94,13 @@ lurek.charts.newBar(config)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `config?` | any |  |
+| `config?` | table | Parameter value for this chart operation. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LBarChart](#lbarchart) | New bar chart userdata. |
 
 **Example**
 
@@ -101,7 +119,7 @@ end
 
 ### `lurek.charts.newHeatmap`
 
-New heatmap.
+Creates a new heatmap chart userdata instance.
 
 ```lua
 lurek.charts.newHeatmap(config)
@@ -111,7 +129,13 @@ lurek.charts.newHeatmap(config)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `config?` | any |  |
+| `config?` | table | Parameter value for this chart operation. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LHeatmapChart](#lheatmapchart) | New heatmap chart userdata. |
 
 **Example**
 
@@ -131,7 +155,7 @@ end
 
 ### `lurek.charts.newHistogram`
 
-New histogram.
+Creates a new histogram chart userdata instance.
 
 ```lua
 lurek.charts.newHistogram(config)
@@ -141,7 +165,13 @@ lurek.charts.newHistogram(config)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `config?` | any |  |
+| `config?` | table | Parameter value for this chart operation. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LHistogramChart](#lhistogramchart) | New histogram chart userdata. |
 
 **Example**
 
@@ -161,7 +191,7 @@ end
 
 ### `lurek.charts.newLine`
 
-New line.
+Creates a new line chart userdata instance.
 
 ```lua
 lurek.charts.newLine(config)
@@ -171,7 +201,13 @@ lurek.charts.newLine(config)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `config?` | any |  |
+| `config?` | table | Parameter value for this chart operation. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LLineChart](#llinechart) | New line chart userdata. |
 
 **Example**
 
@@ -190,7 +226,7 @@ end
 
 ### `lurek.charts.newPie`
 
-New pie.
+Creates a new pie chart userdata instance.
 
 ```lua
 lurek.charts.newPie(config)
@@ -200,7 +236,13 @@ lurek.charts.newPie(config)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `config?` | any |  |
+| `config?` | table | Parameter value for this chart operation. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LPieChart](#lpiechart) | New pie chart userdata. |
 
 **Example**
 
@@ -220,7 +262,7 @@ end
 
 ### `lurek.charts.newScatter`
 
-New scatter.
+Creates a new scatter plot userdata instance.
 
 ```lua
 lurek.charts.newScatter(config)
@@ -230,7 +272,13 @@ lurek.charts.newScatter(config)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `config?` | any |  |
+| `config?` | table | Parameter value for this chart operation. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LScatterPlot](#lscatterplot) | New scatter plot userdata. |
 
 **Example**
 
@@ -249,7 +297,7 @@ end
 
 ### `lurek.charts.seriesColor`
 
-Series color.
+Returns the palette color for a series index.
 
 ```lua
 lurek.charts.seriesColor(index)
@@ -259,7 +307,13 @@ lurek.charts.seriesColor(index)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | any |  |
+| `index` | number | Parameter value for this chart operation. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Palette color table for the requested series. |
 
 **Example**
 
@@ -318,9 +372,15 @@ LAreaChart:addLayer(name, values, color)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | any |  |
-| `values` | any |  |
-| `color?` | any |  |
+| `name` | string | Parameter value for this chart operation. |
+| `values` | table | Parameter value for this chart operation. |
+| `color?` | table | Parameter value for this chart operation. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| nil | Return value produced by this chart operation. |
 
 **Example**
 
@@ -343,8 +403,24 @@ end
 Builds one filled area layer from a dataframe value column.
 
 ```lua
-LAreaChart:addLayerFromDataFrame()
+LAreaChart:addLayerFromDataFrame(name, df, value_col, color, opts)
 ```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Parameter value for this chart operation. |
+| `df` | userdata | Parameter value for this chart operation. |
+| `value_col` | string | Parameter value for this chart operation. |
+| `color?` | table | Parameter value for this chart operation. |
+| `opts?` | table | Parameter value for this chart operation. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| nil | Return value produced by this chart operation. |
 
 **Example**
 
@@ -372,9 +448,15 @@ LAreaChart:addSeries(name, data, color)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | any |  |
-| `data` | any |  |
-| `color?` | any |  |
+| `name` | string | Parameter value for this chart operation. |
+| `data` | table | Parameter value for this chart operation. |
+| `color?` | table | Parameter value for this chart operation. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| nil | Return value produced by this chart operation. |
 
 **Example**
 
@@ -403,10 +485,16 @@ LAreaChart:appendPoint(name, x, y, color)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | any |  |
-| `x` | any |  |
-| `y` | any |  |
-| `color?` | any |  |
+| `name` | string | Parameter value for this chart operation. |
+| `x` | number | Parameter value for this chart operation. |
+| `y` | number | Parameter value for this chart operation. |
+| `color?` | table | Parameter value for this chart operation. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| nil | Return value produced by this chart operation. |
 
 **Example**
 
@@ -424,7 +512,7 @@ end
 
 #### `LAreaChart:clear`
 
-Clears the state.
+Clears all series and cached chart state.
 
 ```lua
 LAreaChart:clear()
@@ -457,9 +545,15 @@ LAreaChart:draw(x, y, opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | any |  |
-| `y` | any |  |
-| `opts?` | any |  |
+| `x` | number | Parameter value for this chart operation. |
+| `y` | number | Parameter value for this chart operation. |
+| `opts?` | table | Parameter value for this chart operation. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| nil | Return value produced by this chart operation. |
 
 **Example**
 
@@ -477,7 +571,7 @@ end
 
 #### `LAreaChart:drawToImage`
 
-Draw to image.
+Draws the rendered chart into an existing image.
 
 ```lua
 LAreaChart:drawToImage(target)
@@ -487,7 +581,7 @@ LAreaChart:drawToImage(target)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `target` | any |  |
+| `target` | userdata | Parameter value for this chart operation. |
 
 **Example**
 
@@ -505,11 +599,17 @@ end
 
 #### `LAreaChart:getHeight`
 
-Returns the height.
+Returns the configured chart height in pixels.
 
 ```lua
 LAreaChart:getHeight()
 ```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Configured chart dimension in pixels. |
 
 **Example**
 
@@ -528,11 +628,17 @@ end
 
 #### `LAreaChart:getWidth`
 
-Returns the width.
+Returns the configured chart width in pixels.
 
 ```lua
 LAreaChart:getWidth()
 ```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Configured chart dimension in pixels. |
 
 **Example**
 
@@ -551,11 +657,19 @@ end
 
 #### `LAreaChart:render`
 
-Render.
+Renders the chart into raw RGBA image bytes.
 
 ```lua
 LAreaChart:render()
 ```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Width; height; and RGBA image bytes for the rendered chart. (value 1). |
+| number | Width; height; and RGBA image bytes for the rendered chart. (value 2). |
+| string | Width; height; and RGBA image bytes for the rendered chart. (value 3). |
 
 **Example**
 
@@ -573,7 +687,7 @@ end
 
 #### `LAreaChart:renderImage`
 
-Render image.
+Renders the chart into a new [LImage](render.md#limage) userdata.
 
 ```lua
 LAreaChart:renderImage()
@@ -595,7 +709,7 @@ end
 
 #### `LAreaChart:setShowLegend`
 
-Sets the show legend.
+Controls whether the chart legend is rendered.
 
 ```lua
 LAreaChart:setShowLegend(value)
@@ -605,7 +719,7 @@ LAreaChart:setShowLegend(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | any |  |
+| `value` | boolean | Parameter value for this chart operation. |
 
 **Example**
 
@@ -624,7 +738,7 @@ end
 
 #### `LAreaChart:setTitle`
 
-Sets the title.
+Sets the chart title text shown in rendered output.
 
 ```lua
 LAreaChart:setTitle(title)
@@ -634,7 +748,7 @@ LAreaChart:setTitle(title)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `title` | any |  |
+| `title` | string | Parameter value for this chart operation. |
 
 **Example**
 
@@ -654,7 +768,7 @@ end
 
 #### `LAreaChart:setWindow`
 
-Sets the window.
+Sets the maximum retained sample window for this chart.
 
 ```lua
 LAreaChart:setWindow(max_points)
@@ -664,7 +778,7 @@ LAreaChart:setWindow(max_points)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `max_points?` | any |  |
+| `max_points?` | number | Parameter value for this chart operation. |
 
 **Example**
 
@@ -682,7 +796,7 @@ end
 
 #### `LAreaChart:setXLabel`
 
-Sets the x label.
+Sets the X axis label text for rendered output.
 
 ```lua
 LAreaChart:setXLabel(label)
@@ -692,7 +806,7 @@ LAreaChart:setXLabel(label)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `label` | any |  |
+| `label` | string | Parameter value for this chart operation. |
 
 **Example**
 
@@ -710,7 +824,7 @@ end
 
 #### `LAreaChart:setXTickCount`
 
-Sets the x tick count.
+Sets the number of X axis ticks drawn for this chart.
 
 ```lua
 LAreaChart:setXTickCount(count)
@@ -720,7 +834,7 @@ LAreaChart:setXTickCount(count)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `count` | any |  |
+| `count` | number | Parameter value for this chart operation. |
 
 **Example**
 
@@ -738,7 +852,7 @@ end
 
 #### `LAreaChart:setYLabel`
 
-Sets the y label.
+Sets the Y axis label text for rendered output.
 
 ```lua
 LAreaChart:setYLabel(label)
@@ -748,7 +862,7 @@ LAreaChart:setYLabel(label)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `label` | any |  |
+| `label` | string | Parameter value for this chart operation. |
 
 **Example**
 
@@ -766,7 +880,7 @@ end
 
 #### `LAreaChart:setYMax`
 
-Sets the y max.
+Sets the explicit Y axis maximum for chart scaling.
 
 ```lua
 LAreaChart:setYMax(value)
@@ -776,7 +890,7 @@ LAreaChart:setYMax(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | any |  |
+| `value` | number | Parameter value for this chart operation. |
 
 **Example**
 
@@ -794,7 +908,7 @@ end
 
 #### `LAreaChart:setYTickCount`
 
-Sets the y tick count.
+Sets the number of Y axis ticks drawn for this chart.
 
 ```lua
 LAreaChart:setYTickCount(count)
@@ -804,7 +918,7 @@ LAreaChart:setYTickCount(count)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `count` | any |  |
+| `count` | number | Parameter value for this chart operation. |
 
 **Example**
 
@@ -822,11 +936,17 @@ end
 
 #### `LAreaChart:type`
 
-Type.
+Returns the runtime userdata type name for this chart.
 
 ```lua
 LAreaChart:type()
 ```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Runtime userdata type name. |
 
 **Example**
 
@@ -845,7 +965,7 @@ end
 
 #### `LAreaChart:typeOf`
 
-Type of.
+Checks whether a type name matches this chart userdata.
 
 ```lua
 LAreaChart:typeOf(name)
@@ -855,7 +975,13 @@ LAreaChart:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | any |  |
+| `name` | string | Parameter value for this chart operation. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the supplied type name matches this chart userdata. |
 
 **Example**
 
@@ -885,8 +1011,23 @@ end
 Adds grouped bar categories by reading one label column and one or more value columns from a dataframe.
 
 ```lua
-LBarChart:addCategoriesFromDataFrame()
+LBarChart:addCategoriesFromDataFrame(df, label_col, value_cols, opts)
 ```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `df` | userdata | Parameter value for this chart operation. |
+| `label_col` | string | Parameter value for this chart operation. |
+| `value_cols` | table | Parameter value for this chart operation. |
+| `opts?` | table | Parameter value for this chart operation. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| nil | Return value produced by this chart operation. |
 
 **Example**
 
@@ -914,8 +1055,14 @@ LBarChart:addCategory(label, values)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `label` | any |  |
-| `values` | any |  |
+| `label` | string | Parameter value for this chart operation. |
+| `values` | table | Parameter value for this chart operation. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| nil | Return value produced by this chart operation. |
 
 **Example**
 
@@ -943,9 +1090,15 @@ LBarChart:addSeries(name, data, color)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | any |  |
-| `data` | any |  |
-| `color?` | any |  |
+| `name` | string | Parameter value for this chart operation. |
+| `data` | table | Parameter value for this chart operation. |
+| `color?` | table | Parameter value for this chart operation. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| nil | Return value produced by this chart operation. |
 
 **Example**
 
@@ -964,7 +1117,7 @@ end
 
 #### `LBarChart:clear`
 
-Clears the state.
+Clears all series and cached chart state.
 
 ```lua
 LBarChart:clear()
@@ -997,9 +1150,15 @@ LBarChart:draw(x, y, opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | any |  |
-| `y` | any |  |
-| `opts?` | any |  |
+| `x` | number | Parameter value for this chart operation. |
+| `y` | number | Parameter value for this chart operation. |
+| `opts?` | table | Parameter value for this chart operation. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| nil | Return value produced by this chart operation. |
 
 **Example**
 
@@ -1017,7 +1176,7 @@ end
 
 #### `LBarChart:drawToImage`
 
-Draw to image.
+Draws the rendered chart into an existing image.
 
 ```lua
 LBarChart:drawToImage(target)
@@ -1027,7 +1186,7 @@ LBarChart:drawToImage(target)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `target` | any |  |
+| `target` | userdata | Parameter value for this chart operation. |
 
 **Example**
 
@@ -1045,11 +1204,17 @@ end
 
 #### `LBarChart:getHeight`
 
-Returns the height.
+Returns the configured chart height in pixels.
 
 ```lua
 LBarChart:getHeight()
 ```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Configured chart dimension in pixels. |
 
 **Example**
 
@@ -1068,11 +1233,17 @@ end
 
 #### `LBarChart:getWidth`
 
-Returns the width.
+Returns the configured chart width in pixels.
 
 ```lua
 LBarChart:getWidth()
 ```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Configured chart dimension in pixels. |
 
 **Example**
 
@@ -1091,11 +1262,19 @@ end
 
 #### `LBarChart:render`
 
-Render.
+Renders the chart into raw RGBA image bytes.
 
 ```lua
 LBarChart:render()
 ```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Width; height; and RGBA image bytes for the rendered chart. (value 1). |
+| number | Width; height; and RGBA image bytes for the rendered chart. (value 2). |
+| string | Width; height; and RGBA image bytes for the rendered chart. (value 3). |
 
 **Example**
 
@@ -1113,7 +1292,7 @@ end
 
 #### `LBarChart:renderImage`
 
-Render image.
+Renders the chart into a new [LImage](render.md#limage) userdata.
 
 ```lua
 LBarChart:renderImage()
@@ -1135,7 +1314,7 @@ end
 
 #### `LBarChart:setBarWidth`
 
-Sets the bar width.
+Sets the rendered width used for each bar.
 
 ```lua
 LBarChart:setBarWidth(width)
@@ -1145,7 +1324,7 @@ LBarChart:setBarWidth(width)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `width` | any |  |
+| `width` | number | Parameter value for this chart operation. |
 
 **Example**
 
@@ -1165,7 +1344,7 @@ end
 
 #### `LBarChart:setShowLegend`
 
-Sets the show legend.
+Controls whether the chart legend is rendered.
 
 ```lua
 LBarChart:setShowLegend(value)
@@ -1175,7 +1354,7 @@ LBarChart:setShowLegend(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | any |  |
+| `value` | boolean | Parameter value for this chart operation. |
 
 **Example**
 
@@ -1194,7 +1373,7 @@ end
 
 #### `LBarChart:setTitle`
 
-Sets the title.
+Sets the chart title text shown in rendered output.
 
 ```lua
 LBarChart:setTitle(title)
@@ -1204,7 +1383,7 @@ LBarChart:setTitle(title)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `title` | any |  |
+| `title` | string | Parameter value for this chart operation. |
 
 **Example**
 
@@ -1224,7 +1403,7 @@ end
 
 #### `LBarChart:setXLabel`
 
-Sets the x label.
+Sets the X axis label text for rendered output.
 
 ```lua
 LBarChart:setXLabel(label)
@@ -1234,7 +1413,7 @@ LBarChart:setXLabel(label)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `label` | any |  |
+| `label` | string | Parameter value for this chart operation. |
 
 **Example**
 
@@ -1252,7 +1431,7 @@ end
 
 #### `LBarChart:setXTickCount`
 
-Sets the x tick count.
+Sets the number of X axis ticks drawn for this chart.
 
 ```lua
 LBarChart:setXTickCount(count)
@@ -1262,7 +1441,7 @@ LBarChart:setXTickCount(count)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `count` | any |  |
+| `count` | number | Parameter value for this chart operation. |
 
 **Example**
 
@@ -1281,7 +1460,7 @@ end
 
 #### `LBarChart:setYLabel`
 
-Sets the y label.
+Sets the Y axis label text for rendered output.
 
 ```lua
 LBarChart:setYLabel(label)
@@ -1291,7 +1470,7 @@ LBarChart:setYLabel(label)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `label` | any |  |
+| `label` | string | Parameter value for this chart operation. |
 
 **Example**
 
@@ -1309,7 +1488,7 @@ end
 
 #### `LBarChart:setYTickCount`
 
-Sets the y tick count.
+Sets the number of Y axis ticks drawn for this chart.
 
 ```lua
 LBarChart:setYTickCount(count)
@@ -1319,7 +1498,7 @@ LBarChart:setYTickCount(count)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `count` | any |  |
+| `count` | number | Parameter value for this chart operation. |
 
 **Example**
 
@@ -1338,11 +1517,17 @@ end
 
 #### `LBarChart:type`
 
-Type.
+Returns the runtime userdata type name for this chart.
 
 ```lua
 LBarChart:type()
 ```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Runtime userdata type name. |
 
 **Example**
 
@@ -1361,7 +1546,7 @@ end
 
 #### `LBarChart:typeOf`
 
-Type of.
+Checks whether a type name matches this chart userdata.
 
 ```lua
 LBarChart:typeOf(name)
@@ -1371,7 +1556,13 @@ LBarChart:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | any |  |
+| `name` | string | Parameter value for this chart operation. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the supplied type name matches this chart userdata. |
 
 **Example**
 
@@ -1398,7 +1589,7 @@ end
 
 #### `LHeatmapChart:clear`
 
-Clears the state.
+Clears all series and cached chart state.
 
 ```lua
 LHeatmapChart:clear()
@@ -1420,7 +1611,7 @@ end
 
 #### `LHeatmapChart:clearValueRange`
 
-Clears value range.
+Clears the explicit heatmap value range.
 
 ```lua
 LHeatmapChart:clearValueRange()
@@ -1453,9 +1644,15 @@ LHeatmapChart:draw(x, y, opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | any |  |
-| `y` | any |  |
-| `opts?` | any |  |
+| `x` | number | Parameter value for this chart operation. |
+| `y` | number | Parameter value for this chart operation. |
+| `opts?` | table | Parameter value for this chart operation. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| nil | Return value produced by this chart operation. |
 
 **Example**
 
@@ -1473,7 +1670,7 @@ end
 
 #### `LHeatmapChart:drawToImage`
 
-Draw to image.
+Draws the rendered chart into an existing image.
 
 ```lua
 LHeatmapChart:drawToImage(target)
@@ -1483,7 +1680,7 @@ LHeatmapChart:drawToImage(target)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `target` | any |  |
+| `target` | userdata | Parameter value for this chart operation. |
 
 **Example**
 
@@ -1501,11 +1698,17 @@ end
 
 #### `LHeatmapChart:getHeight`
 
-Returns the height.
+Returns the configured chart height in pixels.
 
 ```lua
 LHeatmapChart:getHeight()
 ```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Configured chart dimension in pixels. |
 
 **Example**
 
@@ -1524,11 +1727,17 @@ end
 
 #### `LHeatmapChart:getWidth`
 
-Returns the width.
+Returns the configured chart width in pixels.
 
 ```lua
 LHeatmapChart:getWidth()
 ```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Configured chart dimension in pixels. |
 
 **Example**
 
@@ -1547,11 +1756,19 @@ end
 
 #### `LHeatmapChart:render`
 
-Render.
+Renders the chart into raw RGBA image bytes.
 
 ```lua
 LHeatmapChart:render()
 ```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Width; height; and RGBA image bytes for the rendered chart. (value 1). |
+| number | Width; height; and RGBA image bytes for the rendered chart. (value 2). |
+| string | Width; height; and RGBA image bytes for the rendered chart. (value 3). |
 
 **Example**
 
@@ -1569,7 +1786,7 @@ end
 
 #### `LHeatmapChart:renderImage`
 
-Render image.
+Renders the chart into a new [LImage](render.md#limage) userdata.
 
 ```lua
 LHeatmapChart:renderImage()
@@ -1591,7 +1808,7 @@ end
 
 #### `LHeatmapChart:resize`
 
-Resize.
+Resizes the heatmap grid dimensions.
 
 ```lua
 LHeatmapChart:resize(rows, cols)
@@ -1601,8 +1818,8 @@ LHeatmapChart:resize(rows, cols)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `rows` | any |  |
-| `cols` | any |  |
+| `rows` | number | Parameter value for this chart operation. |
+| `cols` | number | Parameter value for this chart operation. |
 
 **Example**
 
@@ -1621,7 +1838,7 @@ end
 
 #### `LHeatmapChart:setCell`
 
-Sets the cell.
+Sets a numeric heatmap cell value by row and column.
 
 ```lua
 LHeatmapChart:setCell(row, col, value)
@@ -1631,9 +1848,9 @@ LHeatmapChart:setCell(row, col, value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `row` | any |  |
-| `col` | any |  |
-| `value` | any |  |
+| `row` | number | Parameter value for this chart operation. |
+| `col` | number | Parameter value for this chart operation. |
+| `value` | number | Parameter value for this chart operation. |
 
 **Example**
 
@@ -1662,8 +1879,14 @@ LHeatmapChart:setColorRange(low, high)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `low` | any |  |
-| `high` | any |  |
+| `low` | table | Parameter value for this chart operation. |
+| `high` | table | Parameter value for this chart operation. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| nil | Return value produced by this chart operation. |
 
 **Example**
 
@@ -1681,7 +1904,7 @@ end
 
 #### `LHeatmapChart:setColumnLabels`
 
-Sets the column labels.
+Sets labels displayed for heatmap columns.
 
 ```lua
 LHeatmapChart:setColumnLabels(labels)
@@ -1691,7 +1914,7 @@ LHeatmapChart:setColumnLabels(labels)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `labels` | any |  |
+| `labels` | table | Parameter value for this chart operation. |
 
 **Example**
 
@@ -1719,9 +1942,15 @@ LHeatmapChart:setMatrix(matrix, row_labels, col_labels)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `matrix` | any |  |
-| `row_labels?` | any |  |
-| `col_labels?` | any |  |
+| `matrix` | table | Parameter value for this chart operation. |
+| `row_labels?` | table | Parameter value for this chart operation. |
+| `col_labels?` | table | Parameter value for this chart operation. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| nil | Return value produced by this chart operation. |
 
 **Example**
 
@@ -1744,8 +1973,24 @@ end
 Builds the heatmap contents from dataframe row, column, and value fields.
 
 ```lua
-LHeatmapChart:setMatrixFromDataFrame()
+LHeatmapChart:setMatrixFromDataFrame(df, row_col, col_col, value_col, opts)
 ```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `df` | userdata | Parameter value for this chart operation. |
+| `row_col` | string | Parameter value for this chart operation. |
+| `col_col` | string | Parameter value for this chart operation. |
+| `value_col` | string | Parameter value for this chart operation. |
+| `opts?` | table | Parameter value for this chart operation. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| nil | Return value produced by this chart operation. |
 
 **Example**
 
@@ -1763,7 +2008,7 @@ end
 
 #### `LHeatmapChart:setRowLabels`
 
-Sets the row labels.
+Sets labels displayed for heatmap rows.
 
 ```lua
 LHeatmapChart:setRowLabels(labels)
@@ -1773,7 +2018,7 @@ LHeatmapChart:setRowLabels(labels)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `labels` | any |  |
+| `labels` | table | Parameter value for this chart operation. |
 
 **Example**
 
@@ -1791,7 +2036,7 @@ end
 
 #### `LHeatmapChart:setShowLegend`
 
-Sets the show legend.
+Controls whether the chart legend is rendered.
 
 ```lua
 LHeatmapChart:setShowLegend(value)
@@ -1801,7 +2046,7 @@ LHeatmapChart:setShowLegend(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | any |  |
+| `value` | boolean | Parameter value for this chart operation. |
 
 **Example**
 
@@ -1819,7 +2064,7 @@ end
 
 #### `LHeatmapChart:setShowValues`
 
-Sets the show values.
+Controls whether heatmap cell values are rendered.
 
 ```lua
 LHeatmapChart:setShowValues(value)
@@ -1829,7 +2074,7 @@ LHeatmapChart:setShowValues(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | any |  |
+| `value` | boolean | Parameter value for this chart operation. |
 
 **Example**
 
@@ -1847,7 +2092,7 @@ end
 
 #### `LHeatmapChart:setTitle`
 
-Sets the title.
+Sets the chart title text shown in rendered output.
 
 ```lua
 LHeatmapChart:setTitle(title)
@@ -1857,7 +2102,7 @@ LHeatmapChart:setTitle(title)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `title` | any |  |
+| `title` | string | Parameter value for this chart operation. |
 
 **Example**
 
@@ -1875,7 +2120,7 @@ end
 
 #### `LHeatmapChart:setValueRange`
 
-Sets the value range.
+Sets the explicit heatmap value range.
 
 ```lua
 LHeatmapChart:setValueRange(min, max)
@@ -1885,8 +2130,8 @@ LHeatmapChart:setValueRange(min, max)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `min` | any |  |
-| `max` | any |  |
+| `min` | number | Parameter value for this chart operation. |
+| `max` | number | Parameter value for this chart operation. |
 
 **Example**
 
@@ -1904,11 +2149,17 @@ end
 
 #### `LHeatmapChart:type`
 
-Type.
+Returns the runtime userdata type name for this chart.
 
 ```lua
 LHeatmapChart:type()
 ```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Runtime userdata type name. |
 
 **Example**
 
@@ -1927,7 +2178,7 @@ end
 
 #### `LHeatmapChart:typeOf`
 
-Type of.
+Checks whether a type name matches this chart userdata.
 
 ```lua
 LHeatmapChart:typeOf(name)
@@ -1937,7 +2188,13 @@ LHeatmapChart:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | any |  |
+| `name` | string | Parameter value for this chart operation. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the supplied type name matches this chart userdata. |
 
 **Example**
 
@@ -1967,16 +2224,22 @@ end
 Adds a named histogram sample series from a numeric value list.
 
 ```lua
-LHistogramChart:addSeries(name, values, color)
+LHistogramChart:addSeries(name, data, color)
 ```
 
 **Parameters**
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | any |  |
-| `values` | any |  |
-| `color?` | any |  |
+| `name` | string | Parameter value for this chart operation. |
+| `data` | table | Parameter value for this chart operation. |
+| `color?` | table | Parameter value for this chart operation. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| nil | Return value produced by this chart operation. |
 
 **Example**
 
@@ -1999,8 +2262,25 @@ end
 Builds a named histogram sample series from one dataframe value column.
 
 ```lua
-LHistogramChart:addSeriesFromDataFrame()
+LHistogramChart:addSeriesFromDataFrame(name, df, x_col, y_col, color, opts)
 ```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Parameter value for this chart operation. |
+| `df` | userdata | Parameter value for this chart operation. |
+| `x_col` | string | Parameter value for this chart operation. |
+| `y_col` | string | Parameter value for this chart operation. |
+| `color?` | table | Parameter value for this chart operation. |
+| `opts?` | table | Parameter value for this chart operation. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| nil | Return value produced by this chart operation. |
 
 **Example**
 
@@ -2028,9 +2308,15 @@ LHistogramChart:appendValue(name, value, color)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | any |  |
-| `value` | any |  |
-| `color?` | any |  |
+| `name` | string | Parameter value for this chart operation. |
+| `value` | number | Parameter value for this chart operation. |
+| `color?` | table | Parameter value for this chart operation. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| nil | Return value produced by this chart operation. |
 
 **Example**
 
@@ -2048,7 +2334,7 @@ end
 
 #### `LHistogramChart:clear`
 
-Clears the state.
+Clears all series and cached chart state.
 
 ```lua
 LHistogramChart:clear()
@@ -2070,7 +2356,7 @@ end
 
 #### `LHistogramChart:clearRange`
 
-Clears range.
+Clears the explicit histogram value range.
 
 ```lua
 LHistogramChart:clearRange()
@@ -2103,9 +2389,15 @@ LHistogramChart:draw(x, y, opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | any |  |
-| `y` | any |  |
-| `opts?` | any |  |
+| `x` | number | Parameter value for this chart operation. |
+| `y` | number | Parameter value for this chart operation. |
+| `opts?` | table | Parameter value for this chart operation. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| nil | Return value produced by this chart operation. |
 
 **Example**
 
@@ -2123,7 +2415,7 @@ end
 
 #### `LHistogramChart:drawToImage`
 
-Draw to image.
+Draws the rendered chart into an existing image.
 
 ```lua
 LHistogramChart:drawToImage(target)
@@ -2133,7 +2425,7 @@ LHistogramChart:drawToImage(target)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `target` | any |  |
+| `target` | userdata | Parameter value for this chart operation. |
 
 **Example**
 
@@ -2151,11 +2443,17 @@ end
 
 #### `LHistogramChart:getHeight`
 
-Returns the height.
+Returns the configured chart height in pixels.
 
 ```lua
 LHistogramChart:getHeight()
 ```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Configured chart dimension in pixels. |
 
 **Example**
 
@@ -2174,11 +2472,17 @@ end
 
 #### `LHistogramChart:getWidth`
 
-Returns the width.
+Returns the configured chart width in pixels.
 
 ```lua
 LHistogramChart:getWidth()
 ```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Configured chart dimension in pixels. |
 
 **Example**
 
@@ -2197,11 +2501,19 @@ end
 
 #### `LHistogramChart:render`
 
-Render.
+Renders the chart into raw RGBA image bytes.
 
 ```lua
 LHistogramChart:render()
 ```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Width; height; and RGBA image bytes for the rendered chart. (value 1). |
+| number | Width; height; and RGBA image bytes for the rendered chart. (value 2). |
+| string | Width; height; and RGBA image bytes for the rendered chart. (value 3). |
 
 **Example**
 
@@ -2219,7 +2531,7 @@ end
 
 #### `LHistogramChart:renderImage`
 
-Render image.
+Renders the chart into a new [LImage](render.md#limage) userdata.
 
 ```lua
 LHistogramChart:renderImage()
@@ -2244,16 +2556,22 @@ end
 Replaces a named histogram sample series with a new numeric value list.
 
 ```lua
-LHistogramChart:replaceSeries(name, values, color)
+LHistogramChart:replaceSeries(name, data, color)
 ```
 
 **Parameters**
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | any |  |
-| `values` | any |  |
-| `color?` | any |  |
+| `name` | string | Parameter value for this chart operation. |
+| `data` | table | Parameter value for this chart operation. |
+| `color?` | table | Parameter value for this chart operation. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| nil | Return value produced by this chart operation. |
 
 **Example**
 
@@ -2271,7 +2589,7 @@ end
 
 #### `LHistogramChart:setBinCount`
 
-Sets the bin count.
+Sets the number of histogram bins used for samples.
 
 ```lua
 LHistogramChart:setBinCount(bins)
@@ -2281,7 +2599,7 @@ LHistogramChart:setBinCount(bins)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `bins` | any |  |
+| `bins` | number | Parameter value for this chart operation. |
 
 **Example**
 
@@ -2299,7 +2617,7 @@ end
 
 #### `LHistogramChart:setDensity`
 
-Sets the density.
+Controls whether histogram bins render as density values.
 
 ```lua
 LHistogramChart:setDensity(enabled)
@@ -2309,7 +2627,7 @@ LHistogramChart:setDensity(enabled)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `enabled` | any |  |
+| `enabled` | boolean | Parameter value for this chart operation. |
 
 **Example**
 
@@ -2327,7 +2645,7 @@ end
 
 #### `LHistogramChart:setRange`
 
-Sets the range.
+Sets the explicit histogram value range.
 
 ```lua
 LHistogramChart:setRange(min, max)
@@ -2337,8 +2655,8 @@ LHistogramChart:setRange(min, max)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `min` | any |  |
-| `max` | any |  |
+| `min` | number | Parameter value for this chart operation. |
+| `max` | number | Parameter value for this chart operation. |
 
 **Example**
 
@@ -2356,7 +2674,7 @@ end
 
 #### `LHistogramChart:setShowLegend`
 
-Sets the show legend.
+Controls whether the chart legend is rendered.
 
 ```lua
 LHistogramChart:setShowLegend(value)
@@ -2366,7 +2684,7 @@ LHistogramChart:setShowLegend(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | any |  |
+| `value` | boolean | Parameter value for this chart operation. |
 
 **Example**
 
@@ -2385,7 +2703,7 @@ end
 
 #### `LHistogramChart:setTitle`
 
-Sets the title.
+Sets the chart title text shown in rendered output.
 
 ```lua
 LHistogramChart:setTitle(title)
@@ -2395,7 +2713,7 @@ LHistogramChart:setTitle(title)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `title` | any |  |
+| `title` | string | Parameter value for this chart operation. |
 
 **Example**
 
@@ -2413,7 +2731,7 @@ end
 
 #### `LHistogramChart:setWindow`
 
-Sets the window.
+Sets the maximum retained sample window for this chart.
 
 ```lua
 LHistogramChart:setWindow(max_points)
@@ -2423,7 +2741,7 @@ LHistogramChart:setWindow(max_points)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `max_points?` | any |  |
+| `max_points?` | number | Parameter value for this chart operation. |
 
 **Example**
 
@@ -2441,7 +2759,7 @@ end
 
 #### `LHistogramChart:setXLabel`
 
-Sets the x label.
+Sets the X axis label text for rendered output.
 
 ```lua
 LHistogramChart:setXLabel(label)
@@ -2451,7 +2769,7 @@ LHistogramChart:setXLabel(label)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `label` | any |  |
+| `label` | string | Parameter value for this chart operation. |
 
 **Example**
 
@@ -2469,7 +2787,7 @@ end
 
 #### `LHistogramChart:setXTickCount`
 
-Sets the x tick count.
+Sets the number of X axis ticks drawn for this chart.
 
 ```lua
 LHistogramChart:setXTickCount(count)
@@ -2479,7 +2797,7 @@ LHistogramChart:setXTickCount(count)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `count` | any |  |
+| `count` | number | Parameter value for this chart operation. |
 
 **Example**
 
@@ -2497,7 +2815,7 @@ end
 
 #### `LHistogramChart:setYLabel`
 
-Sets the y label.
+Sets the Y axis label text for rendered output.
 
 ```lua
 LHistogramChart:setYLabel(label)
@@ -2507,7 +2825,7 @@ LHistogramChart:setYLabel(label)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `label` | any |  |
+| `label` | string | Parameter value for this chart operation. |
 
 **Example**
 
@@ -2525,7 +2843,7 @@ end
 
 #### `LHistogramChart:setYTickCount`
 
-Sets the y tick count.
+Sets the number of Y axis ticks drawn for this chart.
 
 ```lua
 LHistogramChart:setYTickCount(count)
@@ -2535,7 +2853,7 @@ LHistogramChart:setYTickCount(count)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `count` | any |  |
+| `count` | number | Parameter value for this chart operation. |
 
 **Example**
 
@@ -2553,11 +2871,17 @@ end
 
 #### `LHistogramChart:type`
 
-Type.
+Returns the runtime userdata type name for this chart.
 
 ```lua
 LHistogramChart:type()
 ```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Runtime userdata type name. |
 
 **Example**
 
@@ -2576,7 +2900,7 @@ end
 
 #### `LHistogramChart:typeOf`
 
-Type of.
+Checks whether a type name matches this chart userdata.
 
 ```lua
 LHistogramChart:typeOf(name)
@@ -2586,7 +2910,13 @@ LHistogramChart:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | any |  |
+| `name` | string | Parameter value for this chart operation. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the supplied type name matches this chart userdata. |
 
 **Example**
 
@@ -2623,9 +2953,15 @@ LLineChart:addSeries(name, data, color)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | any |  |
-| `data` | any |  |
-| `color?` | any |  |
+| `name` | string | Parameter value for this chart operation. |
+| `data` | table | Parameter value for this chart operation. |
+| `color?` | table | Parameter value for this chart operation. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| nil | Return value produced by this chart operation. |
 
 **Example**
 
@@ -2647,8 +2983,25 @@ end
 Builds a named line series from x and y columns in a dataframe.
 
 ```lua
-LLineChart:addSeriesFromDataFrame()
+LLineChart:addSeriesFromDataFrame(name, df, x_col, y_col, color, opts)
 ```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Parameter value for this chart operation. |
+| `df` | userdata | Parameter value for this chart operation. |
+| `x_col` | string | Parameter value for this chart operation. |
+| `y_col` | string | Parameter value for this chart operation. |
+| `color?` | table | Parameter value for this chart operation. |
+| `opts?` | table | Parameter value for this chart operation. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| nil | Return value produced by this chart operation. |
 
 **Example**
 
@@ -2676,10 +3029,16 @@ LLineChart:appendPoint(name, x, y, color)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | any |  |
-| `x` | any |  |
-| `y` | any |  |
-| `color?` | any |  |
+| `name` | string | Parameter value for this chart operation. |
+| `x` | number | Parameter value for this chart operation. |
+| `y` | number | Parameter value for this chart operation. |
+| `color?` | table | Parameter value for this chart operation. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| nil | Return value produced by this chart operation. |
 
 **Example**
 
@@ -2697,7 +3056,7 @@ end
 
 #### `LLineChart:clear`
 
-Clears the state.
+Clears all series and cached chart state.
 
 ```lua
 LLineChart:clear()
@@ -2730,9 +3089,15 @@ LLineChart:draw(x, y, opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | any |  |
-| `y` | any |  |
-| `opts?` | any |  |
+| `x` | number | Parameter value for this chart operation. |
+| `y` | number | Parameter value for this chart operation. |
+| `opts?` | table | Parameter value for this chart operation. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| nil | Return value produced by this chart operation. |
 
 **Example**
 
@@ -2750,7 +3115,7 @@ end
 
 #### `LLineChart:drawToImage`
 
-Draw to image.
+Draws the rendered chart into an existing image.
 
 ```lua
 LLineChart:drawToImage(target)
@@ -2760,7 +3125,7 @@ LLineChart:drawToImage(target)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `target` | any |  |
+| `target` | userdata | Parameter value for this chart operation. |
 
 **Example**
 
@@ -2778,11 +3143,17 @@ end
 
 #### `LLineChart:getHeight`
 
-Returns the height.
+Returns the configured chart height in pixels.
 
 ```lua
 LLineChart:getHeight()
 ```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Configured chart dimension in pixels. |
 
 **Example**
 
@@ -2801,11 +3172,17 @@ end
 
 #### `LLineChart:getWidth`
 
-Returns the width.
+Returns the configured chart width in pixels.
 
 ```lua
 LLineChart:getWidth()
 ```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Configured chart dimension in pixels. |
 
 **Example**
 
@@ -2824,7 +3201,7 @@ end
 
 #### `LLineChart:nearest`
 
-Nearest.
+Finds the nearest plotted point to screen coordinates.
 
 ```lua
 LLineChart:nearest(x, y)
@@ -2834,8 +3211,14 @@ LLineChart:nearest(x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | any |  |
-| `y` | any |  |
+| `x` | number | Parameter value for this chart operation. |
+| `y` | number | Parameter value for this chart operation. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Nearest point table, or nil when no point is available. |
 
 **Example**
 
@@ -2853,11 +3236,19 @@ end
 
 #### `LLineChart:render`
 
-Render.
+Renders the chart into raw RGBA image bytes.
 
 ```lua
 LLineChart:render()
 ```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Width; height; and RGBA image bytes for the rendered chart. (value 1). |
+| number | Width; height; and RGBA image bytes for the rendered chart. (value 2). |
+| string | Width; height; and RGBA image bytes for the rendered chart. (value 3). |
 
 **Example**
 
@@ -2875,7 +3266,7 @@ end
 
 #### `LLineChart:renderImage`
 
-Render image.
+Renders the chart into a new [LImage](render.md#limage) userdata.
 
 ```lua
 LLineChart:renderImage()
@@ -2907,9 +3298,15 @@ LLineChart:replaceSeries(name, data, color)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | any |  |
-| `data` | any |  |
-| `color?` | any |  |
+| `name` | string | Parameter value for this chart operation. |
+| `data` | table | Parameter value for this chart operation. |
+| `color?` | table | Parameter value for this chart operation. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| nil | Return value produced by this chart operation. |
 
 **Example**
 
@@ -2927,7 +3324,7 @@ end
 
 #### `LLineChart:setShowLegend`
 
-Sets the show legend.
+Controls whether the chart legend is rendered.
 
 ```lua
 LLineChart:setShowLegend(value)
@@ -2937,7 +3334,7 @@ LLineChart:setShowLegend(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | any |  |
+| `value` | boolean | Parameter value for this chart operation. |
 
 **Example**
 
@@ -2956,7 +3353,7 @@ end
 
 #### `LLineChart:setTitle`
 
-Sets the title.
+Sets the chart title text shown in rendered output.
 
 ```lua
 LLineChart:setTitle(title)
@@ -2966,7 +3363,7 @@ LLineChart:setTitle(title)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `title` | any |  |
+| `title` | string | Parameter value for this chart operation. |
 
 **Example**
 
@@ -2986,7 +3383,7 @@ end
 
 #### `LLineChart:setWindow`
 
-Sets the window.
+Sets the maximum retained sample window for this chart.
 
 ```lua
 LLineChart:setWindow(max_points)
@@ -2996,7 +3393,7 @@ LLineChart:setWindow(max_points)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `max_points?` | any |  |
+| `max_points?` | number | Parameter value for this chart operation. |
 
 **Example**
 
@@ -3014,7 +3411,7 @@ end
 
 #### `LLineChart:setXLabel`
 
-Sets the x label.
+Sets the X axis label text for rendered output.
 
 ```lua
 LLineChart:setXLabel(label)
@@ -3024,7 +3421,7 @@ LLineChart:setXLabel(label)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `label` | any |  |
+| `label` | string | Parameter value for this chart operation. |
 
 **Example**
 
@@ -3042,7 +3439,7 @@ end
 
 #### `LLineChart:setXMax`
 
-Sets the x max.
+Sets the explicit X axis maximum for chart scaling.
 
 ```lua
 LLineChart:setXMax(value)
@@ -3052,7 +3449,7 @@ LLineChart:setXMax(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | any |  |
+| `value` | number | Parameter value for this chart operation. |
 
 **Example**
 
@@ -3070,7 +3467,7 @@ end
 
 #### `LLineChart:setXTickCount`
 
-Sets the x tick count.
+Sets the number of X axis ticks drawn for this chart.
 
 ```lua
 LLineChart:setXTickCount(count)
@@ -3080,7 +3477,7 @@ LLineChart:setXTickCount(count)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `count` | any |  |
+| `count` | number | Parameter value for this chart operation. |
 
 **Example**
 
@@ -3098,7 +3495,7 @@ end
 
 #### `LLineChart:setYLabel`
 
-Sets the y label.
+Sets the Y axis label text for rendered output.
 
 ```lua
 LLineChart:setYLabel(label)
@@ -3108,7 +3505,7 @@ LLineChart:setYLabel(label)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `label` | any |  |
+| `label` | string | Parameter value for this chart operation. |
 
 **Example**
 
@@ -3126,7 +3523,7 @@ end
 
 #### `LLineChart:setYMax`
 
-Sets the y max.
+Sets the explicit Y axis maximum for chart scaling.
 
 ```lua
 LLineChart:setYMax(value)
@@ -3136,7 +3533,7 @@ LLineChart:setYMax(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | any |  |
+| `value` | number | Parameter value for this chart operation. |
 
 **Example**
 
@@ -3154,7 +3551,7 @@ end
 
 #### `LLineChart:setYTickCount`
 
-Sets the y tick count.
+Sets the number of Y axis ticks drawn for this chart.
 
 ```lua
 LLineChart:setYTickCount(count)
@@ -3164,7 +3561,7 @@ LLineChart:setYTickCount(count)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `count` | any |  |
+| `count` | number | Parameter value for this chart operation. |
 
 **Example**
 
@@ -3182,11 +3579,17 @@ end
 
 #### `LLineChart:type`
 
-Type.
+Returns the runtime userdata type name for this chart.
 
 ```lua
 LLineChart:type()
 ```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Runtime userdata type name. |
 
 **Example**
 
@@ -3205,7 +3608,7 @@ end
 
 #### `LLineChart:typeOf`
 
-Type of.
+Checks whether a type name matches this chart userdata.
 
 ```lua
 LLineChart:typeOf(name)
@@ -3215,7 +3618,13 @@ LLineChart:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | any |  |
+| `name` | string | Parameter value for this chart operation. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the supplied type name matches this chart userdata. |
 
 **Example**
 
@@ -3252,9 +3661,15 @@ LPieChart:addSegment(label, value, color)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `label` | any |  |
-| `value` | any |  |
-| `color?` | any |  |
+| `label` | string | Parameter value for this chart operation. |
+| `value` | number | Parameter value for this chart operation. |
+| `color?` | table | Parameter value for this chart operation. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| nil | Return value produced by this chart operation. |
 
 **Example**
 
@@ -3275,8 +3690,23 @@ end
 Adds pie segments by reading label and value columns from a dataframe.
 
 ```lua
-LPieChart:addSegmentsFromDataFrame()
+LPieChart:addSegmentsFromDataFrame(df, label_col, value_col, opts)
 ```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `df` | userdata | Parameter value for this chart operation. |
+| `label_col` | string | Parameter value for this chart operation. |
+| `value_col` | string | Parameter value for this chart operation. |
+| `opts?` | table | Parameter value for this chart operation. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| nil | Return value produced by this chart operation. |
 
 **Example**
 
@@ -3308,9 +3738,15 @@ LPieChart:addSlice(label, value, color)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `label` | any |  |
-| `value` | any |  |
-| `color?` | any |  |
+| `label` | string | Parameter value for this chart operation. |
+| `value` | number | Parameter value for this chart operation. |
+| `color?` | table | Parameter value for this chart operation. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| nil | Return value produced by this chart operation. |
 
 **Example**
 
@@ -3328,7 +3764,7 @@ end
 
 #### `LPieChart:clear`
 
-Clears the state.
+Clears all series and cached chart state.
 
 ```lua
 LPieChart:clear()
@@ -3362,9 +3798,15 @@ LPieChart:draw(x, y, opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | any |  |
-| `y` | any |  |
-| `opts?` | any |  |
+| `x` | number | Parameter value for this chart operation. |
+| `y` | number | Parameter value for this chart operation. |
+| `opts?` | table | Parameter value for this chart operation. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| nil | Return value produced by this chart operation. |
 
 **Example**
 
@@ -3383,7 +3825,7 @@ end
 
 #### `LPieChart:drawToImage`
 
-Draw to image.
+Draws the rendered chart into an existing image.
 
 ```lua
 LPieChart:drawToImage(target)
@@ -3393,7 +3835,7 @@ LPieChart:drawToImage(target)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `target` | any |  |
+| `target` | userdata | Parameter value for this chart operation. |
 
 **Example**
 
@@ -3412,11 +3854,17 @@ end
 
 #### `LPieChart:getHeight`
 
-Returns the height.
+Returns the configured chart height in pixels.
 
 ```lua
 LPieChart:getHeight()
 ```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Configured chart dimension in pixels. |
 
 **Example**
 
@@ -3436,11 +3884,17 @@ end
 
 #### `LPieChart:getWidth`
 
-Returns the width.
+Returns the configured chart width in pixels.
 
 ```lua
 LPieChart:getWidth()
 ```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Configured chart dimension in pixels. |
 
 **Example**
 
@@ -3460,11 +3914,19 @@ end
 
 #### `LPieChart:render`
 
-Render.
+Renders the chart into raw RGBA image bytes.
 
 ```lua
 LPieChart:render()
 ```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Width; height; and RGBA image bytes for the rendered chart. (value 1). |
+| number | Width; height; and RGBA image bytes for the rendered chart. (value 2). |
+| string | Width; height; and RGBA image bytes for the rendered chart. (value 3). |
 
 **Example**
 
@@ -3484,7 +3946,7 @@ end
 
 #### `LPieChart:renderImage`
 
-Render image.
+Renders the chart into a new [LImage](render.md#limage) userdata.
 
 ```lua
 LPieChart:renderImage()
@@ -3507,7 +3969,7 @@ end
 
 #### `LPieChart:setShowLegend`
 
-Sets the show legend.
+Controls whether the chart legend is rendered.
 
 ```lua
 LPieChart:setShowLegend(value)
@@ -3517,7 +3979,7 @@ LPieChart:setShowLegend(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | any |  |
+| `value` | boolean | Parameter value for this chart operation. |
 
 **Example**
 
@@ -3536,7 +3998,7 @@ end
 
 #### `LPieChart:setTitle`
 
-Sets the title.
+Sets the chart title text shown in rendered output.
 
 ```lua
 LPieChart:setTitle(title)
@@ -3546,7 +4008,7 @@ LPieChart:setTitle(title)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `title` | any |  |
+| `title` | string | Parameter value for this chart operation. |
 
 **Example**
 
@@ -3567,11 +4029,17 @@ end
 
 #### `LPieChart:type`
 
-Type.
+Returns the runtime userdata type name for this chart.
 
 ```lua
 LPieChart:type()
 ```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Runtime userdata type name. |
 
 **Example**
 
@@ -3591,7 +4059,7 @@ end
 
 #### `LPieChart:typeOf`
 
-Type of.
+Checks whether a type name matches this chart userdata.
 
 ```lua
 LPieChart:typeOf(name)
@@ -3601,7 +4069,13 @@ LPieChart:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | any |  |
+| `name` | string | Parameter value for this chart operation. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the supplied type name matches this chart userdata. |
 
 **Example**
 
@@ -3639,9 +4113,15 @@ LScatterPlot:addSeries(name, data, color)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | any |  |
-| `data` | any |  |
-| `color?` | any |  |
+| `name` | string | Parameter value for this chart operation. |
+| `data` | table | Parameter value for this chart operation. |
+| `color?` | table | Parameter value for this chart operation. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| nil | Return value produced by this chart operation. |
 
 **Example**
 
@@ -3663,8 +4143,25 @@ end
 Builds a named scatter series from x and y columns in a dataframe.
 
 ```lua
-LScatterPlot:addSeriesFromDataFrame()
+LScatterPlot:addSeriesFromDataFrame(name, df, x_col, y_col, color, opts)
 ```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Parameter value for this chart operation. |
+| `df` | userdata | Parameter value for this chart operation. |
+| `x_col` | string | Parameter value for this chart operation. |
+| `y_col` | string | Parameter value for this chart operation. |
+| `color?` | table | Parameter value for this chart operation. |
+| `opts?` | table | Parameter value for this chart operation. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| nil | Return value produced by this chart operation. |
 
 **Example**
 
@@ -3692,10 +4189,16 @@ LScatterPlot:appendPoint(name, x, y, color)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | any |  |
-| `x` | any |  |
-| `y` | any |  |
-| `color?` | any |  |
+| `name` | string | Parameter value for this chart operation. |
+| `x` | number | Parameter value for this chart operation. |
+| `y` | number | Parameter value for this chart operation. |
+| `color?` | table | Parameter value for this chart operation. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| nil | Return value produced by this chart operation. |
 
 **Example**
 
@@ -3713,7 +4216,7 @@ end
 
 #### `LScatterPlot:clear`
 
-Clears the state.
+Clears all series and cached chart state.
 
 ```lua
 LScatterPlot:clear()
@@ -3746,9 +4249,15 @@ LScatterPlot:draw(x, y, opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | any |  |
-| `y` | any |  |
-| `opts?` | any |  |
+| `x` | number | Parameter value for this chart operation. |
+| `y` | number | Parameter value for this chart operation. |
+| `opts?` | table | Parameter value for this chart operation. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| nil | Return value produced by this chart operation. |
 
 **Example**
 
@@ -3766,7 +4275,7 @@ end
 
 #### `LScatterPlot:drawToImage`
 
-Draw to image.
+Draws the rendered chart into an existing image.
 
 ```lua
 LScatterPlot:drawToImage(target)
@@ -3776,7 +4285,7 @@ LScatterPlot:drawToImage(target)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `target` | any |  |
+| `target` | userdata | Parameter value for this chart operation. |
 
 **Example**
 
@@ -3794,11 +4303,17 @@ end
 
 #### `LScatterPlot:getHeight`
 
-Returns the height.
+Returns the configured chart height in pixels.
 
 ```lua
 LScatterPlot:getHeight()
 ```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Configured chart dimension in pixels. |
 
 **Example**
 
@@ -3817,11 +4332,17 @@ end
 
 #### `LScatterPlot:getWidth`
 
-Returns the width.
+Returns the configured chart width in pixels.
 
 ```lua
 LScatterPlot:getWidth()
 ```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Configured chart dimension in pixels. |
 
 **Example**
 
@@ -3840,7 +4361,7 @@ end
 
 #### `LScatterPlot:nearest`
 
-Nearest.
+Finds the nearest plotted point to screen coordinates.
 
 ```lua
 LScatterPlot:nearest(x, y)
@@ -3850,8 +4371,14 @@ LScatterPlot:nearest(x, y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `x` | any |  |
-| `y` | any |  |
+| `x` | number | Parameter value for this chart operation. |
+| `y` | number | Parameter value for this chart operation. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Nearest point table, or nil when no point is available. |
 
 **Example**
 
@@ -3869,11 +4396,19 @@ end
 
 #### `LScatterPlot:render`
 
-Render.
+Renders the chart into raw RGBA image bytes.
 
 ```lua
 LScatterPlot:render()
 ```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Width; height; and RGBA image bytes for the rendered chart. (value 1). |
+| number | Width; height; and RGBA image bytes for the rendered chart. (value 2). |
+| string | Width; height; and RGBA image bytes for the rendered chart. (value 3). |
 
 **Example**
 
@@ -3891,7 +4426,7 @@ end
 
 #### `LScatterPlot:renderImage`
 
-Render image.
+Renders the chart into a new [LImage](render.md#limage) userdata.
 
 ```lua
 LScatterPlot:renderImage()
@@ -3923,9 +4458,15 @@ LScatterPlot:replaceSeries(name, data, color)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | any |  |
-| `data` | any |  |
-| `color?` | any |  |
+| `name` | string | Parameter value for this chart operation. |
+| `data` | table | Parameter value for this chart operation. |
+| `color?` | table | Parameter value for this chart operation. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| nil | Return value produced by this chart operation. |
 
 **Example**
 
@@ -3943,7 +4484,7 @@ end
 
 #### `LScatterPlot:setDotRadius`
 
-Sets the dot radius.
+Sets the rendered radius used for scatter dots.
 
 ```lua
 LScatterPlot:setDotRadius(radius)
@@ -3953,7 +4494,7 @@ LScatterPlot:setDotRadius(radius)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `radius` | any |  |
+| `radius` | number | Parameter value for this chart operation. |
 
 **Example**
 
@@ -3973,7 +4514,7 @@ end
 
 #### `LScatterPlot:setShowLegend`
 
-Sets the show legend.
+Controls whether the chart legend is rendered.
 
 ```lua
 LScatterPlot:setShowLegend(value)
@@ -3983,7 +4524,7 @@ LScatterPlot:setShowLegend(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | any |  |
+| `value` | boolean | Parameter value for this chart operation. |
 
 **Example**
 
@@ -4002,7 +4543,7 @@ end
 
 #### `LScatterPlot:setTitle`
 
-Sets the title.
+Sets the chart title text shown in rendered output.
 
 ```lua
 LScatterPlot:setTitle(title)
@@ -4012,7 +4553,7 @@ LScatterPlot:setTitle(title)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `title` | any |  |
+| `title` | string | Parameter value for this chart operation. |
 
 **Example**
 
@@ -4032,7 +4573,7 @@ end
 
 #### `LScatterPlot:setWindow`
 
-Sets the window.
+Sets the maximum retained sample window for this chart.
 
 ```lua
 LScatterPlot:setWindow(max_points)
@@ -4042,7 +4583,7 @@ LScatterPlot:setWindow(max_points)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `max_points?` | any |  |
+| `max_points?` | number | Parameter value for this chart operation. |
 
 **Example**
 
@@ -4060,7 +4601,7 @@ end
 
 #### `LScatterPlot:setXLabel`
 
-Sets the x label.
+Sets the X axis label text for rendered output.
 
 ```lua
 LScatterPlot:setXLabel(label)
@@ -4070,7 +4611,7 @@ LScatterPlot:setXLabel(label)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `label` | any |  |
+| `label` | string | Parameter value for this chart operation. |
 
 **Example**
 
@@ -4088,7 +4629,7 @@ end
 
 #### `LScatterPlot:setXRange`
 
-Sets the x range.
+Sets the explicit X axis range for plotted points.
 
 ```lua
 LScatterPlot:setXRange(min_x, max_x)
@@ -4098,8 +4639,8 @@ LScatterPlot:setXRange(min_x, max_x)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `min_x` | any |  |
-| `max_x` | any |  |
+| `min_x` | number | Parameter value for this chart operation. |
+| `max_x` | number | Parameter value for this chart operation. |
 
 **Example**
 
@@ -4117,7 +4658,7 @@ end
 
 #### `LScatterPlot:setXTickCount`
 
-Sets the x tick count.
+Sets the number of X axis ticks drawn for this chart.
 
 ```lua
 LScatterPlot:setXTickCount(count)
@@ -4127,7 +4668,7 @@ LScatterPlot:setXTickCount(count)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `count` | any |  |
+| `count` | number | Parameter value for this chart operation. |
 
 **Example**
 
@@ -4145,7 +4686,7 @@ end
 
 #### `LScatterPlot:setYLabel`
 
-Sets the y label.
+Sets the Y axis label text for rendered output.
 
 ```lua
 LScatterPlot:setYLabel(label)
@@ -4155,7 +4696,7 @@ LScatterPlot:setYLabel(label)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `label` | any |  |
+| `label` | string | Parameter value for this chart operation. |
 
 **Example**
 
@@ -4173,7 +4714,7 @@ end
 
 #### `LScatterPlot:setYRange`
 
-Sets the y range.
+Sets the explicit Y axis range for plotted points.
 
 ```lua
 LScatterPlot:setYRange(min_y, max_y)
@@ -4183,8 +4724,8 @@ LScatterPlot:setYRange(min_y, max_y)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `min_y` | any |  |
-| `max_y` | any |  |
+| `min_y` | number | Parameter value for this chart operation. |
+| `max_y` | number | Parameter value for this chart operation. |
 
 **Example**
 
@@ -4202,7 +4743,7 @@ end
 
 #### `LScatterPlot:setYTickCount`
 
-Sets the y tick count.
+Sets the number of Y axis ticks drawn for this chart.
 
 ```lua
 LScatterPlot:setYTickCount(count)
@@ -4212,7 +4753,7 @@ LScatterPlot:setYTickCount(count)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `count` | any |  |
+| `count` | number | Parameter value for this chart operation. |
 
 **Example**
 
@@ -4230,11 +4771,17 @@ end
 
 #### `LScatterPlot:type`
 
-Type.
+Returns the runtime userdata type name for this chart.
 
 ```lua
 LScatterPlot:type()
 ```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Runtime userdata type name. |
 
 **Example**
 
@@ -4253,7 +4800,7 @@ end
 
 #### `LScatterPlot:typeOf`
 
-Type of.
+Checks whether a type name matches this chart userdata.
 
 ```lua
 LScatterPlot:typeOf(name)
@@ -4263,7 +4810,13 @@ LScatterPlot:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | any |  |
+| `name` | string | Parameter value for this chart operation. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the supplied type name matches this chart userdata. |
 
 **Example**
 

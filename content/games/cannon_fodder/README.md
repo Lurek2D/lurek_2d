@@ -17,7 +17,7 @@ Cechy rozgrywki:
 Uruchom grę na silniku Lurek za pomocą poniższego polecenia:
 
 ```powershell
-cargo run -- content/games/retro/cannon_fodder
+cargo run -- content/games/cannon_fodder
 ```
 
 ## 🕹️ Sterowanie (Controls)

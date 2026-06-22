@@ -2,9 +2,9 @@
 """Audit content/games readiness for the public demo catalog.
 
 The audit is intentionally non-destructive. It scans each
-content/games/<category>/<name> folder, applies the product decision map from
-issue #30, checks catalog assets, detects lurek.* modules, and can run the
-static validate_game.py checks in-process.
+content/games/<name> folder, applies the current product decision map, checks
+catalog assets, detects lurek.* modules, and can run the static
+validate_game.py checks in-process.
 
 Examples:
     python tools/demos/audit_games.py
@@ -218,7 +218,7 @@ def collect_audit(
     rows: list[GameAudit] = []
     for game_dir in game_dirs:
         identifier = game_catalog.game_id(game_dir, games_root)
-        category, name = identifier.split("/", 1)
+        category, name = game_catalog.split_game_identifier(identifier)
         decision, decision_note = game_catalog.decision_for(identifier)
         readme_text = game_catalog.read_text(game_dir / "README.md")
         validate_status = "NOT_RUN"

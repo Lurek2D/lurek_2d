@@ -447,8 +447,8 @@ impl LuaUserData for LuaTileMap {
         /// @param | name | string | Layer name.
         /// @param | w | integer | Width in tiles.
         /// @param | h | integer | Height in tiles.
-        /// @return | integer? | Index of the new layer (1-based).
-        /// @return | string? | Error message when validation fails.
+        /// @return | integer | Index of the new layer (1-based).
+        /// @return | string | Error message when validation fails.
         methods.add_method(
             "tryAddLayer",
             |_, this, (name, w, h): (String, u32, u32)| match this
@@ -605,7 +605,7 @@ impl LuaUserData for LuaTileMap {
         /// @param | y | integer | Row (1-based).
         /// @param | gid | integer | Global tile ID to place.
         /// @return | boolean | True on success.
-        /// @return | string? | Error message on failure.
+        /// @return | string | Error message on failure.
         methods.add_method(
             "trySetTile",
             |_, this, (layer, x, y, gid): (usize, u32, u32, u32)| match this
@@ -631,8 +631,8 @@ impl LuaUserData for LuaTileMap {
         /// @param | layer | integer | Layer index (1-based).
         /// @param | x | integer | Column (1-based).
         /// @param | y | integer | Row (1-based).
-        /// @return | integer? | Global tile ID at that position.
-        /// @return | string? | Error message on failure.
+        /// @return | integer | Global tile ID at that position.
+        /// @return | string | Error message on failure.
         methods.add_method(
             "tryGetTile",
             |_, this, (layer, x, y): (usize, u32, u32)| match this.inner.borrow().try_get_tile(
@@ -756,8 +756,8 @@ impl LuaUserData for LuaTileMap {
         /// Converts world-space pixel coordinates to tile-grid coordinates, returning nils for negative or non-finite input.
         /// @param | wx | number | World X position in pixels.
         /// @param | wy | number | World Y position in pixels.
-        /// @return | integer? | Tile column (1-based).
-        /// @return | integer? | Tile row (1-based).
+        /// @return | integer | Tile column (1-based).
+        /// @return | integer | Tile row (1-based).
         methods.add_method("tryWorldToTile", |_, this, (wx, wy): (f32, f32)| {
             Ok(this
                 .inner
@@ -999,6 +999,15 @@ impl LuaUserData for LuaTileMap {
         );
         // -- trySetTileTint --
         /// Sets a per-cell tint override and returns `false, error` instead of throwing on invalid input.
+        /// @param | layer | integer | Layer index (1-based).
+        /// @param | x | integer | Column (1-based).
+        /// @param | y | integer | Row (1-based).
+        /// @param | r | number | Red tint channel.
+        /// @param | g | number | Green tint channel.
+        /// @param | b | number | Blue tint channel.
+        /// @param | a | number | Alpha tint channel.
+        /// @return | boolean | True on success.
+        /// @return | string | Error message on failure.
         methods.add_method(
             "trySetTileTint",
             |_, this, (layer, x, y, r, g, b, a): (usize, u32, u32, f32, f32, f32, f32)| match this

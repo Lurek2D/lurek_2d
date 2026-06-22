@@ -2882,7 +2882,7 @@ end
 
 #### `LGlobe:setMarkerColor`
 
-Sets marker tint color.
+Sets the RGBA tint color used to render a marker.
 
 ```lua
 LGlobe:setMarkerColor(id, r, g, b, a)
@@ -3065,7 +3065,7 @@ end
 
 #### `LGlobe:setMarkerSize`
 
-Sets marker size in screen units.
+Sets the marker size in screen units for rendering.
 
 ```lua
 LGlobe:setMarkerSize(id, size)

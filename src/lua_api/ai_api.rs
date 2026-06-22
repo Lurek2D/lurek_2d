@@ -6,9 +6,8 @@ use crate::ai::{
     AIDirector, AILod, AIWorld, AiValidationLimits, BTNode, BehaviorTree, Blackboard,
     CallbackErrorTrace, CommandQueue, Consideration, ContextSteering, DecisionModel, DialogueAI,
     Emotion, EmotionModel, FormationType, GOAPPlanner, HTNDomain, HTNMethod, HTNPlanner,
-    MCTSConfig, MCTSEngine, Need, NeedSystem, ORCAAgent, ORCASolver, ParallelPolicy,
-    ResponseCurve, Squad, SteeringManager, StimulusWorld, StrategyAI, TraitProfile, UtilityAI,
-    WorldState,
+    MCTSConfig, MCTSEngine, Need, NeedSystem, ORCAAgent, ORCASolver, ParallelPolicy, ResponseCurve,
+    Squad, SteeringManager, StimulusWorld, StrategyAI, TraitProfile, UtilityAI, WorldState,
 };
 use crate::lua_api::callback_registry::CallbackRegistry;
 use crate::pathfind::InfluenceMap;

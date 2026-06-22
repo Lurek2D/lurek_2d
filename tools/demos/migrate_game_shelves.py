@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Move non-public game catalog entries into explicit holding shelves.
 
-This tool applies the product decisions from issue #30 in small, reversible
-steps. It only moves whole demo directories within the workspace and refuses to
-overwrite existing destinations.
+This tool applies the current product decisions in small, reversible steps. It
+only moves whole demo directories within the workspace and refuses to overwrite
+existing destinations.
 
 Examples:
     python tools/demos/migrate_game_shelves.py --decision MOVE_INCUBATOR
@@ -25,7 +25,6 @@ GAMES_ROOT = game_catalog.DEFAULT_GAMES_ROOT
 
 DESTINATION_ROOTS = {
     "MOVE_INCUBATOR": GAMES_ROOT / "_incubator",
-    "MOVE_EXAMPLE": REPO_ROOT / "content" / "showcase",
 }
 
 
@@ -58,10 +57,7 @@ def _build_plan(decisions: set[str], only: str | None) -> list[MovePlan]:
         source = GAMES_ROOT / identifier
         if not source.is_dir():
             continue
-        if decision == "MOVE_EXAMPLE" and identifier.startswith("showcase/"):
-            destination = DESTINATION_ROOTS[decision] / identifier.split("/", 1)[1]
-        else:
-            destination = DESTINATION_ROOTS[decision] / identifier
+        destination = DESTINATION_ROOTS[decision] / identifier
         plans.append(MovePlan(identifier, decision, source, destination))
     return plans
 
@@ -88,56 +84,15 @@ def _write_incubator_readme() -> None:
     content = """# Game Incubator
 
 This shelf holds design-only, skeleton, or incomplete game/app demos moved out
-of the public `content/games/<category>/<name>` catalog.
+of the public `content/games/<name>` catalog.
 
 Entries here are intentionally not discovered by `tools/demos/smoke_sweep.py`
 or the generated public demo catalog. Promote an entry back to
-`content/games/<category>/<name>` only after it has real gameplay, README,
+`content/games/<name>` only after it has real gameplay, README,
 screen, preview GIF, static validation, and smoke evidence.
 """
     readme.parent.mkdir(parents=True, exist_ok=True)
     readme.write_text(content, encoding="utf-8")
-
-
-def _write_showcase_contract() -> None:
-    showcase_root = REPO_ROOT / "content" / "showcase"
-    readme = showcase_root / "README.md"
-    readme_content = """# Lurek2D Feature Showcase
-
-This shelf holds runnable feature showcases and API labs that are not complete
-catalog game demos. These entries used to live under `content/games/`, but issue
-#30 keeps the public games catalog focused on complete playable games and apps.
-
-Use `content/examples/` for small single-file API examples. Use
-`content/games/` only when the entry has a complete game/app loop, README,
-screen, preview GIF, validation, and smoke evidence.
-"""
-    agents = showcase_root / "AGENTS.md"
-    agents_content = """# Showcase Contract
-
-## Mission & Scope
-- Own runnable feature showcases and API labs that are not complete games.
-- Keep `content/games/` focused on catalog-ready playable demos.
-
-## Files
-- `README.md`: Showcase shelf overview.
-- `<category>/<name>/main.lua`: Optional runnable showcase entry point.
-- `<category>/<name>/README.md`: Feature notes and run command when present.
-
-## Rules
-- Do not present showcase entries as complete games.
-- Prefer `content/examples/` for small single-file API examples.
-- Keep moved entries runnable when they already had a `main.lua`.
-
-## Workflow
-- Validate moved Lua with `python tools/validate/validate_game.py <showcase-dir>` when APIs change.
-- Use `python tools/demos/smoke_sweep.py --kind game --only <name>` for runnable smoke checks when needed.
-"""
-    showcase_root.mkdir(parents=True, exist_ok=True)
-    if not readme.exists():
-        readme.write_text(readme_content, encoding="utf-8")
-    if not agents.exists():
-        agents.write_text(agents_content, encoding="utf-8")
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -179,10 +134,6 @@ def main(argv: list[str] | None = None) -> int:
     if args.apply and "MOVE_INCUBATOR" in set(args.decision):
         _write_incubator_readme()
         print(f"WROTE {game_catalog.rel_to_repo(GAMES_ROOT / '_incubator' / 'README.md')}")
-    if args.apply and "MOVE_EXAMPLE" in set(args.decision):
-        _write_showcase_contract()
-        print(f"WROTE {game_catalog.rel_to_repo(REPO_ROOT / 'content' / 'showcase' / 'README.md')}")
-        print(f"WROTE {game_catalog.rel_to_repo(REPO_ROOT / 'content' / 'showcase' / 'AGENTS.md')}")
     return 0
 
 

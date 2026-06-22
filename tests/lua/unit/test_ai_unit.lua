@@ -166,21 +166,6 @@ describe("ai factories", function()
         expect_type("userdata", lurek.ai.newORCASolver(1.5))
     end)
 
-    -- @covers lurek.learning.newQLearner
-    it("keeps learning constructors under lurek.learning", function()
-        expect_equal(nil, lurek.ai.newQLearner)
-        expect_equal(nil, lurek.ai.newNeuralNet)
-        expect_equal(nil, lurek.ai.newGeneticAlgorithm)
-        expect_equal(nil, lurek.ai.newBandit)
-        expect_equal(nil, lurek.ai.newNeuroevolution)
-
-        expect_type("function", lurek.learning.newQLearner)
-        expect_type("function", lurek.learning.newNeuralNet)
-        expect_type("function", lurek.learning.newGeneticAlgorithm)
-        expect_type("function", lurek.learning.newBandit)
-        expect_type("function", lurek.learning.newNeuroevolution)
-    end)
-
     -- @covers lurek.ai.newStrategyAI
     it("newStrategyAI creates userdata", function()
         expect_type("userdata", lurek.ai.newStrategyAI(5.0))

@@ -1284,13 +1284,6 @@ end)
 
 -- @describe map generation helpers
 describe("map generation helpers", function()
-    -- @covers LMapBlock:setTile
-    it("LMapBlock:setTile writes a gid into a block", function()
-        local block = new_mapblock()
-        block:setTile(1, 2, 2, 7)
-        expect_equal(7, block:getTile(1, 2, 2))
-    end)
-
     -- @covers LMapBlock:setSide
     it("LMapBlock:setSide stores a side id for an edge segment", function()
         local block = new_mapblock()

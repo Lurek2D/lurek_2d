@@ -5,7 +5,7 @@ _A small playable Lurek2D demo skeleton for new catalog-ready games._
 ## Run
 
 ```powershell
-cargo run -- content/games/<category>/<name>
+cargo run -- content/games/<name>
 ```
 
 ## Controls
@@ -31,5 +31,5 @@ Collect every marker in the arena. Use this template as the starting point for a
 ## Catalog Requirements
 
 - Keep `main.lua`, `README.md`, `screen.png`, and `preview.gif` in the game folder.
-- Run `python tools/validate/validate_game.py content/games/<category>/<name>`.
+- Run `python tools/validate/validate_game.py content/games/<name>`.
 - Run `python tools/demos/smoke_sweep.py --kind game --only <name> --frames 300`.

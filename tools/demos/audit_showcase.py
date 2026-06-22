@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Inventory and classify legacy showcase-style entries."""
+"""Inventory and classify example-style entries."""
 
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[2]
-SHOWCASE_ROOT = ROOT / "content" / "showcase"
+EXAMPLES_ROOT = ROOT / "content" / "examples"
 
 PLACEHOLDER_TOKENS = (
     "next step:",
@@ -72,7 +72,7 @@ def classify_entry(path: Path) -> ShowcaseEntry:
     elif placeholder:
         classification = "candidate_review"
     else:
-        classification = "showcase"
+        classification = "example"
 
     try:
         display_path = path.relative_to(ROOT).as_posix()
@@ -97,11 +97,11 @@ def render_text(entries: list[ShowcaseEntry]) -> str:
     for entry in entries:
         counts[entry.classification] = counts.get(entry.classification, 0) + 1
 
-    lines = ["Showcase audit", "", "Summary:"]
+    lines = ["Example audit", "", "Summary:"]
     for key in sorted(counts):
         lines.append(f"- {key}: {counts[key]}")
 
-    flagged = [entry for entry in entries if entry.classification != "showcase"]
+    flagged = [entry for entry in entries if entry.classification != "example"]
     if flagged:
         lines.append("")
         lines.append("Flagged entries:")
@@ -115,7 +115,7 @@ def main() -> int:
     parser.add_argument("--json", action="store_true", help="emit JSON instead of text")
     args = parser.parse_args()
 
-    entries = [classify_entry(path) for path in _iter_entries(SHOWCASE_ROOT)]
+    entries = [classify_entry(path) for path in _iter_entries(EXAMPLES_ROOT)]
     if args.json:
         print(json.dumps([asdict(entry) for entry in entries], indent=2))
     else:

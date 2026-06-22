@@ -2990,8 +2990,8 @@ function LAISystem:agentCount() end
 function LAISystem:buildContext(instruction, opts) end
 
 --- Builds context and returns both the rendered text and provenance list.
----@param instruction any
----@param opts? any
+---@param instruction string User instruction used to build the context report.
+---@param opts? table Optional table containing instruction filters and agent selection.
 ---@return table `{ text = string, provenance = { ... } }`.
 function LAISystem:buildContextReport(instruction, opts) end
 
@@ -7380,631 +7380,759 @@ lurek.camera.newRig = function() end
 lurek.camera.newWalker = function(map, opts) end
 
 --- Adds one filled area layer from a numeric value list.
----@param name any
----@param values any
----@param color? any
+---@param name string Parameter value for this chart operation.
+---@param values table Parameter value for this chart operation.
+---@param color? table Parameter value for this chart operation.
+---@return nil Return value produced by this chart operation.
 function LAreaChart:addLayer(name, values, color) end
 
 --- Builds one filled area layer from a dataframe value column.
-function LAreaChart:addLayerFromDataFrame() end
+---@param name string Parameter value for this chart operation.
+---@param df userdata Parameter value for this chart operation.
+---@param value_col string Parameter value for this chart operation.
+---@param color? table Parameter value for this chart operation.
+---@param opts? table Parameter value for this chart operation.
+---@return nil Return value produced by this chart operation.
+function LAreaChart:addLayerFromDataFrame(name, df, value_col, color, opts) end
 
 --- Adds a named area series from an array-style Lua table of points.
----@param name any
----@param data any
----@param color? any
+---@param name string Parameter value for this chart operation.
+---@param data table Parameter value for this chart operation.
+---@param color? table Parameter value for this chart operation.
+---@return nil Return value produced by this chart operation.
 function LAreaChart:addSeries(name, data, color) end
 
 --- Appends one finite point to a named area series.
----@param name any
----@param x any
----@param y any
----@param color? any
+---@param name string Parameter value for this chart operation.
+---@param x number Parameter value for this chart operation.
+---@param y number Parameter value for this chart operation.
+---@param color? table Parameter value for this chart operation.
+---@return nil Return value produced by this chart operation.
 function LAreaChart:appendPoint(name, x, y, color) end
 
---- Clears the state.
+--- Clears all series and cached chart state.
 function LAreaChart:clear() end
 
 --- Draws the area chart at world or screen coordinates using optional transform options.
----@param x any
----@param y any
----@param opts? any
+---@param x number Parameter value for this chart operation.
+---@param y number Parameter value for this chart operation.
+---@param opts? table Parameter value for this chart operation.
+---@return nil Return value produced by this chart operation.
 function LAreaChart:draw(x, y, opts) end
 
---- Draw to image.
----@param target any
+--- Draws the rendered chart into an existing image.
+---@param target userdata Parameter value for this chart operation.
 function LAreaChart:drawToImage(target) end
 
---- Returns the height.
+--- Returns the configured chart height in pixels.
+---@return number Configured chart dimension in pixels.
 function LAreaChart:getHeight() end
 
---- Returns the width.
+--- Returns the configured chart width in pixels.
+---@return number Configured chart dimension in pixels.
 function LAreaChart:getWidth() end
 
---- Render.
+--- Renders the chart into raw RGBA image bytes.
+---@return number Width; height; and RGBA image bytes for the rendered chart. (value 1).
+---@return number Width; height; and RGBA image bytes for the rendered chart. (value 2).
+---@return string Width; height; and RGBA image bytes for the rendered chart. (value 3).
 function LAreaChart:render() end
 
---- Render image.
+--- Renders the chart into a new LImage userdata.
 function LAreaChart:renderImage() end
 
---- Sets the show legend.
----@param value any
+--- Controls whether the chart legend is rendered.
+---@param value boolean Parameter value for this chart operation.
 function LAreaChart:setShowLegend(value) end
 
---- Sets the title.
----@param title any
+--- Sets the chart title text shown in rendered output.
+---@param title string Parameter value for this chart operation.
 function LAreaChart:setTitle(title) end
 
---- Sets the window.
----@param max_points? any
+--- Sets the maximum retained sample window for this chart.
+---@param max_points? number Parameter value for this chart operation.
 function LAreaChart:setWindow(max_points) end
 
---- Sets the x label.
----@param label any
+--- Sets the X axis label text for rendered output.
+---@param label string Parameter value for this chart operation.
 function LAreaChart:setXLabel(label) end
 
---- Sets the x tick count.
----@param count any
+--- Sets the number of X axis ticks drawn for this chart.
+---@param count number Parameter value for this chart operation.
 function LAreaChart:setXTickCount(count) end
 
---- Sets the y label.
----@param label any
+--- Sets the Y axis label text for rendered output.
+---@param label string Parameter value for this chart operation.
 function LAreaChart:setYLabel(label) end
 
---- Sets the y max.
----@param value any
+--- Sets the explicit Y axis maximum for chart scaling.
+---@param value number Parameter value for this chart operation.
 function LAreaChart:setYMax(value) end
 
---- Sets the y tick count.
----@param count any
+--- Sets the number of Y axis ticks drawn for this chart.
+---@param count number Parameter value for this chart operation.
 function LAreaChart:setYTickCount(count) end
 
---- Type.
+--- Returns the runtime userdata type name for this chart.
+---@return string Runtime userdata type name.
 function LAreaChart:type() end
 
---- Type of.
----@param name any
+--- Checks whether a type name matches this chart userdata.
+---@param name string Parameter value for this chart operation.
+---@return boolean True when the supplied type name matches this chart userdata.
 function LAreaChart:typeOf(name) end
 
 --- Adds grouped bar categories by reading one label column and one or more value columns from a dataframe.
-function LBarChart:addCategoriesFromDataFrame() end
+---@param df userdata Parameter value for this chart operation.
+---@param label_col string Parameter value for this chart operation.
+---@param value_cols table Parameter value for this chart operation.
+---@param opts? table Parameter value for this chart operation.
+---@return nil Return value produced by this chart operation.
+function LBarChart:addCategoriesFromDataFrame(df, label_col, value_cols, opts) end
 
 --- Adds one category label with a numeric value list for grouped bars.
----@param label any
----@param values any
+---@param label string Parameter value for this chart operation.
+---@param values table Parameter value for this chart operation.
+---@return nil Return value produced by this chart operation.
 function LBarChart:addCategory(label, values) end
 
 --- Adds a named bar series from an array-style Lua table of values or points.
----@param name any
----@param data any
----@param color? any
+---@param name string Parameter value for this chart operation.
+---@param data table Parameter value for this chart operation.
+---@param color? table Parameter value for this chart operation.
+---@return nil Return value produced by this chart operation.
 function LBarChart:addSeries(name, data, color) end
 
---- Clears the state.
+--- Clears all series and cached chart state.
 function LBarChart:clear() end
 
 --- Draws the bar chart at world or screen coordinates using optional transform options.
----@param x any
----@param y any
----@param opts? any
+---@param x number Parameter value for this chart operation.
+---@param y number Parameter value for this chart operation.
+---@param opts? table Parameter value for this chart operation.
+---@return nil Return value produced by this chart operation.
 function LBarChart:draw(x, y, opts) end
 
---- Draw to image.
----@param target any
+--- Draws the rendered chart into an existing image.
+---@param target userdata Parameter value for this chart operation.
 function LBarChart:drawToImage(target) end
 
---- Returns the height.
+--- Returns the configured chart height in pixels.
+---@return number Configured chart dimension in pixels.
 function LBarChart:getHeight() end
 
---- Returns the width.
+--- Returns the configured chart width in pixels.
+---@return number Configured chart dimension in pixels.
 function LBarChart:getWidth() end
 
---- Render.
+--- Renders the chart into raw RGBA image bytes.
+---@return number Width; height; and RGBA image bytes for the rendered chart. (value 1).
+---@return number Width; height; and RGBA image bytes for the rendered chart. (value 2).
+---@return string Width; height; and RGBA image bytes for the rendered chart. (value 3).
 function LBarChart:render() end
 
---- Render image.
+--- Renders the chart into a new LImage userdata.
 function LBarChart:renderImage() end
 
---- Sets the bar width.
----@param width any
+--- Sets the rendered width used for each bar.
+---@param width number Parameter value for this chart operation.
 function LBarChart:setBarWidth(width) end
 
---- Sets the show legend.
----@param value any
+--- Controls whether the chart legend is rendered.
+---@param value boolean Parameter value for this chart operation.
 function LBarChart:setShowLegend(value) end
 
---- Sets the title.
----@param title any
+--- Sets the chart title text shown in rendered output.
+---@param title string Parameter value for this chart operation.
 function LBarChart:setTitle(title) end
 
---- Sets the x label.
----@param label any
+--- Sets the X axis label text for rendered output.
+---@param label string Parameter value for this chart operation.
 function LBarChart:setXLabel(label) end
 
---- Sets the x tick count.
----@param count any
+--- Sets the number of X axis ticks drawn for this chart.
+---@param count number Parameter value for this chart operation.
 function LBarChart:setXTickCount(count) end
 
---- Sets the y label.
----@param label any
+--- Sets the Y axis label text for rendered output.
+---@param label string Parameter value for this chart operation.
 function LBarChart:setYLabel(label) end
 
---- Sets the y tick count.
----@param count any
+--- Sets the number of Y axis ticks drawn for this chart.
+---@param count number Parameter value for this chart operation.
 function LBarChart:setYTickCount(count) end
 
---- Type.
+--- Returns the runtime userdata type name for this chart.
+---@return string Runtime userdata type name.
 function LBarChart:type() end
 
---- Type of.
----@param name any
+--- Checks whether a type name matches this chart userdata.
+---@param name string Parameter value for this chart operation.
+---@return boolean True when the supplied type name matches this chart userdata.
 function LBarChart:typeOf(name) end
 
---- Clears the state.
+--- Clears all series and cached chart state.
 function LHeatmapChart:clear() end
 
---- Clears value range.
+--- Clears the explicit heatmap value range.
 function LHeatmapChart:clearValueRange() end
 
 --- Draws the heatmap at world or screen coordinates using optional transform options.
----@param x any
----@param y any
----@param opts? any
+---@param x number Parameter value for this chart operation.
+---@param y number Parameter value for this chart operation.
+---@param opts? table Parameter value for this chart operation.
+---@return nil Return value produced by this chart operation.
 function LHeatmapChart:draw(x, y, opts) end
 
---- Draw to image.
----@param target any
+--- Draws the rendered chart into an existing image.
+---@param target userdata Parameter value for this chart operation.
 function LHeatmapChart:drawToImage(target) end
 
---- Returns the height.
+--- Returns the configured chart height in pixels.
+---@return number Configured chart dimension in pixels.
 function LHeatmapChart:getHeight() end
 
---- Returns the width.
+--- Returns the configured chart width in pixels.
+---@return number Configured chart dimension in pixels.
 function LHeatmapChart:getWidth() end
 
---- Render.
+--- Renders the chart into raw RGBA image bytes.
+---@return number Width; height; and RGBA image bytes for the rendered chart. (value 1).
+---@return number Width; height; and RGBA image bytes for the rendered chart. (value 2).
+---@return string Width; height; and RGBA image bytes for the rendered chart. (value 3).
 function LHeatmapChart:render() end
 
---- Render image.
+--- Renders the chart into a new LImage userdata.
 function LHeatmapChart:renderImage() end
 
---- Resize.
----@param rows any
----@param cols any
+--- Resizes the heatmap grid dimensions.
+---@param rows number Parameter value for this chart operation.
+---@param cols number Parameter value for this chart operation.
 function LHeatmapChart:resize(rows, cols) end
 
---- Sets the cell.
----@param row any
----@param col any
----@param value any
+--- Sets a numeric heatmap cell value by row and column.
+---@param row number Parameter value for this chart operation.
+---@param col number Parameter value for this chart operation.
+---@param value number Parameter value for this chart operation.
 function LHeatmapChart:setCell(row, col, value) end
 
 --- Sets the low and high RGBA colors used for the heatmap gradient.
----@param low any
----@param high any
+---@param low table Parameter value for this chart operation.
+---@param high table Parameter value for this chart operation.
+---@return nil Return value produced by this chart operation.
 function LHeatmapChart:setColorRange(low, high) end
 
---- Sets the column labels.
----@param labels any
+--- Sets labels displayed for heatmap columns.
+---@param labels table Parameter value for this chart operation.
 function LHeatmapChart:setColumnLabels(labels) end
 
 --- Replaces the heatmap contents from a numeric matrix with optional row and column labels.
----@param matrix any
----@param row_labels? any
----@param col_labels? any
+---@param matrix table Parameter value for this chart operation.
+---@param row_labels? table Parameter value for this chart operation.
+---@param col_labels? table Parameter value for this chart operation.
+---@return nil Return value produced by this chart operation.
 function LHeatmapChart:setMatrix(matrix, row_labels, col_labels) end
 
 --- Builds the heatmap contents from dataframe row, column, and value fields.
-function LHeatmapChart:setMatrixFromDataFrame() end
+---@param df userdata Parameter value for this chart operation.
+---@param row_col string Parameter value for this chart operation.
+---@param col_col string Parameter value for this chart operation.
+---@param value_col string Parameter value for this chart operation.
+---@param opts? table Parameter value for this chart operation.
+---@return nil Return value produced by this chart operation.
+function LHeatmapChart:setMatrixFromDataFrame(df, row_col, col_col, value_col, opts) end
 
---- Sets the row labels.
----@param labels any
+--- Sets labels displayed for heatmap rows.
+---@param labels table Parameter value for this chart operation.
 function LHeatmapChart:setRowLabels(labels) end
 
---- Sets the show legend.
----@param value any
+--- Controls whether the chart legend is rendered.
+---@param value boolean Parameter value for this chart operation.
 function LHeatmapChart:setShowLegend(value) end
 
---- Sets the show values.
----@param value any
+--- Controls whether heatmap cell values are rendered.
+---@param value boolean Parameter value for this chart operation.
 function LHeatmapChart:setShowValues(value) end
 
---- Sets the title.
----@param title any
+--- Sets the chart title text shown in rendered output.
+---@param title string Parameter value for this chart operation.
 function LHeatmapChart:setTitle(title) end
 
---- Sets the value range.
----@param min any
----@param max any
+--- Sets the explicit heatmap value range.
+---@param min number Parameter value for this chart operation.
+---@param max number Parameter value for this chart operation.
 function LHeatmapChart:setValueRange(min, max) end
 
---- Type.
+--- Returns the runtime userdata type name for this chart.
+---@return string Runtime userdata type name.
 function LHeatmapChart:type() end
 
---- Type of.
----@param name any
+--- Checks whether a type name matches this chart userdata.
+---@param name string Parameter value for this chart operation.
+---@return boolean True when the supplied type name matches this chart userdata.
 function LHeatmapChart:typeOf(name) end
 
 --- Adds a named histogram sample series from a numeric value list.
----@param name any
----@param values any
----@param color? any
-function LHistogramChart:addSeries(name, values, color) end
+---@param name string Parameter value for this chart operation.
+---@param data table Parameter value for this chart operation.
+---@param color? table Parameter value for this chart operation.
+---@return nil Return value produced by this chart operation.
+function LHistogramChart:addSeries(name, data, color) end
 
 --- Builds a named histogram sample series from one dataframe value column.
-function LHistogramChart:addSeriesFromDataFrame() end
+---@param name string Parameter value for this chart operation.
+---@param df userdata Parameter value for this chart operation.
+---@param x_col string Parameter value for this chart operation.
+---@param y_col string Parameter value for this chart operation.
+---@param color? table Parameter value for this chart operation.
+---@param opts? table Parameter value for this chart operation.
+---@return nil Return value produced by this chart operation.
+function LHistogramChart:addSeriesFromDataFrame(name, df, x_col, y_col, color, opts) end
 
 --- Appends one finite numeric sample to a named histogram series.
----@param name any
----@param value any
----@param color? any
+---@param name string Parameter value for this chart operation.
+---@param value number Parameter value for this chart operation.
+---@param color? table Parameter value for this chart operation.
+---@return nil Return value produced by this chart operation.
 function LHistogramChart:appendValue(name, value, color) end
 
---- Clears the state.
+--- Clears all series and cached chart state.
 function LHistogramChart:clear() end
 
---- Clears range.
+--- Clears the explicit histogram value range.
 function LHistogramChart:clearRange() end
 
 --- Draws the histogram at world or screen coordinates using optional transform options.
----@param x any
----@param y any
----@param opts? any
+---@param x number Parameter value for this chart operation.
+---@param y number Parameter value for this chart operation.
+---@param opts? table Parameter value for this chart operation.
+---@return nil Return value produced by this chart operation.
 function LHistogramChart:draw(x, y, opts) end
 
---- Draw to image.
----@param target any
+--- Draws the rendered chart into an existing image.
+---@param target userdata Parameter value for this chart operation.
 function LHistogramChart:drawToImage(target) end
 
---- Returns the height.
+--- Returns the configured chart height in pixels.
+---@return number Configured chart dimension in pixels.
 function LHistogramChart:getHeight() end
 
---- Returns the width.
+--- Returns the configured chart width in pixels.
+---@return number Configured chart dimension in pixels.
 function LHistogramChart:getWidth() end
 
---- Render.
+--- Renders the chart into raw RGBA image bytes.
+---@return number Width; height; and RGBA image bytes for the rendered chart. (value 1).
+---@return number Width; height; and RGBA image bytes for the rendered chart. (value 2).
+---@return string Width; height; and RGBA image bytes for the rendered chart. (value 3).
 function LHistogramChart:render() end
 
---- Render image.
+--- Renders the chart into a new LImage userdata.
 function LHistogramChart:renderImage() end
 
 --- Replaces a named histogram sample series with a new numeric value list.
----@param name any
----@param values any
----@param color? any
-function LHistogramChart:replaceSeries(name, values, color) end
+---@param name string Parameter value for this chart operation.
+---@param data table Parameter value for this chart operation.
+---@param color? table Parameter value for this chart operation.
+---@return nil Return value produced by this chart operation.
+function LHistogramChart:replaceSeries(name, data, color) end
 
---- Sets the bin count.
----@param bins any
+--- Sets the number of histogram bins used for samples.
+---@param bins number Parameter value for this chart operation.
 function LHistogramChart:setBinCount(bins) end
 
---- Sets the density.
----@param enabled any
+--- Controls whether histogram bins render as density values.
+---@param enabled boolean Parameter value for this chart operation.
 function LHistogramChart:setDensity(enabled) end
 
---- Sets the range.
----@param min any
----@param max any
+--- Sets the explicit histogram value range.
+---@param min number Parameter value for this chart operation.
+---@param max number Parameter value for this chart operation.
 function LHistogramChart:setRange(min, max) end
 
---- Sets the show legend.
----@param value any
+--- Controls whether the chart legend is rendered.
+---@param value boolean Parameter value for this chart operation.
 function LHistogramChart:setShowLegend(value) end
 
---- Sets the title.
----@param title any
+--- Sets the chart title text shown in rendered output.
+---@param title string Parameter value for this chart operation.
 function LHistogramChart:setTitle(title) end
 
---- Sets the window.
----@param max_points? any
+--- Sets the maximum retained sample window for this chart.
+---@param max_points? number Parameter value for this chart operation.
 function LHistogramChart:setWindow(max_points) end
 
---- Sets the x label.
----@param label any
+--- Sets the X axis label text for rendered output.
+---@param label string Parameter value for this chart operation.
 function LHistogramChart:setXLabel(label) end
 
---- Sets the x tick count.
----@param count any
+--- Sets the number of X axis ticks drawn for this chart.
+---@param count number Parameter value for this chart operation.
 function LHistogramChart:setXTickCount(count) end
 
---- Sets the y label.
----@param label any
+--- Sets the Y axis label text for rendered output.
+---@param label string Parameter value for this chart operation.
 function LHistogramChart:setYLabel(label) end
 
---- Sets the y tick count.
----@param count any
+--- Sets the number of Y axis ticks drawn for this chart.
+---@param count number Parameter value for this chart operation.
 function LHistogramChart:setYTickCount(count) end
 
---- Type.
+--- Returns the runtime userdata type name for this chart.
+---@return string Runtime userdata type name.
 function LHistogramChart:type() end
 
---- Type of.
----@param name any
+--- Checks whether a type name matches this chart userdata.
+---@param name string Parameter value for this chart operation.
+---@return boolean True when the supplied type name matches this chart userdata.
 function LHistogramChart:typeOf(name) end
 
 --- Adds a named line series from an array-style Lua table of points.
----@param name any
----@param data any
----@param color? any
+---@param name string Parameter value for this chart operation.
+---@param data table Parameter value for this chart operation.
+---@param color? table Parameter value for this chart operation.
+---@return nil Return value produced by this chart operation.
 function LLineChart:addSeries(name, data, color) end
 
 --- Builds a named line series from x and y columns in a dataframe.
-function LLineChart:addSeriesFromDataFrame() end
+---@param name string Parameter value for this chart operation.
+---@param df userdata Parameter value for this chart operation.
+---@param x_col string Parameter value for this chart operation.
+---@param y_col string Parameter value for this chart operation.
+---@param color? table Parameter value for this chart operation.
+---@param opts? table Parameter value for this chart operation.
+---@return nil Return value produced by this chart operation.
+function LLineChart:addSeriesFromDataFrame(name, df, x_col, y_col, color, opts) end
 
 --- Appends one finite point to a named line series.
----@param name any
----@param x any
----@param y any
----@param color? any
+---@param name string Parameter value for this chart operation.
+---@param x number Parameter value for this chart operation.
+---@param y number Parameter value for this chart operation.
+---@param color? table Parameter value for this chart operation.
+---@return nil Return value produced by this chart operation.
 function LLineChart:appendPoint(name, x, y, color) end
 
---- Clears the state.
+--- Clears all series and cached chart state.
 function LLineChart:clear() end
 
 --- Draws the line chart at world or screen coordinates using optional transform options.
----@param x any
----@param y any
----@param opts? any
+---@param x number Parameter value for this chart operation.
+---@param y number Parameter value for this chart operation.
+---@param opts? table Parameter value for this chart operation.
+---@return nil Return value produced by this chart operation.
 function LLineChart:draw(x, y, opts) end
 
---- Draw to image.
----@param target any
+--- Draws the rendered chart into an existing image.
+---@param target userdata Parameter value for this chart operation.
 function LLineChart:drawToImage(target) end
 
---- Returns the height.
+--- Returns the configured chart height in pixels.
+---@return number Configured chart dimension in pixels.
 function LLineChart:getHeight() end
 
---- Returns the width.
+--- Returns the configured chart width in pixels.
+---@return number Configured chart dimension in pixels.
 function LLineChart:getWidth() end
 
---- Nearest.
----@param x any
----@param y any
+--- Finds the nearest plotted point to screen coordinates.
+---@param x number Parameter value for this chart operation.
+---@param y number Parameter value for this chart operation.
+---@return table Nearest point table, or nil when no point is available.
 function LLineChart:nearest(x, y) end
 
---- Render.
+--- Renders the chart into raw RGBA image bytes.
+---@return number Width; height; and RGBA image bytes for the rendered chart. (value 1).
+---@return number Width; height; and RGBA image bytes for the rendered chart. (value 2).
+---@return string Width; height; and RGBA image bytes for the rendered chart. (value 3).
 function LLineChart:render() end
 
---- Render image.
+--- Renders the chart into a new LImage userdata.
 function LLineChart:renderImage() end
 
 --- Replaces a named line series with a new array-style Lua table of points.
----@param name any
----@param data any
----@param color? any
+---@param name string Parameter value for this chart operation.
+---@param data table Parameter value for this chart operation.
+---@param color? table Parameter value for this chart operation.
+---@return nil Return value produced by this chart operation.
 function LLineChart:replaceSeries(name, data, color) end
 
---- Sets the show legend.
----@param value any
+--- Controls whether the chart legend is rendered.
+---@param value boolean Parameter value for this chart operation.
 function LLineChart:setShowLegend(value) end
 
---- Sets the title.
----@param title any
+--- Sets the chart title text shown in rendered output.
+---@param title string Parameter value for this chart operation.
 function LLineChart:setTitle(title) end
 
---- Sets the window.
----@param max_points? any
+--- Sets the maximum retained sample window for this chart.
+---@param max_points? number Parameter value for this chart operation.
 function LLineChart:setWindow(max_points) end
 
---- Sets the x label.
----@param label any
+--- Sets the X axis label text for rendered output.
+---@param label string Parameter value for this chart operation.
 function LLineChart:setXLabel(label) end
 
---- Sets the x max.
----@param value any
+--- Sets the explicit X axis maximum for chart scaling.
+---@param value number Parameter value for this chart operation.
 function LLineChart:setXMax(value) end
 
---- Sets the x tick count.
----@param count any
+--- Sets the number of X axis ticks drawn for this chart.
+---@param count number Parameter value for this chart operation.
 function LLineChart:setXTickCount(count) end
 
---- Sets the y label.
----@param label any
+--- Sets the Y axis label text for rendered output.
+---@param label string Parameter value for this chart operation.
 function LLineChart:setYLabel(label) end
 
---- Sets the y max.
----@param value any
+--- Sets the explicit Y axis maximum for chart scaling.
+---@param value number Parameter value for this chart operation.
 function LLineChart:setYMax(value) end
 
---- Sets the y tick count.
----@param count any
+--- Sets the number of Y axis ticks drawn for this chart.
+---@param count number Parameter value for this chart operation.
 function LLineChart:setYTickCount(count) end
 
---- Type.
+--- Returns the runtime userdata type name for this chart.
+---@return string Runtime userdata type name.
 function LLineChart:type() end
 
---- Type of.
----@param name any
+--- Checks whether a type name matches this chart userdata.
+---@param name string Parameter value for this chart operation.
+---@return boolean True when the supplied type name matches this chart userdata.
 function LLineChart:typeOf(name) end
 
 --- Adds one pie segment with a non-negative value.
----@param label any
----@param value any
----@param color? any
+---@param label string Parameter value for this chart operation.
+---@param value number Parameter value for this chart operation.
+---@param color? table Parameter value for this chart operation.
+---@return nil Return value produced by this chart operation.
 function LPieChart:addSegment(label, value, color) end
 
 --- Adds pie segments by reading label and value columns from a dataframe.
-function LPieChart:addSegmentsFromDataFrame() end
+---@param df userdata Parameter value for this chart operation.
+---@param label_col string Parameter value for this chart operation.
+---@param value_col string Parameter value for this chart operation.
+---@param opts? table Parameter value for this chart operation.
+---@return nil Return value produced by this chart operation.
+function LPieChart:addSegmentsFromDataFrame(df, label_col, value_col, opts) end
 
 --- Legacy alias that adds one pie slice with a non-negative value.
----@param label any
----@param value any
----@param color? any
+---@param label string Parameter value for this chart operation.
+---@param value number Parameter value for this chart operation.
+---@param color? table Parameter value for this chart operation.
+---@return nil Return value produced by this chart operation.
 function LPieChart:addSlice(label, value, color) end
 
---- Clears the state.
+--- Clears all series and cached chart state.
 function LPieChart:clear() end
 
 --- Draws the pie chart at world or screen coordinates using optional transform options.
----@param x any
----@param y any
----@param opts? any
+---@param x number Parameter value for this chart operation.
+---@param y number Parameter value for this chart operation.
+---@param opts? table Parameter value for this chart operation.
+---@return nil Return value produced by this chart operation.
 function LPieChart:draw(x, y, opts) end
 
---- Draw to image.
----@param target any
+--- Draws the rendered chart into an existing image.
+---@param target userdata Parameter value for this chart operation.
 function LPieChart:drawToImage(target) end
 
---- Returns the height.
+--- Returns the configured chart height in pixels.
+---@return number Configured chart dimension in pixels.
 function LPieChart:getHeight() end
 
---- Returns the width.
+--- Returns the configured chart width in pixels.
+---@return number Configured chart dimension in pixels.
 function LPieChart:getWidth() end
 
---- Render.
+--- Renders the chart into raw RGBA image bytes.
+---@return number Width; height; and RGBA image bytes for the rendered chart. (value 1).
+---@return number Width; height; and RGBA image bytes for the rendered chart. (value 2).
+---@return string Width; height; and RGBA image bytes for the rendered chart. (value 3).
 function LPieChart:render() end
 
---- Render image.
+--- Renders the chart into a new LImage userdata.
 function LPieChart:renderImage() end
 
---- Sets the show legend.
----@param value any
+--- Controls whether the chart legend is rendered.
+---@param value boolean Parameter value for this chart operation.
 function LPieChart:setShowLegend(value) end
 
---- Sets the title.
----@param title any
+--- Sets the chart title text shown in rendered output.
+---@param title string Parameter value for this chart operation.
 function LPieChart:setTitle(title) end
 
---- Type.
+--- Returns the runtime userdata type name for this chart.
+---@return string Runtime userdata type name.
 function LPieChart:type() end
 
---- Type of.
----@param name any
+--- Checks whether a type name matches this chart userdata.
+---@param name string Parameter value for this chart operation.
+---@return boolean True when the supplied type name matches this chart userdata.
 function LPieChart:typeOf(name) end
 
 --- Adds a named scatter series from an array-style Lua table of points.
----@param name any
----@param data any
----@param color? any
+---@param name string Parameter value for this chart operation.
+---@param data table Parameter value for this chart operation.
+---@param color? table Parameter value for this chart operation.
+---@return nil Return value produced by this chart operation.
 function LScatterPlot:addSeries(name, data, color) end
 
 --- Builds a named scatter series from x and y columns in a dataframe.
-function LScatterPlot:addSeriesFromDataFrame() end
+---@param name string Parameter value for this chart operation.
+---@param df userdata Parameter value for this chart operation.
+---@param x_col string Parameter value for this chart operation.
+---@param y_col string Parameter value for this chart operation.
+---@param color? table Parameter value for this chart operation.
+---@param opts? table Parameter value for this chart operation.
+---@return nil Return value produced by this chart operation.
+function LScatterPlot:addSeriesFromDataFrame(name, df, x_col, y_col, color, opts) end
 
 --- Appends one finite point to a named scatter series.
----@param name any
----@param x any
----@param y any
----@param color? any
+---@param name string Parameter value for this chart operation.
+---@param x number Parameter value for this chart operation.
+---@param y number Parameter value for this chart operation.
+---@param color? table Parameter value for this chart operation.
+---@return nil Return value produced by this chart operation.
 function LScatterPlot:appendPoint(name, x, y, color) end
 
---- Clears the state.
+--- Clears all series and cached chart state.
 function LScatterPlot:clear() end
 
 --- Draws the scatter plot at world or screen coordinates using optional transform options.
----@param x any
----@param y any
----@param opts? any
+---@param x number Parameter value for this chart operation.
+---@param y number Parameter value for this chart operation.
+---@param opts? table Parameter value for this chart operation.
+---@return nil Return value produced by this chart operation.
 function LScatterPlot:draw(x, y, opts) end
 
---- Draw to image.
----@param target any
+--- Draws the rendered chart into an existing image.
+---@param target userdata Parameter value for this chart operation.
 function LScatterPlot:drawToImage(target) end
 
---- Returns the height.
+--- Returns the configured chart height in pixels.
+---@return number Configured chart dimension in pixels.
 function LScatterPlot:getHeight() end
 
---- Returns the width.
+--- Returns the configured chart width in pixels.
+---@return number Configured chart dimension in pixels.
 function LScatterPlot:getWidth() end
 
---- Nearest.
----@param x any
----@param y any
+--- Finds the nearest plotted point to screen coordinates.
+---@param x number Parameter value for this chart operation.
+---@param y number Parameter value for this chart operation.
+---@return table Nearest point table, or nil when no point is available.
 function LScatterPlot:nearest(x, y) end
 
---- Render.
+--- Renders the chart into raw RGBA image bytes.
+---@return number Width; height; and RGBA image bytes for the rendered chart. (value 1).
+---@return number Width; height; and RGBA image bytes for the rendered chart. (value 2).
+---@return string Width; height; and RGBA image bytes for the rendered chart. (value 3).
 function LScatterPlot:render() end
 
---- Render image.
+--- Renders the chart into a new LImage userdata.
 function LScatterPlot:renderImage() end
 
 --- Replaces a named scatter series with a new array-style Lua table of points.
----@param name any
----@param data any
----@param color? any
+---@param name string Parameter value for this chart operation.
+---@param data table Parameter value for this chart operation.
+---@param color? table Parameter value for this chart operation.
+---@return nil Return value produced by this chart operation.
 function LScatterPlot:replaceSeries(name, data, color) end
 
---- Sets the dot radius.
----@param radius any
+--- Sets the rendered radius used for scatter dots.
+---@param radius number Parameter value for this chart operation.
 function LScatterPlot:setDotRadius(radius) end
 
---- Sets the show legend.
----@param value any
+--- Controls whether the chart legend is rendered.
+---@param value boolean Parameter value for this chart operation.
 function LScatterPlot:setShowLegend(value) end
 
---- Sets the title.
----@param title any
+--- Sets the chart title text shown in rendered output.
+---@param title string Parameter value for this chart operation.
 function LScatterPlot:setTitle(title) end
 
---- Sets the window.
----@param max_points? any
+--- Sets the maximum retained sample window for this chart.
+---@param max_points? number Parameter value for this chart operation.
 function LScatterPlot:setWindow(max_points) end
 
---- Sets the x label.
----@param label any
+--- Sets the X axis label text for rendered output.
+---@param label string Parameter value for this chart operation.
 function LScatterPlot:setXLabel(label) end
 
---- Sets the x range.
----@param min_x any
----@param max_x any
+--- Sets the explicit X axis range for plotted points.
+---@param min_x number Parameter value for this chart operation.
+---@param max_x number Parameter value for this chart operation.
 function LScatterPlot:setXRange(min_x, max_x) end
 
---- Sets the x tick count.
----@param count any
+--- Sets the number of X axis ticks drawn for this chart.
+---@param count number Parameter value for this chart operation.
 function LScatterPlot:setXTickCount(count) end
 
---- Sets the y label.
----@param label any
+--- Sets the Y axis label text for rendered output.
+---@param label string Parameter value for this chart operation.
 function LScatterPlot:setYLabel(label) end
 
---- Sets the y range.
----@param min_y any
----@param max_y any
+--- Sets the explicit Y axis range for plotted points.
+---@param min_y number Parameter value for this chart operation.
+---@param max_y number Parameter value for this chart operation.
 function LScatterPlot:setYRange(min_y, max_y) end
 
---- Sets the y tick count.
----@param count any
+--- Sets the number of Y axis ticks drawn for this chart.
+---@param count number Parameter value for this chart operation.
 function LScatterPlot:setYTickCount(count) end
 
---- Type.
+--- Returns the runtime userdata type name for this chart.
+---@return string Runtime userdata type name.
 function LScatterPlot:type() end
 
---- Type of.
----@param name any
+--- Checks whether a type name matches this chart userdata.
+---@param name string Parameter value for this chart operation.
+---@return boolean True when the supplied type name matches this chart userdata.
 function LScatterPlot:typeOf(name) end
 
---- Default palette.
+--- Returns the default chart color palette.
+---@return table Default color palette as RGB tables.
 lurek.charts.defaultPalette = function() end
 
---- New area.
----@param config? any
+--- Creates a new area chart userdata instance.
+---@param config? table Parameter value for this chart operation.
+---@return LAreaChart New area chart userdata.
 lurek.charts.newArea = function(config) end
 
---- New bar.
----@param config? any
+--- Creates a new bar chart userdata instance.
+---@param config? table Parameter value for this chart operation.
+---@return LBarChart New bar chart userdata.
 lurek.charts.newBar = function(config) end
 
---- New heatmap.
----@param config? any
+--- Creates a new heatmap chart userdata instance.
+---@param config? table Parameter value for this chart operation.
+---@return LHeatmapChart New heatmap chart userdata.
 lurek.charts.newHeatmap = function(config) end
 
---- New histogram.
----@param config? any
+--- Creates a new histogram chart userdata instance.
+---@param config? table Parameter value for this chart operation.
+---@return LHistogramChart New histogram chart userdata.
 lurek.charts.newHistogram = function(config) end
 
---- New line.
----@param config? any
+--- Creates a new line chart userdata instance.
+---@param config? table Parameter value for this chart operation.
+---@return LLineChart New line chart userdata.
 lurek.charts.newLine = function(config) end
 
---- New pie.
----@param config? any
+--- Creates a new pie chart userdata instance.
+---@param config? table Parameter value for this chart operation.
+---@return LPieChart New pie chart userdata.
 lurek.charts.newPie = function(config) end
 
---- New scatter.
----@param config? any
+--- Creates a new scatter plot userdata instance.
+---@param config? table Parameter value for this chart operation.
+---@return LScatterPlot New scatter plot userdata.
 lurek.charts.newScatter = function(config) end
 
---- Series color.
----@param index any
+--- Returns the palette color for a series index.
+---@param index number Parameter value for this chart operation.
+---@return table Palette color table for the requested series.
 lurek.charts.seriesColor = function(index) end
 
 --- Appends a timed cut to the cinematic timeline.
@@ -11038,7 +11166,7 @@ function LRelationshipManager:defineType(name, levels, default_level) end
 ---@param a number Source entity id for the relationship pair.
 ---@param b number Target entity id for the relationship pair.
 ---@param type_name string Registered relationship type name to query.
----@return string? Stored level label or the type default when available, otherwise `nil` if the type is unknown.
+---@return string Stored level label or the type default when available, otherwise `nil` if the type is unknown.
 function LRelationshipManager:getLevel(a, b, type_name) end
 
 --- Returns the numeric relationship value between two entity ids.
@@ -13364,7 +13492,7 @@ function LGlobe:setLayerVisible(name, vis) end
 ---@return boolean True when the marker exists.
 function LGlobe:setMarkerAttr(id, key, val) end
 
---- Sets marker tint color.
+--- Sets the RGBA tint color used to render a marker.
 ---@param id number Marker id.
 ---@param r number Red channel.
 ---@param g number Green channel.
@@ -13398,7 +13526,7 @@ function LGlobe:setMarkerRotation(id, dps) end
 ---@return boolean True when the marker exists.
 function LGlobe:setMarkerShape(id, shape) end
 
---- Sets marker size in screen units.
+--- Sets the marker size in screen units for rendering.
 ---@param id number Marker id.
 ---@param size number Marker size, clamped to at least 1.0.
 ---@return boolean True when the marker exists.
@@ -13636,7 +13764,7 @@ lurek.grep.jsonSearch = function(file, key) end
 ---@return table Array of matching log entries.
 lurek.grep.logSearch = function(file, level, pattern) end
 
---- Create a filter for Lua files only.
+--- Creates a file filter preconfigured for Lua files only.
 ---@return LFileFilter Pre-configured Lua filter.
 lurek.grep.luaFilter = function() end
 
@@ -13649,7 +13777,7 @@ lurek.grep.newEngine = function() end
 ---@return LGrepEngine Grep engine instance.
 lurek.grep.newEngineOpts = function(opts) end
 
---- Create an empty file filter.
+--- Creates an empty file filter for custom include rules.
 ---@return LFileFilter File filter instance.
 lurek.grep.newFilter = function() end
 
@@ -18851,7 +18979,7 @@ function LMod:releaseRefs() end
 
 --- Executes one registered hook under the mod's configured sandbox policy.
 ---@param name string Hook name.
----@return any Hook return values.
+---@return table Hook return values passed through from Lua.
 function LMod:runHook(name) end
 
 --- Sets the required API version string.
@@ -25242,7 +25370,7 @@ function LRaycaster:width() end
 ---@param opts? table Optional {size?, id?, level?, angle?}.
 function LSceneAdapter:addDirectionalSprite(x, y, front, right, back, left, opts) end
 
---- Adds a static point light entry.
+--- Adds a static point light entry to the adapter.
 ---@param x number World X position.
 ---@param y number World Y position.
 ---@param radius number Light falloff radius.
@@ -25296,7 +25424,7 @@ function LSceneAdapter:clear() end
 --- Removes every tracked light entry from the adapter.
 function LSceneAdapter:clearLights() end
 
---- Clears models.
+--- Clears all loaded model entries from the adapter.
 function LSceneAdapter:clearModels() end
 
 --- Removes every tracked sprite entry from the adapter.
@@ -25425,7 +25553,7 @@ lurek.raycaster.buildMultiLevelSceneFromAdapter = function(params, levels, adapt
 lurek.raycaster.distanceShade = function(distance, maxDistance) end
 
 --- Returns stats for the last stored raycaster scene build.
----@return table? Nil if no raycaster scene has been built yet; otherwise a stats table.
+---@return LRaycasterGetLastBuildStatsResult Nil if no raycaster scene has been built yet; otherwise a stats table.
 lurek.raycaster.getLastBuildStats = function() end
 
 --- Creates a new raycaster map with the given grid dimensions.
@@ -28124,7 +28252,7 @@ function LTerminal:textinput(text) end
 ---@param bb? number Background blue (0-1, default 0).
 ---@param ba? number Background alpha (0-1, default 0).
 ---@return boolean True on success; otherwise false and a reason string. (value 1).
----@return string? True on success; otherwise false and a reason string. (value 2).
+---@return string True on success; otherwise false and a reason string. (value 2).
 function LTerminal:trySet(col, row, ch, fr, fg, fb, fa, br, bg, bb, ba) end
 
 --- Returns the type name string "LTerminal".
@@ -28138,7 +28266,7 @@ function LTerminal:typeOf(name) end
 
 --- Validates panel child ownership, stale references, cycles, and the current focus target.
 ---@return boolean True when valid; otherwise false plus an array of validation messages. (value 1).
----@return string[]? True when valid; otherwise false plus an array of validation messages. (value 2).
+---@return table True when valid; otherwise false plus an array of validation messages. (value 2).
 function LTerminal:validateWidgets() end
 
 --- Adds a child widget to a panel widget. The child becomes part of the panel layout and rendering.
@@ -28294,7 +28422,7 @@ function LWidget:setVisible(visible) end
 --- Strictly sets widget text and returns an explicit error string instead of silently truncating.
 ---@param text string The new text content.
 ---@return boolean True on success; otherwise false and a reason string. (value 1).
----@return string? True on success; otherwise false and a reason string. (value 2).
+---@return string True on success; otherwise false and a reason string. (value 2).
 function LWidget:trySetText(text) end
 
 --- Returns the type name string "LWidget".
@@ -28471,14 +28599,14 @@ lurek.terminal.stripAnsi = function(text) end
 ---@param terminal LTerminal The terminal to push to.
 ---@param cmd string The command string to store.
 ---@return boolean True on success; otherwise false and a reason string. (value 1).
----@return string? True on success; otherwise false and a reason string. (value 2).
+---@return string True on success; otherwise false and a reason string. (value 2).
 lurek.terminal.tryPushCmdHistory = function(terminal, cmd) end
 
 --- Strictly appends a line of text to the terminal scrollback buffer.
 ---@param terminal LTerminal The terminal to push to.
 ---@param line string The text line to append.
 ---@return boolean True on success; otherwise false and a reason string. (value 1).
----@return string? True on success; otherwise false and a reason string. (value 2).
+---@return string True on success; otherwise false and a reason string. (value 2).
 lurek.terminal.tryPushScrollback = function(terminal, line) end
 
 --- Removes all pending values from the channel.
@@ -29421,16 +29549,16 @@ function LTileMap:toNavGrid(layer, gids) end
 ---@param name string Layer name.
 ---@param w number Width in tiles.
 ---@param h number Height in tiles.
----@return number? Index of the new layer (1-based).
----@return string? Error message when validation fails.
+---@return number Index of the new layer (1-based).
+---@return string Error message when validation fails.
 function LTileMap:tryAddLayer(name, w, h) end
 
 --- Returns the tile GID at a specific grid position, or `nil, error` when the layer or coord is invalid.
 ---@param layer number Layer index (1-based).
 ---@param x number Column (1-based).
 ---@param y number Row (1-based).
----@return number? Global tile ID at that position.
----@return string? Error message on failure.
+---@return number Global tile ID at that position.
+---@return string Error message on failure.
 function LTileMap:tryGetTile(layer, x, y) end
 
 --- Sets a tile and returns `false, error` instead of throwing on invalid layer or coordinate input.
@@ -29439,24 +29567,26 @@ function LTileMap:tryGetTile(layer, x, y) end
 ---@param y number Row (1-based).
 ---@param gid number Global tile ID to place.
 ---@return boolean True on success.
----@return string? Error message on failure.
+---@return string Error message on failure.
 function LTileMap:trySetTile(layer, x, y, gid) end
 
 --- Sets a per-cell tint override and returns `false, error` instead of throwing on invalid input.
----@param layer any
----@param x any
----@param y any
----@param r any
----@param g any
----@param b any
----@param a any
+---@param layer number Layer index (1-based).
+---@param x number Column (1-based).
+---@param y number Row (1-based).
+---@param r number Red tint channel.
+---@param g number Green tint channel.
+---@param b number Blue tint channel.
+---@param a number Alpha tint channel.
+---@return boolean True on success.
+---@return string Error message on failure.
 function LTileMap:trySetTileTint(layer, x, y, r, g, b, a) end
 
 --- Converts world-space pixel coordinates to tile-grid coordinates, returning nils for negative or non-finite input.
 ---@param wx number World X position in pixels.
 ---@param wy number World Y position in pixels.
----@return number? Tile column (1-based).
----@return number? Tile row (1-based).
+---@return number Tile column (1-based).
+---@return number Tile row (1-based).
 function LTileMap:tryWorldToTile(wx, wy) end
 
 --- Returns the type name of this userdata.

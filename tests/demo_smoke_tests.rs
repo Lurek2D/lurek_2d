@@ -150,46 +150,25 @@ macro_rules! demo_smoke_test {
     };
 }
 
-// ─── showcase demos ───────────────────────────────────────────────────────────
+// Current reference games.
 
 // ─── arcade demos ─────────────────────────────────────────────────────────────
 
-demo_smoke_test!(demo_smoke_pong, "content/games/arcade/pong");
-demo_smoke_test!(demo_smoke_snake, "content/games/arcade/snake");
-demo_smoke_test!(demo_smoke_tetris, "content/games/arcade/tetris");
-demo_smoke_test!(demo_smoke_pac_man, "content/games/arcade/pac_man");
-demo_smoke_test!(demo_smoke_asteroids, "content/games/arcade/asteroids");
-demo_smoke_test!(demo_smoke_dyna_blaster, "content/games/arcade/dyna_blaster");
+demo_smoke_test!(demo_smoke_cannon_fodder, "content/games/cannon_fodder");
+demo_smoke_test!(demo_smoke_dungeon_crawler, "content/games/dungeon_crawler");
+demo_smoke_test!(demo_smoke_eu2, "content/games/eu2");
+demo_smoke_test!(demo_smoke_finance_app, "content/games/finance_app");
+demo_smoke_test!(demo_smoke_hex_logistics, "content/games/hex_logistics");
+demo_smoke_test!(demo_smoke_music_composer, "content/games/music_composer");
+demo_smoke_test!(demo_smoke_sensible_soccer, "content/games/sensible_soccer");
 
 // ─── simulation demos ─────────────────────────────────────────────────────────
 
-demo_smoke_test!(
-    demo_smoke_physics_demo,
-    "content/games/simulation/physics_demo"
-);
-demo_smoke_test!(
-    demo_smoke_physics_sandbox,
-    "content/games/simulation/physics_sandbox"
-);
 
 // ─── action demos ─────────────────────────────────────────────────────────────
 
-demo_smoke_test!(demo_smoke_platformer, "content/games/action/platformer");
-demo_smoke_test!(
-    demo_smoke_brick_breaker,
-    "content/games/action/brick_breaker"
-);
 
 // ─── strategy demos ───────────────────────────────────────────────────────────
 
-demo_smoke_test!(
-    demo_smoke_tower_defense,
-    "content/games/strategy/tower_defense"
-);
 
-// ─── showcase: HTML UI demos ──────────────────────────────────────────────────
-
-demo_smoke_test!(
-    demo_smoke_mapblock_labyrinth,
-    "content/games/puzzle/mapblock_labyrinth"
-);
+// Removed legacy category-specific smoke targets.

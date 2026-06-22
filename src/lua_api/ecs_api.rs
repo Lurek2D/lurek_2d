@@ -123,7 +123,7 @@ impl LuaUserData for LuaRelationshipManager {
         /// @param | a | integer | Source entity id for the relationship pair.
         /// @param | b | integer | Target entity id for the relationship pair.
         /// @param | type_name | string | Registered relationship type name to query.
-        /// @return | string? | Stored level label or the type default when available, otherwise `nil` if the type is unknown.
+        /// @return | string | Stored level label or the type default when available, otherwise `nil` if the type is unknown.
         methods.add_method(
             "getLevel",
             |_, this, (a, b, type_name): (u32, u32, String)| {

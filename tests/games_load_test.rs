@@ -56,24 +56,7 @@ fn collect_recursive(dir: &Path, out: &mut Vec<PathBuf>) {
     }
 }
 
-fn library_module_exists(module_name: &str) -> bool {
-    let file_path = format!("library/{}.lua", module_name);
-    let init_path = format!("library/{}/init.lua", module_name);
-    Path::new(&file_path).exists() || Path::new(&init_path).exists()
-}
-
-fn should_skip_game(path: &str) -> Option<&'static str> {
-    let normalized = path.replace('\\', "/");
-    if normalized.ends_with("content/games/retro/commando/main.lua") {
-        // LuaJIT has a hard limit of 60 upvalues per function.
-        // This legacy demo currently exceeds that parser/runtime limit.
-        return Some("LuaJIT upvalue limit (>60 upvalues in one function)");
-    }
-    if normalized.ends_with("content/games/rpg/star_voyage/main.lua")
-        && !library_module_exists("dialog")
-    {
-        return Some("missing library module 'dialog'");
-    }
+fn should_skip_game(_path: &str) -> Option<&'static str> {
     None
 }
 

@@ -949,7 +949,7 @@ impl LuaUserData for LuaGlobe {
             this.with(|g| g.markers.get_attr(id, &key).map(|s| s.to_owned()))
         });
         // -- setMarkerColor --
-        /// Sets marker tint color.
+        /// Sets the RGBA tint color used to render a marker.
         /// @param | id | integer | Marker id.
         /// @param | r | number | Red channel.
         /// @param | g | number | Green channel.
@@ -976,7 +976,7 @@ impl LuaUserData for LuaGlobe {
             },
         );
         // -- setMarkerSize --
-        /// Sets marker size in screen units.
+        /// Sets the marker size in screen units for rendering.
         /// @param | id | integer | Marker id.
         /// @param | size | number | Marker size, clamped to at least 1.0.
         /// @return | boolean | True when the marker exists.

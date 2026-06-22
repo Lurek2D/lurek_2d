@@ -37,6 +37,7 @@ pub struct UiDiagnostic {
 }
 
 impl UiDiagnostic {
+    /// Creates a diagnostic message optionally tied to a widget index.
     pub(crate) fn new(widget_idx: Option<usize>, message: impl Into<String>) -> Self {
         Self {
             widget_idx,

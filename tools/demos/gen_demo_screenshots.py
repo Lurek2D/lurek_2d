@@ -2,7 +2,7 @@
 """
 gen_demo_screenshots.py — Capture a screen.png for every Lurek2D game demo.
 
-Scans ``content/games/<category>/<name>/`` for any folder containing ``main.lua``
+Scans ``content/games/<name>/`` for any folder containing ``main.lua``
 and launches the engine binary in screenshot mode.  Up to ``--workers`` (default 6)
 games are captured in parallel, each window placed in its own grid slot so they
 do not overlap on the desktop.
@@ -215,8 +215,8 @@ def rebuild(repo_root: Path) -> None:
 
 def discover_demos(games_root: Path, filter_names: list) -> list:
     """
-    Walk ``games_root/<category>/<name>/`` and return a sorted list of demo
-    directories that contain a ``main.lua``.
+    Walk ``games_root`` and return a sorted list of demo directories that
+    contain a ``main.lua``.
 
     If ``filter_names`` is non-empty only demos whose basename is in the set
     are returned.
@@ -224,12 +224,12 @@ def discover_demos(games_root: Path, filter_names: list) -> list:
     demos = []
     if not games_root.is_dir():
         return demos
-    for category_dir in sorted(games_root.iterdir()):
-        if not category_dir.is_dir():
+    for main_lua in sorted(games_root.rglob("main.lua")):
+        demo_dir = main_lua.parent
+        rel_parts = demo_dir.relative_to(games_root).parts
+        if any(part.startswith("_") for part in rel_parts):
             continue
-        for demo_dir in sorted(category_dir.iterdir()):
-            if demo_dir.is_dir() and (demo_dir / "main.lua").exists():
-                demos.append(demo_dir)
+        demos.append(demo_dir)
 
     if filter_names:
         wanted = set(filter_names)

@@ -1691,7 +1691,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 etbl.set("name", ev.name.clone())?;
                 tbl.set(i + 1, etbl)?;
             }
+            /// Replayed mouse X coordinate for this frame when recorded.
             tbl.set("mouse_x", frame.mouse_x)?;
+            /// Replayed mouse Y coordinate for this frame when recorded.
             tbl.set("mouse_y", frame.mouse_y)?;
             Ok(tbl)
         })?,

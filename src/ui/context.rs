@@ -2322,6 +2322,7 @@ impl GuiContext {
         hit.map(|(idx, _, _)| idx)
     }
 
+    /// Computes dropdown placement, visible row range, and scroll offset for a combo box.
     pub(crate) fn combo_dropdown_metrics(
         &self,
         idx: usize,

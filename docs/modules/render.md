@@ -6535,6 +6535,18 @@ LShader:getId()
 |------|-------------|
 | number | Opaque shader handle identifier. |
 
+**Example**
+
+```lua
+do
+    local code = "@fragment fn fs() -> @location(0) vec4<f32> { return vec4<f32>(1.0); }"
+    local shader = lurek.render.newShader(code)
+    local id = shader:getId()
+    example_print_log("shader id = " .. tostring(id))
+    example_print_log("shader id numeric = " .. tostring(type(id) == "number"))
+end
+```
+
 ---
 
 #### `LShader:hasUniform`

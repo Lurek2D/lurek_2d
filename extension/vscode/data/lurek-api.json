@@ -4259,17 +4259,17 @@
           "name": "newLine",
           "fullPath": "lurek.charts.newLine",
           "signature": "([config])",
-          "description": "New line.",
+          "description": "Creates a new line chart userdata instance.",
           "parameters": [
             {
               "name": "config",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
               "optional": true
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "LLineChart",
+          "returnType": "LLineChart",
           "isMethod": false,
           "objectType": null
         },
@@ -4277,17 +4277,17 @@
           "name": "newBar",
           "fullPath": "lurek.charts.newBar",
           "signature": "([config])",
-          "description": "New bar.",
+          "description": "Creates a new bar chart userdata instance.",
           "parameters": [
             {
               "name": "config",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
               "optional": true
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "LBarChart",
+          "returnType": "LBarChart",
           "isMethod": false,
           "objectType": null
         },
@@ -4295,17 +4295,17 @@
           "name": "newScatter",
           "fullPath": "lurek.charts.newScatter",
           "signature": "([config])",
-          "description": "New scatter.",
+          "description": "Creates a new scatter plot userdata instance.",
           "parameters": [
             {
               "name": "config",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
               "optional": true
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "LScatterPlot",
+          "returnType": "LScatterPlot",
           "isMethod": false,
           "objectType": null
         },
@@ -4313,17 +4313,17 @@
           "name": "newPie",
           "fullPath": "lurek.charts.newPie",
           "signature": "([config])",
-          "description": "New pie.",
+          "description": "Creates a new pie chart userdata instance.",
           "parameters": [
             {
               "name": "config",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
               "optional": true
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "LPieChart",
+          "returnType": "LPieChart",
           "isMethod": false,
           "objectType": null
         },
@@ -4331,17 +4331,17 @@
           "name": "newArea",
           "fullPath": "lurek.charts.newArea",
           "signature": "([config])",
-          "description": "New area.",
+          "description": "Creates a new area chart userdata instance.",
           "parameters": [
             {
               "name": "config",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
               "optional": true
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "LAreaChart",
+          "returnType": "LAreaChart",
           "isMethod": false,
           "objectType": null
         },
@@ -4349,17 +4349,17 @@
           "name": "newHistogram",
           "fullPath": "lurek.charts.newHistogram",
           "signature": "([config])",
-          "description": "New histogram.",
+          "description": "Creates a new histogram chart userdata instance.",
           "parameters": [
             {
               "name": "config",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
               "optional": true
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "LHistogramChart",
+          "returnType": "LHistogramChart",
           "isMethod": false,
           "objectType": null
         },
@@ -4367,17 +4367,17 @@
           "name": "newHeatmap",
           "fullPath": "lurek.charts.newHeatmap",
           "signature": "([config])",
-          "description": "New heatmap.",
+          "description": "Creates a new heatmap chart userdata instance.",
           "parameters": [
             {
               "name": "config",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
               "optional": true
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "LHeatmapChart",
+          "returnType": "LHeatmapChart",
           "isMethod": false,
           "objectType": null
         },
@@ -4385,10 +4385,10 @@
           "name": "defaultPalette",
           "fullPath": "lurek.charts.defaultPalette",
           "signature": "()",
-          "description": "Default palette.",
+          "description": "Returns the default chart color palette.",
           "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "table",
+          "returnType": "table",
           "isMethod": false,
           "objectType": null
         },
@@ -4396,17 +4396,17 @@
           "name": "seriesColor",
           "fullPath": "lurek.charts.seriesColor",
           "signature": "(index)",
-          "description": "Series color.",
+          "description": "Returns the palette color for a series index.",
           "parameters": [
             {
               "name": "index",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "table",
+          "returnType": "table",
           "isMethod": false,
           "objectType": null
         }
@@ -10450,7 +10450,7 @@
           "name": "newFilter",
           "fullPath": "lurek.grep.newFilter",
           "signature": "()",
-          "description": "Create an empty file filter.",
+          "description": "Creates an empty file filter for custom include rules.",
           "parameters": [],
           "returns": "LFileFilter",
           "returnType": "LFileFilter",
@@ -10461,7 +10461,7 @@
           "name": "luaFilter",
           "fullPath": "lurek.grep.luaFilter",
           "signature": "()",
-          "description": "Create a filter for Lua files only.",
+          "description": "Creates a file filter preconfigured for Lua files only.",
           "parameters": [],
           "returns": "LFileFilter",
           "returnType": "LFileFilter",
@@ -21541,8 +21541,8 @@
           "signature": "()",
           "description": "Returns stats for the last stored raycaster scene build.",
           "parameters": [],
-          "returns": "table?",
-          "returnType": "table?",
+          "returns": "table",
+          "returnType": "table",
           "isMethod": false,
           "objectType": null
         },
@@ -27162,8 +27162,8 @@
               "optional": false
             }
           ],
-          "returns": "boolean, string?",
-          "returnType": "boolean, string?",
+          "returns": "boolean, string",
+          "returnType": "boolean, string",
           "isMethod": false,
           "objectType": null
         },
@@ -27282,8 +27282,8 @@
               "optional": false
             }
           ],
-          "returns": "boolean, string?",
-          "returnType": "boolean, string?",
+          "returns": "boolean, string",
+          "returnType": "boolean, string",
           "isMethod": false,
           "objectType": null
         },
@@ -32725,14 +32725,14 @@
           "parameters": [
             {
               "name": "instruction",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "User instruction used to build the context report.",
               "optional": false
             },
             {
               "name": "opts",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Optional table containing instruction filters and agent selection.",
               "optional": true
             }
           ],
@@ -36811,20 +36811,20 @@
           "parameters": [
             {
               "name": "name",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             },
             {
               "name": "data",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             },
             {
               "name": "color",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
               "optional": true
             }
           ],
@@ -36841,20 +36841,20 @@
           "parameters": [
             {
               "name": "name",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             },
             {
               "name": "values",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             },
             {
               "name": "color",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
               "optional": true
             }
           ],
@@ -36866,9 +36866,40 @@
         {
           "name": "addLayerFromDataFrame",
           "fullPath": "LAreaChart:addLayerFromDataFrame",
-          "signature": "LAreaChart:addLayerFromDataFrame()",
+          "signature": "LAreaChart:addLayerFromDataFrame(name, df, value_col, [color], [opts])",
           "description": "Builds one filled area layer from a dataframe value column.",
-          "parameters": [],
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Parameter value for this chart operation.",
+              "optional": false
+            },
+            {
+              "name": "df",
+              "type": "userdata",
+              "description": "Parameter value for this chart operation.",
+              "optional": false
+            },
+            {
+              "name": "value_col",
+              "type": "string",
+              "description": "Parameter value for this chart operation.",
+              "optional": false
+            },
+            {
+              "name": "color",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
+              "optional": true
+            }
+          ],
           "returns": "nil",
           "returnType": "nil",
           "isMethod": true,
@@ -36882,26 +36913,26 @@
           "parameters": [
             {
               "name": "name",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             },
             {
               "name": "x",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             },
             {
               "name": "y",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             },
             {
               "name": "color",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
               "optional": true
             }
           ],
@@ -36914,12 +36945,12 @@
           "name": "setWindow",
           "fullPath": "LAreaChart:setWindow",
           "signature": "([max_points])",
-          "description": "Sets the window.",
+          "description": "Sets the maximum retained sample window for this chart.",
           "parameters": [
             {
               "name": "max_points",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "Parameter value for this chart operation.",
               "optional": true
             }
           ],
@@ -36932,7 +36963,7 @@
           "name": "clear",
           "fullPath": "LAreaChart:clear",
           "signature": "()",
-          "description": "Clears the state.",
+          "description": "Clears all series and cached chart state.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -36943,12 +36974,12 @@
           "name": "setTitle",
           "fullPath": "LAreaChart:setTitle",
           "signature": "(title)",
-          "description": "Sets the title.",
+          "description": "Sets the chart title text shown in rendered output.",
           "parameters": [
             {
               "name": "title",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
@@ -36961,12 +36992,12 @@
           "name": "setYMax",
           "fullPath": "LAreaChart:setYMax",
           "signature": "(value)",
-          "description": "Sets the y max.",
+          "description": "Sets the explicit Y axis maximum for chart scaling.",
           "parameters": [
             {
               "name": "value",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
@@ -36979,12 +37010,12 @@
           "name": "setXLabel",
           "fullPath": "LAreaChart:setXLabel",
           "signature": "(label)",
-          "description": "Sets the x label.",
+          "description": "Sets the X axis label text for rendered output.",
           "parameters": [
             {
               "name": "label",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
@@ -36997,12 +37028,12 @@
           "name": "setYLabel",
           "fullPath": "LAreaChart:setYLabel",
           "signature": "(label)",
-          "description": "Sets the y label.",
+          "description": "Sets the Y axis label text for rendered output.",
           "parameters": [
             {
               "name": "label",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
@@ -37015,12 +37046,12 @@
           "name": "setXTickCount",
           "fullPath": "LAreaChart:setXTickCount",
           "signature": "(count)",
-          "description": "Sets the x tick count.",
+          "description": "Sets the number of X axis ticks drawn for this chart.",
           "parameters": [
             {
               "name": "count",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
@@ -37033,12 +37064,12 @@
           "name": "setYTickCount",
           "fullPath": "LAreaChart:setYTickCount",
           "signature": "(count)",
-          "description": "Sets the y tick count.",
+          "description": "Sets the number of Y axis ticks drawn for this chart.",
           "parameters": [
             {
               "name": "count",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
@@ -37051,12 +37082,12 @@
           "name": "setShowLegend",
           "fullPath": "LAreaChart:setShowLegend",
           "signature": "(value)",
-          "description": "Sets the show legend.",
+          "description": "Controls whether the chart legend is rendered.",
           "parameters": [
             {
               "name": "value",
-              "type": "any",
-              "description": "",
+              "type": "boolean",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
@@ -37069,10 +37100,10 @@
           "name": "render",
           "fullPath": "LAreaChart:render",
           "signature": "()",
-          "description": "Render.",
+          "description": "Renders the chart into raw RGBA image bytes.",
           "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "integer, integer, string",
+          "returnType": "integer, integer, string",
           "isMethod": true,
           "objectType": "LAreaChart"
         },
@@ -37080,7 +37111,7 @@
           "name": "renderImage",
           "fullPath": "LAreaChart:renderImage",
           "signature": "()",
-          "description": "Render image.",
+          "description": "Renders the chart into a new LImage userdata.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -37091,12 +37122,12 @@
           "name": "drawToImage",
           "fullPath": "LAreaChart:drawToImage",
           "signature": "(target)",
-          "description": "Draw to image.",
+          "description": "Draws the rendered chart into an existing image.",
           "parameters": [
             {
               "name": "target",
-              "type": "any",
-              "description": "",
+              "type": "userdata",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
@@ -37113,20 +37144,20 @@
           "parameters": [
             {
               "name": "x",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             },
             {
               "name": "y",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             },
             {
               "name": "opts",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
               "optional": true
             }
           ],
@@ -37139,10 +37170,10 @@
           "name": "getWidth",
           "fullPath": "LAreaChart:getWidth",
           "signature": "()",
-          "description": "Returns the width.",
+          "description": "Returns the configured chart width in pixels.",
           "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LAreaChart"
         },
@@ -37150,10 +37181,10 @@
           "name": "getHeight",
           "fullPath": "LAreaChart:getHeight",
           "signature": "()",
-          "description": "Returns the height.",
+          "description": "Returns the configured chart height in pixels.",
           "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LAreaChart"
         },
@@ -37161,10 +37192,10 @@
           "name": "type",
           "fullPath": "LAreaChart:type",
           "signature": "()",
-          "description": "Type.",
+          "description": "Returns the runtime userdata type name for this chart.",
           "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "string",
+          "returnType": "string",
           "isMethod": true,
           "objectType": "LAreaChart"
         },
@@ -37172,17 +37203,17 @@
           "name": "typeOf",
           "fullPath": "LAreaChart:typeOf",
           "signature": "(name)",
-          "description": "Type of.",
+          "description": "Checks whether a type name matches this chart userdata.",
           "parameters": [
             {
               "name": "name",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "boolean",
+          "returnType": "boolean",
           "isMethod": true,
           "objectType": "LAreaChart"
         }
@@ -40587,20 +40618,20 @@
           "parameters": [
             {
               "name": "name",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             },
             {
               "name": "data",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             },
             {
               "name": "color",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
               "optional": true
             }
           ],
@@ -40617,14 +40648,14 @@
           "parameters": [
             {
               "name": "label",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             },
             {
               "name": "values",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
@@ -40636,9 +40667,34 @@
         {
           "name": "addCategoriesFromDataFrame",
           "fullPath": "LBarChart:addCategoriesFromDataFrame",
-          "signature": "LBarChart:addCategoriesFromDataFrame()",
+          "signature": "LBarChart:addCategoriesFromDataFrame(df, label_col, value_cols, [opts])",
           "description": "Adds grouped bar categories by reading one label column and one or more value columns from a dataframe.",
-          "parameters": [],
+          "parameters": [
+            {
+              "name": "df",
+              "type": "userdata",
+              "description": "Parameter value for this chart operation.",
+              "optional": false
+            },
+            {
+              "name": "label_col",
+              "type": "string",
+              "description": "Parameter value for this chart operation.",
+              "optional": false
+            },
+            {
+              "name": "value_cols",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
+              "optional": true
+            }
+          ],
           "returns": "nil",
           "returnType": "nil",
           "isMethod": true,
@@ -40648,7 +40704,7 @@
           "name": "clear",
           "fullPath": "LBarChart:clear",
           "signature": "()",
-          "description": "Clears the state.",
+          "description": "Clears all series and cached chart state.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -40659,12 +40715,12 @@
           "name": "setBarWidth",
           "fullPath": "LBarChart:setBarWidth",
           "signature": "(width)",
-          "description": "Sets the bar width.",
+          "description": "Sets the rendered width used for each bar.",
           "parameters": [
             {
               "name": "width",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
@@ -40677,12 +40733,12 @@
           "name": "setTitle",
           "fullPath": "LBarChart:setTitle",
           "signature": "(title)",
-          "description": "Sets the title.",
+          "description": "Sets the chart title text shown in rendered output.",
           "parameters": [
             {
               "name": "title",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
@@ -40695,12 +40751,12 @@
           "name": "setXLabel",
           "fullPath": "LBarChart:setXLabel",
           "signature": "(label)",
-          "description": "Sets the x label.",
+          "description": "Sets the X axis label text for rendered output.",
           "parameters": [
             {
               "name": "label",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
@@ -40713,12 +40769,12 @@
           "name": "setYLabel",
           "fullPath": "LBarChart:setYLabel",
           "signature": "(label)",
-          "description": "Sets the y label.",
+          "description": "Sets the Y axis label text for rendered output.",
           "parameters": [
             {
               "name": "label",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
@@ -40731,12 +40787,12 @@
           "name": "setXTickCount",
           "fullPath": "LBarChart:setXTickCount",
           "signature": "(count)",
-          "description": "Sets the x tick count.",
+          "description": "Sets the number of X axis ticks drawn for this chart.",
           "parameters": [
             {
               "name": "count",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
@@ -40749,12 +40805,12 @@
           "name": "setYTickCount",
           "fullPath": "LBarChart:setYTickCount",
           "signature": "(count)",
-          "description": "Sets the y tick count.",
+          "description": "Sets the number of Y axis ticks drawn for this chart.",
           "parameters": [
             {
               "name": "count",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
@@ -40767,12 +40823,12 @@
           "name": "setShowLegend",
           "fullPath": "LBarChart:setShowLegend",
           "signature": "(value)",
-          "description": "Sets the show legend.",
+          "description": "Controls whether the chart legend is rendered.",
           "parameters": [
             {
               "name": "value",
-              "type": "any",
-              "description": "",
+              "type": "boolean",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
@@ -40785,10 +40841,10 @@
           "name": "render",
           "fullPath": "LBarChart:render",
           "signature": "()",
-          "description": "Render.",
+          "description": "Renders the chart into raw RGBA image bytes.",
           "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "integer, integer, string",
+          "returnType": "integer, integer, string",
           "isMethod": true,
           "objectType": "LBarChart"
         },
@@ -40796,7 +40852,7 @@
           "name": "renderImage",
           "fullPath": "LBarChart:renderImage",
           "signature": "()",
-          "description": "Render image.",
+          "description": "Renders the chart into a new LImage userdata.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -40807,12 +40863,12 @@
           "name": "drawToImage",
           "fullPath": "LBarChart:drawToImage",
           "signature": "(target)",
-          "description": "Draw to image.",
+          "description": "Draws the rendered chart into an existing image.",
           "parameters": [
             {
               "name": "target",
-              "type": "any",
-              "description": "",
+              "type": "userdata",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
@@ -40829,20 +40885,20 @@
           "parameters": [
             {
               "name": "x",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             },
             {
               "name": "y",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             },
             {
               "name": "opts",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
               "optional": true
             }
           ],
@@ -40855,10 +40911,10 @@
           "name": "getWidth",
           "fullPath": "LBarChart:getWidth",
           "signature": "()",
-          "description": "Returns the width.",
+          "description": "Returns the configured chart width in pixels.",
           "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LBarChart"
         },
@@ -40866,10 +40922,10 @@
           "name": "getHeight",
           "fullPath": "LBarChart:getHeight",
           "signature": "()",
-          "description": "Returns the height.",
+          "description": "Returns the configured chart height in pixels.",
           "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LBarChart"
         },
@@ -40877,10 +40933,10 @@
           "name": "type",
           "fullPath": "LBarChart:type",
           "signature": "()",
-          "description": "Type.",
+          "description": "Returns the runtime userdata type name for this chart.",
           "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "string",
+          "returnType": "string",
           "isMethod": true,
           "objectType": "LBarChart"
         },
@@ -40888,17 +40944,17 @@
           "name": "typeOf",
           "fullPath": "LBarChart:typeOf",
           "signature": "(name)",
-          "description": "Type of.",
+          "description": "Checks whether a type name matches this chart userdata.",
           "parameters": [
             {
               "name": "name",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "boolean",
+          "returnType": "boolean",
           "isMethod": true,
           "objectType": "LBarChart"
         }
@@ -66671,7 +66727,7 @@
           "name": "setMarkerColor",
           "fullPath": "LGlobe:setMarkerColor",
           "signature": "(id, r, g, b, [a])",
-          "description": "Sets marker tint color.",
+          "description": "Sets the RGBA tint color used to render a marker.",
           "parameters": [
             {
               "name": "id",
@@ -66713,7 +66769,7 @@
           "name": "setMarkerSize",
           "fullPath": "LGlobe:setMarkerSize",
           "signature": "(id, size)",
-          "description": "Sets marker size in screen units.",
+          "description": "Sets the marker size in screen units for rendering.",
           "parameters": [
             {
               "name": "id",
@@ -73382,20 +73438,20 @@
           "parameters": [
             {
               "name": "matrix",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             },
             {
               "name": "row_labels",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
               "optional": true
             },
             {
               "name": "col_labels",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
               "optional": true
             }
           ],
@@ -73407,9 +73463,40 @@
         {
           "name": "setMatrixFromDataFrame",
           "fullPath": "LHeatmapChart:setMatrixFromDataFrame",
-          "signature": "LHeatmapChart:setMatrixFromDataFrame()",
+          "signature": "LHeatmapChart:setMatrixFromDataFrame(df, row_col, col_col, value_col, [opts])",
           "description": "Builds the heatmap contents from dataframe row, column, and value fields.",
-          "parameters": [],
+          "parameters": [
+            {
+              "name": "df",
+              "type": "userdata",
+              "description": "Parameter value for this chart operation.",
+              "optional": false
+            },
+            {
+              "name": "row_col",
+              "type": "string",
+              "description": "Parameter value for this chart operation.",
+              "optional": false
+            },
+            {
+              "name": "col_col",
+              "type": "string",
+              "description": "Parameter value for this chart operation.",
+              "optional": false
+            },
+            {
+              "name": "value_col",
+              "type": "string",
+              "description": "Parameter value for this chart operation.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
+              "optional": true
+            }
+          ],
           "returns": "nil",
           "returnType": "nil",
           "isMethod": true,
@@ -73419,18 +73506,18 @@
           "name": "resize",
           "fullPath": "LHeatmapChart:resize",
           "signature": "(rows, cols)",
-          "description": "Resize.",
+          "description": "Resizes the heatmap grid dimensions.",
           "parameters": [
             {
               "name": "rows",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             },
             {
               "name": "cols",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
@@ -73443,24 +73530,24 @@
           "name": "setCell",
           "fullPath": "LHeatmapChart:setCell",
           "signature": "(row, col, value)",
-          "description": "Sets the cell.",
+          "description": "Sets a numeric heatmap cell value by row and column.",
           "parameters": [
             {
               "name": "row",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             },
             {
               "name": "col",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             },
             {
               "name": "value",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
@@ -73473,7 +73560,7 @@
           "name": "clear",
           "fullPath": "LHeatmapChart:clear",
           "signature": "()",
-          "description": "Clears the state.",
+          "description": "Clears all series and cached chart state.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -73484,12 +73571,12 @@
           "name": "setRowLabels",
           "fullPath": "LHeatmapChart:setRowLabels",
           "signature": "(labels)",
-          "description": "Sets the row labels.",
+          "description": "Sets labels displayed for heatmap rows.",
           "parameters": [
             {
               "name": "labels",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
@@ -73502,12 +73589,12 @@
           "name": "setColumnLabels",
           "fullPath": "LHeatmapChart:setColumnLabels",
           "signature": "(labels)",
-          "description": "Sets the column labels.",
+          "description": "Sets labels displayed for heatmap columns.",
           "parameters": [
             {
               "name": "labels",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
@@ -73520,18 +73607,18 @@
           "name": "setValueRange",
           "fullPath": "LHeatmapChart:setValueRange",
           "signature": "(min, max)",
-          "description": "Sets the value range.",
+          "description": "Sets the explicit heatmap value range.",
           "parameters": [
             {
               "name": "min",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             },
             {
               "name": "max",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
@@ -73544,7 +73631,7 @@
           "name": "clearValueRange",
           "fullPath": "LHeatmapChart:clearValueRange",
           "signature": "()",
-          "description": "Clears value range.",
+          "description": "Clears the explicit heatmap value range.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -73559,14 +73646,14 @@
           "parameters": [
             {
               "name": "low",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             },
             {
               "name": "high",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
@@ -73579,12 +73666,12 @@
           "name": "setShowValues",
           "fullPath": "LHeatmapChart:setShowValues",
           "signature": "(value)",
-          "description": "Sets the show values.",
+          "description": "Controls whether heatmap cell values are rendered.",
           "parameters": [
             {
               "name": "value",
-              "type": "any",
-              "description": "",
+              "type": "boolean",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
@@ -73597,12 +73684,12 @@
           "name": "setTitle",
           "fullPath": "LHeatmapChart:setTitle",
           "signature": "(title)",
-          "description": "Sets the title.",
+          "description": "Sets the chart title text shown in rendered output.",
           "parameters": [
             {
               "name": "title",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
@@ -73615,12 +73702,12 @@
           "name": "setShowLegend",
           "fullPath": "LHeatmapChart:setShowLegend",
           "signature": "(value)",
-          "description": "Sets the show legend.",
+          "description": "Controls whether the chart legend is rendered.",
           "parameters": [
             {
               "name": "value",
-              "type": "any",
-              "description": "",
+              "type": "boolean",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
@@ -73633,10 +73720,10 @@
           "name": "render",
           "fullPath": "LHeatmapChart:render",
           "signature": "()",
-          "description": "Render.",
+          "description": "Renders the chart into raw RGBA image bytes.",
           "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "integer, integer, string",
+          "returnType": "integer, integer, string",
           "isMethod": true,
           "objectType": "LHeatmapChart"
         },
@@ -73644,7 +73731,7 @@
           "name": "renderImage",
           "fullPath": "LHeatmapChart:renderImage",
           "signature": "()",
-          "description": "Render image.",
+          "description": "Renders the chart into a new LImage userdata.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -73655,12 +73742,12 @@
           "name": "drawToImage",
           "fullPath": "LHeatmapChart:drawToImage",
           "signature": "(target)",
-          "description": "Draw to image.",
+          "description": "Draws the rendered chart into an existing image.",
           "parameters": [
             {
               "name": "target",
-              "type": "any",
-              "description": "",
+              "type": "userdata",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
@@ -73677,20 +73764,20 @@
           "parameters": [
             {
               "name": "x",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             },
             {
               "name": "y",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             },
             {
               "name": "opts",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
               "optional": true
             }
           ],
@@ -73703,10 +73790,10 @@
           "name": "getWidth",
           "fullPath": "LHeatmapChart:getWidth",
           "signature": "()",
-          "description": "Returns the width.",
+          "description": "Returns the configured chart width in pixels.",
           "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LHeatmapChart"
         },
@@ -73714,10 +73801,10 @@
           "name": "getHeight",
           "fullPath": "LHeatmapChart:getHeight",
           "signature": "()",
-          "description": "Returns the height.",
+          "description": "Returns the configured chart height in pixels.",
           "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LHeatmapChart"
         },
@@ -73725,10 +73812,10 @@
           "name": "type",
           "fullPath": "LHeatmapChart:type",
           "signature": "()",
-          "description": "Type.",
+          "description": "Returns the runtime userdata type name for this chart.",
           "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "string",
+          "returnType": "string",
           "isMethod": true,
           "objectType": "LHeatmapChart"
         },
@@ -73736,17 +73823,17 @@
           "name": "typeOf",
           "fullPath": "LHeatmapChart:typeOf",
           "signature": "(name)",
-          "description": "Type of.",
+          "description": "Checks whether a type name matches this chart userdata.",
           "parameters": [
             {
               "name": "name",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "boolean",
+          "returnType": "boolean",
           "isMethod": true,
           "objectType": "LHeatmapChart"
         }
@@ -74247,20 +74334,20 @@
           "parameters": [
             {
               "name": "name",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             },
             {
-              "name": "values",
-              "type": "any",
-              "description": "",
+              "name": "data",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             },
             {
               "name": "color",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
               "optional": true
             }
           ],
@@ -74272,9 +74359,46 @@
         {
           "name": "addSeriesFromDataFrame",
           "fullPath": "LHistogramChart:addSeriesFromDataFrame",
-          "signature": "LHistogramChart:addSeriesFromDataFrame()",
+          "signature": "LHistogramChart:addSeriesFromDataFrame(name, df, x_col, y_col, [color], [opts])",
           "description": "Builds a named histogram sample series from one dataframe value column.",
-          "parameters": [],
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Parameter value for this chart operation.",
+              "optional": false
+            },
+            {
+              "name": "df",
+              "type": "userdata",
+              "description": "Parameter value for this chart operation.",
+              "optional": false
+            },
+            {
+              "name": "x_col",
+              "type": "string",
+              "description": "Parameter value for this chart operation.",
+              "optional": false
+            },
+            {
+              "name": "y_col",
+              "type": "string",
+              "description": "Parameter value for this chart operation.",
+              "optional": false
+            },
+            {
+              "name": "color",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
+              "optional": true
+            }
+          ],
           "returns": "nil",
           "returnType": "nil",
           "isMethod": true,
@@ -74288,20 +74412,20 @@
           "parameters": [
             {
               "name": "name",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             },
             {
-              "name": "values",
-              "type": "any",
-              "description": "",
+              "name": "data",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             },
             {
               "name": "color",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
               "optional": true
             }
           ],
@@ -74318,20 +74442,20 @@
           "parameters": [
             {
               "name": "name",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             },
             {
               "name": "value",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             },
             {
               "name": "color",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
               "optional": true
             }
           ],
@@ -74344,12 +74468,12 @@
           "name": "setWindow",
           "fullPath": "LHistogramChart:setWindow",
           "signature": "([max_points])",
-          "description": "Sets the window.",
+          "description": "Sets the maximum retained sample window for this chart.",
           "parameters": [
             {
               "name": "max_points",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "Parameter value for this chart operation.",
               "optional": true
             }
           ],
@@ -74362,7 +74486,7 @@
           "name": "clear",
           "fullPath": "LHistogramChart:clear",
           "signature": "()",
-          "description": "Clears the state.",
+          "description": "Clears all series and cached chart state.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -74373,12 +74497,12 @@
           "name": "setBinCount",
           "fullPath": "LHistogramChart:setBinCount",
           "signature": "(bins)",
-          "description": "Sets the bin count.",
+          "description": "Sets the number of histogram bins used for samples.",
           "parameters": [
             {
               "name": "bins",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
@@ -74391,18 +74515,18 @@
           "name": "setRange",
           "fullPath": "LHistogramChart:setRange",
           "signature": "(min, max)",
-          "description": "Sets the range.",
+          "description": "Sets the explicit histogram value range.",
           "parameters": [
             {
               "name": "min",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             },
             {
               "name": "max",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
@@ -74415,7 +74539,7 @@
           "name": "clearRange",
           "fullPath": "LHistogramChart:clearRange",
           "signature": "()",
-          "description": "Clears range.",
+          "description": "Clears the explicit histogram value range.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -74426,12 +74550,12 @@
           "name": "setDensity",
           "fullPath": "LHistogramChart:setDensity",
           "signature": "(enabled)",
-          "description": "Sets the density.",
+          "description": "Controls whether histogram bins render as density values.",
           "parameters": [
             {
               "name": "enabled",
-              "type": "any",
-              "description": "",
+              "type": "boolean",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
@@ -74444,12 +74568,12 @@
           "name": "setTitle",
           "fullPath": "LHistogramChart:setTitle",
           "signature": "(title)",
-          "description": "Sets the title.",
+          "description": "Sets the chart title text shown in rendered output.",
           "parameters": [
             {
               "name": "title",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
@@ -74462,12 +74586,12 @@
           "name": "setXLabel",
           "fullPath": "LHistogramChart:setXLabel",
           "signature": "(label)",
-          "description": "Sets the x label.",
+          "description": "Sets the X axis label text for rendered output.",
           "parameters": [
             {
               "name": "label",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
@@ -74480,12 +74604,12 @@
           "name": "setYLabel",
           "fullPath": "LHistogramChart:setYLabel",
           "signature": "(label)",
-          "description": "Sets the y label.",
+          "description": "Sets the Y axis label text for rendered output.",
           "parameters": [
             {
               "name": "label",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
@@ -74498,12 +74622,12 @@
           "name": "setXTickCount",
           "fullPath": "LHistogramChart:setXTickCount",
           "signature": "(count)",
-          "description": "Sets the x tick count.",
+          "description": "Sets the number of X axis ticks drawn for this chart.",
           "parameters": [
             {
               "name": "count",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
@@ -74516,12 +74640,12 @@
           "name": "setYTickCount",
           "fullPath": "LHistogramChart:setYTickCount",
           "signature": "(count)",
-          "description": "Sets the y tick count.",
+          "description": "Sets the number of Y axis ticks drawn for this chart.",
           "parameters": [
             {
               "name": "count",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
@@ -74534,12 +74658,12 @@
           "name": "setShowLegend",
           "fullPath": "LHistogramChart:setShowLegend",
           "signature": "(value)",
-          "description": "Sets the show legend.",
+          "description": "Controls whether the chart legend is rendered.",
           "parameters": [
             {
               "name": "value",
-              "type": "any",
-              "description": "",
+              "type": "boolean",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
@@ -74552,10 +74676,10 @@
           "name": "render",
           "fullPath": "LHistogramChart:render",
           "signature": "()",
-          "description": "Render.",
+          "description": "Renders the chart into raw RGBA image bytes.",
           "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "integer, integer, string",
+          "returnType": "integer, integer, string",
           "isMethod": true,
           "objectType": "LHistogramChart"
         },
@@ -74563,7 +74687,7 @@
           "name": "renderImage",
           "fullPath": "LHistogramChart:renderImage",
           "signature": "()",
-          "description": "Render image.",
+          "description": "Renders the chart into a new LImage userdata.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -74574,12 +74698,12 @@
           "name": "drawToImage",
           "fullPath": "LHistogramChart:drawToImage",
           "signature": "(target)",
-          "description": "Draw to image.",
+          "description": "Draws the rendered chart into an existing image.",
           "parameters": [
             {
               "name": "target",
-              "type": "any",
-              "description": "",
+              "type": "userdata",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
@@ -74596,20 +74720,20 @@
           "parameters": [
             {
               "name": "x",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             },
             {
               "name": "y",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             },
             {
               "name": "opts",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
               "optional": true
             }
           ],
@@ -74622,10 +74746,10 @@
           "name": "getWidth",
           "fullPath": "LHistogramChart:getWidth",
           "signature": "()",
-          "description": "Returns the width.",
+          "description": "Returns the configured chart width in pixels.",
           "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LHistogramChart"
         },
@@ -74633,10 +74757,10 @@
           "name": "getHeight",
           "fullPath": "LHistogramChart:getHeight",
           "signature": "()",
-          "description": "Returns the height.",
+          "description": "Returns the configured chart height in pixels.",
           "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LHistogramChart"
         },
@@ -74644,10 +74768,10 @@
           "name": "type",
           "fullPath": "LHistogramChart:type",
           "signature": "()",
-          "description": "Type.",
+          "description": "Returns the runtime userdata type name for this chart.",
           "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "string",
+          "returnType": "string",
           "isMethod": true,
           "objectType": "LHistogramChart"
         },
@@ -74655,17 +74779,17 @@
           "name": "typeOf",
           "fullPath": "LHistogramChart:typeOf",
           "signature": "(name)",
-          "description": "Type of.",
+          "description": "Checks whether a type name matches this chart userdata.",
           "parameters": [
             {
               "name": "name",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "boolean",
+          "returnType": "boolean",
           "isMethod": true,
           "objectType": "LHistogramChart"
         }
@@ -85732,20 +85856,20 @@
           "parameters": [
             {
               "name": "name",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             },
             {
               "name": "data",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             },
             {
               "name": "color",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
               "optional": true
             }
           ],
@@ -85757,9 +85881,46 @@
         {
           "name": "addSeriesFromDataFrame",
           "fullPath": "LLineChart:addSeriesFromDataFrame",
-          "signature": "LLineChart:addSeriesFromDataFrame()",
+          "signature": "LLineChart:addSeriesFromDataFrame(name, df, x_col, y_col, [color], [opts])",
           "description": "Builds a named line series from x and y columns in a dataframe.",
-          "parameters": [],
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Parameter value for this chart operation.",
+              "optional": false
+            },
+            {
+              "name": "df",
+              "type": "userdata",
+              "description": "Parameter value for this chart operation.",
+              "optional": false
+            },
+            {
+              "name": "x_col",
+              "type": "string",
+              "description": "Parameter value for this chart operation.",
+              "optional": false
+            },
+            {
+              "name": "y_col",
+              "type": "string",
+              "description": "Parameter value for this chart operation.",
+              "optional": false
+            },
+            {
+              "name": "color",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
+              "optional": true
+            }
+          ],
           "returns": "nil",
           "returnType": "nil",
           "isMethod": true,
@@ -85773,20 +85934,20 @@
           "parameters": [
             {
               "name": "name",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             },
             {
               "name": "data",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             },
             {
               "name": "color",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
               "optional": true
             }
           ],
@@ -85803,26 +85964,26 @@
           "parameters": [
             {
               "name": "name",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             },
             {
               "name": "x",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             },
             {
               "name": "y",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             },
             {
               "name": "color",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
               "optional": true
             }
           ],
@@ -85835,12 +85996,12 @@
           "name": "setWindow",
           "fullPath": "LLineChart:setWindow",
           "signature": "([max_points])",
-          "description": "Sets the window.",
+          "description": "Sets the maximum retained sample window for this chart.",
           "parameters": [
             {
               "name": "max_points",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "Parameter value for this chart operation.",
               "optional": true
             }
           ],
@@ -85853,7 +86014,7 @@
           "name": "clear",
           "fullPath": "LLineChart:clear",
           "signature": "()",
-          "description": "Clears the state.",
+          "description": "Clears all series and cached chart state.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -85864,12 +86025,12 @@
           "name": "setTitle",
           "fullPath": "LLineChart:setTitle",
           "signature": "(title)",
-          "description": "Sets the title.",
+          "description": "Sets the chart title text shown in rendered output.",
           "parameters": [
             {
               "name": "title",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
@@ -85882,12 +86043,12 @@
           "name": "setYMax",
           "fullPath": "LLineChart:setYMax",
           "signature": "(value)",
-          "description": "Sets the y max.",
+          "description": "Sets the explicit Y axis maximum for chart scaling.",
           "parameters": [
             {
               "name": "value",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
@@ -85900,12 +86061,12 @@
           "name": "setXMax",
           "fullPath": "LLineChart:setXMax",
           "signature": "(value)",
-          "description": "Sets the x max.",
+          "description": "Sets the explicit X axis maximum for chart scaling.",
           "parameters": [
             {
               "name": "value",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
@@ -85918,12 +86079,12 @@
           "name": "setXLabel",
           "fullPath": "LLineChart:setXLabel",
           "signature": "(label)",
-          "description": "Sets the x label.",
+          "description": "Sets the X axis label text for rendered output.",
           "parameters": [
             {
               "name": "label",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
@@ -85936,12 +86097,12 @@
           "name": "setYLabel",
           "fullPath": "LLineChart:setYLabel",
           "signature": "(label)",
-          "description": "Sets the y label.",
+          "description": "Sets the Y axis label text for rendered output.",
           "parameters": [
             {
               "name": "label",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
@@ -85954,12 +86115,12 @@
           "name": "setXTickCount",
           "fullPath": "LLineChart:setXTickCount",
           "signature": "(count)",
-          "description": "Sets the x tick count.",
+          "description": "Sets the number of X axis ticks drawn for this chart.",
           "parameters": [
             {
               "name": "count",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
@@ -85972,12 +86133,12 @@
           "name": "setYTickCount",
           "fullPath": "LLineChart:setYTickCount",
           "signature": "(count)",
-          "description": "Sets the y tick count.",
+          "description": "Sets the number of Y axis ticks drawn for this chart.",
           "parameters": [
             {
               "name": "count",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
@@ -85990,12 +86151,12 @@
           "name": "setShowLegend",
           "fullPath": "LLineChart:setShowLegend",
           "signature": "(value)",
-          "description": "Sets the show legend.",
+          "description": "Controls whether the chart legend is rendered.",
           "parameters": [
             {
               "name": "value",
-              "type": "any",
-              "description": "",
+              "type": "boolean",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
@@ -86008,10 +86169,10 @@
           "name": "render",
           "fullPath": "LLineChart:render",
           "signature": "()",
-          "description": "Render.",
+          "description": "Renders the chart into raw RGBA image bytes.",
           "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "integer, integer, string",
+          "returnType": "integer, integer, string",
           "isMethod": true,
           "objectType": "LLineChart"
         },
@@ -86019,7 +86180,7 @@
           "name": "renderImage",
           "fullPath": "LLineChart:renderImage",
           "signature": "()",
-          "description": "Render image.",
+          "description": "Renders the chart into a new LImage userdata.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -86030,12 +86191,12 @@
           "name": "drawToImage",
           "fullPath": "LLineChart:drawToImage",
           "signature": "(target)",
-          "description": "Draw to image.",
+          "description": "Draws the rendered chart into an existing image.",
           "parameters": [
             {
               "name": "target",
-              "type": "any",
-              "description": "",
+              "type": "userdata",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
@@ -86052,20 +86213,20 @@
           "parameters": [
             {
               "name": "x",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             },
             {
               "name": "y",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             },
             {
               "name": "opts",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
               "optional": true
             }
           ],
@@ -86078,23 +86239,23 @@
           "name": "nearest",
           "fullPath": "LLineChart:nearest",
           "signature": "(x, y)",
-          "description": "Nearest.",
+          "description": "Finds the nearest plotted point to screen coordinates.",
           "parameters": [
             {
               "name": "x",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             },
             {
               "name": "y",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LLineChart"
         },
@@ -86102,10 +86263,10 @@
           "name": "getWidth",
           "fullPath": "LLineChart:getWidth",
           "signature": "()",
-          "description": "Returns the width.",
+          "description": "Returns the configured chart width in pixels.",
           "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LLineChart"
         },
@@ -86113,10 +86274,10 @@
           "name": "getHeight",
           "fullPath": "LLineChart:getHeight",
           "signature": "()",
-          "description": "Returns the height.",
+          "description": "Returns the configured chart height in pixels.",
           "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LLineChart"
         },
@@ -86124,10 +86285,10 @@
           "name": "type",
           "fullPath": "LLineChart:type",
           "signature": "()",
-          "description": "Type.",
+          "description": "Returns the runtime userdata type name for this chart.",
           "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "string",
+          "returnType": "string",
           "isMethod": true,
           "objectType": "LLineChart"
         },
@@ -86135,17 +86296,17 @@
           "name": "typeOf",
           "fullPath": "LLineChart:typeOf",
           "signature": "(name)",
-          "description": "Type of.",
+          "description": "Checks whether a type name matches this chart userdata.",
           "parameters": [
             {
               "name": "name",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "boolean",
+          "returnType": "boolean",
           "isMethod": true,
           "objectType": "LLineChart"
         }
@@ -95861,8 +96022,8 @@
               "optional": false
             }
           ],
-          "returns": "any",
-          "returnType": "any",
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LMod"
         },
@@ -108484,20 +108645,20 @@
           "parameters": [
             {
               "name": "label",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             },
             {
               "name": "value",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             },
             {
               "name": "color",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
               "optional": true
             }
           ],
@@ -108514,20 +108675,20 @@
           "parameters": [
             {
               "name": "label",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             },
             {
               "name": "value",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             },
             {
               "name": "color",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
               "optional": true
             }
           ],
@@ -108539,9 +108700,34 @@
         {
           "name": "addSegmentsFromDataFrame",
           "fullPath": "LPieChart:addSegmentsFromDataFrame",
-          "signature": "LPieChart:addSegmentsFromDataFrame()",
+          "signature": "LPieChart:addSegmentsFromDataFrame(df, label_col, value_col, [opts])",
           "description": "Adds pie segments by reading label and value columns from a dataframe.",
-          "parameters": [],
+          "parameters": [
+            {
+              "name": "df",
+              "type": "userdata",
+              "description": "Parameter value for this chart operation.",
+              "optional": false
+            },
+            {
+              "name": "label_col",
+              "type": "string",
+              "description": "Parameter value for this chart operation.",
+              "optional": false
+            },
+            {
+              "name": "value_col",
+              "type": "string",
+              "description": "Parameter value for this chart operation.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
+              "optional": true
+            }
+          ],
           "returns": "nil",
           "returnType": "nil",
           "isMethod": true,
@@ -108551,7 +108737,7 @@
           "name": "clear",
           "fullPath": "LPieChart:clear",
           "signature": "()",
-          "description": "Clears the state.",
+          "description": "Clears all series and cached chart state.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -108562,12 +108748,12 @@
           "name": "setTitle",
           "fullPath": "LPieChart:setTitle",
           "signature": "(title)",
-          "description": "Sets the title.",
+          "description": "Sets the chart title text shown in rendered output.",
           "parameters": [
             {
               "name": "title",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
@@ -108580,12 +108766,12 @@
           "name": "setShowLegend",
           "fullPath": "LPieChart:setShowLegend",
           "signature": "(value)",
-          "description": "Sets the show legend.",
+          "description": "Controls whether the chart legend is rendered.",
           "parameters": [
             {
               "name": "value",
-              "type": "any",
-              "description": "",
+              "type": "boolean",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
@@ -108598,10 +108784,10 @@
           "name": "render",
           "fullPath": "LPieChart:render",
           "signature": "()",
-          "description": "Render.",
+          "description": "Renders the chart into raw RGBA image bytes.",
           "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "integer, integer, string",
+          "returnType": "integer, integer, string",
           "isMethod": true,
           "objectType": "LPieChart"
         },
@@ -108609,7 +108795,7 @@
           "name": "renderImage",
           "fullPath": "LPieChart:renderImage",
           "signature": "()",
-          "description": "Render image.",
+          "description": "Renders the chart into a new LImage userdata.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -108620,12 +108806,12 @@
           "name": "drawToImage",
           "fullPath": "LPieChart:drawToImage",
           "signature": "(target)",
-          "description": "Draw to image.",
+          "description": "Draws the rendered chart into an existing image.",
           "parameters": [
             {
               "name": "target",
-              "type": "any",
-              "description": "",
+              "type": "userdata",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
@@ -108642,20 +108828,20 @@
           "parameters": [
             {
               "name": "x",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             },
             {
               "name": "y",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             },
             {
               "name": "opts",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
               "optional": true
             }
           ],
@@ -108668,10 +108854,10 @@
           "name": "getWidth",
           "fullPath": "LPieChart:getWidth",
           "signature": "()",
-          "description": "Returns the width.",
+          "description": "Returns the configured chart width in pixels.",
           "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LPieChart"
         },
@@ -108679,10 +108865,10 @@
           "name": "getHeight",
           "fullPath": "LPieChart:getHeight",
           "signature": "()",
-          "description": "Returns the height.",
+          "description": "Returns the configured chart height in pixels.",
           "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LPieChart"
         },
@@ -108690,10 +108876,10 @@
           "name": "type",
           "fullPath": "LPieChart:type",
           "signature": "()",
-          "description": "Type.",
+          "description": "Returns the runtime userdata type name for this chart.",
           "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "string",
+          "returnType": "string",
           "isMethod": true,
           "objectType": "LPieChart"
         },
@@ -108701,17 +108887,17 @@
           "name": "typeOf",
           "fullPath": "LPieChart:typeOf",
           "signature": "(name)",
-          "description": "Type of.",
+          "description": "Checks whether a type name matches this chart userdata.",
           "parameters": [
             {
               "name": "name",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "boolean",
+          "returnType": "boolean",
           "isMethod": true,
           "objectType": "LPieChart"
         }
@@ -118333,8 +118519,8 @@
               "optional": false
             }
           ],
-          "returns": "string?",
-          "returnType": "string?",
+          "returns": "string",
+          "returnType": "string",
           "isMethod": true,
           "objectType": "LRelationshipManager"
         },
@@ -119526,20 +119712,20 @@
           "parameters": [
             {
               "name": "name",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             },
             {
               "name": "data",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             },
             {
               "name": "color",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
               "optional": true
             }
           ],
@@ -119551,9 +119737,46 @@
         {
           "name": "addSeriesFromDataFrame",
           "fullPath": "LScatterPlot:addSeriesFromDataFrame",
-          "signature": "LScatterPlot:addSeriesFromDataFrame()",
+          "signature": "LScatterPlot:addSeriesFromDataFrame(name, df, x_col, y_col, [color], [opts])",
           "description": "Builds a named scatter series from x and y columns in a dataframe.",
-          "parameters": [],
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Parameter value for this chart operation.",
+              "optional": false
+            },
+            {
+              "name": "df",
+              "type": "userdata",
+              "description": "Parameter value for this chart operation.",
+              "optional": false
+            },
+            {
+              "name": "x_col",
+              "type": "string",
+              "description": "Parameter value for this chart operation.",
+              "optional": false
+            },
+            {
+              "name": "y_col",
+              "type": "string",
+              "description": "Parameter value for this chart operation.",
+              "optional": false
+            },
+            {
+              "name": "color",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
+              "optional": true
+            }
+          ],
           "returns": "nil",
           "returnType": "nil",
           "isMethod": true,
@@ -119567,20 +119790,20 @@
           "parameters": [
             {
               "name": "name",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             },
             {
               "name": "data",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             },
             {
               "name": "color",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
               "optional": true
             }
           ],
@@ -119597,26 +119820,26 @@
           "parameters": [
             {
               "name": "name",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             },
             {
               "name": "x",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             },
             {
               "name": "y",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             },
             {
               "name": "color",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
               "optional": true
             }
           ],
@@ -119629,12 +119852,12 @@
           "name": "setWindow",
           "fullPath": "LScatterPlot:setWindow",
           "signature": "([max_points])",
-          "description": "Sets the window.",
+          "description": "Sets the maximum retained sample window for this chart.",
           "parameters": [
             {
               "name": "max_points",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "Parameter value for this chart operation.",
               "optional": true
             }
           ],
@@ -119647,7 +119870,7 @@
           "name": "clear",
           "fullPath": "LScatterPlot:clear",
           "signature": "()",
-          "description": "Clears the state.",
+          "description": "Clears all series and cached chart state.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -119658,12 +119881,12 @@
           "name": "setDotRadius",
           "fullPath": "LScatterPlot:setDotRadius",
           "signature": "(radius)",
-          "description": "Sets the dot radius.",
+          "description": "Sets the rendered radius used for scatter dots.",
           "parameters": [
             {
               "name": "radius",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
@@ -119676,12 +119899,12 @@
           "name": "setTitle",
           "fullPath": "LScatterPlot:setTitle",
           "signature": "(title)",
-          "description": "Sets the title.",
+          "description": "Sets the chart title text shown in rendered output.",
           "parameters": [
             {
               "name": "title",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
@@ -119694,18 +119917,18 @@
           "name": "setXRange",
           "fullPath": "LScatterPlot:setXRange",
           "signature": "(min_x, max_x)",
-          "description": "Sets the x range.",
+          "description": "Sets the explicit X axis range for plotted points.",
           "parameters": [
             {
               "name": "min_x",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             },
             {
               "name": "max_x",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
@@ -119718,18 +119941,18 @@
           "name": "setYRange",
           "fullPath": "LScatterPlot:setYRange",
           "signature": "(min_y, max_y)",
-          "description": "Sets the y range.",
+          "description": "Sets the explicit Y axis range for plotted points.",
           "parameters": [
             {
               "name": "min_y",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             },
             {
               "name": "max_y",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
@@ -119742,12 +119965,12 @@
           "name": "setXLabel",
           "fullPath": "LScatterPlot:setXLabel",
           "signature": "(label)",
-          "description": "Sets the x label.",
+          "description": "Sets the X axis label text for rendered output.",
           "parameters": [
             {
               "name": "label",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
@@ -119760,12 +119983,12 @@
           "name": "setYLabel",
           "fullPath": "LScatterPlot:setYLabel",
           "signature": "(label)",
-          "description": "Sets the y label.",
+          "description": "Sets the Y axis label text for rendered output.",
           "parameters": [
             {
               "name": "label",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
@@ -119778,12 +120001,12 @@
           "name": "setXTickCount",
           "fullPath": "LScatterPlot:setXTickCount",
           "signature": "(count)",
-          "description": "Sets the x tick count.",
+          "description": "Sets the number of X axis ticks drawn for this chart.",
           "parameters": [
             {
               "name": "count",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
@@ -119796,12 +120019,12 @@
           "name": "setYTickCount",
           "fullPath": "LScatterPlot:setYTickCount",
           "signature": "(count)",
-          "description": "Sets the y tick count.",
+          "description": "Sets the number of Y axis ticks drawn for this chart.",
           "parameters": [
             {
               "name": "count",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
@@ -119814,12 +120037,12 @@
           "name": "setShowLegend",
           "fullPath": "LScatterPlot:setShowLegend",
           "signature": "(value)",
-          "description": "Sets the show legend.",
+          "description": "Controls whether the chart legend is rendered.",
           "parameters": [
             {
               "name": "value",
-              "type": "any",
-              "description": "",
+              "type": "boolean",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
@@ -119832,10 +120055,10 @@
           "name": "render",
           "fullPath": "LScatterPlot:render",
           "signature": "()",
-          "description": "Render.",
+          "description": "Renders the chart into raw RGBA image bytes.",
           "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "integer, integer, string",
+          "returnType": "integer, integer, string",
           "isMethod": true,
           "objectType": "LScatterPlot"
         },
@@ -119843,7 +120066,7 @@
           "name": "renderImage",
           "fullPath": "LScatterPlot:renderImage",
           "signature": "()",
-          "description": "Render image.",
+          "description": "Renders the chart into a new LImage userdata.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -119854,12 +120077,12 @@
           "name": "drawToImage",
           "fullPath": "LScatterPlot:drawToImage",
           "signature": "(target)",
-          "description": "Draw to image.",
+          "description": "Draws the rendered chart into an existing image.",
           "parameters": [
             {
               "name": "target",
-              "type": "any",
-              "description": "",
+              "type": "userdata",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
@@ -119876,20 +120099,20 @@
           "parameters": [
             {
               "name": "x",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             },
             {
               "name": "y",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             },
             {
               "name": "opts",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
               "optional": true
             }
           ],
@@ -119902,23 +120125,23 @@
           "name": "nearest",
           "fullPath": "LScatterPlot:nearest",
           "signature": "(x, y)",
-          "description": "Nearest.",
+          "description": "Finds the nearest plotted point to screen coordinates.",
           "parameters": [
             {
               "name": "x",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             },
             {
               "name": "y",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LScatterPlot"
         },
@@ -119926,10 +120149,10 @@
           "name": "getWidth",
           "fullPath": "LScatterPlot:getWidth",
           "signature": "()",
-          "description": "Returns the width.",
+          "description": "Returns the configured chart width in pixels.",
           "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LScatterPlot"
         },
@@ -119937,10 +120160,10 @@
           "name": "getHeight",
           "fullPath": "LScatterPlot:getHeight",
           "signature": "()",
-          "description": "Returns the height.",
+          "description": "Returns the configured chart height in pixels.",
           "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LScatterPlot"
         },
@@ -119948,10 +120171,10 @@
           "name": "type",
           "fullPath": "LScatterPlot:type",
           "signature": "()",
-          "description": "Type.",
+          "description": "Returns the runtime userdata type name for this chart.",
           "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "string",
+          "returnType": "string",
           "isMethod": true,
           "objectType": "LScatterPlot"
         },
@@ -119959,17 +120182,17 @@
           "name": "typeOf",
           "fullPath": "LScatterPlot:typeOf",
           "signature": "(name)",
-          "description": "Type of.",
+          "description": "Checks whether a type name matches this chart userdata.",
           "parameters": [
             {
               "name": "name",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Parameter value for this chart operation.",
               "optional": false
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "boolean",
+          "returnType": "boolean",
           "isMethod": true,
           "objectType": "LScatterPlot"
         }
@@ -120151,7 +120374,7 @@
           "name": "addLight",
           "fullPath": "LSceneAdapter:addLight",
           "signature": "(x, y, radius, [opts])",
-          "description": "Adds a static point light entry.",
+          "description": "Adds a static point light entry to the adapter.",
           "parameters": [
             {
               "name": "x",
@@ -120327,7 +120550,7 @@
           "name": "clearModels",
           "fullPath": "LSceneAdapter:clearModels",
           "signature": "()",
-          "description": "Clears models.",
+          "description": "Clears all loaded model entries from the adapter.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -142446,8 +142669,8 @@
               "optional": true
             }
           ],
-          "returns": "boolean, string?",
-          "returnType": "boolean, string?",
+          "returns": "boolean, string",
+          "returnType": "boolean, string",
           "isMethod": true,
           "objectType": "LTerminal"
         },
@@ -142620,8 +142843,8 @@
           "signature": "()",
           "description": "Validates panel child ownership, stale references, cycles, and the current focus target.",
           "parameters": [],
-          "returns": "boolean, string[]?",
-          "returnType": "boolean, string[]?",
+          "returns": "boolean, table",
+          "returnType": "boolean, table",
           "isMethod": true,
           "objectType": "LTerminal"
         },
@@ -145094,8 +145317,8 @@
               "optional": false
             }
           ],
-          "returns": "integer?",
-          "returnType": "integer?",
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LTileMap"
         },
@@ -145453,8 +145676,8 @@
               "optional": false
             }
           ],
-          "returns": "integer?",
-          "returnType": "integer?",
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LTileMap"
         },
@@ -145662,8 +145885,8 @@
               "optional": false
             }
           ],
-          "returns": "integer?",
-          "returnType": "integer?",
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LTileMap"
         },
@@ -146132,49 +146355,49 @@
           "parameters": [
             {
               "name": "layer",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "Layer index (1-based).",
               "optional": false
             },
             {
               "name": "x",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "Column (1-based).",
               "optional": false
             },
             {
               "name": "y",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "Row (1-based).",
               "optional": false
             },
             {
               "name": "r",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Red tint channel.",
               "optional": false
             },
             {
               "name": "g",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Green tint channel.",
               "optional": false
             },
             {
               "name": "b",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Blue tint channel.",
               "optional": false
             },
             {
               "name": "a",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Alpha tint channel.",
               "optional": false
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "boolean",
+          "returnType": "boolean",
           "isMethod": true,
           "objectType": "LTileMap"
         },
@@ -160460,8 +160683,8 @@
               "optional": false
             }
           ],
-          "returns": "boolean, string?",
-          "returnType": "boolean, string?",
+          "returns": "boolean, string",
+          "returnType": "boolean, string",
           "isMethod": true,
           "objectType": "LWidget"
         },

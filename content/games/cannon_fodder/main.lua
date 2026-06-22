@@ -267,7 +267,7 @@ function lurek.init()
 
     start_mission(1)
     
-    lurek.ui.loadLayoutFile("content/games/retro/cannon_fodder/ui.toml")
+    lurek.ui.loadLayoutFile("content/games/cannon_fodder/ui.toml")
     local ui_root = lurek.ui.getRoot()
     app_ui = {}
     app_ui.title_screen = ui_root:findById("title_screen")

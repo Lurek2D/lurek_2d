@@ -27,14 +27,14 @@ class AuditShowcaseTests(unittest.TestCase):
         self.assertIn("placeholder-text", entry.reasons)
         self.assertIn("missing-conf", entry.reasons)
 
-    def test_runnable_showcase_is_retained(self) -> None:
+    def test_runnable_example_is_retained(self) -> None:
         entry = classify_entry(self.make_entry(
             "automation_demo",
             main="lurek = lurek or {}\nfunction lurek.init() end\n",
             readme="# Automation Demo\n",
             conf=True,
         ))
-        self.assertEqual("showcase", entry.classification)
+        self.assertEqual("example", entry.classification)
         self.assertTrue(entry.has_conf)
         self.assertTrue(entry.has_readme)
 
@@ -43,13 +43,13 @@ class AuditShowcaseTests(unittest.TestCase):
             "visual_fx_lab",
             main="-- skeleton\n-- next step: hook up effects\n",
         ))
-        showcase = classify_entry(self.make_entry(
+        example = classify_entry(self.make_entry(
             "automation_demo",
             main="lurek = lurek or {}\nfunction lurek.init() end\n",
             readme="# Automation Demo\n",
             conf=True,
         ))
-        report = render_text([placeholder, showcase])
+        report = render_text([placeholder, example])
         self.assertIn("candidate_delete_or_evidence", report)
         self.assertIn("visual_fx_lab", report)
 

@@ -169,19 +169,21 @@ impl AgentClient {
         let total_latency_ms = Arc::new(AtomicU64::new(0));
         let total_finished = Arc::new(AtomicU64::new(0));
 
+        let worker_shared = AgentWorkerShared {
+            receiver: Arc::clone(&receiver),
+            pending: Arc::clone(&pending),
+            cancelled: Arc::clone(&cancelled),
+            in_flight: Arc::clone(&in_flight),
+            queued: Arc::clone(&queued),
+            diagnostics: Arc::clone(&diagnostics),
+            total_latency_ms: Arc::clone(&total_latency_ms),
+            total_finished: Arc::clone(&total_finished),
+            transport: Arc::clone(&transport),
+            retry_backoff_ms: config.retry_backoff_ms,
+        };
+
         for _ in 0..max_in_flight {
-            spawn_worker(
-                Arc::clone(&receiver),
-                Arc::clone(&pending),
-                Arc::clone(&cancelled),
-                Arc::clone(&in_flight),
-                Arc::clone(&queued),
-                Arc::clone(&diagnostics),
-                Arc::clone(&total_latency_ms),
-                Arc::clone(&total_finished),
-                Arc::clone(&transport),
-                config.retry_backoff_ms,
-            );
+            spawn_worker(worker_shared.clone());
         }
 
         Self {
@@ -289,7 +291,8 @@ impl Default for AgentClient {
     }
 }
 
-fn spawn_worker(
+#[derive(Clone)]
+struct AgentWorkerShared {
     receiver: Arc<Mutex<Receiver<QueuedRequest>>>,
     pending: Arc<Mutex<Vec<AgentResponse>>>,
     cancelled: Arc<Mutex<HashSet<usize>>>,
@@ -300,9 +303,11 @@ fn spawn_worker(
     total_finished: Arc<AtomicU64>,
     transport: Arc<dyn AgentTransport>,
     retry_backoff_ms: u64,
-) {
+}
+
+fn spawn_worker(shared: AgentWorkerShared) {
     std::thread::spawn(move || loop {
-        let queued_req = match receiver.lock() {
+        let queued_req = match shared.receiver.lock() {
             Ok(guard) => guard.recv(),
             Err(_) => return,
         };
@@ -311,33 +316,39 @@ fn spawn_worker(
             Err(_) => return,
         };
 
-        queued.fetch_sub(1, Ordering::Relaxed);
+        shared.queued.fetch_sub(1, Ordering::Relaxed);
         let callback_id = queued_req.req.callback_id;
-        if take_cancelled(&cancelled, callback_id) {
-            record_cancelled(&diagnostics, &queued_req.req);
+        if take_cancelled(&shared.cancelled, callback_id) {
+            record_cancelled(&shared.diagnostics, &queued_req.req);
             continue;
         }
 
-        in_flight.fetch_add(1, Ordering::Relaxed);
-        record_last_target(&diagnostics, &queued_req.req);
+        shared.in_flight.fetch_add(1, Ordering::Relaxed);
+        record_last_target(&shared.diagnostics, &queued_req.req);
         let started_at = Instant::now();
-        let result = execute_with_retry(transport.as_ref(), &queued_req.req, retry_backoff_ms);
+        let result = execute_with_retry(
+            shared.transport.as_ref(),
+            &queued_req.req,
+            shared.retry_backoff_ms,
+        );
         let elapsed_ms = started_at.elapsed().as_millis() as u64;
-        total_latency_ms.fetch_add(elapsed_ms, Ordering::Relaxed);
-        total_finished.fetch_add(1, Ordering::Relaxed);
-        in_flight.fetch_sub(1, Ordering::Relaxed);
+        shared
+            .total_latency_ms
+            .fetch_add(elapsed_ms, Ordering::Relaxed);
+        shared.total_finished.fetch_add(1, Ordering::Relaxed);
+        shared.in_flight.fetch_sub(1, Ordering::Relaxed);
 
-        if take_cancelled(&cancelled, callback_id) {
-            record_cancelled(&diagnostics, &queued_req.req);
+        if take_cancelled(&shared.cancelled, callback_id) {
+            record_cancelled(&shared.diagnostics, &queued_req.req);
             continue;
         }
 
-        record_finished(&diagnostics, &result);
+        record_finished(&shared.diagnostics, &result);
         let response = AgentResponse {
             callback_id,
             body: result,
         };
-        if let Ok(mut guard) = pending.lock() {
+        if let Ok(mut guard) = shared.pending.lock() {
             guard.push(response);
         }
     });

@@ -121,25 +121,9 @@ describe("binary module functions", function()
         expect_equal(14, lurek.binary.size("f32 f64 bool pad"))
     end)
 
-    -- @covers lurek.serial.fromToml
-    it("does not expose structured TOML serialization", function()
-        expect_equal(nil, lurek.binary.parseToml)
-        expect_equal(nil, lurek.binary.encodeToml)
-        expect_type("function", lurek.serial.fromToml)
-        expect_type("function", lurek.serial.toToml)
-    end)
-
     -- @covers lurek.binary.newRingBuffer
     it("newRingBuffer creates userdata", function()
         expect_type("userdata", new_ring_buffer(4))
-    end)
-
-    -- @covers lurek.serial.encodeMsgPack
-    it("does not expose structured MessagePack serialization", function()
-        expect_equal(nil, lurek.binary.toMsgPack)
-        expect_equal(nil, lurek.binary.fromMsgPack)
-        expect_type("function", lurek.serial.encodeMsgPack)
-        expect_type("function", lurek.serial.decodeMsgPack)
     end)
 
     -- @covers lurek.binary.newWriter

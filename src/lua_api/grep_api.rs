@@ -195,7 +195,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         })?,
     )?;
 
-    /// Create an empty file filter.
+    /// Creates an empty file filter for custom include rules.
     /// @return | LFileFilter | File filter instance.
     module.set(
         "newFilter",
@@ -206,7 +206,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         })?,
     )?;
 
-    /// Create a filter for Lua files only.
+    /// Creates a file filter preconfigured for Lua files only.
     /// @return | LFileFilter | Pre-configured Lua filter.
     module.set(
         "luaFilter",

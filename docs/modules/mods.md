@@ -987,7 +987,7 @@ LMod:runHook(name)
 
 | Type | Description |
 |------|-------------|
-| any | Hook return values. |
+| table | Hook return values passed through from Lua. |
 
 **Example**
 

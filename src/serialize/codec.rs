@@ -353,7 +353,7 @@ impl Default for DecodeOptions {
 }
 
 /// Options controlling encoding behavior.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct EncodeOptions {
     /// When true, JSON output is pretty-printed.
     pub json_pretty: bool,
@@ -361,16 +361,6 @@ pub struct EncodeOptions {
     pub csv: CsvOptions,
     /// Global limit policy used before encoding.
     pub limits: SerializeLimits,
-}
-
-impl Default for EncodeOptions {
-    fn default() -> Self {
-        Self {
-            json_pretty: false,
-            csv: CsvOptions::default(),
-            limits: SerializeLimits::default(),
-        }
-    }
 }
 
 /// Result of encoding a value into text or binary output.
@@ -402,7 +392,7 @@ fn ensure_format_allowed(
     allowed_formats: &[SerialFormat],
     context: &str,
 ) -> Result<(), SerializeError> {
-    if allowed_formats.iter().any(|allowed| *allowed == format) {
+    if allowed_formats.contains(&format) {
         return Ok(());
     }
     Err(SerializeError::FormatNotAllowed {
@@ -465,12 +455,7 @@ pub fn detect_format_detailed(
     }
 
     for format in detection_order() {
-        if !format.can_decode_text()
-            || !opts
-                .allowed_formats
-                .iter()
-                .any(|allowed| *allowed == format)
-        {
+        if !format.can_decode_text() || !opts.allowed_formats.contains(&format) {
             continue;
         }
         if report.attempted_formats.len() >= opts.limits.max_detect_attempts {

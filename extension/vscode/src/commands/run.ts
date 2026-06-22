@@ -85,7 +85,7 @@ export async function runWithArgs(
 }
 
 /**
- * Shows a quick-pick list of example projects and runs the selected one.
+ * Shows a quick-pick list of single-file examples and runs the selected one.
  */
 export async function runExample(
   lurekProcess: LurekProcessService
@@ -96,16 +96,19 @@ export async function runExample(
     return;
   }
 
-  const examplesDir = path.join(root, "content", "games", "showcase");
+  const examplesDir = path.join(root, "content", "examples");
   if (!fs.existsSync(examplesDir)) {
-    vscode.window.showWarningMessage("No content/games/showcase/ directory found.");
+    vscode.window.showWarningMessage("No content/examples/ directory found.");
     return;
   }
 
   const examples = fs
     .readdirSync(examplesDir, { withFileTypes: true })
-    .filter((e) => e.isDirectory())
-    .map((e) => e.name);
+    .filter((e) => e.isFile() && e.name.endsWith(".lua"))
+    .map((e) => ({
+      label: e.name.replace(/\.lua$/, ""),
+      file: e.name,
+    }));
 
   if (examples.length === 0) {
     vscode.window.showWarningMessage("No examples found.");
@@ -113,14 +116,14 @@ export async function runExample(
   }
 
   const selected = await vscode.window.showQuickPick(examples, {
-    placeHolder: "Select a demo to run",
+    placeHolder: "Select an example to run",
   });
   if (!selected) {
     return;
   }
 
   try {
-    await lurekProcess.run(path.join(examplesDir, selected));
+    await lurekProcess.run(path.join(examplesDir, selected.file));
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err);
     vscode.window.showErrorMessage(`Failed to run example: ${msg}`);

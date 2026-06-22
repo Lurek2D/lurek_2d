@@ -989,7 +989,7 @@ lurek.terminal.tryPushCmdHistory(terminal, cmd)
 | Type | Description |
 |------|-------------|
 | boolean | True on success; otherwise false and a reason string. (value 1). |
-| string? | True on success; otherwise false and a reason string. (value 2). |
+| string | True on success; otherwise false and a reason string. (value 2). |
 
 **Example**
 
@@ -1025,7 +1025,7 @@ lurek.terminal.tryPushScrollback(terminal, line)
 | Type | Description |
 |------|-------------|
 | boolean | True on success; otherwise false and a reason string. (value 1). |
-| string? | True on success; otherwise false and a reason string. (value 2). |
+| string | True on success; otherwise false and a reason string. (value 2). |
 
 **Example**
 
@@ -2240,7 +2240,7 @@ LTerminal:trySet(col, row, ch, fr, fg, fb, fa, br, bg, bb, ba)
 | Type | Description |
 |------|-------------|
 | boolean | True on success; otherwise false and a reason string. (value 1). |
-| string? | True on success; otherwise false and a reason string. (value 2). |
+| string | True on success; otherwise false and a reason string. (value 2). |
 
 **Example**
 
@@ -2331,7 +2331,7 @@ LTerminal:validateWidgets()
 | Type | Description |
 |------|-------------|
 | boolean | True when valid; otherwise false plus an array of validation messages. (value 1). |
-| string[]? | True when valid; otherwise false plus an array of validation messages. (value 2). |
+| table | True when valid; otherwise false plus an array of validation messages. (value 2). |
 
 **Example**
 
@@ -3387,7 +3387,7 @@ LWidget:trySetText(text)
 | Type | Description |
 |------|-------------|
 | boolean | True on success; otherwise false and a reason string. (value 1). |
-| string? | True on success; otherwise false and a reason string. (value 2). |
+| string | True on success; otherwise false and a reason string. (value 2). |
 
 **Example**
 

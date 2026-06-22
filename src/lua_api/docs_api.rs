@@ -613,7 +613,9 @@ impl LuaUserData for ValidationReport {
             // incomplete: items with partial or missing documentation
             /// Performs the 'incomplete' operation.
             tbl.set("incomplete", incomplete)?;
+            /// Structured validation issues.
             tbl.set("issues", docs_issues_to_lua_table(lua, &this.0.issues)?)?;
+            /// Whether the report has no missing live API entries.
             tbl.set("isValid", this.0.missing.is_empty())?;
             Ok(tbl)
         });
@@ -777,6 +779,7 @@ impl LuaUserData for QualityReport {
             }
             /// Performs the 'moduleScores' operation.
             tbl.set("moduleScores", mods)?;
+            /// Structured quality issues.
             tbl.set("issues", docs_issues_to_lua_table(lua, &this.0.issues)?)?;
             let policy = lua.create_table()?;
             policy.set("descriptionWeight", this.0.policy.description_weight)?;
@@ -794,6 +797,7 @@ impl LuaUserData for QualityReport {
             policy.set("returnTypeWeight", this.0.policy.return_type_weight)?;
             policy.set("exampleWeight", this.0.policy.example_weight)?;
             policy.set("sinceWeight", this.0.policy.since_weight)?;
+            /// Weighting policy used to compute the quality score.
             tbl.set("policy", policy)?;
             Ok(tbl)
         });

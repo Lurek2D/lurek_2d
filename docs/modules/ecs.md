@@ -312,7 +312,7 @@ LRelationshipManager:getLevel(a, b, type_name)
 
 | Type | Description |
 |------|-------------|
-| string? | Stored level label or the type default when available, otherwise `nil` if the type is unknown. |
+| string | Stored level label or the type default when available, otherwise `nil` if the type is unknown. |
 
 **Example**
 

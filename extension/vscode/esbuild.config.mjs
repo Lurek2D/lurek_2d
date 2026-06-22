@@ -1,13 +1,17 @@
 import * as esbuild from "esbuild";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 const production = process.argv.includes("--production");
 const watch = process.argv.includes("--watch");
+const rootDir = path.dirname(fileURLToPath(import.meta.url));
 
 /** @type {esbuild.BuildOptions} */
 const buildOptions = {
-  entryPoints: ["src/extension.ts"],
+  absWorkingDir: rootDir,
+  entryPoints: [path.join(rootDir, "src", "extension.ts")],
   bundle: true,
-  outfile: "dist/extension.js",
+  outfile: path.join(rootDir, "dist", "extension.js"),
   external: ["vscode"],
   format: "cjs",
   platform: "node",
@@ -21,15 +25,16 @@ const buildOptions = {
 /** @type {esbuild.BuildOptions} */
 const testOptions = {
   entryPoints: [
-    "src/test/runTest.ts",
-    "src/test/suite/index.ts",
-    "src/test/unit/commandRegistration.test.ts",
-    "src/test/unit/editorCatalog.test.ts",
-    "src/test/unit/typeInference.test.ts",
-    "src/test/unit/luaParser.test.ts",
+    path.join(rootDir, "src", "test", "runTest.ts"),
+    path.join(rootDir, "src", "test", "suite", "index.ts"),
+    path.join(rootDir, "src", "test", "unit", "commandRegistration.test.ts"),
+    path.join(rootDir, "src", "test", "unit", "editorCatalog.test.ts"),
+    path.join(rootDir, "src", "test", "unit", "typeInference.test.ts"),
+    path.join(rootDir, "src", "test", "unit", "luaParser.test.ts"),
   ],
   bundle: true,
-  outdir: "dist/test",
+  absWorkingDir: rootDir,
+  outdir: path.join(rootDir, "dist", "test"),
   external: ["vscode", "mocha", "@vscode/test-electron"],
   format: "cjs",
   platform: "node",

@@ -18,7 +18,7 @@ Kluczowe mechaniki rozgrywki:
 Uruchom grę na silniku Lurek za pomocą poniższego polecenia:
 
 ```powershell
-cargo run -- content/games/retro/sensible_soccer
+cargo run -- content/games/sensible_soccer
 ```
 
 ## 🕹️ Sterowanie (Controls)

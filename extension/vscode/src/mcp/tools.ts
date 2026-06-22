@@ -104,7 +104,7 @@ function normalizeRagLimit(
   }
   if (normalized < range.min || normalized > range.max) {
     throw new Error(
-      `limit` must be between ${range.min} and ${range.max}.`
+      `limit must be between ${range.min} and ${range.max}.`
     );
   }
   return normalized;
@@ -171,7 +171,7 @@ export function getToolDefinitions(workspaceRoot: string = process.cwd()): ToolD
     },
     {
       name: "lurek2d.listExamples",
-      description: "List all available Lurek2D example directories.",
+      description: "List all available Lurek2D example files.",
       inputSchema: {
         type: "object",
         properties: {},
@@ -379,7 +379,7 @@ export function getToolDefinitions(workspaceRoot: string = process.cwd()): ToolD
 /**
  * Creates the handler for `lurek2d.runExample`.
  *
- * Builds and runs the specified showcase game via the wrapper-backed run path.
+ * Builds and runs the specified single-file example via the wrapper-backed run path.
  */
 export function handleRunExample(
   workspaceRoot: string
@@ -390,15 +390,15 @@ export function handleRunExample(
       return "Error: 'name' parameter is required.";
     }
 
-    // Validate example exists
-    const exampleDir = path.join(workspaceRoot, "content", "games", "showcase", name);
-    if (!fs.existsSync(exampleDir)) {
-      const available = listExampleDirs(workspaceRoot);
-      return `Showcase game "${name}" not found. Available: ${available.join(", ")}`;
+    const exampleName = name.endsWith(".lua") ? name : `${name}.lua`;
+    const examplePath = path.join(workspaceRoot, "content", "examples", exampleName);
+    if (!fs.existsSync(examplePath)) {
+      const available = listExampleFiles(workspaceRoot);
+      return `Example "${name}" not found. Available: ${available.join(", ")}`;
     }
 
-    const relativeGamePath = path.posix.join("content", "games", "showcase", name);
-    return execParallelCargoCommand(workspaceRoot, ["run", "debug", "--", relativeGamePath], 120_000);
+    const relativeExamplePath = path.posix.join("content", "examples", exampleName);
+    return execParallelCargoCommand(workspaceRoot, ["run", "debug", "--", relativeExamplePath], 120_000);
   };
 }
 
@@ -441,15 +441,15 @@ export function handleGetApiDoc(
 /**
  * Creates the handler for `lurek2d.listExamples`.
  *
- * Returns a newline-separated list of example directory names.
+ * Returns a newline-separated list of example file stems.
  */
 export function handleListExamples(
   workspaceRoot: string
 ): ToolHandler {
   return async () => {
-    const examples = listExampleDirs(workspaceRoot);
+    const examples = listExampleFiles(workspaceRoot);
     if (examples.length === 0) {
-      return "No showcase games found in content/games/showcase/.";
+      return "No examples found in content/examples/.";
     }
     return examples.join("\n");
   };
@@ -529,18 +529,18 @@ export function handleGetLogs(
 }
 
 /**
- * Lists showcase game directory names from the workspace content/games/showcase/ folder.
+ * Lists example file stems from the workspace content/examples/ folder.
  */
-function listExampleDirs(workspaceRoot: string): string[] {
-  const examplesDir = path.join(workspaceRoot, "content", "games", "showcase");
+function listExampleFiles(workspaceRoot: string): string[] {
+  const examplesDir = path.join(workspaceRoot, "content", "examples");
   if (!fs.existsSync(examplesDir)) {
     return [];
   }
   try {
     return fs
       .readdirSync(examplesDir, { withFileTypes: true })
-      .filter((entry) => entry.isDirectory())
-      .map((entry) => entry.name);
+      .filter((entry) => entry.isFile() && entry.name.endsWith(".lua"))
+      .map((entry) => entry.name.replace(/\.lua$/, ""));
   } catch {
     return [];
   }

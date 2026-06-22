@@ -139,5 +139,5 @@ if ($Destination -notin $PathDirs) {
     Write-Host ""
 }
 
-Write-OK "Lurek2D installed. Run: lurek2d.exe content\games\showcase\hello_world"
+Write-OK "Lurek2D installed. Run: lurek2d.exe content\games\music_composer"
 Write-OK "Or use games from: $GamesDest"

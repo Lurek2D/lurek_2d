@@ -239,7 +239,7 @@ function lurek.init()
     lurek.window.setTitle("Sensible Soccer — Lurek2D")
     lurek.render.setBackgroundColor(0.15, 0.4, 0.1)
 
-    lurek.ui.loadLayoutFile("content/games/retro/sensible_soccer/ui.toml")
+    lurek.ui.loadLayoutFile("content/games/sensible_soccer/ui.toml")
     local ui_root = lurek.ui.getRoot()
     app_ui = {}
     app_ui.title_panel = ui_root:findById("title_panel")

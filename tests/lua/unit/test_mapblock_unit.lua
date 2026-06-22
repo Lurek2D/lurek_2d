@@ -236,16 +236,11 @@ describe("mapblock block methods", function()
     end)
 
     -- @covers LMapBlock:setWeight
-    it("setWeight accepts floating point weights", function()
+    it("setWeight accepts valid weights and rejects invalid weights", function()
         local block = new_block()
         expect_no_error(function()
             block:setWeight(2.5)
         end)
-    end)
-
-    -- @covers LMapBlock:setWeight
-    it("setWeight rejects non-finite and negative weights", function()
-        local block = new_block()
         expect_error(function()
             block:setWeight(0 / 0)
         end)

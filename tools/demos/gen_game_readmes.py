@@ -3,13 +3,13 @@ gen_game_readmes.py — Generate or repair README.md files for content/games/ pr
 
 Scans each game directory for main.lua and conf.lua, extracts lurek.* API
 references, and produces a well-structured README.md matching the canonical
-template from content/games/arcade/asteroids/README.md.
+template from content/games/_template/README.md.
 
 Usage:
     python tools/demos/gen_game_readmes.py [options]
 
 Arguments:
-    --game PATH      Path to one game directory (e.g. content/games/action/platformer)
+    --game PATH      Path to one game directory (e.g. content/games/music_composer)
     --all            Process all game directories under content/games/
     --dry-run        Print generated README to stdout, don't write files
     --threshold N    Only update READMEs shorter than N lines (default: 30)
@@ -17,7 +17,7 @@ Arguments:
 
 Examples:
     # Preview generated README for one game (no file write)
-    python tools/demos/gen_game_readmes.py --dry-run --game content/games/rpg/loot_rpg
+    python tools/demos/gen_game_readmes.py --dry-run --game content/games/music_composer
 
     # Fix all short READMEs (under 30 lines, default threshold)
     python tools/demos/gen_game_readmes.py --all
@@ -120,7 +120,7 @@ def _parse_conf(conf_path: Path) -> dict:
 
 
 def _game_rel_path(game_dir: Path) -> str:
-    """Return 'content/games/category/name' relative to repo root."""
+    """Return the content/games path relative to repo root."""
     try:
         return game_dir.relative_to(REPO_ROOT).as_posix()
     except ValueError:
@@ -365,7 +365,7 @@ def main(argv: list[str] | None = None) -> int:
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument(
         "--game", metavar="PATH",
-        help="Path to one game directory (e.g. content/games/rpg/loot_rpg).",
+        help="Path to one game directory (e.g. content/games/music_composer).",
     )
     group.add_argument(
         "--all", action="store_true",
