@@ -117,6 +117,8 @@ def check_module_pages_indexed(errors: list[str]) -> None:
             errors.append(f"MISSING_MODULE_PAGE docs/modules/{module}.md")
         if module_ref not in mkdocs_text:
             errors.append(f"MISSING_MKDOCS_MODULE_NAV {module_ref}")
+        if re.search(rf"^  - [^:\n]+:\s+{re.escape(module_ref)}\s*$", mkdocs_text, re.MULTILINE):
+            errors.append(f"FORBIDDEN_TOP_LEVEL_MODULE_NAV {module_ref}")
         if f"]({module_ref})" not in guide_text:
             errors.append(f"MISSING_MODULE_GUIDE_LINK {module_ref}")
 
