@@ -10,11 +10,22 @@ site_dir: pages
 use_directory_urls: false
 
 exclude_docs: |
+  index.md
+  getting-started.md
+  first-game.md
+  project-structure.md
+  lua-api.md
+  examples.md
+  reference-games.md
+  recipes.md
+  contributors.md
   specs/
   wiki/
   templates/
   meta/
   snippets.md
+  api/lurek.md
+  api/lureksome.md
   api/rust.md
   CHANGELOG.md
   linux_build.md
@@ -85,96 +96,75 @@ extra:
       link: https://github.com/Lurek2D/lurek_2d
 
 nav:
-  - Home: index.md
-  - Getting Started:
-    - Overview: getting-started.md
-    - First Game: first-game.md
-    - Project Structure: project-structure.md
-  - Lua API:
-    - Overview: lua-api.md
-    - Full lurek API: api/lurek.md
-    - Callbacks: api/callbacks.md
-    - Lureksome: api/lureksome.md
-  - Module Guides:
-    - Overview: module-guides.md
-    - Foundations:
-      - Binary: modules/binary.md
-      - Color: modules/color.md
-      - Compute: modules/compute.md
-      - Dataframe: modules/dataframe.md
-      - Graph: modules/flownet.md
-      - Globe: modules/globe.md
-      - Layout: modules/layout.md
-      - Log: modules/log.md
-      - Math: modules/math.md
-      - Patterns: modules/patterns.md
-      - Procgen: modules/procgen.md
-      - Serial: modules/serialize.md
-      - SVG: modules/vector.md
-    - Core Runtime:
-      - Event: modules/event.md
-      - Filesystem: modules/filesystem.md
-      - Network: modules/network.md
-      - Repl: modules/repl.md
-      - Runtime: modules/runtime.md
-      - Thread: modules/thread.md
-      - Timer: modules/timer.md
-    - Platform Services:
-      - Audio: modules/audio.md
-      - Camera: modules/camera.md
-      - DSP: modules/dsp.md
-      - Effect: modules/effect.md
-      - Font: modules/font.md
-      - Image: modules/image.md
-      - Input: modules/input.md
-      - Light: modules/light.md
-      - Midi: modules/midi.md
-      - Physics: modules/physics.md
-      - Render: modules/render.md
-      - Visibility: modules/visibility.md
-      - Window: modules/window.md
-    - Feature Systems:
-      - Agent: modules/agent.md
-      - AI: modules/ai.md
-      - Animation: modules/animation.md
-      - Asset: modules/asset.md
-      - Automation: modules/automation.md
-      - Charts: modules/charts.md
-      - Cinematic: modules/cinematic.md
-      - Cursor: modules/cursor.md
-      - Dialog: modules/dialog.md
-      - ECS: modules/ecs.md
-      - Grep: modules/grep.md
-      - Html: modules/html.md
-      - I18n: modules/i18n.md
-      - Learning: modules/learning.md
-      - Mapblock: modules/mapblock.md
-      - Minimap: modules/minimap.md
-      - Mods: modules/mods.md
-      - Overlay: modules/overlay.md
-      - Parallax: modules/parallax.md
-      - Particle: modules/particle.md
-      - Pathfind: modules/pathfind.md
-      - Pipeline: modules/pipeline.md
-      - Province: modules/province.md
-      - Raycaster: modules/raycaster.md
-      - Save: modules/save.md
-      - Scene: modules/scene.md
-      - Spine: modules/spine.md
-      - Sprite: modules/sprite.md
-      - Terminal: modules/terminal.md
-      - Tilemap: modules/tilemap.md
-      - Tween: modules/tween.md
-      - UI: modules/ui.md
-      - Validator: modules/validator.md
-    - Edge/Integration:
-      - App: modules/app.md
-      - Debugbridge: modules/debugbridge.md
-      - Devtools: modules/devtools.md
-      - Docs: modules/docs.md
-  - Examples:
-    - Overview: examples.md
-    - Reference Games: reference-games.md
-    - Recipes: recipes.md
-  - Contributors:
-    - Overview: contributors.md
+  - Module API Specs: module-guides.md
+  - Callbacks: api/callbacks.md
+  - Agent: modules/agent.md
+  - AI: modules/ai.md
+  - Animation: modules/animation.md
+  - App: modules/app.md
+  - Asset: modules/asset.md
+  - Audio: modules/audio.md
+  - Automation: modules/automation.md
+  - Binary: modules/binary.md
+  - Camera: modules/camera.md
+  - Charts: modules/charts.md
+  - Cinematic: modules/cinematic.md
+  - Color: modules/color.md
+  - Compute: modules/compute.md
+  - Cursor: modules/cursor.md
+  - Dataframe: modules/dataframe.md
+  - Debugbridge: modules/debugbridge.md
+  - Devtools: modules/devtools.md
+  - Dialog: modules/dialog.md
+  - Docs: modules/docs.md
+  - DSP: modules/dsp.md
+  - ECS: modules/ecs.md
+  - Effect: modules/effect.md
+  - Event: modules/event.md
+  - Filesystem: modules/filesystem.md
+  - Font: modules/font.md
+  - Globe: modules/globe.md
+  - Graph: modules/flownet.md
+  - Grep: modules/grep.md
+  - Html: modules/html.md
+  - I18n: modules/i18n.md
+  - Image: modules/image.md
+  - Input: modules/input.md
+  - Layout: modules/layout.md
+  - Learning: modules/learning.md
+  - Light: modules/light.md
+  - Log: modules/log.md
+  - Mapblock: modules/mapblock.md
+  - Math: modules/math.md
+  - Midi: modules/midi.md
+  - Minimap: modules/minimap.md
+  - Mods: modules/mods.md
+  - Network: modules/network.md
+  - Overlay: modules/overlay.md
+  - Parallax: modules/parallax.md
+  - Particle: modules/particle.md
+  - Pathfind: modules/pathfind.md
+  - Patterns: modules/patterns.md
+  - Physics: modules/physics.md
+  - Pipeline: modules/pipeline.md
+  - Procgen: modules/procgen.md
+  - Province: modules/province.md
+  - Raycaster: modules/raycaster.md
+  - Render: modules/render.md
+  - Repl: modules/repl.md
+  - Runtime: modules/runtime.md
+  - Save: modules/save.md
+  - Scene: modules/scene.md
+  - Serial: modules/serialize.md
+  - Spine: modules/spine.md
+  - Sprite: modules/sprite.md
+  - SVG: modules/vector.md
+  - Terminal: modules/terminal.md
+  - Thread: modules/thread.md
+  - Tilemap: modules/tilemap.md
+  - Timer: modules/timer.md
+  - Tween: modules/tween.md
+  - UI: modules/ui.md
+  - Validator: modules/validator.md
+  - Visibility: modules/visibility.md
+  - Window: modules/window.md

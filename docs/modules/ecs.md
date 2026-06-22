@@ -32,7 +32,7 @@ end
 
 ## API Reference
 
-- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- This page is the generated API reference for this module.
 - Runnable example owner: `content/examples/ecs.lua`
 
 ## Summary

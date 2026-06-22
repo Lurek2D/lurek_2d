@@ -20,7 +20,7 @@ See `content/examples/app.lua` for runnable examples when this module has public
 
 ## API Reference
 
-- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)
+- This page is the generated API reference for this module.
 - Runnable example owner: `content/examples/app.lua`
 
 ## Summary

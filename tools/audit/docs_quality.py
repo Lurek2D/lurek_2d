@@ -82,6 +82,34 @@ def check_coverage(errors: list[str]) -> None:
 def check_module_pages_indexed(errors: list[str]) -> None:
     mkdocs_text = (ROOT / "mkdocs.yml").read_text(encoding="utf-8")
     guide_text = (ROOT / "docs" / "module-guides.md").read_text(encoding="utf-8")
+    page_only_excluded = [
+        "index.md",
+        "getting-started.md",
+        "first-game.md",
+        "project-structure.md",
+        "lua-api.md",
+        "examples.md",
+        "reference-games.md",
+        "recipes.md",
+        "contributors.md",
+        "api/lurek.md",
+        "api/lureksome.md",
+    ]
+    for path in page_only_excluded:
+        if f"  {path}" not in mkdocs_text:
+            errors.append(f"MISSING_PAGES_EXCLUDE {path}")
+        if re.search(rf"^\s*-\s+.*:\s+{re.escape(path)}\s*$", mkdocs_text, re.MULTILINE):
+            errors.append(f"FORBIDDEN_PAGES_NAV {path}")
+
+    forbidden_headings = {"Foundations", "Core Runtime", "Platform Services", "Feature Systems", "Edge/Integration"}
+    for heading in forbidden_headings:
+        if re.search(rf"^##\s+{re.escape(heading)}\s*$", guide_text, re.MULTILINE):
+            errors.append(f"FORBIDDEN_MODULE_GUIDE_SECTION {heading}")
+
+    guide_labels = re.findall(r"^\| \[([^\]]+)\]\(modules/[^)]+\.md\) \|", guide_text, re.MULTILINE)
+    if guide_labels != sorted(guide_labels, key=str.casefold):
+        errors.append("MODULE_GUIDE_NOT_ALPHABETICAL")
+
     for module in module_registry.user_facing_modules():
         module_path = ROOT / "docs" / "modules" / f"{module}.md"
         module_ref = f"modules/{module}.md"

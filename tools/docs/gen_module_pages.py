@@ -533,7 +533,7 @@ def build_page(
 
     out.append("## API Reference")
     out.append("")
-    out.append(f"- Full generated API reference: [docs/api/lurek.md](../api/lurek.md)")
+    out.append("- This page is the generated API reference for this module.")
     out.append(f"- Runnable example owner: `content/examples/{module}.lua`")
     out.append("")
 
@@ -661,6 +661,14 @@ def build_callbacks_page() -> str:
     spec = extract_spec_sections(SPECS_DIR / "callbacks.md")
     general_info = (spec.get("general_info") or "").strip()
     summary = (spec.get("summary") or "").strip()
+    general_info = general_info.replace(
+        "Detailed callback signatures/parameters belong to generated API references (`docs/api/lurek.md`, `docs/api/lurek.lua`).",
+        "Detailed callback signatures and parameters are listed below on this page.",
+    )
+    summary = summary.replace(
+        "Detailed callback signatures/parameters belong to generated API references (`docs/api/lurek.md`, `docs/api/lurek.lua`).",
+        "Detailed callback signatures and parameters are listed below on this page.",
+    )
 
     callbacks = []
     if LUA_API_JSON.exists():
@@ -744,7 +752,6 @@ def build_callbacks_page() -> str:
     out.append("## Sources")
     out.append("")
     out.append("- [Spec callbacks](https://github.com/Lurek2D/lurek_2d/blob/main/docs/specs/callbacks.md)")
-    out.append("- [Generated API (Markdown)](lurek.md)")
     out.append("")
 
     return "\n".join(out)

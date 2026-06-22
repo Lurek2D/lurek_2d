@@ -14,7 +14,7 @@
 
 This spec documents global `lurek.*` lifecycle/input/render callbacks exposed by the engine runtime. It is generated from `build/docs-data/lua_api.json` (`engine_callbacks`) with `logs/data/lua_api_data.json` compatibility fallback so callback contracts stay in sync with Rust+Lua API extraction without hardcoded lists.
 
-Scope boundary: this file owns only callback inventory and ownership context. Detailed callback signatures/parameters belong to generated API references (`docs/api/lurek.md`, `docs/api/lurek.lua`).
+Scope boundary: this file owns only callback inventory and ownership context. Detailed callback signatures and parameters are listed below on this page.
 
 ## Callback Inventory
 
@@ -27,4 +27,3 @@ Scope boundary: this file owns only callback inventory and ownership context. De
 ## Sources
 
 - [Spec callbacks](https://github.com/Lurek2D/lurek_2d/blob/main/docs/specs/callbacks.md)
-- [Generated API (Markdown)](lurek.md)
