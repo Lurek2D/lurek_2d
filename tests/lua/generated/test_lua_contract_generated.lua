@@ -1168,6 +1168,21 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.charts.newBar)
     end)
 
+    -- @covers lurek.charts.newBoxPlot
+    it("lurek.charts.newBoxPlot exists", function()
+        expect_type("function", lurek.charts.newBoxPlot)
+    end)
+
+    -- @covers lurek.charts.newBubble
+    it("lurek.charts.newBubble exists", function()
+        expect_type("function", lurek.charts.newBubble)
+    end)
+
+    -- @covers lurek.charts.newCandlestick
+    it("lurek.charts.newCandlestick exists", function()
+        expect_type("function", lurek.charts.newCandlestick)
+    end)
+
     -- @covers lurek.charts.newHeatmap
     it("lurek.charts.newHeatmap exists", function()
         expect_type("function", lurek.charts.newHeatmap)
@@ -1188,9 +1203,19 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.charts.newPie)
     end)
 
+    -- @covers lurek.charts.newRadar
+    it("lurek.charts.newRadar exists", function()
+        expect_type("function", lurek.charts.newRadar)
+    end)
+
     -- @covers lurek.charts.newScatter
     it("lurek.charts.newScatter exists", function()
         expect_type("function", lurek.charts.newScatter)
+    end)
+
+    -- @covers lurek.charts.newTreemap
+    it("lurek.charts.newTreemap exists", function()
+        expect_type("function", lurek.charts.newTreemap)
     end)
 
     -- @covers lurek.charts.seriesColor
@@ -3418,6 +3443,11 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.layout.centerInArea)
     end)
 
+    -- @covers lurek.layout.circular
+    it("lurek.layout.circular exists", function()
+        expect_type("function", lurek.layout.circular)
+    end)
+
     -- @covers lurek.layout.dag
     it("lurek.layout.dag exists", function()
         expect_type("function", lurek.layout.dag)
@@ -3428,9 +3458,29 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.layout.force)
     end)
 
+    -- @covers lurek.layout.grid
+    it("lurek.layout.grid exists", function()
+        expect_type("function", lurek.layout.grid)
+    end)
+
+    -- @covers lurek.layout.radial
+    it("lurek.layout.radial exists", function()
+        expect_type("function", lurek.layout.radial)
+    end)
+
     -- @covers lurek.layout.snapToGrid
     it("lurek.layout.snapToGrid exists", function()
         expect_type("function", lurek.layout.snapToGrid)
+    end)
+
+    -- @covers lurek.layout.spiral
+    it("lurek.layout.spiral exists", function()
+        expect_type("function", lurek.layout.spiral)
+    end)
+
+    -- @covers lurek.layout.stress
+    it("lurek.layout.stress exists", function()
+        expect_type("function", lurek.layout.stress)
     end)
 
     -- @covers lurek.layout.tree
@@ -4568,6 +4618,11 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.pathfind.newNavGrid)
     end)
 
+    -- @covers lurek.pathfind.newNavGridFromField
+    it("lurek.pathfind.newNavGridFromField exists", function()
+        expect_type("function", lurek.pathfind.newNavGridFromField)
+    end)
+
     -- @covers lurek.pathfind.newNavGridFromTileMap
     it("lurek.pathfind.newNavGridFromTileMap exists", function()
         expect_type("function", lurek.pathfind.newNavGridFromTileMap)
@@ -4601,6 +4656,11 @@ describe("generated: top-level lurek contract", function()
     -- @covers lurek.pathfind.rangeMap
     it("lurek.pathfind.rangeMap exists", function()
         expect_type("function", lurek.pathfind.rangeMap)
+    end)
+
+    -- @covers lurek.pathfind.rangeMapFromField
+    it("lurek.pathfind.rangeMapFromField exists", function()
+        expect_type("function", lurek.pathfind.rangeMapFromField)
     end)
 
     -- @covers lurek.pathfind.setThreadCount
@@ -5113,6 +5173,11 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.raycaster.buildMultiLevelSceneFromAdapter)
     end)
 
+    -- @covers lurek.raycaster.buildMultiLevelSceneFromField
+    it("lurek.raycaster.buildMultiLevelSceneFromField exists", function()
+        expect_type("function", lurek.raycaster.buildMultiLevelSceneFromField)
+    end)
+
     -- @covers lurek.raycaster.distanceShade
     it("lurek.raycaster.distanceShade exists", function()
         expect_type("function", lurek.raycaster.distanceShade)
@@ -5146,11 +5211,6 @@ describe("generated: top-level lurek contract", function()
     -- @covers lurek.raycaster.newMultiLevelGrid
     it("lurek.raycaster.newMultiLevelGrid exists", function()
         expect_type("function", lurek.raycaster.newMultiLevelGrid)
-    end)
-
-    -- @covers lurek.raycaster.newPointLight
-    it("lurek.raycaster.newPointLight exists", function()
-        expect_type("function", lurek.raycaster.newPointLight)
     end)
 
     -- @covers lurek.raycaster.newSceneAdapter
@@ -6543,6 +6603,16 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.thread.newThread)
     end)
 
+    -- @covers lurek.tilefield.fromTileMap
+    it("lurek.tilefield.fromTileMap exists", function()
+        expect_type("function", lurek.tilefield.fromTileMap)
+    end)
+
+    -- @covers lurek.tilefield.new
+    it("lurek.tilefield.new exists", function()
+        expect_type("function", lurek.tilefield.new)
+    end)
+
     -- @covers lurek.tilemap.fromLDtk
     it("lurek.tilemap.fromLDtk exists", function()
         expect_type("function", lurek.tilemap.fromLDtk)
@@ -7348,6 +7418,16 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.validator.validateFile)
     end)
 
+    -- @covers lurek.visibility.lineOfAction
+    it("lurek.visibility.lineOfAction exists", function()
+        expect_type("function", lurek.visibility.lineOfAction)
+    end)
+
+    -- @covers lurek.visibility.lineOfSight
+    it("lurek.visibility.lineOfSight exists", function()
+        expect_type("function", lurek.visibility.lineOfSight)
+    end)
+
     -- @covers lurek.visibility.new
     it("lurek.visibility.new exists", function()
         expect_type("function", lurek.visibility.new)
@@ -7356,6 +7436,11 @@ describe("generated: top-level lurek contract", function()
     -- @covers lurek.visibility.newFov
     it("lurek.visibility.newFov exists", function()
         expect_type("function", lurek.visibility.newFov)
+    end)
+
+    -- @covers lurek.visibility.newTileVisibility
+    it("lurek.visibility.newTileVisibility exists", function()
+        expect_type("function", lurek.visibility.newTileVisibility)
     end)
 
     -- @covers lurek.window.close

@@ -223,6 +223,122 @@ describe("lurek.visibility.newFov", function()
         expect_true(fov:typeOf("LFov"))
     end)
 end)
+
+-- @describe visibility tilefield helpers
+describe("visibility tilefield helpers", function()
+    -- @covers lurek.visibility.lineOfSight
+    it("checks sight line with vision channel", function()
+        local field = lurek.tilefield.new({ width = 5, height = 3 })
+        field:applyProfile(3, 2, 1, "window")
+        expect_true(lurek.visibility.lineOfSight(field, { x = 1, y = 2, z = 1 }, { x = 5, y = 2, z = 1 }))
+    end)
+
+    -- @covers lurek.visibility.lineOfAction
+    it("checks action line separately from sight", function()
+        local field = lurek.tilefield.new({ width = 5, height = 3 })
+        field:applyProfile(3, 2, 1, "window")
+        expect_true(not lurek.visibility.lineOfAction(field, { x = 1, y = 2, z = 1 }, { x = 5, y = 2, z = 1 }))
+    end)
+
+    -- @covers lurek.visibility.newTileVisibility
+    it("creates per-player tile visibility", function()
+        local field = lurek.tilefield.new({ width = 5, height = 5 })
+        local vis = lurek.visibility.newTileVisibility(field, { players = { "p1", "p2" } })
+        expect_equal("LTileVisibility", vis:type())
+    end)
+
+    -- @covers LTileVisibility:computeVisible
+    it("computes visible mask for one player", function()
+        local field = lurek.tilefield.new({ width = 5, height = 5 })
+        local vis = lurek.visibility.newTileVisibility(field, { players = { "p1", "p2" } })
+        vis:computeVisible("p1", { origin = { x = 1, y = 1, z = 1 }, range = 2 })
+        expect_true(vis:isVisible("p1", 2, 1, 1))
+        expect_true(not vis:isVisible("p2", 2, 1, 1))
+    end)
+
+    -- @covers LTileVisibility:computeAction
+    it("computes action mask separately", function()
+        local field = lurek.tilefield.new({ width = 5, height = 3 })
+        field:applyProfile(3, 2, 1, "window")
+        local vis = lurek.visibility.newTileVisibility(field, { players = { "p1" } })
+        vis:computeVisible("p1", { origin = { x = 1, y = 2, z = 1 }, range = 5 })
+        vis:computeAction("p1", { origin = { x = 1, y = 2, z = 1 }, range = 5 })
+        expect_true(vis:isVisible("p1", 5, 2, 1))
+        expect_true(not vis:canActOn("p1", 5, 2, 1))
+    end)
+
+    -- @covers LTileVisibility:isVisible
+    it("reports visible cells", function()
+        local field = lurek.tilefield.new({ width = 4, height = 4 })
+        local vis = lurek.visibility.newTileVisibility(field, { players = { "p1" } })
+        vis:computeVisible("p1", { origin = { x = 2, y = 2, z = 1 }, range = 1 })
+        expect_true(vis:isVisible("p1", 2, 2, 1))
+    end)
+
+    -- @covers LTileVisibility:isExplored
+    it("remembers explored cells", function()
+        local field = lurek.tilefield.new({ width = 4, height = 4 })
+        local vis = lurek.visibility.newTileVisibility(field, { players = { "p1" }, rememberExplored = true })
+        vis:computeVisible("p1", { origin = { x = 2, y = 2, z = 1 }, range = 1 })
+        expect_true(vis:isExplored("p1", 2, 2, 1))
+    end)
+
+    -- @covers LTileVisibility:canActOn
+    it("reports action cells", function()
+        local field = lurek.tilefield.new({ width = 4, height = 4 })
+        local vis = lurek.visibility.newTileVisibility(field, { players = { "p1" } })
+        vis:computeAction("p1", { origin = { x = 2, y = 2, z = 1 }, range = 1 })
+        expect_true(vis:canActOn("p1", 2, 2, 1))
+    end)
+
+    -- @covers LTileVisibility:visibleCells
+    it("returns visible cell list", function()
+        local field = lurek.tilefield.new({ width = 4, height = 4 })
+        local vis = lurek.visibility.newTileVisibility(field, { players = { "p1" } })
+        vis:computeVisible("p1", { origin = { x = 2, y = 2, z = 1 }, range = 1 })
+        expect_true(#vis:visibleCells("p1", 1) > 0)
+    end)
+
+    -- @covers LTileVisibility:actionCells
+    it("returns action cell list", function()
+        local field = lurek.tilefield.new({ width = 4, height = 4 })
+        local vis = lurek.visibility.newTileVisibility(field, { players = { "p1" } })
+        vis:computeAction("p1", { origin = { x = 2, y = 2, z = 1 }, range = 1 })
+        expect_true(#vis:actionCells("p1", 1) > 0)
+    end)
+
+    -- @covers LTileVisibility:clearPlayer
+    it("clears one player", function()
+        local field = lurek.tilefield.new({ width = 4, height = 4 })
+        local vis = lurek.visibility.newTileVisibility(field, { players = { "p1" } })
+        vis:computeVisible("p1", { origin = { x = 2, y = 2, z = 1 }, range = 1 })
+        vis:clearPlayer("p1")
+        expect_true(not vis:isVisible("p1", 2, 2, 1))
+    end)
+
+    -- @covers LTileVisibility:clearAll
+    it("clears all players", function()
+        local field = lurek.tilefield.new({ width = 4, height = 4 })
+        local vis = lurek.visibility.newTileVisibility(field, { players = { "p1", "p2" } })
+        vis:computeAction("p1", { origin = { x = 2, y = 2, z = 1 }, range = 1 })
+        vis:clearAll()
+        expect_true(not vis:canActOn("p1", 2, 2, 1))
+    end)
+
+    -- @covers LTileVisibility:type
+    it("returns tile visibility type", function()
+        local field = lurek.tilefield.new({ width = 4, height = 4 })
+        local vis = lurek.visibility.newTileVisibility(field, { players = { "p1" } })
+        expect_equal("LTileVisibility", vis:type())
+    end)
+
+    -- @covers LTileVisibility:typeOf
+    it("checks tile visibility type", function()
+        local field = lurek.tilefield.new({ width = 4, height = 4 })
+        local vis = lurek.visibility.newTileVisibility(field, { players = { "p1" } })
+        expect_true(vis:typeOf("LTileVisibility"))
+    end)
+end)
 end
 -- END test_visibility_core_unit.lua
 

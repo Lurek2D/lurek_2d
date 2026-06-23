@@ -1,6 +1,6 @@
 {
   "version": "auto-generated",
-  "generated": "2026-06-22",
+  "generated": "2026-06-23",
   "modules": [
     {
       "name": "agent",
@@ -4378,6 +4378,96 @@
           ],
           "returns": "LHeatmapChart",
           "returnType": "LHeatmapChart",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "newCandlestick",
+          "fullPath": "lurek.charts.newCandlestick",
+          "signature": "([config])",
+          "description": "Creates a new candlestick chart userdata instance.",
+          "parameters": [
+            {
+              "name": "config",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
+              "optional": true
+            }
+          ],
+          "returns": "LCandlestickChart",
+          "returnType": "LCandlestickChart",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "newBoxPlot",
+          "fullPath": "lurek.charts.newBoxPlot",
+          "signature": "([config])",
+          "description": "Creates a new boxplot chart userdata instance.",
+          "parameters": [
+            {
+              "name": "config",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
+              "optional": true
+            }
+          ],
+          "returns": "LBoxPlotChart",
+          "returnType": "LBoxPlotChart",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "newBubble",
+          "fullPath": "lurek.charts.newBubble",
+          "signature": "([config])",
+          "description": "Creates a new bubble chart userdata instance.",
+          "parameters": [
+            {
+              "name": "config",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
+              "optional": true
+            }
+          ],
+          "returns": "LBubbleChart",
+          "returnType": "LBubbleChart",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "newRadar",
+          "fullPath": "lurek.charts.newRadar",
+          "signature": "([config])",
+          "description": "Creates a new radar chart userdata instance.",
+          "parameters": [
+            {
+              "name": "config",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
+              "optional": true
+            }
+          ],
+          "returns": "LRadarChart",
+          "returnType": "LRadarChart",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "newTreemap",
+          "fullPath": "lurek.charts.newTreemap",
+          "signature": "([config])",
+          "description": "Creates a new treemap chart userdata instance.",
+          "parameters": [
+            {
+              "name": "config",
+              "type": "table",
+              "description": "Parameter value for this chart operation.",
+              "optional": true
+            }
+          ],
+          "returns": "LTreemapChart",
+          "returnType": "LTreemapChart",
           "isMethod": false,
           "objectType": null
         },
@@ -13146,7 +13236,7 @@
           "name": "tree",
           "fullPath": "lurek.layout.tree",
           "signature": "lurek.layout.tree(nodes, children, root, config)",
-          "description": "Lays out a tree using the Reingold-Tilford algorithm.",
+          "description": "Lays out a size-aware tree, centering parents over child spans and keeping disconnected nodes.",
           "parameters": [
             {
               "name": "nodes",
@@ -13182,7 +13272,7 @@
           "name": "dag",
           "fullPath": "lurek.layout.dag",
           "signature": "(nodes_tbl, edges_tbl, [config_tbl])",
-          "description": "Lays out a DAG using the Sugiyama layered algorithm.",
+          "description": "Lays out a size-aware DAG with centered layers, stable barycenter ordering, and height-aware ranks.",
           "parameters": [
             {
               "name": "nodes",
@@ -13212,7 +13302,7 @@
           "name": "force",
           "fullPath": "lurek.layout.force",
           "signature": "(nodes_tbl, edges_tbl, [config_tbl])",
-          "description": "Lays out a graph using force-directed Fruchterman-Reingold simulation.",
+          "description": "Lays out a graph using bounded size-aware force simulation with final overlap cleanup.",
           "parameters": [
             {
               "name": "nodes",
@@ -13230,6 +13320,144 @@
               "name": "config",
               "type": "table|nil",
               "description": "Optional config with iterations, repulsion, attraction, cooling, areaWidth, areaHeight.",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "circular",
+          "fullPath": "lurek.layout.circular",
+          "signature": "(nodes_tbl, [config_tbl])",
+          "description": "Lays out nodes around a chord-safe circle for cycle-heavy graphs and overviews.",
+          "parameters": [
+            {
+              "name": "nodes",
+              "type": "table",
+              "description": "Array of node tables with id, width, height, label fields.",
+              "optional": false
+            },
+            {
+              "name": "config",
+              "type": "table|nil",
+              "description": "Optional config with hSpacing, vSpacing, margin.",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "radial",
+          "fullPath": "lurek.layout.radial",
+          "signature": "lurek.layout.radial(nodes, edges, root, config)",
+          "description": "Lays out a graph on size-aware breadth-first concentric rings from a root node.",
+          "parameters": [
+            {
+              "name": "nodes",
+              "type": "table",
+              "description": "Array of node tables with id, width, height, label fields.",
+              "optional": false
+            },
+            {
+              "name": "edges",
+              "type": "table",
+              "description": "Array of edge tables with from, to, weight fields.",
+              "optional": false
+            },
+            {
+              "name": "root",
+              "type": "integer",
+              "description": "ID of the radial center node.",
+              "optional": false
+            },
+            {
+              "name": "config",
+              "type": "table|nil",
+              "description": "Optional config with hSpacing, vSpacing, margin.",
+              "optional": false
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "grid",
+          "fullPath": "lurek.layout.grid",
+          "signature": "(nodes_tbl, [config_tbl])",
+          "description": "Lays out nodes in a compact variable-size grid for dense or disconnected graphs.",
+          "parameters": [
+            {
+              "name": "nodes",
+              "type": "table",
+              "description": "Array of node tables with id, width, height, label fields.",
+              "optional": false
+            },
+            {
+              "name": "config",
+              "type": "table|nil",
+              "description": "Optional config with hSpacing, vSpacing, margin.",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "spiral",
+          "fullPath": "lurek.layout.spiral",
+          "signature": "(nodes_tbl, [config_tbl])",
+          "description": "Lays out nodes on an expanding overlap-checked spiral for fast large-graph refreshes.",
+          "parameters": [
+            {
+              "name": "nodes",
+              "type": "table",
+              "description": "Array of node tables with id, width, height, label fields.",
+              "optional": false
+            },
+            {
+              "name": "config",
+              "type": "table|nil",
+              "description": "Optional config with hSpacing, vSpacing, margin.",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "stress",
+          "fullPath": "lurek.layout.stress",
+          "signature": "(nodes_tbl, edges_tbl, [config_tbl])",
+          "description": "Lays out a graph by preserving graph-distance relationships with bounded relaxation and cleanup.",
+          "parameters": [
+            {
+              "name": "nodes",
+              "type": "table",
+              "description": "Array of node tables with id, width, height, label fields.",
+              "optional": false
+            },
+            {
+              "name": "edges",
+              "type": "table",
+              "description": "Array of edge tables with from, to, weight fields.",
+              "optional": false
+            },
+            {
+              "name": "config",
+              "type": "table|nil",
+              "description": "Optional config with iterations, edgeLength, step.",
               "optional": true
             }
           ],
@@ -18706,6 +18934,30 @@
           "objectType": null
         },
         {
+          "name": "newNavGridFromField",
+          "fullPath": "lurek.pathfind.newNavGridFromField",
+          "signature": "(field_ud, [opts])",
+          "description": "Creates a navigation grid from a tilefield level and channel.",
+          "parameters": [
+            {
+              "name": "field_ud",
+              "type": "LTileField",
+              "description": "Tilefield to derive navigation grid from.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Options with `level`, `channel`, `costChannel`, and `diagonalMode`.",
+              "optional": true
+            }
+          ],
+          "returns": "LNavGrid",
+          "returnType": "LNavGrid",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
           "name": "newHexGrid",
           "fullPath": "lurek.pathfind.newHexGrid",
           "signature": "(width, height, [layout_str])",
@@ -18780,6 +19032,30 @@
               "name": "opts",
               "type": "table",
               "description": "Options with dimensions, origin, budget, optional diagonal flag, costs, and blocked cells.",
+              "optional": false
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "rangeMapFromField",
+          "fullPath": "lurek.pathfind.rangeMapFromField",
+          "signature": "(field_ud, opts)",
+          "description": "Computes reachable cells from a tilefield level and movement channel.",
+          "parameters": [
+            {
+              "name": "field_ud",
+              "type": "LTileField",
+              "description": "Tilefield to read.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Options with `origin`, `budget`, optional `level`, `channel`, `costChannel`, and `diagonal`.",
               "optional": false
             }
           ],
@@ -21472,7 +21748,7 @@
             {
               "name": "lights",
               "type": "table",
-              "description": "Array of point-light tables or LPointLight userdata values.",
+              "description": "Array of render light tables.",
               "optional": true
             },
             {
@@ -21491,6 +21767,54 @@
               "name": "models",
               "type": "table",
               "description": "Array of model instance tables {model, x, y, level?, rotation?, yaw?, z?, scale?}; instances default to `active_level`.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "buildMultiLevelSceneFromField",
+          "fullPath": "lurek.raycaster.buildMultiLevelSceneFromField",
+          "signature": "lurek.raycaster.buildMultiLevelSceneFromField(params, field, [opts], [lights], [sprites], [wallTextures])",
+          "description": "Builds a multilevel raycaster scene from a tilefield blocker channel.",
+          "parameters": [
+            {
+              "name": "params",
+              "type": "table",
+              "description": "Scene params plus optional active_level.",
+              "optional": false
+            },
+            {
+              "name": "field",
+              "type": "LTileField",
+              "description": "Source tilefield.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Options with `wallChannel` (default `vision`).",
+              "optional": true
+            },
+            {
+              "name": "lights",
+              "type": "table",
+              "description": "Optional raycaster point lights.",
+              "optional": true
+            },
+            {
+              "name": "sprites",
+              "type": "table|LSpriteManager",
+              "description": "Optional raycaster sprites.",
+              "optional": true
+            },
+            {
+              "name": "wallTextures",
+              "type": "table",
+              "description": "Map of cell_value -> texture for wall surfaces.",
               "optional": true
             }
           ],
@@ -21668,66 +21992,6 @@
           ],
           "returns": "LHeightMap",
           "returnType": "LHeightMap",
-          "isMethod": false,
-          "objectType": null
-        },
-        {
-          "name": "newPointLight",
-          "fullPath": "lurek.raycaster.newPointLight",
-          "signature": "lurek.raycaster.newPointLight(x, y, r, g, b, radius, intensity, [level])",
-          "description": "Creates a new point light with position, color, radius, and intensity.",
-          "parameters": [
-            {
-              "name": "x",
-              "type": "number",
-              "description": "World X position.",
-              "optional": false
-            },
-            {
-              "name": "y",
-              "type": "number",
-              "description": "World Y position.",
-              "optional": false
-            },
-            {
-              "name": "r",
-              "type": "number",
-              "description": "Red channel (0.0..1.0).",
-              "optional": false
-            },
-            {
-              "name": "g",
-              "type": "number",
-              "description": "Green channel (0.0..1.0).",
-              "optional": false
-            },
-            {
-              "name": "b",
-              "type": "number",
-              "description": "Blue channel (0.0..1.0).",
-              "optional": false
-            },
-            {
-              "name": "radius",
-              "type": "number",
-              "description": "Light falloff radius in world units.",
-              "optional": false
-            },
-            {
-              "name": "intensity",
-              "type": "number",
-              "description": "Brightness multiplier.",
-              "optional": false
-            },
-            {
-              "name": "level",
-              "type": "integer",
-              "description": "Optional multilevel slice index that owns this light.",
-              "optional": true
-            }
-          ],
-          "returns": "LPointLight",
-          "returnType": "LPointLight",
           "isMethod": false,
           "objectType": null
         },
@@ -27748,6 +28012,55 @@
       "methods": []
     },
     {
+      "name": "tilefield",
+      "description": "Registers the `lurek.tilefield` Lua API for multi-level tile gameplay semantics.\nThe binding layer converts Lua tables and one-based coordinates while the Rust domain module owns field behavior.",
+      "functions": [
+        {
+          "name": "new",
+          "fullPath": "lurek.tilefield.new",
+          "signature": "(opts)",
+          "description": "Creates a multi-level tilefield.",
+          "parameters": [
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "`{width, height, levels?, topology?}`.",
+              "optional": false
+            }
+          ],
+          "returns": "LTileField",
+          "returnType": "LTileField",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "fromTileMap",
+          "fullPath": "lurek.tilefield.fromTileMap",
+          "signature": "(tm_ud, [opts])",
+          "description": "Copies a tilemap layer into a tilefield using solid and empty profiles.",
+          "parameters": [
+            {
+              "name": "tilemap",
+              "type": "LTileMap",
+              "description": "Source tilemap.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "`{level?, topology?, solidProfile?, emptyProfile?, solidGids?}`.",
+              "optional": true
+            }
+          ],
+          "returns": "LTileField",
+          "returnType": "LTileField",
+          "isMethod": false,
+          "objectType": null
+        }
+      ],
+      "methods": []
+    },
+    {
       "name": "tilemap",
       "description": "Registers the `lurek.tilemap` Lua API for tilemap userdata, imports, one-based coordinates, and validation.",
       "functions": [
@@ -30996,6 +31309,102 @@
           ],
           "returns": "LFov",
           "returnType": "LFov",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "newTileVisibility",
+          "fullPath": "lurek.visibility.newTileVisibility",
+          "signature": "(field_ud, opts)",
+          "description": "Creates per-player tile visibility/action masks backed by a tilefield.",
+          "parameters": [
+            {
+              "name": "field",
+              "type": "LTileField",
+              "description": "Source tilefield.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "`{players={...}, rememberExplored=true?}`.",
+              "optional": false
+            }
+          ],
+          "returns": "LTileVisibility",
+          "returnType": "LTileVisibility",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "lineOfSight",
+          "fullPath": "lurek.visibility.lineOfSight",
+          "signature": "lurek.visibility.lineOfSight(field, from, to, [opts])",
+          "description": "Returns whether two tilefield cells have a clear sight line.",
+          "parameters": [
+            {
+              "name": "field",
+              "type": "LTileField",
+              "description": "Tilefield to query.",
+              "optional": false
+            },
+            {
+              "name": "from",
+              "type": "table",
+              "description": "One-based `{x,y,z?}` start.",
+              "optional": false
+            },
+            {
+              "name": "to",
+              "type": "table",
+              "description": "One-based `{x,y,z?}` target.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional `{channel=\"vision\"}`.",
+              "optional": true
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "lineOfAction",
+          "fullPath": "lurek.visibility.lineOfAction",
+          "signature": "lurek.visibility.lineOfAction(field, from, to, [opts])",
+          "description": "Returns whether two tilefield cells have a clear action line.",
+          "parameters": [
+            {
+              "name": "field",
+              "type": "LTileField",
+              "description": "Tilefield to query.",
+              "optional": false
+            },
+            {
+              "name": "from",
+              "type": "table",
+              "description": "One-based `{x,y,z?}` start.",
+              "optional": false
+            },
+            {
+              "name": "to",
+              "type": "table",
+              "description": "One-based `{x,y,z?}` target.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional `{channel=\"action\"}`.",
+              "optional": true
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
           "isMethod": false,
           "objectType": null
         }
@@ -43650,6 +44059,510 @@
       ]
     },
     {
+      "name": "LBoxPlotChart",
+      "description": "Lua handle for a box-and-whisker chart.",
+      "methods": [
+        {
+          "name": "addSeries",
+          "fullPath": "LBoxPlotChart:addSeries",
+          "signature": "(name, values, [color])",
+          "description": "Adds or replaces a named distribution sample series.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "values",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "color",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBoxPlotChart"
+        },
+        {
+          "name": "appendValue",
+          "fullPath": "LBoxPlotChart:appendValue",
+          "signature": "(name, value, [color])",
+          "description": "Appends one numeric sample to a named distribution.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "value",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "color",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBoxPlotChart"
+        },
+        {
+          "name": "clear",
+          "fullPath": "LBoxPlotChart:clear",
+          "signature": "LBoxPlotChart:clear()",
+          "description": "Clears all chart data and cached chart state.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBoxPlotChart"
+        },
+        {
+          "name": "setTitle",
+          "fullPath": "LBoxPlotChart:setTitle",
+          "signature": "(title)",
+          "description": "Sets the chart title text shown in rendered output.",
+          "parameters": [
+            {
+              "name": "title",
+              "type": "string",
+              "description": "New chart title.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBoxPlotChart"
+        },
+        {
+          "name": "setShowLegend",
+          "fullPath": "LBoxPlotChart:setShowLegend",
+          "signature": "(value)",
+          "description": "Controls whether the chart legend is rendered.",
+          "parameters": [
+            {
+              "name": "value",
+              "type": "boolean",
+              "description": "True to show the legend.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBoxPlotChart"
+        },
+        {
+          "name": "render",
+          "fullPath": "LBoxPlotChart:render",
+          "signature": "()",
+          "description": "Renders the chart into raw RGBA image bytes.",
+          "parameters": [],
+          "returns": "integer, integer, string",
+          "returnType": "integer, integer, string",
+          "isMethod": true,
+          "objectType": "LBoxPlotChart"
+        },
+        {
+          "name": "renderImage",
+          "fullPath": "LBoxPlotChart:renderImage",
+          "signature": "()",
+          "description": "Renders the chart into a new LImage userdata.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBoxPlotChart"
+        },
+        {
+          "name": "drawToImage",
+          "fullPath": "LBoxPlotChart:drawToImage",
+          "signature": "(target)",
+          "description": "Draws the rendered chart into an existing image.",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "userdata",
+              "description": "ImageData target to receive chart pixels.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBoxPlotChart"
+        },
+        {
+          "name": "draw",
+          "fullPath": "LBoxPlotChart:draw",
+          "signature": "(x, y, opts)",
+          "description": "Draws the chart at world or screen coordinates using optional transform options.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "number",
+              "description": "Draw X coordinate.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "number",
+              "description": "Draw Y coordinate.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional render transform options.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBoxPlotChart"
+        },
+        {
+          "name": "getWidth",
+          "fullPath": "LBoxPlotChart:getWidth",
+          "signature": "()",
+          "description": "Returns the configured chart width in pixels.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LBoxPlotChart"
+        },
+        {
+          "name": "getHeight",
+          "fullPath": "LBoxPlotChart:getHeight",
+          "signature": "()",
+          "description": "Returns the configured chart height in pixels.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LBoxPlotChart"
+        },
+        {
+          "name": "type",
+          "fullPath": "LBoxPlotChart:type",
+          "signature": "()",
+          "description": "Returns the runtime userdata type name for this chart.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LBoxPlotChart"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LBoxPlotChart:typeOf",
+          "signature": "(name)",
+          "description": "Checks whether a type name matches this chart userdata.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Type name to check.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LBoxPlotChart"
+        }
+      ]
+    },
+    {
+      "name": "LBubbleChart",
+      "description": "Lua handle for a weighted bubble chart.",
+      "methods": [
+        {
+          "name": "addSeries",
+          "fullPath": "LBubbleChart:addSeries",
+          "signature": "(name, data, [color])",
+          "description": "Adds or replaces a weighted point series from `{x, y, size}` rows.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "data",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "color",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBubbleChart"
+        },
+        {
+          "name": "appendPoint",
+          "fullPath": "LBubbleChart:appendPoint",
+          "signature": "(name, x, y, size, [color])",
+          "description": "Appends one weighted point to a named bubble series.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "x",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "size",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "color",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBubbleChart"
+        },
+        {
+          "name": "setRadiusRange",
+          "fullPath": "LBubbleChart:setRadiusRange",
+          "signature": "(min, max)",
+          "description": "Sets the minimum and maximum bubble radius in pixels.",
+          "parameters": [
+            {
+              "name": "min",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "max",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBubbleChart"
+        },
+        {
+          "name": "clear",
+          "fullPath": "LBubbleChart:clear",
+          "signature": "LBubbleChart:clear()",
+          "description": "Clears all chart data and cached chart state.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBubbleChart"
+        },
+        {
+          "name": "setTitle",
+          "fullPath": "LBubbleChart:setTitle",
+          "signature": "(title)",
+          "description": "Sets the chart title text shown in rendered output.",
+          "parameters": [
+            {
+              "name": "title",
+              "type": "string",
+              "description": "New chart title.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBubbleChart"
+        },
+        {
+          "name": "setShowLegend",
+          "fullPath": "LBubbleChart:setShowLegend",
+          "signature": "(value)",
+          "description": "Controls whether the chart legend is rendered.",
+          "parameters": [
+            {
+              "name": "value",
+              "type": "boolean",
+              "description": "True to show the legend.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBubbleChart"
+        },
+        {
+          "name": "render",
+          "fullPath": "LBubbleChart:render",
+          "signature": "()",
+          "description": "Renders the chart into raw RGBA image bytes.",
+          "parameters": [],
+          "returns": "integer, integer, string",
+          "returnType": "integer, integer, string",
+          "isMethod": true,
+          "objectType": "LBubbleChart"
+        },
+        {
+          "name": "renderImage",
+          "fullPath": "LBubbleChart:renderImage",
+          "signature": "()",
+          "description": "Renders the chart into a new LImage userdata.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBubbleChart"
+        },
+        {
+          "name": "drawToImage",
+          "fullPath": "LBubbleChart:drawToImage",
+          "signature": "(target)",
+          "description": "Draws the rendered chart into an existing image.",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "userdata",
+              "description": "ImageData target to receive chart pixels.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBubbleChart"
+        },
+        {
+          "name": "draw",
+          "fullPath": "LBubbleChart:draw",
+          "signature": "(x, y, opts)",
+          "description": "Draws the chart at world or screen coordinates using optional transform options.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "number",
+              "description": "Draw X coordinate.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "number",
+              "description": "Draw Y coordinate.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional render transform options.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBubbleChart"
+        },
+        {
+          "name": "getWidth",
+          "fullPath": "LBubbleChart:getWidth",
+          "signature": "()",
+          "description": "Returns the configured chart width in pixels.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LBubbleChart"
+        },
+        {
+          "name": "getHeight",
+          "fullPath": "LBubbleChart:getHeight",
+          "signature": "()",
+          "description": "Returns the configured chart height in pixels.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LBubbleChart"
+        },
+        {
+          "name": "type",
+          "fullPath": "LBubbleChart:type",
+          "signature": "()",
+          "description": "Returns the runtime userdata type name for this chart.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LBubbleChart"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LBubbleChart:typeOf",
+          "signature": "(name)",
+          "description": "Checks whether a type name matches this chart userdata.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Type name to check.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LBubbleChart"
+        }
+      ]
+    },
+    {
       "name": "LBus",
       "description": "Lua-side wrapper around an audio mixing bus for grouped volume and effect control.",
       "methods": [
@@ -47070,6 +47983,264 @@
           "returnType": "boolean",
           "isMethod": true,
           "objectType": "LCameraWalker"
+        }
+      ]
+    },
+    {
+      "name": "LCandlestickChart",
+      "description": "Lua handle for an OHLC candlestick chart.",
+      "methods": [
+        {
+          "name": "setCandles",
+          "fullPath": "LCandlestickChart:setCandles",
+          "signature": "(candles)",
+          "description": "Replaces all OHLC candles from table rows with open/high/low/close fields or values 1..4.",
+          "parameters": [
+            {
+              "name": "candles",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LCandlestickChart"
+        },
+        {
+          "name": "appendCandle",
+          "fullPath": "LCandlestickChart:appendCandle",
+          "signature": "(label, open, high, low, close)",
+          "description": "Appends one labeled OHLC candle to the end of the current candlestick stream.",
+          "parameters": [
+            {
+              "name": "label",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "open",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "high",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "low",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "close",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LCandlestickChart"
+        },
+        {
+          "name": "setColors",
+          "fullPath": "LCandlestickChart:setColors",
+          "signature": "(up, down)",
+          "description": "Sets up/down candle colors.",
+          "parameters": [
+            {
+              "name": "up",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "down",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LCandlestickChart"
+        },
+        {
+          "name": "clear",
+          "fullPath": "LCandlestickChart:clear",
+          "signature": "LCandlestickChart:clear()",
+          "description": "Clears all chart data and cached chart state.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LCandlestickChart"
+        },
+        {
+          "name": "setTitle",
+          "fullPath": "LCandlestickChart:setTitle",
+          "signature": "(title)",
+          "description": "Sets the chart title text shown in rendered output.",
+          "parameters": [
+            {
+              "name": "title",
+              "type": "string",
+              "description": "New chart title.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LCandlestickChart"
+        },
+        {
+          "name": "setShowLegend",
+          "fullPath": "LCandlestickChart:setShowLegend",
+          "signature": "(value)",
+          "description": "Controls whether the chart legend is rendered.",
+          "parameters": [
+            {
+              "name": "value",
+              "type": "boolean",
+              "description": "True to show the legend.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LCandlestickChart"
+        },
+        {
+          "name": "render",
+          "fullPath": "LCandlestickChart:render",
+          "signature": "()",
+          "description": "Renders the chart into raw RGBA image bytes.",
+          "parameters": [],
+          "returns": "integer, integer, string",
+          "returnType": "integer, integer, string",
+          "isMethod": true,
+          "objectType": "LCandlestickChart"
+        },
+        {
+          "name": "renderImage",
+          "fullPath": "LCandlestickChart:renderImage",
+          "signature": "()",
+          "description": "Renders the chart into a new LImage userdata.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LCandlestickChart"
+        },
+        {
+          "name": "drawToImage",
+          "fullPath": "LCandlestickChart:drawToImage",
+          "signature": "(target)",
+          "description": "Draws the rendered chart into an existing image.",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "userdata",
+              "description": "ImageData target to receive chart pixels.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LCandlestickChart"
+        },
+        {
+          "name": "draw",
+          "fullPath": "LCandlestickChart:draw",
+          "signature": "(x, y, opts)",
+          "description": "Draws the chart at world or screen coordinates using optional transform options.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "number",
+              "description": "Draw X coordinate.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "number",
+              "description": "Draw Y coordinate.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional render transform options.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LCandlestickChart"
+        },
+        {
+          "name": "getWidth",
+          "fullPath": "LCandlestickChart:getWidth",
+          "signature": "()",
+          "description": "Returns the configured chart width in pixels.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LCandlestickChart"
+        },
+        {
+          "name": "getHeight",
+          "fullPath": "LCandlestickChart:getHeight",
+          "signature": "()",
+          "description": "Returns the configured chart height in pixels.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LCandlestickChart"
+        },
+        {
+          "name": "type",
+          "fullPath": "LCandlestickChart:type",
+          "signature": "()",
+          "description": "Returns the runtime userdata type name for this chart.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LCandlestickChart"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LCandlestickChart:typeOf",
+          "signature": "(name)",
+          "description": "Checks whether a type name matches this chart userdata.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Type name to check.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LCandlestickChart"
         }
       ]
     },
@@ -74160,42 +75331,6 @@
           "objectType": "LHexGrid"
         },
         {
-          "name": "lineOfSight",
-          "fullPath": "LHexGrid:lineOfSight",
-          "signature": "(fc, fr, tc, tr)",
-          "description": "Returns whether two one-based hex cells have line of sight.",
-          "parameters": [
-            {
-              "name": "fc",
-              "type": "integer",
-              "description": "One-based column of the first cell.",
-              "optional": false
-            },
-            {
-              "name": "fr",
-              "type": "integer",
-              "description": "One-based row of the first cell.",
-              "optional": false
-            },
-            {
-              "name": "tc",
-              "type": "integer",
-              "description": "One-based column of the second cell.",
-              "optional": false
-            },
-            {
-              "name": "tr",
-              "type": "integer",
-              "description": "One-based row of the second cell.",
-              "optional": false
-            }
-          ],
-          "returns": "boolean",
-          "returnType": "boolean",
-          "isMethod": true,
-          "objectType": "LHexGrid"
-        },
-        {
           "name": "fieldOfView",
           "fullPath": "LHexGrid:fieldOfView",
           "signature": "(col, row, max_range)",
@@ -96581,10 +97716,10 @@
           "objectType": "LMultiLevelGrid"
         },
         {
-          "name": "setHalfWallCell",
-          "fullPath": "LMultiLevelGrid:setHalfWallCell",
-          "signature": "(x, y, height)",
-          "description": "Attaches a half-height wall feature to a blocking cell on the active level.",
+          "name": "setWallFeatureCell",
+          "fullPath": "LMultiLevelGrid:setWallFeatureCell",
+          "signature": "(x, y, feature_tbl)",
+          "description": "Attaches a render-only wall feature descriptor to a blocking cell on the active level.",
           "parameters": [
             {
               "name": "x",
@@ -96599,94 +97734,10 @@
               "optional": false
             },
             {
-              "name": "height",
-              "type": "number",
-              "description": "Solid wall height from floor, 0.0..1.0.",
+              "name": "feature",
+              "type": "table|Feature table {kind=\"half\"|\"window\"",
+              "description": "\"door\", ...}.",
               "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LMultiLevelGrid"
-        },
-        {
-          "name": "setWindowCell",
-          "fullPath": "LMultiLevelGrid:setWindowCell",
-          "signature": "(x, y, sill_height, lintel_height, [alpha])",
-          "description": "Attaches a window feature to a blocking cell on the active level, leaving a visible opening between sill and lintel.",
-          "parameters": [
-            {
-              "name": "x",
-              "type": "integer",
-              "description": "Grid column.",
-              "optional": false
-            },
-            {
-              "name": "y",
-              "type": "integer",
-              "description": "Grid row.",
-              "optional": false
-            },
-            {
-              "name": "sillHeight",
-              "type": "number",
-              "description": "Bottom of the opening from the floor, 0.0..1.0.",
-              "optional": false
-            },
-            {
-              "name": "lintelHeight",
-              "type": "number",
-              "description": "Top of the opening from the floor, 0.0..1.0.",
-              "optional": false
-            },
-            {
-              "name": "alpha",
-              "type": "number",
-              "description": "Wall alpha multiplier for the solid bands.",
-              "optional": true
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LMultiLevelGrid"
-        },
-        {
-          "name": "setDoorCell",
-          "fullPath": "LMultiLevelGrid:setDoorCell",
-          "signature": "(x, y, dir_str, open_amount, [alpha])",
-          "description": "Attaches a sliding door feature to a blocking cell on the active level.",
-          "parameters": [
-            {
-              "name": "x",
-              "type": "integer",
-              "description": "Grid column.",
-              "optional": false
-            },
-            {
-              "name": "y",
-              "type": "integer",
-              "description": "Grid row.",
-              "optional": false
-            },
-            {
-              "name": "direction",
-              "type": "string",
-              "description": "\"horizontal\" or \"vertical\".",
-              "optional": false
-            },
-            {
-              "name": "openAmount",
-              "type": "number",
-              "description": "Door open amount, 0.0..1.0.",
-              "optional": false
-            },
-            {
-              "name": "alpha",
-              "type": "number",
-              "description": "Optional alpha multiplier.",
-              "optional": true
             }
           ],
           "returns": "nil",
@@ -97201,7 +98252,7 @@
             {
               "name": "lights",
               "type": "table",
-              "description": "Array of point-light tables or LPointLight userdata values.",
+              "description": "Array of render light tables.",
               "optional": true
             },
             {
@@ -110161,185 +111212,6 @@
       ]
     },
     {
-      "name": "LPointLight",
-      "description": "Lua-visible point light that illuminates nearby raycaster tiles and sprites with colored light and falloff.",
-      "methods": [
-        {
-          "name": "x",
-          "fullPath": "LPointLight:x",
-          "signature": "()",
-          "description": "Returns the X world position of this light.",
-          "parameters": [],
-          "returns": "number",
-          "returnType": "number",
-          "isMethod": true,
-          "objectType": "LPointLight"
-        },
-        {
-          "name": "y",
-          "fullPath": "LPointLight:y",
-          "signature": "()",
-          "description": "Returns the Y world position of this light.",
-          "parameters": [],
-          "returns": "number",
-          "returnType": "number",
-          "isMethod": true,
-          "objectType": "LPointLight"
-        },
-        {
-          "name": "level",
-          "fullPath": "LPointLight:level",
-          "signature": "()",
-          "description": "Returns the optional multilevel slice index that owns this light.",
-          "parameters": [],
-          "returns": "integer",
-          "returnType": "integer",
-          "isMethod": true,
-          "objectType": "LPointLight"
-        },
-        {
-          "name": "radius",
-          "fullPath": "LPointLight:radius",
-          "signature": "()",
-          "description": "Returns the light's falloff radius in world units.",
-          "parameters": [],
-          "returns": "number",
-          "returnType": "number",
-          "isMethod": true,
-          "objectType": "LPointLight"
-        },
-        {
-          "name": "intensity",
-          "fullPath": "LPointLight:intensity",
-          "signature": "()",
-          "description": "Returns the brightness multiplier of this light.",
-          "parameters": [],
-          "returns": "number",
-          "returnType": "number",
-          "isMethod": true,
-          "objectType": "LPointLight"
-        },
-        {
-          "name": "color",
-          "fullPath": "LPointLight:color",
-          "signature": "()",
-          "description": "Returns the RGB color components of this light.",
-          "parameters": [],
-          "returns": "number",
-          "returnType": "number",
-          "isMethod": true,
-          "objectType": "LPointLight"
-        },
-        {
-          "name": "set",
-          "fullPath": "LPointLight:set",
-          "signature": "LPointLight:set(x, y, r, g, b, radius, intensity, [level])",
-          "description": "Overwrites all properties of this point light in a single call.",
-          "parameters": [
-            {
-              "name": "x",
-              "type": "number",
-              "description": "New X world position.",
-              "optional": false
-            },
-            {
-              "name": "y",
-              "type": "number",
-              "description": "New Y world position.",
-              "optional": false
-            },
-            {
-              "name": "r",
-              "type": "number",
-              "description": "Red color channel (0.0..1.0).",
-              "optional": false
-            },
-            {
-              "name": "g",
-              "type": "number",
-              "description": "Green color channel (0.0..1.0).",
-              "optional": false
-            },
-            {
-              "name": "b",
-              "type": "number",
-              "description": "Blue color channel (0.0..1.0).",
-              "optional": false
-            },
-            {
-              "name": "radius",
-              "type": "number",
-              "description": "Falloff radius in world units.",
-              "optional": false
-            },
-            {
-              "name": "intensity",
-              "type": "number",
-              "description": "Brightness multiplier.",
-              "optional": false
-            },
-            {
-              "name": "level",
-              "type": "integer",
-              "description": "Optional multilevel slice index that owns this light.",
-              "optional": true
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LPointLight"
-        },
-        {
-          "name": "setLevel",
-          "fullPath": "LPointLight:setLevel",
-          "signature": "([level])",
-          "description": "Updates the optional multilevel slice index that owns this light.",
-          "parameters": [
-            {
-              "name": "level",
-              "type": "integer",
-              "description": "Level index, or nil to let this light affect every level.",
-              "optional": true
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LPointLight"
-        },
-        {
-          "name": "type",
-          "fullPath": "LPointLight:type",
-          "signature": "()",
-          "description": "Returns the type name of this object (\"LPointLight\").",
-          "parameters": [],
-          "returns": "string",
-          "returnType": "string",
-          "isMethod": true,
-          "objectType": "LPointLight"
-        },
-        {
-          "name": "typeOf",
-          "fullPath": "LPointLight:typeOf",
-          "signature": "(name)",
-          "description": "Checks whether this object matches the given type name.",
-          "parameters": [
-            {
-              "name": "name",
-              "type": "string",
-              "description": "Type name to test against.",
-              "optional": false
-            }
-          ],
-          "returns": "boolean",
-          "returnType": "boolean",
-          "isMethod": true,
-          "objectType": "LPointLight"
-        }
-      ]
-    },
-    {
       "name": "LPositionalEncoding",
       "description": "Lua wrapper over `PositionalEncoding`.",
       "methods": [
@@ -114837,6 +115709,257 @@
       ]
     },
     {
+      "name": "LRadarChart",
+      "description": "Lua handle for a radar/spider chart.",
+      "methods": [
+        {
+          "name": "setAxes",
+          "fullPath": "LRadarChart:setAxes",
+          "signature": "(axes)",
+          "description": "Replaces radar axis labels.",
+          "parameters": [
+            {
+              "name": "axes",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRadarChart"
+        },
+        {
+          "name": "addSeries",
+          "fullPath": "LRadarChart:addSeries",
+          "signature": "(name, values, [color])",
+          "description": "Adds or replaces a named radar series.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "values",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "color",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRadarChart"
+        },
+        {
+          "name": "setMaxValue",
+          "fullPath": "LRadarChart:setMaxValue",
+          "signature": "(value)",
+          "description": "Sets the explicit maximum radial value.",
+          "parameters": [
+            {
+              "name": "value",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRadarChart"
+        },
+        {
+          "name": "clearMaxValue",
+          "fullPath": "LRadarChart:clearMaxValue",
+          "signature": "()",
+          "description": "Clears the explicit maximum radial value.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRadarChart"
+        },
+        {
+          "name": "clear",
+          "fullPath": "LRadarChart:clear",
+          "signature": "LRadarChart:clear()",
+          "description": "Clears all chart data and cached chart state.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRadarChart"
+        },
+        {
+          "name": "setTitle",
+          "fullPath": "LRadarChart:setTitle",
+          "signature": "(title)",
+          "description": "Sets the chart title text shown in rendered output.",
+          "parameters": [
+            {
+              "name": "title",
+              "type": "string",
+              "description": "New chart title.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRadarChart"
+        },
+        {
+          "name": "setShowLegend",
+          "fullPath": "LRadarChart:setShowLegend",
+          "signature": "(value)",
+          "description": "Controls whether the chart legend is rendered.",
+          "parameters": [
+            {
+              "name": "value",
+              "type": "boolean",
+              "description": "True to show the legend.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRadarChart"
+        },
+        {
+          "name": "render",
+          "fullPath": "LRadarChart:render",
+          "signature": "()",
+          "description": "Renders the chart into raw RGBA image bytes.",
+          "parameters": [],
+          "returns": "integer, integer, string",
+          "returnType": "integer, integer, string",
+          "isMethod": true,
+          "objectType": "LRadarChart"
+        },
+        {
+          "name": "renderImage",
+          "fullPath": "LRadarChart:renderImage",
+          "signature": "()",
+          "description": "Renders the chart into a new LImage userdata.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRadarChart"
+        },
+        {
+          "name": "drawToImage",
+          "fullPath": "LRadarChart:drawToImage",
+          "signature": "(target)",
+          "description": "Draws the rendered chart into an existing image.",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "userdata",
+              "description": "ImageData target to receive chart pixels.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRadarChart"
+        },
+        {
+          "name": "draw",
+          "fullPath": "LRadarChart:draw",
+          "signature": "(x, y, opts)",
+          "description": "Draws the chart at world or screen coordinates using optional transform options.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "number",
+              "description": "Draw X coordinate.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "number",
+              "description": "Draw Y coordinate.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional render transform options.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRadarChart"
+        },
+        {
+          "name": "getWidth",
+          "fullPath": "LRadarChart:getWidth",
+          "signature": "()",
+          "description": "Returns the configured chart width in pixels.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LRadarChart"
+        },
+        {
+          "name": "getHeight",
+          "fullPath": "LRadarChart:getHeight",
+          "signature": "()",
+          "description": "Returns the configured chart height in pixels.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LRadarChart"
+        },
+        {
+          "name": "type",
+          "fullPath": "LRadarChart:type",
+          "signature": "()",
+          "description": "Returns the runtime userdata type name for this chart.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LRadarChart"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LRadarChart:typeOf",
+          "signature": "(name)",
+          "description": "Checks whether a type name matches this chart userdata.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Type name to check.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LRadarChart"
+        }
+      ]
+    },
+    {
       "name": "LRadioButton",
       "description": "Adds radio-button-specific methods to a radio button widget table.",
       "methods": [
@@ -116703,10 +117826,10 @@
           "objectType": "LRaycaster"
         },
         {
-          "name": "setHalfWallCell",
-          "fullPath": "LRaycaster:setHalfWallCell",
-          "signature": "(x, y, height)",
-          "description": "Attaches a half-height wall feature to a blocking cell.",
+          "name": "setWallFeatureCell",
+          "fullPath": "LRaycaster:setWallFeatureCell",
+          "signature": "(x, y, feature_tbl)",
+          "description": "Attaches a render-only wall feature descriptor to a blocking cell.",
           "parameters": [
             {
               "name": "x",
@@ -116721,94 +117844,10 @@
               "optional": false
             },
             {
-              "name": "height",
-              "type": "number",
-              "description": "Solid wall height from floor, 0.0..1.0.",
+              "name": "feature",
+              "type": "table|Feature table {kind=\"half\"|\"window\"",
+              "description": "\"door\", ...}.",
               "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LRaycaster"
-        },
-        {
-          "name": "setWindowCell",
-          "fullPath": "LRaycaster:setWindowCell",
-          "signature": "(x, y, sill_height, lintel_height, [alpha])",
-          "description": "Attaches a window feature to a blocking cell, leaving a visible opening between sill and lintel.",
-          "parameters": [
-            {
-              "name": "x",
-              "type": "integer",
-              "description": "Grid column.",
-              "optional": false
-            },
-            {
-              "name": "y",
-              "type": "integer",
-              "description": "Grid row.",
-              "optional": false
-            },
-            {
-              "name": "sillHeight",
-              "type": "number",
-              "description": "Bottom of the opening from the floor, 0.0..1.0.",
-              "optional": false
-            },
-            {
-              "name": "lintelHeight",
-              "type": "number",
-              "description": "Top of the opening from the floor, 0.0..1.0.",
-              "optional": false
-            },
-            {
-              "name": "alpha",
-              "type": "number",
-              "description": "Wall alpha multiplier for the solid bands.",
-              "optional": true
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LRaycaster"
-        },
-        {
-          "name": "setDoorCell",
-          "fullPath": "LRaycaster:setDoorCell",
-          "signature": "(x, y, dir_str, open_amount, [alpha])",
-          "description": "Attaches a sliding door feature to a blocking cell.",
-          "parameters": [
-            {
-              "name": "x",
-              "type": "integer",
-              "description": "Grid column.",
-              "optional": false
-            },
-            {
-              "name": "y",
-              "type": "integer",
-              "description": "Grid row.",
-              "optional": false
-            },
-            {
-              "name": "direction",
-              "type": "string",
-              "description": "\"horizontal\" or \"vertical\".",
-              "optional": false
-            },
-            {
-              "name": "openAmount",
-              "type": "number",
-              "description": "Door open amount, 0.0..1.0.",
-              "optional": false
-            },
-            {
-              "name": "alpha",
-              "type": "number",
-              "description": "Optional alpha multiplier.",
-              "optional": true
             }
           ],
           "returns": "nil",
@@ -117115,108 +118154,6 @@
           "objectType": "LRaycaster"
         },
         {
-          "name": "isWalkBlocked",
-          "fullPath": "LRaycaster:isWalkBlocked",
-          "signature": "(x, y)",
-          "description": "Returns true if the cell blocks walking (solid wall OR blocked lowered-floor cell).",
-          "parameters": [
-            {
-              "name": "x",
-              "type": "integer",
-              "description": "Grid column.",
-              "optional": false
-            },
-            {
-              "name": "y",
-              "type": "integer",
-              "description": "Grid row.",
-              "optional": false
-            }
-          ],
-          "returns": "boolean",
-          "returnType": "boolean",
-          "isMethod": true,
-          "objectType": "LRaycaster"
-        },
-        {
-          "name": "tryMove",
-          "fullPath": "LRaycaster:tryMove",
-          "signature": "(px, py, dx, dy)",
-          "description": "Attempts to move from (px,py) by (dx,dy) with wall-slide collision. Returns the final position.",
-          "parameters": [
-            {
-              "name": "px",
-              "type": "number",
-              "description": "Current X position in world space.",
-              "optional": false
-            },
-            {
-              "name": "py",
-              "type": "number",
-              "description": "Current Y position in world space.",
-              "optional": false
-            },
-            {
-              "name": "dx",
-              "type": "number",
-              "description": "Desired X movement delta.",
-              "optional": false
-            },
-            {
-              "name": "dy",
-              "type": "number",
-              "description": "Desired Y movement delta.",
-              "optional": false
-            }
-          ],
-          "returns": "number",
-          "returnType": "number",
-          "isMethod": true,
-          "objectType": "LRaycaster"
-        },
-        {
-          "name": "gridMove",
-          "fullPath": "LRaycaster:gridMove",
-          "signature": "(px, py, dir, action, step)",
-          "description": "Performs a discrete grid-step movement in one of 4 cardinal directions with collision.",
-          "parameters": [
-            {
-              "name": "px",
-              "type": "number",
-              "description": "Current X position.",
-              "optional": false
-            },
-            {
-              "name": "py",
-              "type": "number",
-              "description": "Current Y position.",
-              "optional": false
-            },
-            {
-              "name": "dir",
-              "type": "integer",
-              "description": "Facing direction 1..4 (1=N, 2=E, 3=S, 4=W).",
-              "optional": false
-            },
-            {
-              "name": "action",
-              "type": "string",
-              "description": "Movement action: \"forward\", \"back\", \"left\", or \"right\".",
-              "optional": false
-            },
-            {
-              "name": "step",
-              "type": "number",
-              "description": "Step distance in world units (typically 1.0).",
-              "optional": false
-            }
-          ],
-          "returns": "number",
-          "returnType": "number",
-          "isMethod": true,
-          "objectType": "LRaycaster"
-        },
-        {
           "name": "castRay",
           "fullPath": "LRaycaster:castRay",
           "signature": "(ox, oy, angle, max_dist)",
@@ -117345,216 +118282,6 @@
           ],
           "returns": "number[]",
           "returnType": "number[]",
-          "isMethod": true,
-          "objectType": "LRaycaster"
-        },
-        {
-          "name": "lineOfSight",
-          "fullPath": "LRaycaster:lineOfSight",
-          "signature": "(x1, y1, x2, y2)",
-          "description": "Tests whether there is a clear line of sight between two world points (no walls in between).",
-          "parameters": [
-            {
-              "name": "x1",
-              "type": "number",
-              "description": "Start X.",
-              "optional": false
-            },
-            {
-              "name": "y1",
-              "type": "number",
-              "description": "Start Y.",
-              "optional": false
-            },
-            {
-              "name": "x2",
-              "type": "number",
-              "description": "End X.",
-              "optional": false
-            },
-            {
-              "name": "y2",
-              "type": "number",
-              "description": "End Y.",
-              "optional": false
-            }
-          ],
-          "returns": "boolean",
-          "returnType": "boolean",
-          "isMethod": true,
-          "objectType": "LRaycaster"
-        },
-        {
-          "name": "revealCellsFromRays",
-          "fullPath": "LRaycaster:revealCellsFromRays",
-          "signature": "LRaycaster:revealCellsFromRays(ox, oy, angle, fov, count, maxDist, [step])",
-          "description": "Casts rays across the FOV and returns a list of grid cells that are visible (for fog-of-war).",
-          "parameters": [
-            {
-              "name": "ox",
-              "type": "number",
-              "description": "Ray origin X.",
-              "optional": false
-            },
-            {
-              "name": "oy",
-              "type": "number",
-              "description": "Ray origin Y.",
-              "optional": false
-            },
-            {
-              "name": "angle",
-              "type": "number",
-              "description": "Center angle in radians.",
-              "optional": false
-            },
-            {
-              "name": "fov",
-              "type": "number",
-              "description": "Field of view in radians.",
-              "optional": false
-            },
-            {
-              "name": "count",
-              "type": "integer",
-              "description": "Number of rays.",
-              "optional": false
-            },
-            {
-              "name": "maxDist",
-              "type": "number",
-              "description": "Maximum ray distance.",
-              "optional": false
-            },
-            {
-              "name": "step",
-              "type": "number",
-              "description": "Walk step along each ray (default 0.2).",
-              "optional": true
-            }
-          ],
-          "returns": "table",
-          "returnType": "table",
-          "isMethod": true,
-          "objectType": "LRaycaster"
-        },
-        {
-          "name": "computeTileLight",
-          "fullPath": "LRaycaster:computeTileLight",
-          "signature": "(x, y, ambient, lights_tbl)",
-          "description": "Computes the combined lighting color at a tile from ambient and point lights, accounting for walls.",
-          "parameters": [
-            {
-              "name": "x",
-              "type": "integer",
-              "description": "Tile grid column.",
-              "optional": false
-            },
-            {
-              "name": "y",
-              "type": "integer",
-              "description": "Tile grid row.",
-              "optional": false
-            },
-            {
-              "name": "ambient",
-              "type": "number",
-              "description": "Base ambient light level (0.0..1.0).",
-              "optional": false
-            },
-            {
-              "name": "lights",
-              "type": "table",
-              "description": "Array of point-light tables {x, y, radius, r?, g?, b?, color?, intensity?, level?} or LPointLight userdata values.",
-              "optional": true
-            }
-          ],
-          "returns": "number",
-          "returnType": "number",
-          "isMethod": true,
-          "objectType": "LRaycaster"
-        },
-        {
-          "name": "buildMinimapWindow",
-          "fullPath": "LRaycaster:buildMinimapWindow",
-          "signature": "(center_x, center_y, radius, ambient, lights_tbl)",
-          "description": "Generates a grid of minimap tile samples around a center point with lighting info.",
-          "parameters": [
-            {
-              "name": "centerX",
-              "type": "number",
-              "description": "Center X in world coordinates.",
-              "optional": false
-            },
-            {
-              "name": "centerY",
-              "type": "number",
-              "description": "Center Y in world coordinates.",
-              "optional": false
-            },
-            {
-              "name": "radius",
-              "type": "integer",
-              "description": "Tile radius around the center to sample.",
-              "optional": false
-            },
-            {
-              "name": "ambient",
-              "type": "number",
-              "description": "Ambient light level (0.0..1.0).",
-              "optional": false
-            },
-            {
-              "name": "lights",
-              "type": "table",
-              "description": "Array of point-light tables or LPointLight userdata values.",
-              "optional": true
-            }
-          ],
-          "returns": "table",
-          "returnType": "table",
-          "isMethod": true,
-          "objectType": "LRaycaster"
-        },
-        {
-          "name": "extractMinimap",
-          "fullPath": "LRaycaster:extractMinimap",
-          "signature": "LRaycaster:extractMinimap(playerX, playerY, playerAngle, viewRadius, cellSize)",
-          "description": "Extracts a pixel minimap image centered on the player from this raycaster map.",
-          "parameters": [
-            {
-              "name": "playerX",
-              "type": "number",
-              "description": "Player x position in world space.",
-              "optional": false
-            },
-            {
-              "name": "playerY",
-              "type": "number",
-              "description": "Player y position in world space.",
-              "optional": false
-            },
-            {
-              "name": "playerAngle",
-              "type": "number",
-              "description": "Player facing angle in radians.",
-              "optional": false
-            },
-            {
-              "name": "viewRadius",
-              "type": "integer",
-              "description": "Visible tile radius around the player.",
-              "optional": false
-            },
-            {
-              "name": "cellSize",
-              "type": "integer",
-              "description": "Pixel size of each minimap cell.",
-              "optional": false
-            }
-          ],
-          "returns": "LImageData",
-          "returnType": "LImageData",
           "isMethod": true,
           "objectType": "LRaycaster"
         },
@@ -117901,48 +118628,6 @@
           "objectType": "LRaycaster"
         },
         {
-          "name": "drawLineOfSight",
-          "fullPath": "LRaycaster:drawLineOfSight",
-          "signature": "(ax, ay, bx, by, scale)",
-          "description": "Renders a debug image showing the line-of-sight ray between two world points.",
-          "parameters": [
-            {
-              "name": "ax",
-              "type": "number",
-              "description": "Start X.",
-              "optional": false
-            },
-            {
-              "name": "ay",
-              "type": "number",
-              "description": "Start Y.",
-              "optional": false
-            },
-            {
-              "name": "bx",
-              "type": "number",
-              "description": "End X.",
-              "optional": false
-            },
-            {
-              "name": "by",
-              "type": "number",
-              "description": "End Y.",
-              "optional": false
-            },
-            {
-              "name": "scale",
-              "type": "integer",
-              "description": "Pixels per grid cell.",
-              "optional": false
-            }
-          ],
-          "returns": "LImageData",
-          "returnType": "LImageData",
-          "isMethod": true,
-          "objectType": "LRaycaster"
-        },
-        {
           "name": "drawCameraSweep",
           "fullPath": "LRaycaster:drawCameraSweep",
           "signature": "(x, y, fov, max_dist, num_frames, fw, fh)",
@@ -118089,7 +118774,7 @@
             {
               "name": "lights",
               "type": "table",
-              "description": "Array of point-light tables {x, y, radius, r?, g?, b?, color?, intensity?, level?} or LPointLight userdata values.",
+              "description": "Array of render light tables {x, y, radius, r?, g?, b?, color?, intensity?, level?}.",
               "optional": true
             },
             {
@@ -118155,7 +118840,7 @@
             {
               "name": "lights",
               "type": "table",
-              "description": "Array of point-light tables or LPointLight userdata values.",
+              "description": "Array of render light tables.",
               "optional": true
             },
             {
@@ -145212,6 +145897,840 @@
       ]
     },
     {
+      "name": "LTileField",
+      "description": "Lua-side handle wrapping a shared tilefield.",
+      "methods": [
+        {
+          "name": "getSize",
+          "fullPath": "LTileField:getSize",
+          "signature": "()",
+          "description": "Returns field width, height, and level count.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "getTopology",
+          "fullPath": "LTileField:getTopology",
+          "signature": "()",
+          "description": "Returns the field topology name.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "inBounds",
+          "fullPath": "LTileField:inBounds",
+          "signature": "(x, y, [z])",
+          "description": "Returns whether one-based coordinates are inside the field.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "One-based column.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "One-based row.",
+              "optional": false
+            },
+            {
+              "name": "z",
+              "type": "integer",
+              "description": "One-based level, default 1.",
+              "optional": true
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "clear",
+          "fullPath": "LTileField:clear",
+          "signature": "()",
+          "description": "Clears all cell gameplay state and computed light values.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "clearCell",
+          "fullPath": "LTileField:clearCell",
+          "signature": "(x, y, [z])",
+          "description": "Clears one cell.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "One-based column.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "One-based row.",
+              "optional": false
+            },
+            {
+              "name": "z",
+              "type": "integer",
+              "description": "One-based level, default 1.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "getCell",
+          "fullPath": "LTileField:getCell",
+          "signature": "(x, y, [z])",
+          "description": "Returns a table with blockers, costs, sun occlusion, and optional profile name.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "One-based column.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "One-based row.",
+              "optional": false
+            },
+            {
+              "name": "z",
+              "type": "integer",
+              "description": "One-based level, default 1.",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "setCell",
+          "fullPath": "LTileField:setCell",
+          "signature": "(x, y, [z], cell_tbl)",
+          "description": "Sets cell state from a table with optional `blocks`, `costs`, `sunOcclusion`, and `profile`.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "One-based column.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "One-based row.",
+              "optional": false
+            },
+            {
+              "name": "z",
+              "type": "integer",
+              "description": "One-based level, default 1.",
+              "optional": true
+            },
+            {
+              "name": "cell",
+              "type": "table",
+              "description": "Cell data.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "setBlock",
+          "fullPath": "LTileField:setBlock",
+          "signature": "(x, y, [z], channel, blocked)",
+          "description": "Sets whether a cell blocks a channel.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "z",
+              "type": "any",
+              "description": "",
+              "optional": true
+            },
+            {
+              "name": "channel",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "blocked",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "blocks",
+          "fullPath": "LTileField:blocks",
+          "signature": "(x, y, [z], channel)",
+          "description": "Returns whether a cell blocks a channel.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "z",
+              "type": "any",
+              "description": "",
+              "optional": true
+            },
+            {
+              "name": "channel",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "setCost",
+          "fullPath": "LTileField:setCost",
+          "signature": "(x, y, [z], channel, cost)",
+          "description": "Sets the cost for one cell/channel.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "z",
+              "type": "any",
+              "description": "",
+              "optional": true
+            },
+            {
+              "name": "channel",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "cost",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "getCost",
+          "fullPath": "LTileField:getCost",
+          "signature": "(x, y, [z], channel)",
+          "description": "Returns the cost for one cell/channel.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "z",
+              "type": "any",
+              "description": "",
+              "optional": true
+            },
+            {
+              "name": "channel",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "setSunOcclusion",
+          "fullPath": "LTileField:setSunOcclusion",
+          "signature": "(x, y, [z], value)",
+          "description": "Sets top-light occlusion in the inclusive range 0..1.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "z",
+              "type": "any",
+              "description": "",
+              "optional": true
+            },
+            {
+              "name": "value",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "getSunOcclusion",
+          "fullPath": "LTileField:getSunOcclusion",
+          "signature": "(x, y, [z])",
+          "description": "Returns top-light occlusion in the inclusive range 0..1.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "z",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "setProfile",
+          "fullPath": "LTileField:setProfile",
+          "signature": "(name, profile_tbl)",
+          "description": "Registers or replaces a named object profile.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "profile_tbl",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "applyProfile",
+          "fullPath": "LTileField:applyProfile",
+          "signature": "(x, y, [z], name)",
+          "description": "Applies a named profile to one cell.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "z",
+              "type": "any",
+              "description": "",
+              "optional": true
+            },
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "getProfile",
+          "fullPath": "LTileField:getProfile",
+          "signature": "(name)",
+          "description": "Returns a named object profile table, or nil when absent.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Profile name to read.",
+              "optional": false
+            }
+          ],
+          "returns": "table|nil",
+          "returnType": "table|nil",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "removeProfile",
+          "fullPath": "LTileField:removeProfile",
+          "signature": "(name)",
+          "description": "Removes a named object profile.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Profile name to remove.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "line",
+          "fullPath": "LTileField:line",
+          "signature": "(opts)",
+          "description": "Returns topology-aware one-based cells between `from` and `to` tables.",
+          "parameters": [
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "`{from={x,y,z?}, to={x,y,z?}, includeEndpoints?}`.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "clearLine",
+          "fullPath": "LTileField:clearLine",
+          "signature": "(from_tbl, to_tbl, channel, [opts])",
+          "description": "Returns true when the line between two cell tables has no blocker for a channel.",
+          "parameters": [
+            {
+              "name": "from_tbl",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "to_tbl",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "channel",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "firstBlocker",
+          "fullPath": "LTileField:firstBlocker",
+          "signature": "(from_tbl, to_tbl, channel, [opts])",
+          "description": "Returns the first one-based blocking cell table between two cells, or nil.",
+          "parameters": [
+            {
+              "name": "from_tbl",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "to_tbl",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "channel",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "addPointLight",
+          "fullPath": "LTileField:addPointLight",
+          "signature": "(opts)",
+          "description": "Adds a point light and returns its stable id.",
+          "parameters": [
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "`{x, y, z?, radius, intensity?, color?}` light definition.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "updatePointLight",
+          "fullPath": "LTileField:updatePointLight",
+          "signature": "(id, opts)",
+          "description": "Updates an existing point light by id.",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "removePointLight",
+          "fullPath": "LTileField:removePointLight",
+          "signature": "(id)",
+          "description": "Removes a point light by id and returns whether it existed.",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "integer",
+              "description": "Stable point light id returned by `addPointLight`.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "clearPointLights",
+          "fullPath": "LTileField:clearPointLights",
+          "signature": "()",
+          "description": "Removes all point lights.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "setGlobalLight",
+          "fullPath": "LTileField:setGlobalLight",
+          "signature": "(opts)",
+          "description": "Sets top-down global light.",
+          "parameters": [
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "`{intensity?, color?}` global top-light settings.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "computeLight",
+          "fullPath": "LTileField:computeLight",
+          "signature": "([opts])",
+          "description": "Computes tile light from ambient, point lights, and global top light.",
+          "parameters": [
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional includePointLights, includeGlobalLight, and ambient settings.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "getLight",
+          "fullPath": "LTileField:getLight",
+          "signature": "(x, y, [z])",
+          "description": "Returns r, g, b, and luma for one cell.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "One-based cell x coordinate.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "One-based cell y coordinate.",
+              "optional": false
+            },
+            {
+              "name": "z",
+              "type": "integer",
+              "description": "One-based level, default 1.",
+              "optional": true
+            }
+          ],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "exportLightLayer",
+          "fullPath": "LTileField:exportLightLayer",
+          "signature": "([z])",
+          "description": "Exports one level of computed light as row-major `{r,g,b,luma}` tables.",
+          "parameters": [
+            {
+              "name": "z",
+              "type": "integer",
+              "description": "One-based level, default 1.",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "exportLightVolume",
+          "fullPath": "LTileField:exportLightVolume",
+          "signature": "()",
+          "description": "Exports all computed light levels as nested row-major tables.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "exportBlockLayer",
+          "fullPath": "LTileField:exportBlockLayer",
+          "signature": "(channel, [z])",
+          "description": "Exports one blocker channel and level as a row-major boolean array.",
+          "parameters": [
+            {
+              "name": "channel",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "z",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "exportCostLayer",
+          "fullPath": "LTileField:exportCostLayer",
+          "signature": "(channel, [z])",
+          "description": "Exports one cost channel and level as a row-major number array.",
+          "parameters": [
+            {
+              "name": "channel",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "z",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "exportProfileLayer",
+          "fullPath": "LTileField:exportProfileLayer",
+          "signature": "([z])",
+          "description": "Exports one level of profile names as a row-major array.",
+          "parameters": [
+            {
+              "name": "z",
+              "type": "integer",
+              "description": "One-based level, default 1.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "type",
+          "fullPath": "LTileField:type",
+          "signature": "()",
+          "description": "Returns the Lua-visible type name for this tilefield handle.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LTileField:typeOf",
+          "signature": "(name)",
+          "description": "Returns whether this handle matches a supported type name.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Type name to compare.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LTileField"
+        }
+      ]
+    },
+    {
       "name": "LTileMap",
       "description": "Lua-side handle wrapping a `TileMap` with layers, tile data, collision, viewports, auto-tiling, and tile callbacks.",
       "methods": [
@@ -147049,6 +148568,274 @@
           "returnType": "boolean",
           "isMethod": true,
           "objectType": "LTileSet"
+        }
+      ]
+    },
+    {
+      "name": "LTileVisibility",
+      "description": "Lua-side wrapper for per-player tile visibility/action masks.",
+      "methods": [
+        {
+          "name": "computeVisible",
+          "fullPath": "LTileVisibility:computeVisible",
+          "signature": "(player, opts)",
+          "description": "Computes one player's current visible mask from a tilefield origin.",
+          "parameters": [
+            {
+              "name": "player",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileVisibility"
+        },
+        {
+          "name": "computeAction",
+          "fullPath": "LTileVisibility:computeAction",
+          "signature": "(player, opts)",
+          "description": "Computes one player's current action mask from a tilefield origin.",
+          "parameters": [
+            {
+              "name": "player",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileVisibility"
+        },
+        {
+          "name": "isVisible",
+          "fullPath": "LTileVisibility:isVisible",
+          "signature": "(player, x, y, [z])",
+          "description": "Returns whether a one-based cell is currently visible for a player.",
+          "parameters": [
+            {
+              "name": "player",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "x",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "z",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileVisibility"
+        },
+        {
+          "name": "isExplored",
+          "fullPath": "LTileVisibility:isExplored",
+          "signature": "(player, x, y, [z])",
+          "description": "Returns whether a one-based cell has been explored for a player.",
+          "parameters": [
+            {
+              "name": "player",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "x",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "z",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileVisibility"
+        },
+        {
+          "name": "canActOn",
+          "fullPath": "LTileVisibility:canActOn",
+          "signature": "(player, x, y, [z])",
+          "description": "Returns whether a one-based cell is currently actionable for a player.",
+          "parameters": [
+            {
+              "name": "player",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "x",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "z",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileVisibility"
+        },
+        {
+          "name": "visibleCells",
+          "fullPath": "LTileVisibility:visibleCells",
+          "signature": "(player, [z])",
+          "description": "Returns all currently visible cells for a player, optionally filtered to a level.",
+          "parameters": [
+            {
+              "name": "player",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "z",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileVisibility"
+        },
+        {
+          "name": "actionCells",
+          "fullPath": "LTileVisibility:actionCells",
+          "signature": "(player, [z])",
+          "description": "Returns all currently actionable cells for a player, optionally filtered to a level.",
+          "parameters": [
+            {
+              "name": "player",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "z",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileVisibility"
+        },
+        {
+          "name": "clearPlayer",
+          "fullPath": "LTileVisibility:clearPlayer",
+          "signature": "(player)",
+          "description": "Clears current, explored, and action masks for one player.",
+          "parameters": [
+            {
+              "name": "player",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileVisibility"
+        },
+        {
+          "name": "clearAll",
+          "fullPath": "LTileVisibility:clearAll",
+          "signature": "()",
+          "description": "Clears current, explored, and action masks for all players.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileVisibility"
+        },
+        {
+          "name": "type",
+          "fullPath": "LTileVisibility:type",
+          "signature": "()",
+          "description": "Returns the Lua-visible type name for this tile visibility handle.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileVisibility"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LTileVisibility:typeOf",
+          "signature": "(name)",
+          "description": "Returns whether this handle matches a supported type name.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTileVisibility"
         }
       ]
     },
@@ -153971,6 +155758,228 @@
       ]
     },
     {
+      "name": "LTreemapChart",
+      "description": "Lua handle for a treemap chart.",
+      "methods": [
+        {
+          "name": "setItems",
+          "fullPath": "LTreemapChart:setItems",
+          "signature": "(items)",
+          "description": "Replaces weighted treemap items from label/value rows or fields.",
+          "parameters": [
+            {
+              "name": "items",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTreemapChart"
+        },
+        {
+          "name": "addItem",
+          "fullPath": "LTreemapChart:addItem",
+          "signature": "(label, value, [color])",
+          "description": "Adds one weighted treemap item.",
+          "parameters": [
+            {
+              "name": "label",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "value",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "color",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTreemapChart"
+        },
+        {
+          "name": "clear",
+          "fullPath": "LTreemapChart:clear",
+          "signature": "LTreemapChart:clear()",
+          "description": "Clears all chart data and cached chart state.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTreemapChart"
+        },
+        {
+          "name": "setTitle",
+          "fullPath": "LTreemapChart:setTitle",
+          "signature": "(title)",
+          "description": "Sets the chart title text shown in rendered output.",
+          "parameters": [
+            {
+              "name": "title",
+              "type": "string",
+              "description": "New chart title.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTreemapChart"
+        },
+        {
+          "name": "setShowLegend",
+          "fullPath": "LTreemapChart:setShowLegend",
+          "signature": "(value)",
+          "description": "Controls whether the chart legend is rendered.",
+          "parameters": [
+            {
+              "name": "value",
+              "type": "boolean",
+              "description": "True to show the legend.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTreemapChart"
+        },
+        {
+          "name": "render",
+          "fullPath": "LTreemapChart:render",
+          "signature": "()",
+          "description": "Renders the chart into raw RGBA image bytes.",
+          "parameters": [],
+          "returns": "integer, integer, string",
+          "returnType": "integer, integer, string",
+          "isMethod": true,
+          "objectType": "LTreemapChart"
+        },
+        {
+          "name": "renderImage",
+          "fullPath": "LTreemapChart:renderImage",
+          "signature": "()",
+          "description": "Renders the chart into a new LImage userdata.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTreemapChart"
+        },
+        {
+          "name": "drawToImage",
+          "fullPath": "LTreemapChart:drawToImage",
+          "signature": "(target)",
+          "description": "Draws the rendered chart into an existing image.",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "userdata",
+              "description": "ImageData target to receive chart pixels.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTreemapChart"
+        },
+        {
+          "name": "draw",
+          "fullPath": "LTreemapChart:draw",
+          "signature": "(x, y, opts)",
+          "description": "Draws the chart at world or screen coordinates using optional transform options.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "number",
+              "description": "Draw X coordinate.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "number",
+              "description": "Draw Y coordinate.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional render transform options.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTreemapChart"
+        },
+        {
+          "name": "getWidth",
+          "fullPath": "LTreemapChart:getWidth",
+          "signature": "()",
+          "description": "Returns the configured chart width in pixels.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LTreemapChart"
+        },
+        {
+          "name": "getHeight",
+          "fullPath": "LTreemapChart:getHeight",
+          "signature": "()",
+          "description": "Returns the configured chart height in pixels.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LTreemapChart"
+        },
+        {
+          "name": "type",
+          "fullPath": "LTreemapChart:type",
+          "signature": "()",
+          "description": "Returns the runtime userdata type name for this chart.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LTreemapChart"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LTreemapChart:typeOf",
+          "signature": "(name)",
+          "description": "Checks whether a type name matches this chart userdata.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Type name to check.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LTreemapChart"
+        }
+      ]
+    },
+    {
       "name": "LTween",
       "description": "Lua-side wrapper for numeric tween state.",
       "methods": [
@@ -156936,48 +158945,6 @@
           ],
           "returns": "number",
           "returnType": "number",
-          "isMethod": true,
-          "objectType": "LUnitPathfinder"
-        },
-        {
-          "name": "lineOfSight",
-          "fullPath": "LUnitPathfinder:lineOfSight",
-          "signature": "(x1, y1, x2, y2, [unit_size])",
-          "description": "Returns whether two one-based cells have line of sight.",
-          "parameters": [
-            {
-              "name": "x1",
-              "type": "integer",
-              "description": "One-based column of the first cell.",
-              "optional": false
-            },
-            {
-              "name": "y1",
-              "type": "integer",
-              "description": "One-based row of the first cell.",
-              "optional": false
-            },
-            {
-              "name": "x2",
-              "type": "integer",
-              "description": "One-based column of the second cell.",
-              "optional": false
-            },
-            {
-              "name": "y2",
-              "type": "integer",
-              "description": "One-based row of the second cell.",
-              "optional": false
-            },
-            {
-              "name": "unit_size",
-              "type": "integer",
-              "description": "Unit footprint in cells (default 1).",
-              "optional": true
-            }
-          ],
-          "returns": "boolean",
-          "returnType": "boolean",
           "isMethod": true,
           "objectType": "LUnitPathfinder"
         },

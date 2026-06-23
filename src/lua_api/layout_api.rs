@@ -2,8 +2,9 @@
 
 use super::SharedState;
 use crate::layout::{
-    center_in_area, layout_dag, layout_force, layout_tree, snap_to_grid, ForceConfig, LayoutConfig,
-    LayoutEdge, LayoutNode, LayoutResult, NodeId,
+    center_in_area, layout_circular, layout_dag, layout_force, layout_grid, layout_radial,
+    layout_spiral, layout_stress, layout_tree, snap_to_grid, ForceConfig, LayoutConfig, LayoutEdge,
+    LayoutNode, LayoutResult, NodeId, StressConfig,
 };
 use mlua::prelude::*;
 use std::cell::RefCell;
@@ -87,13 +88,13 @@ fn parse_config(tbl: Option<LuaTable>) -> LayoutConfig {
     }
 }
 
-/// Registers the `lurek.layout` namespace with tree, dag, force, and post-processing functions.
+/// Registers the `lurek.layout` namespace with tree, dag, force, circular, radial, grid, spiral, stress, and post-processing functions.
 /// @module layout
 pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let layout_table = lua.create_table()?;
 
     // lurek.layout.tree(nodes, children, root, config?) â†’ result
-    /// Lays out a tree using the Reingold-Tilford algorithm.
+    /// Lays out a size-aware tree, centering parents over child spans and keeping disconnected nodes.
     /// @param | nodes | table | Array of node tables with id, width, height, label fields.
     /// @param | children | table | Map of parent node ID to array of child node IDs.
     /// @param | root | integer | ID of the root node.
@@ -134,7 +135,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     )?;
 
     // lurek.layout.dag(nodes, edges, config?) â†’ result
-    /// Lays out a DAG using the Sugiyama layered algorithm.
+    /// Lays out a size-aware DAG with centered layers, stable barycenter ordering, and height-aware ranks.
     /// @param | nodes | table | Array of node tables with id, width, height, label fields.
     /// @param | edges | table | Array of edge tables with from, to, weight fields.
     /// @param | config | table|nil | Optional config with hSpacing, vSpacing, margin.
@@ -153,7 +154,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     )?;
 
     // lurek.layout.force(nodes, edges, config?) â†’ result
-    /// Lays out a graph using force-directed Fruchterman-Reingold simulation.
+    /// Lays out a graph using bounded size-aware force simulation with final overlap cleanup.
     /// @param | nodes | table | Array of node tables with id, width, height, label fields.
     /// @param | edges | table | Array of edge tables with from, to, weight fields.
     /// @param | config | table|nil | Optional config with iterations, repulsion, attraction, cooling, areaWidth, areaHeight.
@@ -178,6 +179,104 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
                 };
 
                 let result = layout_force(&nodes, &edges, &force_config);
+                result_to_lua(lua, &result)
+            },
+        )?,
+    )?;
+
+    /// Lays out nodes around a chord-safe circle for cycle-heavy graphs and overviews.
+    /// @param | nodes | table | Array of node tables with id, width, height, label fields.
+    /// @param | config | table|nil | Optional config with hSpacing, vSpacing, margin.
+    /// @return | table | Layout result with nodes array, width, height.
+    layout_table.set(
+        "circular",
+        lua.create_function(
+            |lua, (nodes_tbl, config_tbl): (LuaTable, Option<LuaTable>)| {
+                let nodes = parse_nodes(&nodes_tbl)?;
+                let config = parse_config(config_tbl);
+                let result = layout_circular(&nodes, &config);
+                result_to_lua(lua, &result)
+            },
+        )?,
+    )?;
+
+    /// Lays out a graph on size-aware breadth-first concentric rings from a root node.
+    /// @param | nodes | table | Array of node tables with id, width, height, label fields.
+    /// @param | edges | table | Array of edge tables with from, to, weight fields.
+    /// @param | root | integer | ID of the radial center node.
+    /// @param | config | table|nil | Optional config with hSpacing, vSpacing, margin.
+    /// @return | table | Layout result with nodes array, width, height.
+    layout_table.set(
+        "radial",
+        lua.create_function(
+            |lua,
+             (nodes_tbl, edges_tbl, root, config_tbl): (
+                LuaTable,
+                LuaTable,
+                NodeId,
+                Option<LuaTable>,
+            )| {
+                let nodes = parse_nodes(&nodes_tbl)?;
+                let edges = parse_edges(&edges_tbl)?;
+                let config = parse_config(config_tbl);
+                let result = layout_radial(&nodes, &edges, root, &config);
+                result_to_lua(lua, &result)
+            },
+        )?,
+    )?;
+
+    /// Lays out nodes in a compact variable-size grid for dense or disconnected graphs.
+    /// @param | nodes | table | Array of node tables with id, width, height, label fields.
+    /// @param | config | table|nil | Optional config with hSpacing, vSpacing, margin.
+    /// @return | table | Layout result with nodes array, width, height.
+    layout_table.set(
+        "grid",
+        lua.create_function(
+            |lua, (nodes_tbl, config_tbl): (LuaTable, Option<LuaTable>)| {
+                let nodes = parse_nodes(&nodes_tbl)?;
+                let config = parse_config(config_tbl);
+                let result = layout_grid(&nodes, &config);
+                result_to_lua(lua, &result)
+            },
+        )?,
+    )?;
+
+    /// Lays out nodes on an expanding overlap-checked spiral for fast large-graph refreshes.
+    /// @param | nodes | table | Array of node tables with id, width, height, label fields.
+    /// @param | config | table|nil | Optional config with hSpacing, vSpacing, margin.
+    /// @return | table | Layout result with nodes array, width, height.
+    layout_table.set(
+        "spiral",
+        lua.create_function(
+            |lua, (nodes_tbl, config_tbl): (LuaTable, Option<LuaTable>)| {
+                let nodes = parse_nodes(&nodes_tbl)?;
+                let config = parse_config(config_tbl);
+                let result = layout_spiral(&nodes, &config);
+                result_to_lua(lua, &result)
+            },
+        )?,
+    )?;
+
+    /// Lays out a graph by preserving graph-distance relationships with bounded relaxation and cleanup.
+    /// @param | nodes | table | Array of node tables with id, width, height, label fields.
+    /// @param | edges | table | Array of edge tables with from, to, weight fields.
+    /// @param | config | table|nil | Optional config with iterations, edgeLength, step.
+    /// @return | table | Layout result with nodes array, width, height.
+    layout_table.set(
+        "stress",
+        lua.create_function(
+            |lua, (nodes_tbl, edges_tbl, config_tbl): (LuaTable, LuaTable, Option<LuaTable>)| {
+                let nodes = parse_nodes(&nodes_tbl)?;
+                let edges = parse_edges(&edges_tbl)?;
+                let stress_config = match config_tbl {
+                    Some(t) => StressConfig {
+                        iterations: t.get("iterations").unwrap_or(24),
+                        edge_length: t.get("edgeLength").unwrap_or(80.0),
+                        step: t.get("step").unwrap_or(0.08),
+                    },
+                    None => StressConfig::default(),
+                };
+                let result = layout_stress(&nodes, &edges, &stress_config);
                 result_to_lua(lua, &result)
             },
         )?,

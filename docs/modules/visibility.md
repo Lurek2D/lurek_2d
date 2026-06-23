@@ -27,8 +27,11 @@ end
 
 ## Common Patterns
 
+- Start with `lurek.visibility.lineOfAction` when exploring this module.
+- Start with `lurek.visibility.lineOfSight` when exploring this module.
 - Start with `lurek.visibility.new` when exploring this module.
 - Start with `lurek.visibility.newFov` when exploring this module.
+- Start with `lurek.visibility.newTileVisibility` when exploring this module.
 
 ## API Reference
 
@@ -47,6 +50,82 @@ end
 This module is mostly self-contained inside the `Edge/Integration` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
 
 ## Functions
+
+### `lurek.visibility.lineOfAction`
+
+Returns whether two tilefield cells have a clear action line.
+
+```lua
+lurek.visibility.lineOfAction(field, from, to, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `field` | [LTileField](#ltilefield) | Tilefield to query. |
+| `from` | table | One-based `{x,y,z?}` start. |
+| `to` | table | One-based `{x,y,z?}` target. |
+| `opts?` | table | Optional `{channel="action"}`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when clear. |
+
+**Example**
+
+```lua
+do
+    local field = lurek.tilefield.new({ width = 6, height = 3 })
+    field:applyProfile(3, 2, 1, "window")
+    local from = { x = 1, y = 2, z = 1 }
+    local to = { x = 6, y = 2, z = 1 }
+    local clear = lurek.visibility.lineOfAction(field, from, to)
+    lurek.log.info("lineOfAction through window = " .. tostring(clear))
+end
+```
+
+---
+
+### `lurek.visibility.lineOfSight`
+
+Returns whether two tilefield cells have a clear sight line.
+
+```lua
+lurek.visibility.lineOfSight(field, from, to, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `field` | [LTileField](#ltilefield) | Tilefield to query. |
+| `from` | table | One-based `{x,y,z?}` start. |
+| `to` | table | One-based `{x,y,z?}` target. |
+| `opts?` | table | Optional `{channel="vision"}`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when clear. |
+
+**Example**
+
+```lua
+do
+    local field = lurek.tilefield.new({ width = 6, height = 3 })
+    field:applyProfile(3, 2, 1, "window")
+    local from = { x = 1, y = 2, z = 1 }
+    local to = { x = 6, y = 2, z = 1 }
+    local clear = lurek.visibility.lineOfSight(field, from, to)
+    lurek.log.info("lineOfSight through window = " .. tostring(clear))
+end
+```
+
+---
 
 ### `lurek.visibility.new`
 
@@ -118,6 +197,41 @@ end
 
 ---
 
+### `lurek.visibility.newTileVisibility`
+
+Creates per-player tile visibility/action masks backed by a tilefield.
+
+```lua
+lurek.visibility.newTileVisibility(field, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `field` | [LTileField](#ltilefield) | Source tilefield. |
+| `opts` | table | `{players={...}, rememberExplored=true?}`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LTileVisibility](#ltilevisibility) | New tile visibility handle. |
+
+**Example**
+
+```lua
+do
+    local field = lurek.tilefield.new({ width = 6, height = 6 })
+    local vis = lurek.visibility.newTileVisibility(field, { players = { "p1", "p2" } })
+    vis:computeVisible("p1", { origin = { x = 2, y = 2, z = 1 }, range = 3 })
+    local visible = vis:isVisible("p1", 3, 2, 1)
+    lurek.log.info("tile visibility created, visible=" .. tostring(visible))
+end
+```
+
+---
+
 ## Module Fields
 
 *No module-level fields documented.*
@@ -129,6 +243,8 @@ end
 ## Types
 
 - [LFov](#lfov)
+- [LTileField](#ltilefield)
+- [LTileVisibility](#ltilevisibility)
 - [LVisibilityGrid](#lvisibilitygrid)
 
 ## LFov
@@ -508,6 +624,953 @@ do
     local first_label = first and (first.x .. "," .. first.y) or "none"
     lurek.log.info("visible cell count = " .. #cells)
     lurek.log.info("first visible cell = " .. first_label)
+end
+```
+
+---
+
+## LTileField
+
+### Type Fields
+
+*No documented fields for this handle.*
+
+### Type Methods
+
+#### `LTileField:addPointLight`
+
+Adds a point light and returns its stable id.
+
+```lua
+LTileField:addPointLight(opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `opts` | table | `{x, y, z?, radius, intensity?, color?}` light definition. |
+
+---
+
+#### `LTileField:applyProfile`
+
+Applies a named profile to one cell.
+
+```lua
+LTileField:applyProfile(x, y, z, name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `z?` | any |  |
+| `name` | any |  |
+
+---
+
+#### `LTileField:blocks`
+
+Returns whether a cell blocks a channel.
+
+```lua
+LTileField:blocks(x, y, z, channel)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `z?` | any |  |
+| `channel` | any |  |
+
+---
+
+#### `LTileField:clear`
+
+Clears all cell gameplay state and computed light values.
+
+```lua
+LTileField:clear()
+```
+
+---
+
+#### `LTileField:clearCell`
+
+Clears one cell.
+
+```lua
+LTileField:clearCell(x, y, z)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+| `z?` | number | One-based level, default 1. |
+
+---
+
+#### `LTileField:clearLine`
+
+Returns true when the line between two cell tables has no blocker for a channel.
+
+```lua
+LTileField:clearLine(from_tbl, to_tbl, channel, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `from_tbl` | any |  |
+| `to_tbl` | any |  |
+| `channel` | any |  |
+| `opts?` | any |  |
+
+---
+
+#### `LTileField:clearPointLights`
+
+Removes all point lights.
+
+```lua
+LTileField:clearPointLights()
+```
+
+---
+
+#### `LTileField:computeLight`
+
+Computes tile light from ambient, point lights, and global top light.
+
+```lua
+LTileField:computeLight(opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `opts?` | table | Optional includePointLights, includeGlobalLight, and ambient settings. |
+
+---
+
+#### `LTileField:exportBlockLayer`
+
+Exports one blocker channel and level as a row-major boolean array.
+
+```lua
+LTileField:exportBlockLayer(channel, z)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `channel` | any |  |
+| `z?` | any |  |
+
+---
+
+#### `LTileField:exportCostLayer`
+
+Exports one cost channel and level as a row-major number array.
+
+```lua
+LTileField:exportCostLayer(channel, z)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `channel` | any |  |
+| `z?` | any |  |
+
+---
+
+#### `LTileField:exportLightLayer`
+
+Exports one level of computed light as row-major `{r,g,b,luma}` tables.
+
+```lua
+LTileField:exportLightLayer(z)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `z?` | number | One-based level, default 1. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Row-major array of light tables. |
+
+---
+
+#### `LTileField:exportLightVolume`
+
+Exports all computed light levels as nested row-major tables.
+
+```lua
+LTileField:exportLightVolume()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of per-level row-major light layers. |
+
+---
+
+#### `LTileField:exportProfileLayer`
+
+Exports one level of profile names as a row-major array.
+
+```lua
+LTileField:exportProfileLayer(z)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `z?` | number | One-based level, default 1. |
+
+---
+
+#### `LTileField:firstBlocker`
+
+Returns the first one-based blocking cell table between two cells, or nil.
+
+```lua
+LTileField:firstBlocker(from_tbl, to_tbl, channel, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `from_tbl` | any |  |
+| `to_tbl` | any |  |
+| `channel` | any |  |
+| `opts?` | any |  |
+
+---
+
+#### `LTileField:getCell`
+
+Returns a table with blockers, costs, sun occlusion, and optional profile name.
+
+```lua
+LTileField:getCell(x, y, z)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+| `z?` | number | One-based level, default 1. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Cell state table. |
+
+---
+
+#### `LTileField:getCost`
+
+Returns the cost for one cell/channel.
+
+```lua
+LTileField:getCost(x, y, z, channel)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `z?` | any |  |
+| `channel` | any |  |
+
+---
+
+#### `LTileField:getLight`
+
+Returns r, g, b, and luma for one cell.
+
+```lua
+LTileField:getLight(x, y, z)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | One-based cell x coordinate. |
+| `y` | number | One-based cell y coordinate. |
+| `z?` | number | One-based level, default 1. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Red component in 0..1. |
+| number | Green component in 0..1. |
+| number | Blue component in 0..1. |
+| number | Luma value in 0..1. |
+
+---
+
+#### `LTileField:getProfile`
+
+Returns a named object profile table, or nil when absent.
+
+```lua
+LTileField:getProfile(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Profile name to read. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | nil | Profile table with blockers, costs, and sunOcclusion, or nil. |
+
+---
+
+#### `LTileField:getSize`
+
+Returns field width, height, and level count.
+
+```lua
+LTileField:getSize()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Field width in cells. |
+| number | Field height in cells. |
+| number | Level count. |
+
+---
+
+#### `LTileField:getSunOcclusion`
+
+Returns top-light occlusion in the inclusive range 0..1.
+
+```lua
+LTileField:getSunOcclusion(x, y, z)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `z?` | any |  |
+
+---
+
+#### `LTileField:getTopology`
+
+Returns the field topology name.
+
+```lua
+LTileField:getTopology()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | `square`, `iso_square`, or `hex`. |
+
+---
+
+#### `LTileField:inBounds`
+
+Returns whether one-based coordinates are inside the field.
+
+```lua
+LTileField:inBounds(x, y, z)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+| `z?` | number | One-based level, default 1. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when coordinates are in bounds. |
+
+---
+
+#### `LTileField:line`
+
+Returns topology-aware one-based cells between `from` and `to` tables.
+
+```lua
+LTileField:line(opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `opts` | table | `{from={x,y,z?}, to={x,y,z?}, includeEndpoints?}`. |
+
+---
+
+#### `LTileField:removePointLight`
+
+Removes a point light by id and returns whether it existed.
+
+```lua
+LTileField:removePointLight(id)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | number | Stable point light id returned by `addPointLight`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when a point light was removed. |
+
+---
+
+#### `LTileField:removeProfile`
+
+Removes a named object profile.
+
+```lua
+LTileField:removeProfile(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Profile name to remove. |
+
+---
+
+#### `LTileField:setBlock`
+
+Sets whether a cell blocks a channel.
+
+```lua
+LTileField:setBlock(x, y, z, channel, blocked)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `z?` | any |  |
+| `channel` | any |  |
+| `blocked` | any |  |
+
+---
+
+#### `LTileField:setCell`
+
+Sets cell state from a table with optional `blocks`, `costs`, `sunOcclusion`, and `profile`.
+
+```lua
+LTileField:setCell(x, y, z, cell)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+| `z?` | number | One-based level, default 1. |
+| `cell` | table | Cell data. |
+
+---
+
+#### `LTileField:setCost`
+
+Sets the cost for one cell/channel.
+
+```lua
+LTileField:setCost(x, y, z, channel, cost)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `z?` | any |  |
+| `channel` | any |  |
+| `cost` | any |  |
+
+---
+
+#### `LTileField:setGlobalLight`
+
+Sets top-down global light.
+
+```lua
+LTileField:setGlobalLight(opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `opts` | table | `{intensity?, color?}` global top-light settings. |
+
+---
+
+#### `LTileField:setProfile`
+
+Registers or replaces a named object profile.
+
+```lua
+LTileField:setProfile(name, profile_tbl)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | any |  |
+| `profile_tbl` | any |  |
+
+---
+
+#### `LTileField:setSunOcclusion`
+
+Sets top-light occlusion in the inclusive range 0..1.
+
+```lua
+LTileField:setSunOcclusion(x, y, z, value)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `z?` | any |  |
+| `value` | any |  |
+
+---
+
+#### `LTileField:type`
+
+Returns the Lua-visible type name for this tilefield handle.
+
+```lua
+LTileField:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | The string `[LTileField](#ltilefield)`. |
+
+---
+
+#### `LTileField:typeOf`
+
+Returns whether this handle matches a supported type name.
+
+```lua
+LTileField:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Type name to compare. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True for `[LTileField](#ltilefield)` or `LObject`. |
+
+---
+
+#### `LTileField:updatePointLight`
+
+Updates an existing point light by id.
+
+```lua
+LTileField:updatePointLight(id, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | any |  |
+| `opts` | any |  |
+
+---
+
+## LTileVisibility
+
+### Type Fields
+
+*No documented fields for this handle.*
+
+### Type Methods
+
+#### `LTileVisibility:actionCells`
+
+Returns all currently actionable cells for a player, optionally filtered to a level.
+
+```lua
+LTileVisibility:actionCells(player, z)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `player` | any |  |
+| `z?` | any |  |
+
+**Example**
+
+```lua
+do
+    local field = lurek.tilefield.new({ width = 4, height = 4 })
+    local vis = lurek.visibility.newTileVisibility(field, { players = { "p1" } })
+    vis:computeAction("p1", { origin = { x = 2, y = 2, z = 1 }, range = 1 })
+    local cells = vis:actionCells("p1", 1)
+    lurek.log.info("actionCells count = " .. #cells)
+end
+```
+
+---
+
+#### `LTileVisibility:canActOn`
+
+Returns whether a one-based cell is currently actionable for a player.
+
+```lua
+LTileVisibility:canActOn(player, x, y, z)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `player` | any |  |
+| `x` | any |  |
+| `y` | any |  |
+| `z?` | any |  |
+
+**Example**
+
+```lua
+do
+    local field = lurek.tilefield.new({ width = 4, height = 4 })
+    local vis = lurek.visibility.newTileVisibility(field, { players = { "p1" } })
+    vis:computeAction("p1", { origin = { x = 2, y = 2, z = 1 }, range = 1 })
+    local actionable = vis:canActOn("p1", 2, 2, 1)
+    lurek.log.info("center actionable = " .. tostring(actionable))
+end
+```
+
+---
+
+#### `LTileVisibility:clearAll`
+
+Clears current, explored, and action masks for all players.
+
+```lua
+LTileVisibility:clearAll()
+```
+
+**Example**
+
+```lua
+do
+    local field = lurek.tilefield.new({ width = 4, height = 4 })
+    local vis = lurek.visibility.newTileVisibility(field, { players = { "p1", "p2" } })
+    vis:computeAction("p1", { origin = { x = 2, y = 2, z = 1 }, range = 1 })
+    vis:clearAll()
+    lurek.log.info("after clearAll action = " .. tostring(vis:canActOn("p1", 2, 2, 1)))
+end
+```
+
+---
+
+#### `LTileVisibility:clearPlayer`
+
+Clears current, explored, and action masks for one player.
+
+```lua
+LTileVisibility:clearPlayer(player)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `player` | any |  |
+
+**Example**
+
+```lua
+do
+    local field = lurek.tilefield.new({ width = 4, height = 4 })
+    local vis = lurek.visibility.newTileVisibility(field, { players = { "p1" } })
+    vis:computeVisible("p1", { origin = { x = 2, y = 2, z = 1 }, range = 1 })
+    vis:clearPlayer("p1")
+    lurek.log.info("after clearPlayer visible = " .. tostring(vis:isVisible("p1", 2, 2, 1)))
+end
+```
+
+---
+
+#### `LTileVisibility:computeAction`
+
+Computes one player's current action mask from a tilefield origin.
+
+```lua
+LTileVisibility:computeAction(player, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `player` | any |  |
+| `opts` | any |  |
+
+**Example**
+
+```lua
+do
+    local field = lurek.tilefield.new({ width = 6, height = 3 })
+    field:applyProfile(3, 2, 1, "window")
+    local vis = lurek.visibility.newTileVisibility(field, { players = { "p1" } })
+    vis:computeAction("p1", { origin = { x = 1, y = 2, z = 1 }, range = 6 })
+    lurek.log.info("can act through window = " .. tostring(vis:canActOn("p1", 6, 2, 1)))
+end
+```
+
+---
+
+#### `LTileVisibility:computeVisible`
+
+Computes one player's current visible mask from a tilefield origin.
+
+```lua
+LTileVisibility:computeVisible(player, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `player` | any |  |
+| `opts` | any |  |
+
+**Example**
+
+```lua
+do
+    local field = lurek.tilefield.new({ width = 6, height = 6 })
+    local vis = lurek.visibility.newTileVisibility(field, { players = { "p1" } })
+    vis:computeVisible("p1", { origin = { x = 2, y = 2, z = 1 }, range = 2 })
+    local count = #vis:visibleCells("p1", 1)
+    lurek.log.info("visible tile count = " .. count)
+end
+```
+
+---
+
+#### `LTileVisibility:isExplored`
+
+Returns whether a one-based cell has been explored for a player.
+
+```lua
+LTileVisibility:isExplored(player, x, y, z)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `player` | any |  |
+| `x` | any |  |
+| `y` | any |  |
+| `z?` | any |  |
+
+**Example**
+
+```lua
+do
+    local field = lurek.tilefield.new({ width = 4, height = 4 })
+    local vis = lurek.visibility.newTileVisibility(field, { players = { "p1" }, rememberExplored = true })
+    vis:computeVisible("p1", { origin = { x = 2, y = 2, z = 1 }, range = 1 })
+    local explored = vis:isExplored("p1", 2, 2, 1)
+    lurek.log.info("center explored = " .. tostring(explored))
+end
+```
+
+---
+
+#### `LTileVisibility:isVisible`
+
+Returns whether a one-based cell is currently visible for a player.
+
+```lua
+LTileVisibility:isVisible(player, x, y, z)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `player` | any |  |
+| `x` | any |  |
+| `y` | any |  |
+| `z?` | any |  |
+
+**Example**
+
+```lua
+do
+    local field = lurek.tilefield.new({ width = 4, height = 4 })
+    local vis = lurek.visibility.newTileVisibility(field, { players = { "p1" } })
+    vis:computeVisible("p1", { origin = { x = 2, y = 2, z = 1 }, range = 1 })
+    local visible = vis:isVisible("p1", 2, 2, 1)
+    lurek.log.info("center visible = " .. tostring(visible))
+end
+```
+
+---
+
+#### `LTileVisibility:type`
+
+Returns the Lua-visible type name for this tile visibility handle.
+
+```lua
+LTileVisibility:type()
+```
+
+**Example**
+
+```lua
+do
+    local field = lurek.tilefield.new({ width = 2, height = 2 })
+    local vis = lurek.visibility.newTileVisibility(field, { players = { "p1" } })
+    local name = vis:type()
+    local object = vis:typeOf("LObject")
+    lurek.log.info("tile visibility type = " .. name .. " object=" .. tostring(object))
+end
+```
+
+---
+
+#### `LTileVisibility:typeOf`
+
+Returns whether this handle matches a supported type name.
+
+```lua
+LTileVisibility:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | any |  |
+
+**Example**
+
+```lua
+do
+    local field = lurek.tilefield.new({ width = 2, height = 2 })
+    local vis = lurek.visibility.newTileVisibility(field, { players = { "p1" } })
+    local exact = vis:typeOf("LTileVisibility")
+    local miss = vis:typeOf("LFov")
+    lurek.log.info("tile visibility typeOf = " .. tostring(exact) .. " miss=" .. tostring(miss))
+end
+```
+
+---
+
+#### `LTileVisibility:visibleCells`
+
+Returns all currently visible cells for a player, optionally filtered to a level.
+
+```lua
+LTileVisibility:visibleCells(player, z)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `player` | any |  |
+| `z?` | any |  |
+
+**Example**
+
+```lua
+do
+    local field = lurek.tilefield.new({ width = 4, height = 4 })
+    local vis = lurek.visibility.newTileVisibility(field, { players = { "p1" } })
+    vis:computeVisible("p1", { origin = { x = 2, y = 2, z = 1 }, range = 1 })
+    local cells = vis:visibleCells("p1", 1)
+    lurek.log.info("visibleCells count = " .. #cells)
 end
 ```
 

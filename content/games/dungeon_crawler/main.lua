@@ -86,6 +86,11 @@ local special_textures = {}
 local world_models = {}
 local sectoid_model = nil
 local raycaster = nil
+local field = nil
+local tile_visibility = nil
+local field_light_dirty = true
+local field_light_key = ""
+local static_render_lights = nil
 
 local app_ui = {}
 
@@ -281,11 +286,30 @@ local function reset_explored()
     explored = new_grid(MAP_W, MAP_H, false)
 end
 
+local function apply_map_to_tilefield()
+    field = lurek.tilefield.new({ width = MAP_W, height = MAP_H, levels = 1 })
+    for y = 1, MAP_H do
+        for x = 1, MAP_W do
+            if dungeon[y][x] > 0 then
+                field:applyProfile(x, y, 1, "wall")
+            end
+            if liquid_type[y][x] ~= 0 then
+                field:setBlock(x, y, 1, "move", true)
+                field:setBlock(x, y, 1, "action", true)
+            end
+        end
+    end
+    tile_visibility = lurek.visibility.newTileVisibility(field, {
+        players = { "player" },
+        rememberExplored = true,
+    })
+end
+
 local function is_blocked(wx, wy)
     local gx = math.floor(wx)+1
     local gy = math.floor(wy)+1
     if gx<1 or gy<1 or gx>MAP_W or gy>MAP_H then return true end
-    if raycaster then return raycaster:isWalkBlocked(gx-1, gy-1) end
+    if field then return field:blocks(gx, gy, 1, "move") end
     return dungeon[gy][gx] > 0
 end
 
@@ -300,27 +324,11 @@ local function sync_angle_from_dir()
 end
 
 local function do_forward_step(sign)
-    if raycaster and raycaster.gridMove then
-        local action = sign > 0 and "forward" or "back"
-        local nx, ny, moved = raycaster:gridMove(player.x, player.y, player.dir, action, MOVE_STEP)
-        if moved then
-            player.x, player.y = nx, ny
-        end
-        return
-    end
     local d = DIRS[player.dir]
     try_step(d[1] * MOVE_STEP * sign, d[2] * MOVE_STEP * sign)
 end
 
 local function do_strafe_step(sign)
-    if raycaster and raycaster.gridMove then
-        local action = sign > 0 and "left" or "right"
-        local nx, ny, moved = raycaster:gridMove(player.x, player.y, player.dir, action, MOVE_STEP)
-        if moved then
-            player.x, player.y = nx, ny
-        end
-        return
-    end
     local d = DIRS[player.dir]
     try_step(d[2] * MOVE_STEP * sign, -d[1] * MOVE_STEP * sign)
 end
@@ -332,36 +340,21 @@ local function reveal_cell(wx, wy)
 end
 
 local function reveal_from_rays()
-    if not raycaster then return end
-    if raycaster.revealCellsFromRays then
-        local cells = raycaster:revealCellsFromRays(
-            player.x,
-            player.y,
-            player.angle,
-            FOV,
-            REVEAL_RAYS,
-            REVEAL_DIST,
-            0.2
-        )
-        for _, cell in ipairs(cells) do
-            local gx = (cell.x or -1) + 1
-            local gy = (cell.y or -1) + 1
-            if gx >= 1 and gy >= 1 and gx <= MAP_W and gy <= MAP_H then
-                explored[gy][gx] = true
-            end
-        end
-    else
+    if not tile_visibility then
         reveal_cell(player.x, player.y)
-        local rays = raycaster:castRays(player.x, player.y, player.angle, FOV, REVEAL_RAYS, REVEAL_DIST)
-        for _, hit in ipairs(rays) do
-            local hx = hit.hit_x or (player.x + math.cos(player.angle)*REVEAL_DIST)
-            local hy = hit.hit_y or (player.y + math.sin(player.angle)*REVEAL_DIST)
-            local dx, dy = hx-player.x, hy-player.y
-            local steps = math.max(1, math.floor(math.sqrt(dx*dx+dy*dy)/0.2))
-            for s = 0, steps do
-                local t = s/steps
-                reveal_cell(player.x+dx*t, player.y+dy*t)
-            end
+        return
+    end
+    tile_visibility:computeVisible("player", {
+        origin = { x = math.floor(player.x) + 1, y = math.floor(player.y) + 1, z = 1 },
+        range = math.floor(REVEAL_DIST),
+        channel = "vision",
+    })
+    local cells = tile_visibility:visibleCells("player", 1)
+    for _, cell in ipairs(cells) do
+        local gx = cell.x
+        local gy = cell.y
+        if gx >= 1 and gy >= 1 and gx <= MAP_W and gy <= MAP_H then
+            explored[gy][gx] = true
         end
     end
 end
@@ -469,6 +462,90 @@ local function apply_map_to_raycaster()
     end
 end
 
+local build_light_list
+
+local function mark_field_light_dirty()
+    field_light_dirty = true
+end
+
+local function current_field_light_key()
+    local collected = 0
+    for _, orb in ipairs(orbs) do
+        if orb.collected then collected = collected + 1 end
+    end
+    return table.concat({
+        tostring(TIME_MODE),
+        player.torch and "torch_on" or "torch_off",
+        tostring(math.floor(player.x)),
+        tostring(math.floor(player.y)),
+        tostring(collected),
+    }, ":")
+end
+
+local function compute_field_light()
+    if not field then return end
+    field:clearPointLights()
+    local sr, sg, sb = mode_sky_color()
+    field:setGlobalLight({
+        intensity = mode_ambient(),
+        color = { r = sr, g = sg, b = sb },
+    })
+    for _, light in ipairs(build_light_list()) do
+        local lx = math.floor(light.x) + 1
+        local ly = math.floor(light.y) + 1
+        if field:inBounds(lx, ly, 1) then
+            field:addPointLight({
+                x = lx,
+                y = ly,
+                z = 1,
+                radius = math.max(1, math.floor(light.radius or 1)),
+                intensity = math.min(1.0, (light.intensity or 1.0) / 8.0),
+                color = {
+                    r = light.r or 1.0,
+                    g = light.g or 1.0,
+                    b = light.b or 1.0,
+                },
+            })
+        end
+    end
+    field:computeLight({
+        includePointLights = true,
+        includeGlobalLight = true,
+        ambient = { r = 0.02, g = 0.02, b = 0.025 },
+    })
+    field_light_dirty = false
+    field_light_key = current_field_light_key()
+end
+
+local function ensure_field_light()
+    local key = current_field_light_key()
+    if field_light_dirty or key ~= field_light_key then
+        compute_field_light()
+    end
+end
+
+local function rebuild_static_render_lights()
+    local lights = {}
+    for _, t in ipairs(torches) do
+        lights[#lights+1] = {
+            x=t.x+0.5, y=t.y+0.5,
+            radius=t.radius, r=t.r, g=t.g, b=t.b, intensity=t.intensity,
+        }
+    end
+    for y = 1, MAP_H do
+        for x = 1, MAP_W do
+            local lt = liquid_type[y][x]
+            if lt == 2 then
+                lights[#lights+1] = {
+                    x=x-0.5, y=y-0.5,
+                    radius=5.0, r=1.00, g=0.48, b=0.10, intensity=8.0,
+                }
+            end
+        end
+    end
+    static_render_lights = lights
+end
+
 local function collect_orbs()
     local all = true
     for _, orb in ipairs(orbs) do
@@ -476,6 +553,7 @@ local function collect_orbs()
             local dx, dy = orb.x-player.x, orb.y-player.y
             if (dx*dx+dy*dy) < 0.35*0.35 then
                 orb.collected=true; score=score+100
+                mark_field_light_dirty()
             else
                 all=false
             end
@@ -484,7 +562,7 @@ local function collect_orbs()
     if all then state=STATE.COMPLETE end
 end
 
-local function build_light_list()
+function build_light_list()
     local lights = {}
     -- Player torch toggle T
     if player.torch then
@@ -494,12 +572,11 @@ local function build_light_list()
             radius=7.0, r=1.0, g=0.88, b=0.66, intensity=8.0,
         }
     end
-    -- Map lights are active in all modes.
-    for _, t in ipairs(torches) do
-        lights[#lights+1] = {
-            x=t.x+0.5, y=t.y+0.5,
-            radius=t.radius, r=t.r, g=t.g, b=t.b, intensity=t.intensity,
-        }
+    if not static_render_lights then
+        rebuild_static_render_lights()
+    end
+    for _, light in ipairs(static_render_lights) do
+        lights[#lights+1] = light
     end
     -- Orb glow: almost off in night.
     local orb_intensity = (TIME_MODE == 1) and 2.0 or ((TIME_MODE == 2) and 1.2 or 0.25)
@@ -511,18 +588,6 @@ local function build_light_list()
             }
         end
     end
-    -- Liquids: lava glows, water does not.
-        for y = 1, MAP_H do
-            for x = 1, MAP_W do
-                local lt = liquid_type[y][x]
-                if lt == 2 then
-                    lights[#lights+1] = {
-                        x=x-0.5, y=y-0.5,
-                        radius=5.0, r=1.00, g=0.48, b=0.10, intensity=8.0,
-                    }
-                end
-            end
-        end
     return lights
 end
 
@@ -582,9 +647,11 @@ function lurek.init()
         end
         orbs = filtered
     end
+    rebuild_static_render_lights()
     reset_explored()
     load_textures()
     build_random_model_instances()
+    apply_map_to_tilefield()
     apply_map_to_raycaster()
     reveal_from_rays()
 
@@ -606,8 +673,12 @@ end
 -- directly from the KeyboardInput OS event, so it always sees the press.
 function lurek.keypressed(key, _sc, is_repeat)
     if is_repeat then return end
-    if key == "t" then player.torch = not player.torch
-    elseif key == "n" then TIME_MODE = (TIME_MODE % 3) + 1
+    if key == "t" then
+        player.torch = not player.torch
+        mark_field_light_dirty()
+    elseif key == "n" then
+        TIME_MODE = (TIME_MODE % 3) + 1
+        mark_field_light_dirty()
     end
 end
 
@@ -785,14 +856,7 @@ draw_minimap = function()
     local cgy=math.floor(player.y)+1
 
     local ambient = mode_ambient()
-    local lights = build_light_list()
-    local minimap_samples = {}
-    if raycaster and raycaster.buildMinimapWindow then
-        local samples = raycaster:buildMinimapWindow(player.x, player.y, MM_R, ambient, lights)
-        for _, s in ipairs(samples) do
-            minimap_samples[(s.x + 1) .. "," .. (s.y + 1)] = s
-        end
-    end
+    ensure_field_light()
 
     local mm_bg
     if TIME_MODE == 1 then
@@ -812,8 +876,11 @@ draw_minimap = function()
             local sy=MM_Y+(oy+MM_R)*MM_CELL
             if gx>=1 and gy>=1 and gx<=MAP_W and gy<=MAP_H then
                 local v=dungeon[gy][gx]
-                local sample = minimap_samples[gx .. "," .. gy]
-                local ll = sample and sample.luma or ambient
+                local ll = ambient
+                if field then
+                    local _, _, _, luma = field:getLight(gx, gy, 1)
+                    ll = luma
+                end
                 ll = math.max(0.05, math.min(1.0, ll))
                 if v>0 then
                     -- Walls: bright block + border

@@ -1,20 +1,20 @@
 {
   "meta": {
-    "generated": "2026-06-22T19:49:47.437447+00:00",
+    "generated": "2026-06-23T08:46:00.667294+00:00",
     "generator": "tools/gen_rust_api_data.py",
     "version": "1.1.0",
     "stats": {
-      "rust_items": 3009,
-      "rust_modules": 705,
-      "rust_tests": 481,
-      "lua_tests": 264
+      "rust_items": 3038,
+      "rust_modules": 721,
+      "rust_tests": 491,
+      "lua_tests": 274
     }
   },
   "rust_api": {
     "summary": {
-      "total_items": 3009,
-      "documented": 3009,
-      "modules": 705
+      "total_items": 3038,
+      "documented": 3038,
+      "modules": 721
     },
     "modules": {
       "agent::chat": {
@@ -2961,6 +2961,52 @@
           }
         ]
       },
+      "charts::boxplot": {
+        "module_doc": "This file owns box-and-whisker chart rendering for distributions, benchmark runs, and telemetry spreads. It stores named sample series, computes quartiles on render, and draws whiskers, boxes, medians, and outliers. Shared chart helpers provide axes, ticks, category labels, legends, and background styling for consistency. The renderer sorts only per-series samples and otherwise draws O(series + samples) primitives for fast refreshes. Open it when distribution statistics, outlier policy, or boxplot geometry need to change.",
+        "source_file": "src/charts/boxplot.rs",
+        "items": [
+          {
+            "name": "BoxPlotChart",
+            "kind": "struct",
+            "description": "Box-and-whisker chart for one or more named distributions.",
+            "file": "src/charts/boxplot.rs",
+            "line": 31
+          }
+        ]
+      },
+      "charts::bubble": {
+        "module_doc": "This file owns bubble chart rendering for weighted point clouds, portfolio maps, and correlation dashboards. It stores named `(x, y, size)` samples, maps size values to radius bounds, and draws one circle per finite sample. Shared chart helpers provide cartesian axes, ticks, grids, labels, and legends while this file owns radius scaling. Streaming append and max-point trimming keep live dashboards bounded for repeated 10 FPS redraws. Open it when bubble-size semantics, weighted scatter ingestion, or radius defaults need to change.",
+        "source_file": "src/charts/bubble.rs",
+        "items": [
+          {
+            "name": "BubbleChart",
+            "kind": "struct",
+            "description": "Bubble chart with named weighted point series.",
+            "file": "src/charts/bubble.rs",
+            "line": 22
+          }
+        ]
+      },
+      "charts::candlestick": {
+        "module_doc": "This file owns candlestick chart rendering for OHLC financial or telemetry interval data. It stores labeled candles, supports incremental appends, and draws wicks plus open-close bodies in one CPU pass. Axis scaling is derived from high/low values, while shared chart helpers provide grid, ticks, title, and captions. Positive and negative candles use configurable colors so streaming market views remain readable at 10 FPS. Open it when OHLC ingestion, candle body geometry, or finance-style chart semantics need to change.",
+        "source_file": "src/charts/candlestick.rs",
+        "items": [
+          {
+            "name": "Candle",
+            "kind": "struct",
+            "description": "One open-high-low-close candle.",
+            "file": "src/charts/candlestick.rs",
+            "line": 14
+          },
+          {
+            "name": "CandlestickChart",
+            "kind": "struct",
+            "description": "Candlestick chart for ordered OHLC samples.",
+            "file": "src/charts/candlestick.rs",
+            "line": 29
+          }
+        ]
+      },
       "charts::config": {
         "module_doc": "This file owns chart configuration structs, margins, palettes, and dataframe import limits used by every renderer. `ChartConfig` defines image size, axis colors, titles, labels, grid policy, legend space, and streaming point limits. `ChartSeries` carries named colored `(x, y)` samples, while `ChartMargin` and defaults stabilize plot layout math. `ChartDataFrameOptions` keeps tabular import limits local so chart renderers share one narrow ingestion contract. Open this file when cross-chart option semantics change; per-chart rasterization and annotation live in sibling files.",
         "source_file": "src/charts/config.rs",
@@ -3049,7 +3095,7 @@
         ]
       },
       "charts": {
-        "module_doc": "This module is the charts index, wiring concrete chart renderers, shared config types, and raster helpers. It exports area, bar, line, pie, scatter, histogram, and heatmap owners from one navigation entry point. Shared option contracts live in `config.rs`, while `render_utils.rs` owns the CPU drawing primitives used by all charts. This file owns only module visibility and reexports, not chart state, buffers, dataframe ingestion, or render math. Open it when chart ownership, public names, or reexport boundaries move between sibling implementation files. For behavior changes, edit the renderer file that owns the chart type instead of growing coordination logic here.",
+        "module_doc": "This module is the charts index, wiring concrete chart renderers, shared config types, and raster helpers. It exports area, bar, line, pie, scatter, histogram, heatmap, candlestick, boxplot, bubble, radar, and treemap owners. Shared option contracts live in `config.rs`, while `render_utils.rs` owns the CPU drawing primitives used by all charts. This file owns only module visibility and reexports, not chart state, buffers, dataframe ingestion, or render math. Open it when chart ownership, public names, or reexport boundaries move between sibling implementation files. For behavior changes, edit the renderer file that owns the chart type instead of growing coordination logic here.",
         "source_file": "src/charts/mod.rs",
         "items": [
           {
@@ -3067,53 +3113,88 @@
             "line": 11
           },
           {
+            "name": "boxplot",
+            "kind": "mod",
+            "description": "Boxplot chart: displays quartiles, medians, whiskers, and outliers for distributions.",
+            "file": "src/charts/mod.rs",
+            "line": 13
+          },
+          {
+            "name": "bubble",
+            "kind": "mod",
+            "description": "Bubble chart: weighted scatter plot where point size encodes a third value.",
+            "file": "src/charts/mod.rs",
+            "line": 15
+          },
+          {
+            "name": "candlestick",
+            "kind": "mod",
+            "description": "Candlestick chart: displays ordered OHLC candles for financial or interval data.",
+            "file": "src/charts/mod.rs",
+            "line": 17
+          },
+          {
             "name": "config",
             "kind": "mod",
             "description": "Chart configuration and shared types.",
             "file": "src/charts/mod.rs",
-            "line": 13
+            "line": 19
           },
           {
             "name": "heatmap",
             "kind": "mod",
             "description": "Heatmap chart: renders matrix data using a color ramp for dense dashboard and ML views.",
             "file": "src/charts/mod.rs",
-            "line": 15
+            "line": 21
           },
           {
             "name": "histogram",
             "kind": "mod",
             "description": "Histogram chart: renders bucketed value distributions for telemetry and analytics.",
             "file": "src/charts/mod.rs",
-            "line": 17
+            "line": 23
           },
           {
             "name": "line",
             "kind": "mod",
             "description": "Line chart: plots data series as connected lines over time or categories.",
             "file": "src/charts/mod.rs",
-            "line": 19
+            "line": 25
           },
           {
             "name": "pie",
             "kind": "mod",
             "description": "Pie chart: renders proportional slice segments from a single data series.",
             "file": "src/charts/mod.rs",
-            "line": 21
+            "line": 27
+          },
+          {
+            "name": "radar",
+            "kind": "mod",
+            "description": "Radar chart: compares multivariate series across shared radial axes.",
+            "file": "src/charts/mod.rs",
+            "line": 29
           },
           {
             "name": "render_utils",
             "kind": "mod",
             "description": "Shared rasterization utilities.",
             "file": "src/charts/mod.rs",
-            "line": 23
+            "line": 31
           },
           {
             "name": "scatter",
             "kind": "mod",
             "description": "Scatter plot: renders (x, y) point series to show distribution and correlation.",
             "file": "src/charts/mod.rs",
-            "line": 25
+            "line": 33
+          },
+          {
+            "name": "treemap",
+            "kind": "mod",
+            "description": "Treemap chart: renders weighted labeled rectangles for part-to-whole summaries.",
+            "file": "src/charts/mod.rs",
+            "line": 35
           }
         ]
       },
@@ -3134,6 +3215,19 @@
             "description": "A pie chart that renders proportional slices as a filled circle.",
             "file": "src/charts/pie.rs",
             "line": 26
+          }
+        ]
+      },
+      "charts::radar": {
+        "module_doc": "This file owns radar/spider chart rendering for multivariate series over shared axes. It stores ordered axis labels and named series values, then draws radial grid rings and closed polygons. The chart can use an explicit maximum value or auto-scale from finite series samples. Rendering is O(axes * series) and avoids per-pixel polygon fills so live dashboards can refresh quickly. Open it when radar axis semantics, scaling, or polygon stroke behavior need to change.",
+        "source_file": "src/charts/radar.rs",
+        "items": [
+          {
+            "name": "RadarChart",
+            "kind": "struct",
+            "description": "Radar chart for comparing named series across shared axes.",
+            "file": "src/charts/radar.rs",
+            "line": 20
           }
         ]
       },
@@ -3223,6 +3317,26 @@
             "description": "A scatter plot that renders data points as filled circles.",
             "file": "src/charts/scatter.rs",
             "line": 19
+          }
+        ]
+      },
+      "charts::treemap": {
+        "module_doc": "This file owns treemap chart rendering for part-to-whole dashboards and hierarchical-looking flat summaries. It stores weighted labeled items, applies deterministic squarified rows, and draws colored rectangles with labels. The API accepts flat items because runtime Lua callers commonly aggregate hierarchy before visualization. Rendering is O(n log n) from value sorting plus rectangle fills, keeping repeated refreshes practical. Open it when treemap item ingestion, squarified row packing, or label rendering need to change.",
+        "source_file": "src/charts/treemap.rs",
+        "items": [
+          {
+            "name": "TreemapItem",
+            "kind": "struct",
+            "description": "One weighted treemap item.",
+            "file": "src/charts/treemap.rs",
+            "line": 13
+          },
+          {
+            "name": "TreemapChart",
+            "kind": "struct",
+            "description": "Treemap chart for weighted labeled rectangles.",
+            "file": "src/charts/treemap.rs",
+            "line": 32
           }
         ]
       },
@@ -9419,8 +9533,21 @@
           }
         ]
       },
+      "layout::circular": {
+        "module_doc": "Owns deterministic circular placement for cycle-heavy graphs, overviews, and equal-emphasis node sets. Computes a chord-safe radius from real node sizes and spacing, then places sorted ids on one ring. Keeps no graph traversal state; change this file only for ring geometry, radius, or ordering behavior.",
+        "source_file": "src/layout/circular.rs",
+        "items": [
+          {
+            "name": "layout_circular",
+            "kind": "fn",
+            "description": "Lay out nodes evenly around a circle using sorted node ids for deterministic output.",
+            "file": "src/layout/circular.rs",
+            "line": 8
+          }
+        ]
+      },
       "layout::dag": {
-        "module_doc": "`src/layout/dag.rs` lays out directed graphs in layers so flow direction, rank order, and dependency reading stay clear. It owns layer assignment, cyclic fallback placement, barycenter-based crossing reduction, and per-layer coordinates. Shared `LayoutConfig` spacing and margins are applied here so DAG results align with the rest of the layout module. This file is the layered-graph algorithm boundary; it does not own shared types, force simulation, or tree recursion. Read it when rank construction, crossing reduction, deterministic fallback, or DAG coordinate rules need changes.",
+        "module_doc": "`src/layout/dag.rs` lays out directed graphs in layers so flow direction, rank order, and dependency reading stay clear. It owns layer assignment, cyclic fallback placement, barycenter ordering, and centered per-layer coordinates. Shared `LayoutConfig` spacing and margins are applied here so DAG results align with the rest of the layout module. This file is the layered-graph algorithm boundary; it does not own shared types, force simulation, or tree recursion. Read it when rank construction, crossing reduction, deterministic fallback, or DAG coordinate rules need changes.",
         "source_file": "src/layout/dag.rs",
         "items": [
           {
@@ -9433,7 +9560,7 @@
         ]
       },
       "layout::force": {
-        "module_doc": "`src/layout/force.rs` computes force-directed graph layouts for cases where clustering matters more than strict rank. It owns the simulation loop, repulsion and attraction tuning, cooling, bounded placement, and initial grid seeding. `ForceConfig` lives here because iteration count, strengths, and area size are specific to this algorithm family. This file outputs shared `LayoutResult` data but does not own node contracts, tree logic, or alignment cleanup. Read it when graph spacing, convergence behavior, simulation cost, or force-tuning semantics need to change.",
+        "module_doc": "`src/layout/force.rs` computes force-directed graph layouts for cases where clustering matters more than strict rank. It owns simulation, size-aware forces, cooling, bounded placement, initial seeding, and overlap cleanup. `ForceConfig` lives here because iteration count, strengths, and area size are specific to this algorithm family. This file outputs shared `LayoutResult` data but does not own node contracts, tree logic, or alignment cleanup. Read it when graph spacing, convergence behavior, simulation cost, or force-tuning semantics need to change.",
         "source_file": "src/layout/force.rs",
         "items": [
           {
@@ -9449,6 +9576,19 @@
             "description": "Applies force-directed layout to a graph.",
             "file": "src/layout/force.rs",
             "line": 41
+          }
+        ]
+      },
+      "layout::grid": {
+        "module_doc": "Owns deterministic row-column placement for dense, disconnected, or topology-neutral node sets. Scores candidate column counts using real node widths, row heights, area, and readable aspect ratio. Ignores edges by design, making it a fast fallback when graph topology should not drive placement. Change this file for packed-grid defaults, variable cell sizing, or deterministic ordering behavior.",
+        "source_file": "src/layout/grid.rs",
+        "items": [
+          {
+            "name": "layout_grid",
+            "kind": "fn",
+            "description": "Lay out nodes in a compact square-ish grid using sorted node ids.",
+            "file": "src/layout/grid.rs",
+            "line": 9
           }
         ]
       },
@@ -9473,48 +9613,129 @@
         ]
       },
       "layout": {
-        "module_doc": "`src/layout/mod.rs` is the module index for layout algorithms, shared types, and post-processing helpers. It declares DAG, tree, force, and grid-alignment files while keeping the shared layout contracts in `types.rs`. This file reexports the main entry points so callers can switch layout strategy without importing deep module paths. No layout state or coordinate math lives here; it only defines the public surface and subsystem ownership map. Read this index first when tracing layout behavior, because it shows where algorithms end and shared data begins. Changes here affect reachability and API shape, not node placement rules, spacing policy, or result generation.",
+        "module_doc": "Indexes layout algorithms, shared payload types, and coordinate post-processing helper owners. Declares tree, DAG, force, circular, radial, grid, spiral, stress, and alignment submodules. Reexports main entry points so callers switch strategies without depending on deep owner paths. Keeps coordinate math and live state out of this file; sibling modules own placement behavior. Guides agents to the right algorithm owner before changing spacing, overlap, or result geometry. Changes here affect reachability and API shape, not placement rules, spacing policy, or results.",
         "source_file": "src/layout/mod.rs",
         "items": [
+          {
+            "name": "circular",
+            "kind": "mod",
+            "description": "Circular ring layout for cycle-heavy or overview graph diagrams.",
+            "file": "src/layout/mod.rs",
+            "line": 9
+          },
           {
             "name": "dag",
             "kind": "mod",
             "description": "Sugiyama layered layout algorithm for directed acyclic graphs (DAGs).",
             "file": "src/layout/mod.rs",
-            "line": 9
+            "line": 11
           },
           {
             "name": "force",
             "kind": "mod",
             "description": "Fruchterman-Reingold force-directed spring simulation for arbitrary graphs.",
             "file": "src/layout/mod.rs",
-            "line": 11
+            "line": 13
+          },
+          {
+            "name": "grid",
+            "kind": "mod",
+            "description": "Compact row-column placement for dense or disconnected node sets.",
+            "file": "src/layout/mod.rs",
+            "line": 15
           },
           {
             "name": "grid_align",
             "kind": "mod",
             "description": "Post-processing utilities: snap nodes to grid and center in bounding area.",
             "file": "src/layout/mod.rs",
-            "line": 13
+            "line": 17
+          },
+          {
+            "name": "radial",
+            "kind": "mod",
+            "description": "Radial breadth-first graph layout for hub-and-spoke diagrams.",
+            "file": "src/layout/mod.rs",
+            "line": 19
+          },
+          {
+            "name": "spiral",
+            "kind": "mod",
+            "description": "Fast expanding spiral placement for large unordered graphs.",
+            "file": "src/layout/mod.rs",
+            "line": 21
+          },
+          {
+            "name": "stress",
+            "kind": "mod",
+            "description": "Lightweight stress-distance graph layout for topology-readable arbitrary graphs.",
+            "file": "src/layout/mod.rs",
+            "line": 23
           },
           {
             "name": "tree",
             "kind": "mod",
             "description": "Reingold-Tilford algorithm for compact hierarchical tree node layout.",
             "file": "src/layout/mod.rs",
-            "line": 15
+            "line": 25
           },
           {
             "name": "types",
             "kind": "mod",
             "description": "Shared layout types: nodes, edges, configuration, and result structures.",
             "file": "src/layout/mod.rs",
-            "line": 17
+            "line": 27
+          }
+        ]
+      },
+      "layout::radial": {
+        "module_doc": "`src/layout/radial.rs` owns concentric breadth-first graph placement for hub-and-spoke and network-map views. It provides a deterministic radial layout similar to Graphviz twopi, grouping nodes by hop distance from a root. Edges are treated as undirected for level discovery so arbitrary graph data can still produce useful rings. Rings use chord-safe radii and parent-angle ordering so dense branches avoid obvious overlap and crossings. Read it when radial ring assignment, root handling, or disconnected fallback placement need to change.",
+        "source_file": "src/layout/radial.rs",
+        "items": [
+          {
+            "name": "layout_radial",
+            "kind": "fn",
+            "description": "Lay out a graph on concentric rings discovered by breadth-first distance from `root`.",
+            "file": "src/layout/radial.rs",
+            "line": 11
+          }
+        ]
+      },
+      "layout::spiral": {
+        "module_doc": "Owns expanding spiral placement for large unordered graphs, search results, and map-like previews. Sorts node ids, probes a golden-angle spiral, and rejects positions colliding with prior nodes. Ignores edges for fast refreshes; change this file for spacing, probes, or collision policy.",
+        "source_file": "src/layout/spiral.rs",
+        "items": [
+          {
+            "name": "layout_spiral",
+            "kind": "fn",
+            "description": "Lay out nodes on an expanding spiral using sorted node ids.",
+            "file": "src/layout/spiral.rs",
+            "line": 8
+          }
+        ]
+      },
+      "layout::stress": {
+        "module_doc": "`src/layout/stress.rs` owns distance-preserving graph placement for topology-readable arbitrary graphs. It provides a lightweight stress layout inspired by multidimensional scaling without keeping persistent solver state. The algorithm computes graph distances, seeds positions on a circle, relaxes pairs, and clears overlaps. Iteration count is capped through `StressConfig` so callers can choose stable output or fast 10 FPS refreshes. Read it when graph-distance preservation, relaxation cost, or default stress tuning need to change.",
+        "source_file": "src/layout/stress.rs",
+        "items": [
+          {
+            "name": "StressConfig",
+            "kind": "struct",
+            "description": "Configuration for lightweight stress-based graph layout.",
+            "file": "src/layout/stress.rs",
+            "line": 12
+          },
+          {
+            "name": "layout_stress",
+            "kind": "fn",
+            "description": "Lay out a graph by preserving shortest-path distances with bounded iterative relaxation.",
+            "file": "src/layout/stress.rs",
+            "line": 32
           }
         ]
       },
       "layout::tree": {
-        "module_doc": "`src/layout/tree.rs` lays out rooted hierarchies by recursively placing children and centering parents over spans. It owns deterministic tree traversal, cycle fallback handling, horizontal extent growth, and depth-based y placement. Shared `LayoutConfig` spacing rules are applied here so hierarchy outputs stay compatible with other layout modes. This file is the hierarchy-specific algorithm boundary; it does not own shared types or post-layout alignment passes. Read it when parent-child ordering, subtree spacing, root fallback behavior, or tree coordinate rules need changes.",
+        "module_doc": "`src/layout/tree.rs` lays out rooted hierarchies by recursively placing children and centering parents over spans. It owns deterministic traversal, cycle fallback handling, subtree spans, and depth-based y placement. Shared `LayoutConfig` spacing rules are applied here so hierarchy outputs stay compatible with other layout modes. This file is the hierarchy-specific algorithm boundary; it does not own shared types or post-layout alignment passes. Read it when parent-child ordering, subtree spacing, root fallback behavior, or tree coordinate rules need changes.",
         "source_file": "src/layout/tree.rs",
         "items": [
           {
@@ -9527,7 +9748,7 @@
         ]
       },
       "layout::types": {
-        "module_doc": "`src/layout/types.rs` defines the shared node, edge, config, and result structs used by every layout algorithm. It owns the common data contract for ids, positions, sizes, spacing policy, and final bounding-box reporting. Lightweight builder helpers live here so node and edge defaults stay attached to the types that consume them. This file carries reusable layout data only; it does not choose tree, DAG, force, or alignment strategies. Read it when layout payload fields, shared spacing semantics, or result-shape expectations need to change.",
+        "module_doc": "Defines shared node, edge, config, and result structs consumed by every layout algorithm owner. Owns common ids, positions, sizes, spacing policy, labels, and final bounding-box reporting. Keeps builder helpers attached to the payload types that Lua bindings and Rust algorithms consume. Provides rectangle overlap, positive size, and margin normalization helpers for quality cleanup. Carries reusable layout data only; it does not choose tree, DAG, force, radial, or grid strategy. Change this file when payload fields, shared spacing semantics, or result shape expectations move.",
         "source_file": "src/layout/types.rs",
         "items": [
           {
@@ -9535,35 +9756,35 @@
             "kind": "type",
             "description": "Unique node identifier (index-based for performance).",
             "file": "src/layout/types.rs",
-            "line": 8
+            "line": 9
           },
           {
             "name": "LayoutNode",
             "kind": "struct",
             "description": "A node with position and size in layout space.",
             "file": "src/layout/types.rs",
-            "line": 12
+            "line": 13
           },
           {
             "name": "LayoutEdge",
             "kind": "struct",
             "description": "A directed edge between two nodes.",
             "file": "src/layout/types.rs",
-            "line": 56
+            "line": 57
           },
           {
             "name": "LayoutConfig",
             "kind": "struct",
             "description": "Configuration for layout spacing.",
             "file": "src/layout/types.rs",
-            "line": 84
+            "line": 85
           },
           {
             "name": "LayoutResult",
             "kind": "struct",
             "description": "Result of a layout computation.",
             "file": "src/layout/types.rs",
-            "line": 105
+            "line": 106
           }
         ]
       },
@@ -11626,7 +11847,7 @@
         ]
       },
       "minimap": {
-        "module_doc": "`src/minimap/mod.rs` is the module index for the minimap subsystem, covering state, render helpers, types, and adapters. It declares the core `minimap` model, province adapter, renderer bridge, and raycaster overlay as separate files. This file also reexports `Minimap`, overlay sampling helpers, and shared minimap types so callers avoid deep paths. No runtime minimap state lives here; its job is to define the public boundary and keep subsystem ownership visible. Read this index first when tracing minimap features, because it shows where data, rendering, and map import split. Changes here affect module reachability and public surface, not minimap behavior, storage, or per-frame update rules.",
+        "module_doc": "Indexes the passive minimap subsystem, naming the model, renderer, province adapter, and type owners. Reexports `Minimap` plus layer, marker, fog, ping, overlay, error, and validation data contracts. Keeps minimap ownership scoped to visualization of supplied terrain, fog, light, and overlay inputs only. Declares no runtime state here; concrete storage, render buffers, and import adapters live in sibling files. Guides agents toward the correct owner before changing ingestion, rendering, validation, or overlay behavior. Changes here affect module reachability and public symbol routing, not gameplay LOS, lighting, or movement.",
         "source_file": "src/minimap/mod.rs",
         "items": [
           {
@@ -11644,25 +11865,18 @@
             "line": 12
           },
           {
-            "name": "raycaster_overlay",
-            "kind": "mod",
-            "description": "Raycaster-specific minimap overlay rendering.",
-            "file": "src/minimap/mod.rs",
-            "line": 14
-          },
-          {
             "name": "render",
             "kind": "mod",
             "description": "Pixel-buffer rendering for the minimap texture.",
             "file": "src/minimap/mod.rs",
-            "line": 16
+            "line": 14
           },
           {
             "name": "types",
             "kind": "mod",
             "description": "Shared data types for markers, layers, overlays, fog, and pings.",
             "file": "src/minimap/mod.rs",
-            "line": 18
+            "line": 16
           }
         ]
       },
@@ -11690,68 +11904,6 @@
             "description": "Register each province's `political_color` as the terrain colour in `minimap`.",
             "file": "src/minimap/province_adapter.rs",
             "line": 53
-          }
-        ]
-      },
-      "minimap::raycaster_overlay": {
-        "module_doc": "Owns the raycaster overlay owner for the minimap subsystem and keeps its rules local to this file. Keeps minimap data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior. Defines how raycaster overlay data is validated, transformed, or stored before neighboring systems use it. Owns minimap behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on raycaster overlay behavior while Lua registration stays elsewhere. Documents the boundary where minimap code accepts inputs, reports errors, or updates state. Use this file when changing raycaster overlay defaults, lifecycle handling, validation, or data ownership.",
-        "source_file": "src/minimap/raycaster_overlay.rs",
-        "items": [
-          {
-            "name": "MinimapTileSample",
-            "kind": "struct",
-            "description": "A tile sample used to build a minimap view window centered on the player.",
-            "file": "src/minimap/raycaster_overlay.rs",
-            "line": 16
-          },
-          {
-            "name": "compute_tile_light",
-            "kind": "fn",
-            "description": "Compute accumulated RGB light for the center of tile `(x, y)` using `compute_lighting`.",
-            "file": "src/minimap/raycaster_overlay.rs",
-            "line": 42
-          },
-          {
-            "name": "build_minimap_tile_window",
-            "kind": "fn",
-            "description": "Return all `MinimapTileSample`s in a `radius`-tile square window centered on `(center_x, center_y)`.",
-            "file": "src/minimap/raycaster_overlay.rs",
-            "line": 62
-          },
-          {
-            "name": "reveal_cells_from_rays",
-            "kind": "fn",
-            "description": "Cast a FOV fan of `count` rays from `(ox, oy)` and collect all traversed tile coordinates.",
-            "file": "src/minimap/raycaster_overlay.rs",
-            "line": 103
-          },
-          {
-            "name": "extract_minimap",
-            "kind": "fn",
-            "description": "Render a `view_radius`-tile minimap pixel grid centered on the player; return `(pixels, width, height)`.",
-            "file": "src/minimap/raycaster_overlay.rs",
-            "line": 151
-          },
-          {
-            "name": "try_extract_minimap",
-            "kind": "fn",
-            "description": "Render a `view_radius`-tile minimap pixel grid centered on the player; return `(pixels, width, height)`.",
-            "file": "src/minimap/raycaster_overlay.rs",
-            "line": 178
-          },
-          {
-            "name": "draw_player_arrow",
-            "kind": "fn",
-            "description": "Draw a filled circle with a forward-direction line at `(center_x, center_y)` into a raw RGBA pixel slice.",
-            "file": "src/minimap/raycaster_overlay.rs",
-            "line": 303
-          },
-          {
-            "name": "try_draw_player_arrow",
-            "kind": "fn",
-            "description": "Draw a filled circle with a forward-direction line at `(center_x, center_y)` into a raw RGBA pixel slice.",
-            "file": "src/minimap/raycaster_overlay.rs",
-            "line": 320
           }
         ]
       },
@@ -11846,21 +11998,21 @@
             "kind": "struct",
             "description": "Validation policy for Lua-facing floats, colors, and free-form text.",
             "file": "src/minimap/types.rs",
-            "line": 230
+            "line": 227
           },
           {
             "name": "MinimapRenderStats",
             "kind": "struct",
             "description": "Debug counters for one minimap render-command generation pass.",
             "file": "src/minimap/types.rs",
-            "line": 257
+            "line": 254
           },
           {
             "name": "MinimapError",
             "kind": "enum",
             "description": "Structured minimap failure reasons surfaced through Rust and Lua strict paths.",
             "file": "src/minimap/types.rs",
-            "line": 268
+            "line": 265
           }
         ]
       },
@@ -13548,7 +13700,7 @@
         ]
       },
       "pathfind::astar": {
-        "module_doc": "Implements the core NavGrid A* search used by higher-level pathfinding features across the engine runtime. Owns heap nodes, octile and Manhattan heuristics, unit-size neighbor expansion, and parent reconstruction logic. Supports early termination with partial paths, then offers Bresenham line-of-sight checks and path smoothing. Provides the solver boundary between raw NavGrid movement rules and callers that need an ordered route result. This file is where diagonal policy, per-tile costs, and max-node budget semantics are coordinated together. Open this owner before changing dependent path systems when the bug affects baseline grid path quality itself.",
+        "module_doc": "Implements core `NavGrid` A* search used by higher-level pathfinding features across the runtime. Owns heap nodes, octile and Manhattan heuristics, unit-size neighbor expansion, and route recovery. Supports early termination with partial paths while respecting diagonal policy, costs, and node budgets. Provides local Bresenham clearance checks only for path smoothing, not visibility or action semantics. Receives movement data from grids or adapters and never owns tilefield channels beyond movement costs. Returns ordered route results for callers while keeping async queues, HPA graphs, and navmeshes separate. Open this owner when baseline grid route quality changes, not for fog, lighting, raycasting, or minimaps.",
         "source_file": "src/pathfind/astar.rs",
         "items": [
           {
@@ -13556,21 +13708,14 @@
             "kind": "fn",
             "description": "Run A\\* on `grid` from `start` to `goal`; return `(path, reached_goal)`. Returns partial path. to closest node when `max_nodes` is hit or goal is unreachable.",
             "file": "src/pathfind/astar.rs",
-            "line": 63
-          },
-          {
-            "name": "line_of_sight",
-            "kind": "fn",
-            "description": "Return true when a straight Bresenham line from `(x1,y1)` to `(x2,y2)` crosses no blocked cells.",
-            "file": "src/pathfind/astar.rs",
-            "line": 241
+            "line": 64
           },
           {
             "name": "smooth_path",
             "kind": "fn",
             "description": "Apply string-pull smoothing: reduce waypoints by skipping any that have direct line-of-sight.",
             "file": "src/pathfind/astar.rs",
-            "line": 271
+            "line": 279
           }
         ]
       },
@@ -16658,7 +16803,7 @@
         ]
       },
       "raycaster::dda": {
-        "module_doc": "This file owns `Raycaster2D`, the grid-backed DDA engine that stores wall cells and answers ray or LOS queries. It stores map dimensions, row-major cells, wall alpha overrides, wall features, and synchronized door feature state. Core casting methods produce single hits, layered transparent hits, fan casts, and packed ray buffers from one model. Visibility helpers reuse the same blocking rules for line of sight, so lighting and AI stay aligned with rendering. Door synchronization translates `DoorManager` openness into wall features without replacing underlying tile identity. Sprite and floor helpers project billboards and sample floor rows with the same camera conventions as wall casting. Safe setters ignore invalid writes, and out-of-range reads fall back predictably for tools and runtime probes. Open this file when marching semantics or map-owned ray data change; debug views and scene building live in siblings.",
+        "module_doc": "This file owns `Raycaster2D`, the grid-backed DDA engine that stores wall cells and answers render ray queries. It stores map dimensions, row-major cells, wall alpha overrides, wall features, and synchronized door feature state. Core casting methods produce single hits, layered transparent hits, fan casts, and packed ray buffers from one model. Render visibility helpers reuse the same blocking rules so lighting and screen picking stay aligned with rendering. Door synchronization translates `DoorManager` openness into wall features without replacing underlying tile identity. Sprite and floor helpers project billboards and sample floor rows with the same camera conventions as wall casting. Safe setters ignore invalid writes, and out-of-range reads fall back predictably for tools and runtime probes. Open this file when marching semantics or map-owned ray data change; debug views and scene building live in siblings.",
         "source_file": "src/raycaster/dda.rs",
         "items": [
           {
@@ -16722,33 +16867,6 @@
         "source_file": "src/raycaster/draw.rs",
         "items": []
       },
-      "raycaster::grid_motion": {
-        "module_doc": "This file owns grid-locked movement helpers for raycaster games that step actors one tile at a time. It defines `GridMoveAction`, parses move tokens, and converts facing direction into cardinal world deltas. `try_move` applies bounds and caller-provided blocking tests so locomotion rules stay reusable across maps. Open this file when snapped movement semantics change; ray casting and wall visibility logic live in siblings.",
-        "source_file": "src/raycaster/grid_motion.rs",
-        "items": [
-          {
-            "name": "GridMoveAction",
-            "kind": "enum",
-            "description": "Discrete movement intent for a single step on the grid.",
-            "file": "src/raycaster/grid_motion.rs",
-            "line": 8
-          },
-          {
-            "name": "dir4_delta",
-            "kind": "fn",
-            "description": "Return the world-space `(dx, dy)` delta for `action` given facing direction `dir` (1=E,2=S,3=W,4=N) scaled by `step`.",
-            "file": "src/raycaster/grid_motion.rs",
-            "line": 31
-          },
-          {
-            "name": "try_move",
-            "kind": "fn",
-            "description": "Attempt to move from `(px, py)` by `(dx, dy)` on a grid of `width × height`;. return the new position and `true` on success, or the original position and `false` if blocked.",
-            "file": "src/raycaster/grid_motion.rs",
-            "line": 49
-          }
-        ]
-      },
       "raycaster::heightmap": {
         "module_doc": "This file owns `HeightMap`, the per-tile floor and ceiling override store for stepped raycaster spaces. It stores map dimensions plus floor and ceiling arrays, then serves stable reads with ignored bad writes. Helpers set individual cells or rectangles so authored tools and procedural passes share one height model. Open this file when per-tile height semantics change; scene building and level rendering stay in siblings.",
         "source_file": "src/raycaster/heightmap.rs",
@@ -16790,13 +16908,13 @@
         ]
       },
       "raycaster::lighting": {
-        "module_doc": "This file owns `PointLight` plus local and global lighting helpers for colored illumination in raycaster space. It stores point-light position, optional level ownership, radius, intensity, and color for cheap sample evaluation. Helper functions test line of sight through walls, accumulate ambient and point light, and apply directional sun tint. Scene builders reuse these lighting samples to shade walls, floors, sprites, and multilevel slices without light graphs. Open this file when raycaster light semantics change; hit casting and wall feature payloads live in sibling owners.",
+        "module_doc": "Owns render-only light samples used while raycaster turns structured scene input into shaded geometry. Stores screen-facing point light positions, optional level ownership, radius, intensity, and color inputs. Tests render occlusion through wall geometry for shading, not gameplay sight, action, or tile-light queries. Applies ambient, point, and directional tint values to walls, floors, sprites, and multilevel render slices. Change this file for first-person shading; tilefield owns gameplay light propagation and exported volumes.",
         "source_file": "src/raycaster/lighting.rs",
         "items": [
           {
             "name": "PointLight",
             "kind": "struct",
-            "description": "A point light placed in world space that contributes to tile-level lighting.",
+            "description": "A render point light placed in world space for first-person scene shading.",
             "file": "src/raycaster/lighting.rs",
             "line": 9
           },
@@ -16824,7 +16942,7 @@
         ]
       },
       "raycaster": {
-        "module_doc": "This module re-exports the raycaster subsystem surface for casting, scene building, lighting, doors, and rendering. It keeps navigation explicit by mapping which sibling files own DDA marching, column batches, height data, and adapters. Public exports here route callers toward `Raycaster2D` for casting and scene types for prepared first-person output. `projection.rs`, `depth_buffer.rs`, and `sprite_projection.rs` own screen-space math and occlusion data. `doors.rs`, `wall_feature.rs`, and `heightmap.rs` hold cell state that changes how blocking tiles render. `build_scene.rs`, `draw.rs`, and `render.rs` translate ray hits into either CPU pixels or engine render commands. Visibility, segment, and grid-motion helpers stay here so gameplay queries can reuse the camera model. Change this file when the public raycaster symbol map moves; change siblings when behavior or data rules change.",
+        "module_doc": "This module re-exports the raycaster subsystem surface for casting, scene building, lighting, doors, and rendering. It keeps navigation explicit by mapping which sibling files own DDA marching, column batches, height data, and adapters. Public exports here route callers toward `Raycaster2D` for casting and scene types for prepared first-person output. `projection.rs`, `depth_buffer.rs`, and `sprite_projection.rs` own screen-space math and occlusion data. `doors.rs`, `wall_feature.rs`, and `heightmap.rs` hold cell state that changes how blocking tiles render. `build_scene.rs`, `draw.rs`, and `render.rs` translate ray hits into either CPU pixels or engine render commands. Visibility-polygon, segment, and picking helpers stay render-facing and do not own tile gameplay semantics. Change this file when the public raycaster symbol map moves; change siblings when behavior or data rules change.",
         "source_file": "src/raycaster/mod.rs",
         "items": [
           {
@@ -16870,128 +16988,121 @@
             "line": 21
           },
           {
-            "name": "grid_motion",
-            "kind": "mod",
-            "description": "Grid-aligned player movement helpers.",
-            "file": "src/raycaster/mod.rs",
-            "line": 23
-          },
-          {
             "name": "heightmap",
             "kind": "mod",
             "description": "Variable floor/ceiling height map.",
             "file": "src/raycaster/mod.rs",
-            "line": 25
+            "line": 23
           },
           {
             "name": "level_render",
             "kind": "mod",
             "description": "Level rendering helpers for multi-level raycaster.",
             "file": "src/raycaster/mod.rs",
-            "line": 27
+            "line": 25
           },
           {
             "name": "lighting",
             "kind": "mod",
             "description": "Distance-based wall and sprite lighting.",
             "file": "src/raycaster/mod.rs",
-            "line": 29
+            "line": 27
           },
           {
             "name": "multilevel",
             "kind": "mod",
             "description": "Multi-level grid with floor/ceiling holes.",
             "file": "src/raycaster/mod.rs",
-            "line": 31
+            "line": 29
           },
           {
             "name": "projection",
             "kind": "mod",
             "description": "Column projection math: wall slice height and screen coordinates.",
             "file": "src/raycaster/mod.rs",
-            "line": 33
+            "line": 31
           },
           {
             "name": "ray_hit",
             "kind": "mod",
             "description": "Ray-hit record produced by a single DDA ray.",
             "file": "src/raycaster/mod.rs",
-            "line": 35
+            "line": 33
           },
           {
             "name": "render",
             "kind": "mod",
             "description": "Top-level render dispatch for a raycaster frame.",
             "file": "src/raycaster/mod.rs",
-            "line": 37
+            "line": 35
           },
           {
             "name": "scene",
             "kind": "mod",
             "description": "`RaycasterScene` and its constituent quad/sprite/mesh types.",
             "file": "src/raycaster/mod.rs",
-            "line": 39
+            "line": 37
           },
           {
             "name": "scene_adapter",
             "kind": "mod",
             "description": "Runtime adapter for mapping static or physics-backed 2D entities into raycaster scene inputs.",
             "file": "src/raycaster/mod.rs",
-            "line": 41
+            "line": 39
           },
           {
             "name": "segment",
             "kind": "mod",
             "description": "2D line segment and `cast_ray_2d` entry point.",
             "file": "src/raycaster/mod.rs",
-            "line": 43
+            "line": 41
           },
           {
             "name": "sprite_manager",
             "kind": "mod",
             "description": "Sprite registry and frustum-sorted sprite list.",
             "file": "src/raycaster/mod.rs",
-            "line": 45
+            "line": 43
           },
           {
             "name": "sprite_projection",
             "kind": "mod",
             "description": "Screen-space sprite projection math.",
             "file": "src/raycaster/mod.rs",
-            "line": 47
+            "line": 45
           },
           {
             "name": "tile_picker",
             "kind": "mod",
             "description": "Tile picker: screen-to-tile coordinate mapping.",
             "file": "src/raycaster/mod.rs",
-            "line": 49
+            "line": 47
           },
           {
             "name": "visibility",
             "kind": "mod",
             "description": "Field-of-view visibility grid computation.",
             "file": "src/raycaster/mod.rs",
-            "line": 51
+            "line": 49
           },
           {
             "name": "visualization",
             "kind": "mod",
             "description": "Debug visualization helpers (ray paths, normals, tiles).",
             "file": "src/raycaster/mod.rs",
-            "line": 53
+            "line": 51
           },
           {
             "name": "wall_feature",
             "kind": "mod",
             "description": "Per-cell wall feature descriptors for doors, windows, and half-height walls.",
             "file": "src/raycaster/mod.rs",
-            "line": 55
+            "line": 53
           }
         ]
       },
       "raycaster::multilevel": {
-        "module_doc": "This file owns `RaycasterLevel` and `MultiLevelGrid`, the stacked-slice model for multi-storey raycaster worlds. It stores per-level walls, wall features, texture overrides, lowered floors, holes, vertical bounds, and caches. Level helpers read or mutate wall, floor, ceiling, and hole data while rejecting out-of-bounds writes safely. The runtime builder compiles a transient `Raycaster2D` view from level-owned cells for rendering and picking. `MultiLevelGrid` tracks the active slice, caches compiled runtimes, and resolves visible lower or upper levels. Ascend and descend checks use floor or ceiling holes so movement and visibility share one vertical rule set. Open this file when stacked-level data or cross-level visibility changes; scene assembly lives in siblings.",
+        "module_doc": "This file owns `RaycasterLevel` and `MultiLevelGrid`, the stacked-slice model for multi-storey raycaster worlds. It stores per-level walls, wall features, texture overrides, lowered floors, holes, vertical bounds, and caches. Level helpers read or mutate wall, floor, ceiling, and hole data while rejecting out-of-bounds writes safely. The runtime builder compiles a transient `Raycaster2D` view from level-owned cells for rendering and picking. `MultiLevelGrid` tracks the active slice, caches compiled runtimes, and resolves visible lower or upper levels. Floor and ceiling holes decide which adjacent slices are visible to render and picking queries. Open this file when stacked-level data or cross-level visibility changes; scene assembly lives in siblings.",
         "source_file": "src/raycaster/multilevel.rs",
         "items": [
           {
@@ -17118,7 +17229,7 @@
         ]
       },
       "raycaster::scene_adapter": {
-        "module_doc": "This file owns transform adapters that turn static entries or live physics bodies into scene-facing raycaster inputs. It stores `SceneTransform` sources plus resolved sprite, light, and optional model bindings sampled each frame. Body-backed transforms apply local offsets and angle offsets so pseudo-3D attachments stay aligned with physics owners. `SceneAdapter` aggregates bindings, clears tracked groups, and resolves live entries into world sprite or light data. The adapter keeps gameplay code focused on 2D ownership while the raycaster consumes one normalized input surface. This file is the boundary between physics or runtime state and the scene builder's input contracts. Open this file when source-to-scene adaptation changes; prepared geometry and lighting evaluation live in siblings.",
+        "module_doc": "This file owns transform adapters that turn static entries or live physics bodies into scene-facing raycaster inputs. It stores `SceneTransform` sources plus resolved sprite, light, and optional model bindings sampled each frame. Body-backed transforms apply local offsets and angle offsets so pseudo-3D attachments stay aligned with physics owners. `SceneAdapter` aggregates bindings, clears tracked groups, and resolves live entries into world sprite or light data. The adapter keeps external entity ownership outside the raycaster while it consumes one normalized input surface. This file is the boundary between physics or runtime state and the scene builder's input contracts. Open this file when source-to-scene adaptation changes; prepared geometry and lighting evaluation live in siblings.",
         "source_file": "src/raycaster/scene_adapter.rs",
         "items": [
           {
@@ -17240,7 +17351,7 @@
         ]
       },
       "raycaster::tile_picker": {
-        "module_doc": "This file owns screen-to-world picking for the raycaster, mapping a pixel back onto wall, floor, or ceiling space. It defines `PickSurface`, `PickWallSection`, `ScreenPickParams`, `TilePicker`, and `PickResult` payloads. `TilePicker` keeps camera pose, screen size, grid size, and tile scale for repeated first-person selection queries. Helper math derives ray angle, corrected distance, horizon, projection depth, and plane intersections from the camera. Wall picking reuses DDA stepping so hit ordering matches the same traversal semantics used for rendering and visibility. Feature-aware logic distinguishes half-height walls, window bands, and door panels, returning the hit solid section. Floor and ceiling picking projects the pixel onto horizontal planes and rejects cells hidden by closer walls or holes. `Raycaster2D::pick_screen` resolves single-level maps, while `MultiLevelGrid::pick_screen` chooses the owning slice. This file is the boundary between first-person UI input and gameplay selection on underlying grid or multilevel data. Open this file when selection payloads or pick precedence change; scene building and ray hits live in siblings.",
+        "module_doc": "This file owns screen-to-world picking for the raycaster, mapping a pixel back onto wall, floor, or ceiling space. It defines `PickSurface`, `PickWallSection`, `ScreenPickParams`, `TilePicker`, and `PickResult` payloads. `TilePicker` keeps camera pose, screen size, grid size, and tile scale for repeated first-person selection queries. Helper math derives ray angle, corrected distance, horizon, projection depth, and plane intersections from the camera. Wall picking reuses DDA stepping so hit ordering matches the same traversal semantics used for rendering and visibility. Feature-aware logic distinguishes half-height walls, window bands, and door panels, returning the hit solid section. Floor and ceiling picking projects the pixel onto horizontal planes and rejects cells hidden by closer walls or holes. `Raycaster2D::pick_screen` resolves single-level maps, while `MultiLevelGrid::pick_screen` chooses the owning slice. This file is the boundary between first-person UI input and render-space selection on grid or multilevel data. Open this file when selection payloads or pick precedence change; scene building and ray hits live in siblings.",
         "source_file": "src/raycaster/tile_picker.rs",
         "items": [
           {
@@ -17299,7 +17410,7 @@
         "items": []
       },
       "raycaster::wall_feature": {
-        "module_doc": "This file owns `WallFeatureKind` and `WallFeature`, the cell-local descriptors for wall behavior refinement. It models half-height walls, window openings, and sliding doors without changing the base tile map schema. Constructors clamp feature parameters into safe ranges so tools and scene builders share stable semantics. Query helpers answer movement, visibility, and light blocking from the same payload used by rendering code. Open this file when per-cell wall behavior changes; door state progression and scene assembly live in siblings.",
+        "module_doc": "This file owns `WallFeatureKind` and `WallFeature`, the cell-local descriptors for wall behavior refinement. It models half-height walls, window openings, and sliding doors without changing the base tile map schema. Constructors clamp feature parameters into safe ranges so tools and scene builders share stable semantics. Query helpers answer render ray and render light blocking from the same payload used by rendering code. Open this file when per-cell wall behavior changes; door state progression and scene assembly live in siblings.",
         "source_file": "src/raycaster/wall_feature.rs",
         "items": [
           {
@@ -18921,7 +19032,7 @@
             "kind": "struct",
             "description": "Performance-related runtime configuration. # Fields",
             "file": "src/runtime/config.rs",
-            "line": 457
+            "line": 460
           }
         ]
       },
@@ -22753,6 +22864,174 @@
           }
         ]
       },
+      "tilefield::cell": {
+        "module_doc": "Owns per-cell gameplay channel data for blockers, traversal costs, and sun occlusion in tilefield maps. Defines the fixed semantic channels used by Lua, pathfind adapters, visibility checks, and tile lighting. Keeps movement, vision, action, point-light, and top-light values independent on every stored cell. Provides parsing and default-state helpers for field mutation without depending on higher-level systems. Does not know about topology, rendering, minimap presentation, player masks, or pathfinding algorithms.",
+        "source_file": "src/tilefield/cell.rs",
+        "items": [
+          {
+            "name": "TileChannel",
+            "kind": "enum",
+            "description": "Gameplay channels tracked independently per cell.",
+            "file": "src/tilefield/cell.rs",
+            "line": 9
+          },
+          {
+            "name": "TileCell",
+            "kind": "struct",
+            "description": "Per-cell gameplay state with independent channel blockers, costs, and sun occlusion.",
+            "file": "src/tilefield/cell.rs",
+            "line": 61
+          }
+        ]
+      },
+      "tilefield::field": {
+        "module_doc": "Owns multi-level tilefield storage, channel blockers, channel costs, profiles, and lighting state. Implements bounds checks, cell mutation, profile application, layer exports, and light accumulation. Stores cells, named profiles, point lights, global light, and computed light values in one grid owner. Uses topology and line helpers locally so callers can query blockers without owning traversal logic. Provides renderer-independent input consumed by movement, visibility, minimap, and render adapters. Keeps action, vision, movement, point-light, and sun channels independent by never inferring one from another. Returns controlled string errors at the domain boundary so Lua bindings can attach lurek.tilefield names. Does not depend on pathfind, visibility, raycaster, minimap, tilemap rendering, or renderer state.",
+        "source_file": "src/tilefield/field.rs",
+        "items": [
+          {
+            "name": "TileField",
+            "kind": "struct",
+            "description": "Multi-level tile gameplay field.",
+            "file": "src/tilefield/field.rs",
+            "line": 19
+          }
+        ]
+      },
+      "tilefield::light": {
+        "module_doc": "Owns tile-based light data records shared by `TileField` and Lua conversion code at the API boundary. Defines RGB colors, point-light definitions, point-light patch updates, and global top-light values. Keeps these structs data-only so the field solver can query blockers without cyclic module ownership. Provides clamp and construction helpers while leaving occlusion, falloff, and accumulation to `field.rs`. Does not render light, manage GPU state, infer visibility, or alter movement/action channel semantics.",
+        "source_file": "src/tilefield/light.rs",
+        "items": [
+          {
+            "name": "LightColor",
+            "kind": "struct",
+            "description": "RGB light color in linear 0..1 components.",
+            "file": "src/tilefield/light.rs",
+            "line": 9
+          },
+          {
+            "name": "PointLight",
+            "kind": "struct",
+            "description": "Tile point light definition.",
+            "file": "src/tilefield/light.rs",
+            "line": 57
+          },
+          {
+            "name": "PointLightUpdate",
+            "kind": "struct",
+            "description": "Optional patch for updating an existing point light.",
+            "file": "src/tilefield/light.rs",
+            "line": 76
+          },
+          {
+            "name": "GlobalLight",
+            "kind": "struct",
+            "description": "Global top light settings.",
+            "file": "src/tilefield/light.rs",
+            "line": 93
+          }
+        ]
+      },
+      "tilefield::line": {
+        "module_doc": "Owns deterministic tile-line traversal for square, isometric-square, hex, and vertical level checks. Converts two zero-based cell coordinates into ordered cells used by blocker and occlusion queries. Implements Bresenham square lines, axial hex interpolation, and same-column vertical level traversal. Keeps traversal math independent from movement, visibility, action, lighting, and rendering decisions. Rejects arbitrary diagonal multi-level lines so callers get a clear v1 boundary instead of guessed cells.",
+        "source_file": "src/tilefield/line.rs",
+        "items": [
+          {
+            "name": "CellCoord",
+            "kind": "struct",
+            "description": "Zero-based tile coordinate including level.",
+            "file": "src/tilefield/line.rs",
+            "line": 11
+          },
+          {
+            "name": "line_between",
+            "kind": "fn",
+            "description": "Compute a topology-specific line between two cells.",
+            "file": "src/tilefield/line.rs",
+            "line": 21
+          },
+          {
+            "name": "visit_line_cells",
+            "kind": "fn",
+            "description": "Visit every cell on a topology-specific line until the visitor returns false.",
+            "file": "src/tilefield/line.rs",
+            "line": 44
+          }
+        ]
+      },
+      "tilefield": {
+        "module_doc": "Indexes the tilefield gameplay-semantics subsystem and keeps its public Rust surface explicit. Exports cell, field, light, line, profile, and topology owners used by Lua bindings and tests. Re-exports compact data types so callers can build field inputs without depending on file layout. Keeps tilefield independent from renderers, minimaps, raycasters, pathfinding, and visibility state. Agents start here to trace which file owns blockers, costs, topology math, profiles, and lighting. Neighbor modules may consume exported data, but they do not become owners of tilefield semantics.",
+        "source_file": "src/tilefield/mod.rs",
+        "items": [
+          {
+            "name": "cell",
+            "kind": "mod",
+            "description": "Field cell storage and query behavior.",
+            "file": "src/tilefield/mod.rs",
+            "line": 9
+          },
+          {
+            "name": "field",
+            "kind": "mod",
+            "description": "Tile field dimensions, profiles, channels, exports, and lighting state.",
+            "file": "src/tilefield/mod.rs",
+            "line": 11
+          },
+          {
+            "name": "light",
+            "kind": "mod",
+            "description": "Tile-light accumulation primitives.",
+            "file": "src/tilefield/mod.rs",
+            "line": 13
+          },
+          {
+            "name": "line",
+            "kind": "mod",
+            "description": "Tile line traversal helpers.",
+            "file": "src/tilefield/mod.rs",
+            "line": 15
+          },
+          {
+            "name": "profile",
+            "kind": "mod",
+            "description": "Named object profiles applied to cells.",
+            "file": "src/tilefield/mod.rs",
+            "line": 17
+          },
+          {
+            "name": "topology",
+            "kind": "mod",
+            "description": "Supported grid topology parsing and distance helpers.",
+            "file": "src/tilefield/mod.rs",
+            "line": 19
+          }
+        ]
+      },
+      "tilefield::profile": {
+        "module_doc": "Owns named tilefield profiles that stamp blocker, cost, and sun-occlusion semantics onto cells. Provides built-in wall, window, door, half-wall, and empty profiles for common tactical map objects. Stores profile data only, keeping renderer geometry and gameplay consumers independent of each other. Lets `TileField` apply reusable object semantics without duplicating channel maps at every call site. Does not calculate movement, visibility, action lines, lighting, minimap overlays, or render geometry.",
+        "source_file": "src/tilefield/profile.rs",
+        "items": [
+          {
+            "name": "TileProfile",
+            "kind": "struct",
+            "description": "Named collection of channel blockers, channel costs, and sun attenuation.",
+            "file": "src/tilefield/profile.rs",
+            "line": 12
+          }
+        ]
+      },
+      "tilefield::topology": {
+        "module_doc": "Owns logical tilefield topology parsing and distance rules for square, isometric-square, and axial hex grids. Treats isometric-square as square gameplay math because projection belongs to tilemap and render code. Provides distance helpers used by field lighting, ranges, and topology-aware line generation. Does not store map data, render coordinates, pathfinding policies, player masks, or minimap presentation.",
+        "source_file": "src/tilefield/topology.rs",
+        "items": [
+          {
+            "name": "TileTopology",
+            "kind": "enum",
+            "description": "Logical tile topology for line and distance queries.",
+            "file": "src/tilefield/topology.rs",
+            "line": 10
+          }
+        ]
+      },
       "tilemap::autotile_sheet": {
         "module_doc": "Defines the autotile sheet model that turns neighborhood bitmasks into final atlas tile selections. Owns supported autotile layouts and the shared contract used by different terrain or border art styles. Centralizes bitmask interpretation so terrain seam logic stays in one graphics-selection owner. Resolves corner and edge relationships carefully so transitions remain visually clean across map joins. Supports quarter-tile composition for layouts that assemble one final tile from smaller atlas regions. Bridges tileset geometry with adjacency rules instead of mixing autotile policy into general map storage. Open this file when terrain transitions, mask lookup, or autotile atlas mapping behaves incorrectly.",
         "source_file": "src/tilemap/autotile_sheet.rs",
@@ -24792,6 +25071,13 @@
             "description": "Visibility state enum: Hidden, Discovered, Visible, and custom levels.",
             "file": "src/visibility/mod.rs",
             "line": 25
+          },
+          {
+            "name": "tile_visibility",
+            "kind": "mod",
+            "description": "Per-player tile visibility and action masks backed by tilefield semantics.",
+            "file": "src/visibility/mod.rs",
+            "line": 27
           }
         ]
       },
@@ -24831,6 +25117,19 @@
             "description": "Visibility state for a region from a specific player's perspective.",
             "file": "src/visibility/state.rs",
             "line": 7
+          }
+        ]
+      },
+      "visibility::tile_visibility": {
+        "module_doc": "Owns per-player tile visibility, explored, and action masks backed by one shared `TileField`. Computes visible and actionable cells by asking tilefield for channel-specific line clearance data. Stores independent masks per player so teams can have different current sight, memory, and action reach. Exposes stateless line-of-sight and line-of-action helpers without owning movement or lighting rules. Keeps tilefield as the source for blockers, costs, profiles, and bounds while visibility owns masks only. Change this file when sight/action mask behavior changes, not when pathfinding or tile-light math changes.",
+        "source_file": "src/visibility/tile_visibility.rs",
+        "items": [
+          {
+            "name": "TileVisibility",
+            "kind": "struct",
+            "description": "Multi-player tile visibility/action state.",
+            "file": "src/visibility/tile_visibility.rs",
+            "line": 38
           }
         ]
       },
@@ -27098,1542 +27397,1612 @@
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_evidence_terminal_evidence",
+        "name": "lua_evidence_tilefield_evidence",
         "description": "",
         "line": 398
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_evidence_tween_evidence",
+        "name": "lua_evidence_terminal_evidence",
         "description": "",
         "line": 403
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_evidence_ui_evidence",
+        "name": "lua_evidence_tween_evidence",
         "description": "",
         "line": 408
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_golden_ai_golden",
+        "name": "lua_evidence_ui_evidence",
         "description": "",
         "line": 413
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
+        "name": "lua_golden_ai_golden",
+        "description": "",
+        "line": 418
+      },
+      {
+        "file": "tests/lua_tests.rs",
+        "module": "lua",
         "name": "lua_golden_animation_golden",
         "description": "",
-        "line": 421
+        "line": 426
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_agent_golden",
         "description": "",
-        "line": 429
+        "line": 434
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_automation_golden",
         "description": "",
-        "line": 437
+        "line": 442
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_audio_golden",
         "description": "",
-        "line": 445
+        "line": 450
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_binary_golden",
         "description": "",
-        "line": 453
+        "line": 458
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_camera_golden",
         "description": "",
-        "line": 461
+        "line": 466
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_charts_golden",
         "description": "",
-        "line": 469
+        "line": 474
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_cinematic_golden",
         "description": "",
-        "line": 477
+        "line": 482
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_color_golden",
         "description": "",
-        "line": 485
+        "line": 490
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_compute_golden",
         "description": "",
-        "line": 493
+        "line": 498
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_dataframe_golden",
         "description": "",
-        "line": 501
+        "line": 506
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_ecs_golden",
         "description": "",
-        "line": 509
+        "line": 514
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_dsp_golden",
         "description": "",
-        "line": 517
+        "line": 522
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_effect_golden",
         "description": "",
-        "line": 525
+        "line": 530
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_html_golden",
         "description": "",
-        "line": 533
+        "line": 538
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_globe_golden",
         "description": "",
-        "line": 541
+        "line": 546
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_image_golden",
         "description": "",
-        "line": 549
+        "line": 554
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_flownet_golden",
         "description": "",
-        "line": 557
+        "line": 562
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_layout_golden",
         "description": "",
-        "line": 565
+        "line": 570
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_light_golden",
         "description": "",
-        "line": 573
+        "line": 578
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_math_golden",
         "description": "",
-        "line": 581
+        "line": 586
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_mapblock_golden",
         "description": "",
-        "line": 589
+        "line": 594
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_minimap_golden",
         "description": "",
-        "line": 597
+        "line": 602
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_overlay_golden",
         "description": "",
-        "line": 605
+        "line": 610
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_particle_golden",
         "description": "",
-        "line": 613
+        "line": 618
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_parallax_golden",
         "description": "",
-        "line": 621
+        "line": 626
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_pathfind_golden",
         "description": "",
-        "line": 629
+        "line": 634
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_physics_golden",
         "description": "",
-        "line": 637
+        "line": 642
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_procgen_golden",
         "description": "",
-        "line": 645
+        "line": 650
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_province_golden",
         "description": "",
-        "line": 653
+        "line": 658
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_raycaster_golden",
         "description": "",
-        "line": 661
+        "line": 666
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_repl_golden",
         "description": "",
-        "line": 669
+        "line": 674
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_render_golden",
         "description": "",
-        "line": 677
+        "line": 682
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_scene_golden",
         "description": "",
-        "line": 685
+        "line": 690
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_serialize_golden",
         "description": "",
-        "line": 693
+        "line": 698
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_spine_golden",
         "description": "",
-        "line": 701
+        "line": 706
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_sprite_golden",
         "description": "",
-        "line": 709
+        "line": 714
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_svg_golden",
         "description": "",
-        "line": 717
+        "line": 722
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_tilemap_golden",
         "description": "",
-        "line": 725
+        "line": 730
+      },
+      {
+        "file": "tests/lua_tests.rs",
+        "module": "lua",
+        "name": "lua_golden_tilefield_golden",
+        "description": "",
+        "line": 738
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_terminal_golden",
         "description": "",
-        "line": 733
+        "line": 746
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_tween_golden",
         "description": "",
-        "line": 741
+        "line": 754
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_ui_golden",
         "description": "",
-        "line": 749
+        "line": 762
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_ai_ecs_scene_integration",
         "description": "",
-        "line": 757
+        "line": 770
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_ai_pathfind_integration",
         "description": "",
-        "line": 762
+        "line": 775
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_ai_physics_integration",
         "description": "",
-        "line": 767
+        "line": 780
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_ai_scene_camera_integration",
         "description": "",
-        "line": 772
+        "line": 785
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_animation_tween_integration",
         "description": "",
-        "line": 777
+        "line": 790
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_audio_event_integration",
         "description": "",
-        "line": 782
+        "line": 795
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_audio_scene_integration",
         "description": "",
-        "line": 787
+        "line": 800
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_automation_event_integration",
         "description": "",
-        "line": 792
+        "line": 805
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_binary_compute_integration",
         "description": "",
-        "line": 797
+        "line": 810
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_binary_filesystem_integration",
         "description": "",
-        "line": 802
+        "line": 815
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_compute_dataframe_integration",
         "description": "",
-        "line": 807
+        "line": 820
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_ecs_ai_integration",
         "description": "",
-        "line": 812
+        "line": 825
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_ecs_physics_integration",
         "description": "",
-        "line": 817
+        "line": 830
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_ecs_render_integration",
         "description": "",
-        "line": 822
+        "line": 835
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_effect_camera_integration",
         "description": "",
-        "line": 827
+        "line": 840
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_effect_light_integration",
         "description": "",
-        "line": 832
+        "line": 845
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_event_entity_integration",
         "description": "",
-        "line": 837
+        "line": 850
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_i18n_ui_integration",
         "description": "",
-        "line": 842
+        "line": 855
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_image_dataframe_integration",
         "description": "",
-        "line": 847
+        "line": 860
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_math_pathfind_integration",
         "description": "",
-        "line": 852
+        "line": 865
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_math_physics_integration",
         "description": "",
-        "line": 857
+        "line": 870
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_minimap_pathfind_integration",
         "description": "",
-        "line": 862
+        "line": 875
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_minimap_tilemap_camera_integration",
         "description": "",
-        "line": 867
+        "line": 880
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_mods_filesystem_integration",
         "description": "",
-        "line": 872
+        "line": 885
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_network_save_integration",
         "description": "",
-        "line": 877
+        "line": 890
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_parallax_camera_integration",
         "description": "",
-        "line": 882
+        "line": 895
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_particle_timer_integration",
         "description": "",
-        "line": 887
+        "line": 900
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_pathfind_ecs_integration",
         "description": "",
-        "line": 892
+        "line": 905
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_pathfind_graph_integration",
         "description": "",
-        "line": 897
+        "line": 910
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_postfx_camera_integration",
         "description": "",
-        "line": 902
+        "line": 915
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_procgen_tilemap_integration",
         "description": "",
-        "line": 907
+        "line": 920
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_raycaster_render_integration",
         "description": "",
-        "line": 912
+        "line": 925
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_raycaster_tilemap_integration",
         "description": "",
-        "line": 917
+        "line": 930
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_render_animation_integration",
         "description": "",
-        "line": 922
+        "line": 935
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_render_camera_integration",
         "description": "",
-        "line": 927
+        "line": 940
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_save_ecs_integration",
         "description": "",
-        "line": 932
+        "line": 945
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_save_ecs_scene_integration",
         "description": "",
-        "line": 937
+        "line": 950
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_save_tilemap_integration",
         "description": "",
-        "line": 942
+        "line": 955
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_scene_camera_integration",
         "description": "",
-        "line": 947
+        "line": 960
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_serialize_filesystem_integration",
         "description": "",
-        "line": 952
+        "line": 965
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_terminal_input_integration",
         "description": "",
-        "line": 957
+        "line": 970
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_thread_data_integration",
         "description": "",
-        "line": 962
+        "line": 975
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_tilemap_camera_integration",
         "description": "",
-        "line": 967
+        "line": 980
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_tilemap_pathfind_integration",
         "description": "",
-        "line": 972
+        "line": 985
+      },
+      {
+        "file": "tests/lua_tests.rs",
+        "module": "lua",
+        "name": "lua_integration_tilefield_pathfind_integration",
+        "description": "",
+        "line": 990
+      },
+      {
+        "file": "tests/lua_tests.rs",
+        "module": "lua",
+        "name": "lua_integration_tilefield_visibility_integration",
+        "description": "",
+        "line": 995
+      },
+      {
+        "file": "tests/lua_tests.rs",
+        "module": "lua",
+        "name": "lua_integration_tilefield_raycaster_integration",
+        "description": "",
+        "line": 1000
+      },
+      {
+        "file": "tests/lua_tests.rs",
+        "module": "lua",
+        "name": "lua_integration_tilefield_minimap_integration",
+        "description": "",
+        "line": 1005
+      },
+      {
+        "file": "tests/lua_tests.rs",
+        "module": "lua",
+        "name": "lua_integration_tilefield_systems_integration",
+        "description": "",
+        "line": 1010
+      },
+      {
+        "file": "tests/lua_tests.rs",
+        "module": "lua",
+        "name": "lua_integration_procgen_tilefield_integration",
+        "description": "",
+        "line": 1015
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_tilemap_physics_integration",
         "description": "",
-        "line": 977
+        "line": 1020
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_timer_event_integration",
         "description": "",
-        "line": 982
+        "line": 1025
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_timer_math_integration",
         "description": "",
-        "line": 987
+        "line": 1030
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_tween_camera_integration",
         "description": "",
-        "line": 992
+        "line": 1035
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_tween_ecs_integration",
         "description": "",
-        "line": 997
+        "line": 1040
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_ui_localization_data_integration",
         "description": "",
-        "line": 1002
+        "line": 1045
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_library_battle_library",
         "description": "",
-        "line": 1007
+        "line": 1050
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_library_cardgame_library",
         "description": "",
-        "line": 1012
+        "line": 1055
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_library_combat_library",
         "description": "",
-        "line": 1017
+        "line": 1060
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_library_crafting_library",
         "description": "",
-        "line": 1022
+        "line": 1065
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_library_doll_library",
         "description": "",
-        "line": 1027
+        "line": 1070
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_library_economy_library",
         "description": "",
-        "line": 1032
+        "line": 1075
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_library_inventory_library",
         "description": "",
-        "line": 1037
+        "line": 1080
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_library_item_library",
         "description": "",
-        "line": 1042
+        "line": 1085
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_library_loot_library",
         "description": "",
-        "line": 1047
+        "line": 1090
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_library_narrative_library",
         "description": "",
-        "line": 1052
+        "line": 1095
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_library_province_map_library",
         "description": "",
-        "line": 1057
+        "line": 1100
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_library_quest_library",
         "description": "",
-        "line": 1062
+        "line": 1105
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_library_rhythm_library",
         "description": "",
-        "line": 1067
+        "line": 1110
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_library_roguelike_library",
         "description": "",
-        "line": 1072
+        "line": 1115
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_library_scene_objects_library",
         "description": "",
-        "line": 1077
+        "line": 1120
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_library_stats_library",
         "description": "",
-        "line": 1082
+        "line": 1125
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_library_tilemap_minimap_library",
         "description": "",
-        "line": 1087
+        "line": 1130
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_security_filesystem_security",
         "description": "",
-        "line": 1092
+        "line": 1135
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_security_network_security",
         "description": "",
-        "line": 1097
+        "line": 1140
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_security_render_security",
         "description": "",
-        "line": 1102
+        "line": 1145
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_security_runtime_security",
         "description": "",
-        "line": 1107
+        "line": 1150
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_security_save_security",
         "description": "",
-        "line": 1112
+        "line": 1155
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_ai_stress",
         "description": "",
-        "line": 1117
+        "line": 1160
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_animation_stress",
         "description": "",
-        "line": 1122
+        "line": 1165
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_binary_stress",
         "description": "",
-        "line": 1127
+        "line": 1170
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_camera_stress",
         "description": "",
-        "line": 1132
+        "line": 1175
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_compute_stress",
         "description": "",
-        "line": 1137
+        "line": 1180
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_dataframe_stress",
         "description": "",
-        "line": 1142
+        "line": 1185
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_ecs_stress",
         "description": "",
-        "line": 1147
+        "line": 1190
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_event_stress",
         "description": "",
-        "line": 1152
+        "line": 1195
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_filesystem_stress",
         "description": "",
-        "line": 1157
+        "line": 1200
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_image_stress",
         "description": "",
-        "line": 1162
+        "line": 1205
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_learning_stress",
         "description": "",
-        "line": 1167
+        "line": 1210
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_light_stress",
         "description": "",
-        "line": 1172
+        "line": 1215
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_math_stress",
         "description": "",
-        "line": 1177
+        "line": 1220
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_particle_stress",
         "description": "",
-        "line": 1182
+        "line": 1225
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_pathfind_stress",
         "description": "",
-        "line": 1187
+        "line": 1230
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_patterns_stress",
         "description": "",
-        "line": 1192
+        "line": 1235
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_physics_stress",
         "description": "",
-        "line": 1197
+        "line": 1240
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_procgen_stress",
         "description": "",
-        "line": 1202
+        "line": 1245
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_render_stress",
         "description": "",
-        "line": 1207
+        "line": 1250
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_save_stress",
         "description": "",
-        "line": 1212
+        "line": 1255
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_scene_stress",
         "description": "",
-        "line": 1217
+        "line": 1260
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_serialize_stress",
         "description": "",
-        "line": 1222
+        "line": 1265
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_thread_stress",
         "description": "",
-        "line": 1227
+        "line": 1270
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_tilemap_stress",
         "description": "",
-        "line": 1232
+        "line": 1275
+      },
+      {
+        "file": "tests/lua_tests.rs",
+        "module": "lua",
+        "name": "lua_stress_tilefield_stress",
+        "description": "",
+        "line": 1280
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_timer_stress",
         "description": "",
-        "line": 1237
+        "line": 1285
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_tween_stress",
         "description": "",
-        "line": 1242
+        "line": 1290
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_agent_unit",
         "description": "",
-        "line": 1247
+        "line": 1295
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_ai_unit",
         "description": "",
-        "line": 1252
+        "line": 1300
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_animation_unit",
         "description": "",
-        "line": 1257
+        "line": 1305
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_asset_unit",
         "description": "",
-        "line": 1262
+        "line": 1310
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_audio_unit",
         "description": "",
-        "line": 1267
+        "line": 1315
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_automation_unit",
         "description": "",
-        "line": 1272
+        "line": 1320
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_beat_clock_unit",
         "description": "",
-        "line": 1277
+        "line": 1325
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_binary_unit",
         "description": "",
-        "line": 1282
+        "line": 1330
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_camera_unit",
         "description": "",
-        "line": 1287
+        "line": 1335
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_charts_unit",
         "description": "",
-        "line": 1292
+        "line": 1340
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_cinematic_unit",
         "description": "",
-        "line": 1297
+        "line": 1345
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_collision_unit",
         "description": "",
-        "line": 1302
+        "line": 1350
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_color_unit",
         "description": "",
-        "line": 1307
+        "line": 1355
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_compute_unit",
         "description": "",
-        "line": 1312
+        "line": 1360
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_cursor_unit",
         "description": "",
-        "line": 1317
+        "line": 1365
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_dataframe_unit",
         "description": "",
-        "line": 1322
+        "line": 1370
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_debugbridge_unit",
         "description": "",
-        "line": 1327
+        "line": 1375
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_devtools_unit",
         "description": "",
-        "line": 1332
+        "line": 1380
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_dialog_unit",
         "description": "",
-        "line": 1337
+        "line": 1385
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_docs_unit",
         "description": "",
-        "line": 1342
+        "line": 1390
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_dsp_unit",
         "description": "",
-        "line": 1347
+        "line": 1395
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_ecs_unit",
         "description": "",
-        "line": 1352
+        "line": 1400
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_effect_unit",
         "description": "",
-        "line": 1357
+        "line": 1405
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_engine_unit",
         "description": "",
-        "line": 1362
+        "line": 1410
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_event_unit",
         "description": "",
-        "line": 1367
+        "line": 1415
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_filesystem_unit",
         "description": "",
-        "line": 1372
+        "line": 1420
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_flownet_unit",
         "description": "",
-        "line": 1377
+        "line": 1425
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_font_unit",
         "description": "",
-        "line": 1382
+        "line": 1430
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_globe_unit",
         "description": "",
-        "line": 1387
+        "line": 1435
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_grep_unit",
         "description": "",
-        "line": 1392
+        "line": 1440
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_html_unit",
         "description": "",
-        "line": 1397
+        "line": 1445
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_i18n_unit",
         "description": "",
-        "line": 1402
+        "line": 1450
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_image_unit",
         "description": "",
-        "line": 1407
+        "line": 1455
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_input_unit",
         "description": "",
-        "line": 1412
+        "line": 1460
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_learning_unit",
         "description": "",
-        "line": 1417
+        "line": 1465
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_layout_unit",
         "description": "",
-        "line": 1422
+        "line": 1470
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_light_unit",
         "description": "",
-        "line": 1427
+        "line": 1475
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_log_unit",
         "description": "",
-        "line": 1432
+        "line": 1480
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_loot_unit",
         "description": "",
-        "line": 1437
+        "line": 1485
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_math_unit",
         "description": "",
-        "line": 1442
+        "line": 1490
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_mapblock_unit",
         "description": "",
-        "line": 1447
+        "line": 1495
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_midi_unit",
         "description": "",
-        "line": 1452
+        "line": 1500
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_minimap_unit",
         "description": "",
-        "line": 1457
+        "line": 1505
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_mods_unit",
         "description": "",
-        "line": 1462
+        "line": 1510
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_net_unit",
         "description": "",
-        "line": 1467
+        "line": 1515
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_network_unit",
         "description": "",
-        "line": 1472
+        "line": 1520
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_overlay_unit",
         "description": "",
-        "line": 1477
+        "line": 1525
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_parallax_unit",
         "description": "",
-        "line": 1482
+        "line": 1530
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_particle_unit",
         "description": "",
-        "line": 1487
+        "line": 1535
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_pathfind_unit",
         "description": "",
-        "line": 1492
+        "line": 1540
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_patterns_unit",
         "description": "",
-        "line": 1497
+        "line": 1545
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_physics_unit",
         "description": "",
-        "line": 1502
+        "line": 1550
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_pipeline_unit",
         "description": "",
-        "line": 1507
+        "line": 1555
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_procgen_unit",
         "description": "",
-        "line": 1512
+        "line": 1560
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_province_unit",
         "description": "",
-        "line": 1517
+        "line": 1565
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_raycaster_unit",
         "description": "",
-        "line": 1522
+        "line": 1570
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_render_unit",
         "description": "",
-        "line": 1527
+        "line": 1575
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_repl_unit",
         "description": "",
-        "line": 1532
+        "line": 1580
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_runtime_unit",
         "description": "",
-        "line": 1537
+        "line": 1585
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_save_unit",
         "description": "",
-        "line": 1542
+        "line": 1590
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_scene_unit",
         "description": "",
-        "line": 1547
+        "line": 1595
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_serialize_unit",
         "description": "",
-        "line": 1552
+        "line": 1600
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_shape_unit",
         "description": "",
-        "line": 1557
+        "line": 1605
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_spine_unit",
         "description": "",
-        "line": 1562
+        "line": 1610
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_sprite_unit",
         "description": "",
-        "line": 1567
+        "line": 1615
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_svg_unit",
         "description": "",
-        "line": 1572
+        "line": 1620
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_terminal_unit",
         "description": "",
-        "line": 1577
+        "line": 1625
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_thread_unit",
         "description": "",
-        "line": 1582
+        "line": 1630
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_tilemap_unit",
         "description": "",
-        "line": 1587
+        "line": 1635
+      },
+      {
+        "file": "tests/lua_tests.rs",
+        "module": "lua",
+        "name": "lua_unit_tilefield_unit",
+        "description": "",
+        "line": 1640
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_timer_unit",
         "description": "",
-        "line": 1592
+        "line": 1645
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_tween_unit",
         "description": "",
-        "line": 1597
+        "line": 1650
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_ui_unit",
         "description": "",
-        "line": 1602
+        "line": 1655
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_validator_unit",
         "description": "",
-        "line": 1607
+        "line": 1660
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_visibility_unit",
         "description": "",
-        "line": 1612
+        "line": 1665
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_window_unit",
         "description": "",
-        "line": 1617
+        "line": 1670
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_demo_colocated_games",
         "description": "",
-        "line": 1622
+        "line": 1675
       }
     ],
     "lua": [
@@ -28915,6 +29284,13 @@
         "module": "test_terminal_evidence",
         "name": "test_terminal_evidence",
         "description": "Canonical evidence file for lurek.terminal visual artifacts.",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/evidence/test_tilefield_evidence.lua",
+        "module": "test_tilefield_evidence",
+        "name": "test_tilefield_evidence",
+        "description": "Evidence tests: tilefield module.",
         "kind": "lua"
       },
       {
@@ -29240,6 +29616,13 @@
         "kind": "lua"
       },
       {
+        "file": "tests/lua/golden/test_tilefield_golden.lua",
+        "module": "test_tilefield_golden",
+        "name": "test_tilefield_golden",
+        "description": "Golden test: tilefield evidence comparison.",
+        "kind": "lua"
+      },
+      {
         "file": "tests/lua/golden/test_tilemap_golden.lua",
         "module": "test_tilemap_golden",
         "name": "test_tilemap_golden",
@@ -29485,6 +29868,13 @@
         "kind": "lua"
       },
       {
+        "file": "tests/lua/integration/test_procgen_tilefield_integration.lua",
+        "module": "test_procgen_tilefield_integration",
+        "name": "test_procgen_tilefield_integration",
+        "description": "Integration: procgen output can be converted into tilefield profiles.",
+        "kind": "lua"
+      },
+      {
         "file": "tests/lua/integration/test_procgen_tilemap_integration.lua",
         "module": "test_procgen_tilemap_integration",
         "name": "test_procgen_tilemap_integration",
@@ -29566,6 +29956,41 @@
         "module": "test_thread_data_integration",
         "name": "test_thread_data_integration",
         "description": "Integration: typed Channel passing JSON-serialized data between thread contexts",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/integration/test_tilefield_minimap_integration.lua",
+        "module": "test_tilefield_minimap_integration",
+        "name": "test_tilefield_minimap_integration",
+        "description": "Integration: tilefield and visibility export passive data consumed by minimap.",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/integration/test_tilefield_pathfind_integration.lua",
+        "module": "test_tilefield_pathfind_integration",
+        "name": "test_tilefield_pathfind_integration",
+        "description": "Integration: tilefield movement semantics feed pathfinding.",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/integration/test_tilefield_raycaster_integration.lua",
+        "module": "test_tilefield_raycaster_integration",
+        "name": "test_tilefield_raycaster_integration",
+        "description": "Integration: tilefield wall channel feeds raycaster scene building.",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/integration/test_tilefield_systems_integration.lua",
+        "module": "test_tilefield_systems_integration",
+        "name": "test_tilefield_systems_integration",
+        "description": "Integration: tilefield is the shared source for movement, visibility, lighting, minimap, and raycaster input.",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/integration/test_tilefield_visibility_integration.lua",
+        "module": "test_tilefield_visibility_integration",
+        "name": "test_tilefield_visibility_integration",
+        "description": "Integration: tilefield channel semantics feed visibility and action masks.",
         "kind": "lua"
       },
       {
@@ -29937,6 +30362,13 @@
         "module": "test_thread_stress",
         "name": "test_thread_stress",
         "description": "Lurek2D Stress Test: Thread/Channel Communication",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/stress/test_tilefield_stress.lua",
+        "module": "test_tilefield_stress",
+        "name": "test_tilefield_stress",
+        "description": "Stress coverage for tilefield large multi-level fields.",
         "kind": "lua"
       },
       {
@@ -30434,6 +30866,13 @@
         "module": "test_thread_unit",
         "name": "test_thread_unit",
         "description": "Reorganized unit test file.",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/unit/test_tilefield_unit.lua",
+        "module": "test_tilefield_unit",
+        "name": "test_tilefield_unit",
+        "description": "Canonical unit coverage for lurek.tilefield.",
         "kind": "lua"
       },
       {

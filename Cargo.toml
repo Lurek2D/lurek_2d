@@ -292,6 +292,10 @@ name = "pathfind_tests"
 path = "tests/rust/unit/pathfind_tests.rs"
 
 [[test]]
+name = "tilefield_tests"
+path = "tests/rust/unit/tilefield_tests.rs"
+
+[[test]]
 name = "animation_tests"
 path = "tests/rust/unit/animation_tests.rs"
 

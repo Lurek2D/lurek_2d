@@ -6,7 +6,7 @@
 //! Feature-aware logic distinguishes half-height walls, window bands, and door panels, returning the hit solid section.
 //! Floor and ceiling picking projects the pixel onto horizontal planes and rejects cells hidden by closer walls or holes.
 //! `Raycaster2D::pick_screen` resolves single-level maps, while `MultiLevelGrid::pick_screen` chooses the owning slice.
-//! This file is the boundary between first-person UI input and gameplay selection on underlying grid or multilevel data.
+//! This file is the boundary between first-person UI input and render-space selection on grid or multilevel data.
 //! Open this file when selection payloads or pick precedence change; scene building and ray hits live in siblings.
 
 use super::dda::Raycaster2D;

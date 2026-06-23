@@ -807,6 +807,10 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 
 ## Notes
 
+- `tilemap` owns map storage, layers, chunks, tile ids, orientation/projection metadata, imports/exports, draw helpers, and tile-coordinate utilities.
+- Tile gameplay semantics such as movement blockers, vision/action blockers, and tile-light blockers belong in `tilefield` when a project needs one shared source of truth.
+- `lurek.tilefield.fromTileMap(tilemap, opts)` copies tilemap state into a field snapshot. Later tilemap edits are not automatically synchronized unless the adapter is called again.
+- Existing `tilemap:toNavGrid()` and `pathfind.newNavGridFromTileMap()` stay as compatibility/convenience flows for direct navigation grids.
 - `lurek.tilemap.newTileMap(...)` and `lurek.tilemap.newChunkMap(...)` accept an optional limits table with ceilings such as `maxLayers`, `maxTiles`, `maxImagePixels`, `maxImportBytes`, `maxDecodedBytes`, `maxChunkCells`, `maxChunks`, and `maxCollisionTileChecks`.
 - `lurek.tilemap.loadTMX(xml, opts)` supports strict/bounded import policy through `strictLayerSize`, `allowExternalTilesets`, `safePaths`, `assetRoot`, and the same byte/size limits used by safe constructors.
 - `LTileMap:worldToTile(...)` preserves legacy clamping semantics, while `LTileMap:tryWorldToTile(...)` returns `nil` for negative or non-finite world coordinates and should be preferred for picking/collision front-ends.

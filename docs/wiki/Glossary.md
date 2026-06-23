@@ -61,13 +61,16 @@ The glossary collects terms that appear across module and API pages.
 - `LBlendLayerSet` ([lurek.animation](https://lurek2d.github.io/lurek_2d/modules/animation.html)) - Lua-side blend layer set used to combine animation clips with weights and bone masks.
 - `LBody` ([lurek.physics](https://lurek2d.github.io/lurek_2d/modules/physics.html)) - A handle to a single physics body in the world, providing per-body manipulation methods.
 - `LBot` ([lurek.ai](https://lurek2d.github.io/lurek_2d/modules/ai.html)) - Lua handle for a named agent stored inside an AI world.
+- `LBoxPlotChart` ([lurek.charts](https://lurek2d.github.io/lurek_2d/modules/charts.html)) - Lua handle for a box-and-whisker chart.
 - `LBTNode` ([lurek.ai](https://lurek2d.github.io/lurek_2d/modules/ai.html)) - Lua handle for a behavior tree node that can be assembled into composites and decorators.
+- `LBubbleChart` ([lurek.charts](https://lurek2d.github.io/lurek_2d/modules/charts.html)) - Lua handle for a weighted bubble chart.
 - `LBus` ([lurek.audio](https://lurek2d.github.io/lurek_2d/modules/audio.html)) - Lua-side wrapper around an audio mixing bus for grouped volume and effect control.
 - `LButton` ([lurek.ui](https://lurek2d.github.io/lurek_2d/modules/ui.html)) - Adds button-specific methods (setText, getText) to a button widget table.
 - `LByteData` ([lurek.binary](https://lurek2d.github.io/lurek_2d/modules/binary.html)) - Exposes byte-buffer inspection and bit editing methods to Lua.
 - `LCamera` ([lurek.camera](https://lurek2d.github.io/lurek_2d/modules/camera.html)) - Lua-side 2D camera handle with transforms, effects, bounds, and render command access.
 - `LCameraRig` ([lurek.camera](https://lurek2d.github.io/lurek_2d/modules/camera.html)) - Lua-side camera rig that manages named cameras and viewport layouts.
 - `LCameraWalker` ([lurek.camera](https://lurek2d.github.io/lurek_2d/modules/camera.html)) - Lua-side walker combining tile-grid movement with camera following.
+- `LCandlestickChart` ([lurek.charts](https://lurek2d.github.io/lurek_2d/modules/charts.html)) - Lua handle for an OHLC candlestick chart.
 - `LCanvas` ([lurek.render](https://lurek2d.github.io/lurek_2d/modules/render.html)) - Off-screen render target that can be drawn to and then composited onto the screen.
 - `LCatmullRom` ([lurek.math](https://lurek2d.github.io/lurek_2d/modules/math.html)) - Lua-side wrapper for a Catmull-Rom spline.
 - `LCellular` ([lurek.procgen](https://lurek2d.github.io/lurek_2d/modules/procgen.html)) - A cellular automaton simulation grid (sand, water, fire, gas, rock) for per-cell falling-sand style simulation.
@@ -141,6 +144,3 @@ The glossary collects terms that appear across module and API pages.
 - `LHermite` ([lurek.math](https://lurek2d.github.io/lurek_2d/modules/math.html)) - Lua-side wrapper for a Hermite spline.
 - `LHexGrid` ([lurek.pathfind](https://lurek2d.github.io/lurek_2d/modules/pathfind.html)) - Lua-side wrapper for a hexagonal grid.
 - `LHistogramChart` ([lurek.charts](https://lurek2d.github.io/lurek_2d/modules/charts.html)) - Lua handle for a histogram chart that bins named numeric samples.
-- `LHtmlDocument` ([lurek.html](https://lurek2d.github.io/lurek_2d/modules/html.html)) - Lua-side HTML document handle with DOM state, callbacks, and render command access.
-- `LHtmlElement` ([lurek.html](https://lurek2d.github.io/lurek_2d/modules/html.html)) - Lua-side DOM element handle with stale-generation detection.
-- `LHTNDomain` ([lurek.ai](https://lurek2d.github.io/lurek_2d/modules/ai.html)) - Lua handle for a hierarchical task network domain.

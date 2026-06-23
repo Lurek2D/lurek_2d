@@ -7,21 +7,20 @@ Simulates pseudo-3D first-person views from 2D maps using DDA marching.
 ## When To Use
 
 - Its technical base is DDA-style ray traversal over map-aligned space, but the important user-facing point is that the module turns that low-level technique into a complete first-person workflow with scene building, interaction helpers, lighting hooks, and deterministic output options.
-- The module is valuable because it solves the interpretation layer between a tile or cell world and a playable camera view. Users provide structured world data, and raycaster decides how that data becomes walls, depth, occlusion, visible openings, and navigable perspective.
+- The module is valuable because it solves the interpretation layer between structured render input and a playable camera view. Users provide wall, floor, ceiling, sprite, model, and optional light tables, and raycaster decides how that data becomes depth, occlusion, visible openings, and first-person perspective.
 - This matters most in projects that want first-person presence without the complexity of general 3D mesh authoring, continuous physics, and fully free camera semantics. The system stays constrained enough to be authorable and testable while still producing a convincing viewpoint.
 
 ## Minimal Example
 
-Example block: `lurek.raycaster.new`
+Example block: `lurek.raycaster.buildMultiLevelSceneFromField`
 
 ```lua
 do
-    local map = lurek.raycaster.new(16, 16)
-    map:setCell(1, 1, 2)
-    ray_log("new width=" .. map:width())
-    ray_log("new height=" .. map:height())
-    ray_log("spawn cell=" .. map:getCell(1, 1))
-    ray_log("spawn blocked=" .. tostring(map:isBlocked(1, 1)))
+    local field = lurek.tilefield.new({ width = 5, height = 5, levels = 2 })
+    field:applyProfile(3, 3, 1, "wall")
+    field:applyProfile(4, 4, 2, "wall")
+    local quads = lurek.raycaster.buildMultiLevelSceneFromField({ px = 2.5, py = 2.5, angle = 0, fov = 1.0, rays = 32, max_dist = 8, screen_w = 96, screen_h = 64, active_level = 0 }, field, { wallChannel = "vision" })
+    ray_log("tilefield raycaster quads = " .. quads)
 end
 ```
 
@@ -30,8 +29,8 @@ end
 - Start with `lurek.raycaster.applyLitShade` when exploring this module.
 - Start with `lurek.raycaster.buildMultiLevelScene` when exploring this module.
 - Start with `lurek.raycaster.buildMultiLevelSceneFromAdapter` when exploring this module.
+- Start with `lurek.raycaster.buildMultiLevelSceneFromField` when exploring this module.
 - Start with `lurek.raycaster.distanceShade` when exploring this module.
-- Start with `lurek.raycaster.getLastBuildStats` when exploring this module.
 
 ## API Reference
 
@@ -41,23 +40,22 @@ end
 
 - The `raycaster` module is the engine's pseudo-3D first-person view system for users who want corridor shooters, dungeon crawlers, exploration views, or tactical previews built from structured 2D world data instead of from a full freeform 3D engine stack.
 - Its technical base is DDA-style ray traversal over map-aligned space, but the important user-facing point is that the module turns that low-level technique into a complete first-person workflow with scene building, interaction helpers, lighting hooks, and deterministic output options.
-- The module is valuable because it solves the interpretation layer between a tile or cell world and a playable camera view. Users provide structured world data, and `raycaster` decides how that data becomes walls, depth, occlusion, visible openings, and navigable perspective.
+- The module is valuable because it solves the interpretation layer between structured render input and a playable camera view. Users provide wall, floor, ceiling, sprite, model, and optional light tables, and `raycaster` decides how that data becomes depth, occlusion, visible openings, and first-person perspective.
 - This matters most in projects that want first-person presence without the complexity of general 3D mesh authoring, continuous physics, and fully free camera semantics. The system stays constrained enough to be authorable and testable while still producing a convincing viewpoint.
 - Variable heights, multilevel interpretation, partial blockers, and transparent or layered hits make the subsystem more than a toy single-plane corridor renderer. It can represent richer spaces where openings, stacked features, and elevation differences matter to play and readability.
-- Door state and related wall-feature handling are especially important because first-person tile spaces often depend on interactable architecture. A door is not only a texture change; it affects visibility, ray obstruction, navigation feel, and scene comprehension, and this module keeps those consequences together.
+- Door state and related wall-feature handling are render features. They affect ray obstruction, visible openings, picking, and scene comprehension, while gameplay movement, vision, action, and lighting semantics live in `tilefield`/`visibility`.
 - Floors and ceilings are part of the same contract rather than optional garnish, since convincing pseudo-3D scenes need more than wall columns to read as spaces.
 - Billboard sprites keep moving actors, pickups, props, projectiles, and markers inside the same depth model as the wall renderer, which avoids a separate mismatched pseudo-3D object layer.
 - Depth-aware ordering and visibility rules are therefore core capabilities. When wall features, sprites, and translucent elements overlap, the module owns what is actually visible and in what order.
-- Lighting hooks, visibility helpers, and picking support make the subsystem useful for gameplay and tooling as well as for final rendering.
-- Those helpers matter beyond display. Projects may use raycasted visibility for perception checks, preview cameras, editor probes, or line-of-sight style gameplay questions tied to the same projected world.
+- Render-light hooks and picking support make the subsystem useful for final rendering and tooling.
+- Gameplay visibility, action lines, movement blockers, point tile-light, and global top-light are outside this module.
 - Scene assembly is one of the biggest practical wins for users: walls, floors, ceilings, sprites, and optional inserted content are composed through one coherent first-person pipeline instead of several subsystems guessing at perspective differently.
-- Movement-oriented helpers keep the module grounded in its natural use cases. Many raycasted projects combine discrete or grid-influenced movement with first-person presentation, so helpers for that style of navigation reduce project-specific glue at the camera seam.
+- Projects that need movement or reachability should use `pathfind` with `tilefield` adapters and feed the resulting camera/world state back into raycaster as render input.
 - Deterministic preview and software-capture paths matter because raycasted scenes often need screenshots, regression checks, editor thumbnails, or evidence artifacts outside live play.
-- Because the module owns both projection and interaction-friendly queries, aiming, object picking, and visibility-sensitive gameplay can stay aligned with the same depth model instead of relying on separate approximations.
-- That same alignment keeps first-person tools and gameplay on one depth model.
+- Because the module owns projection and picking, first-person tools can inspect what the renderer hit without becoming gameplay authorities.
 - The result is a feature that serves both play and inspection. The same projection model can support a shipped first-person game, a level preview tool, or a visibility-debug workflow without changing how world interpretation works.
 - This combination of constrained world model and rich view helpers is what gives the subsystem its identity: it provides first-person readability without giving up the structural advantages of a map-driven engine.
-- From a boundary perspective, world modules define the environment and `render` draws the final commands, but `raycaster` owns how structured 2D space becomes a first-person readable visual field with depth, occlusion, and object placement semantics.
+- From a boundary perspective, world/gameplay modules define semantics and `render` draws final commands, while `raycaster` owns how structured render input becomes a first-person readable visual field with depth, occlusion, and object placement.
 - Read `raycaster` as the engine authority for grid-based first-person projection and scene composition.
 
 This module primarily collaborates with `color`, `image`, `math`, `physics`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
@@ -118,7 +116,7 @@ lurek.raycaster.buildMultiLevelScene(params, levels, lights, sprites, wallTextur
 |------|------|-------------|
 | `params` | table | Scene params plus optional active_level. |
 | `levels` | table|[LMultiLevelGrid](#lmultilevelgrid) | Array of level tables or a persistent [LMultiLevelGrid](#lmultilevelgrid). |
-| `lights?` | table | Array of point-light tables or [LPointLight](#lpointlight) userdata values. |
+| `lights?` | table | Array of render light tables. |
 | `sprites?` | table|[LSpriteManager](#lspritemanager) | Array of sprite tables {x, y, texture?, size?, level?, front_texture?, right_texture?, back_texture?, left_texture?, angle?} or an [LSpriteManager](#lspritemanager) whose sprites use their own optional level indices and default to active_level. |
 | `wallTextures?` | table | Map of cell_value -> texture for wall surfaces. |
 | `models?` | table | Array of model instance tables {model, x, y, level?, rotation?, yaw?, z?, scale?}; instances default to `active_level`. |
@@ -318,6 +316,45 @@ end
 
 ---
 
+### `lurek.raycaster.buildMultiLevelSceneFromField`
+
+Builds a multilevel raycaster scene from a tilefield blocker channel.
+
+```lua
+lurek.raycaster.buildMultiLevelSceneFromField(params, field, opts, lights, sprites, wallTextures)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `params` | table | Scene params plus optional active_level. |
+| `field` | [LTileField](#ltilefield) | Source tilefield. |
+| `opts?` | table | Options with `wallChannel` (default `vision`). |
+| `lights?` | table | Optional raycaster point lights. |
+| `sprites?` | table|[LSpriteManager](#lspritemanager) | Optional raycaster sprites. |
+| `wallTextures?` | table | Map of cell_value -> texture for wall surfaces. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Total number of quads in the built scene. |
+
+**Example**
+
+```lua
+do
+    local field = lurek.tilefield.new({ width = 5, height = 5, levels = 2 })
+    field:applyProfile(3, 3, 1, "wall")
+    field:applyProfile(4, 4, 2, "wall")
+    local quads = lurek.raycaster.buildMultiLevelSceneFromField({ px = 2.5, py = 2.5, angle = 0, fov = 1.0, rays = 32, max_dist = 8, screen_w = 96, screen_h = 64, active_level = 0 }, field, { wallChannel = "vision" })
+    ray_log("tilefield raycaster quads = " .. quads)
+end
+```
+
+---
+
 ### `lurek.raycaster.distanceShade`
 
 Returns a brightness multiplier (0.0..1.0) based on distance for fog/darkness falloff.
@@ -397,7 +434,7 @@ do
         screen_w = 320,
         screen_h = 200,
     }, {
-        lurek.raycaster.newPointLight(4.0, 4.0, 1.0, 0.9, 0.8, 4.0, 1.25),
+        { x = 4.0, y = 4.0, r = 1.0, g = 0.9, b = 0.8, radius = 4.0, intensity = 1.25 },
     }, {}, {
         [1] = wall_tex,
     })
@@ -585,49 +622,6 @@ do
         },
     })
     example_print_log("persistent grid levels = " .. grid:levelCount())
-end
-```
-
----
-
-### `lurek.raycaster.newPointLight`
-
-Creates a new point light with position, color, radius, and intensity.
-
-```lua
-lurek.raycaster.newPointLight(x, y, r, g, b, radius, intensity, level)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `x` | number | World X position. |
-| `y` | number | World Y position. |
-| `r` | number | Red channel (0.0..1.0). |
-| `g` | number | Green channel (0.0..1.0). |
-| `b` | number | Blue channel (0.0..1.0). |
-| `radius` | number | Light falloff radius in world units. |
-| `intensity` | number | Brightness multiplier. |
-| `level?` | number | Optional multilevel slice index that owns this light. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| [LPointLight](#lpointlight) | A new point light instance. |
-
-**Example**
-
-```lua
-do
-    local torch = lurek.raycaster.newPointLight(5.5, 3.5, 1.0, 0.8, 0.4, 4.0, 1.5, 1)
-    local r, g, b = torch:color()
-
-    example_print_log("pos = " .. torch:x() .. "," .. torch:y())
-    example_print_log("color = " .. r .. "," .. g .. "," .. b)
-    example_print_log("radius = " .. torch:radius() .. " intensity = " .. torch:intensity())
-    example_print_log("level = " .. tostring(torch:level()))
 end
 ```
 
@@ -996,10 +990,10 @@ end
 - [LDoorManager](#ldoormanager)
 - [LHeightMap](#lheightmap)
 - [LMultiLevelGrid](#lmultilevelgrid)
-- [LPointLight](#lpointlight)
 - [LRaycaster](#lraycaster)
 - [LSceneAdapter](#lsceneadapter)
 - [LSpriteManager](#lspritemanager)
+- [LTileField](#ltilefield)
 
 ## LDoorManager
 
@@ -1488,7 +1482,7 @@ do
     hm:setCeiling(2, 2, 1.4)
     ray_log("LHeightMap=" .. tostring(hm:typeOf("LHeightMap")))
     ray_log("LObject=" .. tostring(hm:typeOf("LObject")))
-    ray_log("LPointLight=" .. tostring(hm:typeOf("LPointLight")))
+    ray_log("LSpriteManager=" .. tostring(hm:typeOf("LSpriteManager")))
     ray_log("ceiling sample=" .. hm:ceilingAt(2, 2))
 end
 ```
@@ -1581,7 +1575,7 @@ LMultiLevelGrid:buildScene(params, lights, sprites, wallTextures)
 | Name | Type | Description |
 |------|------|-------------|
 | `params` | table | Scene params for the current camera. |
-| `lights?` | table | Array of point-light tables or [LPointLight](#lpointlight) userdata values. |
+| `lights?` | table | Array of render light tables. |
 | `sprites?` | table|[LSpriteManager](#lspritemanager) | Array of level sprite tables or an [LSpriteManager](#lspritemanager). |
 | `wallTextures?` | table | Map of cell_value -> texture for wall surfaces. |
 
@@ -1731,7 +1725,7 @@ do
     local grid = lurek.raycaster.newMultiLevelGrid({
         { width = 2, height = 2, cells = { 1, 0, 0, 0 } },
     })
-    grid:setWindowCell(0, 0, 0.25, 0.8, 0.4)
+    grid:setWallFeatureCell(0, 0, { kind = "window", sill_height = 0.25, lintel_height = 0.8, alpha = 0.4 })
     grid:clearWallFeatureCell(0, 0)
     example_print_log("feature cleared = " .. tostring(grid:getWallFeatureCell(0, 0) == nil))
 end
@@ -2034,7 +2028,7 @@ do
     local grid = lurek.raycaster.newMultiLevelGrid({
         { width = 2, height = 2, cells = { 1, 0, 0, 0 } },
     })
-    grid:setWindowCell(0, 0, 0.25, 0.8, 0.4)
+    grid:setWallFeatureCell(0, 0, { kind = "window", sill_height = 0.25, lintel_height = 0.8, alpha = 0.4 })
     local feature = grid:getWallFeatureCell(0, 0)
     ray_log("feature kind=" .. tostring(feature and feature.kind))
     ray_log("feature alpha=" .. tostring(feature and feature.alpha))
@@ -2509,38 +2503,6 @@ end
 
 ---
 
-#### `LMultiLevelGrid:setDoorCell`
-
-Attaches a sliding door feature to a blocking cell on the active level.
-
-```lua
-LMultiLevelGrid:setDoorCell(x, y, direction, openAmount, alpha)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `x` | number | Grid column. |
-| `y` | number | Grid row. |
-| `direction` | string | "horizontal" or "vertical". |
-| `openAmount` | number | Door open amount, 0.0..1.0. |
-| `alpha?` | number | Optional alpha multiplier. |
-
-**Example**
-
-```lua
-do
-    local grid = lurek.raycaster.newMultiLevelGrid({
-        { width = 2, height = 2, cells = { 1, 0, 0, 0 } },
-    })
-    grid:setDoorCell(0, 0, "vertical", 0.6, 0.9)
-    example_print_log("door open amount = " .. grid:getWallFeatureCell(0, 0).open_amount)
-end
-```
-
----
-
 #### `LMultiLevelGrid:setFloorHole`
 
 Sets whether an active-level cell is open to the level below.
@@ -2664,36 +2626,6 @@ end
 
 ---
 
-#### `LMultiLevelGrid:setHalfWallCell`
-
-Attaches a half-height wall feature to a blocking cell on the active level.
-
-```lua
-LMultiLevelGrid:setHalfWallCell(x, y, height)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `x` | number | Grid column. |
-| `y` | number | Grid row. |
-| `height` | number | Solid wall height from floor, 0.0..1.0. |
-
-**Example**
-
-```lua
-do
-    local grid = lurek.raycaster.newMultiLevelGrid({
-        { width = 2, height = 2, cells = { 1, 0, 0, 0 } },
-    })
-    grid:setHalfWallCell(0, 0, 0.5)
-    example_print_log("half feature kind = " .. grid:getWallFeatureCell(0, 0).kind)
-end
-```
-
----
-
 #### `LMultiLevelGrid:setLoweredFloorCell`
 
 Marks an active-level cell as a lowered floor (pit) with its own texture, depth, tint, and blocking flag.
@@ -2739,12 +2671,12 @@ end
 
 ---
 
-#### `LMultiLevelGrid:setWindowCell`
+#### `LMultiLevelGrid:setWallFeatureCell`
 
-Attaches a window feature to a blocking cell on the active level, leaving a visible opening between sill and lintel.
+Attaches a render-only wall feature descriptor to a blocking cell on the active level.
 
 ```lua
-LMultiLevelGrid:setWindowCell(x, y, sillHeight, lintelHeight, alpha)
+LMultiLevelGrid:setWallFeatureCell(x, y, feature)
 ```
 
 **Parameters**
@@ -2753,9 +2685,7 @@ LMultiLevelGrid:setWindowCell(x, y, sillHeight, lintelHeight, alpha)
 |------|------|-------------|
 | `x` | number | Grid column. |
 | `y` | number | Grid row. |
-| `sillHeight` | number | Bottom of the opening from the floor, 0.0..1.0. |
-| `lintelHeight` | number | Top of the opening from the floor, 0.0..1.0. |
-| `alpha?` | number | Wall alpha multiplier for the solid bands. |
+| `feature` | table|Feature | "door", ...}. |
 
 **Example**
 
@@ -2764,8 +2694,10 @@ do
     local grid = lurek.raycaster.newMultiLevelGrid({
         { width = 2, height = 2, cells = { 1, 0, 0, 0 } },
     })
-    grid:setWindowCell(0, 0, 0.25, 0.8, 0.4)
-    example_print_log("window sill = " .. grid:getWallFeatureCell(0, 0).sill_height)
+    grid:setWallFeatureCell(0, 0, { kind = "door", direction = "vertical", open_amount = 0.4, alpha = 0.9 })
+    local feature = grid:getWallFeatureCell(0, 0)
+    example_print_log("feature kind = " .. feature.kind)
+    example_print_log("door open = " .. string.format("%.2f", feature.open_amount))
 end
 ```
 
@@ -2836,318 +2768,6 @@ end
 
 ---
 
-## LPointLight
-
-### Type Fields
-
-*No documented fields for this handle.*
-
-### Type Methods
-
-#### `LPointLight:color`
-
-Returns the RGB color components of this light.
-
-```lua
-LPointLight:color()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Red channel (0.0..1.0). |
-| number | Green channel (0.0..1.0). |
-| number | Blue channel (0.0..1.0). |
-
-**Example**
-
-```lua
-do
-    local pl = lurek.raycaster.newPointLight(8, 8, 1, 1, 0.8, 5.0, 2.0)
-    local r, g, b = pl:color()
-    ray_log("color=" .. r .. "," .. g .. "," .. b)
-    ray_log("intensity=" .. pl:intensity())
-    ray_log("radius=" .. pl:radius())
-    ray_log("level=" .. tostring(pl:level()))
-end
-```
-
----
-
-#### `LPointLight:intensity`
-
-Returns the brightness multiplier of this light.
-
-```lua
-LPointLight:intensity()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Intensity. |
-
-**Example**
-
-```lua
-do
-    local pl = lurek.raycaster.newPointLight(8, 8, 1, 1, 0.8, 5.0, 2.0)
-    local r, g, b = pl:color()
-    ray_log("intensity=" .. pl:intensity())
-    ray_log("radius=" .. pl:radius())
-    ray_log("position=" .. pl:x() .. "," .. pl:y())
-    ray_log("color=" .. r .. "," .. g .. "," .. b)
-end
-```
-
----
-
-#### `LPointLight:level`
-
-Returns the optional multilevel slice index that owns this light.
-
-```lua
-LPointLight:level()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Level index, or nil when this light is global across levels. |
-
-**Example**
-
-```lua
-do
-    local light = lurek.raycaster.newPointLight(1, 1, 1, 1, 1, 2, 0.5, 3)
-    local r, g, b = light:color()
-    ray_log("light level=" .. tostring(light:level()))
-    ray_log("light color=" .. r .. "," .. g .. "," .. b)
-    ray_log("light radius=" .. light:radius())
-    ray_log("light intensity=" .. light:intensity())
-end
-```
-
----
-
-#### `LPointLight:radius`
-
-Returns the light's falloff radius in world units.
-
-```lua
-LPointLight:radius()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Radius. |
-
-**Example**
-
-```lua
-do
-    local pl = lurek.raycaster.newPointLight(8, 8, 1, 1, 0.8, 5.0, 2.0)
-    local r, g, b = pl:color()
-    ray_log("radius=" .. pl:radius())
-    ray_log("intensity=" .. pl:intensity())
-    ray_log("position=" .. pl:x() .. "," .. pl:y())
-    ray_log("color=" .. r .. "," .. g .. "," .. b)
-end
-```
-
----
-
-#### `LPointLight:set`
-
-Overwrites all properties of this point light in a single call.
-
-```lua
-LPointLight:set(x, y, r, g, b, radius, intensity, level)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `x` | number | New X world position. |
-| `y` | number | New Y world position. |
-| `r` | number | Red color channel (0.0..1.0). |
-| `g` | number | Green color channel (0.0..1.0). |
-| `b` | number | Blue color channel (0.0..1.0). |
-| `radius` | number | Falloff radius in world units. |
-| `intensity` | number | Brightness multiplier. |
-| `level?` | number | Optional multilevel slice index that owns this light. |
-
-**Example**
-
-```lua
-do
-    local light = lurek.raycaster.newPointLight(2, 2, 1, 1, 1, 3, 1.0)
-    light:set(8, 8, 0, 0, 1, 6, 2.0, 2)
-    local r, g, b = light:color()
-
-    example_print_log("pos = " .. light:x() .. "," .. light:y())
-    example_print_log("color = " .. r .. "," .. g .. "," .. b)
-    example_print_log("radius = " .. light:radius() .. " intensity = " .. light:intensity())
-    example_print_log("level = " .. tostring(light:level()))
-end
-```
-
----
-
-#### `LPointLight:setLevel`
-
-Updates the optional multilevel slice index that owns this light.
-
-```lua
-LPointLight:setLevel(level)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `level?` | number | Level index, or nil to let this light affect every level. |
-
-**Example**
-
-```lua
-do
-    local light = lurek.raycaster.newPointLight(1, 1, 1, 1, 1, 2, 0.5)
-    light:setLevel(1)
-    example_print_log("light level after set = " .. tostring(light:level()))
-    light:setLevel(nil)
-    example_print_log("light level after clear = " .. tostring(light:level()))
-end
-```
-
----
-
-#### `LPointLight:type`
-
-Returns the type name of this object ("[LPointLight](#lpointlight)").
-
-```lua
-LPointLight:type()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| string | Type name string. |
-
-**Example**
-
-```lua
-do
-    local light = lurek.raycaster.newPointLight(0, 0, 1, 1, 1, 1, 1)
-    local type_name = light:type()
-    ray_log("light type=" .. type_name)
-    ray_log("x=" .. light:x())
-    ray_log("y=" .. light:y())
-    ray_log("radius=" .. light:radius())
-end
-```
-
----
-
-#### `LPointLight:typeOf`
-
-Checks whether this object matches the given type name.
-
-```lua
-LPointLight:typeOf(name)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `name` | string | Type name to test against. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| boolean | True if this object is of the given type. |
-
-**Example**
-
-```lua
-do
-    local light = lurek.raycaster.newPointLight(0, 0, 1, 1, 1, 1, 1)
-    light:setLevel(2)
-    ray_log("LPointLight=" .. tostring(light:typeOf("LPointLight")))
-    ray_log("LObject=" .. tostring(light:typeOf("LObject")))
-    ray_log("LHeightMap=" .. tostring(light:typeOf("LHeightMap")))
-    ray_log("level=" .. tostring(light:level()))
-end
-```
-
----
-
-#### `LPointLight:x`
-
-Returns the X world position of this light.
-
-```lua
-LPointLight:x()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | X coordinate. |
-
-**Example**
-
-```lua
-do
-    local pl = lurek.raycaster.newPointLight(8, 8, 1, 1, 0.8, 5.0, 2.0)
-    ray_log("x=" .. pl:x())
-    ray_log("y=" .. pl:y())
-    ray_log("radius=" .. pl:radius())
-    ray_log("intensity=" .. pl:intensity())
-end
-```
-
----
-
-#### `LPointLight:y`
-
-Returns the Y world position of this light.
-
-```lua
-LPointLight:y()
-```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Y coordinate. |
-
-**Example**
-
-```lua
-do
-    local pl = lurek.raycaster.newPointLight(8, 8, 1, 1, 0.8, 5.0, 2.0)
-    ray_log("y=" .. pl:y())
-    ray_log("x=" .. pl:x())
-    ray_log("radius=" .. pl:radius())
-    ray_log("intensity=" .. pl:intensity())
-end
-```
-
----
-
 ## LRaycaster
 
 ### Type Fields
@@ -3196,58 +2816,6 @@ end
 
 ---
 
-#### `LRaycaster:buildMinimapWindow`
-
-Generates a grid of minimap tile samples around a center point with lighting info.
-
-```lua
-LRaycaster:buildMinimapWindow(centerX, centerY, radius, ambient, lights)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `centerX` | number | Center X in world coordinates. |
-| `centerY` | number | Center Y in world coordinates. |
-| `radius` | number | Tile radius around the center to sample. |
-| `ambient` | number | Ambient light level (0.0..1.0). |
-| `lights?` | table | Array of point-light tables or [LPointLight](#lpointlight) userdata values. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| LRaycasterBuildMinimapWindowResult | Array of {x, y, blocked, visible, r, g, b, luma} tables. |
-
-**Example**
-
-```lua
-do
-    local map = lurek.raycaster.new(16, 16)
-    for i = 0, 15 do
-        map:setCell(i, 0, 1)
-        map:setCell(i, 15, 1)
-        map:setCell(0, i, 1)
-        map:setCell(15, i, 1)
-    end
-
-    map:setCell(5, 8, 1)
-    local lights = {
-        { x = 8, y = 8, r = 1.0, g = 1.0, b = 0.8, radius = 5.0, intensity = 1.0 },
-    }
-    local cells = map:buildMinimapWindow(8, 8, 5, 0.2, lights)
-
-    example_print_log("sample count = " .. #cells)
-    if cells[1] then
-        example_print_log("first cell = " .. cells[1].x .. "," .. cells[1].y)
-        example_print_log("first luma = " .. string.format("%.2f", cells[1].luma))
-    end
-end
-```
-
----
-
 #### `LRaycaster:buildScene`
 
 Builds a complete textured raycaster scene for GPU rendering. Stores the output internally.
@@ -3261,7 +2829,7 @@ LRaycaster:buildScene(params, lights, sprites, wallTextures)
 | Name | Type | Description |
 |------|------|-------------|
 | `params` | table | Scene params {px, py, angle, fov, rays, max_dist, screen_w, screen_h, ambient?, shade_dist?, floor_r/g/b?, ceiling_r/g/b?, camera_height?, horizon_offset?}. |
-| `lights?` | table | Array of point-light tables {x, y, radius, r?, g?, b?, color?, intensity?, level?} or [LPointLight](#lpointlight) userdata values. |
+| `lights?` | table | Array of render light tables {x, y, radius, r?, g?, b?, color?, intensity?, level?}. |
 | `sprites?` | table|[LSpriteManager](#lspritemanager) | Array of sprite tables {x, y, texture?, size?, front_texture?, right_texture?, back_texture?, left_texture?, angle?} or an [LSpriteManager](#lspritemanager) with integer/[LImage](render.md#limage) textures. |
 | `wallTextures?` | table | Map of cell_value -> texture for wall surfaces. |
 
@@ -3402,7 +2970,7 @@ LRaycaster:buildSceneWithModels(params, lights, sprites, wallTextures, models)
 | Name | Type | Description |
 |------|------|-------------|
 | `params` | table | Scene params (same as buildScene). |
-| `lights?` | table | Array of point-light tables or [LPointLight](#lpointlight) userdata values. |
+| `lights?` | table | Array of render light tables. |
 | `sprites?` | table|[LSpriteManager](#lspritemanager) | Array of sprite tables with billboard or 4-direction textures, or an [LSpriteManager](#lspritemanager) with integer/[LImage](render.md#limage) textures. |
 | `wallTextures?` | table | Map of cell_value -> texture. |
 | `models?` | table | Array of model instance tables {model, x, y, rotation?, yaw?, z?, scale?}. |
@@ -3699,54 +3267,9 @@ LRaycaster:clearWallFeatureCell(x, y)
 do
     local map = lurek.raycaster.new(8, 8)
     map:setCell(3, 3, 1)
-    map:setWindowCell(3, 3, 0.25, 0.75, 0.35)
+    map:setWallFeatureCell(3, 3, { kind = "window", sill_height = 0.25, lintel_height = 0.75, alpha = 0.35 })
     map:clearWallFeatureCell(3, 3)
     example_print_log("feature cleared = " .. tostring(map:getWallFeatureCell(3, 3) == nil))
-end
-```
-
----
-
-#### `LRaycaster:computeTileLight`
-
-Computes the combined lighting color at a tile from ambient and point lights, accounting for walls.
-
-```lua
-LRaycaster:computeTileLight(x, y, ambient, lights)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `x` | number | Tile grid column. |
-| `y` | number | Tile grid row. |
-| `ambient` | number | Base ambient light level (0.0..1.0). |
-| `lights?` | table | Array of point-light tables {x, y, radius, r?, g?, b?, color?, intensity?, level?} or [LPointLight](#lpointlight) userdata values. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Red light channel. |
-| number | Green light channel. |
-| number | Blue light channel. |
-| number | Average luminance. |
-
-**Example**
-
-```lua
-do
-    local map = lurek.raycaster.new(16, 16)
-    local lights = {
-        { x = 8, y = 8, r = 1.0, g = 0.9, b = 0.7, radius = 5.0, intensity = 2.0 },
-        { x = 3, y = 3, r = 0.2, g = 0.5, b = 1.0, radius = 3.0, intensity = 1.0 },
-    }
-    local r, g, b, luma = map:computeTileLight(7, 8, 0.1, lights)
-
-    example_print_log("r = " .. string.format("%.2f", r))
-    example_print_log("g = " .. string.format("%.2f", g))
-    example_print_log("luma = " .. string.format("%.2f", luma))
 end
 ```
 
@@ -3847,46 +3370,6 @@ end
 
 ---
 
-#### `LRaycaster:drawLineOfSight`
-
-Renders a debug image showing the line-of-sight ray between two world points.
-
-```lua
-LRaycaster:drawLineOfSight(ax, ay, bx, by, scale)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `ax` | number | Start X. |
-| `ay` | number | Start Y. |
-| `bx` | number | End X. |
-| `by` | number | End Y. |
-| `scale` | number | Pixels per grid cell. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| [LImageData](render.md#limagedata) | Raw image data for this view. |
-
-**Example**
-
-```lua
-do
-    local map = lurek.raycaster.new(8, 8)
-    map:setCell(4, 4, 1)
-
-    local img = map:drawLineOfSight(1, 1, 7, 7, 16)
-
-    example_print_log("width = " .. img:getWidth())
-    example_print_log("height = " .. img:getHeight())
-end
-```
-
----
-
 #### `LRaycaster:drawTopDown`
 
 Renders a top-down debug view of the map with the player's position and direction.
@@ -3975,46 +3458,6 @@ do
 
     example_print_log("width = " .. img:getWidth())
     example_print_log("height = " .. img:getHeight())
-end
-```
-
----
-
-#### `LRaycaster:extractMinimap`
-
-Extracts a pixel minimap image centered on the player from this raycaster map.
-
-```lua
-LRaycaster:extractMinimap(playerX, playerY, playerAngle, viewRadius, cellSize)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `playerX` | number | Player x position in world space. |
-| `playerY` | number | Player y position in world space. |
-| `playerAngle` | number | Player facing angle in radians. |
-| `viewRadius` | number | Visible tile radius around the player. |
-| `cellSize` | number | Pixel size of each minimap cell. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| [LImageData](render.md#limagedata) | Image data containing the extracted minimap. |
-
-**Example**
-
-```lua
-do
-    local map = lurek.raycaster.new(8, 8)
-    map:setCell(0, 0, 1)
-    map:setCell(1, 0, 1)
-    map:setCell(0, 1, 1)
-    local image = map:extractMinimap(4.0, 4.0, 0.0, 3, 4)
-    example_print_log("minimap type = " .. image:type())
-    example_print_log("minimap width = " .. image:getWidth())
 end
 ```
 
@@ -4250,11 +3693,11 @@ do
     end
 
     map:setCell(7, 5, 1)
-    map:setHalfWallCell(7, 5, 0.5)
+    map:setWallFeatureCell(7, 5, { kind = "half", height = 0.5 })
     map:setCell(7, 7, 1)
-    map:setWindowCell(7, 7, 0.25, 0.78, 0.35)
+    map:setWallFeatureCell(7, 7, { kind = "window", sill_height = 0.25, lintel_height = 0.78, alpha = 0.35 })
     map:setCell(7, 9, 1)
-    map:setDoorCell(7, 9, "vertical", 1.0)
+    map:setWallFeatureCell(7, 9, { kind = "door", direction = "vertical", open_amount = 1.0 })
     local feature = map:getWallFeatureCell(7, 7)
     example_print_log("feature kind = " .. tostring(feature and feature.kind))
 
@@ -4270,75 +3713,13 @@ do
     }
     local picked = map:pickScreen(160, 100, params)
     local hit = map:castRay(2.5, 9.5, 0.0, 20.0)
-    local solid = lurek.raycaster.new(8, 3)
-    solid:setCell(4, 1, 1)
-    local solid_r = select(1, solid:computeTileLight(2, 1, 0.0, {
-        { x = 5.5, y = 1.5, radius = 8.0, intensity = 8.0, color = { 1.0, 0.8, 0.6 } },
-    }))
-    local through_window = lurek.raycaster.new(8, 3)
-    through_window:setCell(4, 1, 1)
-    through_window:setWindowCell(4, 1, 0.25, 0.8, 0.35)
-    local window_r = select(1, through_window:computeTileLight(2, 1, 0.0, {
-        { x = 5.5, y = 1.5, radius = 8.0, intensity = 8.0, color = { 1.0, 0.8, 0.6 } },
-    }))
 
-    example_print_log("window los = " .. tostring(map:lineOfSight(2.5, 7.5, 12.5, 7.5)))
     example_print_log("half wall blocked = " .. tostring(map:isBlocked(7, 5)))
     example_print_log("open door hit cell = " .. tostring(hit and hit.cell_value or "nil"))
-    example_print_log("solid light r = " .. string.format("%.3f", solid_r))
-    example_print_log("window light r = " .. string.format("%.3f", window_r))
     if picked then
         example_print_log("pick surface = " .. picked.surface)
         example_print_log("pick tile = " .. picked.x .. "," .. picked.y)
     end
-end
-```
-
----
-
-#### `LRaycaster:gridMove`
-
-Performs a discrete grid-step movement in one of 4 cardinal directions with collision.
-
-```lua
-LRaycaster:gridMove(px, py, dir, action, step)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `px` | number | Current X position. |
-| `py` | number | Current Y position. |
-| `dir` | number | Facing direction 1..4 (1=N, 2=E, 3=S, 4=W). |
-| `action` | string | Movement action: "forward", "back", "left", or "right". |
-| `step` | number | Step distance in world units (typically 1.0). |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Final X position. |
-| number | Final Y position. |
-| boolean | Whether the move succeeded. |
-
-**Example**
-
-```lua
-do
-    local map = lurek.raycaster.new(8, 8)
-    for i = 0, 7 do
-        map:setCell(i, 0, 1)
-        map:setCell(i, 7, 1)
-        map:setCell(0, i, 1)
-        map:setCell(7, i, 1)
-    end
-
-    local nx, ny, moved = map:gridMove(4.5, 4.5, 2, "forward", 1.0)
-    local sx, sy, strafe = map:gridMove(nx, ny, 2, "left", 1.0)
-
-    example_print_log("forward = " .. tostring(moved) .. " -> " .. nx .. "," .. ny)
-    example_print_log("left = " .. tostring(strafe) .. " -> " .. sx .. "," .. sy)
 end
 ```
 
@@ -4392,7 +3773,7 @@ LRaycaster:isBlocked(x, y)
 
 | Type | Description |
 |------|-------------|
-| boolean | True if cell blocks movement and rays. |
+| boolean | True if the cell blocks render rays. |
 
 **Example**
 
@@ -4404,88 +3785,7 @@ do
     ray_log("cell(3,3) blocked=" .. tostring(map:isBlocked(3, 3)))
     ray_log("cell(4,3) blocked=" .. tostring(map:isBlocked(4, 3)))
     ray_log("cell(2,2) blocked=" .. tostring(map:isBlocked(2, 2)))
-    ray_log("line of sight across wall=" .. tostring(map:lineOfSight(1.5, 3.5, 6.5, 3.5)))
-end
-```
-
----
-
-#### `LRaycaster:isWalkBlocked`
-
-Returns true if the cell blocks walking (solid wall OR blocked lowered-floor cell).
-
-```lua
-LRaycaster:isWalkBlocked(x, y)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `x` | number | Grid column. |
-| `y` | number | Grid row. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| boolean | True if the cell cannot be walked through. |
-
-**Example**
-
-```lua
-do
-    local map = lurek.raycaster.new(8, 8)
-    local pit_texture = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
-
-    map:setLoweredFloorCell(3, 3, {
-        texture = pit_texture,
-        depth = 0.3,
-        blocked = true,
-    })
-
-    example_print_log("cell(3,3) walk blocked = " .. tostring(map:isWalkBlocked(3, 3)))
-    example_print_log("cell(2,2) walk blocked = " .. tostring(map:isWalkBlocked(2, 2)))
-end
-```
-
----
-
-#### `LRaycaster:lineOfSight`
-
-Tests whether there is a clear line of sight between two world points (no walls in between).
-
-```lua
-LRaycaster:lineOfSight(x1, y1, x2, y2)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `x1` | number | Start X. |
-| `y1` | number | Start Y. |
-| `x2` | number | End X. |
-| `y2` | number | End Y. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| boolean | True if the path is unobstructed. |
-
-**Example**
-
-```lua
-do
-    local map = lurek.raycaster.new(16, 16)
-    map:setCell(8, 8, 1)
-
-    local clear = map:lineOfSight(4, 4, 12, 4)
-    local blocked = map:lineOfSight(4, 8, 12, 8)
-
-    example_print_log("clear = " .. tostring(clear))
-    example_print_log("blocked = " .. tostring(blocked))
+    ray_log("wall values remain render input")
 end
 ```
 
@@ -4556,7 +3856,7 @@ do
         half_map:setCell(11, i, 1)
     end
     half_map:setCell(7, 5, 1)
-    half_map:setHalfWallCell(7, 5, 0.5)
+    half_map:setWallFeatureCell(7, 5, { kind = "half", height = 0.5 })
     local feature_hit = half_map:pickScreen(160, 100, {
         px = 2.5,
         py = 5.5,
@@ -4699,56 +3999,6 @@ end
 
 ---
 
-#### `LRaycaster:revealCellsFromRays`
-
-Casts rays across the FOV and returns a list of grid cells that are visible (for fog-of-war).
-
-```lua
-LRaycaster:revealCellsFromRays(ox, oy, angle, fov, count, maxDist, step)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `ox` | number | Ray origin X. |
-| `oy` | number | Ray origin Y. |
-| `angle` | number | Center angle in radians. |
-| `fov` | number | Field of view in radians. |
-| `count` | number | Number of rays. |
-| `maxDist` | number | Maximum ray distance. |
-| `step?` | number | Walk step along each ray (default 0.2). |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| LRaycasterRevealCellsFromRaysResult | Array of {x, y} tables representing revealed grid cells. |
-
-**Example**
-
-```lua
-do
-    local map = lurek.raycaster.new(16, 16)
-    for i = 0, 15 do
-        map:setCell(i, 0, 1)
-        map:setCell(i, 15, 1)
-        map:setCell(0, i, 1)
-        map:setCell(15, i, 1)
-    end
-
-    map:setCell(6, 8, 1)
-    local revealed = map:revealCellsFromRays(8, 8, 0, math.pi * 2, 64, 10)
-
-    example_print_log("revealed count = " .. #revealed)
-    if revealed[1] then
-        example_print_log("first cell = " .. revealed[1].x .. "," .. revealed[1].y)
-    end
-end
-```
-
----
-
 #### `LRaycaster:setCeilingTextureCell`
 
 Assigns a per-cell ceiling texture override. Pass nil to remove the override.
@@ -4851,41 +4101,6 @@ end
 
 ---
 
-#### `LRaycaster:setDoorCell`
-
-Attaches a sliding door feature to a blocking cell.
-
-```lua
-LRaycaster:setDoorCell(x, y, direction, openAmount, alpha)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `x` | number | Grid column. |
-| `y` | number | Grid row. |
-| `direction` | string | "horizontal" or "vertical". |
-| `openAmount` | number | Door open amount, 0.0..1.0. |
-| `alpha?` | number | Optional alpha multiplier. |
-
-**Example**
-
-```lua
-do
-    local map = lurek.raycaster.new(8, 8)
-    map:setCell(3, 3, 1)
-    map:setDoorCell(3, 3, "horizontal", 1.0)
-    local feature = map:getWallFeatureCell(3, 3)
-
-    example_print_log("kind = " .. feature.kind)
-    example_print_log("direction = " .. feature.direction)
-    example_print_log("blocked = " .. tostring(map:isBlocked(3, 3)))
-end
-```
-
----
-
 #### `LRaycaster:setFloorTextureCell`
 
 Assigns a per-cell floor texture override. Pass nil to remove the override.
@@ -4914,38 +4129,6 @@ do
     ray_log("neighbor raw id=" .. tostring(map:getFloorTextureCell(4, 3)))
     ray_log("empty raw id=" .. tostring(map:getFloorTextureCell(0, 0)))
     ray_log("floor texture cells assigned for corridor")
-end
-```
-
----
-
-#### `LRaycaster:setHalfWallCell`
-
-Attaches a half-height wall feature to a blocking cell.
-
-```lua
-LRaycaster:setHalfWallCell(x, y, height)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `x` | number | Grid column. |
-| `y` | number | Grid row. |
-| `height` | number | Solid wall height from floor, 0.0..1.0. |
-
-**Example**
-
-```lua
-do
-    local map = lurek.raycaster.new(8, 8)
-    map:setCell(3, 3, 1)
-    map:setHalfWallCell(3, 3, 0.5)
-    local feature = map:getWallFeatureCell(3, 3)
-
-    example_print_log("kind = " .. feature.kind)
-    example_print_log("height = " .. string.format("%.2f", feature.height))
 end
 ```
 
@@ -5024,12 +4207,12 @@ end
 
 ---
 
-#### `LRaycaster:setWindowCell`
+#### `LRaycaster:setWallFeatureCell`
 
-Attaches a window feature to a blocking cell, leaving a visible opening between sill and lintel.
+Attaches a render-only wall feature descriptor to a blocking cell.
 
 ```lua
-LRaycaster:setWindowCell(x, y, sillHeight, lintelHeight, alpha)
+LRaycaster:setWallFeatureCell(x, y, feature)
 ```
 
 **Parameters**
@@ -5038,9 +4221,7 @@ LRaycaster:setWindowCell(x, y, sillHeight, lintelHeight, alpha)
 |------|------|-------------|
 | `x` | number | Grid column. |
 | `y` | number | Grid row. |
-| `sillHeight` | number | Bottom of the opening from the floor, 0.0..1.0. |
-| `lintelHeight` | number | Top of the opening from the floor, 0.0..1.0. |
-| `alpha?` | number | Wall alpha multiplier for the solid bands. |
+| `feature` | table|Feature | "door", ...}. |
 
 **Example**
 
@@ -5048,59 +4229,11 @@ LRaycaster:setWindowCell(x, y, sillHeight, lintelHeight, alpha)
 do
     local map = lurek.raycaster.new(8, 8)
     map:setCell(3, 3, 1)
-    map:setWindowCell(3, 3, 0.3, 0.75, 0.4)
+    map:setWallFeatureCell(3, 3, { kind = "window", sill_height = 0.25, lintel_height = 0.75, alpha = 0.4 })
     local feature = map:getWallFeatureCell(3, 3)
 
-    example_print_log("kind = " .. feature.kind)
-    example_print_log("los = " .. tostring(map:lineOfSight(1.5, 3.5, 6.5, 3.5)))
-    example_print_log("alpha = " .. string.format("%.2f", feature.alpha))
-end
-```
-
----
-
-#### `LRaycaster:tryMove`
-
-Attempts to move from (px,py) by (dx,dy) with wall-slide collision. Returns the final position.
-
-```lua
-LRaycaster:tryMove(px, py, dx, dy)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `px` | number | Current X position in world space. |
-| `py` | number | Current Y position in world space. |
-| `dx` | number | Desired X movement delta. |
-| `dy` | number | Desired Y movement delta. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Final X position. |
-| number | Final Y position. |
-| boolean | Whether any movement occurred. |
-
-**Example**
-
-```lua
-do
-    local map = lurek.raycaster.new(8, 8)
-    for i = 0, 7 do
-        map:setCell(i, 0, 1)
-        map:setCell(i, 7, 1)
-        map:setCell(0, i, 1)
-        map:setCell(7, i, 1)
-    end
-
-    local nx, ny, moved = map:tryMove(4.5, 4.5, 0.25, 0)
-    local wx, wy, blocked = map:tryMove(0.5, 0.5, -1, 0)
-
-    example_print_log("free move = " .. tostring(moved) .. " -> " .. nx .. "," .. ny)
-    example_print_log("wall move = " .. tostring(blocked) .. " -> " .. wx .. "," .. wy)
+    example_print_log("feature kind = " .. feature.kind)
+    example_print_log("feature alpha = " .. string.format("%.2f", feature.alpha))
 end
 ```
 
@@ -6122,5 +5255,635 @@ do
     ray_log("visible sprite id=" .. tostring(id))
 end
 ```
+
+---
+
+## LTileField
+
+### Type Fields
+
+*No documented fields for this handle.*
+
+### Type Methods
+
+#### `LTileField:addPointLight`
+
+Adds a point light and returns its stable id.
+
+```lua
+LTileField:addPointLight(opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `opts` | table | `{x, y, z?, radius, intensity?, color?}` light definition. |
+
+---
+
+#### `LTileField:applyProfile`
+
+Applies a named profile to one cell.
+
+```lua
+LTileField:applyProfile(x, y, z, name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `z?` | any |  |
+| `name` | any |  |
+
+---
+
+#### `LTileField:blocks`
+
+Returns whether a cell blocks a channel.
+
+```lua
+LTileField:blocks(x, y, z, channel)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `z?` | any |  |
+| `channel` | any |  |
+
+---
+
+#### `LTileField:clear`
+
+Clears all cell gameplay state and computed light values.
+
+```lua
+LTileField:clear()
+```
+
+---
+
+#### `LTileField:clearCell`
+
+Clears one cell.
+
+```lua
+LTileField:clearCell(x, y, z)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+| `z?` | number | One-based level, default 1. |
+
+---
+
+#### `LTileField:clearLine`
+
+Returns true when the line between two cell tables has no blocker for a channel.
+
+```lua
+LTileField:clearLine(from_tbl, to_tbl, channel, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `from_tbl` | any |  |
+| `to_tbl` | any |  |
+| `channel` | any |  |
+| `opts?` | any |  |
+
+---
+
+#### `LTileField:clearPointLights`
+
+Removes all point lights.
+
+```lua
+LTileField:clearPointLights()
+```
+
+---
+
+#### `LTileField:computeLight`
+
+Computes tile light from ambient, point lights, and global top light.
+
+```lua
+LTileField:computeLight(opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `opts?` | table | Optional includePointLights, includeGlobalLight, and ambient settings. |
+
+---
+
+#### `LTileField:exportBlockLayer`
+
+Exports one blocker channel and level as a row-major boolean array.
+
+```lua
+LTileField:exportBlockLayer(channel, z)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `channel` | any |  |
+| `z?` | any |  |
+
+---
+
+#### `LTileField:exportCostLayer`
+
+Exports one cost channel and level as a row-major number array.
+
+```lua
+LTileField:exportCostLayer(channel, z)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `channel` | any |  |
+| `z?` | any |  |
+
+---
+
+#### `LTileField:exportLightLayer`
+
+Exports one level of computed light as row-major `{r,g,b,luma}` tables.
+
+```lua
+LTileField:exportLightLayer(z)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `z?` | number | One-based level, default 1. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Row-major array of light tables. |
+
+---
+
+#### `LTileField:exportLightVolume`
+
+Exports all computed light levels as nested row-major tables.
+
+```lua
+LTileField:exportLightVolume()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of per-level row-major light layers. |
+
+---
+
+#### `LTileField:exportProfileLayer`
+
+Exports one level of profile names as a row-major array.
+
+```lua
+LTileField:exportProfileLayer(z)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `z?` | number | One-based level, default 1. |
+
+---
+
+#### `LTileField:firstBlocker`
+
+Returns the first one-based blocking cell table between two cells, or nil.
+
+```lua
+LTileField:firstBlocker(from_tbl, to_tbl, channel, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `from_tbl` | any |  |
+| `to_tbl` | any |  |
+| `channel` | any |  |
+| `opts?` | any |  |
+
+---
+
+#### `LTileField:getCell`
+
+Returns a table with blockers, costs, sun occlusion, and optional profile name.
+
+```lua
+LTileField:getCell(x, y, z)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+| `z?` | number | One-based level, default 1. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Cell state table. |
+
+---
+
+#### `LTileField:getCost`
+
+Returns the cost for one cell/channel.
+
+```lua
+LTileField:getCost(x, y, z, channel)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `z?` | any |  |
+| `channel` | any |  |
+
+---
+
+#### `LTileField:getLight`
+
+Returns r, g, b, and luma for one cell.
+
+```lua
+LTileField:getLight(x, y, z)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | One-based cell x coordinate. |
+| `y` | number | One-based cell y coordinate. |
+| `z?` | number | One-based level, default 1. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Red component in 0..1. |
+| number | Green component in 0..1. |
+| number | Blue component in 0..1. |
+| number | Luma value in 0..1. |
+
+---
+
+#### `LTileField:getProfile`
+
+Returns a named object profile table, or nil when absent.
+
+```lua
+LTileField:getProfile(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Profile name to read. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | nil | Profile table with blockers, costs, and sunOcclusion, or nil. |
+
+---
+
+#### `LTileField:getSize`
+
+Returns field width, height, and level count.
+
+```lua
+LTileField:getSize()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Field width in cells. |
+| number | Field height in cells. |
+| number | Level count. |
+
+---
+
+#### `LTileField:getSunOcclusion`
+
+Returns top-light occlusion in the inclusive range 0..1.
+
+```lua
+LTileField:getSunOcclusion(x, y, z)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `z?` | any |  |
+
+---
+
+#### `LTileField:getTopology`
+
+Returns the field topology name.
+
+```lua
+LTileField:getTopology()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | `square`, `iso_square`, or `hex`. |
+
+---
+
+#### `LTileField:inBounds`
+
+Returns whether one-based coordinates are inside the field.
+
+```lua
+LTileField:inBounds(x, y, z)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+| `z?` | number | One-based level, default 1. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when coordinates are in bounds. |
+
+---
+
+#### `LTileField:line`
+
+Returns topology-aware one-based cells between `from` and `to` tables.
+
+```lua
+LTileField:line(opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `opts` | table | `{from={x,y,z?}, to={x,y,z?}, includeEndpoints?}`. |
+
+---
+
+#### `LTileField:removePointLight`
+
+Removes a point light by id and returns whether it existed.
+
+```lua
+LTileField:removePointLight(id)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | number | Stable point light id returned by `addPointLight`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when a point light was removed. |
+
+---
+
+#### `LTileField:removeProfile`
+
+Removes a named object profile.
+
+```lua
+LTileField:removeProfile(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Profile name to remove. |
+
+---
+
+#### `LTileField:setBlock`
+
+Sets whether a cell blocks a channel.
+
+```lua
+LTileField:setBlock(x, y, z, channel, blocked)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `z?` | any |  |
+| `channel` | any |  |
+| `blocked` | any |  |
+
+---
+
+#### `LTileField:setCell`
+
+Sets cell state from a table with optional `blocks`, `costs`, `sunOcclusion`, and `profile`.
+
+```lua
+LTileField:setCell(x, y, z, cell)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+| `z?` | number | One-based level, default 1. |
+| `cell` | table | Cell data. |
+
+---
+
+#### `LTileField:setCost`
+
+Sets the cost for one cell/channel.
+
+```lua
+LTileField:setCost(x, y, z, channel, cost)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `z?` | any |  |
+| `channel` | any |  |
+| `cost` | any |  |
+
+---
+
+#### `LTileField:setGlobalLight`
+
+Sets top-down global light.
+
+```lua
+LTileField:setGlobalLight(opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `opts` | table | `{intensity?, color?}` global top-light settings. |
+
+---
+
+#### `LTileField:setProfile`
+
+Registers or replaces a named object profile.
+
+```lua
+LTileField:setProfile(name, profile_tbl)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | any |  |
+| `profile_tbl` | any |  |
+
+---
+
+#### `LTileField:setSunOcclusion`
+
+Sets top-light occlusion in the inclusive range 0..1.
+
+```lua
+LTileField:setSunOcclusion(x, y, z, value)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `z?` | any |  |
+| `value` | any |  |
+
+---
+
+#### `LTileField:type`
+
+Returns the Lua-visible type name for this tilefield handle.
+
+```lua
+LTileField:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | The string `[LTileField](#ltilefield)`. |
+
+---
+
+#### `LTileField:typeOf`
+
+Returns whether this handle matches a supported type name.
+
+```lua
+LTileField:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Type name to compare. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True for `[LTileField](#ltilefield)` or `LObject`. |
+
+---
+
+#### `LTileField:updatePointLight`
+
+Updates an existing point light by id.
+
+```lua
+LTileField:updatePointLight(id, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | any |  |
+| `opts` | any |  |
 
 ---

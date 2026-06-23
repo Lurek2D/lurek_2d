@@ -15,6 +15,7 @@ Structural lint checks (E-codes) run automatically after the summary:
     E5 -- marker text is not a clean API identifier
     E6 -- marker text appears more than once across example files
     E7 -- top-level ``do`` block has no immediately preceding ``--@api:`` / ``--@api-stub:``
+    E8 -- top-level Lua code appears outside a marker-owned ``do ... end`` block
 
 Workflow:
   1. Run example_add_missing.py  -- adds --@api-stub: blocks with -- TODO: (pending)
@@ -59,14 +60,16 @@ DEFAULT_MARKDOWN_REPORT = ROOT / 'logs' / 'reports' / 'example_coverage.md'
 FULL_BLOCK_MIN_LINES = 5
 
 DO_LINE_RE = re.compile(r'^do(?:\s*--.*)?$')
-FUNCTION_START_RE = re.compile(r'^(?:local\s+)?function\b')
-IF_START_RE = re.compile(r'^if\b.*\bthen(?:\s*--.*)?$')
-FOR_START_RE = re.compile(r'^for\b.*\bdo(?:\s*--.*)?$')
-WHILE_START_RE = re.compile(r'^while\b.*\bdo(?:\s*--.*)?$')
+FUNCTION_START_RE = re.compile(r'\bfunction\b')
+IF_START_RE = re.compile(r'\bif\b.*?\bthen\b')
+FOR_START_RE = re.compile(r'\bfor\b.*?\bdo\b')
+WHILE_START_RE = re.compile(r'\bwhile\b.*?\bdo\b')
 REPEAT_RE = re.compile(r'^repeat(?:\s*--.*)?$')
-END_LINE_RE = re.compile(r'^end(?:\s*--.*)?$')
+END_LINE_RE = re.compile(r'\bend\b')
+OUTER_END_LINE_RE = re.compile(r'^end(?:\s*--.*)?$')
 UNTIL_LINE_RE = re.compile(r'^until\b')
 API_MARKER_RE = re.compile(r'^--@api(?:-stub)?:\s*(.+)$')
+STRING_LITERAL_RE = re.compile(r'(?:"(?:\\.|[^"\\])*"|\'(?:\\.|[^\'\\])*\')')
 
 API_MODULE_TO_REGISTRY_MODULE = {
     "engine": "app",
@@ -189,31 +192,34 @@ def resolve_markdown_path(path_arg: str, examples_dir: Path) -> Path:
 
 
 def _count_scope_openings(stripped: str) -> int:
+    if stripped.startswith('--'):
+        return 0
+    stripped = STRING_LITERAL_RE.sub('""', stripped)
+    count = 0
     if DO_LINE_RE.match(stripped):
-        return 1
+        count += 1
     if REPEAT_RE.match(stripped):
-        return 1
-    if FUNCTION_START_RE.match(stripped):
-        return 1
-    if IF_START_RE.match(stripped) and not stripped.startswith('elseif'):
-        return 1
-    if FOR_START_RE.match(stripped):
-        return 1
-    if WHILE_START_RE.match(stripped):
-        return 1
-    return 0
+        count += 1
+    count += len(FUNCTION_START_RE.findall(stripped))
+    count += len(IF_START_RE.findall(stripped))
+    count += len(FOR_START_RE.findall(stripped))
+    count += len(WHILE_START_RE.findall(stripped))
+    return count
 
 
 def _count_scope_closures(stripped: str) -> int:
-    if END_LINE_RE.match(stripped):
-        return 1
+    if stripped.startswith('--'):
+        return 0
+    stripped = STRING_LITERAL_RE.sub('""', stripped)
+    count = 0
+    count += len(END_LINE_RE.findall(stripped))
     if UNTIL_LINE_RE.match(stripped):
-        return 1
-    return 0
+        count += 1
+    return count
 
 
 def _is_outer_block_end(stripped: str, depth: int) -> bool:
-    return depth == 1 and _count_scope_closures(stripped) == 1 and _count_scope_openings(stripped) == 0
+    return depth == 1 and OUTER_END_LINE_RE.match(stripped) is not None
 
 
 def classify_block(block: dict | None) -> str:
@@ -592,6 +598,34 @@ def _collect_do_block(lines: list, start: int) -> tuple:
     return k, body
 
 
+def _brace_delta(stripped: str) -> int:
+    return stripped.count('{') - stripped.count('}')
+
+
+def _top_level_statement_end(lines: list[str], start: int) -> int:
+    """Return the last line index for a top-level statement best-effort.
+
+    This keeps one E8 finding anchored to the helper/setup statement instead of
+    reporting every line in a helper function or multiline table literal.
+    """
+    stripped = lines[start].strip()
+    depth = _count_scope_openings(stripped) - _count_scope_closures(stripped)
+    brace_depth = _brace_delta(stripped)
+    if depth <= 0 and brace_depth <= 0:
+        return start
+
+    k = start + 1
+    while k < len(lines):
+        next_stripped = lines[k].strip()
+        depth += _count_scope_openings(next_stripped)
+        depth -= _count_scope_closures(next_stripped)
+        brace_depth += _brace_delta(next_stripped)
+        if depth <= 0 and brace_depth <= 0:
+            return k
+        k += 1
+    return start
+
+
 def lint_example_files(examples_dir: Path, filt: str | None = None) -> list:
     """Structural quality scan.
 
@@ -605,6 +639,7 @@ def lint_example_files(examples_dir: Path, filt: str | None = None) -> list:
       E5  marker text is not a clean API identifier
       E6  marker text appears more than once across example files
       E7  top-level ``do`` block has no immediately preceding example marker
+      E8  top-level Lua code outside a marker-owned ``do ... end`` block
     """
     issues: list = []
 
@@ -633,6 +668,11 @@ def lint_example_files(examples_dir: Path, filt: str | None = None) -> list:
                     end_idx, _ = _collect_do_block(lines, i)
                     top_level_depth = 0
                     i = end_idx + 1
+                    continue
+                if stripped and not stripped.startswith('--'):
+                    issues.append((p.name, i + 1, 'E8',
+                        'top-level Lua code outside an API marker block; duplicate setup/helper code inside each owning do...end block'))
+                    i = _top_level_statement_end(lines, i) + 1
                     continue
                 i += 1
                 continue

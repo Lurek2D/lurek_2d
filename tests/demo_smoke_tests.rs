@@ -164,11 +164,8 @@ demo_smoke_test!(demo_smoke_sensible_soccer, "content/games/sensible_soccer");
 
 // ─── simulation demos ─────────────────────────────────────────────────────────
 
-
 // ─── action demos ─────────────────────────────────────────────────────────────
 
-
 // ─── strategy demos ───────────────────────────────────────────────────────────
-
 
 // Removed legacy category-specific smoke targets.

@@ -2,7 +2,7 @@
 //! It stores `SceneTransform` sources plus resolved sprite, light, and optional model bindings sampled each frame.
 //! Body-backed transforms apply local offsets and angle offsets so pseudo-3D attachments stay aligned with physics owners.
 //! `SceneAdapter` aggregates bindings, clears tracked groups, and resolves live entries into world sprite or light data.
-//! The adapter keeps gameplay code focused on 2D ownership while the raycaster consumes one normalized input surface.
+//! The adapter keeps external entity ownership outside the raycaster while it consumes one normalized input surface.
 //! This file is the boundary between physics or runtime state and the scene builder's input contracts.
 //! Open this file when source-to-scene adaptation changes; prepared geometry and lighting evaluation live in siblings.
 
@@ -31,7 +31,7 @@ pub struct ResolvedSceneTransform {
 /// Source of a raycaster-facing transform.
 #[derive(Clone)]
 pub enum SceneTransform {
-    /// Fixed transform authored directly by gameplay code.
+    /// Fixed transform authored directly by the caller.
     Static { x: f32, y: f32, angle: f32 },
     /// Transform sampled from a live physics body with optional local offsets.
     Body {
@@ -100,7 +100,7 @@ impl SceneTransform {
 /// Sprite binding owned by a `SceneAdapter`.
 #[derive(Clone)]
 pub struct SceneAdapterSprite {
-    /// Optional stable gameplay id.
+    /// Optional stable caller entity id.
     pub entity_id: Option<u32>,
     /// Owning multilevel slice.
     pub level_index: usize,
@@ -174,7 +174,7 @@ impl SceneAdapterLight {
 pub struct ResolvedSceneModel {
     /// Model geometry.
     pub model: ObjModel,
-    /// Optional stable gameplay id.
+    /// Optional stable caller entity id.
     pub entity_id: Option<u32>,
     /// Owning multilevel slice.
     pub level_index: usize,
@@ -196,7 +196,7 @@ pub struct ResolvedSceneModel {
 pub struct SceneAdapterModel {
     /// Model geometry.
     pub model: ObjModel,
-    /// Optional stable gameplay id.
+    /// Optional stable caller entity id.
     pub entity_id: Option<u32>,
     /// Owning multilevel slice.
     pub level_index: usize,

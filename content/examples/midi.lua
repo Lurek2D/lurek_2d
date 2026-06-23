@@ -1,16 +1,17 @@
 --- MIDI Playback Example
 --- Demonstrates MIDI file playback with per-channel control using lurek.midi.
 
-local function example_print_log(...)
-    local parts = {}
-    for i = 1, select("#", ...) do
-        parts[i] = tostring(select(i, ...))
-    end
-    lurek.log.info(table.concat(parts, " "))
-end
 
 --@api: lurek.midi.newPlayer
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local path = "content/examples/assets/audio/sample_midi.mid"
     local player = lurek.midi.newPlayer(path)
     example_print_log("type = " .. player:type())
@@ -20,6 +21,14 @@ end
 
 --@api: lurek.midi.loadSoundFont
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local path = "content/examples/assets/audio/sample_soundfont.sf2"
     local ok, err = pcall(function()
         local loaded = lurek.midi.loadSoundFont(path)
@@ -31,6 +40,14 @@ end
 
 --@api: lurek.midi.hasSoundFont
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local path = "content/examples/assets/audio/sample_soundfont.sf2"
     lurek.midi.clearSoundFont()
     example_print_log("before load = " .. tostring(lurek.midi.hasSoundFont()))
@@ -45,6 +62,14 @@ end
 
 --@api: lurek.midi.clearSoundFont
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local path = "content/examples/assets/audio/sample_soundfont.sf2"
     local ok, err = pcall(function()
         lurek.midi.loadSoundFont(path)

@@ -4,16 +4,17 @@
 
 --- Animation Examples Part 1: Constructors, LAnimation methods, LAnimStateMachine, LBlendLayerSet
 
-local function example_print_log(...)
-    local parts = {}
-    for i = 1, select("#", ...) do
-        parts[i] = tostring(select(i, ...))
-    end
-    lurek.log.info(table.concat(parts, " "))
-end
 
 --@api: lurek.animation.new
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 32, 32)
     anim:addClip("idle", { 0 }, 4, true)
@@ -25,6 +26,14 @@ end
 
 --@api: lurek.animation.fromAseprite
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local json = '{"frames":[{"filename":"f0","frame":{"x":0,"y":0,"w":16,"h":16}}],"meta":{"size":{"w":16,"h":16},"frameTags":[]}}'
     local anim = lurek.animation.fromAseprite(json)
     if anim then
@@ -35,6 +44,14 @@ end
 
 --@api: lurek.animation.newStateMachine
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 32, 32)
     anim:addClip("idle", { 0 }, 1, true)
@@ -45,6 +62,14 @@ end
 
 --@api: lurek.animation.newCurve
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local curve = lurek.animation.newCurve()
     curve:addKeyframe(0.0, 0.0)
     curve:addKeyframe(1.0, 1.0)
@@ -56,6 +81,14 @@ end
 
 --@api: lurek.animation.newSyncGroup
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sg = lurek.animation.newSyncGroup()
     sg:add(101)
     sg:add(102)
@@ -67,6 +100,14 @@ end
 
 --@api: lurek.animation.newBlendLayerSet
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bls = lurek.animation.newBlendLayerSet()
     bls:addLayer("base", "idle", 1.0)
     bls:addLayer("upper", "aim", 0.4)
@@ -78,6 +119,14 @@ end
 
 --@api: lurek.animation.buildCharacter
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local char = lurek.animation.buildCharacter({
         texW = 64,
         texH = 16,
@@ -97,6 +146,14 @@ end
 
 --@api: LAnimation:addFrame
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 32, 32)
     anim:addFrame(32, 0, 32, 32)
@@ -109,6 +166,14 @@ end
 
 --@api: LAnimation:addFramesFromGrid
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local anim = lurek.animation.new()
     local count = anim:addFramesFromGrid(256, 256, 32, 32, 0, 8)
     anim:addClip("run", { 0, 1, 2, 3 }, 12, true)
@@ -120,6 +185,14 @@ end
 
 --@api: LAnimation:addFramesFromRects
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local anim = lurek.animation.new()
     anim:addFramesFromRects({ { x = 0, y = 0, w = 16, h = 16 }, { x = 16, y = 0, w = 16, h = 16 } })
     anim:addClip("pickup_spin", { 0, 1 }, 10, true)
@@ -132,6 +205,14 @@ end
 
 --@api: LAnimation:addClip
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local anim = lurek.animation.new()
     anim:addFramesFromGrid(128, 32, 32, 32, 0, 4)
     anim:addClip("walk", { 0, 1, 2, 3 }, 10, true, "forward")
@@ -141,6 +222,14 @@ end
 
 --@api: LAnimation:setClipMode
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 32, 32)
     anim:addClip("test", { 0 }, 5, true, "forward")
@@ -151,6 +240,14 @@ end
 
 --@api: LAnimation:getClipMode
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 32, 32)
     anim:addClip("run", { 0 }, 12, true, "pingpong")
@@ -160,6 +257,14 @@ end
 
 --@api: LAnimation:addClipFromGrid
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local anim = lurek.animation.new()
     anim:addClipFromGrid("sprint", 256, 64, 32, 32, 0, 8, 15, true)
     anim:play("sprint")
@@ -172,6 +277,14 @@ end
 
 --@api: LAnimation:play
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local anim = lurek.animation.new()
     anim:addFramesFromGrid(128, 32, 32, 32, 0, 4)
     anim:addClip("idle", { 0, 1, 2, 3 }, 8, true)
@@ -181,6 +294,14 @@ end
 
 --@api: LAnimation:stop
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 32, 32)
     anim:addClip("a", { 0 }, 5, true)
@@ -192,6 +313,14 @@ end
 
 --@api: LAnimation:pause
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 32, 32)
     anim:addClip("b", { 0 }, 5, true)
@@ -203,6 +332,14 @@ end
 
 --@api: LAnimation:resume
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 32, 32)
     anim:addClip("c", { 0 }, 5, true)
@@ -215,6 +352,14 @@ end
 
 --@api: LAnimation:update
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local anim = lurek.animation.new()
     anim:addFramesFromGrid(64, 32, 32, 32, 0, 2)
     anim:addClip("tick", { 0, 1 }, 2, true)
@@ -225,6 +370,14 @@ end
 
 --@api: LAnimation:getQuad
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 32, 32)
     anim:addClip("single", { 0 }, 1, false)
@@ -236,6 +389,14 @@ end
 
 --@api: LAnimation:draw
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local atlas = lurek.render.newImage("content/examples/assets/images/sample_icon.png")
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 16, 16)
@@ -250,6 +411,14 @@ end
 
 --@api: LAnimation:setImage
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local atlas = lurek.render.newImage("content/examples/assets/images/sample_icon.png")
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 16, 16)
@@ -262,6 +431,14 @@ end
 
 --@api: LAnimation:pollEvents
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 32, 32)
     anim:addClip("once", { 0 }, 10, false)
@@ -273,6 +450,14 @@ end
 
 --@api: LAnimation:isPlaying
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 16, 16)
     anim:addClip("x", { 0 }, 1, false)
@@ -282,6 +467,14 @@ end
 
 --@api: LAnimation:isLooping
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 16, 16)
     anim:addClip("loop_clip", { 0 }, 5, true)
@@ -291,6 +484,14 @@ end
 
 --@api: LAnimation:getClip
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 16, 16)
     anim:addClip("walk", { 0 }, 8, true)
@@ -300,6 +501,14 @@ end
 
 --@api: LAnimation:getSpeed
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 16, 16)
     anim:addClip("idle", { 0 }, 4, true)
@@ -311,6 +520,14 @@ end
 
 --@api: LAnimation:setSpeed
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local anim = lurek.animation.new()
     anim:setSpeed(2.0)
     anim:addFrame(0, 0, 16, 16)
@@ -323,6 +540,14 @@ end
 
 --@api: LAnimation:getFrameCount
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 32, 32)
     anim:addFrame(32, 0, 32, 32)
@@ -335,6 +560,14 @@ end
 
 --@api: LAnimation:getClipCount
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 16, 16)
     anim:addClip("a", { 0 }, 5, false)
@@ -344,6 +577,14 @@ end
 
 --@api: LAnimation:getCurrentFrame
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local anim = lurek.animation.new()
     anim:addFramesFromGrid(64, 32, 32, 32, 0, 2)
     anim:addClip("pair", { 0, 1 }, 4, true)
@@ -353,6 +594,14 @@ end
 
 --@api: LAnimation:setFrame
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local anim = lurek.animation.new()
     anim:addFramesFromGrid(128, 32, 32, 32, 0, 4)
     anim:addClip("seq", { 0, 1, 2, 3 }, 8, true)
@@ -363,6 +612,14 @@ end
 
 --@api: LAnimation:crossfade
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local anim = lurek.animation.new()
     anim:addFramesFromGrid(128, 32, 32, 32, 0, 4)
     anim:addClip("idle", { 0, 1 }, 4, true)
@@ -375,6 +632,14 @@ end
 
 --@api: LAnimation:getBlendState
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 32, 32)
     anim:addClip("a", { 0 }, 5, true)
@@ -385,6 +650,14 @@ end
 
 --@api: LAnimation:drawToImage
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 32, 32)
     anim:addClip("snap", { 0 }, 1, false)
@@ -395,6 +668,14 @@ end
 
 --@api: LAnimation:drawPreviewGrid
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local anim = lurek.animation.new()
     anim:addFramesFromGrid(128, 32, 32, 32, 0, 4)
     anim:addClip("preview", { 0, 1, 2, 3 }, 8, true)
@@ -406,6 +687,14 @@ end
 
 --@api: LAnimation:type
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 16, 16)
     anim:addClip("idle", { 0 }, 1, true)
@@ -417,6 +706,14 @@ end
 
 --@api: LAnimation:typeOf
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 16, 16)
     anim:addClip("idle", { 0 }, 1, true)
@@ -428,6 +725,14 @@ end
 
 --@api: LAnimStateMachine:update
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 32, 32)
     anim:addClip("idle", { 0 }, 5, true)
@@ -439,6 +744,14 @@ end
 
 --@api: LAnimStateMachine:getState
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 32, 32)
     anim:addClip("stand", { 0 }, 1, true)
@@ -449,6 +762,14 @@ end
 
 --@api: LAnimStateMachine:forceState
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local anim = lurek.animation.new()
     anim:addFramesFromGrid(64, 32, 32, 32, 0, 2)
     anim:addClip("a", { 0 }, 5, true)
@@ -462,6 +783,14 @@ end
 
 --@api: LAnimStateMachine:addState
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 32, 32)
     anim:addClip("idle", { 0 }, 5, true)
@@ -473,6 +802,14 @@ end
 
 --@api: LAnimStateMachine:addTransition
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 32, 32)
     anim:addClip("idle", { 0 }, 5, true)
@@ -486,6 +823,14 @@ end
 
 --@api: LAnimStateMachine:setParam
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 32, 32)
     anim:addClip("idle", { 0 }, 5, true)
@@ -498,6 +843,14 @@ end
 
 --@api: LAnimStateMachine:getQuad
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 32, 32)
     anim:addClip("idle", { 0 }, 5, true)
@@ -509,6 +862,14 @@ end
 
 --@api: LAnimStateMachine:draw
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local atlas = lurek.render.newImage("content/examples/assets/images/sample_icon.png")
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 16, 16)
@@ -525,6 +886,14 @@ end
 
 --@api: LAnimStateMachine:setImage
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local atlas = lurek.render.newImage("content/examples/assets/images/sample_icon.png")
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 16, 16)
@@ -539,6 +908,14 @@ end
 
 --@api: LAnimStateMachine:type
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 32, 32)
     anim:addClip("idle", { 0 }, 5, true)
@@ -549,6 +926,14 @@ end
 
 --@api: LAnimStateMachine:typeOf
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 32, 32)
     anim:addClip("idle", { 0 }, 5, true)
@@ -558,6 +943,14 @@ end
 
 --@api: LBlendLayerSet:addLayer
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bls = lurek.animation.newBlendLayerSet()
     bls:addLayer("base", "idle", 1.0)
     bls:addLayer("upper_body", "aim", 0.35)
@@ -569,6 +962,14 @@ end
 
 --@api: LBlendLayerSet:removeLayer
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bls = lurek.animation.newBlendLayerSet()
     bls:addLayer("temp", "idle", 1.0)
     bls:removeLayer("temp")
@@ -578,6 +979,14 @@ end
 
 --@api: LBlendLayerSet:setWeight
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bls = lurek.animation.newBlendLayerSet()
     bls:addLayer("walk", "walk_clip", 0.5)
     bls:setWeight("walk", 0.8)
@@ -587,6 +996,14 @@ end
 
 --@api: LBlendLayerSet:getWeight
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bls = lurek.animation.newBlendLayerSet()
     bls:addLayer("run", "run_clip", 0.7)
     bls:addLayer("lean", "lean_clip", 0.25)
@@ -598,6 +1015,14 @@ end
 
 --@api: LBlendLayerSet:setMask
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bls = lurek.animation.newBlendLayerSet()
     bls:addLayer("arms", "swing", 1.0)
     bls:setMask("arms", { "shoulder_l", "arm_l", "hand_l" })
@@ -609,6 +1034,14 @@ end
 
 --@api: LBlendLayerSet:listLayers
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bls = lurek.animation.newBlendLayerSet()
     bls:addLayer("base", "idle", 1.0)
     local names = bls:listLayers()
@@ -618,6 +1051,14 @@ end
 
 --@api: LBlendLayerSet:len
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bls = lurek.animation.newBlendLayerSet()
     bls:addLayer("a", "clip_a", 1.0)
     bls:addLayer("b", "clip_b", 0.5)
@@ -629,6 +1070,14 @@ end
 
 --@api: LBlendLayerSet:type
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bls = lurek.animation.newBlendLayerSet()
     bls:addLayer("base", "idle", 1.0)
     local typeName = bls:type()
@@ -640,6 +1089,14 @@ end
 
 --@api: LBlendLayerSet:typeOf
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bls = lurek.animation.newBlendLayerSet()
     bls:addLayer("base", "idle", 1.0)
     local isBlendSet = bls:typeOf("LBlendLayerSet")
@@ -650,6 +1107,14 @@ end
 
 --@api: LAnimCurve:addKeyframe
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local curve = lurek.animation.newCurve()
     curve:addKeyframe(0.0, 0.0)
     curve:addKeyframe(0.5, 1.0)
@@ -659,6 +1124,14 @@ end
 
 --@api: LAnimCurve:eval
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local curve = lurek.animation.newCurve()
     curve:addKeyframe(0.0, 0.0)
     curve:addKeyframe(1.0, 10.0)
@@ -668,6 +1141,14 @@ end
 
 --@api: LAnimCurve:setEasing
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local curve = lurek.animation.newCurve()
     curve:addKeyframe(0.0, 0.0)
     curve:addKeyframe(1.0, 1.0)
@@ -677,6 +1158,14 @@ end
 
 --@api: LAnimCurve:keyframeCount
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local curve = lurek.animation.newCurve()
     curve:addKeyframe(0.0, 0.0)
     curve:addKeyframe(0.25, 5.0)
@@ -689,6 +1178,14 @@ end
 
 --@api: LAnimCurve:setCustomEasing
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local curve = lurek.animation.newCurve()
     curve:addKeyframe(0.0, 0.0)
     curve:addKeyframe(1.0, 100.0)
@@ -698,6 +1195,14 @@ end
 
 --@api: LAnimCurve:clear
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local curve = lurek.animation.newCurve()
     curve:addKeyframe(0.0, 1.0)
     curve:addKeyframe(1.0, 2.0)
@@ -707,6 +1212,14 @@ end
 
 --@api: LAnimCurve:type
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local curve = lurek.animation.newCurve()
     curve:addKeyframe(0.0, 0.0)
     curve:addKeyframe(1.0, 1.0)
@@ -718,6 +1231,14 @@ end
 
 --@api: LAnimCurve:typeOf
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local curve = lurek.animation.newCurve()
     curve:addKeyframe(0.0, 0.0)
     curve:addKeyframe(1.0, 1.0)
@@ -729,6 +1250,14 @@ end
 
 --@api: LAnimSyncGroup:add
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sg = lurek.animation.newSyncGroup()
     sg:add(1)
     sg:add(2)
@@ -740,6 +1269,14 @@ end
 
 --@api: LAnimSyncGroup:remove
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sg = lurek.animation.newSyncGroup()
     sg:add(1)
     sg:add(2)
@@ -752,6 +1289,14 @@ end
 
 --@api: LAnimSyncGroup:clear
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sg = lurek.animation.newSyncGroup()
     sg:add(1)
     sg:add(2)
@@ -764,6 +1309,14 @@ end
 
 --@api: LAnimSyncGroup:memberCount
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sg = lurek.animation.newSyncGroup()
     sg:add(1)
     sg:add(2)
@@ -775,6 +1328,14 @@ end
 
 --@api: LAnimSyncGroup:type
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sg = lurek.animation.newSyncGroup()
     sg:add(11)
     local typeName = sg:type()
@@ -786,6 +1347,14 @@ end
 
 --@api: LAnimSyncGroup:typeOf
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sg = lurek.animation.newSyncGroup()
     sg:add(12)
     local isSyncGroup = sg:typeOf("LAnimSyncGroup")

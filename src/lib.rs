@@ -151,6 +151,8 @@ pub mod terminal;
 /// Exposes the threading subsystem module.
 pub mod thread;
 
+/// Exposes tile-based gameplay semantics for movement, visibility, action, and lighting.
+pub mod tilefield;
 /// Exposes the tilemap subsystem module.
 pub mod tilemap;
 /// Exposes the timer subsystem module.

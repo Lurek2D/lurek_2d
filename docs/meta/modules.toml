@@ -700,6 +700,16 @@ lua_unit_test = "tests/lua/unit/test_tilemap_unit.lua"
 user_facing = true
 plugin_tier = "core_keep"
 
+[tilefield]
+tier = "feature_systems"
+source = "src/tilefield"
+lua_binding = "src/lua_api/tilefield_api.rs"
+namespace = "lurek.tilefield"
+example_file = "content/examples/tilefield.lua"
+lua_unit_test = "tests/lua/unit/test_tilefield_unit.lua"
+user_facing = true
+plugin_tier = "core_keep"
+
 [timer]
 tier = "core_runtime"
 source = "src/timer"

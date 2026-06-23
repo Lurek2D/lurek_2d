@@ -2,35 +2,36 @@
 -- Auto-generated from content/examples2/debugbridge_*.lua by tools/fix/merge_examples2_into_examples.py
 -- Run: cargo run -- content/examples/debugbridge.lua
 
-local function bridge_log(message)
-    lurek.log.info("[debugbridge] " .. message)
-end
 
-local function stop_bridge_if_running()
-    if lurek.debugbridge.isRunning() then
-        lurek.debugbridge.stop()
-    end
-end
 
-local function start_bridge()
-    stop_bridge_if_running()
-    for port = 49740, 49840 do
-        if lurek.debugbridge.start(port) then
-            return port
-        end
-    end
-    return nil
-end
 
-local function reset_print_history()
-    lurek.debugbridge.clearPrintHistory()
-    lurek.debugbridge.setMaxPrintHistory(2000)
-end
 
 --- DebugBridge Module: editor bridge lifecycle, runtime telemetry, print capture, screenshots, and hot reload.
 
 --@api: lurek.debugbridge.start
 do
+    local function bridge_log(message)
+        lurek.log.info("[debugbridge] " .. message)
+    end
+    local function stop_bridge_if_running()
+        if lurek.debugbridge.isRunning() then
+            lurek.debugbridge.stop()
+        end
+    end
+    local function start_bridge()
+        stop_bridge_if_running()
+        for port = 49740, 49840 do
+            if lurek.debugbridge.start(port) then
+                return port
+            end
+        end
+        return nil
+    end
+    local function reset_print_history()
+        lurek.debugbridge.clearPrintHistory()
+        lurek.debugbridge.setMaxPrintHistory(2000)
+    end
+
     local port = start_bridge()
     local running = lurek.debugbridge.isRunning()
     local active_port = lurek.debugbridge.getPort()
@@ -40,6 +41,28 @@ end
 
 --@api: lurek.debugbridge.stop
 do
+    local function bridge_log(message)
+        lurek.log.info("[debugbridge] " .. message)
+    end
+    local function stop_bridge_if_running()
+        if lurek.debugbridge.isRunning() then
+            lurek.debugbridge.stop()
+        end
+    end
+    local function start_bridge()
+        stop_bridge_if_running()
+        for port = 49740, 49840 do
+            if lurek.debugbridge.start(port) then
+                return port
+            end
+        end
+        return nil
+    end
+    local function reset_print_history()
+        lurek.debugbridge.clearPrintHistory()
+        lurek.debugbridge.setMaxPrintHistory(2000)
+    end
+
     local port = start_bridge()
     local before = lurek.debugbridge.isRunning()
     lurek.debugbridge.stop()
@@ -49,6 +72,28 @@ end
 
 --@api: lurek.debugbridge.isRunning
 do
+    local function bridge_log(message)
+        lurek.log.info("[debugbridge] " .. message)
+    end
+    local function stop_bridge_if_running()
+        if lurek.debugbridge.isRunning() then
+            lurek.debugbridge.stop()
+        end
+    end
+    local function start_bridge()
+        stop_bridge_if_running()
+        for port = 49740, 49840 do
+            if lurek.debugbridge.start(port) then
+                return port
+            end
+        end
+        return nil
+    end
+    local function reset_print_history()
+        lurek.debugbridge.clearPrintHistory()
+        lurek.debugbridge.setMaxPrintHistory(2000)
+    end
+
     stop_bridge_if_running()
     local before = lurek.debugbridge.isRunning()
     local port = start_bridge()
@@ -59,6 +104,28 @@ end
 
 --@api: lurek.debugbridge.getPort
 do
+    local function bridge_log(message)
+        lurek.log.info("[debugbridge] " .. message)
+    end
+    local function stop_bridge_if_running()
+        if lurek.debugbridge.isRunning() then
+            lurek.debugbridge.stop()
+        end
+    end
+    local function start_bridge()
+        stop_bridge_if_running()
+        for port = 49740, 49840 do
+            if lurek.debugbridge.start(port) then
+                return port
+            end
+        end
+        return nil
+    end
+    local function reset_print_history()
+        lurek.debugbridge.clearPrintHistory()
+        lurek.debugbridge.setMaxPrintHistory(2000)
+    end
+
     stop_bridge_if_running()
     local idle_port = lurek.debugbridge.getPort()
     local port = start_bridge()
@@ -69,6 +136,28 @@ end
 
 --@api: lurek.debugbridge.getClientCount
 do
+    local function bridge_log(message)
+        lurek.log.info("[debugbridge] " .. message)
+    end
+    local function stop_bridge_if_running()
+        if lurek.debugbridge.isRunning() then
+            lurek.debugbridge.stop()
+        end
+    end
+    local function start_bridge()
+        stop_bridge_if_running()
+        for port = 49740, 49840 do
+            if lurek.debugbridge.start(port) then
+                return port
+            end
+        end
+        return nil
+    end
+    local function reset_print_history()
+        lurek.debugbridge.clearPrintHistory()
+        lurek.debugbridge.setMaxPrintHistory(2000)
+    end
+
     stop_bridge_if_running()
     local before = lurek.debugbridge.getClientCount()
     local port = start_bridge()
@@ -79,6 +168,28 @@ end
 
 --@api: lurek.debugbridge.poll
 do
+    local function bridge_log(message)
+        lurek.log.info("[debugbridge] " .. message)
+    end
+    local function stop_bridge_if_running()
+        if lurek.debugbridge.isRunning() then
+            lurek.debugbridge.stop()
+        end
+    end
+    local function start_bridge()
+        stop_bridge_if_running()
+        for port = 49740, 49840 do
+            if lurek.debugbridge.start(port) then
+                return port
+            end
+        end
+        return nil
+    end
+    local function reset_print_history()
+        lurek.debugbridge.clearPrintHistory()
+        lurek.debugbridge.setMaxPrintHistory(2000)
+    end
+
     stop_bridge_if_running()
     lurek.debugbridge.poll()
     local port = start_bridge()
@@ -90,6 +201,28 @@ end
 
 --@api: lurek.debugbridge.capturePrint
 do
+    local function bridge_log(message)
+        lurek.log.info("[debugbridge] " .. message)
+    end
+    local function stop_bridge_if_running()
+        if lurek.debugbridge.isRunning() then
+            lurek.debugbridge.stop()
+        end
+    end
+    local function start_bridge()
+        stop_bridge_if_running()
+        for port = 49740, 49840 do
+            if lurek.debugbridge.start(port) then
+                return port
+            end
+        end
+        return nil
+    end
+    local function reset_print_history()
+        lurek.debugbridge.clearPrintHistory()
+        lurek.debugbridge.setMaxPrintHistory(2000)
+    end
+
     reset_print_history()
     lurek.debugbridge.capturePrint("quest accepted", "quests.lua", 42)
     local history = lurek.debugbridge.getPrintHistory(1)
@@ -99,6 +232,28 @@ end
 
 --@api: lurek.debugbridge.getPrintHistory
 do
+    local function bridge_log(message)
+        lurek.log.info("[debugbridge] " .. message)
+    end
+    local function stop_bridge_if_running()
+        if lurek.debugbridge.isRunning() then
+            lurek.debugbridge.stop()
+        end
+    end
+    local function start_bridge()
+        stop_bridge_if_running()
+        for port = 49740, 49840 do
+            if lurek.debugbridge.start(port) then
+                return port
+            end
+        end
+        return nil
+    end
+    local function reset_print_history()
+        lurek.debugbridge.clearPrintHistory()
+        lurek.debugbridge.setMaxPrintHistory(2000)
+    end
+
     reset_print_history()
     for i = 1, 4 do
         lurek.debugbridge.capturePrint("frame " .. i, "hud.lua", i)
@@ -111,6 +266,28 @@ end
 
 --@api: lurek.debugbridge.clearPrintHistory
 do
+    local function bridge_log(message)
+        lurek.log.info("[debugbridge] " .. message)
+    end
+    local function stop_bridge_if_running()
+        if lurek.debugbridge.isRunning() then
+            lurek.debugbridge.stop()
+        end
+    end
+    local function start_bridge()
+        stop_bridge_if_running()
+        for port = 49740, 49840 do
+            if lurek.debugbridge.start(port) then
+                return port
+            end
+        end
+        return nil
+    end
+    local function reset_print_history()
+        lurek.debugbridge.clearPrintHistory()
+        lurek.debugbridge.setMaxPrintHistory(2000)
+    end
+
     reset_print_history()
     lurek.debugbridge.capturePrint("before clear", "main.lua", 10)
     local before = #lurek.debugbridge.getPrintHistory()
@@ -121,6 +298,28 @@ end
 
 --@api: lurek.debugbridge.setMaxPrintHistory
 do
+    local function bridge_log(message)
+        lurek.log.info("[debugbridge] " .. message)
+    end
+    local function stop_bridge_if_running()
+        if lurek.debugbridge.isRunning() then
+            lurek.debugbridge.stop()
+        end
+    end
+    local function start_bridge()
+        stop_bridge_if_running()
+        for port = 49740, 49840 do
+            if lurek.debugbridge.start(port) then
+                return port
+            end
+        end
+        return nil
+    end
+    local function reset_print_history()
+        lurek.debugbridge.clearPrintHistory()
+        lurek.debugbridge.setMaxPrintHistory(2000)
+    end
+
     reset_print_history()
     lurek.debugbridge.setMaxPrintHistory(3)
     for i = 1, 5 do
@@ -133,6 +332,28 @@ end
 
 --@api: lurek.debugbridge.getPerformance
 do
+    local function bridge_log(message)
+        lurek.log.info("[debugbridge] " .. message)
+    end
+    local function stop_bridge_if_running()
+        if lurek.debugbridge.isRunning() then
+            lurek.debugbridge.stop()
+        end
+    end
+    local function start_bridge()
+        stop_bridge_if_running()
+        for port = 49740, 49840 do
+            if lurek.debugbridge.start(port) then
+                return port
+            end
+        end
+        return nil
+    end
+    local function reset_print_history()
+        lurek.debugbridge.clearPrintHistory()
+        lurek.debugbridge.setMaxPrintHistory(2000)
+    end
+
     lurek.debugbridge.poll()
     local perf = lurek.debugbridge.getPerformance()
     local fps = perf.fps or "n/a"
@@ -143,6 +364,28 @@ end
 
 --@api: lurek.debugbridge.requestScreenshot
 do
+    local function bridge_log(message)
+        lurek.log.info("[debugbridge] " .. message)
+    end
+    local function stop_bridge_if_running()
+        if lurek.debugbridge.isRunning() then
+            lurek.debugbridge.stop()
+        end
+    end
+    local function start_bridge()
+        stop_bridge_if_running()
+        for port = 49740, 49840 do
+            if lurek.debugbridge.start(port) then
+                return port
+            end
+        end
+        return nil
+    end
+    local function reset_print_history()
+        lurek.debugbridge.clearPrintHistory()
+        lurek.debugbridge.setMaxPrintHistory(2000)
+    end
+
     local before = lurek.debugbridge.isScreenshotRequested()
     lurek.debugbridge.requestScreenshot(2)
     local after = lurek.debugbridge.isScreenshotRequested()
@@ -152,6 +395,28 @@ end
 
 --@api: lurek.debugbridge.isScreenshotRequested
 do
+    local function bridge_log(message)
+        lurek.log.info("[debugbridge] " .. message)
+    end
+    local function stop_bridge_if_running()
+        if lurek.debugbridge.isRunning() then
+            lurek.debugbridge.stop()
+        end
+    end
+    local function start_bridge()
+        stop_bridge_if_running()
+        for port = 49740, 49840 do
+            if lurek.debugbridge.start(port) then
+                return port
+            end
+        end
+        return nil
+    end
+    local function reset_print_history()
+        lurek.debugbridge.clearPrintHistory()
+        lurek.debugbridge.setMaxPrintHistory(2000)
+    end
+
     local before = lurek.debugbridge.isScreenshotRequested()
     lurek.debugbridge.requestScreenshot()
     local after = lurek.debugbridge.isScreenshotRequested()
@@ -161,6 +426,28 @@ end
 
 --@api: lurek.debugbridge.broadcast
 do
+    local function bridge_log(message)
+        lurek.log.info("[debugbridge] " .. message)
+    end
+    local function stop_bridge_if_running()
+        if lurek.debugbridge.isRunning() then
+            lurek.debugbridge.stop()
+        end
+    end
+    local function start_bridge()
+        stop_bridge_if_running()
+        for port = 49740, 49840 do
+            if lurek.debugbridge.start(port) then
+                return port
+            end
+        end
+        return nil
+    end
+    local function reset_print_history()
+        lurek.debugbridge.clearPrintHistory()
+        lurek.debugbridge.setMaxPrintHistory(2000)
+    end
+
     stop_bridge_if_running()
     local port = start_bridge()
     lurek.debugbridge.broadcast("quest:update", '{"quest":"intro","state":"ready"}')
@@ -171,6 +458,28 @@ end
 
 --@api: lurek.debugbridge.getProtocolInfo
 do
+    local function bridge_log(message)
+        lurek.log.info("[debugbridge] " .. message)
+    end
+    local function stop_bridge_if_running()
+        if lurek.debugbridge.isRunning() then
+            lurek.debugbridge.stop()
+        end
+    end
+    local function start_bridge()
+        stop_bridge_if_running()
+        for port = 49740, 49840 do
+            if lurek.debugbridge.start(port) then
+                return port
+            end
+        end
+        return nil
+    end
+    local function reset_print_history()
+        lurek.debugbridge.clearPrintHistory()
+        lurek.debugbridge.setMaxPrintHistory(2000)
+    end
+
     local info = lurek.debugbridge.getProtocolInfo()
     local version = info.version
     local nonce = info.nonce
@@ -180,6 +489,28 @@ end
 
 --@api: lurek.debugbridge.consumeHotReloadRequest
 do
+    local function bridge_log(message)
+        lurek.log.info("[debugbridge] " .. message)
+    end
+    local function stop_bridge_if_running()
+        if lurek.debugbridge.isRunning() then
+            lurek.debugbridge.stop()
+        end
+    end
+    local function start_bridge()
+        stop_bridge_if_running()
+        for port = 49740, 49840 do
+            if lurek.debugbridge.start(port) then
+                return port
+            end
+        end
+        return nil
+    end
+    local function reset_print_history()
+        lurek.debugbridge.clearPrintHistory()
+        lurek.debugbridge.setMaxPrintHistory(2000)
+    end
+
     local first = lurek.debugbridge.consumeHotReloadRequest()
     local second = lurek.debugbridge.consumeHotReloadRequest()
     local info = lurek.debugbridge.getProtocolInfo()

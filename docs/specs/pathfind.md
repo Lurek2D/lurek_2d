@@ -14,7 +14,7 @@
 - Source path: `src/pathfind`
 - Binding: `src/lua_api/pathfind_api.rs`
 - Namespace: `lurek.pathfind`
-- Lua API surface: `18` functions, `22` types, `104` methods
+- Lua API surface: `20` functions, `22` types, `102` methods
 - User-facing: `true`
 - Plugin tier: `not_evaluated`
 
@@ -68,12 +68,13 @@ This module primarily collaborates with `flownet`, `image`, `render`, `runtime`.
 
 ### astar.rs
 
-- Implements the core NavGrid A* search used by higher-level pathfinding features across the engine runtime.
-- Owns heap nodes, octile and Manhattan heuristics, unit-size neighbor expansion, and parent reconstruction logic.
-- Supports early termination with partial paths, then offers Bresenham line-of-sight checks and path smoothing.
-- Provides the solver boundary between raw NavGrid movement rules and callers that need an ordered route result.
-- This file is where diagonal policy, per-tile costs, and max-node budget semantics are coordinated together.
-- Open this owner before changing dependent path systems when the bug affects baseline grid path quality itself.
+- Implements core `NavGrid` A* search used by higher-level pathfinding features across the runtime.
+- Owns heap nodes, octile and Manhattan heuristics, unit-size neighbor expansion, and route recovery.
+- Supports early termination with partial paths while respecting diagonal policy, costs, and node budgets.
+- Provides local Bresenham clearance checks only for path smoothing, not visibility or action semantics.
+- Receives movement data from grids or adapters and never owns tilefield channels beyond movement costs.
+- Returns ordered route results for callers while keeping async queues, HPA graphs, and navmeshes separate.
+- Open this owner when baseline grid route quality changes, not for fog, lighting, raycasting, or minimaps.
 
 ### async_pool.rs
 
@@ -266,6 +267,7 @@ This module primarily collaborates with `flownet`, `image`, `render`, `runtime`.
 - `lurek.pathfind.newHexGrid(width, height, layout_str?) -> LHexGrid`: Creates a hex grid with the given dimensions.
 - `lurek.pathfind.newJpsGrid(width, height) -> LJpsGrid`: Creates a Jump Point Search grid with given dimensions.
 - `lurek.pathfind.newNavGrid(width, height) -> LNavGrid`: Creates a navigation grid with the given dimensions.
+- `lurek.pathfind.newNavGridFromField(field_ud, opts?) -> LNavGrid`: Creates a navigation grid from a tilefield level and channel.
 - `lurek.pathfind.newNavGridFromTileMap(tm_ud, layer_index, blocked_table) -> LNavGrid`: Creates a navigation grid from a tilemap layer and blocked gid table.
 - `lurek.pathfind.newNavMesh() -> LNavMesh`: Creates an empty navigation mesh for polygon-based pathfinding.
 - `lurek.pathfind.newPathFlowField(grid_ud) -> LAIFlowField`: Creates an AI flow field from a path grid.
@@ -273,6 +275,7 @@ This module primarily collaborates with `flownet`, `image`, `render`, `runtime`.
 - `lurek.pathfind.newPathfinder(grid_ud) -> LUnitPathfinder`: Creates a unit pathfinder for a navigation grid.
 - `lurek.pathfind.pollAsyncPaths() -> table`: Returns all currently available async path events without blocking.
 - `lurek.pathfind.rangeMap(opts) -> table`: Computes reachable cells from range map options.
+- `lurek.pathfind.rangeMapFromField(field_ud, opts) -> table`: Computes reachable cells from a tilefield level and movement channel.
 - `lurek.pathfind.setThreadCount(count) -> nil`: Sets the configured pathfinding worker-thread count.
 - `lurek.pathfind.submitAsyncPath(grid_ud, opts) -> integer`: Queues an async path query against a navigation grid snapshot.
 
@@ -379,7 +382,6 @@ This module primarily collaborates with `flownet`, `image`, `render`, `runtime`.
 - `LHexGrid:fieldOfView(col, row, max_range) -> table`: Returns visible hex cells within range from an origin.
 - `LHexGrid:findPath(fc, fr, tc, tr) -> table`: Finds a path between one-based hex cells.
 - `LHexGrid:isBlocked(col, row) -> boolean`: Returns whether a one-based hex cell is blocked.
-- `LHexGrid:lineOfSight(fc, fr, tc, tr) -> boolean`: Returns whether two one-based hex cells have line of sight.
 - `LHexGrid:rangeOfMovement(col, row, budget) -> table`: Returns reachable hex cells within a movement budget.
 - `LHexGrid:setBlocked(col, row, blocked) -> nil`: Sets blocked state for a one-based hex cell.
 - `LHexGrid:setCost(col, row, cost) -> nil`: Sets movement cost for a one-based hex cell.
@@ -601,7 +603,6 @@ This module primarily collaborates with `flownet`, `image`, `render`, `runtime`.
 - `LUnitPathfinder:heuristicDistance(x1, y1, x2, y2) -> number`: Returns heuristic distance between two one-based cells.
 - `LUnitPathfinder:isCacheEnabled() -> boolean`: Returns whether path cache is enabled.
 - `LUnitPathfinder:isReachable(x1, y1, x2, y2, unit_size?) -> boolean`: Returns whether a target cell is reachable from a start cell.
-- `LUnitPathfinder:lineOfSight(x1, y1, x2, y2, unit_size?) -> boolean`: Returns whether two one-based cells have line of sight.
 - `LUnitPathfinder:setCacheEnabled(enabled) -> nil`: Enables or disables the path cache on this object.
 - `LUnitPathfinder:setCacheMaxSize(n) -> nil`: Sets maximum path cache size for this object.
 - `LUnitPathfinder:type() -> string`: Returns the Lua-visible type name for this pathfinder handle.
@@ -694,4 +695,6 @@ This module primarily collaborates with `flownet`, `image`, `render`, `runtime`.
 
 ## Notes
 
-- No additional module-specific notes.
+- `pathfind` owns movement algorithms, movement range, route search, costs, and reachability. It does not own line-of-sight, line-of-action, lighting, or object-profile semantics.
+- `lurek.pathfind.newNavGridFromField(field, opts)` and `lurek.pathfind.rangeMapFromField(field, opts)` are adapters from `lurek.tilefield`; by default they read the `"move"` channel and movement costs from the field.
+- `newNavGridFromTileMap` remains a compatibility path for projects that want direct tilemap-to-navigation conversion without adopting `tilefield`.

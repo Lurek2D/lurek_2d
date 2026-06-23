@@ -12,7 +12,7 @@
 - Source path: `src/charts`
 - Binding: `src/lua_api/charts_api.rs`
 - Namespace: `lurek.charts`
-- Lua API surface: `9` functions, `7` types, `146` methods
+- Lua API surface: `14` functions, `12` types, `215` methods
 - User-facing: `true`
 - Plugin tier: `tier_2_plugin`
 
@@ -68,6 +68,30 @@ This module primarily collaborates with `color`, `dataframe`, `image`. Its respo
 - Category labels are stored beside the series here because annotation needs renderer-owned ordering for each group.
 - Open it when bar grouping or category ingestion changes; line, area, pie, and heatmap behavior lives in siblings.
 
+### boxplot.rs
+
+- This file owns box-and-whisker chart rendering for distributions, benchmark runs, and telemetry spreads.
+- It stores named sample series, computes quartiles on render, and draws whiskers, boxes, medians, and outliers.
+- Shared chart helpers provide axes, ticks, category labels, legends, and background styling for consistency.
+- The renderer sorts only per-series samples and otherwise draws O(series + samples) primitives for fast refreshes.
+- Open it when distribution statistics, outlier policy, or boxplot geometry need to change.
+
+### bubble.rs
+
+- This file owns bubble chart rendering for weighted point clouds, portfolio maps, and correlation dashboards.
+- It stores named `(x, y, size)` samples, maps size values to radius bounds, and draws one circle per finite sample.
+- Shared chart helpers provide cartesian axes, ticks, grids, labels, and legends while this file owns radius scaling.
+- Streaming append and max-point trimming keep live dashboards bounded for repeated 10 FPS redraws.
+- Open it when bubble-size semantics, weighted scatter ingestion, or radius defaults need to change.
+
+### candlestick.rs
+
+- This file owns candlestick chart rendering for OHLC financial or telemetry interval data.
+- It stores labeled candles, supports incremental appends, and draws wicks plus open-close bodies in one CPU pass.
+- Axis scaling is derived from high/low values, while shared chart helpers provide grid, ticks, title, and captions.
+- Positive and negative candles use configurable colors so streaming market views remain readable at 10 FPS.
+- Open it when OHLC ingestion, candle body geometry, or finance-style chart semantics need to change.
+
 ### config.rs
 
 - This file owns chart configuration structs, margins, palettes, and dataframe import limits used by every renderer.
@@ -109,7 +133,7 @@ This module primarily collaborates with `color`, `dataframe`, `image`. Its respo
 ### mod.rs
 
 - This module is the charts index, wiring concrete chart renderers, shared config types, and raster helpers.
-- It exports area, bar, line, pie, scatter, histogram, and heatmap owners from one navigation entry point.
+- It exports area, bar, line, pie, scatter, histogram, heatmap, candlestick, boxplot, bubble, radar, and treemap owners.
 - Shared option contracts live in `config.rs`, while `render_utils.rs` owns the CPU drawing primitives used by all charts.
 - This file owns only module visibility and reexports, not chart state, buffers, dataframe ingestion, or render math.
 - Open it when chart ownership, public names, or reexport boundaries move between sibling implementation files.
@@ -122,6 +146,14 @@ This module primarily collaborates with `color`, `dataframe`, `image`. Its respo
 - Legend annotations are delegated to `render_utils`, while this file owns slice accumulation, totals, and arc membership.
 - Empty or nonpositive values short-circuit rendering here so downstream image consumers avoid invalid sector math.
 - Open it when pie segment ingestion or angular fill behavior changes; cartesian axes and shared config live elsewhere.
+
+### radar.rs
+
+- This file owns radar/spider chart rendering for multivariate series over shared axes.
+- It stores ordered axis labels and named series values, then draws radial grid rings and closed polygons.
+- The chart can use an explicit maximum value or auto-scale from finite series samples.
+- Rendering is O(axes * series) and avoids per-pixel polygon fills so live dashboards can refresh quickly.
+- Open it when radar axis semantics, scaling, or polygon stroke behavior need to change.
 
 ### render_utils.rs
 
@@ -142,6 +174,14 @@ This module primarily collaborates with `color`, `dataframe`, `image`. Its respo
 - `replace_series`, `append_point`, and `set_max_points` make this the owner for incremental point-cloud updates.
 - Open it when marker rendering or range selection changes; polylines, stacked fills, and bar grouping live elsewhere.
 
+### treemap.rs
+
+- This file owns treemap chart rendering for part-to-whole dashboards and hierarchical-looking flat summaries.
+- It stores weighted labeled items, applies deterministic squarified rows, and draws colored rectangles with labels.
+- The API accepts flat items because runtime Lua callers commonly aggregate hierarchy before visualization.
+- Rendering is O(n log n) from value sorting plus rectangle fills, keeping repeated refreshes practical.
+- Open it when treemap item ingestion, squarified row packing, or label rendering need to change.
+
 
 
 ## Lua API Ref
@@ -151,11 +191,16 @@ This module primarily collaborates with `color`, `dataframe`, `image`. Its respo
 - `lurek.charts.defaultPalette() -> table`: Returns the default chart color palette.
 - `lurek.charts.newArea(config?) -> LAreaChart`: Creates a new area chart userdata instance.
 - `lurek.charts.newBar(config?) -> LBarChart`: Creates a new bar chart userdata instance.
+- `lurek.charts.newBoxPlot(config?) -> LBoxPlotChart`: Creates a new boxplot chart userdata instance.
+- `lurek.charts.newBubble(config?) -> LBubbleChart`: Creates a new bubble chart userdata instance.
+- `lurek.charts.newCandlestick(config?) -> LCandlestickChart`: Creates a new candlestick chart userdata instance.
 - `lurek.charts.newHeatmap(config?) -> LHeatmapChart`: Creates a new heatmap chart userdata instance.
 - `lurek.charts.newHistogram(config?) -> LHistogramChart`: Creates a new histogram chart userdata instance.
 - `lurek.charts.newLine(config?) -> LLineChart`: Creates a new line chart userdata instance.
 - `lurek.charts.newPie(config?) -> LPieChart`: Creates a new pie chart userdata instance.
+- `lurek.charts.newRadar(config?) -> LRadarChart`: Creates a new radar chart userdata instance.
 - `lurek.charts.newScatter(config?) -> LScatterPlot`: Creates a new scatter plot userdata instance.
+- `lurek.charts.newTreemap(config?) -> LTreemapChart`: Creates a new treemap chart userdata instance.
 - `lurek.charts.seriesColor(index) -> table`: Returns the palette color for a series index.
 
 ### Callbacks
@@ -229,6 +274,80 @@ This module primarily collaborates with `color`, `dataframe`, `image`. Its respo
 - `LBarChart:setYTickCount(count) -> nil`: Sets the number of Y axis ticks drawn for this chart.
 - `LBarChart:type() -> string`: Returns the runtime userdata type name for this chart.
 - `LBarChart:typeOf(name) -> boolean`: Checks whether a type name matches this chart userdata.
+
+#### LBoxPlotChart Type
+
+- Lua handle for a box-and-whisker chart.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LBoxPlotChart:addSeries(name, values, color?) -> nil`: Adds or replaces a named distribution sample series.
+- `LBoxPlotChart:appendValue(name, value, color?) -> nil`: Appends one numeric sample to a named distribution.
+- `LBoxPlotChart:clear() -> nil`: Clears all chart data and cached chart state.
+- `LBoxPlotChart:draw(x, y, opts?) -> nil`: Draws the chart at world or screen coordinates using optional transform options.
+- `LBoxPlotChart:drawToImage(target) -> nil`: Draws the rendered chart into an existing image.
+- `LBoxPlotChart:getHeight() -> integer`: Returns the configured chart height in pixels.
+- `LBoxPlotChart:getWidth() -> integer`: Returns the configured chart width in pixels.
+- `LBoxPlotChart:render() -> integer, integer, string`: Renders the chart into raw RGBA image bytes.
+- `LBoxPlotChart:renderImage() -> nil`: Renders the chart into a new LImage userdata.
+- `LBoxPlotChart:setShowLegend(value) -> nil`: Controls whether the chart legend is rendered.
+- `LBoxPlotChart:setTitle(title) -> nil`: Sets the chart title text shown in rendered output.
+- `LBoxPlotChart:type() -> string`: Returns the runtime userdata type name for this chart.
+- `LBoxPlotChart:typeOf(name) -> boolean`: Checks whether a type name matches this chart userdata.
+
+#### LBubbleChart Type
+
+- Lua handle for a weighted bubble chart.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LBubbleChart:addSeries(name, data, color?) -> nil`: Adds or replaces a weighted point series from `{x, y, size}` rows.
+- `LBubbleChart:appendPoint(name, x, y, size, color?) -> nil`: Appends one weighted point to a named bubble series.
+- `LBubbleChart:clear() -> nil`: Clears all chart data and cached chart state.
+- `LBubbleChart:draw(x, y, opts?) -> nil`: Draws the chart at world or screen coordinates using optional transform options.
+- `LBubbleChart:drawToImage(target) -> nil`: Draws the rendered chart into an existing image.
+- `LBubbleChart:getHeight() -> integer`: Returns the configured chart height in pixels.
+- `LBubbleChart:getWidth() -> integer`: Returns the configured chart width in pixels.
+- `LBubbleChart:render() -> integer, integer, string`: Renders the chart into raw RGBA image bytes.
+- `LBubbleChart:renderImage() -> nil`: Renders the chart into a new LImage userdata.
+- `LBubbleChart:setRadiusRange(min, max) -> nil`: Sets the minimum and maximum bubble radius in pixels.
+- `LBubbleChart:setShowLegend(value) -> nil`: Controls whether the chart legend is rendered.
+- `LBubbleChart:setTitle(title) -> nil`: Sets the chart title text shown in rendered output.
+- `LBubbleChart:type() -> string`: Returns the runtime userdata type name for this chart.
+- `LBubbleChart:typeOf(name) -> boolean`: Checks whether a type name matches this chart userdata.
+
+#### LCandlestickChart Type
+
+- Lua handle for an OHLC candlestick chart.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LCandlestickChart:appendCandle(label, open, high, low, close) -> nil`: Appends one labeled OHLC candle to the end of the current candlestick stream.
+- `LCandlestickChart:clear() -> nil`: Clears all chart data and cached chart state.
+- `LCandlestickChart:draw(x, y, opts?) -> nil`: Draws the chart at world or screen coordinates using optional transform options.
+- `LCandlestickChart:drawToImage(target) -> nil`: Draws the rendered chart into an existing image.
+- `LCandlestickChart:getHeight() -> integer`: Returns the configured chart height in pixels.
+- `LCandlestickChart:getWidth() -> integer`: Returns the configured chart width in pixels.
+- `LCandlestickChart:render() -> integer, integer, string`: Renders the chart into raw RGBA image bytes.
+- `LCandlestickChart:renderImage() -> nil`: Renders the chart into a new LImage userdata.
+- `LCandlestickChart:setCandles(candles) -> nil`: Replaces all OHLC candles from table rows with open/high/low/close fields or values 1..4.
+- `LCandlestickChart:setColors(up, down) -> nil`: Sets up/down candle colors.
+- `LCandlestickChart:setShowLegend(value) -> nil`: Controls whether the chart legend is rendered.
+- `LCandlestickChart:setTitle(title) -> nil`: Sets the chart title text shown in rendered output.
+- `LCandlestickChart:type() -> string`: Returns the runtime userdata type name for this chart.
+- `LCandlestickChart:typeOf(name) -> boolean`: Checks whether a type name matches this chart userdata.
 
 #### LHeatmapChart Type
 
@@ -356,6 +475,32 @@ This module primarily collaborates with `color`, `dataframe`, `image`. Its respo
 - `LPieChart:type() -> string`: Returns the runtime userdata type name for this chart.
 - `LPieChart:typeOf(name) -> boolean`: Checks whether a type name matches this chart userdata.
 
+#### LRadarChart Type
+
+- Lua handle for a radar/spider chart.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LRadarChart:addSeries(name, values, color?) -> nil`: Adds or replaces a named radar series.
+- `LRadarChart:clear() -> nil`: Clears all chart data and cached chart state.
+- `LRadarChart:clearMaxValue() -> nil`: Clears the explicit maximum radial value.
+- `LRadarChart:draw(x, y, opts?) -> nil`: Draws the chart at world or screen coordinates using optional transform options.
+- `LRadarChart:drawToImage(target) -> nil`: Draws the rendered chart into an existing image.
+- `LRadarChart:getHeight() -> integer`: Returns the configured chart height in pixels.
+- `LRadarChart:getWidth() -> integer`: Returns the configured chart width in pixels.
+- `LRadarChart:render() -> integer, integer, string`: Renders the chart into raw RGBA image bytes.
+- `LRadarChart:renderImage() -> nil`: Renders the chart into a new LImage userdata.
+- `LRadarChart:setAxes(axes) -> nil`: Replaces radar axis labels.
+- `LRadarChart:setMaxValue(value) -> nil`: Sets the explicit maximum radial value.
+- `LRadarChart:setShowLegend(value) -> nil`: Controls whether the chart legend is rendered.
+- `LRadarChart:setTitle(title) -> nil`: Sets the chart title text shown in rendered output.
+- `LRadarChart:type() -> string`: Returns the runtime userdata type name for this chart.
+- `LRadarChart:typeOf(name) -> boolean`: Checks whether a type name matches this chart userdata.
+
 #### LScatterPlot Type
 
 - Lua handle for a scatter plot with named point series and cached draw output.
@@ -391,6 +536,30 @@ This module primarily collaborates with `color`, `dataframe`, `image`. Its respo
 - `LScatterPlot:type() -> string`: Returns the runtime userdata type name for this chart.
 - `LScatterPlot:typeOf(name) -> boolean`: Checks whether a type name matches this chart userdata.
 
+#### LTreemapChart Type
+
+- Lua handle for a treemap chart.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LTreemapChart:addItem(label, value, color?) -> nil`: Adds one weighted treemap item.
+- `LTreemapChart:clear() -> nil`: Clears all chart data and cached chart state.
+- `LTreemapChart:draw(x, y, opts?) -> nil`: Draws the chart at world or screen coordinates using optional transform options.
+- `LTreemapChart:drawToImage(target) -> nil`: Draws the rendered chart into an existing image.
+- `LTreemapChart:getHeight() -> integer`: Returns the configured chart height in pixels.
+- `LTreemapChart:getWidth() -> integer`: Returns the configured chart width in pixels.
+- `LTreemapChart:render() -> integer, integer, string`: Renders the chart into raw RGBA image bytes.
+- `LTreemapChart:renderImage() -> nil`: Renders the chart into a new LImage userdata.
+- `LTreemapChart:setItems(items) -> nil`: Replaces weighted treemap items from label/value rows or fields.
+- `LTreemapChart:setShowLegend(value) -> nil`: Controls whether the chart legend is rendered.
+- `LTreemapChart:setTitle(title) -> nil`: Sets the chart title text shown in rendered output.
+- `LTreemapChart:type() -> string`: Returns the runtime userdata type name for this chart.
+- `LTreemapChart:typeOf(name) -> boolean`: Checks whether a type name matches this chart userdata.
+
 ## Examples
 
 - `content/examples/charts.lua` (present)
@@ -408,6 +577,9 @@ This module primarily collaborates with `color`, `dataframe`, `image`. Its respo
 | Golden test | `tests/lua/golden/test_charts_golden.lua` |
 | Current artifact | `tests/artifacts/current/charts/charts_area_layered_usage.png` |
 | Current artifact | `tests/artifacts/current/charts/charts_bar_category_revenue.png` |
+| Current artifact | `tests/artifacts/current/charts/charts_boxplot_latency_spread.png` |
+| Current artifact | `tests/artifacts/current/charts/charts_bubble_market_risk.png` |
+| Current artifact | `tests/artifacts/current/charts/charts_candlestick_volatile_ohlc.png` |
 | Current artifact | `tests/artifacts/current/charts/charts_dataframe_heatmap.png` |
 | Current artifact | `tests/artifacts/current/charts/charts_dataframe_histogram.png` |
 | Current artifact | `tests/artifacts/current/charts/charts_dataframe_line.png` |
@@ -417,7 +589,9 @@ This module primarily collaborates with `color`, `dataframe`, `image`. Its respo
 | Current artifact | `tests/artifacts/current/charts/charts_line_revenue_trend.png` |
 | Current artifact | `tests/artifacts/current/charts/charts_nearest_trace.json` |
 | Current artifact | `tests/artifacts/current/charts/charts_pie_market_share.png` |
+| Current artifact | `tests/artifacts/current/charts/charts_radar_unit_comparison.png` |
 | Current artifact | `tests/artifacts/current/charts/charts_scatter_player_scores.png` |
+| Current artifact | `tests/artifacts/current/charts/charts_treemap_budget_breakdown.png` |
 | Baseline artifact | `tests/artifacts/baselines/charts/charts_area_layered_usage.png` |
 | Baseline artifact | `tests/artifacts/baselines/charts/charts_bar_category_revenue.png` |
 | Baseline artifact | `tests/artifacts/baselines/charts/charts_dataframe_heatmap.png` |

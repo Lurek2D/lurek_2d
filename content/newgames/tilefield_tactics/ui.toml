@@ -1,0 +1,20 @@
+[layout]
+name = "tilefield-tactics"
+
+[[label]]
+id = "title"
+x = 34
+y = 26
+w = 260
+h = 28
+text = "Tilefield Tactics"
+font_size = 20
+
+[[label]]
+id = "controls"
+x = 34
+y = 50
+w = 560
+h = 20
+text = "WASD move  Tab player  Space door  Q/E level  R reset"
+font_size = 16

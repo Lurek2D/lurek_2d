@@ -1,10 +1,10 @@
-//! This file owns `PointLight` plus local and global lighting helpers for colored illumination in raycaster space.
-//! It stores point-light position, optional level ownership, radius, intensity, and color for cheap sample evaluation.
-//! Helper functions test line of sight through walls, accumulate ambient and point light, and apply directional sun tint.
-//! Scene builders reuse these lighting samples to shade walls, floors, sprites, and multilevel slices without light graphs.
-//! Open this file when raycaster light semantics change; hit casting and wall feature payloads live in sibling owners.
+//! Owns render-only light samples used while raycaster turns structured scene input into shaded geometry.
+//! Stores screen-facing point light positions, optional level ownership, radius, intensity, and color inputs.
+//! Tests render occlusion through wall geometry for shading, not gameplay sight, action, or tile-light queries.
+//! Applies ambient, point, and directional tint values to walls, floors, sprites, and multilevel render slices.
+//! Change this file for first-person shading; tilefield owns gameplay light propagation and exported volumes.
 
-/// A point light placed in world space that contributes to tile-level lighting.
+/// A render point light placed in world space for first-person scene shading.
 #[derive(Debug, Clone)]
 pub struct PointLight {
     /// World X position of the light source.
@@ -29,8 +29,8 @@ impl PointLight {
             .unwrap_or(true)
     }
 }
-/// Return true when the grid path from `(x0,y0)` to `(x1,y1)` contains no wall tile (Bresenham traversal).
-fn has_line_of_sight(
+/// Return true when the render-light sample path contains no opaque wall tile.
+fn has_render_light_path(
     x0: i32,
     y0: i32,
     x1: i32,
@@ -85,7 +85,7 @@ pub fn compute_lighting(
         }
         let lx = light.x.floor() as i32;
         let ly = light.y.floor() as i32;
-        if !has_line_of_sight(tx, ty, lx, ly, wall_at) {
+        if !has_render_light_path(tx, ty, lx, ly, wall_at) {
             continue;
         }
         let attenuation = (light.radius - tile_dist) / light.radius * (light.intensity / 16.0);
@@ -113,7 +113,7 @@ fn directional_sun_visible(
     if tx == target_x && ty == target_y {
         return true;
     }
-    has_line_of_sight(tx, ty, target_x, target_y, wall_at)
+    has_render_light_path(tx, ty, target_x, target_y, wall_at)
 }
 
 /// Apply global tint and optional directional sun to an already accumulated local lighting sample.

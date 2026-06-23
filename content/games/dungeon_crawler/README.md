@@ -50,8 +50,8 @@ Sterowanie zostało oparse o klasyczne obłożenie klawiatury dla gier trójwymi
 Gra reprezentuje szczyt możliwości optymalizacyjnych i technologicznych 2D-raycastera silnika Lurek:
 
 - `lurek.raycaster` (potok `buildScene`) – Sprzętowo akcelerowany moduł raycastingowy w GPU, generujący trójwymiarowy rzut korytarzy z precyzyjnym mapowaniem tekstur i cieniowaniem odległościowym.
-- `lurek.raycaster.revealCellsFromRays` – Zaawansowane API silnika wykonujące analizę widoczności i automatycznie aktualizujące mgłę wojny na mapie na podstawie rzucanych promieni.
-- `lurek.raycaster.buildMinimapWindow` – Generuje zoptymalizowaną, dostosowaną do Line-of-Sight minimapę z płynnym oświetleniem odkrytych pól.
+- `lurek.tilefield` - Przechowuje tile-based blokady ruchu, widzenia i oswietlenie minimapy jako gameplay source of truth.
+- `lurek.visibility` - Wylicza odkryte pola minimapy niezaleznie od raycastera.
 - `lurek.render` – Rysuje dwuwymiarowy interfejs HUD nałożony na widok 3D, minimapę, znaczniki zebranych kul oraz teksty podsumowania.
 - `lurek.input` – Obsługuje jednoczesny ruch i rotację za pomocą zmapowanych akcji (Strafe i Turn).
 - `lurek.timer` – Kontroluje odczyt Delta Time dla płynnego poruszania się oraz obsługuje migotanie światła pochodni na bazie sinusoidy czasu.

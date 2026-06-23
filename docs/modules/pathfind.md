@@ -12,20 +12,16 @@ Navigates grids, hex layouts, isometric maps, navmeshes, and province graphs.
 
 ## Minimal Example
 
-Example block: `lurek.pathfind.newPathGrid`
+Example block: `lurek.pathfind.newNavGridFromField`
 
 ```lua
 do
-    local grid = lurek.pathfind.newPathGrid(20, 15, 32)
-    grid:setWalkable(10, 8, false)
+    local field = lurek.tilefield.new({ width = 6, height = 6 })
+    field:applyProfile(3, 3, 1, "wall")
+    local grid = lurek.pathfind.newNavGridFromField(field, { level = 1, channel = "move" })
+    local blocked = grid:isBlocked(3, 3)
     local width = grid:getWidth()
-    local height = grid:getHeight()
-    local cell_size = grid:getCellSize()
-    local chokepoint_open = grid:isWalkable(10, 7)
-
-    pathfind_log("patrol grid = " .. width .. "x" .. height)
-    pathfind_log("patrol cell size = " .. cell_size)
-    pathfind_log("approach tile walkable = " .. tostring(chokepoint_open))
+    pathfind_log("field navgrid width=" .. width .. " blocked=" .. tostring(blocked))
 end
 ```
 
@@ -396,6 +392,42 @@ end
 
 ---
 
+### `lurek.pathfind.newNavGridFromField`
+
+Creates a navigation grid from a tilefield level and channel.
+
+```lua
+lurek.pathfind.newNavGridFromField(field_ud, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `field_ud` | [LTileField](#ltilefield) | Tilefield to derive navigation grid from. |
+| `opts?` | table | Options with `level`, `channel`, `costChannel`, and `diagonalMode`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LNavGrid](#lnavgrid) | New navigation grid handle. |
+
+**Example**
+
+```lua
+do
+    local field = lurek.tilefield.new({ width = 6, height = 6 })
+    field:applyProfile(3, 3, 1, "wall")
+    local grid = lurek.pathfind.newNavGridFromField(field, { level = 1, channel = "move" })
+    local blocked = grid:isBlocked(3, 3)
+    local width = grid:getWidth()
+    pathfind_log("field navgrid width=" .. width .. " blocked=" .. tostring(blocked))
+end
+```
+
+---
+
 ### `lurek.pathfind.newNavGridFromTileMap`
 
 Creates a navigation grid from a tilemap layer and blocked gid table.
@@ -688,6 +720,42 @@ end
 
 ---
 
+### `lurek.pathfind.rangeMapFromField`
+
+Computes reachable cells from a tilefield level and movement channel.
+
+```lua
+lurek.pathfind.rangeMapFromField(field_ud, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `field_ud` | [LTileField](#ltilefield) | Tilefield to read. |
+| `opts` | table | Options with `origin`, `budget`, optional `level`, `channel`, `costChannel`, and `diagonal`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Range map result with `cells`, `width`, `height`, and `level`. |
+
+**Example**
+
+```lua
+do
+    local field = lurek.tilefield.new({ width = 6, height = 6 })
+    field:setCost(2, 1, 1, "move", 2)
+    local range = lurek.pathfind.rangeMapFromField(field, { origin = { x = 1, y = 1, z = 1 }, budget = 4 })
+    local count = #range.cells
+    local width = range.width
+    pathfind_log("field range width=" .. width .. " cells=" .. count)
+end
+```
+
+---
+
 ### `lurek.pathfind.setThreadCount`
 
 Sets the configured pathfinding worker-thread count.
@@ -779,6 +847,7 @@ end
 - [LNavGrid](#lnavgrid)
 - [LNavMesh](#lnavmesh)
 - [LPathGrid](#lpathgrid)
+- [LTileField](#ltilefield)
 - [LTileMap](#ltilemap)
 - [LUnitPathfinder](#lunitpathfinder)
 
@@ -2098,46 +2167,6 @@ do
     pathfind_log("ridge blocked = " .. tostring(ridge))
     pathfind_log("ridge neighbor blocked = " .. tostring(ridge_neighbor))
     pathfind_log("southern hex blocked = " .. tostring(open_hex))
-end
-```
-
----
-
-#### `LHexGrid:lineOfSight`
-
-Returns whether two one-based hex cells have line of sight.
-
-```lua
-LHexGrid:lineOfSight(fc, fr, tc, tr)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `fc` | number | One-based column of the first cell. |
-| `fr` | number | One-based row of the first cell. |
-| `tc` | number | One-based column of the second cell. |
-| `tr` | number | One-based row of the second cell. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| boolean | True when line of sight is clear. |
-
-**Example**
-
-```lua
-do
-    local hex = lurek.pathfind.newHexGrid(10, 10)
-
-    local clear = hex:lineOfSight(1, 1, 10, 10)
-    hex:setBlocked(5, 5, true)
-    local blocked = hex:lineOfSight(1, 1, 10, 10)
-
-    example_print_log("clear = " .. tostring(clear))
-    example_print_log("blocked = " .. tostring(blocked))
 end
 ```
 
@@ -3954,6 +3983,636 @@ end
 
 ---
 
+## LTileField
+
+### Type Fields
+
+*No documented fields for this handle.*
+
+### Type Methods
+
+#### `LTileField:addPointLight`
+
+Adds a point light and returns its stable id.
+
+```lua
+LTileField:addPointLight(opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `opts` | table | `{x, y, z?, radius, intensity?, color?}` light definition. |
+
+---
+
+#### `LTileField:applyProfile`
+
+Applies a named profile to one cell.
+
+```lua
+LTileField:applyProfile(x, y, z, name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `z?` | any |  |
+| `name` | any |  |
+
+---
+
+#### `LTileField:blocks`
+
+Returns whether a cell blocks a channel.
+
+```lua
+LTileField:blocks(x, y, z, channel)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `z?` | any |  |
+| `channel` | any |  |
+
+---
+
+#### `LTileField:clear`
+
+Clears all cell gameplay state and computed light values.
+
+```lua
+LTileField:clear()
+```
+
+---
+
+#### `LTileField:clearCell`
+
+Clears one cell.
+
+```lua
+LTileField:clearCell(x, y, z)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+| `z?` | number | One-based level, default 1. |
+
+---
+
+#### `LTileField:clearLine`
+
+Returns true when the line between two cell tables has no blocker for a channel.
+
+```lua
+LTileField:clearLine(from_tbl, to_tbl, channel, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `from_tbl` | any |  |
+| `to_tbl` | any |  |
+| `channel` | any |  |
+| `opts?` | any |  |
+
+---
+
+#### `LTileField:clearPointLights`
+
+Removes all point lights.
+
+```lua
+LTileField:clearPointLights()
+```
+
+---
+
+#### `LTileField:computeLight`
+
+Computes tile light from ambient, point lights, and global top light.
+
+```lua
+LTileField:computeLight(opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `opts?` | table | Optional includePointLights, includeGlobalLight, and ambient settings. |
+
+---
+
+#### `LTileField:exportBlockLayer`
+
+Exports one blocker channel and level as a row-major boolean array.
+
+```lua
+LTileField:exportBlockLayer(channel, z)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `channel` | any |  |
+| `z?` | any |  |
+
+---
+
+#### `LTileField:exportCostLayer`
+
+Exports one cost channel and level as a row-major number array.
+
+```lua
+LTileField:exportCostLayer(channel, z)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `channel` | any |  |
+| `z?` | any |  |
+
+---
+
+#### `LTileField:exportLightLayer`
+
+Exports one level of computed light as row-major `{r,g,b,luma}` tables.
+
+```lua
+LTileField:exportLightLayer(z)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `z?` | number | One-based level, default 1. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Row-major array of light tables. |
+
+---
+
+#### `LTileField:exportLightVolume`
+
+Exports all computed light levels as nested row-major tables.
+
+```lua
+LTileField:exportLightVolume()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of per-level row-major light layers. |
+
+---
+
+#### `LTileField:exportProfileLayer`
+
+Exports one level of profile names as a row-major array.
+
+```lua
+LTileField:exportProfileLayer(z)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `z?` | number | One-based level, default 1. |
+
+---
+
+#### `LTileField:firstBlocker`
+
+Returns the first one-based blocking cell table between two cells, or nil.
+
+```lua
+LTileField:firstBlocker(from_tbl, to_tbl, channel, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `from_tbl` | any |  |
+| `to_tbl` | any |  |
+| `channel` | any |  |
+| `opts?` | any |  |
+
+---
+
+#### `LTileField:getCell`
+
+Returns a table with blockers, costs, sun occlusion, and optional profile name.
+
+```lua
+LTileField:getCell(x, y, z)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+| `z?` | number | One-based level, default 1. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Cell state table. |
+
+---
+
+#### `LTileField:getCost`
+
+Returns the cost for one cell/channel.
+
+```lua
+LTileField:getCost(x, y, z, channel)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `z?` | any |  |
+| `channel` | any |  |
+
+---
+
+#### `LTileField:getLight`
+
+Returns r, g, b, and luma for one cell.
+
+```lua
+LTileField:getLight(x, y, z)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | One-based cell x coordinate. |
+| `y` | number | One-based cell y coordinate. |
+| `z?` | number | One-based level, default 1. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Red component in 0..1. |
+| number | Green component in 0..1. |
+| number | Blue component in 0..1. |
+| number | Luma value in 0..1. |
+
+---
+
+#### `LTileField:getProfile`
+
+Returns a named object profile table, or nil when absent.
+
+```lua
+LTileField:getProfile(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Profile name to read. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | nil | Profile table with blockers, costs, and sunOcclusion, or nil. |
+
+---
+
+#### `LTileField:getSize`
+
+Returns field width, height, and level count.
+
+```lua
+LTileField:getSize()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Field width in cells. |
+| number | Field height in cells. |
+| number | Level count. |
+
+---
+
+#### `LTileField:getSunOcclusion`
+
+Returns top-light occlusion in the inclusive range 0..1.
+
+```lua
+LTileField:getSunOcclusion(x, y, z)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `z?` | any |  |
+
+---
+
+#### `LTileField:getTopology`
+
+Returns the field topology name.
+
+```lua
+LTileField:getTopology()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | `square`, `iso_square`, or `hex`. |
+
+---
+
+#### `LTileField:inBounds`
+
+Returns whether one-based coordinates are inside the field.
+
+```lua
+LTileField:inBounds(x, y, z)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+| `z?` | number | One-based level, default 1. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when coordinates are in bounds. |
+
+---
+
+#### `LTileField:line`
+
+Returns topology-aware one-based cells between `from` and `to` tables.
+
+```lua
+LTileField:line(opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `opts` | table | `{from={x,y,z?}, to={x,y,z?}, includeEndpoints?}`. |
+
+---
+
+#### `LTileField:removePointLight`
+
+Removes a point light by id and returns whether it existed.
+
+```lua
+LTileField:removePointLight(id)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | number | Stable point light id returned by `addPointLight`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when a point light was removed. |
+
+---
+
+#### `LTileField:removeProfile`
+
+Removes a named object profile.
+
+```lua
+LTileField:removeProfile(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Profile name to remove. |
+
+---
+
+#### `LTileField:setBlock`
+
+Sets whether a cell blocks a channel.
+
+```lua
+LTileField:setBlock(x, y, z, channel, blocked)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `z?` | any |  |
+| `channel` | any |  |
+| `blocked` | any |  |
+
+---
+
+#### `LTileField:setCell`
+
+Sets cell state from a table with optional `blocks`, `costs`, `sunOcclusion`, and `profile`.
+
+```lua
+LTileField:setCell(x, y, z, cell)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | One-based column. |
+| `y` | number | One-based row. |
+| `z?` | number | One-based level, default 1. |
+| `cell` | table | Cell data. |
+
+---
+
+#### `LTileField:setCost`
+
+Sets the cost for one cell/channel.
+
+```lua
+LTileField:setCost(x, y, z, channel, cost)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `z?` | any |  |
+| `channel` | any |  |
+| `cost` | any |  |
+
+---
+
+#### `LTileField:setGlobalLight`
+
+Sets top-down global light.
+
+```lua
+LTileField:setGlobalLight(opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `opts` | table | `{intensity?, color?}` global top-light settings. |
+
+---
+
+#### `LTileField:setProfile`
+
+Registers or replaces a named object profile.
+
+```lua
+LTileField:setProfile(name, profile_tbl)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | any |  |
+| `profile_tbl` | any |  |
+
+---
+
+#### `LTileField:setSunOcclusion`
+
+Sets top-light occlusion in the inclusive range 0..1.
+
+```lua
+LTileField:setSunOcclusion(x, y, z, value)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `z?` | any |  |
+| `value` | any |  |
+
+---
+
+#### `LTileField:type`
+
+Returns the Lua-visible type name for this tilefield handle.
+
+```lua
+LTileField:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | The string `[LTileField](#ltilefield)`. |
+
+---
+
+#### `LTileField:typeOf`
+
+Returns whether this handle matches a supported type name.
+
+```lua
+LTileField:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Type name to compare. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True for `[LTileField](#ltilefield)` or `LObject`. |
+
+---
+
+#### `LTileField:updatePointLight`
+
+Updates an existing point light by id.
+
+```lua
+LTileField:updatePointLight(id, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | any |  |
+| `opts` | any |  |
+
+---
+
 ## LTileMap
 
 ### Type Fields
@@ -5625,50 +6284,6 @@ do
 
     example_print_log("reachable_left = " .. tostring(pf:isReachable(1, 1, 9, 9)))
     example_print_log("reachable_right = " .. tostring(pf:isReachable(1, 1, 20, 20)))
-end
-```
-
----
-
-#### `LUnitPathfinder:lineOfSight`
-
-Returns whether two one-based cells have line of sight.
-
-```lua
-LUnitPathfinder:lineOfSight(x1, y1, x2, y2, unit_size)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `x1` | number | One-based column of the first cell. |
-| `y1` | number | One-based row of the first cell. |
-| `x2` | number | One-based column of the second cell. |
-| `y2` | number | One-based row of the second cell. |
-| `unit_size?` | number | Unit footprint in cells (default 1). |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| boolean | True when line of sight is clear. |
-
-**Example**
-
-```lua
-do
-    local nav = lurek.pathfind.newNavGrid(20, 20)
-
-    nav:fill(1)
-
-    local pf = lurek.pathfind.newPathfinder(nav)
-    local clear = pf:lineOfSight(1, 1, 20, 20)
-    nav:setBlocked(10, 10, true)
-    local blocked = pf:lineOfSight(1, 1, 20, 20)
-
-    example_print_log("clear = " .. tostring(clear))
-    example_print_log("blocked = " .. tostring(blocked))
 end
 ```
 

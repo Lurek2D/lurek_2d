@@ -509,7 +509,7 @@ def check_spec_file(module: str) -> List[Check]:
         "General Info": [r"^## General Info\s*$"],
         "Summary": [r"^## Summary\s*$"],
         "Imports": [r"^## Imports\s*$"],
-        "Files": [r"^## Files\s*$"],
+        "Files": [r"^## Files\s*$", r"^## Source Files\s*$"],
         "Lua API Ref": [r"^## Lua API Ref\s*$", r"^## Lua API Reference\s*$"],
     }
 

@@ -6,4 +6,4 @@
 
 These could be improved but are somewhat acceptable.
 
-- [src\locomotion\mod.rs](src\locomotion\mod.rs) - Score: 55/100
+- [src\image\visualization\camera.rs](src\image\visualization\camera.rs) - Score: 55/100

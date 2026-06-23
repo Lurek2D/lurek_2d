@@ -536,11 +536,6 @@ describe("unit pathfinder", function()
         expect_greater(pathfinder:heuristicDistance(1, 1, 4, 5), 0)
     end)
 
-    -- @covers LUnitPathfinder:lineOfSight
-    it("lineOfSight returns true for an unobstructed segment", function()
-        local _, pathfinder = new_pathfinder()
-        expect_true(pathfinder:lineOfSight(1, 1, 5, 5))
-    end)
 
     -- @covers LUnitPathfinder:setCacheEnabled
     it("setCacheEnabled toggles cache usage", function()
@@ -828,10 +823,6 @@ describe("hex grid", function()
         expect_true(#path > 0)
     end)
 
-    -- @covers LHexGrid:lineOfSight
-    it("lineOfSight returns true in open space", function()
-        expect_true(new_hex_grid():lineOfSight(1, 1, 2, 2))
-    end)
 
     -- @covers LHexGrid:fieldOfView
     it("fieldOfView returns visible cells", function()
@@ -1055,6 +1046,31 @@ describe("goal map", function()
     -- @covers LGoalMap:typeOf
     it("typeOf recognizes the goal-map type", function()
         expect_true(new_goal_map():typeOf("LGoalMap"))
+    end)
+end)
+
+-- @describe pathfind tilefield adapters
+describe("pathfind tilefield adapters", function()
+    -- @covers lurek.pathfind.newNavGridFromField
+    it("creates navgrid from tilefield move channel", function()
+        local field = lurek.tilefield.new({ width = 4, height = 4 })
+        field:applyProfile(2, 2, 1, "window")
+        local nav = lurek.pathfind.newNavGridFromField(field, { level = 1, channel = "move" })
+        expect_equal(4, nav:getWidth())
+        expect_true(nav:isBlocked(2, 2))
+    end)
+
+    -- @covers lurek.pathfind.rangeMapFromField
+    it("computes movement range from tilefield", function()
+        local field = lurek.tilefield.new({ width = 5, height = 5 })
+        field:applyProfile(3, 3, 1, "wall")
+        local range = lurek.pathfind.rangeMapFromField(field, {
+            origin = { x = 1, y = 1, z = 1 },
+            budget = 3,
+            channel = "move",
+        })
+        expect_equal(5, range.width)
+        expect_true(#range.cells > 1)
     end)
 end)
 end

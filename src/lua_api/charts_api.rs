@@ -6,7 +6,8 @@ use crate::charts::config::{
     ChartConfig, ChartDataFrameOptions, ChartMargin, ChartSeries, DEFAULT_PALETTE,
 };
 use crate::charts::{
-    AreaChart, BarChart, HeatmapChart, HistogramChart, LineChart, PieChart, ScatterPlot,
+    AreaChart, BarChart, BoxPlotChart, BubbleChart, Candle, CandlestickChart, HeatmapChart,
+    HistogramChart, LineChart, PieChart, RadarChart, ScatterPlot, TreemapChart, TreemapItem,
 };
 use crate::color::Color;
 use crate::image::{ImageData, Texture};
@@ -187,6 +188,45 @@ struct LuaHistogramChart {
 /// Lua handle for a heatmap chart backed by a numeric matrix.
 struct LuaHeatmapChart {
     inner: RefCell<HeatmapChart>,
+    dirty: Cell<bool>,
+    cache: ChartTextureCache,
+}
+
+/// Lua handle for an OHLC candlestick chart.
+struct LuaCandlestickChart {
+    inner: RefCell<CandlestickChart>,
+    dirty: Cell<bool>,
+    cache: ChartTextureCache,
+}
+
+/// Lua handle for a box-and-whisker chart.
+struct LuaBoxPlotChart {
+    inner: RefCell<BoxPlotChart>,
+    count: Cell<usize>,
+    dirty: Cell<bool>,
+    cache: ChartTextureCache,
+}
+
+/// Lua handle for a weighted bubble chart.
+struct LuaBubbleChart {
+    inner: RefCell<BubbleChart>,
+    count: Cell<usize>,
+    dirty: Cell<bool>,
+    cache: ChartTextureCache,
+}
+
+/// Lua handle for a radar/spider chart.
+struct LuaRadarChart {
+    inner: RefCell<RadarChart>,
+    count: Cell<usize>,
+    dirty: Cell<bool>,
+    cache: ChartTextureCache,
+}
+
+/// Lua handle for a treemap chart.
+struct LuaTreemapChart {
+    inner: RefCell<TreemapChart>,
+    count: Cell<usize>,
     dirty: Cell<bool>,
     cache: ChartTextureCache,
 }
@@ -456,6 +496,96 @@ fn parse_numeric_matrix(data: &LuaTable, api_name: &str) -> LuaResult<(usize, us
     Ok((rows, cols.unwrap_or(0), values))
 }
 
+fn parse_candles(data: &LuaTable, api_name: &str) -> LuaResult<Vec<Candle>> {
+    let mut candles = Vec::new();
+    for pair in data.clone().sequence_values::<LuaTable>() {
+        let row = pair?;
+        let label = row
+            .get::<_, Option<String>>("label")?
+            .unwrap_or_else(|| (candles.len() + 1).to_string());
+        let open = match row.get::<_, Option<f32>>("open")? {
+            Some(value) => value,
+            None => row.raw_get(1)?,
+        };
+        let high = match row.get::<_, Option<f32>>("high")? {
+            Some(value) => value,
+            None => row.raw_get(2)?,
+        };
+        let low = match row.get::<_, Option<f32>>("low")? {
+            Some(value) => value,
+            None => row.raw_get(3)?,
+        };
+        let close = match row.get::<_, Option<f32>>("close")? {
+            Some(value) => value,
+            None => row.raw_get(4)?,
+        };
+        if !(open.is_finite() && high.is_finite() && low.is_finite() && close.is_finite()) {
+            return Err(LuaError::RuntimeError(format!(
+                "{api_name}: candles require finite open/high/low/close values"
+            )));
+        }
+        candles.push(Candle {
+            label,
+            open,
+            high,
+            low,
+            close,
+        });
+    }
+    Ok(candles)
+}
+
+fn parse_bubble_data(data: &LuaTable, api_name: &str) -> LuaResult<Vec<(f32, f32, f32)>> {
+    let mut points = Vec::new();
+    for pair in data.clone().sequence_values::<LuaTable>() {
+        let point = pair?;
+        let x = point.get::<_, f32>(1)?;
+        let y = point.get::<_, f32>(2)?;
+        let size = point.get::<_, f32>(3)?;
+        if !(x.is_finite() && y.is_finite() && size.is_finite()) {
+            return Err(LuaError::RuntimeError(format!(
+                "{api_name}: bubble points must contain finite x, y, and size values"
+            )));
+        }
+        points.push((x, y, size));
+    }
+    Ok(points)
+}
+
+fn parse_treemap_items(
+    data: &LuaTable,
+    api_name: &str,
+    start_index: usize,
+) -> LuaResult<Vec<TreemapItem>> {
+    let mut items = Vec::new();
+    for pair in data.clone().sequence_values::<LuaTable>() {
+        let item = pair?;
+        let label = item.get::<_, Option<String>>("label")?.unwrap_or_else(|| {
+            item.raw_get(1)
+                .unwrap_or_else(|_| format!("Item {}", items.len() + 1))
+        });
+        let value = match item.get::<_, Option<f32>>("value")? {
+            Some(value) => value,
+            None => item.raw_get(2)?,
+        };
+        if !value.is_finite() {
+            return Err(LuaError::RuntimeError(format!(
+                "{api_name}: treemap values must be finite"
+            )));
+        }
+        let color = match item.get::<_, Option<LuaTable>>("color")? {
+            Some(color) => parse_color4(&color)?,
+            None => palette_color(start_index + items.len()),
+        };
+        items.push(TreemapItem {
+            label,
+            value,
+            color,
+        });
+    }
+    Ok(items)
+}
+
 struct NearestPoint<'a> {
     series_name: &'a str,
     index: usize,
@@ -528,6 +658,93 @@ fn push_nearest_point<'lua>(
     table.set("screenY", nearest.screen_y)?;
     table.set("distance", nearest.distance)?;
     Ok(LuaValue::Table(table))
+}
+
+macro_rules! add_basic_chart_methods {
+    ($methods:ident, $type_name:literal, $api_prefix:literal) => {
+        // Clears all chart data and cached chart state.
+        $methods.add_method("clear", |_, this, ()| {
+            this.inner.borrow_mut().clear();
+            this.dirty.set(true);
+            Ok(())
+        });
+        // Sets the chart title text shown in rendered output.
+        $methods.add_method("setTitle", |_, this, title: String| {
+            this.inner.borrow_mut().config.title = Some(title);
+            this.dirty.set(true);
+            Ok(())
+        });
+        // Controls whether the chart legend is rendered.
+        $methods.add_method("setShowLegend", |_, this, value: bool| {
+            this.inner.borrow_mut().config.show_legend = value;
+            this.dirty.set(true);
+            Ok(())
+        });
+        // Renders the chart into raw RGBA image bytes.
+        $methods.add_method("render", |lua, this, ()| {
+            let chart = this.inner.borrow();
+            let width = chart.config.width;
+            let height = chart.config.height;
+            let buffer =
+                render_chart_buffer(concat!($api_prefix, ":render"), width, height, |buffer| {
+                    chart.render(buffer);
+                })?;
+            Ok((width, height, lua.create_string(&buffer)?))
+        });
+        // Renders the chart into a new LImage userdata.
+        $methods.add_method("renderImage", |lua, this, ()| {
+            let chart = this.inner.borrow();
+            chart_image_userdata(
+                lua,
+                concat!($api_prefix, ":renderImage"),
+                chart.config.width,
+                chart.config.height,
+                |buffer| chart.render(buffer),
+            )
+        });
+        // Draws the rendered chart into an existing image.
+        $methods.add_method("drawToImage", |_, this, target: LuaAnyUserData| {
+            let chart = this.inner.borrow();
+            let mut image = target.borrow_mut::<ImageData>()?;
+            write_chart_to_image(
+                concat!($api_prefix, ":drawToImage"),
+                &mut image,
+                chart.config.width,
+                chart.config.height,
+                |buffer| chart.render(buffer),
+            )
+        });
+        // Draws the chart at world or screen coordinates using optional transform options.
+        $methods.add_method(
+            "draw",
+            |_, this, (x, y, opts): (f32, f32, Option<LuaTable>)| {
+                let transform = RenderDrawTransform::parse(x, y, opts)?;
+                let chart = this.inner.borrow();
+                this.cache.draw(
+                    concat!($api_prefix, ":draw"),
+                    chart.config.width,
+                    chart.config.height,
+                    &this.dirty,
+                    transform,
+                    |buffer| chart.render(buffer),
+                )
+            },
+        );
+        // Returns the configured chart width in pixels.
+        $methods.add_method("getWidth", |_, this, ()| {
+            Ok(this.inner.borrow().config.width)
+        });
+        // Returns the configured chart height in pixels.
+        $methods.add_method("getHeight", |_, this, ()| {
+            Ok(this.inner.borrow().config.height)
+        });
+        // Returns the runtime userdata type name for this chart.
+        $methods.add_method("type", |_, _, ()| Ok($type_name));
+        // Checks whether a type name matches this chart userdata.
+        $methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == $type_name || name == "LObject")
+        });
+    };
 }
 
 impl LuaUserData for LuaLineChart {
@@ -2471,6 +2688,189 @@ impl LuaUserData for LuaHeatmapChart {
     }
 }
 
+impl LuaUserData for LuaCandlestickChart {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        /// Replaces all OHLC candles from table rows with open/high/low/close fields or values 1..4.
+        methods.add_method("setCandles", |_, this, candles: LuaTable| {
+            let candles = parse_candles(&candles, "lurek.charts.LCandlestickChart:setCandles")?;
+            this.inner.borrow_mut().set_candles(candles);
+            this.dirty.set(true);
+            Ok(())
+        });
+        /// Appends one labeled OHLC candle to the end of the current candlestick stream.
+        ///
+        /// Values must be finite numbers; maxPoints from chart config trims the oldest candles.
+        methods.add_method(
+            "appendCandle",
+            |_, this, (label, open, high, low, close): (String, f32, f32, f32, f32)| {
+                if !(open.is_finite() && high.is_finite() && low.is_finite() && close.is_finite()) {
+                    return Err(LuaError::RuntimeError(
+                        "lurek.charts.LCandlestickChart:appendCandle requires finite values".into(),
+                    ));
+                }
+                this.inner.borrow_mut().append_candle(Candle {
+                    label,
+                    open,
+                    high,
+                    low,
+                    close,
+                });
+                this.dirty.set(true);
+                Ok(())
+            },
+        );
+        /// Sets up/down candle colors.
+        methods.add_method("setColors", |_, this, (up, down): (LuaTable, LuaTable)| {
+            this.inner
+                .borrow_mut()
+                .set_colors(parse_color4(&up)?, parse_color4(&down)?);
+            this.dirty.set(true);
+            Ok(())
+        });
+        add_basic_chart_methods!(
+            methods,
+            "LCandlestickChart",
+            "lurek.charts.LCandlestickChart"
+        );
+    }
+}
+
+impl LuaUserData for LuaBoxPlotChart {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        /// Adds or replaces a named distribution sample series.
+        methods.add_method(
+            "addSeries",
+            |_, this, (name, values, color): (String, LuaTable, Option<LuaTable>)| {
+                let values = parse_value_list(&values, "lurek.charts.LBoxPlotChart:addSeries")?;
+                let rgba = color_from_optional_table(color, this.count.get())?;
+                this.count.set(this.count.get() + 1);
+                this.inner.borrow_mut().add_series(&name, &values, rgba);
+                this.dirty.set(true);
+                Ok(())
+            },
+        );
+        /// Appends one numeric sample to a named distribution.
+        methods.add_method(
+            "appendValue",
+            |_, this, (name, value, color): (String, f32, Option<LuaTable>)| {
+                if !value.is_finite() {
+                    return Err(LuaError::RuntimeError(
+                        "lurek.charts.LBoxPlotChart:appendValue requires a finite value".into(),
+                    ));
+                }
+                let rgba = color_from_optional_table(color, this.count.get())?;
+                this.inner.borrow_mut().append_value(&name, value, rgba);
+                this.dirty.set(true);
+                Ok(())
+            },
+        );
+        add_basic_chart_methods!(methods, "LBoxPlotChart", "lurek.charts.LBoxPlotChart");
+    }
+}
+
+impl LuaUserData for LuaBubbleChart {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        /// Adds or replaces a weighted point series from `{x, y, size}` rows.
+        methods.add_method(
+            "addSeries",
+            |_, this, (name, data, color): (String, LuaTable, Option<LuaTable>)| {
+                let points = parse_bubble_data(&data, "lurek.charts.LBubbleChart:addSeries")?;
+                let rgba = color_from_optional_table(color, this.count.get())?;
+                this.count.set(this.count.get() + 1);
+                this.inner.borrow_mut().add_series(&name, &points, rgba);
+                this.dirty.set(true);
+                Ok(())
+            },
+        );
+        /// Appends one weighted point to a named bubble series.
+        methods.add_method(
+            "appendPoint",
+            |_, this, (name, x, y, size, color): (String, f32, f32, f32, Option<LuaTable>)| {
+                let rgba = color_from_optional_table(color, this.count.get())?;
+                this.inner
+                    .borrow_mut()
+                    .append_point(&name, x, y, size, rgba);
+                this.dirty.set(true);
+                Ok(())
+            },
+        );
+        /// Sets the minimum and maximum bubble radius in pixels.
+        methods.add_method("setRadiusRange", |_, this, (min, max): (f32, f32)| {
+            this.inner.borrow_mut().set_radius_range(min, max);
+            this.dirty.set(true);
+            Ok(())
+        });
+        add_basic_chart_methods!(methods, "LBubbleChart", "lurek.charts.LBubbleChart");
+    }
+}
+
+impl LuaUserData for LuaRadarChart {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        /// Replaces radar axis labels.
+        methods.add_method("setAxes", |_, this, axes: LuaTable| {
+            this.inner
+                .borrow_mut()
+                .set_axes(lua_table_to_strings(axes)?);
+            this.dirty.set(true);
+            Ok(())
+        });
+        /// Adds or replaces a named radar series.
+        methods.add_method(
+            "addSeries",
+            |_, this, (name, values, color): (String, LuaTable, Option<LuaTable>)| {
+                let values = parse_value_list(&values, "lurek.charts.LRadarChart:addSeries")?;
+                let rgba = color_from_optional_table(color, this.count.get())?;
+                this.count.set(this.count.get() + 1);
+                this.inner.borrow_mut().add_series(&name, &values, rgba);
+                this.dirty.set(true);
+                Ok(())
+            },
+        );
+        /// Sets the explicit maximum radial value.
+        methods.add_method("setMaxValue", |_, this, value: f32| {
+            this.inner.borrow_mut().set_max_value(value);
+            this.dirty.set(true);
+            Ok(())
+        });
+        /// Clears the explicit maximum radial value.
+        methods.add_method("clearMaxValue", |_, this, ()| {
+            this.inner.borrow_mut().clear_max_value();
+            this.dirty.set(true);
+            Ok(())
+        });
+        add_basic_chart_methods!(methods, "LRadarChart", "lurek.charts.LRadarChart");
+    }
+}
+
+impl LuaUserData for LuaTreemapChart {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        /// Replaces weighted treemap items from label/value rows or fields.
+        methods.add_method("setItems", |_, this, items: LuaTable| {
+            let items = parse_treemap_items(
+                &items,
+                "lurek.charts.LTreemapChart:setItems",
+                this.count.get(),
+            )?;
+            this.count.set(this.count.get() + items.len());
+            this.inner.borrow_mut().set_items(items);
+            this.dirty.set(true);
+            Ok(())
+        });
+        /// Adds one weighted treemap item.
+        methods.add_method(
+            "addItem",
+            |_, this, (label, value, color): (String, f32, Option<LuaTable>)| {
+                let rgba = color_from_optional_table(color, this.count.get())?;
+                this.count.set(this.count.get() + 1);
+                this.inner.borrow_mut().add_item(&label, value, rgba);
+                this.dirty.set(true);
+                Ok(())
+            },
+        );
+        add_basic_chart_methods!(methods, "LTreemapChart", "lurek.charts.LTreemapChart");
+    }
+}
+
 /// Register the `lurek.charts` namespace.
 pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let charts = lua.create_table()?;
@@ -2607,6 +3007,105 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 let config = parse_chart_config(config)?;
                 Ok(LuaHeatmapChart {
                     inner: RefCell::new(HeatmapChart::new(config)),
+                    dirty: Cell::new(true),
+                    cache: ChartTextureCache::new(state.clone()),
+                })
+            }
+        })?,
+    )?;
+
+    /// Creates a new candlestick chart userdata instance.
+    ///
+    /// @param | config | table? | Parameter value for this chart operation.
+    /// @return | LCandlestickChart | New candlestick chart userdata.
+    charts.set(
+        "newCandlestick",
+        lua.create_function({
+            let state = state.clone();
+            move |_, config: Option<LuaTable>| {
+                let config = parse_chart_config(config)?;
+                Ok(LuaCandlestickChart {
+                    inner: RefCell::new(CandlestickChart::new(config)),
+                    dirty: Cell::new(true),
+                    cache: ChartTextureCache::new(state.clone()),
+                })
+            }
+        })?,
+    )?;
+
+    /// Creates a new boxplot chart userdata instance.
+    ///
+    /// @param | config | table? | Parameter value for this chart operation.
+    /// @return | LBoxPlotChart | New boxplot chart userdata.
+    charts.set(
+        "newBoxPlot",
+        lua.create_function({
+            let state = state.clone();
+            move |_, config: Option<LuaTable>| {
+                let config = parse_chart_config(config)?;
+                Ok(LuaBoxPlotChart {
+                    inner: RefCell::new(BoxPlotChart::new(config)),
+                    count: Cell::new(0),
+                    dirty: Cell::new(true),
+                    cache: ChartTextureCache::new(state.clone()),
+                })
+            }
+        })?,
+    )?;
+
+    /// Creates a new bubble chart userdata instance.
+    ///
+    /// @param | config | table? | Parameter value for this chart operation.
+    /// @return | LBubbleChart | New bubble chart userdata.
+    charts.set(
+        "newBubble",
+        lua.create_function({
+            let state = state.clone();
+            move |_, config: Option<LuaTable>| {
+                let config = parse_chart_config(config)?;
+                Ok(LuaBubbleChart {
+                    inner: RefCell::new(BubbleChart::new(config)),
+                    count: Cell::new(0),
+                    dirty: Cell::new(true),
+                    cache: ChartTextureCache::new(state.clone()),
+                })
+            }
+        })?,
+    )?;
+
+    /// Creates a new radar chart userdata instance.
+    ///
+    /// @param | config | table? | Parameter value for this chart operation.
+    /// @return | LRadarChart | New radar chart userdata.
+    charts.set(
+        "newRadar",
+        lua.create_function({
+            let state = state.clone();
+            move |_, config: Option<LuaTable>| {
+                let config = parse_chart_config(config)?;
+                Ok(LuaRadarChart {
+                    inner: RefCell::new(RadarChart::new(config)),
+                    count: Cell::new(0),
+                    dirty: Cell::new(true),
+                    cache: ChartTextureCache::new(state.clone()),
+                })
+            }
+        })?,
+    )?;
+
+    /// Creates a new treemap chart userdata instance.
+    ///
+    /// @param | config | table? | Parameter value for this chart operation.
+    /// @return | LTreemapChart | New treemap chart userdata.
+    charts.set(
+        "newTreemap",
+        lua.create_function({
+            let state = state.clone();
+            move |_, config: Option<LuaTable>| {
+                let config = parse_chart_config(config)?;
+                Ok(LuaTreemapChart {
+                    inner: RefCell::new(TreemapChart::new(config)),
+                    count: Cell::new(0),
                     dirty: Cell::new(true),
                     cache: ChartTextureCache::new(state.clone()),
                 })

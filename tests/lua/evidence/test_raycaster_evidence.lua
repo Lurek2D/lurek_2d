@@ -43,11 +43,11 @@ local function make_feature_map(kind, amount)
     rc:setCell(8, 5, 2)
     rc:setCell(12, 5, 3)
     if kind == "half" then
-        rc:setHalfWallCell(8, 5, 0.48)
+        rc:setWallFeatureCell(8, 5, { kind = "half", height = 0.48 })
     elseif kind == "window" then
-        rc:setWindowCell(8, 5, 0.25, 0.78, 0.35)
+        rc:setWallFeatureCell(8, 5, { kind = "window", sill_height = 0.25, lintel_height = 0.78, alpha = 0.35 })
     elseif kind == "door" then
-        rc:setDoorCell(8, 5, "vertical", amount or 0.0, 0.82)
+        rc:setWallFeatureCell(8, 5, { kind = "door", direction = "vertical", open_amount = amount or 0.0, alpha = 0.82 })
     end
     return rc
 end
@@ -190,50 +190,16 @@ describe("Evidence: lurek.raycaster", function()
         save_png(img, "raycaster_camera_sweep_atlas.png")
     end)
 
-    -- Does: Draws a top-down raycaster debug map and overlays the revealed fog-of-war cells.
-    -- Shows: The player FOV rays and the returned visible cell set in the same grid space.
-    -- Artifact: tests/artifacts/current/raycaster/raycaster_topdown_reveal_fov.png
-    -- Why: This demonstrates drawTopDown and revealCellsFromRays as visibility tooling tied to the DDA model.
-    it("PNG: top-down reveal FOV", function()
+    -- Does: Draws a top-down raycaster debug map and overlays the same render rays used by the camera.
+    -- Shows: The player FOV rays in grid space without deriving gameplay visibility masks.
+    -- Artifact: tests/artifacts/current/raycaster/raycaster_topdown_cast_rays.png
+    -- Why: This demonstrates drawTopDown and castRays as render-space inspection.
+    it("PNG: top-down cast rays", function()
         local rc = make_corridor()
         local angle = math.pi / 2
         local img = rc:drawTopDown(8.5, 8.5, angle, 14)
-        local cells = rc:revealCellsFromRays(8.5, 8.5, angle, math.pi / 3, 31, 10.0, 0.25)
-        for _, cell in ipairs(cells) do
-            img:drawRect(cell.x * 14 + 3, cell.y * 14 + 3, 8, 8, 70, 210, 255, 190)
-        end
         draw_fov_rays(img, rc, 8.5, 8.5, angle, math.pi / 3, 11, 10.0, 14, 0, 0)
-        save_png(img, "raycaster_topdown_reveal_fov.png")
-    end)
-
-    -- Does: Compares blocked wall, window opening, closed door, and open door line-of-sight.
-    -- Shows: The LOS renderer should visibly change when a feature cell allows or blocks visibility.
-    -- Artifact: tests/artifacts/current/raycaster/raycaster_los_wall_window_door.png
-    -- Why: This demonstrates drawLineOfSight with setWindowCell and setDoorCell feature semantics.
-    it("PNG: LOS wall/window/door comparison", function()
-        local sheet = lurek.image.newImageData(640, 160)
-        sheet:fill(8, 10, 16, 255)
-
-        local solid = make_room(16, 16)
-        solid:setCell(7, 7, 1)
-        sheet:blit(solid:drawLineOfSight(2.5, 7.5, 13.5, 7.5, 10), 0, 0)
-
-        local window = make_room(16, 16)
-        window:setCell(7, 7, 1)
-        window:setWindowCell(7, 7, 0.25, 0.78, 0.35)
-        sheet:blit(window:drawLineOfSight(2.5, 7.5, 13.5, 7.5, 10), 160, 0)
-
-        local closed = make_room(16, 16)
-        closed:setCell(7, 7, 1)
-        closed:setDoorCell(7, 7, "vertical", 0.0, 0.8)
-        sheet:blit(closed:drawLineOfSight(2.5, 7.5, 13.5, 7.5, 10), 320, 0)
-
-        local open = make_room(16, 16)
-        open:setCell(7, 7, 1)
-        open:setDoorCell(7, 7, "vertical", 1.0, 0.8)
-        sheet:blit(open:drawLineOfSight(2.5, 7.5, 13.5, 7.5, 10), 480, 0)
-
-        save_png(sheet, "raycaster_los_wall_window_door.png")
+        save_png(img, "raycaster_topdown_cast_rays.png")
     end)
 
     -- Does: Casts one ray through two transparent wall layers before the final opaque wall.
@@ -291,36 +257,6 @@ describe("Evidence: lurek.raycaster", function()
             draw_pick_world(sheet, lower, 7, 230, 230, 235, x0 + 18, 136)
         end
         save_png(sheet, "raycaster_feature_walls_view_pick.png")
-    end)
-
-    -- Does: Extracts a player-centered minimap and pairs it with lit minimap samples around the same point.
-    -- Shows: The left side is pixel minimap extraction; the right side is visible/lit tile sampling.
-    -- Artifact: tests/artifacts/current/raycaster/raycaster_minimap_reveal_lighting.png
-    -- Why: This demonstrates extractMinimap and buildMinimapWindow as map-space raycaster inspection APIs.
-    it("PNG: minimap reveal and lighting", function()
-        local rc = make_corridor()
-        local mini = rc:extractMinimap(8.5, 8.5, 0.0, 6, 14)
-        local light = lurek.raycaster.newPointLight(8.5, 8.5, 1.0, 0.72, 0.38, 7.0, 1.7)
-        local samples = rc:buildMinimapWindow(8.5, 8.5, 4, 0.10, { light })
-        local img = lurek.image.newImageData(360, 180)
-        img:fill(8, 10, 16, 255)
-        img:blit(mini, 0, 0)
-        for _, s in ipairs(samples) do
-            local x = 200 + (s.x - 4) * 16
-            local y = 18 + (s.y - 4) * 16
-            local r = math.floor((s.r or 0.1) * 255)
-            local g = math.floor((s.g or 0.1) * 255)
-            local b = math.floor((s.b or 0.1) * 255)
-            if s.blocked then
-                img:drawRect(x, y, 14, 14, math.max(r, 95), math.max(g, 60), math.max(b, 45), 255)
-            elseif s.visible then
-                img:drawRect(x, y, 14, 14, r, g, b, 255)
-            else
-                img:drawRect(x, y, 14, 14, 22, 25, 34, 255)
-            end
-        end
-        mark(img, 8.5, 8.5, 14, 255, 255, 255, 0, 0)
-        save_png(img, "raycaster_minimap_reveal_lighting.png")
     end)
 
     -- Does: Uses screen picking and floor-row UV casting on the same first-person camera.
@@ -397,7 +333,7 @@ describe("Evidence: lurek.raycaster", function()
         grid:setLoweredFloorCell(3, 3, { texture = 1, depth = 0.35, blocked = false, r = 0.45, g = 0.65, b = 1.0 })
         local p = params(2.5, 2.5, 0.0, 180, 110)
         p.active_level = 1
-        grid:buildScene(p, { lurek.raycaster.newPointLight(2.5, 2.5, 1.0, 0.9, 0.7, 5.0, 1.2, 1) }, {}, {})
+        grid:buildScene(p, { { x = 2.5, y = 2.5, r = 1.0, g = 0.9, b = 0.7, radius = 5.0, intensity = 1.2, level = 1 } }, {}, {})
         local pick = grid:pickScreen(90, 55, p, {})
 
         local img = lurek.image.newImageData(300, 180)

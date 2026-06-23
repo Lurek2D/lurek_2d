@@ -314,7 +314,6 @@ describe("evidence: pathfind", function()
             "nearest_walkable=" .. tostring(nearest_x) .. "," .. tostring(nearest_y),
             "reachable=" .. tostring(pf:isReachable(1, 1, 12, 10)),
             "heuristic=" .. tostring(pf:heuristicDistance(1, 1, 12, 10)),
-            "line_of_sight=" .. tostring(pf:lineOfSight(1, 1, 3, 3)),
             "cache_enabled=" .. tostring(pf:isCacheEnabled()),
             "cache_size=" .. tostring(pf:getCacheSize()),
             "flow_calculated=" .. tostring(ff:isCalculated()),

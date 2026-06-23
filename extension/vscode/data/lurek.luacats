@@ -5,6 +5,151 @@ lurek = {}
 
 ---@alias LuaValue nil|boolean|number|string|table|function|userdata|thread
 
+--- Global engine callbacks invoked by the runtime when defined in `main.lua`.
+
+--- Called every frame to queue world render commands.
+function lurek.draw() end
+
+--- Called every frame after world drawing to queue UI and HUD render commands.
+function lurek.draw_ui() end
+
+--- Called before the runtime exits after an explicit close path.
+function lurek.exit() end
+
+--- Deprecated fixed-step update callback; use `lurek.process_physics(dt)`.
+---@deprecated Deprecated fixed-step update callback; use `lurek.process_physics(dt)`.
+---@param dt number Fixed timestep in seconds.
+function lurek.fixedUpdate(dt) end
+
+--- Called when the application window gains or loses focus.
+---@param focused boolean True when the window is focused.
+function lurek.focus(focused) end
+
+--- Called when a connected gamepad axis changes.
+---@param id number Gamepad slot id.
+---@param axis string Axis name.
+---@param value number Axis value reported by the backend.
+function lurek.gamepadaxis(id, axis, value) end
+
+--- Called when a gamepad connects.
+---@param id number Gamepad slot id.
+function lurek.gamepadconnected(id) end
+
+--- Called when a gamepad disconnects.
+---@param id number Gamepad slot id.
+function lurek.gamepaddisconnected(id) end
+
+--- Called when a gamepad button is pressed.
+---@param id number Gamepad slot id.
+---@param button string Button name.
+function lurek.gamepadpressed(id, button) end
+
+--- Called when a gamepad button is released.
+---@param id number Gamepad slot id.
+---@param button string Button name.
+function lurek.gamepadreleased(id, button) end
+
+--- Called once after the Lua VM, shared state, and `lurek.*` modules are ready.
+function lurek.init() end
+
+--- Compatibility callback called when a gamepad connects.
+---@param id number Gamepad slot id.
+function lurek.joystickadded(id) end
+
+--- Compatibility callback called when a gamepad disconnects.
+---@param id number Gamepad slot id.
+function lurek.joystickremoved(id) end
+
+--- Called when a keyboard key is pressed and UI did not consume it.
+---@param key string Normalized key name.
+---@param scancode string Normalized physical scancode, or an empty string when unavailable.
+---@param isrepeat boolean True when the key press is an OS repeat event.
+function lurek.keypressed(key, scancode, isrepeat) end
+
+--- Called when a keyboard key is released.
+---@param key string Normalized key name.
+---@param scancode string Normalized physical scancode, or an empty string when unavailable.
+function lurek.keyreleased(key, scancode) end
+
+--- Called when the pointer moves in game coordinates and UI did not consume it.
+---@param x number Pointer x coordinate in game space.
+---@param y number Pointer y coordinate in game space.
+---@param dx number Delta x since the previous pointer event.
+---@param dy number Delta y since the previous pointer event.
+function lurek.mousemoved(x, y, dx, dy) end
+
+--- Called when a mouse button is pressed and UI did not consume it.
+---@param x number Pointer x coordinate in game space.
+---@param y number Pointer y coordinate in game space.
+---@param button number One-based mouse button index.
+function lurek.mousepressed(x, y, button) end
+
+--- Called when a mouse button is released and UI did not consume it.
+---@param x number Pointer x coordinate in game space.
+---@param y number Pointer y coordinate in game space.
+---@param button number One-based mouse button index.
+function lurek.mousereleased(x, y, button) end
+
+--- Called every frame for game logic.
+---@param dt number Frame delta time in seconds.
+function lurek.process(dt) end
+
+--- Called every frame after `process` and fixed-step physics callbacks.
+---@param dt number Frame delta time in seconds.
+function lurek.process_late(dt) end
+
+--- Called at the fixed timestep zero or more times per rendered frame.
+---@param dt number Fixed timestep in seconds.
+function lurek.process_physics(dt) end
+
+--- Called once after startup when the first frame resources are ready.
+function lurek.ready() end
+
+--- Called after the renderer and viewport are resized.
+---@param width number Window width in pixels after clamping.
+---@param height number Window height in pixels after clamping.
+function lurek.resize(width, height) end
+
+--- Called when committed text input arrives and UI did not consume it.
+---@param text string Committed text.
+function lurek.textinput(text) end
+
+--- Called when a touch point moves.
+---@param id number Touch identifier.
+---@param x number Touch x coordinate in game space.
+---@param y number Touch y coordinate in game space.
+---@param dx number Delta x since the previous touch event.
+---@param dy number Delta y since the previous touch event.
+---@param pressure? number Normalized pressure when available.
+function lurek.touchmoved(id, x, y, dx, dy, pressure) end
+
+--- Called when a touch point starts.
+---@param id number Touch identifier.
+---@param x number Touch x coordinate in game space.
+---@param y number Touch y coordinate in game space.
+---@param dx number Initial delta x, normally `0`.
+---@param dy number Initial delta y, normally `0`.
+---@param pressure? number Normalized pressure when available.
+function lurek.touchpressed(id, x, y, dx, dy, pressure) end
+
+--- Called when a touch point ends or is cancelled.
+---@param id number Touch identifier.
+---@param x number Touch x coordinate in game space.
+---@param y number Touch y coordinate in game space.
+---@param dx number Delta x since the previous touch event.
+---@param dy number Delta y since the previous touch event.
+---@param pressure? number Normalized pressure when available.
+function lurek.touchreleased(id, x, y, dx, dy, pressure) end
+
+--- Called when the window occlusion/visibility state changes.
+---@param visible boolean True when the window is visible.
+function lurek.visible(visible) end
+
+--- Called when mouse-wheel input arrives and UI did not consume it.
+---@param dx number Horizontal wheel delta.
+---@param dy number Vertical wheel delta.
+function lurek.wheelmoved(dx, dy) end
+
 ---@class LNetworkRpc
 LNetworkRpc = {}
 
@@ -1677,6 +1822,9 @@ lurek.terminal = {}
 ---@class lurek.thread
 lurek.thread = {}
 
+---@class lurek.tilefield
+lurek.tilefield = {}
+
 ---@class lurek.tilemap
 lurek.tilemap = {}
 
@@ -2735,6 +2883,10 @@ LThreadHandle = {}
 ---@class LThreadPool
 LThreadPool = {}
 
+--- Lua-side handle wrapping a shared tilefield.
+---@class LTileField
+LTileField = {}
+
 --- Lua-side handle wrapping an `AutoTileSheet` that maps bitmasks to tile quads for auto-tiling.
 ---@class LAutoTileSheet
 LAutoTileSheet = {}
@@ -2955,6 +3107,10 @@ LValidationEngine = {}
 --- Lua-side wrapper for a tile-grid recursive-shadowcasting FOV.
 ---@class LFov
 LFov = {}
+
+--- Lua-side wrapper for per-player tile visibility/action masks.
+---@class LTileVisibility
+LTileVisibility = {}
 
 --- Lua-side wrapper for a visibility grid instance.
 ---@class LVisibilityGrid
@@ -21396,6 +21552,12 @@ lurek.pathfind.newJpsGrid = function(width, height) end
 ---@return LNavGrid New navigation grid handle.
 lurek.pathfind.newNavGrid = function(width, height) end
 
+--- Creates a navigation grid from a tilefield level and channel.
+---@param field_ud LTileField Tilefield to derive navigation grid from.
+---@param opts? table Options with `level`, `channel`, `costChannel`, and `diagonalMode`.
+---@return LNavGrid New navigation grid handle.
+lurek.pathfind.newNavGridFromField = function(field_ud, opts) end
+
 --- Creates a navigation grid from a tilemap layer and blocked gid table.
 ---@param tm_ud LTileMap Tilemap to derive navigation grid from.
 ---@param layer_index number One-based tilemap layer index.
@@ -21432,6 +21594,12 @@ lurek.pathfind.pollAsyncPaths = function() end
 ---@param opts table Options with dimensions, origin, budget, optional diagonal flag, costs, and blocked cells.
 ---@return LPathfindRangeMapResult Range map result with `cells`, `width`, and `height` fields.
 lurek.pathfind.rangeMap = function(opts) end
+
+--- Computes reachable cells from a tilefield level and movement channel.
+---@param field_ud LTileField Tilefield to read.
+---@param opts table Options with `origin`, `budget`, optional `level`, `channel`, `costChannel`, and `diagonal`.
+---@return table Range map result with `cells`, `width`, `height`, and `level`.
+lurek.pathfind.rangeMapFromField = function(field_ud, opts) end
 
 --- Sets the configured pathfinding worker-thread count.
 ---@param count number Desired thread count.
@@ -25546,6 +25714,16 @@ lurek.raycaster.buildMultiLevelScene = function(params, levels, lights, sprites,
 ---@return number Total number of quads in the built scene.
 lurek.raycaster.buildMultiLevelSceneFromAdapter = function(params, levels, adapter, wallTextures) end
 
+--- Builds a multilevel raycaster scene from a tilefield blocker channel.
+---@param params table Scene params plus optional active_level.
+---@param field LTileField Source tilefield.
+---@param opts? table Options with `wallChannel` (default `vision`).
+---@param lights? table Optional raycaster point lights.
+---@param sprites? table|LSpriteManager Optional raycaster sprites.
+---@param wallTextures? table Map of cell_value -> texture for wall surfaces.
+---@return number Total number of quads in the built scene.
+lurek.raycaster.buildMultiLevelSceneFromField = function(params, field, opts, lights, sprites, wallTextures) end
+
 --- Returns a brightness multiplier (0.0..1.0) based on distance for fog/darkness falloff.
 ---@param distance number Distance to shade.
 ---@param maxDistance number Distance at which shade reaches zero.
@@ -28794,6 +28972,196 @@ lurek.thread.newPool = function(size, code) end
 ---@param code string Lua source code to run in the worker VM.
 ---@return LThread A thread handle that can be started, waited on, and inspected.
 lurek.thread.newThread = function(code) end
+
+--- Adds a point light and returns its stable id.
+---@param opts any
+function LTileField:addPointLight(opts) end
+
+--- Applies a named profile to one cell.
+---@param x any
+---@param y any
+---@param z? any
+---@param name any
+function LTileField:applyProfile(x, y, z, name) end
+
+--- Returns whether a cell blocks a channel.
+---@param x any
+---@param y any
+---@param z? any
+---@param channel any
+function LTileField:blocks(x, y, z, channel) end
+
+--- Clears all cell gameplay state and computed light values.
+function LTileField:clear() end
+
+--- Clears one cell.
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+function LTileField:clearCell(x, y, z) end
+
+--- Returns true when the line between two cell tables has no blocker for a channel.
+---@param from_tbl any
+---@param to_tbl any
+---@param channel any
+---@param opts? any
+function LTileField:clearLine(from_tbl, to_tbl, channel, opts) end
+
+--- Removes all point lights.
+function LTileField:clearPointLights() end
+
+--- Computes tile light from ambient, point lights, and global top light.
+---@param opts? any
+function LTileField:computeLight(opts) end
+
+--- Exports one blocker channel and level as a row-major boolean array.
+---@param channel any
+---@param z? any
+function LTileField:exportBlockLayer(channel, z) end
+
+--- Exports one cost channel and level as a row-major number array.
+---@param channel any
+---@param z? any
+function LTileField:exportCostLayer(channel, z) end
+
+--- Exports one level of computed light as row-major `{r,g,b,luma}` tables.
+---@param z? any
+function LTileField:exportLightLayer(z) end
+
+--- Exports all computed light levels as nested row-major tables.
+function LTileField:exportLightVolume() end
+
+--- Exports one level of profile names as a row-major array.
+---@param z? any
+function LTileField:exportProfileLayer(z) end
+
+--- Returns the first one-based blocking cell table between two cells, or nil.
+---@param from_tbl any
+---@param to_tbl any
+---@param channel any
+---@param opts? any
+function LTileField:firstBlocker(from_tbl, to_tbl, channel, opts) end
+
+--- Returns a table with blockers, costs, sun occlusion, and optional profile name.
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@return table Cell state table.
+function LTileField:getCell(x, y, z) end
+
+--- Returns the cost for one cell/channel.
+---@param x any
+---@param y any
+---@param z? any
+---@param channel any
+function LTileField:getCost(x, y, z, channel) end
+
+--- Returns r, g, b, and luma for one cell.
+---@param x any
+---@param y any
+---@param z? any
+function LTileField:getLight(x, y, z) end
+
+--- Returns a named object profile table, or nil when absent.
+---@param name any
+function LTileField:getProfile(name) end
+
+--- Returns field width, height, and level count.
+---@return number Field width in cells.
+---@return number Field height in cells.
+---@return number Level count.
+function LTileField:getSize() end
+
+--- Returns top-light occlusion in the inclusive range 0..1.
+---@param x any
+---@param y any
+---@param z? any
+function LTileField:getSunOcclusion(x, y, z) end
+
+--- Returns the field topology name.
+---@return string `square`, `iso_square`, or `hex`.
+function LTileField:getTopology() end
+
+--- Returns whether one-based coordinates are inside the field.
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@return boolean True when coordinates are in bounds.
+function LTileField:inBounds(x, y, z) end
+
+--- Returns topology-aware one-based cells between `from` and `to` tables.
+---@param opts any
+function LTileField:line(opts) end
+
+--- Removes a point light by id and returns whether it existed.
+---@param id any
+function LTileField:removePointLight(id) end
+
+--- Removes a named object profile.
+---@param name any
+function LTileField:removeProfile(name) end
+
+--- Sets whether a cell blocks a channel.
+---@param x any
+---@param y any
+---@param z? any
+---@param channel any
+---@param blocked any
+function LTileField:setBlock(x, y, z, channel, blocked) end
+
+--- Sets cell state from a table with optional `blocks`, `costs`, `sunOcclusion`, and `profile`.
+---@param x number One-based column.
+---@param y number One-based row.
+---@param z? number One-based level, default 1.
+---@param cell table Cell data.
+function LTileField:setCell(x, y, z, cell) end
+
+--- Sets the cost for one cell/channel.
+---@param x any
+---@param y any
+---@param z? any
+---@param channel any
+---@param cost any
+function LTileField:setCost(x, y, z, channel, cost) end
+
+--- Sets top-down global light.
+---@param opts any
+function LTileField:setGlobalLight(opts) end
+
+--- Registers or replaces a named object profile.
+---@param name any
+---@param profile_tbl any
+function LTileField:setProfile(name, profile_tbl) end
+
+--- Sets top-light occlusion in the inclusive range 0..1.
+---@param x any
+---@param y any
+---@param z? any
+---@param value any
+function LTileField:setSunOcclusion(x, y, z, value) end
+
+--- Returns the Lua-visible type name for this tilefield handle.
+function LTileField:type() end
+
+--- Returns whether this handle matches a supported type name.
+---@param name any
+function LTileField:typeOf(name) end
+
+--- Updates an existing point light by id.
+---@param id any
+---@param opts any
+function LTileField:updatePointLight(id, opts) end
+
+--- Copies a tilemap layer into a tilefield using solid and empty profiles.
+---@param tilemap LTileMap Source tilemap.
+---@param opts? table `{level?, topology?, solidProfile?, emptyProfile?, solidGids?}`.
+---@return LTileField New tilefield copied from the tilemap layer.
+lurek.tilefield.fromTileMap = function(tilemap, opts) end
+
+--- Creates a multi-level tilefield.
+---@param opts table `{width, height, levels?, topology?}`.
+---@return LTileField New tilefield handle.
+lurek.tilefield.new = function(opts) end
 
 --- Writes the auto-tile bitmask-to-tile rules from this sheet into a tileset.
 ---@param tileSet LTileSet Target tileset to receive the rules.
@@ -32638,6 +33006,61 @@ function LFov:typeOf(name) end
 ---@return table Array of cell position tables.
 function LFov:visibleCells() end
 
+--- Returns all currently actionable cells for a player, optionally filtered to a level.
+---@param player any
+---@param z? any
+function LTileVisibility:actionCells(player, z) end
+
+--- Returns whether a one-based cell is currently actionable for a player.
+---@param player any
+---@param x any
+---@param y any
+---@param z? any
+function LTileVisibility:canActOn(player, x, y, z) end
+
+--- Clears current, explored, and action masks for all players.
+function LTileVisibility:clearAll() end
+
+--- Clears current, explored, and action masks for one player.
+---@param player any
+function LTileVisibility:clearPlayer(player) end
+
+--- Computes one player's current action mask from a tilefield origin.
+---@param player any
+---@param opts any
+function LTileVisibility:computeAction(player, opts) end
+
+--- Computes one player's current visible mask from a tilefield origin.
+---@param player any
+---@param opts any
+function LTileVisibility:computeVisible(player, opts) end
+
+--- Returns whether a one-based cell has been explored for a player.
+---@param player any
+---@param x any
+---@param y any
+---@param z? any
+function LTileVisibility:isExplored(player, x, y, z) end
+
+--- Returns whether a one-based cell is currently visible for a player.
+---@param player any
+---@param x any
+---@param y any
+---@param z? any
+function LTileVisibility:isVisible(player, x, y, z) end
+
+--- Returns the Lua-visible type name for this tile visibility handle.
+function LTileVisibility:type() end
+
+--- Returns whether this handle matches a supported type name.
+---@param name any
+function LTileVisibility:typeOf(name) end
+
+--- Returns all currently visible cells for a player, optionally filtered to a level.
+---@param player any
+---@param z? any
+function LTileVisibility:visibleCells(player, z) end
+
 --- Drains and returns all pending visibility events.
 ---@return table Array of event tables with `type`, `player_id`, and `region_id` fields.
 function LVisibilityGrid:drainEvents() end
@@ -32714,6 +33137,22 @@ function LVisibilityGrid:setGroup(players) end
 ---@return boolean Whether they share visibility.
 function LVisibilityGrid:sharesVisibility(player_a, player_b) end
 
+--- Returns whether two tilefield cells have a clear action line.
+---@param field LTileField Tilefield to query.
+---@param from table One-based `{x,y,z?}` start.
+---@param to table One-based `{x,y,z?}` target.
+---@param opts? table Optional `{channel="action"}`.
+---@return boolean True when clear.
+lurek.visibility.lineOfAction = function(field, from, to, opts) end
+
+--- Returns whether two tilefield cells have a clear sight line.
+---@param field LTileField Tilefield to query.
+---@param from table One-based `{x,y,z?}` start.
+---@param to table One-based `{x,y,z?}` target.
+---@param opts? table Optional `{channel="vision"}`.
+---@return boolean True when clear.
+lurek.visibility.lineOfSight = function(field, from, to, opts) end
+
 --- Create a new visibility grid for shadow-cast computation.
 ---@param config table Configuration table with `regions` (integer) and `players` (integer) fields. Optional `fog` sub-table with `discovered` (number), `hidden` (number), `smooth` (boolean), `speed` (number).
 ---@return LVisibilityGrid New visibility grid handle.
@@ -32723,6 +33162,12 @@ lurek.visibility.new = function(config) end
 ---@param opts table `{ range=integer, light_walls=boolean? }` (default light_walls=true).
 ---@return LFov New FOV handle ready for blocker assignment and compute calls.
 lurek.visibility.newFov = function(opts) end
+
+--- Creates per-player tile visibility/action masks backed by a tilefield.
+---@param field LTileField Source tilefield.
+---@param opts table `{players={...}, rememberExplored=true?}`.
+---@return LTileVisibility New tile visibility handle.
+lurek.visibility.newTileVisibility = function(field, opts) end
 
 --- Closes the window and signals the engine to shut down.
 lurek.window.close = function() end

@@ -11,4 +11,4 @@ backend = "auto"
 power_preference = "low"
 
 [performance]
-fps_cap = 60
+target_fps = 10

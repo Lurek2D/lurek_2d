@@ -2,33 +2,66 @@
 -- Auto-generated from content/examples2/raycaster_*.lua by tools/fix/merge_examples2_into_examples.py
 -- Run: cargo run -- content/examples/raycaster.lua
 
-local function ray_log(message)
-    lurek.log.info("[raycaster.example] " .. tostring(message))
+
+--@api: lurek.raycaster.buildMultiLevelSceneFromField
+do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local field = lurek.tilefield.new({ width = 5, height = 5, levels = 2 })
+    field:applyProfile(3, 3, 1, "wall")
+    field:applyProfile(4, 4, 2, "wall")
+    local quads = lurek.raycaster.buildMultiLevelSceneFromField({ px = 2.5, py = 2.5, angle = 0, fov = 1.0, rays = 32, max_dist = 8, screen_w = 96, screen_h = 64, active_level = 0 }, field, { wallChannel = "vision" })
+    ray_log("tilefield raycaster quads = " .. quads)
 end
 
-local function build_walled_ray_map(width, height)
-    local map = lurek.raycaster.new(width, height)
-    for x = 0, width - 1 do
-        map:setCell(x, 0, 1)
-        map:setCell(x, height - 1, 1)
-    end
-    for y = 0, height - 1 do
-        map:setCell(0, y, 1)
-        map:setCell(width - 1, y, 1)
-    end
-    return map
-end
 
-local function example_print_log(...)
-    local parts = {}
-    for i = 1, select("#", ...) do
-        parts[i] = tostring(select(i, ...))
-    end
-    lurek.log.info(table.concat(parts, " "))
-end
 
 --@api: lurek.raycaster.new
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.raycaster.new(16, 16)
     map:setCell(1, 1, 2)
     ray_log("new width=" .. map:width())
@@ -39,6 +72,29 @@ end
 
 --@api: lurek.raycaster.newMap
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.raycaster.newMap(32, 32)
     map:setCell(4, 4, 3)
     ray_log("newMap width=" .. map:width())
@@ -49,6 +105,29 @@ end
 
 --@api: LRaycaster:setCell
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.raycaster.new(8, 8)
     map:setCell(0, 0, 1)
     map:setCell(1, 0, 2)
@@ -60,6 +139,29 @@ end
 
 --@api: LRaycaster:getCell
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.raycaster.new(8, 8)
     map:setCell(0, 0, 1)
     local value = map:getCell(0, 0)
@@ -69,43 +171,31 @@ do
     example_print_log("cell(7,7) = " .. empty)
 end
 
---@api: LRaycaster:setHalfWallCell
-do
-    local map = lurek.raycaster.new(8, 8)
-    map:setCell(3, 3, 1)
-    map:setHalfWallCell(3, 3, 0.5)
-    local feature = map:getWallFeatureCell(3, 3)
-
-    example_print_log("kind = " .. feature.kind)
-    example_print_log("height = " .. string.format("%.2f", feature.height))
-end
-
---@api: LRaycaster:setWindowCell
-do
-    local map = lurek.raycaster.new(8, 8)
-    map:setCell(3, 3, 1)
-    map:setWindowCell(3, 3, 0.3, 0.75, 0.4)
-    local feature = map:getWallFeatureCell(3, 3)
-
-    example_print_log("kind = " .. feature.kind)
-    example_print_log("los = " .. tostring(map:lineOfSight(1.5, 3.5, 6.5, 3.5)))
-    example_print_log("alpha = " .. string.format("%.2f", feature.alpha))
-end
-
---@api: LRaycaster:setDoorCell
-do
-    local map = lurek.raycaster.new(8, 8)
-    map:setCell(3, 3, 1)
-    map:setDoorCell(3, 3, "horizontal", 1.0)
-    local feature = map:getWallFeatureCell(3, 3)
-
-    example_print_log("kind = " .. feature.kind)
-    example_print_log("direction = " .. feature.direction)
-    example_print_log("blocked = " .. tostring(map:isBlocked(3, 3)))
-end
-
 --@api: LRaycaster:applyDoorManager
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.raycaster.new(8, 8)
     local doors = lurek.raycaster.newDoorManager()
     map:setCell(3, 3, 2)
@@ -124,17 +214,97 @@ do
     example_print_log("open amount = " .. string.format("%.2f", feature.open_amount))
 end
 
---@api: LRaycaster:clearWallFeatureCell
+--@api: LRaycaster:setWallFeatureCell
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.raycaster.new(8, 8)
     map:setCell(3, 3, 1)
-    map:setWindowCell(3, 3, 0.25, 0.75, 0.35)
+    map:setWallFeatureCell(3, 3, { kind = "window", sill_height = 0.25, lintel_height = 0.75, alpha = 0.4 })
+    local feature = map:getWallFeatureCell(3, 3)
+
+    example_print_log("feature kind = " .. feature.kind)
+    example_print_log("feature alpha = " .. string.format("%.2f", feature.alpha))
+end
+
+--@api: LRaycaster:clearWallFeatureCell
+do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
+    local map = lurek.raycaster.new(8, 8)
+    map:setCell(3, 3, 1)
+    map:setWallFeatureCell(3, 3, { kind = "window", sill_height = 0.25, lintel_height = 0.75, alpha = 0.35 })
     map:clearWallFeatureCell(3, 3)
     example_print_log("feature cleared = " .. tostring(map:getWallFeatureCell(3, 3) == nil))
 end
 
 --@api: LRaycaster:getWallFeatureCell
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.raycaster.new(16, 16)
     for i = 0, 15 do
         map:setCell(i, 0, 1)
@@ -144,11 +314,11 @@ do
     end
 
     map:setCell(7, 5, 1)
-    map:setHalfWallCell(7, 5, 0.5)
+    map:setWallFeatureCell(7, 5, { kind = "half", height = 0.5 })
     map:setCell(7, 7, 1)
-    map:setWindowCell(7, 7, 0.25, 0.78, 0.35)
+    map:setWallFeatureCell(7, 7, { kind = "window", sill_height = 0.25, lintel_height = 0.78, alpha = 0.35 })
     map:setCell(7, 9, 1)
-    map:setDoorCell(7, 9, "vertical", 1.0)
+    map:setWallFeatureCell(7, 9, { kind = "door", direction = "vertical", open_amount = 1.0 })
     local feature = map:getWallFeatureCell(7, 7)
     example_print_log("feature kind = " .. tostring(feature and feature.kind))
 
@@ -164,23 +334,9 @@ do
     }
     local picked = map:pickScreen(160, 100, params)
     local hit = map:castRay(2.5, 9.5, 0.0, 20.0)
-    local solid = lurek.raycaster.new(8, 3)
-    solid:setCell(4, 1, 1)
-    local solid_r = select(1, solid:computeTileLight(2, 1, 0.0, {
-        { x = 5.5, y = 1.5, radius = 8.0, intensity = 8.0, color = { 1.0, 0.8, 0.6 } },
-    }))
-    local through_window = lurek.raycaster.new(8, 3)
-    through_window:setCell(4, 1, 1)
-    through_window:setWindowCell(4, 1, 0.25, 0.8, 0.35)
-    local window_r = select(1, through_window:computeTileLight(2, 1, 0.0, {
-        { x = 5.5, y = 1.5, radius = 8.0, intensity = 8.0, color = { 1.0, 0.8, 0.6 } },
-    }))
 
-    example_print_log("window los = " .. tostring(map:lineOfSight(2.5, 7.5, 12.5, 7.5)))
     example_print_log("half wall blocked = " .. tostring(map:isBlocked(7, 5)))
     example_print_log("open door hit cell = " .. tostring(hit and hit.cell_value or "nil"))
-    example_print_log("solid light r = " .. string.format("%.3f", solid_r))
-    example_print_log("window light r = " .. string.format("%.3f", window_r))
     if picked then
         example_print_log("pick surface = " .. picked.surface)
         example_print_log("pick tile = " .. picked.x .. "," .. picked.y)
@@ -189,6 +345,29 @@ end
 
 --@api: LRaycaster:setCells
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.raycaster.new(8, 8)
     local cells = {}
 
@@ -207,32 +386,63 @@ end
 
 --@api: LRaycaster:isBlocked
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.raycaster.new(8, 8)
     map:setCell(3, 3, 1)
     map:setCell(4, 3, 2)
     ray_log("cell(3,3) blocked=" .. tostring(map:isBlocked(3, 3)))
     ray_log("cell(4,3) blocked=" .. tostring(map:isBlocked(4, 3)))
     ray_log("cell(2,2) blocked=" .. tostring(map:isBlocked(2, 2)))
-    ray_log("line of sight across wall=" .. tostring(map:lineOfSight(1.5, 3.5, 6.5, 3.5)))
-end
-
---@api: LRaycaster:isWalkBlocked
-do
-    local map = lurek.raycaster.new(8, 8)
-    local pit_texture = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
-
-    map:setLoweredFloorCell(3, 3, {
-        texture = pit_texture,
-        depth = 0.3,
-        blocked = true,
-    })
-
-    example_print_log("cell(3,3) walk blocked = " .. tostring(map:isWalkBlocked(3, 3)))
-    example_print_log("cell(2,2) walk blocked = " .. tostring(map:isWalkBlocked(2, 2)))
+    ray_log("wall values remain render input")
 end
 
 --@api: LRaycaster:castRay
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.raycaster.new(16, 16)
     for i = 0, 15 do
         map:setCell(i, 0, 1)
@@ -251,6 +461,29 @@ end
 
 --@api: LRaycaster:castRays
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.raycaster.new(16, 16)
     for i = 0, 15 do
         map:setCell(i, 0, 1)
@@ -269,6 +502,29 @@ end
 
 --@api: LRaycaster:castRaysFlat
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.raycaster.new(16, 16)
     for i = 0, 15 do
         map:setCell(i, 0, 1)
@@ -286,6 +542,29 @@ end
 
 --@api: LRaycaster:castRayMulti
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.raycaster.new(16, 16)
     map:setCell(5, 8, 2)
     map:setCell(10, 8, 1)
@@ -302,6 +581,29 @@ end
 
 --@api: LRaycaster:setWallAlpha
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.raycaster.new(8, 8)
     map:setWallAlpha(2, 0.5)
     map:setCell(3, 3, 2)
@@ -314,6 +616,29 @@ end
 
 --@api: LRaycaster:getWallAlpha
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.raycaster.new(8, 8)
     map:setWallAlpha(2, 0.5)
     map:setWallAlpha(3, 0.25)
@@ -323,73 +648,31 @@ do
     ray_log("alpha map supports multiple tile ids")
 end
 
---@api: LRaycaster:tryMove
-do
-    local map = lurek.raycaster.new(8, 8)
-    for i = 0, 7 do
-        map:setCell(i, 0, 1)
-        map:setCell(i, 7, 1)
-        map:setCell(0, i, 1)
-        map:setCell(7, i, 1)
-    end
-
-    local nx, ny, moved = map:tryMove(4.5, 4.5, 0.25, 0)
-    local wx, wy, blocked = map:tryMove(0.5, 0.5, -1, 0)
-
-    example_print_log("free move = " .. tostring(moved) .. " -> " .. nx .. "," .. ny)
-    example_print_log("wall move = " .. tostring(blocked) .. " -> " .. wx .. "," .. wy)
-end
-
---@api: LRaycaster:gridMove
-do
-    local map = lurek.raycaster.new(8, 8)
-    for i = 0, 7 do
-        map:setCell(i, 0, 1)
-        map:setCell(i, 7, 1)
-        map:setCell(0, i, 1)
-        map:setCell(7, i, 1)
-    end
-
-    local nx, ny, moved = map:gridMove(4.5, 4.5, 2, "forward", 1.0)
-    local sx, sy, strafe = map:gridMove(nx, ny, 2, "left", 1.0)
-
-    example_print_log("forward = " .. tostring(moved) .. " -> " .. nx .. "," .. ny)
-    example_print_log("left = " .. tostring(strafe) .. " -> " .. sx .. "," .. sy)
-end
-
---@api: LRaycaster:lineOfSight
-do
-    local map = lurek.raycaster.new(16, 16)
-    map:setCell(8, 8, 1)
-
-    local clear = map:lineOfSight(4, 4, 12, 4)
-    local blocked = map:lineOfSight(4, 8, 12, 8)
-
-    example_print_log("clear = " .. tostring(clear))
-    example_print_log("blocked = " .. tostring(blocked))
-end
-
---@api: LRaycaster:revealCellsFromRays
-do
-    local map = lurek.raycaster.new(16, 16)
-    for i = 0, 15 do
-        map:setCell(i, 0, 1)
-        map:setCell(i, 15, 1)
-        map:setCell(0, i, 1)
-        map:setCell(15, i, 1)
-    end
-
-    map:setCell(6, 8, 1)
-    local revealed = map:revealCellsFromRays(8, 8, 0, math.pi * 2, 64, 10)
-
-    example_print_log("revealed count = " .. #revealed)
-    if revealed[1] then
-        example_print_log("first cell = " .. revealed[1].x .. "," .. revealed[1].y)
-    end
-end
-
 --@api: LRaycaster:drawView
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.raycaster.new(16, 16)
     for i = 0, 15 do
         map:setCell(i, 0, 1)
@@ -406,6 +689,29 @@ end
 
 --@api: LRaycaster:drawTopDown
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.raycaster.new(8, 8)
     for i = 0, 7 do
         map:setCell(i, 0, 1)
@@ -424,6 +730,29 @@ end
 
 --@api: LRaycaster:drawDepthMap
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.raycaster.new(16, 16)
     for i = 0, 15 do
         map:setCell(i, 0, 1)
@@ -440,6 +769,29 @@ end
 
 --@api: lurek.raycaster.distanceShade
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local near = lurek.raycaster.distanceShade(0, 10)
     local mid = lurek.raycaster.distanceShade(5, 10)
     local far = lurek.raycaster.distanceShade(9, 10)
@@ -451,6 +803,29 @@ end
 
 --@api: lurek.raycaster.applyLitShade
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local near_r, near_g, near_b = lurek.raycaster.applyLitShade(0.9, 1.0, 0.8, 0.6)
     local far_r, far_g, far_b = lurek.raycaster.applyLitShade(0.2, 1.0, 0.8, 0.6)
     ray_log("near lit shade=" .. near_r .. "," .. near_g .. "," .. near_b)
@@ -461,6 +836,29 @@ end
 
 --@api: lurek.raycaster.projectColumn
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local near_height, near_top, near_bottom = lurek.raycaster.projectColumn(3.0, math.pi / 3, 200)
     local far_height = select(1, lurek.raycaster.projectColumn(8.0, math.pi / 3, 200))
     ray_log("near column height=" .. string.format("%.1f", near_height))
@@ -471,6 +869,29 @@ end
 
 --@api: LRaycaster:type
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.raycaster.new(8, 8)
     map:setCell(1, 1, 1)
     local type_name = map:type()
@@ -482,6 +903,29 @@ end
 
 --@api: LRaycaster:typeOf
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.raycaster.new(8, 8)
     map:setCell(2, 2, 1)
     ray_log("LRaycaster=" .. tostring(map:typeOf("LRaycaster")))
@@ -494,6 +938,29 @@ end
 
 --@api: lurek.raycaster.newDoorManager
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doors = lurek.raycaster.newDoorManager()
     local first = doors:addDoor(5, 3, "horizontal", 2.0)
     local second = doors:addDoor(8, 6, "vertical", 1.5)
@@ -505,6 +972,29 @@ end
 
 --@api: LDoorManager:getDoor
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doors = lurek.raycaster.newDoorManager()
     local idx = doors:addDoor(3, 3, "vertical", 4.0)
 
@@ -521,6 +1011,29 @@ end
 
 --@api: LDoorManager:type
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doors = lurek.raycaster.newDoorManager()
     local id = doors:addDoor(2, 2, "horizontal", 0.5)
     local type_name = doors:type()
@@ -532,6 +1045,29 @@ end
 
 --@api: LDoorManager:typeOf
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doors = lurek.raycaster.newDoorManager()
     local id = doors:addDoor(3, 3, "vertical", 0.75)
     local door = doors:getDoor(id)
@@ -543,6 +1079,29 @@ end
 
 --@api: lurek.raycaster.newHeightMap
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local hm = lurek.raycaster.newHeightMap(16, 16)
     hm:setFloor(5, 5, -0.3)
     hm:setCeiling(5, 5, 0.8)
@@ -555,6 +1114,29 @@ end
 
 --@api: LHeightMap:type
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local hm = lurek.raycaster.newHeightMap(4, 4)
     hm:setFloor(1, 1, -0.25)
     local type_name = hm:type()
@@ -566,78 +1148,62 @@ end
 
 --@api: LHeightMap:typeOf
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local hm = lurek.raycaster.newHeightMap(4, 4)
     hm:setCeiling(2, 2, 1.4)
     ray_log("LHeightMap=" .. tostring(hm:typeOf("LHeightMap")))
     ray_log("LObject=" .. tostring(hm:typeOf("LObject")))
-    ray_log("LPointLight=" .. tostring(hm:typeOf("LPointLight")))
+    ray_log("LSpriteManager=" .. tostring(hm:typeOf("LSpriteManager")))
     ray_log("ceiling sample=" .. hm:ceilingAt(2, 2))
-end
-
---@api: lurek.raycaster.newPointLight
-do
-    local torch = lurek.raycaster.newPointLight(5.5, 3.5, 1.0, 0.8, 0.4, 4.0, 1.5, 1)
-    local r, g, b = torch:color()
-
-    example_print_log("pos = " .. torch:x() .. "," .. torch:y())
-    example_print_log("color = " .. r .. "," .. g .. "," .. b)
-    example_print_log("radius = " .. torch:radius() .. " intensity = " .. torch:intensity())
-    example_print_log("level = " .. tostring(torch:level()))
-end
-
---@api: LPointLight:set
-do
-    local light = lurek.raycaster.newPointLight(2, 2, 1, 1, 1, 3, 1.0)
-    light:set(8, 8, 0, 0, 1, 6, 2.0, 2)
-    local r, g, b = light:color()
-
-    example_print_log("pos = " .. light:x() .. "," .. light:y())
-    example_print_log("color = " .. r .. "," .. g .. "," .. b)
-    example_print_log("radius = " .. light:radius() .. " intensity = " .. light:intensity())
-    example_print_log("level = " .. tostring(light:level()))
-end
-
---@api: LPointLight:level
-do
-    local light = lurek.raycaster.newPointLight(1, 1, 1, 1, 1, 2, 0.5, 3)
-    local r, g, b = light:color()
-    ray_log("light level=" .. tostring(light:level()))
-    ray_log("light color=" .. r .. "," .. g .. "," .. b)
-    ray_log("light radius=" .. light:radius())
-    ray_log("light intensity=" .. light:intensity())
-end
-
---@api: LPointLight:setLevel
-do
-    local light = lurek.raycaster.newPointLight(1, 1, 1, 1, 1, 2, 0.5)
-    light:setLevel(1)
-    example_print_log("light level after set = " .. tostring(light:level()))
-    light:setLevel(nil)
-    example_print_log("light level after clear = " .. tostring(light:level()))
-end
-
---@api: LPointLight:type
-do
-    local light = lurek.raycaster.newPointLight(0, 0, 1, 1, 1, 1, 1)
-    local type_name = light:type()
-    ray_log("light type=" .. type_name)
-    ray_log("x=" .. light:x())
-    ray_log("y=" .. light:y())
-    ray_log("radius=" .. light:radius())
-end
-
---@api: LPointLight:typeOf
-do
-    local light = lurek.raycaster.newPointLight(0, 0, 1, 1, 1, 1, 1)
-    light:setLevel(2)
-    ray_log("LPointLight=" .. tostring(light:typeOf("LPointLight")))
-    ray_log("LObject=" .. tostring(light:typeOf("LObject")))
-    ray_log("LHeightMap=" .. tostring(light:typeOf("LHeightMap")))
-    ray_log("level=" .. tostring(light:level()))
 end
 
 --@api: lurek.raycaster.newSpriteManager
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sprites = lurek.raycaster.newSpriteManager()
     local barrel = sprites:add(5.5, 3.5, "content/examples/assets/images/sample_texture.png", 1.0)
     local torch = sprites:add(8.5, 2.5, "content/examples/assets/images/sample_texture.png", 0.5, 1)
@@ -653,6 +1219,29 @@ end
 
 --@api: lurek.raycaster.newSceneAdapter
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 0)
     local body = world:newBody(5.0, 4.0, "dynamic")
     body:setAngle(math.pi / 2)
@@ -710,6 +1299,29 @@ end
 
 --@api: LSceneAdapter:sceneInputs
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local adapter = lurek.raycaster.newSceneAdapter()
     local tex = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     adapter:addSprite(4.5, 3.5, tex, { id = 31, level = 1, size = 1.2 })
@@ -725,6 +1337,29 @@ end
 
 --@api: LSceneAdapter:addSprite
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local adapter = lurek.raycaster.newSceneAdapter()
     adapter:addSprite(
         4.5,
@@ -739,6 +1374,29 @@ end
 
 --@api: LSceneAdapter:addDirectionalSprite
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local adapter = lurek.raycaster.newSceneAdapter()
     local tex = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     adapter:addDirectionalSprite(6.0, 3.5, tex, tex, tex, tex, {
@@ -754,6 +1412,29 @@ end
 
 --@api: LSceneAdapter:addLight
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local adapter = lurek.raycaster.newSceneAdapter()
     adapter:addLight(5.0, 3.5, 4.0, {
         intensity = 1.1,
@@ -767,6 +1448,29 @@ end
 
 --@api: LSceneAdapter:addModel
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local adapter = lurek.raycaster.newSceneAdapter()
     local tex = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     adapter:addModel(
@@ -782,6 +1486,29 @@ end
 
 --@api: LSceneAdapter:bindBodyDirectionalSprite
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tex = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local world = lurek.physics.newWorld(0, 0)
     local body = world:newBody(3.0, 3.0, "dynamic")
@@ -802,6 +1529,29 @@ end
 
 --@api: LSceneAdapter:bindBodySprite
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 0)
     local body = world:newBody(2.0, 2.0, "dynamic")
     local adapter = lurek.raycaster.newSceneAdapter()
@@ -817,6 +1567,29 @@ end
 
 --@api: LSceneAdapter:bindBodyLight
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 0)
     local body = world:newBody(2.0, 2.0, "dynamic")
     local adapter = lurek.raycaster.newSceneAdapter()
@@ -828,6 +1601,29 @@ end
 
 --@api: LSceneAdapter:bindBodyModel
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 0)
     local body = world:newBody(2.0, 2.0, "dynamic")
     local adapter = lurek.raycaster.newSceneAdapter()
@@ -843,6 +1639,29 @@ end
 
 --@api: LRaycaster:buildSceneFromAdapter
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.raycaster.new(8, 8)
     for i = 0, 7 do
         map:setCell(i, 0, 1)
@@ -872,6 +1691,29 @@ end
 
 --@api: LRaycaster:pickScreenFromAdapter
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.raycaster.new(8, 8)
     for i = 0, 7 do
         map:setCell(i, 0, 1)
@@ -904,6 +1746,29 @@ end
 
 --@api: LSceneAdapter:clear
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local adapter = lurek.raycaster.newSceneAdapter()
     local tex = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     adapter:addSprite(1.0, 1.0, tex)
@@ -915,6 +1780,29 @@ end
 
 --@api: LSceneAdapter:clearSprites
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local adapter = lurek.raycaster.newSceneAdapter()
     adapter:addSprite(
         1.0,
@@ -927,6 +1815,29 @@ end
 
 --@api: LSceneAdapter:clearLights
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local adapter = lurek.raycaster.newSceneAdapter()
     adapter:addLight(1.0, 1.0, 2.0)
     adapter:addLight(2.5, 1.0, 3.0, { intensity = 0.6, color = { 0.8, 0.9, 1.0 } })
@@ -939,6 +1850,29 @@ end
 
 --@api: LSceneAdapter:clearModels
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local adapter = lurek.raycaster.newSceneAdapter()
     adapter:addModel(lurek.render.loadModel("content/examples/assets/models/sample_tank.obj"), 1.0, 1.0)
     adapter:addModel(lurek.render.loadModel("content/examples/assets/models/sample_tank.obj"), 2.0, 1.0, { id = 90 })
@@ -951,6 +1885,29 @@ end
 
 --@api: LSceneAdapter:type
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local adapter = lurek.raycaster.newSceneAdapter()
     adapter:addSprite(1.5, 2.5, lurek.render.newImage("content/examples/assets/images/sample_texture.png"), { id = 41 })
     ray_log("adapter type=" .. adapter:type())
@@ -961,6 +1918,29 @@ end
 
 --@api: LSceneAdapter:typeOf
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local adapter = lurek.raycaster.newSceneAdapter()
     adapter:addLight(4.0, 4.0, 3.0, { intensity = 1.0, color = { 1.0, 0.7, 0.4 } })
     ray_log("LSceneAdapter=" .. tostring(adapter:typeOf("LSceneAdapter")))
@@ -971,6 +1951,29 @@ end
 
 --@api: LSpriteManager:sortAndProject
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sprites = lurek.raycaster.newSpriteManager()
     sprites:add(3, 3, "content/examples/assets/images/sample_texture.png")
     sprites:add(6, 6, "content/examples/assets/images/sample_texture.png")
@@ -987,6 +1990,29 @@ end
 
 --@api: LSpriteManager:addDirectional
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sprites = lurek.raycaster.newSpriteManager()
     local id = sprites:addDirectional(
         2.0,
@@ -1007,6 +2033,29 @@ end
 
 --@api: LSpriteManager:setFacing
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sprites = lurek.raycaster.newSpriteManager()
     local id = sprites:addDirectional(2.0, 0.0, "front.png", "right.png", "back.png", "left.png", math.pi, 1.0)
     sprites:setFacing(id, 0.0)
@@ -1018,6 +2067,29 @@ end
 
 --@api: LSpriteManager:setDirectionalTextures
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sprites = lurek.raycaster.newSpriteManager()
     local id = sprites:add(2.0, 0.0, "old.png", 1.0)
     sprites:setDirectionalTextures(id, "front2.png", "right2.png", "back2.png", "left2.png", math.pi)
@@ -1029,6 +2101,29 @@ end
 
 --@api: LSpriteManager:clear
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sprites = lurek.raycaster.newSpriteManager()
     sprites:add(1, 1, "content/examples/assets/images/sample_texture.png")
     sprites:add(2, 2, "content/examples/assets/images/sample_texture.png")
@@ -1041,6 +2136,29 @@ end
 
 --@api: LSpriteManager:type
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sprites = lurek.raycaster.newSpriteManager()
     local id = sprites:add(3.5, 2.5, "content/examples/assets/images/sample_texture.png", 1.0)
     ray_log("sprite manager type=" .. sprites:type())
@@ -1051,6 +2169,29 @@ end
 
 --@api: LSpriteManager:typeOf
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sprites = lurek.raycaster.newSpriteManager()
     local id = sprites:add(4.0, 1.0, "content/examples/assets/images/sample_texture.png", 0.75, 1)
     ray_log("LSpriteManager=" .. tostring(sprites:typeOf("LSpriteManager")))
@@ -1061,6 +2202,29 @@ end
 
 --@api: LRaycaster:setFloorTextureCell
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.raycaster.new(8, 8)
     local floor_tex = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     map:setFloorTextureCell(3, 3, floor_tex)
@@ -1073,6 +2237,29 @@ end
 
 --@api: LRaycaster:getFloorTextureCell
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.raycaster.new(8, 8)
     local floor_tex = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
 
@@ -1084,6 +2271,29 @@ end
 
 --@api: LRaycaster:setCeilingTextureCell
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.raycaster.new(8, 8)
     local ceil_tex = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     map:setCeilingTextureCell(2, 2, ceil_tex)
@@ -1096,6 +2306,29 @@ end
 
 --@api: LRaycaster:getCeilingTextureCell
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.raycaster.new(8, 8)
     local ceil_tex = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
 
@@ -1107,6 +2340,29 @@ end
 
 --@api: LRaycaster:setLoweredFloorCell
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.raycaster.new(8, 8)
     local pit_texture = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
 
@@ -1127,6 +2383,29 @@ end
 
 --@api: LRaycaster:getLoweredFloorCell
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.raycaster.new(8, 8)
     local pit_texture = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
 
@@ -1148,22 +2427,31 @@ do
     end
 end
 
---@api: LRaycaster:computeTileLight
-do
-    local map = lurek.raycaster.new(16, 16)
-    local lights = {
-        { x = 8, y = 8, r = 1.0, g = 0.9, b = 0.7, radius = 5.0, intensity = 2.0 },
-        { x = 3, y = 3, r = 0.2, g = 0.5, b = 1.0, radius = 3.0, intensity = 1.0 },
-    }
-    local r, g, b, luma = map:computeTileLight(7, 8, 0.1, lights)
-
-    example_print_log("r = " .. string.format("%.2f", r))
-    example_print_log("g = " .. string.format("%.2f", g))
-    example_print_log("luma = " .. string.format("%.2f", luma))
-end
-
 --@api: LRaycaster:buildScene
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.raycaster.new(16, 16)
     local wall_tex = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local sprite_tex = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
@@ -1221,6 +2509,29 @@ end
 
 --@api: lurek.raycaster.getLastBuildStats
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.raycaster.new(8, 8)
     local wall_tex = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     for i = 0, 7 do
@@ -1245,7 +2556,7 @@ do
         screen_w = 320,
         screen_h = 200,
     }, {
-        lurek.raycaster.newPointLight(4.0, 4.0, 1.0, 0.9, 0.8, 4.0, 1.25),
+        { x = 4.0, y = 4.0, r = 1.0, g = 0.9, b = 0.8, radius = 4.0, intensity = 1.25 },
     }, {}, {
         [1] = wall_tex,
     })
@@ -1260,6 +2571,29 @@ end
 
 --@api: lurek.raycaster.buildMultiLevelScene
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local wall_tex = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local floor_tex = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local ceil_tex = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
@@ -1356,6 +2690,29 @@ end
 
 --@api: lurek.raycaster.buildMultiLevelSceneFromAdapter
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 0)
     local body = world:newBody(2.5, 1.5, "dynamic")
     local adapter = lurek.raycaster.newSceneAdapter()
@@ -1416,6 +2773,29 @@ end
 
 --@api: lurek.raycaster.newMultiLevelGrid
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local grid = lurek.raycaster.newMultiLevelGrid({
         {
             width = 2,
@@ -1428,6 +2808,29 @@ end
 
 --@api: LMultiLevelGrid:addLevel
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local grid = lurek.raycaster.newMultiLevelGrid()
     local index = grid:addLevel({
         width = 2,
@@ -1439,6 +2842,29 @@ end
 
 --@api: LMultiLevelGrid:levelCount
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local grid = lurek.raycaster.newMultiLevelGrid()
     grid:addLevel({
         width = 2,
@@ -1450,6 +2876,29 @@ end
 
 --@api: LMultiLevelGrid:setActiveLevel
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local grid = lurek.raycaster.newMultiLevelGrid({
         { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
         { width = 2, height = 2, cells = { 0, 0, 0, 0 }, floor_offset = 1, ceiling_height = 2 },
@@ -1460,6 +2909,29 @@ end
 
 --@api: LMultiLevelGrid:activeLevel
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local grid = lurek.raycaster.newMultiLevelGrid({
         { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
         { width = 2, height = 2, cells = { 0, 0, 0, 0 }, floor_offset = 1, ceiling_height = 2 },
@@ -1470,6 +2942,29 @@ end
 
 --@api: LMultiLevelGrid:getFloorOffset
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local grid = lurek.raycaster.newMultiLevelGrid({
         { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
         { width = 2, height = 2, cells = { 0, 0, 0, 0 }, floor_offset = 1.25, ceiling_height = 2.5 },
@@ -1480,6 +2975,29 @@ end
 
 --@api: LMultiLevelGrid:setFloorOffset
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local grid = lurek.raycaster.newMultiLevelGrid({
         { width = 2, height = 2, cells = { 0, 0, 0, 0 }, floor_offset = 0, ceiling_height = 1 },
     })
@@ -1489,6 +3007,29 @@ end
 
 --@api: LMultiLevelGrid:getCeilingHeight
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local grid = lurek.raycaster.newMultiLevelGrid({
         { width = 2, height = 2, cells = { 0, 0, 0, 0 }, floor_offset = 0.5, ceiling_height = 2.25 },
     })
@@ -1501,6 +3042,29 @@ end
 
 --@api: LMultiLevelGrid:setCeilingHeight
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local grid = lurek.raycaster.newMultiLevelGrid({
         { width = 2, height = 2, cells = { 0, 0, 0, 0 }, floor_offset = 0.5, ceiling_height = 1.5 },
     })
@@ -1510,6 +3074,29 @@ end
 
 --@api: LMultiLevelGrid:setCell
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local grid = lurek.raycaster.newMultiLevelGrid({
         { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
         { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
@@ -1521,6 +3108,29 @@ end
 
 --@api: LMultiLevelGrid:getCell
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local grid = lurek.raycaster.newMultiLevelGrid({
         { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
         { width = 2, height = 2, cells = { 0, 5, 0, 0 } },
@@ -1529,49 +3139,102 @@ do
     example_print_log("active cell = " .. grid:getCell(1, 0))
 end
 
---@api: LMultiLevelGrid:setHalfWallCell
+--@api: LMultiLevelGrid:setWallFeatureCell
 do
-    local grid = lurek.raycaster.newMultiLevelGrid({
-        { width = 2, height = 2, cells = { 1, 0, 0, 0 } },
-    })
-    grid:setHalfWallCell(0, 0, 0.5)
-    example_print_log("half feature kind = " .. grid:getWallFeatureCell(0, 0).kind)
-end
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
 
---@api: LMultiLevelGrid:setWindowCell
-do
     local grid = lurek.raycaster.newMultiLevelGrid({
         { width = 2, height = 2, cells = { 1, 0, 0, 0 } },
     })
-    grid:setWindowCell(0, 0, 0.25, 0.8, 0.4)
-    example_print_log("window sill = " .. grid:getWallFeatureCell(0, 0).sill_height)
-end
-
---@api: LMultiLevelGrid:setDoorCell
-do
-    local grid = lurek.raycaster.newMultiLevelGrid({
-        { width = 2, height = 2, cells = { 1, 0, 0, 0 } },
-    })
-    grid:setDoorCell(0, 0, "vertical", 0.6, 0.9)
-    example_print_log("door open amount = " .. grid:getWallFeatureCell(0, 0).open_amount)
+    grid:setWallFeatureCell(0, 0, { kind = "door", direction = "vertical", open_amount = 0.4, alpha = 0.9 })
+    local feature = grid:getWallFeatureCell(0, 0)
+    example_print_log("feature kind = " .. feature.kind)
+    example_print_log("door open = " .. string.format("%.2f", feature.open_amount))
 end
 
 --@api: LMultiLevelGrid:clearWallFeatureCell
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local grid = lurek.raycaster.newMultiLevelGrid({
         { width = 2, height = 2, cells = { 1, 0, 0, 0 } },
     })
-    grid:setWindowCell(0, 0, 0.25, 0.8, 0.4)
+    grid:setWallFeatureCell(0, 0, { kind = "window", sill_height = 0.25, lintel_height = 0.8, alpha = 0.4 })
     grid:clearWallFeatureCell(0, 0)
     example_print_log("feature cleared = " .. tostring(grid:getWallFeatureCell(0, 0) == nil))
 end
 
 --@api: LMultiLevelGrid:getWallFeatureCell
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local grid = lurek.raycaster.newMultiLevelGrid({
         { width = 2, height = 2, cells = { 1, 0, 0, 0 } },
     })
-    grid:setWindowCell(0, 0, 0.25, 0.8, 0.4)
+    grid:setWallFeatureCell(0, 0, { kind = "window", sill_height = 0.25, lintel_height = 0.8, alpha = 0.4 })
     local feature = grid:getWallFeatureCell(0, 0)
     ray_log("feature kind=" .. tostring(feature and feature.kind))
     ray_log("feature alpha=" .. tostring(feature and feature.alpha))
@@ -1581,6 +3244,29 @@ end
 
 --@api: LMultiLevelGrid:setFloorTexture
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local grid = lurek.raycaster.newMultiLevelGrid({
         { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
     })
@@ -1593,6 +3279,29 @@ end
 
 --@api: LMultiLevelGrid:getFloorTexture
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local grid = lurek.raycaster.newMultiLevelGrid({
         { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
     })
@@ -1602,6 +3311,29 @@ end
 
 --@api: LMultiLevelGrid:setFloorTextureCell
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local grid = lurek.raycaster.newMultiLevelGrid({
         { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
     })
@@ -1613,6 +3345,29 @@ end
 
 --@api: LMultiLevelGrid:getFloorTextureCell
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local grid = lurek.raycaster.newMultiLevelGrid({
         { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
     })
@@ -1622,6 +3377,29 @@ end
 
 --@api: LMultiLevelGrid:setCeilingTexture
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local grid = lurek.raycaster.newMultiLevelGrid({
         { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
     })
@@ -1634,6 +3412,29 @@ end
 
 --@api: LMultiLevelGrid:getCeilingTexture
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local grid = lurek.raycaster.newMultiLevelGrid({
         { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
     })
@@ -1643,6 +3444,29 @@ end
 
 --@api: LMultiLevelGrid:setCeilingTextureCell
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local grid = lurek.raycaster.newMultiLevelGrid({
         { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
     })
@@ -1654,6 +3478,29 @@ end
 
 --@api: LMultiLevelGrid:getCeilingTextureCell
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local grid = lurek.raycaster.newMultiLevelGrid({
         { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
     })
@@ -1663,6 +3510,29 @@ end
 
 --@api: LMultiLevelGrid:setLoweredFloorCell
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local grid = lurek.raycaster.newMultiLevelGrid({
         { width = 4, height = 4, cells = {
             0, 0, 0, 0,
@@ -1687,6 +3557,29 @@ end
 
 --@api: LMultiLevelGrid:getLoweredFloorCell
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local grid = lurek.raycaster.newMultiLevelGrid({
         { width = 4, height = 4, cells = {
             0, 0, 0, 0,
@@ -1706,6 +3599,29 @@ end
 
 --@api: LMultiLevelGrid:setFloorHole
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local grid = lurek.raycaster.newMultiLevelGrid({
         { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
         { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
@@ -1717,6 +3633,29 @@ end
 
 --@api: LMultiLevelGrid:isFloorHole
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local grid = lurek.raycaster.newMultiLevelGrid({
         { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
         { width = 2, height = 2, cells = { 0, 0, 0, 0 }, floor_holes = { false, true, false, false } },
@@ -1727,6 +3666,29 @@ end
 
 --@api: LMultiLevelGrid:setCeilingHole
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local grid = lurek.raycaster.newMultiLevelGrid({
         { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
         { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
@@ -1738,6 +3700,29 @@ end
 
 --@api: LMultiLevelGrid:isCeilingHole
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local grid = lurek.raycaster.newMultiLevelGrid({
         { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
         { width = 2, height = 2, cells = { 0, 0, 0, 0 }, ceiling_holes = { false, false, false, true } },
@@ -1748,6 +3733,29 @@ end
 
 --@api: LMultiLevelGrid:buildScene
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local wall_tex = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local grid = lurek.raycaster.newMultiLevelGrid({
         { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
@@ -1782,6 +3790,29 @@ end
 
 --@api: LMultiLevelGrid:pickScreen
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local wall_tex = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local grid = lurek.raycaster.newMultiLevelGrid({
         {
@@ -1839,6 +3870,29 @@ end
 
 --@api: LMultiLevelGrid:buildSceneFromAdapter
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local grid = lurek.raycaster.newMultiLevelGrid({
         {
             width = 4,
@@ -1891,6 +3945,29 @@ end
 
 --@api: LMultiLevelGrid:pickScreenFromAdapter
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local grid = lurek.raycaster.newMultiLevelGrid({
         {
             width = 4,
@@ -1953,6 +4030,29 @@ end
 
 --@api: LMultiLevelGrid:type
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local grid = lurek.raycaster.newMultiLevelGrid()
     grid:addLevel({ width = 2, height = 2, cells = { 0, 0, 0, 0 }, floor_offset = 0, ceiling_height = 1.5 })
     grid:setActiveLevel(0)
@@ -1964,6 +4064,29 @@ end
 
 --@api: LMultiLevelGrid:typeOf
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local grid = lurek.raycaster.newMultiLevelGrid()
     grid:addLevel({ width = 2, height = 2, cells = { 0, 0, 0, 0 }, floor_offset = 1, ceiling_height = 2 })
     ray_log("LMultiLevelGrid=" .. tostring(grid:typeOf("LMultiLevelGrid")))
@@ -1974,6 +4097,29 @@ end
 
 --@api: lurek.raycaster.pickScreenMultiLevel
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local wall_tex = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local hit = lurek.raycaster.pickScreenMultiLevel(
         160,
@@ -2057,6 +4203,29 @@ end
 
 --@api: lurek.raycaster.pickScreenMultiLevelFromAdapter
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.physics.newWorld(0, 0)
     local body = world:newBody(2.5, 1.5, "dynamic")
     local adapter = lurek.raycaster.newSceneAdapter()
@@ -2116,6 +4285,29 @@ end
 
 --@api: LRaycaster:pickScreen
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.raycaster.new(16, 16)
     for i = 0, 15 do
         map:setCell(i, 0, 1)
@@ -2153,7 +4345,7 @@ do
         half_map:setCell(11, i, 1)
     end
     half_map:setCell(7, 5, 1)
-    half_map:setHalfWallCell(7, 5, 0.5)
+    half_map:setWallFeatureCell(7, 5, { kind = "half", height = 0.5 })
     local feature_hit = half_map:pickScreen(160, 100, {
         px = 2.5,
         py = 5.5,
@@ -2192,42 +4384,31 @@ do
     end
 end
 
---@api: LRaycaster:buildMinimapWindow
-do
-    local map = lurek.raycaster.new(16, 16)
-    for i = 0, 15 do
-        map:setCell(i, 0, 1)
-        map:setCell(i, 15, 1)
-        map:setCell(0, i, 1)
-        map:setCell(15, i, 1)
-    end
-
-    map:setCell(5, 8, 1)
-    local lights = {
-        { x = 8, y = 8, r = 1.0, g = 1.0, b = 0.8, radius = 5.0, intensity = 1.0 },
-    }
-    local cells = map:buildMinimapWindow(8, 8, 5, 0.2, lights)
-
-    example_print_log("sample count = " .. #cells)
-    if cells[1] then
-        example_print_log("first cell = " .. cells[1].x .. "," .. cells[1].y)
-        example_print_log("first luma = " .. string.format("%.2f", cells[1].luma))
-    end
-end
-
---@api: LRaycaster:extractMinimap
-do
-    local map = lurek.raycaster.new(8, 8)
-    map:setCell(0, 0, 1)
-    map:setCell(1, 0, 1)
-    map:setCell(0, 1, 1)
-    local image = map:extractMinimap(4.0, 4.0, 0.0, 3, 4)
-    example_print_log("minimap type = " .. image:type())
-    example_print_log("minimap width = " .. image:getWidth())
-end
-
 --@api: LRaycaster:projectSprite
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.raycaster.new(16, 16)
     local proj = map:projectSprite(10, 8, 8, 8, 0, math.pi / 3, 320)
 
@@ -2236,19 +4417,31 @@ do
     example_print_log("visible = " .. tostring(proj.visible))
 end
 
---@api: LRaycaster:drawLineOfSight
-do
-    local map = lurek.raycaster.new(8, 8)
-    map:setCell(4, 4, 1)
-
-    local img = map:drawLineOfSight(1, 1, 7, 7, 16)
-
-    example_print_log("width = " .. img:getWidth())
-    example_print_log("height = " .. img:getHeight())
-end
-
 --@api: LRaycaster:drawCameraSweep
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.raycaster.new(8, 8)
     for i = 0, 7 do
         map:setCell(i, 0, 1)
@@ -2265,6 +4458,29 @@ end
 
 --@api: LRaycaster:castFloorRow
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.raycaster.new(16, 16)
     local uvs = map:castFloorRow(8, 8, 1, 0, 0, 0.66, 150)
 
@@ -2278,6 +4494,29 @@ end
 
 --@api: LRaycaster:buildSceneWithModels
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rc = lurek.raycaster.new(80, 60)
     local model = lurek.render.loadModel("content/examples/assets/models/sample_tank.obj")
     local params = {
@@ -2310,6 +4549,29 @@ end
 
 --@api: LRaycaster:height
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rc = lurek.raycaster.new(160, 120)
     rc:setCell(10, 10, 1)
     ray_log("height=" .. rc:height())
@@ -2320,6 +4582,29 @@ end
 
 --@api: LRaycaster:width
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rc = lurek.raycaster.new(160, 120)
     rc:setCell(12, 12, 2)
     ray_log("width=" .. rc:width())
@@ -2330,6 +4615,29 @@ end
 
 --@api: LDoorManager:addDoor
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dm = lurek.raycaster.newDoorManager()
     local id = dm:addDoor(5, 5, "horizontal", 0.5)
     local door = dm:getDoor(id)
@@ -2340,6 +4648,29 @@ end
 
 --@api: LDoorManager:closeDoor
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dm = lurek.raycaster.newDoorManager()
     local id = dm:addDoor(5, 5, "horizontal", 0.5)
     dm:openDoor(id)
@@ -2355,6 +4686,29 @@ end
 
 --@api: LDoorManager:count
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dm = lurek.raycaster.newDoorManager()
     local first = dm:addDoor(5, 5, "horizontal", 0.5)
     local second = dm:addDoor(6, 5, "vertical", 0.25)
@@ -2366,6 +4720,29 @@ end
 
 --@api: LDoorManager:openDoor
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dm = lurek.raycaster.newDoorManager()
     local id = dm:addDoor(5, 5, "horizontal", 0.5)
     dm:openDoor(id)
@@ -2379,6 +4756,29 @@ end
 
 --@api: LDoorManager:update
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dm = lurek.raycaster.newDoorManager()
     local id = dm:addDoor(5, 5, "horizontal", 0.5)
     dm:openDoor(id)
@@ -2392,6 +4792,29 @@ end
 
 --@api: LHeightMap:ceilingAt
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local hm = lurek.raycaster.newHeightMap(16, 16)
     hm:setFloor(3, 3, 0.2)
     hm:setCeiling(3, 3, 0.9)
@@ -2404,6 +4827,29 @@ end
 
 --@api: LHeightMap:floorAt
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local hm = lurek.raycaster.newHeightMap(16, 16)
     hm:setFloor(3, 3, 0.2)
     hm:setCeiling(3, 3, 0.9)
@@ -2416,6 +4862,29 @@ end
 
 --@api: LHeightMap:setCeiling
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local hm = lurek.raycaster.newHeightMap(16, 16)
     hm:setCeiling(3, 3, 0.9)
     hm:setCeiling(3, 4, 1.3)
@@ -2427,6 +4896,29 @@ end
 
 --@api: LHeightMap:setFloor
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local hm = lurek.raycaster.newHeightMap(16, 16)
     hm:setFloor(3, 3, 0.2)
     hm:setFloor(4, 3, -0.2)
@@ -2436,56 +4928,31 @@ do
     ray_log("setFloor updates targeted cells only")
 end
 
---@api: LPointLight:color
-do
-    local pl = lurek.raycaster.newPointLight(8, 8, 1, 1, 0.8, 5.0, 2.0)
-    local r, g, b = pl:color()
-    ray_log("color=" .. r .. "," .. g .. "," .. b)
-    ray_log("intensity=" .. pl:intensity())
-    ray_log("radius=" .. pl:radius())
-    ray_log("level=" .. tostring(pl:level()))
-end
-
---@api: LPointLight:intensity
-do
-    local pl = lurek.raycaster.newPointLight(8, 8, 1, 1, 0.8, 5.0, 2.0)
-    local r, g, b = pl:color()
-    ray_log("intensity=" .. pl:intensity())
-    ray_log("radius=" .. pl:radius())
-    ray_log("position=" .. pl:x() .. "," .. pl:y())
-    ray_log("color=" .. r .. "," .. g .. "," .. b)
-end
-
---@api: LPointLight:radius
-do
-    local pl = lurek.raycaster.newPointLight(8, 8, 1, 1, 0.8, 5.0, 2.0)
-    local r, g, b = pl:color()
-    ray_log("radius=" .. pl:radius())
-    ray_log("intensity=" .. pl:intensity())
-    ray_log("position=" .. pl:x() .. "," .. pl:y())
-    ray_log("color=" .. r .. "," .. g .. "," .. b)
-end
-
---@api: LPointLight:x
-do
-    local pl = lurek.raycaster.newPointLight(8, 8, 1, 1, 0.8, 5.0, 2.0)
-    ray_log("x=" .. pl:x())
-    ray_log("y=" .. pl:y())
-    ray_log("radius=" .. pl:radius())
-    ray_log("intensity=" .. pl:intensity())
-end
-
---@api: LPointLight:y
-do
-    local pl = lurek.raycaster.newPointLight(8, 8, 1, 1, 0.8, 5.0, 2.0)
-    ray_log("y=" .. pl:y())
-    ray_log("x=" .. pl:x())
-    ray_log("radius=" .. pl:radius())
-    ray_log("intensity=" .. pl:intensity())
-end
-
 --@api: LSpriteManager:add
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sm = lurek.raycaster.newSpriteManager()
     local id = sm:add(5, 5, "content/examples/assets/images/sample_texture.png", 1.0)
     local projected = sm:sortAndProject(0, 0, 0)
@@ -2497,6 +4964,29 @@ end
 
 --@api: LSpriteManager:remove
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sm = lurek.raycaster.newSpriteManager()
     local id = sm:add(5, 5, "content/examples/assets/images/sample_texture.png", 1.0)
     sm:remove(id)
@@ -2508,6 +4998,29 @@ end
 
 --@api: LSpriteManager:setPosition
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sm = lurek.raycaster.newSpriteManager()
     local id = sm:add(5, 5, "content/examples/assets/images/sample_texture.png", 1.0)
     sm:setPosition(id, 6, 6)
@@ -2520,6 +5033,29 @@ end
 
 --@api: LSpriteManager:setLevel
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sm = lurek.raycaster.newSpriteManager()
     local id = sm:add(5, 5, "content/examples/assets/images/sample_texture.png", 1.0)
     sm:setLevel(id, 2)
@@ -2531,6 +5067,29 @@ end
 
 --@api: LSpriteManager:setVisible
 do
+    local function ray_log(message)
+        lurek.log.info("[raycaster.example] " .. tostring(message))
+    end
+    local function build_walled_ray_map(width, height)
+        local map = lurek.raycaster.new(width, height)
+        for x = 0, width - 1 do
+            map:setCell(x, 0, 1)
+            map:setCell(x, height - 1, 1)
+        end
+        for y = 0, height - 1 do
+            map:setCell(0, y, 1)
+            map:setCell(width - 1, y, 1)
+        end
+        return map
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sm = lurek.raycaster.newSpriteManager()
     local id = sm:add(5, 5, "content/examples/assets/images/sample_texture.png", 1.0)
     sm:setVisible(id, false)

@@ -1,0 +1,9 @@
+layout,nodes,overlaps,width,height
+tree,18,0,1187.0,322.0
+dag,18,0,126.0,1288.0
+force,18,0,608.7,560.0
+circular,18,0,940.2,898.6
+radial,18,0,887.6,840.0
+grid,18,0,468.0,250.0
+spiral,18,0,1080.3,924.2
+stress,18,0,1197.1,413.3

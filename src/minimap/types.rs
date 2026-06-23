@@ -202,8 +202,6 @@ pub struct MinimapLimits {
     pub max_path_points: usize,
     /// Maximum number of cells one reveal call may touch.
     pub max_reveal_cells_per_call: usize,
-    /// Maximum tile radius accepted by raycaster minimap extraction helpers.
-    pub max_view_radius: u32,
 }
 
 impl Default for MinimapLimits {
@@ -220,7 +218,6 @@ impl Default for MinimapLimits {
             max_paths: 4_096,
             max_path_points: 65_536,
             max_reveal_cells_per_call: 1_048_576,
-            max_view_radius: 4_096,
         }
     }
 }

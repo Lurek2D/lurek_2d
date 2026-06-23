@@ -1402,6 +1402,538 @@ describe("LuaAreaChart methods", function()
             expect_true(chart:typeOf("LObject"))
         end)
     end)
+
+    -- @describe additional common chart types
+    describe("additional common chart types", function()
+        -- @covers lurek.charts.newCandlestick
+        it("newCandlestick returns userdata", function()
+            expect_type("userdata", lurek.charts.newCandlestick())
+        end)
+
+        -- @covers LCandlestickChart:setCandles
+        it("setCandles renders OHLC rows", function()
+            local chart = lurek.charts.newCandlestick({ width = 96, height = 72 })
+            chart:setCandles({
+                { label = "Mon", open = 10, high = 14, low = 9, close = 13 },
+                { label = "Tue", open = 13, high = 15, low = 11, close = 12 },
+            })
+            expect_chart_draws(chart, 96, 72)
+        end)
+
+        -- @covers LCandlestickChart:appendCandle
+        it("appendCandle streams one OHLC row", function()
+            local chart = lurek.charts.newCandlestick({ width = 96, height = 72 })
+            chart:appendCandle("Mon", 10, 14, 9, 13)
+            expect_chart_draws(chart, 96, 72)
+        end)
+
+        -- @covers LCandlestickChart:setColors
+        it("setColors keeps candlesticks renderable", function()
+            local chart = lurek.charts.newCandlestick({ width = 96, height = 72 })
+            chart:setColors({ 0.1, 0.8, 0.2, 1 }, { 0.9, 0.1, 0.1, 1 })
+            chart:appendCandle("Mon", 10, 14, 9, 13)
+            expect_chart_draws(chart, 96, 72)
+        end)
+
+        -- @covers lurek.charts.newBoxPlot
+        it("newBoxPlot returns userdata", function()
+            expect_type("userdata", lurek.charts.newBoxPlot())
+        end)
+
+        -- @covers LBoxPlotChart:addSeries
+        it("addSeries renders boxplot distributions", function()
+            local chart = lurek.charts.newBoxPlot({ width = 96, height = 72 })
+            chart:addSeries("latency", { 10, 12, 13, 14, 18, 22, 44 })
+            expect_chart_draws(chart, 96, 72)
+        end)
+
+        -- @covers LBoxPlotChart:appendValue
+        it("appendValue streams boxplot samples", function()
+            local chart = lurek.charts.newBoxPlot({ width = 96, height = 72 })
+            chart:appendValue("latency", 10)
+            chart:appendValue("latency", 14)
+            chart:appendValue("latency", 22)
+            expect_chart_draws(chart, 96, 72)
+        end)
+
+        -- @covers lurek.charts.newBubble
+        it("newBubble returns userdata", function()
+            expect_type("userdata", lurek.charts.newBubble())
+        end)
+
+        -- @covers LBubbleChart:addSeries
+        it("addSeries renders weighted bubble points", function()
+            local chart = lurek.charts.newBubble({ width = 96, height = 72 })
+            chart:addSeries("cities", { { 1, 2, 10 }, { 2, 3, 20 }, { 3, 2, 12 } })
+            expect_chart_draws(chart, 96, 72)
+        end)
+
+        -- @covers LBubbleChart:appendPoint
+        it("appendPoint streams weighted bubble points", function()
+            local chart = lurek.charts.newBubble({ width = 96, height = 72 })
+            chart:appendPoint("cities", 1, 2, 10)
+            chart:appendPoint("cities", 2, 3, 20)
+            expect_chart_draws(chart, 96, 72)
+        end)
+
+        -- @covers LBubbleChart:setRadiusRange
+        it("setRadiusRange controls bubble size mapping", function()
+            local chart = lurek.charts.newBubble({ width = 96, height = 72 })
+            chart:setRadiusRange(2, 8)
+            chart:addSeries("cities", { { 1, 2, 10 }, { 2, 3, 20 } })
+            expect_chart_draws(chart, 96, 72)
+        end)
+
+        -- @covers lurek.charts.newRadar
+        it("newRadar returns userdata", function()
+            expect_type("userdata", lurek.charts.newRadar())
+        end)
+
+        -- @covers LRadarChart:setAxes
+        it("setAxes labels radar dimensions", function()
+            local chart = lurek.charts.newRadar({ width = 120, height = 100 })
+            chart:setAxes({ "speed", "power", "range", "cost" })
+            chart:addSeries("A", { 4, 3, 5, 2 })
+            expect_chart_draws(chart, 120, 100)
+        end)
+
+        -- @covers LRadarChart:addSeries
+        it("addSeries renders radar polygons", function()
+            local chart = lurek.charts.newRadar({ width = 120, height = 100 })
+            chart:setAxes({ "speed", "power", "range", "cost" })
+            chart:addSeries("A", { 4, 3, 5, 2 })
+            chart:addSeries("B", { 2, 5, 3, 4 })
+            expect_chart_draws(chart, 120, 100)
+        end)
+
+        -- @covers LRadarChart:setMaxValue
+        it("setMaxValue pins radar scaling", function()
+            local chart = lurek.charts.newRadar({ width = 120, height = 100 })
+            chart:setAxes({ "speed", "power", "range", "cost" })
+            chart:setMaxValue(10)
+            chart:addSeries("A", { 4, 3, 5, 2 })
+            expect_chart_draws(chart, 120, 100)
+        end)
+
+        -- @covers LRadarChart:clearMaxValue
+        it("clearMaxValue restores radar auto scaling", function()
+            local chart = lurek.charts.newRadar({ width = 120, height = 100 })
+            chart:setMaxValue(10)
+            chart:clearMaxValue()
+            chart:setAxes({ "speed", "power", "range", "cost" })
+            chart:addSeries("A", { 4, 3, 5, 2 })
+            expect_chart_draws(chart, 120, 100)
+        end)
+
+        -- @covers lurek.charts.newTreemap
+        it("newTreemap returns userdata", function()
+            expect_type("userdata", lurek.charts.newTreemap())
+        end)
+
+        -- @covers LTreemapChart:setItems
+        it("setItems renders weighted treemap rectangles", function()
+            local chart = lurek.charts.newTreemap({ width = 120, height = 90 })
+            chart:setItems({
+                { label = "CPU", value = 45 },
+                { label = "GPU", value = 30 },
+                { label = "IO", value = 15 },
+            })
+            expect_chart_draws(chart, 120, 90)
+        end)
+
+        -- @covers LTreemapChart:addItem
+        it("addItem appends treemap rectangles", function()
+            local chart = lurek.charts.newTreemap({ width = 120, height = 90 })
+            chart:addItem("CPU", 45)
+            chart:addItem("GPU", 30)
+            expect_chart_draws(chart, 120, 90)
+        end)
+    end)
+
+    -- @describe common methods for additional chart types
+    describe("common methods for additional chart types", function()
+        local function additional_chart(kind)
+            if kind == "candlestick" then
+                local chart = lurek.charts.newCandlestick({ width = 96, height = 72 })
+                chart:appendCandle("Mon", 10, 14, 9, 13)
+                return chart
+            elseif kind == "boxplot" then
+                local chart = lurek.charts.newBoxPlot({ width = 96, height = 72 })
+                chart:addSeries("latency", { 10, 12, 15, 20 })
+                return chart
+            elseif kind == "bubble" then
+                local chart = lurek.charts.newBubble({ width = 96, height = 72 })
+                chart:addSeries("cities", { { 1, 2, 10 }, { 2, 3, 20 } })
+                return chart
+            elseif kind == "radar" then
+                local chart = lurek.charts.newRadar({ width = 96, height = 72 })
+                chart:setAxes({ "a", "b", "c" })
+                chart:addSeries("A", { 1, 2, 3 })
+                return chart
+            end
+            local chart = lurek.charts.newTreemap({ width = 96, height = 72 })
+            chart:addItem("Rendering", 45)
+            chart:addItem("Audio", 18)
+            return chart
+        end
+
+        -- @covers LCandlestickChart:render
+        it("render returns candlestick bytes", function()
+            local chart = lurek.charts.newCandlestick({ width = 96, height = 72 })
+            chart:appendCandle("Mon", 10, 14, 9, 13)
+            local w, h, bytes = chart:render()
+            expect_equal(96, w)
+            expect_equal(72, h)
+            expect_true(#bytes > 0)
+        end)
+
+        -- @covers LBoxPlotChart:renderImage
+        it("renderImage returns boxplot image data", function()
+            local chart = lurek.charts.newBoxPlot({ width = 96, height = 72 })
+            chart:addSeries("latency", { 10, 12, 15, 20 })
+            expect_type("userdata", chart:renderImage())
+        end)
+
+        -- @covers LBubbleChart:drawToImage
+        it("drawToImage paints bubble chart output", function()
+            local chart = lurek.charts.newBubble({ width = 96, height = 72 })
+            chart:addSeries("cities", { { 1, 2, 10 }, { 2, 3, 20 } })
+            expect_chart_draws(chart, 96, 72)
+        end)
+
+        -- @covers LRadarChart:draw
+        it("draw queues radar chart output", function()
+            local chart = lurek.charts.newRadar({ width = 96, height = 72 })
+            chart:setAxes({ "a", "b", "c" })
+            chart:addSeries("A", { 1, 2, 3 })
+            expect_no_error(function()
+                chart:draw(4, 6)
+            end)
+        end)
+
+        -- @covers LTreemapChart:type
+        it("type returns treemap chart userdata name", function()
+            expect_equal("LTreemapChart", lurek.charts.newTreemap():type())
+        end)
+
+        -- @covers LTreemapChart:typeOf
+        it("typeOf recognizes treemap chart userdata", function()
+            local chart = lurek.charts.newTreemap()
+            expect_true(chart:typeOf("LTreemapChart"))
+            expect_true(chart:typeOf("LObject"))
+        end)
+
+        -- @covers LCandlestickChart:clear
+        it("clear removes candlestick data", function()
+            local chart = lurek.charts.newCandlestick({ width = 96, height = 72 })
+            chart:appendCandle("Mon", 10, 14, 9, 13)
+            chart:clear()
+            local w = chart:render()
+            expect_equal(96, w)
+        end)
+
+        -- @covers LBoxPlotChart:setTitle
+        it("setTitle annotates additional charts", function()
+            local chart = lurek.charts.newBoxPlot({ width = 96, height = 72 })
+            chart:setTitle("Latency")
+            chart:addSeries("latency", { 10, 12, 15, 20 })
+            expect_chart_draws(chart, 96, 72)
+        end)
+
+        -- @covers LBubbleChart:setShowLegend
+        it("setShowLegend annotates bubble chart legends", function()
+            local chart = lurek.charts.newBubble({ width = 120, height = 90 })
+            chart:setShowLegend(true)
+            chart:addSeries("cities", { { 1, 2, 10 }, { 2, 3, 20 } })
+            expect_chart_draws(chart, 120, 90)
+        end)
+
+        -- @covers LRadarChart:getWidth
+        it("getWidth returns radar width", function()
+            expect_equal(123, lurek.charts.newRadar({ width = 123, height = 80 }):getWidth())
+        end)
+
+        -- @covers LRadarChart:getHeight
+        it("getHeight returns radar height", function()
+            expect_equal(80, lurek.charts.newRadar({ width = 123, height = 80 }):getHeight())
+        end)
+
+        -- @covers LCandlestickChart:setTitle
+        it("setTitle annotates candlestick charts", function()
+            local chart = additional_chart("candlestick")
+            chart:setTitle("OHLC")
+            expect_chart_draws(chart, 96, 72)
+        end)
+
+        -- @covers LCandlestickChart:setShowLegend
+        it("setShowLegend keeps candlestick charts renderable", function()
+            local chart = additional_chart("candlestick")
+            chart:setShowLegend(true)
+            expect_chart_draws(chart, 96, 72)
+        end)
+
+        -- @covers LCandlestickChart:renderImage
+        it("renderImage returns candlestick image data", function()
+            expect_type("userdata", additional_chart("candlestick"):renderImage())
+        end)
+
+        -- @covers LCandlestickChart:drawToImage
+        it("drawToImage paints candlestick chart output", function()
+            expect_chart_draws(additional_chart("candlestick"), 96, 72)
+        end)
+
+        -- @covers LCandlestickChart:draw
+        it("draw queues candlestick chart output", function()
+            expect_no_error(function()
+                additional_chart("candlestick"):draw(4, 6)
+            end)
+        end)
+
+        -- @covers LCandlestickChart:getWidth
+        it("getWidth returns candlestick width", function()
+            expect_equal(96, additional_chart("candlestick"):getWidth())
+        end)
+
+        -- @covers LCandlestickChart:getHeight
+        it("getHeight returns candlestick height", function()
+            expect_equal(72, additional_chart("candlestick"):getHeight())
+        end)
+
+        -- @covers LCandlestickChart:type
+        it("type returns candlestick chart userdata name", function()
+            expect_equal("LCandlestickChart", additional_chart("candlestick"):type())
+        end)
+
+        -- @covers LCandlestickChart:typeOf
+        it("typeOf recognizes candlestick chart userdata", function()
+            local chart = additional_chart("candlestick")
+            expect_true(chart:typeOf("LCandlestickChart"))
+            expect_true(chart:typeOf("LObject"))
+        end)
+
+        -- @covers LBoxPlotChart:clear
+        it("clear removes boxplot data", function()
+            local chart = additional_chart("boxplot")
+            chart:clear()
+            local w = chart:render()
+            expect_equal(96, w)
+        end)
+
+        -- @covers LBoxPlotChart:setShowLegend
+        it("setShowLegend keeps boxplot charts renderable", function()
+            local chart = additional_chart("boxplot")
+            chart:setShowLegend(true)
+            expect_chart_draws(chart, 96, 72)
+        end)
+
+        -- @covers LBoxPlotChart:render
+        it("render returns boxplot bytes", function()
+            local w, h, bytes = additional_chart("boxplot"):render()
+            expect_equal(96, w)
+            expect_equal(72, h)
+            expect_true(#bytes > 0)
+        end)
+
+        -- @covers LBoxPlotChart:drawToImage
+        it("drawToImage paints boxplot chart output", function()
+            expect_chart_draws(additional_chart("boxplot"), 96, 72)
+        end)
+
+        -- @covers LBoxPlotChart:draw
+        it("draw queues boxplot chart output", function()
+            expect_no_error(function()
+                additional_chart("boxplot"):draw(4, 6)
+            end)
+        end)
+
+        -- @covers LBoxPlotChart:getWidth
+        it("getWidth returns boxplot width", function()
+            expect_equal(96, additional_chart("boxplot"):getWidth())
+        end)
+
+        -- @covers LBoxPlotChart:getHeight
+        it("getHeight returns boxplot height", function()
+            expect_equal(72, additional_chart("boxplot"):getHeight())
+        end)
+
+        -- @covers LBoxPlotChart:type
+        it("type returns boxplot chart userdata name", function()
+            expect_equal("LBoxPlotChart", additional_chart("boxplot"):type())
+        end)
+
+        -- @covers LBoxPlotChart:typeOf
+        it("typeOf recognizes boxplot chart userdata", function()
+            local chart = additional_chart("boxplot")
+            expect_true(chart:typeOf("LBoxPlotChart"))
+            expect_true(chart:typeOf("LObject"))
+        end)
+
+        -- @covers LBubbleChart:clear
+        it("clear removes bubble chart data", function()
+            local chart = additional_chart("bubble")
+            chart:clear()
+            local w = chart:render()
+            expect_equal(96, w)
+        end)
+
+        -- @covers LBubbleChart:setTitle
+        it("setTitle annotates bubble charts", function()
+            local chart = additional_chart("bubble")
+            chart:setTitle("Cities")
+            expect_chart_draws(chart, 96, 72)
+        end)
+
+        -- @covers LBubbleChart:render
+        it("render returns bubble chart bytes", function()
+            local w, h, bytes = additional_chart("bubble"):render()
+            expect_equal(96, w)
+            expect_equal(72, h)
+            expect_true(#bytes > 0)
+        end)
+
+        -- @covers LBubbleChart:renderImage
+        it("renderImage returns bubble image data", function()
+            expect_type("userdata", additional_chart("bubble"):renderImage())
+        end)
+
+        -- @covers LBubbleChart:draw
+        it("draw queues bubble chart output", function()
+            expect_no_error(function()
+                additional_chart("bubble"):draw(4, 6)
+            end)
+        end)
+
+        -- @covers LBubbleChart:getWidth
+        it("getWidth returns bubble width", function()
+            expect_equal(96, additional_chart("bubble"):getWidth())
+        end)
+
+        -- @covers LBubbleChart:getHeight
+        it("getHeight returns bubble height", function()
+            expect_equal(72, additional_chart("bubble"):getHeight())
+        end)
+
+        -- @covers LBubbleChart:type
+        it("type returns bubble chart userdata name", function()
+            expect_equal("LBubbleChart", additional_chart("bubble"):type())
+        end)
+
+        -- @covers LBubbleChart:typeOf
+        it("typeOf recognizes bubble chart userdata", function()
+            local chart = additional_chart("bubble")
+            expect_true(chart:typeOf("LBubbleChart"))
+            expect_true(chart:typeOf("LObject"))
+        end)
+
+        -- @covers LRadarChart:clear
+        it("clear removes radar chart data", function()
+            local chart = additional_chart("radar")
+            chart:clear()
+            local w = chart:render()
+            expect_equal(96, w)
+        end)
+
+        -- @covers LRadarChart:setTitle
+        it("setTitle annotates radar charts", function()
+            local chart = additional_chart("radar")
+            chart:setTitle("Stats")
+            expect_chart_draws(chart, 96, 72)
+        end)
+
+        -- @covers LRadarChart:setShowLegend
+        it("setShowLegend keeps radar charts renderable", function()
+            local chart = additional_chart("radar")
+            chart:setShowLegend(true)
+            expect_chart_draws(chart, 96, 72)
+        end)
+
+        -- @covers LRadarChart:render
+        it("render returns radar chart bytes", function()
+            local w, h, bytes = additional_chart("radar"):render()
+            expect_equal(96, w)
+            expect_equal(72, h)
+            expect_true(#bytes > 0)
+        end)
+
+        -- @covers LRadarChart:renderImage
+        it("renderImage returns radar image data", function()
+            expect_type("userdata", additional_chart("radar"):renderImage())
+        end)
+
+        -- @covers LRadarChart:drawToImage
+        it("drawToImage paints radar chart output", function()
+            expect_chart_draws(additional_chart("radar"), 96, 72)
+        end)
+
+        -- @covers LRadarChart:type
+        it("type returns radar chart userdata name", function()
+            expect_equal("LRadarChart", additional_chart("radar"):type())
+        end)
+
+        -- @covers LRadarChart:typeOf
+        it("typeOf recognizes radar chart userdata", function()
+            local chart = additional_chart("radar")
+            expect_true(chart:typeOf("LRadarChart"))
+            expect_true(chart:typeOf("LObject"))
+        end)
+
+        -- @covers LTreemapChart:clear
+        it("clear removes treemap data", function()
+            local chart = additional_chart("treemap")
+            chart:clear()
+            local w = chart:render()
+            expect_equal(96, w)
+        end)
+
+        -- @covers LTreemapChart:setTitle
+        it("setTitle annotates treemap charts", function()
+            local chart = additional_chart("treemap")
+            chart:setTitle("Budget")
+            expect_chart_draws(chart, 96, 72)
+        end)
+
+        -- @covers LTreemapChart:setShowLegend
+        it("setShowLegend keeps treemap charts renderable", function()
+            local chart = additional_chart("treemap")
+            chart:setShowLegend(true)
+            expect_chart_draws(chart, 96, 72)
+        end)
+
+        -- @covers LTreemapChart:render
+        it("render returns treemap bytes", function()
+            local w, h, bytes = additional_chart("treemap"):render()
+            expect_equal(96, w)
+            expect_equal(72, h)
+            expect_true(#bytes > 0)
+        end)
+
+        -- @covers LTreemapChart:renderImage
+        it("renderImage returns treemap image data", function()
+            expect_type("userdata", additional_chart("treemap"):renderImage())
+        end)
+
+        -- @covers LTreemapChart:drawToImage
+        it("drawToImage paints treemap chart output", function()
+            expect_chart_draws(additional_chart("treemap"), 96, 72)
+        end)
+
+        -- @covers LTreemapChart:draw
+        it("draw queues treemap chart output", function()
+            expect_no_error(function()
+                additional_chart("treemap"):draw(4, 6)
+            end)
+        end)
+
+        -- @covers LTreemapChart:getWidth
+        it("getWidth returns treemap width", function()
+            expect_equal(96, additional_chart("treemap"):getWidth())
+        end)
+
+        -- @covers LTreemapChart:getHeight
+        it("getHeight returns treemap height", function()
+            expect_equal(72, additional_chart("treemap"):getHeight())
+        end)
+    end)
 end)
 end
 -- END test_charts_core_unit.lua

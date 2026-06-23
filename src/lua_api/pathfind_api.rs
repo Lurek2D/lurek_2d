@@ -1,5 +1,6 @@
 //! Registers the `lurek.pathfind` Lua API for path queries, async pools, waypoint conversion, and grid validation.
 
+use super::tilefield_api::LuaTileField;
 use super::tilemap_api::LuaTileMap;
 use super::SharedState;
 use crate::pathfind::ai_flow_field::FlowField as AiFlowField;
@@ -11,6 +12,7 @@ use crate::pathfind::{
     NavMesh, PathEventStatus, PathThreadPool, UnitPathfinder, Waypoint,
 };
 use crate::pathfind::{HexGrid, HexLayout, JpsGrid, RangeMap};
+use crate::tilefield::{CellCoord, TileChannel};
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -90,6 +92,23 @@ fn require_positive_f32(value: f32, label: &str) -> LuaResult<f32> {
             label
         )))
     }
+}
+
+fn parse_tilefield_channel(
+    opts: &LuaTable,
+    key: &str,
+    default: &str,
+    api: &str,
+) -> LuaResult<TileChannel> {
+    let value = opts
+        .get::<_, Option<String>>(key)?
+        .unwrap_or_else(|| default.to_string());
+    TileChannel::parse(&value).map_err(|err| LuaError::RuntimeError(format!("{api}: {err}")))
+}
+
+fn parse_tilefield_level(opts: &LuaTable, api: &str) -> LuaResult<u32> {
+    let level = opts.get::<_, Option<u32>>("level")?.unwrap_or(1);
+    one_based_to_zero_based(level, &format!("{api}.level"))
 }
 
 /// Converts zero-based Rust waypoints into one-based Lua point tables.
@@ -631,25 +650,6 @@ impl LuaUserData for LuaUnitPathfinder {
                 Ok(UnitPathfinder::heuristic_distance(sx, sy, gx, gy))
             },
         );
-        // -- lineOfSight --
-        /// Returns whether two one-based cells have line of sight.
-        /// @param | x1 | integer | One-based column of the first cell.
-        /// @param | y1 | integer | One-based row of the first cell.
-        /// @param | x2 | integer | One-based column of the second cell.
-        /// @param | y2 | integer | One-based row of the second cell.
-        /// @param | unit_size | integer? | Unit footprint in cells (default 1).
-        /// @return | boolean | True when line of sight is clear.
-        methods.add_method(
-            "lineOfSight",
-            |_, this, (x1, y1, x2, y2, unit_size): (u32, u32, u32, u32, Option<u32>)| {
-                let (sx, sy) = one_based_coords_u32(x1, y1, "x1", "y1")?;
-                let (gx, gy) = one_based_coords_u32(x2, y2, "x2", "y2")?;
-                Ok(this
-                    .inner
-                    .borrow()
-                    .line_of_sight(sx, sy, gx, gy, unit_size.unwrap_or(1)))
-            },
-        );
         // -- setCacheEnabled --
         /// Enables or disables the path cache on this object.
         /// @param | enabled | boolean | True to enable caching.
@@ -1109,21 +1109,6 @@ impl LuaUserData for LuaHexGrid {
                         Ok(LuaValue::Table(t))
                     }
                 }
-            },
-        );
-        // -- lineOfSight --
-        /// Returns whether two one-based hex cells have line of sight.
-        /// @param | fc | integer | One-based column of the first cell.
-        /// @param | fr | integer | One-based row of the first cell.
-        /// @param | tc | integer | One-based column of the second cell.
-        /// @param | tr | integer | One-based row of the second cell.
-        /// @return | boolean | True when line of sight is clear.
-        methods.add_method(
-            "lineOfSight",
-            |_, this, (fc, fr, tc, tr): (u32, u32, u32, u32)| {
-                let from = one_based_coords_u32(fc, fr, "fc", "fr")?;
-                let to = one_based_coords_u32(tc, tr, "tc", "tr")?;
-                Ok(this.inner.borrow().line_of_sight(from, to))
             },
         );
         // -- fieldOfView --
@@ -1600,6 +1585,76 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
             },
         )?,
     )?;
+    // -- newNavGridFromField --
+    /// Creates a navigation grid from a tilefield level and channel.
+    /// @param | field_ud | LTileField | Tilefield to derive navigation grid from.
+    /// @param | opts | table? | Options with `level`, `channel`, `costChannel`, and `diagonalMode`.
+    /// @return | LNavGrid | New navigation grid handle.
+    tbl.set(
+        "newNavGridFromField",
+        lua.create_function(|_, (field_ud, opts): (LuaAnyUserData, Option<LuaTable>)| {
+            let field_ud = field_ud.borrow::<LuaTileField>()?;
+            let level = match &opts {
+                Some(opts) => parse_tilefield_level(opts, "lurek.pathfind.newNavGridFromField")?,
+                None => 0,
+            };
+            let channel = match &opts {
+                Some(opts) => parse_tilefield_channel(
+                    opts,
+                    "channel",
+                    "move",
+                    "lurek.pathfind.newNavGridFromField",
+                )?,
+                None => TileChannel::Move,
+            };
+            let cost_channel = match &opts {
+                Some(opts) => parse_tilefield_channel(
+                    opts,
+                    "costChannel",
+                    channel.as_str(),
+                    "lurek.pathfind.newNavGridFromField",
+                )?,
+                None => channel,
+            };
+            let diagonal_mode = match &opts {
+                Some(opts) => opts.get::<_, Option<String>>("diagonalMode")?,
+                None => None,
+            };
+            let field = field_ud.inner.borrow();
+            let (width, height, levels) = field.size();
+            if level >= levels {
+                return Err(LuaError::RuntimeError(format!(
+                    "lurek.pathfind.newNavGridFromField: level {} is out of bounds",
+                    level + 1
+                )));
+            }
+            let mut grid = NavGrid::new(width, height);
+            if let Some(mode) = diagonal_mode {
+                let dm = DiagonalMode::from_lua_str(&mode).ok_or_else(|| {
+                    LuaError::RuntimeError(format!(
+                        "lurek.pathfind.newNavGridFromField: invalid diagonalMode '{}'",
+                        mode
+                    ))
+                })?;
+                grid.set_diagonal_mode(dm);
+            }
+            for y in 0..height {
+                for x in 0..width {
+                    let coord = CellCoord { x, y, z: level };
+                    if field.blocks(coord, channel) {
+                        grid.set_cost(x, y, 0);
+                    } else {
+                        let cost = field.cost(coord, cost_channel).round().clamp(1.0, 254.0) as u8;
+                        grid.set_cost(x, y, cost);
+                    }
+                }
+            }
+            Ok(LuaNavGrid {
+                inner: Rc::new(RefCell::new(grid)),
+                abstract_graph: Rc::new(RefCell::new(None)),
+            })
+        })?,
+    )?;
     // -- newHexGrid --
     /// Creates a hex grid with the given dimensions.
     /// @param | width | integer | Grid width in hex columns.
@@ -1703,6 +1758,79 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
             out.set("width", width)?;
             /// Performs the 'height' operation.
             out.set("height", height)?;
+            Ok(out)
+        })?,
+    )?;
+    // -- rangeMapFromField --
+    /// Computes reachable cells from a tilefield level and movement channel.
+    /// @param | field_ud | LTileField | Tilefield to read.
+    /// @param | opts | table | Options with `origin`, `budget`, optional `level`, `channel`, `costChannel`, and `diagonal`.
+    /// @return | table | Range map result with `cells`, `width`, `height`, and `level`.
+    tbl.set(
+        "rangeMapFromField",
+        lua.create_function(|lua, (field_ud, opts): (LuaAnyUserData, LuaTable)| {
+            let field_ud = field_ud.borrow::<LuaTileField>()?;
+            let origin_tbl: LuaTable = opts.get("origin")?;
+            let ox: u32 = origin_tbl.get("x")?;
+            let oy: u32 = origin_tbl.get("y")?;
+            let oz: u32 = origin_tbl
+                .get::<_, Option<u32>>("z")?
+                .or(opts.get::<_, Option<u32>>("level")?)
+                .unwrap_or(1);
+            let origin_x = one_based_to_zero_based(ox, "origin.x")?;
+            let origin_y = one_based_to_zero_based(oy, "origin.y")?;
+            let level = one_based_to_zero_based(oz, "origin.z")?;
+            let budget: f32 = opts.get("budget")?;
+            let budget = require_positive_f32(budget, "budget")?;
+            let diagonal: bool = opts.get("diagonal").unwrap_or(false);
+            let channel = parse_tilefield_channel(
+                &opts,
+                "channel",
+                "move",
+                "lurek.pathfind.rangeMapFromField",
+            )?;
+            let cost_channel = parse_tilefield_channel(
+                &opts,
+                "costChannel",
+                channel.as_str(),
+                "lurek.pathfind.rangeMapFromField",
+            )?;
+            let field = field_ud.inner.borrow();
+            let (width, height, levels) = field.size();
+            if level >= levels {
+                return Err(LuaError::RuntimeError(format!(
+                    "lurek.pathfind.rangeMapFromField: level {} is out of bounds",
+                    level + 1
+                )));
+            }
+            let len = (width * height) as usize;
+            let mut costs = vec![1.0f32; len];
+            let mut blocked = vec![false; len];
+            for y in 0..height {
+                for x in 0..width {
+                    let idx = (y * width + x) as usize;
+                    let coord = CellCoord { x, y, z: level };
+                    blocked[idx] = field.blocks(coord, channel);
+                    costs[idx] = field.cost(coord, cost_channel).max(0.0);
+                }
+            }
+            let rm = RangeMap::from_grid(
+                width, height, &costs, &blocked, origin_x, origin_y, budget, diagonal,
+            );
+            let cells_tbl = lua.create_table()?;
+            for (i, (x, y, cost)) in rm.reachable_cells_with_cost().into_iter().enumerate() {
+                let cell = lua.create_table()?;
+                cell.set("x", x + 1)?;
+                cell.set("y", y + 1)?;
+                cell.set("z", level + 1)?;
+                cell.set("cost", cost)?;
+                cells_tbl.set(i + 1, cell)?;
+            }
+            let out = lua.create_table()?;
+            out.set("cells", cells_tbl)?;
+            out.set("width", width)?;
+            out.set("height", height)?;
+            out.set("level", level + 1)?;
             Ok(out)
         })?,
     )?;

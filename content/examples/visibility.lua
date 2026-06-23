@@ -319,3 +319,131 @@ do
     lurek.log.info("typeOf LFov = " .. tostring(is_fov))
     lurek.log.info("is object = " .. tostring(is_object) .. " grid=" .. tostring(is_grid))
 end
+
+--@api: lurek.visibility.lineOfSight
+do
+    local field = lurek.tilefield.new({ width = 6, height = 3 })
+    field:applyProfile(3, 2, 1, "window")
+    local from = { x = 1, y = 2, z = 1 }
+    local to = { x = 6, y = 2, z = 1 }
+    local clear = lurek.visibility.lineOfSight(field, from, to)
+    lurek.log.info("lineOfSight through window = " .. tostring(clear))
+end
+
+--@api: lurek.visibility.lineOfAction
+do
+    local field = lurek.tilefield.new({ width = 6, height = 3 })
+    field:applyProfile(3, 2, 1, "window")
+    local from = { x = 1, y = 2, z = 1 }
+    local to = { x = 6, y = 2, z = 1 }
+    local clear = lurek.visibility.lineOfAction(field, from, to)
+    lurek.log.info("lineOfAction through window = " .. tostring(clear))
+end
+
+--@api: lurek.visibility.newTileVisibility
+do
+    local field = lurek.tilefield.new({ width = 6, height = 6 })
+    local vis = lurek.visibility.newTileVisibility(field, { players = { "p1", "p2" } })
+    vis:computeVisible("p1", { origin = { x = 2, y = 2, z = 1 }, range = 3 })
+    local visible = vis:isVisible("p1", 3, 2, 1)
+    lurek.log.info("tile visibility created, visible=" .. tostring(visible))
+end
+
+--@api: LTileVisibility:computeVisible
+do
+    local field = lurek.tilefield.new({ width = 6, height = 6 })
+    local vis = lurek.visibility.newTileVisibility(field, { players = { "p1" } })
+    vis:computeVisible("p1", { origin = { x = 2, y = 2, z = 1 }, range = 2 })
+    local count = #vis:visibleCells("p1", 1)
+    lurek.log.info("visible tile count = " .. count)
+end
+
+--@api: LTileVisibility:computeAction
+do
+    local field = lurek.tilefield.new({ width = 6, height = 3 })
+    field:applyProfile(3, 2, 1, "window")
+    local vis = lurek.visibility.newTileVisibility(field, { players = { "p1" } })
+    vis:computeAction("p1", { origin = { x = 1, y = 2, z = 1 }, range = 6 })
+    lurek.log.info("can act through window = " .. tostring(vis:canActOn("p1", 6, 2, 1)))
+end
+
+--@api: LTileVisibility:isVisible
+do
+    local field = lurek.tilefield.new({ width = 4, height = 4 })
+    local vis = lurek.visibility.newTileVisibility(field, { players = { "p1" } })
+    vis:computeVisible("p1", { origin = { x = 2, y = 2, z = 1 }, range = 1 })
+    local visible = vis:isVisible("p1", 2, 2, 1)
+    lurek.log.info("center visible = " .. tostring(visible))
+end
+
+--@api: LTileVisibility:isExplored
+do
+    local field = lurek.tilefield.new({ width = 4, height = 4 })
+    local vis = lurek.visibility.newTileVisibility(field, { players = { "p1" }, rememberExplored = true })
+    vis:computeVisible("p1", { origin = { x = 2, y = 2, z = 1 }, range = 1 })
+    local explored = vis:isExplored("p1", 2, 2, 1)
+    lurek.log.info("center explored = " .. tostring(explored))
+end
+
+--@api: LTileVisibility:canActOn
+do
+    local field = lurek.tilefield.new({ width = 4, height = 4 })
+    local vis = lurek.visibility.newTileVisibility(field, { players = { "p1" } })
+    vis:computeAction("p1", { origin = { x = 2, y = 2, z = 1 }, range = 1 })
+    local actionable = vis:canActOn("p1", 2, 2, 1)
+    lurek.log.info("center actionable = " .. tostring(actionable))
+end
+
+--@api: LTileVisibility:visibleCells
+do
+    local field = lurek.tilefield.new({ width = 4, height = 4 })
+    local vis = lurek.visibility.newTileVisibility(field, { players = { "p1" } })
+    vis:computeVisible("p1", { origin = { x = 2, y = 2, z = 1 }, range = 1 })
+    local cells = vis:visibleCells("p1", 1)
+    lurek.log.info("visibleCells count = " .. #cells)
+end
+
+--@api: LTileVisibility:actionCells
+do
+    local field = lurek.tilefield.new({ width = 4, height = 4 })
+    local vis = lurek.visibility.newTileVisibility(field, { players = { "p1" } })
+    vis:computeAction("p1", { origin = { x = 2, y = 2, z = 1 }, range = 1 })
+    local cells = vis:actionCells("p1", 1)
+    lurek.log.info("actionCells count = " .. #cells)
+end
+
+--@api: LTileVisibility:clearPlayer
+do
+    local field = lurek.tilefield.new({ width = 4, height = 4 })
+    local vis = lurek.visibility.newTileVisibility(field, { players = { "p1" } })
+    vis:computeVisible("p1", { origin = { x = 2, y = 2, z = 1 }, range = 1 })
+    vis:clearPlayer("p1")
+    lurek.log.info("after clearPlayer visible = " .. tostring(vis:isVisible("p1", 2, 2, 1)))
+end
+
+--@api: LTileVisibility:clearAll
+do
+    local field = lurek.tilefield.new({ width = 4, height = 4 })
+    local vis = lurek.visibility.newTileVisibility(field, { players = { "p1", "p2" } })
+    vis:computeAction("p1", { origin = { x = 2, y = 2, z = 1 }, range = 1 })
+    vis:clearAll()
+    lurek.log.info("after clearAll action = " .. tostring(vis:canActOn("p1", 2, 2, 1)))
+end
+
+--@api: LTileVisibility:type
+do
+    local field = lurek.tilefield.new({ width = 2, height = 2 })
+    local vis = lurek.visibility.newTileVisibility(field, { players = { "p1" } })
+    local name = vis:type()
+    local object = vis:typeOf("LObject")
+    lurek.log.info("tile visibility type = " .. name .. " object=" .. tostring(object))
+end
+
+--@api: LTileVisibility:typeOf
+do
+    local field = lurek.tilefield.new({ width = 2, height = 2 })
+    local vis = lurek.visibility.newTileVisibility(field, { players = { "p1" } })
+    local exact = vis:typeOf("LTileVisibility")
+    local miss = vis:typeOf("LFov")
+    lurek.log.info("tile visibility typeOf = " .. tostring(exact) .. " miss=" .. tostring(miss))
+end

@@ -177,6 +177,26 @@ VALID_SYSTEM_PROMPT = dedent("""\
     Agents are autonomous and keep working until the task is done; if blocked, blocked by scope mismatch, or blocked by a manager-only handoff, report that explicitly.
     """)
 
+VALID_REPO_AGENT = dedent("""\
+    # Repository Contract
+
+    ## Mission & Scope
+    - Own repository guidance.
+    - Keep rules close to the files they govern.
+
+    ## Files
+    - `src/`: Rust engine code.
+    - `tests/`: Validation coverage.
+
+    ## Rules
+    - Keep edits scoped.
+    - Do not validate generated dependency caches as repo contracts.
+
+    ## Workflow
+    - Read the nearest contract.
+    - Run relevant validation.
+    """)
+
 
 class _CagFixture:
     """Build an isolated ``.github/`` tree under a temp dir."""
@@ -398,6 +418,27 @@ class CagValidatorRules(unittest.TestCase):
         baseline = self.validator.load_baseline()
         regressions = self.validator.diff_against_baseline(violations, baseline)
         self.assertEqual(regressions, [])
+
+    def test_repo_agent_discovery_ignores_generated_vendor_dirs(self) -> None:
+        (self.fix.root / "AGENTS.md").write_text(VALID_REPO_AGENT, encoding="utf-8")
+        ignored_paths = [
+            self.fix.root / ".vscode-test" / "cache" / "AGENTS.md",
+            self.fix.root / "node_modules" / "pkg" / "AGENTS.md",
+            self.fix.root / "target" / "debug" / "AGENTS.md",
+        ]
+        for path in ignored_paths:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text("# Vendored\n", encoding="utf-8")
+
+        paths = {
+            p.relative_to(self.fix.root).as_posix()
+            for p in self.common.discover_repo_agents()
+        }
+
+        self.assertIn("AGENTS.md", paths)
+        self.assertNotIn(".vscode-test/cache/AGENTS.md", paths)
+        self.assertNotIn("node_modules/pkg/AGENTS.md", paths)
+        self.assertNotIn("target/debug/AGENTS.md", paths)
 
 
 class LinkCheck(unittest.TestCase):

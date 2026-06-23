@@ -34,7 +34,7 @@ pub struct LoweredFloorCell {
     pub depth_offset: f32,
     /// RGB tint multiplier applied to the floor surface color.
     pub tint: [f32; 3],
-    /// When true the cell blocks movement even though it has a floor texture.
+    /// When true the lowered floor is emitted as a blocked render tile for pits or solid step-down cells.
     pub blocked: bool,
 }
 
@@ -1722,7 +1722,7 @@ impl RaycasterScene {
     ) {
         let proj_dist = (params.screen_width * 0.5) / (params.fov * 0.5).tan();
         let wall_at = |x: i32, y: i32| -> bool {
-            x < 0 || y < 0 || raycaster.blocks_light_at(x as u32, y as u32)
+            x < 0 || y < 0 || raycaster.blocks_render_light_at(x as u32, y as u32)
         };
         build_floor_tiles(
             raycaster,

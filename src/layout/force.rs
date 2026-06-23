@@ -1,5 +1,5 @@
 //! `src/layout/force.rs` computes force-directed graph layouts for cases where clustering matters more than strict rank.
-//! It owns the simulation loop, repulsion and attraction tuning, cooling, bounded placement, and initial grid seeding.
+//! It owns simulation, size-aware forces, cooling, bounded placement, initial seeding, and overlap cleanup.
 //! `ForceConfig` lives here because iteration count, strengths, and area size are specific to this algorithm family.
 //! This file outputs shared `LayoutResult` data but does not own node contracts, tree logic, or alignment cleanup.
 //! Read it when graph spacing, convergence behavior, simulation cost, or force-tuning semantics need to change.
@@ -51,9 +51,12 @@ pub fn layout_force(
     let id_to_idx: HashMap<NodeId, usize> =
         nodes.iter().enumerate().map(|(i, n)| (n.id, i)).collect();
 
-    // Initial positions: grid layout
     let cols = (n as f64).sqrt().ceil() as usize;
-    let rows = n / cols + 1;
+    let rows = n.div_ceil(cols);
+    let max_w = nodes.iter().map(node_width).fold(1.0, f64::max);
+    let max_h = nodes.iter().map(node_height).fold(1.0, f64::max);
+    let usable_w = (config.area_width - max_w).max(1.0);
+    let usable_h = (config.area_height - max_h).max(1.0);
     let mut positions: Vec<(f64, f64)> = nodes
         .iter()
         .enumerate()
@@ -61,13 +64,15 @@ pub fn layout_force(
             let col = i % cols;
             let row = i / cols;
             (
-                config.area_width * (col as f64 + 0.5) / cols as f64,
-                config.area_height * (row as f64 + 0.5) / rows as f64,
+                max_w * 0.5 + usable_w * (col as f64 + 0.5) / cols as f64,
+                max_h * 0.5 + usable_h * (row as f64 + 0.5) / rows as f64,
             )
         })
         .collect();
 
-    let ideal_dist = (config.area_width * config.area_height / n as f64).sqrt();
+    let ideal_dist = (config.area_width * config.area_height / n as f64)
+        .sqrt()
+        .max(max_node_side(nodes) + 8.0);
     let mut temperature = ideal_dist;
 
     for _ in 0..config.iterations {
@@ -79,7 +84,16 @@ pub fn layout_force(
                 let dx = positions[i].0 - positions[j].0;
                 let dy = positions[i].1 - positions[j].1;
                 let dist = (dx * dx + dy * dy).sqrt().max(0.01);
-                let force = config.repulsion / (dist * dist);
+                let min_dist = ((node_width(&nodes[i]) + node_width(&nodes[j])).max(
+                    node_height(&nodes[i]) + node_height(&nodes[j]),
+                ) * 0.5)
+                    .max(ideal_dist * 0.35);
+                let overlap_boost = if dist < min_dist {
+                    (min_dist - dist) * 0.25
+                } else {
+                    0.0
+                };
+                let force = config.repulsion / (dist * dist) + overlap_boost;
                 let fx = dx / dist * force;
                 let fy = dy / dist * force;
                 displacements[i].0 += fx;
@@ -113,24 +127,33 @@ pub fn layout_force(
             positions[i].0 += dx / mag * capped_mag;
             positions[i].1 += dy / mag * capped_mag;
 
-            // Keep within bounds
-            positions[i].0 = positions[i].0.clamp(0.0, config.area_width);
-            positions[i].1 = positions[i].1.clamp(0.0, config.area_height);
+            let half_w = node_width(&nodes[i]) * 0.5;
+            let half_h = node_height(&nodes[i]) * 0.5;
+            let max_x = (config.area_width - half_w).max(half_w);
+            let max_y = (config.area_height - half_h).max(half_h);
+            positions[i].0 = positions[i].0.clamp(half_w, max_x);
+            positions[i].1 = positions[i].1.clamp(half_h, max_y);
         }
 
         temperature *= config.cooling;
     }
 
-    let result_nodes: Vec<LayoutNode> = nodes
+    let mut result_nodes: Vec<LayoutNode> = nodes
         .iter()
         .enumerate()
         .map(|(i, n)| {
             let mut node = n.clone();
-            node.x = positions[i].0;
-            node.y = positions[i].1;
+            node.x = positions[i].0 - node_width(&node) * 0.5;
+            node.y = positions[i].1 - node_height(&node) * 0.5;
             node
         })
         .collect();
+    relax_overlaps(
+        &mut result_nodes,
+        4.0,
+        Some((config.area_width, config.area_height)),
+        8,
+    );
 
     LayoutResult::new(result_nodes)
 }

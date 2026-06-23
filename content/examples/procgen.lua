@@ -4,20 +4,21 @@
 
 --- Procgen Module: noise, dungeons, heightmaps, caves, L-systems, Voronoi, WFC, biomes, names
 
-local function procgen_log(message)
-    lurek.log.info("[procgen.example] " .. tostring(message))
-end
 
-local function example_print_log(...)
-    local parts = {}
-    for i = 1, select("#", ...) do
-        parts[i] = tostring(select(i, ...))
-    end
-    lurek.log.info(table.concat(parts, " "))
-end
 
 --@api: lurek.procgen.simplex2d
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local value = lurek.procgen.simplex2d(1.5, 2.3)
     local mirrored = lurek.procgen.simplex2d(2.3, 1.5)
     local ridge = lurek.procgen.simplex2d(1.75, 2.55)
@@ -28,6 +29,17 @@ end
 
 --@api: lurek.procgen.perlinNoise
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local first = lurek.procgen.perlinNoise(0.5, 0.5, 4.0, 4.0)
     local tiled = lurek.procgen.perlinNoise(4.5, 0.5, 4.0, 4.0)
     local downstream = lurek.procgen.perlinNoise(0.5, 2.5, 4.0, 4.0)
@@ -38,6 +50,17 @@ end
 
 --@api: lurek.procgen.noiseMap
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.procgen.noiseMap(64, 64, {
         scale_x = 0.05,
         scale_y = 0.05,
@@ -53,6 +76,17 @@ end
 
 --@api: lurek.procgen.noiseMapParallel
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.procgen.noiseMapParallel(128, 128, {
         scale_x = 0.02,
         scale_y = 0.02,
@@ -67,6 +101,17 @@ end
 
 --@api: lurek.procgen.heightmap
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local hm = lurek.procgen.heightmap({
         width = 128,
         height = 128,
@@ -84,6 +129,17 @@ end
 
 --@api: lurek.procgen.cellularAutomata
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cave = lurek.procgen.cellularAutomata(80, 60, {
         fill = 0.45,
         iterations = 5,
@@ -98,6 +154,17 @@ end
 
 --@api: lurek.procgen.heightmapFromCellular
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cells = lurek.procgen.cellularAutomata(64, 64, {
         fill = 0.4,
         iterations = 4,
@@ -111,6 +178,17 @@ end
 
 --@api: lurek.procgen.floodFill
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cells = {
         200, 200, 0, 0,
         200, 200, 0, 0,
@@ -125,6 +203,17 @@ end
 
 --@api: lurek.procgen.bspDungeon
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dungeon = lurek.procgen.bspDungeon({
         width = 80,
         height = 60,
@@ -140,6 +229,17 @@ end
 
 --@api: lurek.procgen.roomsDungeon
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dungeon = lurek.procgen.roomsDungeon({
         width = 60,
         height = 40,
@@ -155,6 +255,17 @@ end
 
 --@api: lurek.procgen.bspDungeonWithPrefabs
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local prefabs = {
         { name = "boss_room", width = 10, height = 10 },
     }
@@ -172,6 +283,17 @@ end
 
 --@api: lurek.procgen.roomsDungeonWithPrefabs
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local prefabs = {
         { name = "shop", width = 5, height = 5 },
     }
@@ -188,6 +310,17 @@ end
 
 --@api: lurek.procgen.poissonDisk
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local points = lurek.procgen.poissonDisk(200, 200, 15, 30, 42)
     local first = points[1]
     local second = points[2] or first
@@ -198,6 +331,17 @@ end
 
 --@api: lurek.procgen.voronoi
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local regions, dist1, dist2 = lurek.procgen.voronoi(100, 100, {
         { x = 20, y = 20 },
         { x = 80, y = 80 },
@@ -211,6 +355,17 @@ end
 
 --@api: lurek.procgen.lsystem
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local result = lurek.procgen.lsystem({
         axiom = "F",
         iterations = 3,
@@ -223,6 +378,17 @@ end
 
 --@api: lurek.procgen.lsystemSegments
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local segments = lurek.procgen.lsystemSegments({
         axiom = "F",
         iterations = 4,
@@ -235,6 +401,17 @@ end
 
 --@api: lurek.procgen.wfcGenerate
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local result = lurek.procgen.wfcGenerate({
         width = 4,
         height = 4,
@@ -256,6 +433,17 @@ end
 
 --@api: lurek.procgen.generateName
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local samples = { "Aldric", "Baldric", "Cedric", "Eldric", "Godric", "Fredric" }
     local name = lurek.procgen.generateName(samples, 4, 8, 1)
     local fallback = lurek.procgen.generateName(samples, 4, 8, 2)
@@ -266,6 +454,17 @@ end
 
 --@api: lurek.procgen.newBiomeClassifier
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local classifier = lurek.procgen.newBiomeClassifier({
         ocean_threshold = 0.3,
         coast_threshold = 0.35,
@@ -279,6 +478,17 @@ end
 
 --@api: lurek.procgen.biomeColor
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local r, g, b, a = lurek.procgen.biomeColor("ocean")
     local brightness = r + g + b
     procgen_log("biomeColor ocean=" .. r .. "," .. g .. "," .. b .. "," .. a)
@@ -288,6 +498,17 @@ end
 
 --@api: lurek.procgen.worldGraph
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local world = lurek.procgen.worldGraph(500, 500, 12, 42)
     local first_region = world.regions[1]
     local first_edge = world.edges[1]
@@ -300,6 +521,17 @@ end
 
 --@api: LBiomeClassifier:classify
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local classifier = lurek.procgen.newBiomeClassifier({
         ocean_threshold = 0.28,
         coast_threshold = 0.34,
@@ -313,6 +545,17 @@ end
 
 --@api: LBiomeClassifier:classifyMap
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local classifier = lurek.procgen.newBiomeClassifier({
         ocean_threshold = 0.3,
         coast_threshold = 0.35,
@@ -332,6 +575,17 @@ end
 
 --@api: LBiomeClassifier:type
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local classifier = lurek.procgen.newBiomeClassifier()
     local type_name = classifier:type()
     local sample = classifier:classify(0.82, 0.35, 0.2)
@@ -342,6 +596,17 @@ end
 
 --@api: LBiomeClassifier:typeOf
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local classifier = lurek.procgen.newBiomeClassifier()
     local matches = classifier:typeOf("LBiomeClassifier")
     local object_match = classifier:typeOf("LObject")
@@ -353,6 +618,17 @@ end
 
 --@api: lurek.procgen.generateNames
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local samples = { "Alon", "Beren", "Caran", "Doran", "Elan" }
     local names = lurek.procgen.generateNames(samples, 5, 3, 8, 42)
     local last = names[#names]
@@ -363,6 +639,17 @@ end
 
 --@api: lurek.procgen.noiseMapParallelSeeded
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.procgen.noiseMapParallelSeeded(16, 16, {
         scale_x = 0.1,
         scale_y = 0.1,
@@ -376,6 +663,17 @@ end
 
 --@api: lurek.procgen.simplex3d
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local value = lurek.procgen.simplex3d(0.1, 0.5, 0.9)
     local shifted = lurek.procgen.simplex3d(0.1, 0.5, 1.1)
     local animated = lurek.procgen.simplex3d(0.1, 0.5, 1.3)
@@ -386,6 +684,17 @@ end
 
 --@api: lurek.procgen.perlin4d
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local value = lurek.procgen.perlin4d(0.1, 0.2, 0.3, 0.4)
     local seeded = lurek.procgen.perlin4d(0.1, 0.2, 0.3, 0.4, 17)
     local alternate = lurek.procgen.perlin4d(0.2, 0.3, 0.4, 0.5, 17)
@@ -396,6 +705,17 @@ end
 
 --@api: LNoiseGenerator:fbm
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local generator = lurek.procgen.newNoiseGenerator(42)
     local value = generator:fbm(0.5, 0.5, 4, 2.0, 0.5)
     local valley = generator:fbm(0.25, 0.75, 4, 2.0, 0.5)
@@ -406,6 +726,17 @@ end
 
 --@api: LNoiseGenerator:generateMap
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local generator = lurek.procgen.newNoiseGenerator(42)
     local map = generator:generateMap(16, 16, {
         scaleX = 0.08,
@@ -423,6 +754,17 @@ end
 
 --@api: LNoiseGenerator:generateMapCompute
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local generator = lurek.procgen.newNoiseGenerator(99)
     local map = generator:generateMapCompute(32, 32, {
         scaleX = 0.05,
@@ -440,6 +782,17 @@ end
 
 --@api: LNoiseGenerator:getSeed
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local generator = lurek.procgen.newNoiseGenerator(12345)
     local seed = generator:getSeed()
     local height_a = generator:perlin2d(0.2, 0.2)
@@ -451,6 +804,17 @@ end
 
 --@api: LNoiseGenerator:perlin1d
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local generator = lurek.procgen.newNoiseGenerator(42)
     local value = generator:perlin1d(0.5)
     local next_value = generator:perlin1d(0.75)
@@ -461,6 +825,17 @@ end
 
 --@api: LNoiseGenerator:perlin2d
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local generator = lurek.procgen.newNoiseGenerator(42)
     local value = generator:perlin2d(0.3, 0.7)
     local nearby = generator:perlin2d(0.35, 0.75)
@@ -471,6 +846,17 @@ end
 
 --@api: LNoiseGenerator:perlin3d
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local generator = lurek.procgen.newNoiseGenerator(42)
     local value = generator:perlin3d(0.2, 0.4, 0.8)
     local layered = generator:perlin3d(0.2, 0.4, 1.0)
@@ -481,6 +867,17 @@ end
 
 --@api: LNoiseGenerator:perlin4d
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local generator = lurek.procgen.newNoiseGenerator(42)
     local value = generator:perlin4d(0.1, 0.2, 0.3, 0.6)
     local shifted = generator:perlin4d(0.1, 0.2, 0.3, 0.8)
@@ -491,6 +888,17 @@ end
 
 --@api: LNoiseGenerator:ridged
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local generator = lurek.procgen.newNoiseGenerator(42)
     local value = generator:ridged(0.4, 0.6)
     local adjacent = generator:ridged(0.45, 0.65)
@@ -501,6 +909,17 @@ end
 
 --@api: LNoiseGenerator:setSeed
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local generator = lurek.procgen.newNoiseGenerator(1)
     local before = generator:getSeed()
     generator:setSeed(99999)
@@ -513,6 +932,17 @@ end
 
 --@api: LNoiseGenerator:simplex1d
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local generator = lurek.procgen.newNoiseGenerator(42)
     local value = generator:simplex1d(0.5)
     local next_value = generator:simplex1d(0.75)
@@ -523,6 +953,17 @@ end
 
 --@api: LNoiseGenerator:simplex2d
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local generator = lurek.procgen.newNoiseGenerator(42)
     local value = generator:simplex2d(0.3, 0.8)
     local nearby = generator:simplex2d(0.35, 0.85)
@@ -533,6 +974,17 @@ end
 
 --@api: LNoiseGenerator:simplex3d
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local generator = lurek.procgen.newNoiseGenerator(42)
     local value = generator:simplex3d(0.1, 0.5, 0.9)
     local layered = generator:simplex3d(0.1, 0.5, 1.1)
@@ -543,6 +995,17 @@ end
 
 --@api: LNoiseGenerator:turbulence
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local generator = lurek.procgen.newNoiseGenerator(42)
     local value = generator:turbulence(0.5, 0.5, 4)
     local border = generator:turbulence(0.2, 0.8, 4)
@@ -553,6 +1016,17 @@ end
 
 --@api: LNoiseGenerator:type
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local generator = lurek.procgen.newNoiseGenerator(42)
     local type_name = generator:type()
     local sample = generator:perlin2d(0.1, 0.1)
@@ -563,6 +1037,17 @@ end
 
 --@api: LNoiseGenerator:typeOf
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local generator = lurek.procgen.newNoiseGenerator(42)
     local matches = generator:typeOf("LNoiseGenerator")
     local object_match = generator:typeOf("LObject")
@@ -574,6 +1059,17 @@ end
 
 --@api: LNoiseGenerator:warpDomain
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local generator = lurek.procgen.newNoiseGenerator(42)
     local warped_x, warped_y = generator:warpDomain(0.3, 0.7, 0.1)
     local noise_after_warp = generator:perlin2d(warped_x, warped_y)
@@ -584,6 +1080,17 @@ end
 
 --@api: LNoiseGenerator:worley2d
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local generator = lurek.procgen.newNoiseGenerator(42)
     local value = generator:worley2d(0.5, 0.5)
     local second = generator:worley2d(0.6, 0.5)
@@ -594,6 +1101,17 @@ end
 
 --@api: LNoiseGenerator:worley3d
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local generator = lurek.procgen.newNoiseGenerator(42)
     local value = generator:worley3d(0.5, 0.5, 0.5)
     local layer = generator:worley3d(0.5, 0.5, 0.7)
@@ -604,6 +1122,17 @@ end
 
 --@api: lurek.procgen.fbm
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local value = lurek.procgen.fbm(0.5, 0.5, 7, 4, 2.0, 0.5)
     local other = lurek.procgen.fbm(0.75, 0.25, 7, 4, 2.0, 0.5)
     local ridge = lurek.procgen.fbm(0.25, 0.75, 7, 4, 2.0, 0.5)
@@ -614,6 +1143,17 @@ end
 
 --@api: lurek.procgen.newNoiseGenerator
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local generator = lurek.procgen.newNoiseGenerator(777)
     local sample = generator:simplex2d(0.2, 0.2)
     procgen_log("lurek.procgen.newNoiseGenerator type=" .. generator:type())
@@ -623,6 +1163,17 @@ end
 
 --@api: lurek.procgen.perlin2d
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local value = lurek.procgen.perlin2d(0.2, 0.6)
     local seeded = lurek.procgen.perlin2d(0.2, 0.6, 9)
     local nearby = lurek.procgen.perlin2d(0.25, 0.65, 9)
@@ -633,6 +1184,17 @@ end
 
 --@api: lurek.procgen.perlin3d
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local value = lurek.procgen.perlin3d(0.1, 0.3, 0.7)
     local seeded = lurek.procgen.perlin3d(0.1, 0.3, 0.7, 11)
     local layered = lurek.procgen.perlin3d(0.1, 0.3, 0.9, 11)
@@ -643,6 +1205,17 @@ end
 
 --@api: lurek.procgen.simplexNoise
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local value2d = lurek.procgen.simplexNoise(0.4, 0.9)
     local value3d = lurek.procgen.simplexNoise(0.4, 0.9, 1.2)
     local animated = lurek.procgen.simplexNoise(0.4, 0.9, 1.4)
@@ -653,6 +1226,17 @@ end
 
 --@api: lurek.procgen.setConstraintsFromLLM
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     -- LLM may be offline in CI; result is always a table (empty on error)
     local constraints = lurek.procgen.setConstraintsFromLLM("2 tiles: grass and water. Grass can be next to grass or water. Water can only be next to water.")
     local next_key = next(constraints)
@@ -663,6 +1247,17 @@ end
 
 --@api: lurek.procgen.wfcFromPrompt
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     -- LLM may be offline in CI; result always has the required shape fields
     local grid = lurek.procgen.wfcFromPrompt(
         "small dungeon with stone floor and walls",
@@ -675,6 +1270,17 @@ end
 
 --@api: lurek.procgen.newCellular
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ca = lurek.procgen.newCellular(32, 32)
     ca:setCell(5, 5, lurek.procgen.CELL_SAND)
     ca:step()
@@ -686,6 +1292,17 @@ end
 
 --@api: LCellular:countCells
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ca = lurek.procgen.newCellular(16, 16)
     ca:setCell(0, 0, lurek.procgen.CELL_ROCK)
     ca:setCell(1, 0, lurek.procgen.CELL_ROCK)
@@ -698,6 +1315,17 @@ end
 
 --@api: LCellular:fillCircle
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ca = lurek.procgen.newCellular(32, 32)
     ca:fillCircle(16, 16, 5, lurek.procgen.CELL_WATER)
     local water = ca:countCells(lurek.procgen.CELL_WATER)
@@ -709,6 +1337,17 @@ end
 
 --@api: LCellular:fillRect
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ca = lurek.procgen.newCellular(32, 32)
     ca:fillRect(0, 0, 8, 8, lurek.procgen.CELL_ROCK)
     local rocks = ca:countCells(lurek.procgen.CELL_ROCK)
@@ -720,6 +1359,17 @@ end
 
 --@api: LCellular:findCells
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ca = lurek.procgen.newCellular(16, 16)
     ca:setCell(3, 7, lurek.procgen.CELL_WATER)
     local found = ca:findCells(lurek.procgen.CELL_WATER)
@@ -731,6 +1381,17 @@ end
 
 --@api: LCellular:getCell
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ca = lurek.procgen.newCellular(16, 16)
     ca:setCell(0, 0, lurek.procgen.CELL_FIRE)
     local v = ca:getCell(0, 0)
@@ -742,6 +1403,17 @@ end
 
 --@api: LCellular:loadFromBytes
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ca = lurek.procgen.newCellular(8, 8)
     local bytes = ca:toBytes()
     local ca2 = lurek.procgen.newCellular(8, 8)
@@ -751,6 +1423,17 @@ end
 
 --@api: LCellular:setCell
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ca = lurek.procgen.newCellular(16, 16)
     ca:setCell(3, 3, lurek.procgen.CELL_SAND)
     local cell = ca:getCell(3, 3)
@@ -762,6 +1445,17 @@ end
 
 --@api: LCellular:step
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ca = lurek.procgen.newCellular(16, 16)
     ca:setCell(4, 4, lurek.procgen.CELL_SAND)
     ca:step()
@@ -774,6 +1468,17 @@ end
 
 --@api: LCellular:stepN
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ca = lurek.procgen.newCellular(16, 16)
     ca:setCell(4, 4, lurek.procgen.CELL_SAND)
     ca:stepN(5)
@@ -786,6 +1491,17 @@ end
 
 --@api: LCellular:toBytes
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ca = lurek.procgen.newCellular(8, 8)
     ca:setCell(2, 2, lurek.procgen.CELL_ROCK)
     local bytes = ca:toBytes()
@@ -796,6 +1512,17 @@ end
 
 --@api: LCellular:toImageData
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ca = lurek.procgen.newCellular(16, 16)
     ca:fillRect(0, 0, 4, 4, lurek.procgen.CELL_WATER)
     local img = ca:toImageData()
@@ -806,6 +1533,17 @@ end
 
 --@api: LCellular:toImageDataRegion
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ca = lurek.procgen.newCellular(32, 32)
     ca:fillCircle(16, 16, 6, lurek.procgen.CELL_FIRE)
     local img = ca:toImageDataRegion(0, 0, 16, 16)
@@ -816,6 +1554,17 @@ end
 
 --@api: LCellular:type
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ca = lurek.procgen.newCellular(8, 8)
     ca:setCell(1, 1, lurek.procgen.CELL_GAS)
     procgen_log("type = " .. ca:type())
@@ -825,6 +1574,17 @@ end
 
 --@api: LCellular:typeOf
 do
+    local function procgen_log(message)
+        lurek.log.info("[procgen.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ca = lurek.procgen.newCellular(8, 8)
     ca:setCell(1, 1, lurek.procgen.CELL_GAS)
     procgen_log("typeOf LCellular = " .. tostring(ca:typeOf("LCellular")))

@@ -2,22 +2,23 @@
 -- Auto-generated from content/examples2/html_*.lua by tools/fix/merge_examples2_into_examples.py
 -- Run: cargo run -- content/examples/html.lua
 
-local function html_log(message)
-    lurek.log.info("[html.example] " .. tostring(message))
-end
 
 --- HTML Module Part 1: factory, LHtmlDocument methods
 
-local function example_print_log(...)
-    local parts = {}
-    for i = 1, select("#", ...) do
-        parts[i] = tostring(select(i, ...))
-    end
-    lurek.log.info(table.concat(parts, " "))
-end
 
 --@api: lurek.html.newDocument
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doc = lurek.html.newDocument("<main id='hud'><h1>HUD</h1><p>Status</p></main>")
     local root = doc:getRoot()
     html_log("doc created=" .. tostring(doc ~= nil))
@@ -28,6 +29,17 @@ end
 
 --@api: lurek.html.loadDocument
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ok, doc = pcall(lurek.html.loadDocument, "content/examples/assets/layouts/sample_menu.html")
     example_print_log("loaded document = " .. tostring(ok))
     if ok then
@@ -37,6 +49,17 @@ end
 
 --@api: lurek.html.supports
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ok = lurek.html.supports("css-flex")
     local query_ok = lurek.html.supports("selectors")
     local bogus = lurek.html.supports("totally-unknown-feature")
@@ -48,6 +71,17 @@ end
 
 --@api: lurek.html.preventDefault
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doc = lurek.html.newDocument("<button id='btn'>Go</button>")
     doc:on("click", function(ev)
         example_print_log("event preventDefault = " .. tostring(type(ev.preventDefault) == "function"))
@@ -57,6 +91,17 @@ end
 
 --@api: lurek.html.stopPropagation
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doc = lurek.html.newDocument("<button id='btn'>Go</button>")
     doc:on("click", function(ev)
         example_print_log("event stopPropagation = " .. tostring(type(ev.stopPropagation) == "function"))
@@ -66,6 +111,17 @@ end
 
 --@api: lurek.html.isDefaultPrevented
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doc = lurek.html.newDocument("<button id='btn'>Go</button>")
     doc:on("click", function(ev)
         example_print_log("event isDefaultPrevented = " .. tostring(type(ev.isDefaultPrevented) == "function"))
@@ -75,6 +131,17 @@ end
 
 --@api: LHtmlDocument:setHtml
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doc = lurek.html.newDocument()
     doc:setHtml("<h1>Title</h1><p>Body text</p>")
     local heading = doc:query("h1")
@@ -86,6 +153,17 @@ end
 
 --@api: LHtmlDocument:getHtml
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doc = lurek.html.newDocument("<span>test</span>")
     local html = doc:getHtml()
     local root = doc:getRoot()
@@ -97,6 +175,17 @@ end
 
 --@api: LHtmlDocument:setCss
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doc = lurek.html.newDocument("<div class='box'>X</div>")
     doc:setCss(".box { width: 100px; height: 100px; }")
     doc:relayout()
@@ -109,6 +198,17 @@ end
 
 --@api: LHtmlDocument:addCss
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doc = lurek.html.newDocument("<p>styled</p>")
     doc:addCss("p { font-size: 16px; }")
     doc:addCss("p { margin: 10px; }")
@@ -121,6 +221,17 @@ end
 
 --@api: LHtmlDocument:clearCss
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doc = lurek.html.newDocument("<p>unstyled</p>")
     doc:setCss("p { color: red; }")
     doc:clearCss()
@@ -133,6 +244,17 @@ end
 
 --@api: LHtmlDocument:setViewport
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doc = lurek.html.newDocument()
     doc:setViewport(1024, 768)
     local w, h = doc:getViewport()
@@ -144,6 +266,17 @@ end
 
 --@api: LHtmlDocument:getViewport
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doc = lurek.html.newDocument()
     doc:setViewport(800, 600)
     local w, h = doc:getViewport()
@@ -155,6 +288,17 @@ end
 
 --@api: LHtmlDocument:getElementById
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doc = lurek.html.newDocument("<div id='hero'>Player</div>")
     local el = doc:getElementById("hero")
     if el then
@@ -164,6 +308,17 @@ end
 
 --@api: LHtmlDocument:getRoot
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doc = lurek.html.newDocument("<div>root child</div>")
     local root = doc:getRoot()
     html_log("root tag=" .. root:getTagName())
@@ -174,6 +329,17 @@ end
 
 --@api: LHtmlDocument:query
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doc = lurek.html.newDocument("<p class='intro'>Hello</p><p>World</p>")
     local el = doc:query(".intro")
     if el then
@@ -183,6 +349,17 @@ end
 
 --@api: LHtmlDocument:queryAll
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doc = lurek.html.newDocument("<li>A</li><li>B</li><li>C</li>")
     local items = doc:queryAll("li")
     html_log("items=" .. #items)
@@ -193,6 +370,17 @@ end
 
 --@api: LHtmlDocument:isDirty
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doc = lurek.html.newDocument("<p>X</p>")
     doc:setHtml("<p>Y</p>")
     html_log("dirty after setHtml=" .. tostring(doc:isDirty()))
@@ -204,6 +392,17 @@ end
 
 --@api: LHtmlDocument:relayout
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doc = lurek.html.newDocument("<div>content</div>")
     doc:setViewport(640, 360)
     doc:relayout()
@@ -215,6 +414,17 @@ end
 
 --@api: LHtmlDocument:draw
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doc = lurek.html.newDocument("<p>Hello</p>")
     doc:setViewport(320, 180)
     doc:relayout()
@@ -227,6 +437,17 @@ end
 
 --@api: LHtmlDocument:render
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doc = lurek.html.newDocument("<p>World</p>")
     doc:setViewport(320, 180)
     doc:relayout()
@@ -239,6 +460,17 @@ end
 
 --@api: LHtmlDocument:update
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doc = lurek.html.newDocument("<p>Tick</p>")
     doc:update(0.016)
     html_log("updated")
@@ -249,6 +481,17 @@ end
 
 --@api: LHtmlDocument:on
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doc = lurek.html.newDocument("<button id='btn'>Click</button>")
     local handle = doc:on("click", function(ev)
         example_print_log("clicked!")
@@ -258,6 +501,17 @@ end
 
 --@api: LHtmlDocument:off
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doc = lurek.html.newDocument()
     local h = doc:on("hover", function() end)
     doc:off(h)
@@ -271,6 +525,17 @@ end
 
 --@api: LHtmlDocument:mousemoved
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doc = lurek.html.newDocument("<div>hover me</div>")
     local handled = doc:mousemoved(100, 50)
     html_log("mousemoved handled=" .. tostring(handled))
@@ -281,6 +546,17 @@ end
 
 --@api: LHtmlDocument:mousepressed
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doc = lurek.html.newDocument("<button>click</button>")
     local handled = doc:mousepressed(100, 50, 1)
     html_log("mousepressed handled=" .. tostring(handled))
@@ -291,6 +567,17 @@ end
 
 --@api: LHtmlDocument:mousereleased
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doc = lurek.html.newDocument("<button>click</button>")
     local handled = doc:mousereleased(100, 50, 1)
     html_log("mousereleased handled=" .. tostring(handled))
@@ -301,6 +588,17 @@ end
 
 --@api: LHtmlDocument:keypressed
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doc = lurek.html.newDocument("<input id='in'/>")
     local handled = doc:keypressed("return")
     html_log("keypressed handled=" .. tostring(handled))
@@ -311,6 +609,17 @@ end
 
 --@api: LHtmlDocument:textinput
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doc = lurek.html.newDocument("<input/>")
     local handled = doc:textinput("A")
     html_log("textinput handled=" .. tostring(handled))
@@ -321,6 +630,17 @@ end
 
 --@api: LHtmlDocument:wheelmoved
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doc = lurek.html.newDocument("<div style='overflow:scroll;height:100px'><p>long</p></div>")
     local handled = doc:wheelmoved(0, -3)
     html_log("wheelmoved handled=" .. tostring(handled))
@@ -331,6 +651,17 @@ end
 
 --@api: LHtmlDocument:type
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doc = lurek.html.newDocument()
     html_log("type=" .. doc:type())
     html_log("is document=" .. tostring(doc:typeOf("LHtmlDocument")))
@@ -340,6 +671,17 @@ end
 
 --@api: LHtmlDocument:typeOf
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doc = lurek.html.newDocument()
     html_log("is HtmlDocument=" .. tostring(doc:typeOf("LHtmlDocument")))
     html_log("is LObject=" .. tostring(doc:typeOf("LObject")))
@@ -351,6 +693,17 @@ end
 
 --@api: LHtmlElement:getId
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doc = lurek.html.newDocument("<div id='main'>content</div>")
     local el = doc:getElementById("main")
     if el then
@@ -360,6 +713,17 @@ end
 
 --@api: LHtmlElement:setId
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doc = lurek.html.newDocument("<div>content</div>")
     local root = doc:getRoot()
     root:setId("container")
@@ -371,6 +735,17 @@ end
 
 --@api: LHtmlElement:getTagName
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doc = lurek.html.newDocument("<section>stuff</section>")
     local root = doc:getRoot()
     html_log("tag=" .. root:getTagName())
@@ -381,6 +756,17 @@ end
 
 --@api: LHtmlElement:getAttribute
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doc = lurek.html.newDocument("<a href='#top'>link</a>")
     local el = doc:query("a")
     html_log("href=" .. tostring(el and el:getAttribute("href")))
@@ -391,6 +777,17 @@ end
 
 --@api: LHtmlElement:setAttribute
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doc = lurek.html.newDocument("<img/>")
     local el = doc:query("img")
     if el then el:setAttribute("src", "content/examples/assets/images/sample_icon.png") end
@@ -402,6 +799,17 @@ end
 
 --@api: LHtmlElement:removeAttribute
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doc = lurek.html.newDocument("<div data-x='1'>X</div>")
     local el = doc:query("div")
     if el then el:removeAttribute("data-x") end
@@ -413,6 +821,17 @@ end
 
 --@api: LHtmlElement:getStyle
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doc = lurek.html.newDocument("<div style='color:red'>R</div>")
     local el = doc:query("div")
     html_log("color=" .. tostring(el and el:getStyle("color")))
@@ -423,6 +842,17 @@ end
 
 --@api: LHtmlElement:setStyle
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doc = lurek.html.newDocument("<p>text</p>")
     local el = doc:query("p")
     if el then el:setStyle("font-size", "20px") end
@@ -434,6 +864,17 @@ end
 
 --@api: LHtmlElement:addClass
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doc = lurek.html.newDocument("<div>box</div>")
     local el = doc:query("div")
     if el then el:addClass("highlight") end
@@ -445,6 +886,17 @@ end
 
 --@api: LHtmlElement:removeClass
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doc = lurek.html.newDocument("<div class='active old'>X</div>")
     local el = doc:query("div")
     if el then el:removeClass("old") end
@@ -456,6 +908,17 @@ end
 
 --@api: LHtmlElement:hasClass
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doc = lurek.html.newDocument("<div class='visible'>Y</div>")
     local el = doc:query("div")
     if el then
@@ -465,6 +928,17 @@ end
 
 --@api: LHtmlElement:toggleClass
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doc = lurek.html.newDocument("<div class='on'>Z</div>")
     local el = doc:query("div")
     local first = el and el:toggleClass("on")
@@ -477,6 +951,17 @@ end
 
 --@api: LHtmlElement:getHtml
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doc = lurek.html.newDocument("<div><span>inner</span></div>")
     local el = doc:query("div")
     if el then
@@ -486,6 +971,17 @@ end
 
 --@api: LHtmlElement:setHtml
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doc = lurek.html.newDocument("<div>old</div>")
     local el = doc:query("div")
     if el then el:setHtml("<b>new</b>") end
@@ -497,6 +993,17 @@ end
 
 --@api: LHtmlElement:appendHtml
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doc = lurek.html.newDocument("<ul><li>first</li></ul>")
     local el = doc:query("ul")
     if el then el:appendHtml("<li>second</li>") end
@@ -509,6 +1016,17 @@ end
 
 --@api: LHtmlElement:getText
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doc = lurek.html.newDocument("<p>Hello World</p>")
     local el = doc:query("p")
     if el then
@@ -518,6 +1036,17 @@ end
 
 --@api: LHtmlElement:setText
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doc = lurek.html.newDocument("<span>old</span>")
     local el = doc:query("span")
     if el then el:setText("new text") end
@@ -529,6 +1058,17 @@ end
 
 --@api: LHtmlElement:getRect
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doc = lurek.html.newDocument("<div style='width:100px;height:50px'>box</div>")
     doc:setViewport(800, 600)
     doc:relayout()
@@ -541,6 +1081,17 @@ end
 
 --@api: LHtmlElement:getDocument
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doc = lurek.html.newDocument("<p>owned</p>")
     local el = doc:query("p")
     if el then
@@ -552,6 +1103,17 @@ end
 
 --@api: LHtmlElement:query
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doc = lurek.html.newDocument("<div><span class='x'>found</span></div>")
     local div = doc:query("div")
     local span = div and div:query(".x")
@@ -563,6 +1125,17 @@ end
 
 --@api: LHtmlElement:queryAll
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doc = lurek.html.newDocument("<ul><li>A</li><li>B</li></ul>")
     local ul = doc:query("ul")
     local items = ul and ul:queryAll("li") or {}
@@ -574,6 +1147,17 @@ end
 
 --@api: LHtmlElement:on
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doc = lurek.html.newDocument("<button id='btn'>Go</button>")
     local el = doc:getElementById("btn")
     if el then
@@ -586,6 +1170,17 @@ end
 
 --@api: LHtmlElement:off
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doc = lurek.html.newDocument("<div id='d'>X</div>")
     local el = doc:getElementById("d")
     if el then
@@ -598,6 +1193,17 @@ end
 
 --@api: LHtmlElement:focus
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doc = lurek.html.newDocument("<input id='field'/>")
     local el = doc:getElementById("field")
     if el then el:focus() end
@@ -609,6 +1215,17 @@ end
 
 --@api: LHtmlElement:blur
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doc = lurek.html.newDocument("<input id='field2'/>")
     local el = doc:getElementById("field2")
     if el then
@@ -620,6 +1237,17 @@ end
 
 --@api: LHtmlElement:remove
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doc = lurek.html.newDocument("<div><p id='del'>gone</p></div>")
     local el = doc:getElementById("del")
     if el then el:remove() end
@@ -631,6 +1259,17 @@ end
 
 --@api: LHtmlElement:type
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doc = lurek.html.newDocument("<div>X</div>")
     local el = doc:getRoot()
     html_log("type=" .. el:type())
@@ -641,6 +1280,17 @@ end
 
 --@api: LHtmlElement:typeOf
 do
+    local function html_log(message)
+        lurek.log.info("[html.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local doc = lurek.html.newDocument("<div>X</div>")
     local el = doc:getRoot()
     html_log("is HtmlElement=" .. tostring(el:typeOf("LHtmlElement")))

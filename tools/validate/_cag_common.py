@@ -33,6 +33,21 @@ AGENTS_DIR = GITHUB_DIR / "agents"
 SKILLS_DIR = GITHUB_DIR / "skills"
 PROMPTS_DIR = GITHUB_DIR / "prompts"
 TOOLS_DIR = WORKSPACE_ROOT / "tools"
+IGNORED_DISCOVERY_PARTS = {
+    ".git",
+    ".hg",
+    ".svn",
+    ".cache",
+    ".mypy_cache",
+    ".pytest_cache",
+    ".ruff_cache",
+    ".vscode-test",
+    "__pycache__",
+    "build",
+    "dist",
+    "node_modules",
+    "target",
+}
 
 # ─── CAG types & vocabulary ───────────────────────────────────────────────────
 
@@ -384,7 +399,7 @@ def discover_prompts() -> list[Path]:
 def discover_repo_agents() -> list[Path]:
     out: list[Path] = []
     for p in WORKSPACE_ROOT.rglob("AGENTS.md"):
-        if ".git" in p.parts or "target" in p.parts or "node_modules" in p.parts:
+        if any(part in IGNORED_DISCOVERY_PARTS for part in p.parts):
             continue
         out.append(p)
     return sorted(out)
@@ -573,7 +588,7 @@ def write_json_report(path: Path, payload: dict[str, object]) -> None:
 
 __all__ = [
     "WORKSPACE_ROOT", "GITHUB_DIR", "SYSTEM_PROMPT", "AGENTS_DIR",
-    "SKILLS_DIR", "PROMPTS_DIR", "TOOLS_DIR",
+    "SKILLS_DIR", "PROMPTS_DIR", "TOOLS_DIR", "IGNORED_DISCOVERY_PARTS",
     "PERSONAS", "CAG_TYPES",
     "SYSTEM_PROMPT_REQUIRED_SECTIONS", "SYSTEM_PROMPT_POINTER",
     "AGENT_REQUIRED_SECTIONS", "SKILL_REQUIRED_SECTIONS",

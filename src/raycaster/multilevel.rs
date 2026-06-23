@@ -3,7 +3,7 @@
 //! Level helpers read or mutate wall, floor, ceiling, and hole data while rejecting out-of-bounds writes safely.
 //! The runtime builder compiles a transient `Raycaster2D` view from level-owned cells for rendering and picking.
 //! `MultiLevelGrid` tracks the active slice, caches compiled runtimes, and resolves visible lower or upper levels.
-//! Ascend and descend checks use floor or ceiling holes so movement and visibility share one vertical rule set.
+//! Floor and ceiling holes decide which adjacent slices are visible to render and picking queries.
 //! Open this file when stacked-level data or cross-level visibility changes; scene assembly lives in siblings.
 
 use super::build_scene::LoweredFloorCell;

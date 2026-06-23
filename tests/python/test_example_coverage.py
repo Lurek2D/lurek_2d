@@ -112,6 +112,26 @@ class ExampleCoverageLintTests(unittest.TestCase):
         )
         self.assertIn("E7", codes)
 
+    def test_flags_top_level_helper_outside_marker_block(self) -> None:
+        codes = self.lint_codes(
+            "helper.lua",
+            """
+            local function example_print_log(...)
+                lurek.log.info(table.concat({ ... }, " "))
+            end
+
+            --@api: lurek.render.print
+            do
+                local x = 0
+                local y = 0
+                local message = "hello"
+                lurek.render.print(message, x, y)
+                lurek.log.info(message)
+            end
+            """,
+        )
+        self.assertIn("E8", codes)
+
 
 if __name__ == "__main__":
     unittest.main()

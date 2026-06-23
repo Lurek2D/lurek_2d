@@ -4,16 +4,17 @@
 
 --- Binary Module Part 1: Pack/Unpack, Compression, Encoding, Hashing, RingBuffer, DataView, Writer
 
-local function example_print_log(...)
-    local parts = {}
-    for i = 1, select("#", ...) do
-        parts[i] = tostring(select(i, ...))
-    end
-    lurek.log.info(table.concat(parts, " "))
-end
 
 --@api: lurek.binary.pack
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local actorId = 255
     local health = 1000
     local gold = 123456
@@ -25,6 +26,14 @@ end
 
 --@api: lurek.binary.unpack
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local packed = lurek.binary.pack("BHI", 255, 1000, 123456)
     local b, h, i = lurek.binary.unpack("BHI", packed)
     local checksum = b + h + i
@@ -35,6 +44,14 @@ end
 
 --@api: lurek.binary.getPackedSize
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sz = lurek.binary.getPackedSize("BHI", 0, 0, 0)
     local packed = lurek.binary.pack("BHI", 0, 0, 0)
     local itemPacket = lurek.binary.pack("BHI", 7, 25, 9000)
@@ -45,6 +62,14 @@ end
 
 --@api: lurek.binary.compress
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local raw = string.rep("hello", 100)
     local compressed = lurek.binary.compress("deflate", raw)
     local restored = lurek.binary.decompress("deflate", compressed)
@@ -55,6 +80,14 @@ end
 
 --@api: lurek.binary.decompress
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local raw = string.rep("world", 100)
     local compressed = lurek.binary.compress("deflate", raw)
     local restored = lurek.binary.decompress("deflate", compressed)
@@ -64,6 +97,14 @@ end
 
 --@api: lurek.binary.compressChunks
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local chunks = {"chunk1", "chunk2", "chunk3"}
     local compressed = lurek.binary.compressChunks("deflate", chunks)
     local restored = lurek.binary.decompressChunks("deflate", compressed)
@@ -75,6 +116,14 @@ end
 
 --@api: lurek.binary.decompressChunks
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local chunks = {"aaaa", "bbbb", "cccc"}
     local compressed = lurek.binary.compressChunks("deflate", chunks)
     local restored = lurek.binary.decompressChunks("deflate", compressed)
@@ -84,6 +133,14 @@ end
 
 --@api: lurek.binary.encode
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local encoded = lurek.binary.encode("base64", "Hello, World!")
     local decoded = lurek.binary.decode("base64", encoded)
     local header = encoded:sub(1, 8)
@@ -93,6 +150,14 @@ end
 
 --@api: lurek.binary.decode
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local encoded = lurek.binary.encode("base64", "Hello")
     local decoded = lurek.binary.decode("base64", encoded)
     local reencoded = lurek.binary.encode("base64", decoded)
@@ -103,6 +168,14 @@ end
 
 --@api: lurek.binary.hash
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local digest = lurek.binary.hash("sha256", "secret data")
     local otherDigest = lurek.binary.hash("sha256", "secret data v2")
     local sameDigest = digest == otherDigest
@@ -112,6 +185,14 @@ end
 
 --@api: lurek.binary.crc32
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local crc = lurek.binary.crc32("test data")
     local changedCrc = lurek.binary.crc32("test data!")
     local crcType = type(crc)
@@ -121,6 +202,14 @@ end
 
 --@api: lurek.binary.newByteData
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bd = lurek.binary.newByteData(16)
     bd:setByte(0, 65)
     bd:setByte(1, 66)
@@ -132,6 +221,14 @@ end
 
 --@api: lurek.binary.newDataView
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local raw = lurek.binary.pack("<II", 42, 99)
     local view = lurek.binary.newDataView(raw)
     local firstValue = view:getUInt32(0)
@@ -143,6 +240,14 @@ end
 
 --@api: lurek.binary.write
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bytes = lurek.binary.write("u32", 42)
     local rewardBytes = lurek.binary.write("u32 u32", 42, 500)
     local questId, reward = lurek.binary.read("u32 u32", rewardBytes)
@@ -152,6 +257,14 @@ end
 
 --@api: lurek.binary.read
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bytes = lurek.binary.write("bool cstr", true, "ok")
     local flag, text = lurek.binary.read("bool cstr", bytes)
     local rawSize = #bytes
@@ -161,6 +274,14 @@ end
 
 --@api: lurek.binary.size
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sz = lurek.binary.size("u32")
     local bytes = lurek.binary.write("u32", 7)
     local transformSize = lurek.binary.size("f32 f32 f32")
@@ -171,6 +292,14 @@ end
 
 --@api: lurek.binary.newRingBuffer
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rb = lurek.binary.newRingBuffer(8)
     rb:push("spawn")
     rb:push("loot")
@@ -182,6 +311,14 @@ end
 
 --@api: lurek.binary.newWriter
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.binary.newWriter()
     w:writeU8(1)
     w:writeU8(2)
@@ -193,6 +330,14 @@ end
 
 --@api: LRingBuffer:push
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rb = lurek.binary.newRingBuffer(3)
     rb:push("a")
     rb:push("b")
@@ -203,6 +348,14 @@ end
 
 --@api: LRingBuffer:pop
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rb = lurek.binary.newRingBuffer(4)
     rb:push(10)
     rb:push(20)
@@ -212,6 +365,14 @@ end
 
 --@api: LRingBuffer:peek
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rb = lurek.binary.newRingBuffer(4)
     rb:push("first")
     rb:push("second")
@@ -224,6 +385,14 @@ end
 
 --@api: LRingBuffer:peekNewest
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rb = lurek.binary.newRingBuffer(4)
     rb:push("old")
     rb:push("new")
@@ -236,6 +405,14 @@ end
 
 --@api: LRingBuffer:len
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rb = lurek.binary.newRingBuffer(10)
     rb:push(1)
     rb:push(2)
@@ -245,6 +422,14 @@ end
 
 --@api: LRingBuffer:capacity
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rb = lurek.binary.newRingBuffer(5)
     rb:push("north")
     rb:push("east")
@@ -256,6 +441,14 @@ end
 
 --@api: LRingBuffer:isEmpty
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rb = lurek.binary.newRingBuffer(4)
     local beforePush = rb:isEmpty()
     rb:push("value")
@@ -267,6 +460,14 @@ end
 
 --@api: LRingBuffer:isFull
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rb = lurek.binary.newRingBuffer(2)
     rb:push("a")
     rb:push("b")
@@ -276,6 +477,14 @@ end
 
 --@api: LRingBuffer:clear
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rb = lurek.binary.newRingBuffer(4)
     rb:push(1)
     rb:push(2)
@@ -285,6 +494,14 @@ end
 
 --@api: LRingBuffer:toTable
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rb = lurek.binary.newRingBuffer(4)
     rb:push(10)
     rb:push(20)
@@ -295,6 +512,14 @@ end
 
 --@api: LRingBuffer:type
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rb = lurek.binary.newRingBuffer(4)
     rb:push("fx")
     local typeName = rb:type()
@@ -305,6 +530,14 @@ end
 
 --@api: LRingBuffer:typeOf
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rb = lurek.binary.newRingBuffer(4)
     rb:push("fx")
     local isRingBuffer = rb:typeOf("LRingBuffer")
@@ -315,6 +548,14 @@ end
 
 --@api: LDataView:getUInt8
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local raw = lurek.binary.pack("BBBB", 10, 20, 30, 40)
     local view = lurek.binary.newDataView(raw)
     local red = view:getUInt8(0)
@@ -326,6 +567,14 @@ end
 
 --@api: LDataView:getInt8
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local raw = lurek.binary.pack("b", -42)
     local view = lurek.binary.newDataView(raw)
     local velocity = view:getInt8(0)
@@ -337,6 +586,14 @@ end
 
 --@api: LDataView:getInt16
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local raw = lurek.binary.pack("h", -1000)
     local view = lurek.binary.newDataView(raw)
     local yVelocity = view:getInt16(0)
@@ -348,6 +605,14 @@ end
 
 --@api: LDataView:getUInt16
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local raw = lurek.binary.pack("H", 65000)
     local view = lurek.binary.newDataView(raw)
     local tileId = view:getUInt16(0)
@@ -359,6 +624,14 @@ end
 
 --@api: LDataView:getInt32
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local raw = lurek.binary.pack("<i", -100000)
     local view = lurek.binary.newDataView(raw)
     local worldOffset = view:getInt32(0)
@@ -370,6 +643,14 @@ end
 
 --@api: LDataView:getUInt32
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local raw = lurek.binary.pack("<I", 3000000)
     local view = lurek.binary.newDataView(raw)
     local saveVersion = view:getUInt32(0)
@@ -381,6 +662,14 @@ end
 
 --@api: LDataView:getFloat
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local raw = lurek.binary.pack("f", 3.14)
     local view = lurek.binary.newDataView(raw)
     local radius = view:getFloat(0)
@@ -392,6 +681,14 @@ end
 
 --@api: LDataView:getDouble
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local raw = lurek.binary.pack("d", 2.718281828)
     local view = lurek.binary.newDataView(raw)
     local precisionValue = view:getDouble(0)
@@ -403,6 +700,14 @@ end
 
 --@api: LDataView:getSize
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local raw = lurek.binary.pack("<III", 1, 2, 3)
     local view = lurek.binary.newDataView(raw)
     local size = view:getSize()
@@ -414,6 +719,14 @@ end
 
 --@api: LDataView:type
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local view = lurek.binary.newDataView("abc")
     local typeName = view:type()
     local size = view:getSize()
@@ -424,6 +737,14 @@ end
 
 --@api: LDataView:typeOf
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local view = lurek.binary.newDataView("abc")
     local isView = view:typeOf("LDataView")
     local isWriter = view:typeOf("LDataWriter")
@@ -434,6 +755,14 @@ end
 
 --@api: LDataWriter:writeU8
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.binary.newWriter()
     w:writeU8(255)
     w:writeU8(64)
@@ -445,6 +774,14 @@ end
 
 --@api: LDataWriter:writeI8
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.binary.newWriter()
     w:writeI8(-128)
     w:writeI8(12)
@@ -456,6 +793,14 @@ end
 
 --@api: LDataWriter:writeU16LE
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.binary.newWriter()
     w:writeU16LE(1000)
     w:writeU16LE(2000)
@@ -467,6 +812,14 @@ end
 
 --@api: LDataWriter:writeU16BE
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.binary.newWriter()
     w:writeU16BE(1000)
     w:writeU16BE(2000)
@@ -478,6 +831,14 @@ end
 
 --@api: LDataWriter:writeI16LE
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.binary.newWriter()
     w:writeI16LE(-500)
     w:writeI16LE(125)
@@ -491,6 +852,14 @@ end
 
 --@api: LDataWriter:writeU32LE
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.binary.newWriter()
     w:writeU32LE(123456)
     w:writeU32LE(654321)
@@ -502,6 +871,14 @@ end
 
 --@api: LDataWriter:writeI32LE
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.binary.newWriter()
     w:writeI32LE(-99999)
     w:writeI32LE(12345)
@@ -513,6 +890,14 @@ end
 
 --@api: LDataWriter:writeF32LE
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.binary.newWriter()
     w:writeF32LE(3.14)
     w:writeF32LE(6.28)
@@ -524,6 +909,14 @@ end
 
 --@api: LDataWriter:writeF64LE
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.binary.newWriter()
     w:writeF64LE(2.718281828)
     w:writeF64LE(1.414213562)
@@ -535,6 +928,14 @@ end
 
 --@api: LDataWriter:writeString
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.binary.newWriter()
     w:writeString("Hello!")
     w:writeString("Quest")
@@ -546,6 +947,14 @@ end
 
 --@api: LDataWriter:writeBytes
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.binary.newWriter()
     w:writeBytes("\x00\x01\x02\x03")
     w:writeBytes("\x04\x05")
@@ -557,6 +966,14 @@ end
 
 --@api: LDataWriter:seek
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.binary.newWriter()
     w:writeU32LE(0)
     w:seek(0)
@@ -567,6 +984,14 @@ end
 
 --@api: LDataWriter:tell
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.binary.newWriter()
     w:writeU8(1)
     w:writeU8(2)
@@ -579,6 +1004,14 @@ end
 
 --@api: LDataWriter:len
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.binary.newWriter()
     w:writeU16LE(100)
     w:writeU16LE(200)
@@ -591,6 +1024,14 @@ end
 
 --@api: LDataWriter:toBytes
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.binary.newWriter()
     w:writeU8(65)
     w:writeU8(66)
@@ -601,6 +1042,14 @@ end
 
 --@api: LDataWriter:type
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.binary.newWriter()
     w:writeU8(7)
     local typeName = w:type()
@@ -611,6 +1060,14 @@ end
 
 --@api: LDataWriter:typeOf
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.binary.newWriter()
     w:writeU8(7)
     local isWriter = w:typeOf("LDataWriter")
@@ -621,6 +1078,14 @@ end
 
 --@api: LByteData:getSize
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bd = lurek.binary.newByteData(32)
     bd:setByte(0, 10)
     bd:setByte(31, 99)
@@ -632,6 +1097,14 @@ end
 
 --@api: LByteData:getString
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bd = lurek.binary.newByteData(string.char(0x48, 0x65, 0x00, 0xFF))
     local rawString = bd:getString()
     local size = bd:getSize()
@@ -642,6 +1115,14 @@ end
 
 --@api: LByteData:getByte
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bd = lurek.binary.newByteData("ABC")
     local firstByte = bd:getByte(0)
     local secondByte = bd:getByte(1)
@@ -652,6 +1133,14 @@ end
 
 --@api: LByteData:setByte
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bd = lurek.binary.newByteData(4)
     bd:setByte(0, 255)
     bd:setByte(1, 128)
@@ -663,6 +1152,14 @@ end
 
 --@api: LByteData:clone
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bd = lurek.binary.newByteData("test")
     local copy = bd:clone()
     copy:setByte(0, 88)
@@ -675,6 +1172,14 @@ end
 
 --@api: LByteData:setBit
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bd = lurek.binary.newByteData(1)
     bd:setBit(0, 0, true)
     bd:setBit(0, 7, true)
@@ -684,6 +1189,14 @@ end
 
 --@api: LByteData:getBit
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bd = lurek.binary.newByteData(1)
     bd:setByte(0, 0x80)
     local highBit = bd:getBit(0, 7)
@@ -695,6 +1208,14 @@ end
 
 --@api: LByteData:readBits
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bd = lurek.binary.newByteData(2)
     bd:setByte(0, 0xFF)
     bd:setByte(1, 0x0F)
@@ -704,6 +1225,14 @@ end
 
 --@api: LByteData:type
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bd = lurek.binary.newByteData(1)
     bd:setByte(0, 7)
     local typeName = bd:type()
@@ -714,6 +1243,14 @@ end
 
 --@api: LByteData:typeOf
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bd = lurek.binary.newByteData(1)
     bd:setByte(0, 7)
     local isByteData = bd:typeOf("LByteData")

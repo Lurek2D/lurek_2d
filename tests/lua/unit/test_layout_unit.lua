@@ -16,6 +16,22 @@ local function nodes_by_id(result)
     return mapped
 end
 
+local function overlaps(a, b, padding)
+    padding = padding or 0
+    return a.x < b.x + b.width + padding
+        and a.x + a.width + padding > b.x
+        and a.y < b.y + b.height + padding
+        and a.y + a.height + padding > b.y
+end
+
+local function expect_no_overlap(nodes, padding)
+    for i = 1, #nodes do
+        for j = i + 1, #nodes do
+            expect_true(not overlaps(nodes[i], nodes[j], padding or 0), "layout nodes should not overlap")
+        end
+    end
+end
+
 -- @describe lurek.layout module
 describe("lurek.layout module", function()
     -- @covers lurek.layout.tree
@@ -30,7 +46,9 @@ describe("lurek.layout module", function()
         expect_equal("Root", pos[1].label)
         expect_near(20, pos[1].y, 0.001)
         expect_true(pos[1].y < pos[2].y)
-        expect_near((pos[2].x + pos[3].x) / 2, pos[1].x, 0.001)
+        local child_center = ((pos[2].x + pos[2].width * 0.5) + (pos[3].x + pos[3].width * 0.5)) * 0.5
+        expect_near(child_center, pos[1].x + pos[1].width * 0.5, 0.001)
+        expect_no_overlap(result.nodes, 0)
     end)
 
     -- @covers lurek.layout.dag
@@ -48,6 +66,7 @@ describe("lurek.layout module", function()
         expect_near(24, pos[1].y, 0.001)
         expect_true(pos[1].y < pos[2].y)
         expect_true(pos[2].y < pos[3].y)
+        expect_no_overlap(result.nodes, 0)
         expect_true(result.height > 0)
     end)
 
@@ -73,6 +92,85 @@ describe("lurek.layout module", function()
         expect_in_range(pos[3].x, 0, 400)
         expect_in_range(pos[3].y, 0, 300)
         expect_true(pos[1].x ~= pos[3].x or pos[1].y ~= pos[3].y)
+        expect_no_overlap(result.nodes, 0)
+    end)
+
+    -- @covers lurek.layout.circular
+    it("circular places every node on a non-overlapping overview ring", function()
+        local result = lurek.layout.circular(make_nodes(), {
+            hSpacing = 60,
+            vSpacing = 80,
+            margin = 10,
+        })
+        local pos = nodes_by_id(result)
+        expect_equal(3, #result.nodes)
+        expect_true(pos[1].x ~= pos[2].x or pos[1].y ~= pos[2].y)
+        expect_no_overlap(result.nodes, 0)
+        expect_true(result.width > 0)
+        expect_true(result.height > 0)
+    end)
+
+    -- @covers lurek.layout.radial
+    it("radial places the root inside the inner ring and children farther out", function()
+        local result = lurek.layout.radial(make_nodes(), {
+            { from = 1, to = 2 },
+            { from = 1, to = 3 },
+        }, 1, {
+            hSpacing = 60,
+            vSpacing = 90,
+            margin = 12,
+        })
+        local pos = nodes_by_id(result)
+        local child_dx = math.abs(pos[2].x - pos[1].x) + math.abs(pos[2].y - pos[1].y)
+        expect_equal(3, #result.nodes)
+        expect_true(child_dx > 10)
+        expect_no_overlap(result.nodes, 0)
+        expect_true(result.width > 0)
+    end)
+
+    -- @covers lurek.layout.grid
+    it("grid packs nodes into deterministic rows and columns", function()
+        local result = lurek.layout.grid(make_nodes(), {
+            hSpacing = 20,
+            vSpacing = 30,
+            margin = 8,
+        })
+        local pos = nodes_by_id(result)
+        expect_equal(3, #result.nodes)
+        expect_near(8, pos[1].x, 0.001)
+        expect_true(pos[2].x > pos[1].x or pos[2].y > pos[1].y)
+        expect_no_overlap(result.nodes, 0)
+    end)
+
+    -- @covers lurek.layout.spiral
+    it("spiral gives unordered graphs distinct deterministic positions", function()
+        local result = lurek.layout.spiral(make_nodes(), {
+            hSpacing = 40,
+            vSpacing = 40,
+            margin = 10,
+        })
+        local pos = nodes_by_id(result)
+        expect_equal(3, #result.nodes)
+        expect_true(pos[1].x ~= pos[3].x or pos[1].y ~= pos[3].y)
+        expect_no_overlap(result.nodes, 0)
+        expect_true(result.width > 0)
+    end)
+
+    -- @covers lurek.layout.stress
+    it("stress preserves graph-distance layout while staying deterministic", function()
+        local result = lurek.layout.stress(make_nodes(), {
+            { from = 1, to = 2 },
+            { from = 2, to = 3 },
+        }, {
+            iterations = 8,
+            edgeLength = 50,
+            step = 0.05,
+        })
+        local pos = nodes_by_id(result)
+        expect_equal(3, #result.nodes)
+        expect_true(pos[1].x ~= pos[2].x or pos[1].y ~= pos[2].y)
+        expect_no_overlap(result.nodes, 0)
+        expect_true(result.width > 0)
     end)
 
     -- @covers lurek.layout.snapToGrid

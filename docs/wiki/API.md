@@ -16,16 +16,16 @@ The Wiki does not duplicate the full API reference. Use it as a map to the offic
 
 ## Official API Sources
 
-- Full Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (9175 lines)
-- LuaCATS editor stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (33105 lines)
+- Full Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (9335 lines)
+- LuaCATS editor stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (33593 lines)
 - Runtime callbacks: [docs/api/callbacks.md](../blob/main/docs/api/callbacks.md)
 - Lureksome library API: [docs/api/lureksome.md](../blob/main/docs/api/lureksome.md)
 - Machine-readable Lua API data: [build/docs-data/lua_api.json](../blob/main/build/docs-data/lua_api.json)
 
 ## Coverage
 
-- 70 modules
-- 6086 functions and methods
+- 71 modules
+- 6192 functions and methods
 - 100.0% documented
 
 ## Module Map
@@ -97,6 +97,7 @@ Use the module guides for cookbook-level orientation, then open the full API ref
 | [lurek.runtime](https://lurek2d.github.io/lurek_2d/modules/system.html) | Registers the lurek.system Lua API for host utilities, process helpers, and runtime environment queries. |
 | [lurek.terminal](https://lurek2d.github.io/lurek_2d/modules/terminal.html) | The terminal module is the engine's character-grid interface surface for users who want text-mode displays, debug consoles, command panels, or roguelike-style presentation. |
 | [lurek.thread](https://lurek2d.github.io/lurek_2d/modules/thread.html) | The thread module is the isolated-concurrency surface for projects that want background Lua work without violating the engine's VM and runtime-safety rules. |
+| [lurek.tilefield](https://lurek2d.github.io/lurek_2d/modules/tilefield.html) | Coordinates exposed to Lua are one-based x, y, z; Rust storage is zero-based. |
 | [lurek.tilemap](https://lurek2d.github.io/lurek_2d/modules/tilemap.html) | The tilemap module is the engine's full grid-world framework for users who want tile-based spaces to be authored, generated, rendered, queried, and traversed through one reusable system rather than through several disconnected helpers. |
 | [lurek.timer](https://lurek2d.github.io/lurek_2d/modules/timer.html) | The timer module is the shared time-management surface for users who need clocks, delayed callbacks, repeating work, and timing queries to behave consistently. |
 | [lurek.tween](https://lurek2d.github.io/lurek_2d/modules/tween.html) | The tween module is the engine's interpolation and motion-sequencing surface for users who want values to change over time without hand-writing frame-by-frame update loops. |

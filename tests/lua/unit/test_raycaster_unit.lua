@@ -159,17 +159,6 @@ describe("lurek.raycaster functions", function()
         expect_equal(6, map:height())
     end)
 
-    -- @covers lurek.raycaster.newPointLight
-    it("newPointLight stores the configured light values", function()
-        local light = lurek.raycaster.newPointLight(10.0, 20.0, 0.2, 0.4, 0.6, 5.0, 0.8, 1)
-        local r, g, b = light:color()
-        expect_near(10.0, light:x(), 1e-5)
-        expect_near(20.0, light:y(), 1e-5)
-        expect_near(0.2, r, 1e-5)
-        expect_near(0.4, g, 1e-5)
-        expect_near(0.6, b, 1e-5)
-        expect_equal(1, light:level())
-    end)
 
     -- @covers lurek.raycaster.newSpriteManager
     it("newSpriteManager returns an empty sprite manager", function()
@@ -593,7 +582,7 @@ describe("lurek.raycaster functions", function()
         end
 
         local count = map:buildScene(scene_params(), {
-            lurek.raycaster.newPointLight(8.0, 8.0, 1.0, 0.9, 0.8, 4.0, 1.25),
+            { x = 8.0, y = 8.0, r = 1.0, g = 0.9, b = 0.8, radius = 4.0, intensity = 1.25 },
         }, {}, {
             [1] = wall,
         })
@@ -1284,49 +1273,24 @@ describe("LMultiLevelGrid methods", function()
         expect_equal(5, grid:getCell(1, 0))
     end)
 
-    -- @covers LMultiLevelGrid:setHalfWallCell
-    it("setHalfWallCell stores a half-height feature on the active level", function()
+    -- @covers LMultiLevelGrid:setWallFeatureCell
+    it("setWallFeatureCell stores a render wall feature on the active level", function()
         local grid = lurek.raycaster.newMultiLevelGrid({
             { width = 2, height = 2, cells = { 1, 0, 0, 0 } },
         })
-        grid:setHalfWallCell(0, 0, 0.5)
-        local feature = grid:getWallFeatureCell(0, 0)
-        expect_equal("half", feature.kind)
-        expect_near(0.5, feature.height, 1e-5)
-    end)
-
-    -- @covers LMultiLevelGrid:setWindowCell
-    it("setWindowCell stores a window descriptor on the active level", function()
-        local grid = lurek.raycaster.newMultiLevelGrid({
-            { width = 2, height = 2, cells = { 1, 0, 0, 0 } },
-        })
-        grid:setWindowCell(0, 0, 0.25, 0.8, 0.4)
-        local feature = grid:getWallFeatureCell(0, 0)
-        expect_equal("window", feature.kind)
-        expect_near(0.25, feature.sill_height, 1e-5)
-        expect_near(0.8, feature.lintel_height, 1e-5)
-        expect_near(0.4, feature.alpha, 1e-5)
-    end)
-
-    -- @covers LMultiLevelGrid:setDoorCell
-    it("setDoorCell stores a door descriptor on the active level", function()
-        local grid = lurek.raycaster.newMultiLevelGrid({
-            { width = 2, height = 2, cells = { 1, 0, 0, 0 } },
-        })
-        grid:setDoorCell(0, 0, "vertical", 0.6, 0.9)
+        grid:setWallFeatureCell(0, 0, { kind = "door", direction = "vertical", open_amount = 0.5, alpha = 0.9 })
         local feature = grid:getWallFeatureCell(0, 0)
         expect_equal("door", feature.kind)
-        expect_equal("vertical", feature.direction)
-        expect_near(0.6, feature.open_amount, 1e-5)
-        expect_near(0.9, feature.alpha, 1e-5)
+        expect_near(0.5, feature.open_amount, 1e-5)
     end)
+
 
     -- @covers LMultiLevelGrid:clearWallFeatureCell
     it("clearWallFeatureCell removes an active-level wall feature override", function()
         local grid = lurek.raycaster.newMultiLevelGrid({
             { width = 2, height = 2, cells = { 1, 0, 0, 0 } },
         })
-        grid:setWindowCell(0, 0, 0.25, 0.8, 0.4)
+        grid:setWallFeatureCell(0, 0, { kind = "window", sill_height = 0.25, lintel_height = 0.8, alpha = 0.4 })
         grid:clearWallFeatureCell(0, 0)
         expect_nil(grid:getWallFeatureCell(0, 0))
     end)
@@ -1828,95 +1792,8 @@ describe("LHeightMap methods", function()
     end)
 end)
 
--- @describe LPointLight methods
-describe("LPointLight methods", function()
-    -- @covers LPointLight:color
-    it("color returns the rgb channels", function()
-        local light = lurek.raycaster.newPointLight(0, 0, 0.2, 0.4, 0.6, 5, 1)
-        local r, g, b = light:color()
-        expect_near(0.2, r, 1e-5)
-        expect_near(0.4, g, 1e-5)
-        expect_near(0.6, b, 1e-5)
-    end)
-
-    -- @covers LPointLight:intensity
-    it("intensity returns the configured brightness", function()
-        local light = lurek.raycaster.newPointLight(0, 0, 1, 1, 1, 5, 0.8)
-        expect_near(0.8, light:intensity(), 1e-5)
-    end)
-
-    -- @covers LPointLight:level
-    it("level returns the optional owning multilevel slice", function()
-        local light = lurek.raycaster.newPointLight(0, 0, 1, 1, 1, 5, 0.8, 2)
-        expect_equal(2, light:level())
-    end)
-
-    -- @covers LPointLight:radius
-    it("radius returns the configured falloff radius", function()
-        local light = lurek.raycaster.newPointLight(0, 0, 1, 1, 1, 5, 1)
-        expect_near(5.0, light:radius(), 1e-5)
-    end)
-
-    -- @covers LPointLight:set
-    it("set overwrites position color and intensity", function()
-        local light = lurek.raycaster.newPointLight(0, 0, 1, 1, 1, 1, 1)
-        light:set(7, 9, 0, 0, 1, 6, 2, 3)
-        local r, g, b = light:color()
-        expect_near(7.0, light:x(), 1e-5)
-        expect_near(9.0, light:y(), 1e-5)
-        expect_near(0.0, r, 1e-5)
-        expect_near(0.0, g, 1e-5)
-        expect_near(1.0, b, 1e-5)
-        expect_near(6.0, light:radius(), 1e-5)
-        expect_near(2.0, light:intensity(), 1e-5)
-        expect_equal(3, light:level())
-    end)
-
-    -- @covers LPointLight:setLevel
-    it("setLevel can make a point light level-specific or global again", function()
-        local light = lurek.raycaster.newPointLight(0, 0, 1, 1, 1, 1, 1)
-        light:setLevel(1)
-        expect_equal(1, light:level())
-        light:setLevel(nil)
-        expect_nil(light:level())
-    end)
-
-    -- @covers LPointLight:type
-    it("type returns the point light userdata name", function()
-        local light = lurek.raycaster.newPointLight(0, 0, 1, 1, 1, 1, 1)
-        expect_equal("LPointLight", light:type())
-    end)
-
-    -- @covers LPointLight:typeOf
-    it("typeOf accepts the point light type name", function()
-        local light = lurek.raycaster.newPointLight(0, 0, 1, 1, 1, 1, 1)
-        expect_true(light:typeOf("LPointLight"))
-    end)
-
-    -- @covers LPointLight:x
-    it("x returns the light world x coordinate", function()
-        local light = lurek.raycaster.newPointLight(10, 20, 1, 1, 1, 1, 1)
-        expect_near(10.0, light:x(), 1e-5)
-    end)
-
-    -- @covers LPointLight:y
-    it("y returns the light world y coordinate", function()
-        local light = lurek.raycaster.newPointLight(10, 20, 1, 1, 1, 1, 1)
-        expect_near(20.0, light:y(), 1e-5)
-    end)
-end)
-
 -- @describe LRaycaster methods
 describe("LRaycaster methods", function()
-    -- @covers LRaycaster:buildMinimapWindow
-    it("buildMinimapWindow returns sampled tile records", function()
-        local map = make_map(16, 16)
-        map:setCell(4, 4, 1)
-        local samples = map:buildMinimapWindow(5.5, 5.5, 3, 0.2, {})
-        expect_type("table", samples)
-        expect_true(#samples > 0)
-        expect_type("number", samples[1].x)
-    end)
 
     -- @covers LRaycaster:buildScene
     it("buildScene returns a quad count for a simple scene", function()
@@ -1924,7 +1801,7 @@ describe("LRaycaster methods", function()
         local wall = load_texture()
         local count = map:buildScene(scene_params(), {}, {}, { [1] = wall })
         expect_type("number", count)
-        local light = lurek.raycaster.newPointLight(8.0, 8.0, 1.0, 0.9, 0.8, 4.0, 1.5)
+        local light = { x = 8.0, y = 8.0, r = 1.0, g = 0.9, b = 0.8, radius = 4.0, intensity = 1.5 }
         local managed_count = map:buildScene(scene_params(), { light }, {}, {})
         expect_type("number", managed_count)
         map:setCeilingTextureCell(8, 8, 1)
@@ -2031,7 +1908,7 @@ describe("LRaycaster methods", function()
 
         local closed_door_map = lurek.raycaster.new(12, 6)
         closed_door_map:setCell(5, 2, 2)
-        closed_door_map:setDoorCell(5, 2, "vertical", 0.0, 0.25)
+        closed_door_map:setWallFeatureCell(5, 2, { kind = "door", direction = "vertical", open_amount = 0.0, alpha = 0.25 })
         closed_door_map:setCell(9, 2, 1)
         local closed_door_hit = closed_door_map:castRay(1.5, 2.5, 0.0, 20.0)
         expect_not_nil(closed_door_hit)
@@ -2039,7 +1916,7 @@ describe("LRaycaster methods", function()
 
         local open_door_map = lurek.raycaster.new(12, 6)
         open_door_map:setCell(5, 2, 2)
-        open_door_map:setDoorCell(5, 2, "vertical", 1.0, 0.25)
+        open_door_map:setWallFeatureCell(5, 2, { kind = "door", direction = "vertical", open_amount = 1.0, alpha = 0.25 })
         open_door_map:setCell(9, 2, 1)
         local open_door_hit = open_door_map:castRay(1.5, 2.5, 0.0, 20.0)
         expect_not_nil(open_door_hit)
@@ -2072,42 +1949,6 @@ describe("LRaycaster methods", function()
         expect_type("number", flat[1])
     end)
 
-    -- @covers LRaycaster:computeTileLight
-    it("computeTileLight returns rgb and luma values in range", function()
-        local map = lurek.raycaster.new(8, 8)
-        local r, g, b, luma = map:computeTileLight(3, 3, 0.2, {
-            { x = 3.5, y = 3.5, radius = 4.0, intensity = 8.0, color = { 1.0, 0.8, 0.5 } },
-        })
-        expect_true(r >= 0 and r <= 1)
-        expect_true(g >= 0 and g <= 1)
-        expect_true(b >= 0 and b <= 1)
-        expect_true(luma >= 0 and luma <= 1)
-        local light = lurek.raycaster.newPointLight(3.5, 3.5, 1.0, 0.8, 0.5, 4.0, 8.0, 1)
-        local r2, g2, b2, luma2 = map:computeTileLight(3, 3, 0.2, {
-            light,
-            { x = 2.5, y = 2.5, radius = 3.0, intensity = 2.0, color = { 0.2, 0.4, 1.0 } },
-        })
-        expect_true(r2 >= 0 and r2 <= 1)
-        expect_true(g2 >= 0 and g2 <= 1)
-        expect_true(b2 >= 0 and b2 <= 1)
-        expect_true(luma2 >= 0 and luma2 <= 1)
-
-        local solid = lurek.raycaster.new(8, 3)
-        solid:setCell(4, 1, 1)
-        local sr, sg, sb = solid:computeTileLight(2, 1, 0.0, {
-            { x = 5.5, y = 1.5, radius = 8.0, intensity = 8.0, color = { 1.0, 0.8, 0.6 } },
-        })
-
-        local windowed = lurek.raycaster.new(8, 3)
-        windowed:setCell(4, 1, 1)
-        windowed:setWindowCell(4, 1, 0.25, 0.8, 0.35)
-        local wr, wg, wb = windowed:computeTileLight(2, 1, 0.0, {
-            { x = 5.5, y = 1.5, radius = 8.0, intensity = 8.0, color = { 1.0, 0.8, 0.6 } },
-        })
-        expect_true(wr > sr)
-        expect_true(wg > sg)
-        expect_true(wb > sb)
-    end)
 
     -- @covers LRaycaster:drawCameraSweep
     it("drawCameraSweep returns image data", function()
@@ -2169,7 +2010,7 @@ describe("LRaycaster methods", function()
 
         local half_map = make_map(12, 10)
         half_map:setCell(7, 5, 1)
-        half_map:setHalfWallCell(7, 5, 0.5)
+        half_map:setWallFeatureCell(7, 5, { kind = "half", height = 0.5 })
         local half_center = half_map:pickScreen(160, 100, feature_params)
         expect_not_nil(half_center)
         expect_equal(7, half_center.x)
@@ -2188,7 +2029,7 @@ describe("LRaycaster methods", function()
 
         local window_map = make_map(12, 10)
         window_map:setCell(7, 5, 1)
-        window_map:setWindowCell(7, 5, 0.3, 0.75, 0.35)
+        window_map:setWallFeatureCell(7, 5, { kind = "window", sill_height = 0.3, lintel_height = 0.75, alpha = 0.35 })
         local window_open = window_map:pickScreen(160, 100, feature_params)
         expect_not_nil(window_open)
         expect_equal(11, window_open.x)
@@ -2211,7 +2052,7 @@ describe("LRaycaster methods", function()
 
         local door_map = make_map(12, 10)
         door_map:setCell(7, 5, 1)
-        door_map:setDoorCell(7, 5, "vertical", 0.25, 0.9)
+        door_map:setWallFeatureCell(7, 5, { kind = "door", direction = "vertical", open_amount = 0.25, alpha = 0.9 })
         local door_panel = door_map:pickScreen(160, 100, feature_params)
         expect_not_nil(door_panel)
         expect_equal(7, door_panel.x)
@@ -2220,7 +2061,7 @@ describe("LRaycaster methods", function()
 
         local open_door_map = make_map(12, 10)
         open_door_map:setCell(7, 5, 1)
-        open_door_map:setDoorCell(7, 5, "vertical", 0.6, 0.9)
+        open_door_map:setWallFeatureCell(7, 5, { kind = "door", direction = "vertical", open_amount = 0.6, alpha = 0.9 })
         local door_gap = open_door_map:pickScreen(160, 100, feature_params)
         expect_not_nil(door_gap)
         expect_equal(11, door_gap.x)
@@ -2248,12 +2089,6 @@ describe("LRaycaster methods", function()
         expect_type("userdata", img)
     end)
 
-    -- @covers LRaycaster:drawLineOfSight
-    it("drawLineOfSight returns image data", function()
-        local map = lurek.raycaster.new(8, 8)
-        local img = map:drawLineOfSight(1.0, 1.0, 6.0, 6.0, 4)
-        expect_type("userdata", img)
-    end)
 
     -- @covers LRaycaster:drawTopDown
     it("drawTopDown returns image data", function()
@@ -2270,13 +2105,6 @@ describe("LRaycaster methods", function()
         expect_equal(200, img:getHeight())
     end)
 
-    -- @covers LRaycaster:extractMinimap
-    it("extractMinimap returns a minimap image", function()
-        local map = make_map(16, 16)
-        local img = map:extractMinimap(8, 8, 0, 4, 8)
-        expect_type("userdata", img)
-    end)
-
     -- @covers LRaycaster:getCeilingTextureCell
     it("getCeilingTextureCell returns nil when no override is set", function()
         local map = lurek.raycaster.new(8, 8)
@@ -2290,29 +2118,7 @@ describe("LRaycaster methods", function()
         expect_equal(3, map:getCell(1, 2))
     end)
 
-    -- @covers LRaycaster:setHalfWallCell
-    it("setHalfWallCell stores feature metadata", function()
-        local map = lurek.raycaster.new(4, 4)
-        map:setCell(1, 1, 1)
-        map:setHalfWallCell(1, 1, 0.5)
-        local feature = map:getWallFeatureCell(1, 1)
-        expect_type("table", feature)
-        expect_equal("half", feature.kind)
-        expect_near(0.5, feature.height, 1e-5)
-    end)
 
-    -- @covers LRaycaster:setWindowCell
-    it("setWindowCell stores a transparent opening descriptor", function()
-        local map = lurek.raycaster.new(4, 4)
-        map:setCell(1, 1, 1)
-        map:setWindowCell(1, 1, 0.3, 0.75, 0.4)
-        local feature = map:getWallFeatureCell(1, 1)
-        expect_equal("window", feature.kind)
-        expect_near(0.3, feature.sill_height, 1e-5)
-        expect_near(0.75, feature.lintel_height, 1e-5)
-        expect_near(0.4, feature.alpha, 1e-5)
-        expect_true(map:lineOfSight(0.5, 1.5, 3.5, 1.5))
-    end)
 
     -- @covers LRaycaster:getWallFeatureCell
     it("getWallFeatureCell returns nil when no feature is assigned", function()
@@ -2343,16 +2149,6 @@ describe("LRaycaster methods", function()
         expect_near(0.5, map:getWallAlpha(2), 1e-5)
     end)
 
-    -- @covers LRaycaster:setDoorCell
-    it("setDoorCell can make a wall cell non-blocking when fully open", function()
-        local map = lurek.raycaster.new(4, 4)
-        map:setCell(1, 1, 1)
-        map:setDoorCell(1, 1, "horizontal", 1.0)
-        local feature = map:getWallFeatureCell(1, 1)
-        expect_equal("door", feature.kind)
-        expect_equal("horizontal", feature.direction)
-        expect_false(map:isBlocked(1, 1))
-    end)
 
     -- @covers LRaycaster:applyDoorManager
     it("applyDoorManager syncs animated doors onto blocking tiles", function()
@@ -2380,19 +2176,22 @@ describe("LRaycaster methods", function()
     it("clearWallFeatureCell removes a stored wall feature override", function()
         local map = lurek.raycaster.new(4, 4)
         map:setCell(1, 1, 1)
-        map:setWindowCell(1, 1, 0.25, 0.75, 0.4)
+        map:setWallFeatureCell(1, 1, { kind = "window", sill_height = 0.25, lintel_height = 0.75, alpha = 0.4 })
         map:clearWallFeatureCell(1, 1)
         expect_nil(map:getWallFeatureCell(1, 1))
     end)
 
-    -- @covers LRaycaster:gridMove
-    it("gridMove moves forward along the cardinal direction", function()
-        local map = make_map(8, 8)
-        local nx, ny, moved = map:gridMove(4.5, 4.5, 2, "forward", 1.0)
-        expect_equal(true, moved)
-        expect_type("number", nx)
-        expect_type("number", ny)
+    -- @covers LRaycaster:setWallFeatureCell
+    it("setWallFeatureCell stores render feature metadata", function()
+        local map = lurek.raycaster.new(4, 4)
+        map:setCell(1, 1, 1)
+        map:setWallFeatureCell(1, 1, { kind = "window", sill_height = 0.3, lintel_height = 0.75, alpha = 0.4 })
+        local feature = map:getWallFeatureCell(1, 1)
+        expect_equal("window", feature.kind)
+        expect_near(0.3, feature.sill_height, 1e-5)
+        expect_near(0.4, feature.alpha, 1e-5)
     end)
+
 
     -- @covers LRaycaster:height
     it("height returns the map height in cells", function()
@@ -2408,29 +2207,7 @@ describe("LRaycaster methods", function()
         expect_false(map:isBlocked(1, 1))
     end)
 
-    -- @covers LRaycaster:isWalkBlocked
-    it("isWalkBlocked respects lowered floor blocking flags", function()
-        local map = lurek.raycaster.new(8, 8)
-        map:setLoweredFloorCell(3, 3, { texture = load_texture(), depth = 0.3, blocked = true })
-        expect_true(map:isWalkBlocked(3, 3))
-    end)
 
-    -- @covers LRaycaster:lineOfSight
-    it("lineOfSight returns false when a wall blocks the path", function()
-        local map = lurek.raycaster.new(10, 10)
-        map:setCell(5, 5, 1)
-        expect_false(map:lineOfSight(1.0, 5.5, 9.0, 5.5))
-
-        local window_map = lurek.raycaster.new(10, 10)
-        window_map:setCell(5, 5, 1)
-        window_map:setWindowCell(5, 5, 0.25, 0.8, 0.35)
-        expect_true(window_map:lineOfSight(1.0, 5.5, 9.0, 5.5))
-
-        local door_map = lurek.raycaster.new(10, 10)
-        door_map:setCell(5, 5, 1)
-        door_map:setDoorCell(5, 5, "vertical", 0.0, 0.25)
-        expect_false(door_map:lineOfSight(1.0, 5.5, 9.0, 5.5))
-    end)
 
     -- @covers LRaycaster:projectSprite
     it("projectSprite returns projection fields for a visible sprite", function()
@@ -2443,16 +2220,6 @@ describe("LRaycaster methods", function()
         expect_type("boolean", sp.visible)
     end)
 
-    -- @covers LRaycaster:revealCellsFromRays
-    it("revealCellsFromRays returns cell records with coordinates", function()
-        local map = lurek.raycaster.new(16, 16)
-        local cells = map:revealCellsFromRays(8.5, 8.5, 0.0, math.pi / 3, 8, 8.0, 0.25)
-        expect_type("table", cells)
-        if #cells > 0 then
-            expect_type("number", cells[1].x)
-            expect_type("number", cells[1].y)
-        end
-    end)
 
     -- @covers LRaycaster:setCeilingTextureCell
     it("setCeilingTextureCell stores and clears per-cell texture overrides", function()
@@ -2505,14 +2272,6 @@ describe("LRaycaster methods", function()
         expect_near(0.75, map:getWallAlpha(1), 1e-5)
     end)
 
-    -- @covers LRaycaster:tryMove
-    it("tryMove advances through empty space", function()
-        local map = lurek.raycaster.new(6, 6)
-        local nx, ny, moved = map:tryMove(1.5, 1.5, 1.0, 0.0)
-        expect_equal(true, moved)
-        expect_near(2.5, nx, 0.001)
-        expect_near(1.5, ny, 0.001)
-    end)
 
     -- @covers LRaycaster:type
     it("type returns the raycaster userdata name", function()
@@ -2643,6 +2402,28 @@ describe("LSpriteManager methods", function()
     it("typeOf accepts the sprite manager type name", function()
         local sprites = lurek.raycaster.newSpriteManager()
         expect_true(sprites:typeOf("LSpriteManager"))
+    end)
+end)
+
+-- @describe raycaster tilefield adapters
+describe("raycaster tilefield adapters", function()
+    -- @covers lurek.raycaster.buildMultiLevelSceneFromField
+    it("builds multilevel scene from tilefield channel", function()
+        local field = lurek.tilefield.new({ width = 4, height = 4, levels = 2 })
+        field:applyProfile(2, 2, 1, "wall")
+        field:applyProfile(3, 3, 2, "wall")
+        local count = lurek.raycaster.buildMultiLevelSceneFromField({
+            px = 1.5,
+            py = 1.5,
+            angle = 0,
+            fov = 1.0,
+            rays = 32,
+            max_dist = 8,
+            screen_w = 80,
+            screen_h = 50,
+            active_level = 0,
+        }, field, { wallChannel = "vision" })
+        expect_true(count >= 0)
     end)
 end)
 end

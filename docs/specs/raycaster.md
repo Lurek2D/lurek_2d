@@ -6,8 +6,8 @@
 
 - Simulates pseudo-3D first-person views from 2D maps using DDA marching.
 - Supports transparent walls, variable heights, and multilevel storeys.
-- Manages sliding doors, discrete grid motion, and billboard sprites.
-- Renders textured space with point lights, depth buffers, and pickers.
+- Manages render-only wall features, multilevel space, and billboard sprites.
+- Renders textured space from supplied scene input with depth buffers and pickers.
 
 ## General Info
 
@@ -15,7 +15,7 @@
 - Source path: `src/raycaster`
 - Binding: `src/lua_api/raycaster_api.rs`
 - Namespace: `lurek.raycaster`
-- Lua API surface: `16` functions, `21` types, `132` methods
+- Lua API surface: `16` functions, `18` types, `109` methods
 - User-facing: `true`
 - Plugin tier: `tier_1_plugin`
 
@@ -23,23 +23,22 @@
 
 - The `raycaster` module is the engine's pseudo-3D first-person view system for users who want corridor shooters, dungeon crawlers, exploration views, or tactical previews built from structured 2D world data instead of from a full freeform 3D engine stack.
 - Its technical base is DDA-style ray traversal over map-aligned space, but the important user-facing point is that the module turns that low-level technique into a complete first-person workflow with scene building, interaction helpers, lighting hooks, and deterministic output options.
-- The module is valuable because it solves the interpretation layer between a tile or cell world and a playable camera view. Users provide structured world data, and `raycaster` decides how that data becomes walls, depth, occlusion, visible openings, and navigable perspective.
+- The module is valuable because it solves the interpretation layer between structured render input and a playable camera view. Users provide wall, floor, ceiling, sprite, model, and optional light tables, and `raycaster` decides how that data becomes depth, occlusion, visible openings, and first-person perspective.
 - This matters most in projects that want first-person presence without the complexity of general 3D mesh authoring, continuous physics, and fully free camera semantics. The system stays constrained enough to be authorable and testable while still producing a convincing viewpoint.
 - Variable heights, multilevel interpretation, partial blockers, and transparent or layered hits make the subsystem more than a toy single-plane corridor renderer. It can represent richer spaces where openings, stacked features, and elevation differences matter to play and readability.
-- Door state and related wall-feature handling are especially important because first-person tile spaces often depend on interactable architecture. A door is not only a texture change; it affects visibility, ray obstruction, navigation feel, and scene comprehension, and this module keeps those consequences together.
+- Door state and related wall-feature handling are render features. They affect ray obstruction, visible openings, picking, and scene comprehension, while gameplay movement, vision, action, and lighting semantics live in `tilefield`/`visibility`.
 - Floors and ceilings are part of the same contract rather than optional garnish, since convincing pseudo-3D scenes need more than wall columns to read as spaces.
 - Billboard sprites keep moving actors, pickups, props, projectiles, and markers inside the same depth model as the wall renderer, which avoids a separate mismatched pseudo-3D object layer.
 - Depth-aware ordering and visibility rules are therefore core capabilities. When wall features, sprites, and translucent elements overlap, the module owns what is actually visible and in what order.
-- Lighting hooks, visibility helpers, and picking support make the subsystem useful for gameplay and tooling as well as for final rendering.
-- Those helpers matter beyond display. Projects may use raycasted visibility for perception checks, preview cameras, editor probes, or line-of-sight style gameplay questions tied to the same projected world.
+- Render-light hooks and picking support make the subsystem useful for final rendering and tooling.
+- Gameplay visibility, action lines, movement blockers, point tile-light, and global top-light are outside this module.
 - Scene assembly is one of the biggest practical wins for users: walls, floors, ceilings, sprites, and optional inserted content are composed through one coherent first-person pipeline instead of several subsystems guessing at perspective differently.
-- Movement-oriented helpers keep the module grounded in its natural use cases. Many raycasted projects combine discrete or grid-influenced movement with first-person presentation, so helpers for that style of navigation reduce project-specific glue at the camera seam.
+- Projects that need movement or reachability should use `pathfind` with `tilefield` adapters and feed the resulting camera/world state back into raycaster as render input.
 - Deterministic preview and software-capture paths matter because raycasted scenes often need screenshots, regression checks, editor thumbnails, or evidence artifacts outside live play.
-- Because the module owns both projection and interaction-friendly queries, aiming, object picking, and visibility-sensitive gameplay can stay aligned with the same depth model instead of relying on separate approximations.
-- That same alignment keeps first-person tools and gameplay on one depth model.
+- Because the module owns projection and picking, first-person tools can inspect what the renderer hit without becoming gameplay authorities.
 - The result is a feature that serves both play and inspection. The same projection model can support a shipped first-person game, a level preview tool, or a visibility-debug workflow without changing how world interpretation works.
 - This combination of constrained world model and rich view helpers is what gives the subsystem its identity: it provides first-person readability without giving up the structural advantages of a map-driven engine.
-- From a boundary perspective, world modules define the environment and `render` draws the final commands, but `raycaster` owns how structured 2D space becomes a first-person readable visual field with depth, occlusion, and object placement semantics.
+- From a boundary perspective, world/gameplay modules define semantics and `render` draws final commands, while `raycaster` owns how structured render input becomes a first-person readable visual field with depth, occlusion, and object placement.
 - Read `raycaster` as the engine authority for grid-based first-person projection and scene composition.
 
 This module primarily collaborates with `color`, `image`, `math`, `physics`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
@@ -89,10 +88,10 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 
 ### dda.rs
 
-- This file owns `Raycaster2D`, the grid-backed DDA engine that stores wall cells and answers ray or LOS queries.
+- This file owns `Raycaster2D`, the grid-backed DDA engine that stores wall cells and answers render ray queries.
 - It stores map dimensions, row-major cells, wall alpha overrides, wall features, and synchronized door feature state.
 - Core casting methods produce single hits, layered transparent hits, fan casts, and packed ray buffers from one model.
-- Visibility helpers reuse the same blocking rules for line of sight, so lighting and AI stay aligned with rendering.
+- Render visibility helpers reuse the same blocking rules so lighting and screen picking stay aligned with rendering.
 - Door synchronization translates `DoorManager` openness into wall features without replacing underlying tile identity.
 - Sprite and floor helpers project billboards and sample floor rows with the same camera conventions as wall casting.
 - Safe setters ignore invalid writes, and out-of-range reads fall back predictably for tools and runtime probes.
@@ -120,13 +119,6 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 - It is the right owner for previews, captures, and tool outputs that need first-person imagery without renderer commands.
 - Open this file when CPU draw ordering or fill behavior changes; scene assembly and GPU translation live in siblings.
 
-### grid_motion.rs
-
-- This file owns grid-locked movement helpers for raycaster games that step actors one tile at a time.
-- It defines `GridMoveAction`, parses move tokens, and converts facing direction into cardinal world deltas.
-- `try_move` applies bounds and caller-provided blocking tests so locomotion rules stay reusable across maps.
-- Open this file when snapped movement semantics change; ray casting and wall visibility logic live in siblings.
-
 ### heightmap.rs
 
 - This file owns `HeightMap`, the per-tile floor and ceiling override store for stepped raycaster spaces.
@@ -144,11 +136,11 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 
 ### lighting.rs
 
-- This file owns `PointLight` plus local and global lighting helpers for colored illumination in raycaster space.
-- It stores point-light position, optional level ownership, radius, intensity, and color for cheap sample evaluation.
-- Helper functions test line of sight through walls, accumulate ambient and point light, and apply directional sun tint.
-- Scene builders reuse these lighting samples to shade walls, floors, sprites, and multilevel slices without light graphs.
-- Open this file when raycaster light semantics change; hit casting and wall feature payloads live in sibling owners.
+- Owns render-only light samples used while raycaster turns structured scene input into shaded geometry.
+- Stores screen-facing point light positions, optional level ownership, radius, intensity, and color inputs.
+- Tests render occlusion through wall geometry for shading, not gameplay sight, action, or tile-light queries.
+- Applies ambient, point, and directional tint values to walls, floors, sprites, and multilevel render slices.
+- Change this file for first-person shading; tilefield owns gameplay light propagation and exported volumes.
 
 ### mod.rs
 
@@ -158,7 +150,7 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 - `projection.rs`, `depth_buffer.rs`, and `sprite_projection.rs` own screen-space math and occlusion data.
 - `doors.rs`, `wall_feature.rs`, and `heightmap.rs` hold cell state that changes how blocking tiles render.
 - `build_scene.rs`, `draw.rs`, and `render.rs` translate ray hits into either CPU pixels or engine render commands.
-- Visibility, segment, and grid-motion helpers stay here so gameplay queries can reuse the camera model.
+- Visibility-polygon, segment, and picking helpers stay render-facing and do not own tile gameplay semantics.
 - Change this file when the public raycaster symbol map moves; change siblings when behavior or data rules change.
 
 ### multilevel.rs
@@ -168,7 +160,7 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 - Level helpers read or mutate wall, floor, ceiling, and hole data while rejecting out-of-bounds writes safely.
 - The runtime builder compiles a transient `Raycaster2D` view from level-owned cells for rendering and picking.
 - `MultiLevelGrid` tracks the active slice, caches compiled runtimes, and resolves visible lower or upper levels.
-- Ascend and descend checks use floor or ceiling holes so movement and visibility share one vertical rule set.
+- Floor and ceiling holes decide which adjacent slices are visible to render and picking queries.
 - Open this file when stacked-level data or cross-level visibility changes; scene assembly lives in siblings.
 
 ### projection.rs
@@ -207,7 +199,7 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 - It stores `SceneTransform` sources plus resolved sprite, light, and optional model bindings sampled each frame.
 - Body-backed transforms apply local offsets and angle offsets so pseudo-3D attachments stay aligned with physics owners.
 - `SceneAdapter` aggregates bindings, clears tracked groups, and resolves live entries into world sprite or light data.
-- The adapter keeps gameplay code focused on 2D ownership while the raycaster consumes one normalized input surface.
+- The adapter keeps external entity ownership outside the raycaster while it consumes one normalized input surface.
 - This file is the boundary between physics or runtime state and the scene builder's input contracts.
 - Open this file when source-to-scene adaptation changes; prepared geometry and lighting evaluation live in siblings.
 
@@ -242,7 +234,7 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 - Feature-aware logic distinguishes half-height walls, window bands, and door panels, returning the hit solid section.
 - Floor and ceiling picking projects the pixel onto horizontal planes and rejects cells hidden by closer walls or holes.
 - `Raycaster2D::pick_screen` resolves single-level maps, while `MultiLevelGrid::pick_screen` chooses the owning slice.
-- This file is the boundary between first-person UI input and gameplay selection on underlying grid or multilevel data.
+- This file is the boundary between first-person UI input and render-space selection on grid or multilevel data.
 - Open this file when selection payloads or pick precedence change; scene building and ray hits live in siblings.
 
 ### visibility.rs
@@ -266,7 +258,7 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 - This file owns `WallFeatureKind` and `WallFeature`, the cell-local descriptors for wall behavior refinement.
 - It models half-height walls, window openings, and sliding doors without changing the base tile map schema.
 - Constructors clamp feature parameters into safe ranges so tools and scene builders share stable semantics.
-- Query helpers answer movement, visibility, and light blocking from the same payload used by rendering code.
+- Query helpers answer render ray and render light blocking from the same payload used by rendering code.
 - Open this file when per-cell wall behavior changes; door state progression and scene assembly live in siblings.
 
 
@@ -278,6 +270,7 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 - `lurek.raycaster.applyLitShade(baseShade, r, g, b) -> number`: Applies an RGB light color to a scalar shade value.
 - `lurek.raycaster.buildMultiLevelScene(params, levels, lights?, sprites?, wallTextures?, models?) -> integer`: Builds a multilevel raycaster scene from a stack of plain Lua level tables.
 - `lurek.raycaster.buildMultiLevelSceneFromAdapter(params, levels, adapter, wallTextures?) -> integer`: Builds a multilevel raycaster scene from a stack of plain Lua level tables using a runtime scene adapter.
+- `lurek.raycaster.buildMultiLevelSceneFromField(params, field, opts?, lights?, sprites?, wallTextures?) -> integer`: Builds a multilevel raycaster scene from a tilefield blocker channel.
 - `lurek.raycaster.distanceShade(distance, maxDistance) -> number`: Returns a brightness multiplier (0.0..1.0) based on distance for fog/darkness falloff.
 - `lurek.raycaster.getLastBuildStats() -> table`: Returns stats for the last stored raycaster scene build.
 - `lurek.raycaster.new(w, h) -> LRaycaster`: Creates a new raycaster map with the given grid dimensions.
@@ -285,7 +278,6 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 - `lurek.raycaster.newHeightMap(w, h) -> LHeightMap`: Creates a new height map for variable floor/ceiling heights across the grid.
 - `lurek.raycaster.newMap(w, h) -> LRaycaster`: Creates a new raycaster map (alias for `new`).
 - `lurek.raycaster.newMultiLevelGrid(levels?) -> LMultiLevelGrid`: Creates a persistent multi-level raycaster world from plain Lua level tables or as an empty container.
-- `lurek.raycaster.newPointLight(x, y, r, g, b, radius, intensity, level?) -> LPointLight`: Creates a new point light with position, color, radius, and intensity.
 - `lurek.raycaster.newSceneAdapter() -> LSceneAdapter`: Creates a runtime adapter for sprites, lights, and models that can follow physics bodies.
 - `lurek.raycaster.newSpriteManager() -> LSpriteManager`: Creates a new sprite manager for tracking and projecting billboard sprites.
 - `lurek.raycaster.pickScreenMultiLevel(sx, sy, params, levels, wallTextures?, sprites?, models?) -> table`: Resolves a screen-space click against a stack of plain Lua level tables and returns the owning level.
@@ -388,14 +380,12 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 - `LMultiLevelGrid:setCeilingTexture(texture?) -> nil`: Sets the default ceiling texture used by the active level. Pass nil to clear it.
 - `LMultiLevelGrid:setCeilingTextureCell(x, y, texture?) -> nil`: Assigns a per-cell ceiling texture override on the active level. Pass nil to remove the override.
 - `LMultiLevelGrid:setCell(x, y, val) -> nil`: Sets the wall type value at a grid cell on the active level. Non-zero values are solid walls.
-- `LMultiLevelGrid:setDoorCell(x, y, direction, openAmount, alpha?) -> nil`: Attaches a sliding door feature to a blocking cell on the active level.
 - `LMultiLevelGrid:setFloorHole(x, y, hole) -> nil`: Sets whether an active-level cell is open to the level below.
 - `LMultiLevelGrid:setFloorOffset(offset) -> nil`: Sets the floor height offset of the active level in world units.
 - `LMultiLevelGrid:setFloorTexture(texture?) -> nil`: Sets the default floor texture used by the active level. Pass nil to clear it.
 - `LMultiLevelGrid:setFloorTextureCell(x, y, texture?) -> nil`: Assigns a per-cell floor texture override on the active level. Pass nil to remove the override.
-- `LMultiLevelGrid:setHalfWallCell(x, y, height) -> nil`: Attaches a half-height wall feature to a blocking cell on the active level.
 - `LMultiLevelGrid:setLoweredFloorCell(x, y, opts?) -> nil`: Marks an active-level cell as a lowered floor (pit) with its own texture, depth, tint, and blocking flag.
-- `LMultiLevelGrid:setWindowCell(x, y, sillHeight, lintelHeight, alpha?) -> nil`: Attaches a window feature to a blocking cell on the active level, leaving a visible opening between sill and lintel.
+- `LMultiLevelGrid:setWallFeatureCell(x, y, feature) -> nil`: Attaches a render-only wall feature descriptor to a blocking cell on the active level.
 - `LMultiLevelGrid:type() -> string`: Returns the type name of this object ("LMultiLevelGrid").
 - `LMultiLevelGrid:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
 
@@ -430,27 +420,6 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 
 - No documented methods.
 
-#### LPointLight Type
-
-- Lua-visible point light that illuminates nearby raycaster tiles and sprites with colored light and falloff.
-
-##### Fields
-
-- No documented fields.
-
-##### Methods
-
-- `LPointLight:color() -> number`: Returns the RGB color components of this light.
-- `LPointLight:intensity() -> number`: Returns the brightness multiplier of this light.
-- `LPointLight:level() -> integer`: Returns the optional multilevel slice index that owns this light.
-- `LPointLight:radius() -> number`: Returns the light's falloff radius in world units.
-- `LPointLight:set(x, y, r, g, b, radius, intensity, level?) -> nil`: Overwrites all properties of this point light in a single call.
-- `LPointLight:setLevel(level?) -> nil`: Updates the optional multilevel slice index that owns this light.
-- `LPointLight:type() -> string`: Returns the type name of this object ("LPointLight").
-- `LPointLight:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
-- `LPointLight:x() -> number`: Returns the X world position of this light.
-- `LPointLight:y() -> number`: Returns the Y world position of this light.
-
 #### LRaycaster Type
 
 - Lua-visible raycaster map that holds cell data, per-cell textures, and provides raycasting,.
@@ -462,7 +431,6 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 ##### Methods
 
 - `LRaycaster:applyDoorManager(doors, alpha?) -> nil`: Synchronizes animated doors from an `LDoorManager` into this map's per-cell wall features.
-- `LRaycaster:buildMinimapWindow(centerX, centerY, radius, ambient, lights?) -> table`: Generates a grid of minimap tile samples around a center point with lighting info.
 - `LRaycaster:buildScene(params, lights?, sprites?, wallTextures?) -> integer`: Builds a complete textured raycaster scene for GPU rendering. Stores the output internally.
 - `LRaycaster:buildSceneFromAdapter(params, adapter, wallTextures?) -> integer`: Builds a textured raycaster scene from a runtime scene adapter that may follow physics bodies.
 - `LRaycaster:buildSceneWithModels(params, lights?, sprites?, wallTextures?, models?) -> integer`: Builds a textured raycaster scene with additional 3D .obj model instances projected into the view.
@@ -472,60 +440,31 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 - `LRaycaster:castRays(ox, oy, angle, fov, count, maxDist) -> table`: Casts multiple rays across a field of view and returns an array of hit tables.
 - `LRaycaster:castRaysFlat(ox, oy, angle, fov, count, maxDist) -> number[]`: Casts multiple rays and returns only the corrected distances as a flat array.
 - `LRaycaster:clearWallFeatureCell(x, y) -> nil`: Removes any per-cell wall feature override from a blocking cell.
-- `LRaycaster:computeTileLight(x, y, ambient, lights?) -> number`: Computes the combined lighting color at a tile from ambient and point lights, accounting for walls.
 - `LRaycaster:drawCameraSweep(x, y, fov, maxDist, numFrames, fw, fh) -> LImageData`: Renders multiple frames of a rotating camera sweep as a single combined image.
 - `LRaycaster:drawDepthMap(px, py, angle, fov, numRays, w, h, maxDist) -> LImageData`: Renders a grayscale depth map showing distance-to-wall for each column.
-- `LRaycaster:drawLineOfSight(ax, ay, bx, by, scale) -> LImageData`: Renders a debug image showing the line-of-sight ray between two world points.
 - `LRaycaster:drawTopDown(px, py, angle, scale) -> LImageData`: Renders a top-down debug view of the map with the player's position and direction.
 - `LRaycaster:drawView(px, py, angle, fov, w, h, maxDist) -> LImageData`: Renders a first-person raycaster view to a raw image buffer (no textures, flat-shaded).
-- `LRaycaster:extractMinimap(playerX, playerY, playerAngle, viewRadius, cellSize) -> LImageData`: Extracts a pixel minimap image centered on the player from this raycaster map.
 - `LRaycaster:getCeilingTextureCell(x, y) -> integer`: Returns the raw texture id assigned to this ceiling cell, or nil if none.
 - `LRaycaster:getCell(x, y) -> integer`: Returns the wall type value at a grid cell.
 - `LRaycaster:getFloorTextureCell(x, y) -> integer`: Returns the raw texture id assigned to this floor cell, or nil if none.
 - `LRaycaster:getLoweredFloorCell(x, y) -> table`: Returns the lowered floor configuration at a cell, or nil if the cell is normal.
 - `LRaycaster:getWallAlpha(tileType) -> number`: Returns the current transparency value for a wall tile type.
 - `LRaycaster:getWallFeatureCell(x, y) -> table`: Returns the wall feature attached to a cell, or nil when none is set.
-- `LRaycaster:gridMove(px, py, dir, action, step) -> number`: Performs a discrete grid-step movement in one of 4 cardinal directions with collision.
 - `LRaycaster:height() -> integer`: Returns the map height in grid cells.
 - `LRaycaster:isBlocked(x, y) -> boolean`: Returns true if the grid cell is a solid wall (non-zero value).
-- `LRaycaster:isWalkBlocked(x, y) -> boolean`: Returns true if the cell blocks walking (solid wall OR blocked lowered-floor cell).
-- `LRaycaster:lineOfSight(x1, y1, x2, y2) -> boolean`: Tests whether there is a clear line of sight between two world points (no walls in between).
 - `LRaycaster:pickScreen(sx, sy, params, sprites?, models?) -> table`: Resolves a screen-space click back into the raycaster world using the same camera semantics as scene building.
 - `LRaycaster:pickScreenFromAdapter(sx, sy, params, adapter) -> table`: Resolves a screen-space click using sprite/model inputs sourced from a runtime scene adapter.
 - `LRaycaster:projectSprite(sx, sy, px, py, pa, fov, screenW) -> table`: Projects a world-space sprite to screen coordinates for billboard rendering.
-- `LRaycaster:revealCellsFromRays(ox, oy, angle, fov, count, maxDist, step?) -> table`: Casts rays across the FOV and returns a list of grid cells that are visible (for fog-of-war).
 - `LRaycaster:setCeilingTextureCell(x, y, texture?) -> nil`: Assigns a per-cell ceiling texture override. Pass nil to remove the override.
 - `LRaycaster:setCell(x, y, val) -> nil`: Sets the wall type value at a grid cell. Non-zero values are solid walls.
 - `LRaycaster:setCells(cells) -> nil`: Replaces the entire map grid with a flat array of cell values (row-major order).
-- `LRaycaster:setDoorCell(x, y, direction, openAmount, alpha?) -> nil`: Attaches a sliding door feature to a blocking cell.
 - `LRaycaster:setFloorTextureCell(x, y, texture?) -> nil`: Assigns a per-cell floor texture override. Pass nil to remove the override.
-- `LRaycaster:setHalfWallCell(x, y, height) -> nil`: Attaches a half-height wall feature to a blocking cell.
 - `LRaycaster:setLoweredFloorCell(x, y, opts?) -> nil`: Marks a cell as a lowered floor (pit) with its own texture, depth, tint, and blocking flag.
 - `LRaycaster:setWallAlpha(tileType, alpha) -> nil`: Sets the transparency for a specific wall tile type, enabling see-through walls.
-- `LRaycaster:setWindowCell(x, y, sillHeight, lintelHeight, alpha?) -> nil`: Attaches a window feature to a blocking cell, leaving a visible opening between sill and lintel.
-- `LRaycaster:tryMove(px, py, dx, dy) -> number`: Attempts to move from (px,py) by (dx,dy) with wall-slide collision. Returns the final position.
+- `LRaycaster:setWallFeatureCell(x, y, feature) -> nil`: Attaches a render-only wall feature descriptor to a blocking cell.
 - `LRaycaster:type() -> string`: Returns the type name of this object ("LRaycaster").
 - `LRaycaster:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
 - `LRaycaster:width() -> integer`: Returns the map width in grid cells.
-
-#### LRaycasterBuildMinimapWindowResult Type
-
-- Generated result shape from @field tags.
-
-##### Fields
-
-- `b` (`number`): B.
-- `blocked` (`boolean`): Blocked.
-- `g` (`number`): G.
-- `luma` (`number`): Luma.
-- `r` (`number`): R.
-- `visible` (`boolean`): Visible.
-- `x` (`number`): X.
-- `y` (`number`): Y.
-
-##### Methods
-
-- No documented methods.
 
 #### LRaycasterCastFloorRowResult Type
 
@@ -691,19 +630,6 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 
 - No documented methods.
 
-#### LRaycasterRevealCellsFromRaysResult Type
-
-- Generated result shape from @field tags.
-
-##### Fields
-
-- `x` (`number`): X.
-- `y` (`number`): Y.
-
-##### Methods
-
-- No documented methods.
-
 #### LSceneAdapter Type
 
 - Lua-visible adapter that snapshots sprites, lights, and models from static data and physics bodies.
@@ -773,20 +699,16 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 | Current artifact | `tests/artifacts/current/raycaster/raycaster_depth_columns_vs_view.png` |
 | Current artifact | `tests/artifacts/current/raycaster/raycaster_feature_walls_view_pick.png` |
 | Current artifact | `tests/artifacts/current/raycaster/raycaster_floor_ceiling_pick_uv.png` |
-| Current artifact | `tests/artifacts/current/raycaster/raycaster_los_wall_window_door.png` |
-| Current artifact | `tests/artifacts/current/raycaster/raycaster_minimap_reveal_lighting.png` |
 | Current artifact | `tests/artifacts/current/raycaster/raycaster_multilevel_hole_pick.png` |
-| Current artifact | `tests/artifacts/current/raycaster/raycaster_topdown_reveal_fov.png` |
+| Current artifact | `tests/artifacts/current/raycaster/raycaster_topdown_cast_rays.png` |
 | Current artifact | `tests/artifacts/current/raycaster/raycaster_transparent_layered_hits.png` |
 | Baseline artifact | `tests/artifacts/baselines/raycaster/raycaster_camera_sweep_atlas.png` |
 | Baseline artifact | `tests/artifacts/baselines/raycaster/raycaster_corridor_view_with_fov.png` |
 | Baseline artifact | `tests/artifacts/baselines/raycaster/raycaster_depth_columns_vs_view.png` |
 | Baseline artifact | `tests/artifacts/baselines/raycaster/raycaster_feature_walls_view_pick.png` |
 | Baseline artifact | `tests/artifacts/baselines/raycaster/raycaster_floor_ceiling_pick_uv.png` |
-| Baseline artifact | `tests/artifacts/baselines/raycaster/raycaster_los_wall_window_door.png` |
-| Baseline artifact | `tests/artifacts/baselines/raycaster/raycaster_minimap_reveal_lighting.png` |
 | Baseline artifact | `tests/artifacts/baselines/raycaster/raycaster_multilevel_hole_pick.png` |
-| Baseline artifact | `tests/artifacts/baselines/raycaster/raycaster_topdown_reveal_fov.png` |
+| Baseline artifact | `tests/artifacts/baselines/raycaster/raycaster_topdown_cast_rays.png` |
 | Baseline artifact | `tests/artifacts/baselines/raycaster/raycaster_transparent_layered_hits.png` |
 
 ## Architecture Links
@@ -795,4 +717,7 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 
 ## Notes
 
-- No additional module-specific notes.
+- `raycaster` owns pseudo-3D projection, DDA-style rendering, wall/floor/ceiling composition, sprites, depth, picking, and render-facing scene assembly.
+- Tile gameplay semantics such as movement blockers, vision blockers, action blockers, point tile-light, global sunlight, and window/door/half-wall profile behavior belong in `lurek.tilefield`.
+- `raycaster` no longer exposes gameplay movement, line-of-sight, tile-light, or minimap-light helpers. Tile-based gameplay flows should build or export from `lurek.tilefield`, then pass render input to `raycaster`.
+- `lurek.raycaster.buildMultiLevelSceneFromField(params, field, opts)` is the field-consuming bridge for generated multilevel render input.

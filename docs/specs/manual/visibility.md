@@ -18,7 +18,10 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 
 ## Notes
 
-- No additional module-specific notes.
+- `visibility` owns visible, explored, and action masks. These masks are independent from tile lighting and from movement reachability.
+- `lurek.visibility.newTileVisibility(field, opts)` stores separate current visible, explored, and action masks per player id.
+- `lineOfSight(field, from, to, opts)` and `lineOfAction(field, from, to, opts)` intentionally default to different semantic channels: seeing a cell does not imply the actor can perform an action through the same line.
+- `visibility` may consume light data in future policies, but v1 keeps light and visibility separated.
 
 ## Architecture Links
 

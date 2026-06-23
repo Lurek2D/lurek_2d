@@ -233,11 +233,6 @@ impl UnitPathfinder {
         let max = dx.max(dy);
         min * std::f32::consts::SQRT_2 + (max - min)
     }
-    /// Return true when the Bresenham line from `(x1, y1)` to `(x2, y2)` passes only walkable cells for `unit_size`.
-    pub fn line_of_sight(&self, x1: u32, y1: u32, x2: u32, y2: u32, unit_size: u32) -> bool {
-        let grid = self.grid.borrow();
-        astar::line_of_sight(&grid, x1, y1, x2, y2, unit_size)
-    }
     /// Enable or disable path caching; clears existing cache when disabled.
     pub fn set_cache_enabled(&mut self, enabled: bool) {
         self.cache_enabled = enabled;

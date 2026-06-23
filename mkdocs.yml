@@ -161,6 +161,7 @@ nav:
     - Terminal: modules/terminal.md
     - Thread: modules/thread.md
     - Tilemap: modules/tilemap.md
+    - Tilefield: modules/tilefield.md
     - Timer: modules/timer.md
     - Tween: modules/tween.md
     - UI: modules/ui.md

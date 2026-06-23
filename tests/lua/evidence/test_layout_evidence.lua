@@ -50,6 +50,35 @@ local function save_png(img, path)
     expect_evidence_created(path)
 end
 
+local function save_text(path, text)
+    if write_file then
+        write_file(path, text)
+    else
+        lurek.filesystem.write(path, text)
+    end
+    expect_evidence_created(path)
+end
+
+local function overlaps(a, b, padding)
+    padding = padding or 0
+    return a.x < b.x + b.width + padding
+        and a.x + a.width + padding > b.x
+        and a.y < b.y + b.height + padding
+        and a.y + a.height + padding > b.y
+end
+
+local function overlap_count(result, padding)
+    local count = 0
+    for i = 1, #(result.nodes or {}) do
+        for j = i + 1, #(result.nodes or {}) do
+            if overlaps(result.nodes[i], result.nodes[j], padding or 0) then
+                count = count + 1
+            end
+        end
+    end
+    return count
+end
+
 local function draw_text(img, text, x, y, scale, r, g, b)
     text = string.upper(tostring(text or ""))
     scale = scale or 1
@@ -300,6 +329,191 @@ describe("evidence: layout", function()
         }, "CENTERED VIEWPORT 620X300", OUT .. "layout_center_in_area.png", {
             [1] = { 80, 150, 200 }, [2] = { 94, 166, 124 }, [3] = { 205, 145, 72 }, [4] = { 180, 108, 185 },
         })
+    end)
+
+    -- Does: Runs lurek.layout.circular, radial, grid, spiral, and stress on larger graph-shaped inputs and rasterizes each returned coordinate set.
+    -- Shows: The PNG artifacts should make each newly added auto-layout method visually reviewable: ring ordering, hop-distance rings, uniform rows, expanding spiral placement, and stress-preserved topology.
+    -- Artifact: tests/artifacts/current/layout/layout_circular_cycle_network.png, layout_radial_service_topology.png, layout_grid_inventory_matrix.png, layout_spiral_large_unordered.png, layout_stress_distance_network.png
+    -- Why: These new algorithms are meant to auto-organize arbitrary graphs, so evidence needs to prove they produce distinct readable structures on non-trivial node sets.
+    it("PNG: additional auto layout gallery", function()
+        local circular_nodes = {
+            { id = 1, width = 56, height = 28, label = "AUTH" },
+            { id = 2, width = 56, height = 28, label = "API" },
+            { id = 3, width = 56, height = 28, label = "UI" },
+            { id = 4, width = 56, height = 28, label = "CACHE" },
+            { id = 5, width = 56, height = 28, label = "QUEUE" },
+            { id = 6, width = 56, height = 28, label = "MAIL" },
+            { id = 7, width = 56, height = 28, label = "BILL" },
+            { id = 8, width = 56, height = 28, label = "DB" },
+            { id = 9, width = 56, height = 28, label = "LOG" },
+            { id = 10, width = 56, height = 28, label = "OPS" },
+        }
+        local circular_edges = {
+            { from = 1, to = 2 }, { from = 2, to = 3 }, { from = 3, to = 4 }, { from = 4, to = 5 },
+            { from = 5, to = 6 }, { from = 6, to = 7 }, { from = 7, to = 8 }, { from = 8, to = 9 },
+            { from = 9, to = 10 }, { from = 10, to = 1 }, { from = 2, to = 8 }, { from = 4, to = 9 },
+        }
+        render_graph(
+            lurek.layout.circular(circular_nodes, { hSpacing = 64, vSpacing = 64, margin = 28 }),
+            circular_edges,
+            "CIRCULAR CYCLE NETWORK",
+            OUT .. "layout_circular_cycle_network.png",
+            {
+                [1] = { 82, 144, 214 }, [2] = { 82, 144, 214 }, [3] = { 94, 166, 124 }, [4] = { 94, 166, 124 },
+                [5] = { 205, 145, 72 }, [6] = { 205, 145, 72 }, [7] = { 178, 112, 196 }, [8] = { 178, 112, 196 },
+                [9] = { 70, 150, 160 }, [10] = { 70, 150, 160 },
+            }
+        )
+
+        local radial_nodes = {
+            { id = 1, width = 62, height = 30, label = "GATE" },
+            { id = 2, width = 58, height = 28, label = "AUTH" },
+            { id = 3, width = 58, height = 28, label = "API" },
+            { id = 4, width = 58, height = 28, label = "CDN" },
+            { id = 5, width = 58, height = 28, label = "USER" },
+            { id = 6, width = 58, height = 28, label = "ORDER" },
+            { id = 7, width = 58, height = 28, label = "MEDIA" },
+            { id = 8, width = 58, height = 28, label = "DB1" },
+            { id = 9, width = 58, height = 28, label = "DB2" },
+            { id = 10, width = 58, height = 28, label = "OBJ" },
+            { id = 11, width = 58, height = 28, label = "MAIL" },
+        }
+        local radial_edges = {
+            { from = 1, to = 2 }, { from = 1, to = 3 }, { from = 1, to = 4 },
+            { from = 2, to = 5 }, { from = 3, to = 6 }, { from = 4, to = 7 },
+            { from = 5, to = 8 }, { from = 6, to = 9 }, { from = 7, to = 10 }, { from = 6, to = 11 },
+        }
+        render_graph(
+            lurek.layout.radial(radial_nodes, radial_edges, 1, { hSpacing = 54, vSpacing = 92, margin = 28 }),
+            radial_edges,
+            "RADIAL SERVICE TOPOLOGY",
+            OUT .. "layout_radial_service_topology.png",
+            {
+                [1] = { 235, 148, 82 }, [2] = { 94, 144, 214 }, [3] = { 94, 144, 214 }, [4] = { 94, 144, 214 },
+                [5] = { 94, 176, 126 }, [6] = { 94, 176, 126 }, [7] = { 94, 176, 126 },
+            }
+        )
+
+        local grid_nodes = {}
+        for i = 1, 16 do
+            grid_nodes[i] = { id = i, width = 58, height = 28, label = "N" .. tostring(i) }
+        end
+        local grid_edges = {
+            { from = 1, to = 2 }, { from = 2, to = 3 }, { from = 5, to = 6 }, { from = 6, to = 7 },
+            { from = 9, to = 10 }, { from = 10, to = 11 }, { from = 13, to = 14 }, { from = 14, to = 15 },
+        }
+        render_graph(
+            lurek.layout.grid(grid_nodes, { hSpacing = 34, vSpacing = 38, margin = 24 }),
+            grid_edges,
+            "GRID INVENTORY MATRIX",
+            OUT .. "layout_grid_inventory_matrix.png",
+            {
+                [1] = { 76, 134, 198 }, [5] = { 90, 150, 120 }, [9] = { 190, 136, 74 }, [13] = { 150, 116, 196 },
+            }
+        )
+
+        local spiral_nodes = {}
+        for i = 1, 18 do
+            spiral_nodes[i] = { id = i, width = 54, height = 26, label = "S" .. tostring(i) }
+        end
+        local spiral_edges = {
+            { from = 1, to = 4 }, { from = 2, to = 7 }, { from = 3, to = 11 }, { from = 5, to = 13 },
+            { from = 8, to = 17 }, { from = 10, to = 18 },
+        }
+        render_graph(
+            lurek.layout.spiral(spiral_nodes, { hSpacing = 42, vSpacing = 42, margin = 32 }),
+            spiral_edges,
+            "SPIRAL LARGE UNORDERED",
+            OUT .. "layout_spiral_large_unordered.png",
+            {
+                [1] = { 235, 148, 82 }, [6] = { 94, 144, 214 }, [12] = { 94, 176, 126 }, [18] = { 176, 124, 210 },
+            }
+        )
+
+        local stress_nodes = {
+            { id = 1, width = 58, height = 28, label = "A1" }, { id = 2, width = 58, height = 28, label = "A2" },
+            { id = 3, width = 58, height = 28, label = "A3" }, { id = 4, width = 58, height = 28, label = "A4" },
+            { id = 5, width = 58, height = 28, label = "B1" }, { id = 6, width = 58, height = 28, label = "B2" },
+            { id = 7, width = 58, height = 28, label = "B3" }, { id = 8, width = 58, height = 28, label = "B4" },
+            { id = 9, width = 58, height = 28, label = "C1" }, { id = 10, width = 58, height = 28, label = "C2" },
+            { id = 11, width = 58, height = 28, label = "C3" }, { id = 12, width = 58, height = 28, label = "C4" },
+        }
+        local stress_edges = {
+            { from = 1, to = 2 }, { from = 2, to = 3 }, { from = 3, to = 4 }, { from = 1, to = 5 },
+            { from = 5, to = 6 }, { from = 6, to = 7 }, { from = 7, to = 8 }, { from = 4, to = 8 },
+            { from = 5, to = 9 }, { from = 9, to = 10 }, { from = 10, to = 11 }, { from = 11, to = 12 },
+            { from = 8, to = 12 }, { from = 3, to = 10 }, { from = 2, to = 6 },
+        }
+        render_graph(
+            lurek.layout.stress(stress_nodes, stress_edges, { iterations = 80, edgeLength = 70, step = 0.05 }),
+            stress_edges,
+            "STRESS DISTANCE NETWORK",
+            OUT .. "layout_stress_distance_network.png",
+            {
+                [1] = { 76, 134, 198 }, [2] = { 76, 134, 198 }, [3] = { 76, 134, 198 }, [4] = { 76, 134, 198 },
+                [5] = { 90, 150, 120 }, [6] = { 90, 150, 120 }, [7] = { 90, 150, 120 }, [8] = { 90, 150, 120 },
+                [9] = { 190, 136, 74 }, [10] = { 190, 136, 74 }, [11] = { 190, 136, 74 }, [12] = { 190, 136, 74 },
+            }
+        )
+    end)
+
+    -- Does: Runs every auto-layout method on larger varied-size inputs and writes overlap/bounds metrics.
+    -- Shows: Complex layouts keep node rectangles separated instead of only returning trivial coordinates.
+    -- Artifact: tests/artifacts/current/layout/layout_quality_metrics.txt
+    -- Why: This gives reviewers numeric proof that layout quality improved for dense and irregular node sets.
+    it("TXT: complex layout quality metrics", function()
+        local varied = {}
+        for i = 1, 18 do
+            varied[i] = {
+                id = i,
+                width = 46 + (i % 5) * 17,
+                height = 24 + (i % 3) * 11,
+                label = "N" .. tostring(i),
+            }
+        end
+        local chain = {}
+        for i = 1, 17 do
+            chain[i] = { from = i, to = i + 1 }
+        end
+        local star = {}
+        for i = 2, 18 do
+            star[#star + 1] = { from = 1, to = i }
+        end
+        local children = {
+            [1] = { 2, 3, 4, 5 },
+            [2] = { 6, 7 },
+            [3] = { 8, 9, 10 },
+            [4] = { 14, 15 },
+            [5] = { 11, 12, 13 },
+            [6] = { 16, 17, 18 },
+        }
+
+        local cases = {
+            tree = lurek.layout.tree(varied, children, 1, { hSpacing = 18, vSpacing = 42, margin = 12 }),
+            dag = lurek.layout.dag(varied, chain, { hSpacing = 18, vSpacing = 38, margin = 12 }),
+            force = lurek.layout.force(varied, chain, { iterations = 90, repulsion = 9000, attraction = 0.018, cooling = 0.92, areaWidth = 860, areaHeight = 560 }),
+            circular = lurek.layout.circular(varied, { hSpacing = 24, vSpacing = 24, margin = 12 }),
+            radial = lurek.layout.radial(varied, star, 1, { hSpacing = 22, vSpacing = 44, margin = 12 }),
+            grid = lurek.layout.grid(varied, { hSpacing = 14, vSpacing = 18, margin = 12 }),
+            spiral = lurek.layout.spiral(varied, { hSpacing = 12, vSpacing = 12, margin = 12 }),
+            stress = lurek.layout.stress(varied, chain, { iterations = 24, edgeLength = 66, step = 0.06 }),
+        }
+
+        local lines = { "layout,nodes,overlaps,width,height" }
+        local order = { "tree", "dag", "force", "circular", "radial", "grid", "spiral", "stress" }
+        for _, name in ipairs(order) do
+            local result = cases[name]
+            local overlaps_found = overlap_count(result, 0)
+            expect_equal(0, overlaps_found)
+            lines[#lines + 1] = table.concat({
+                name,
+                tostring(#result.nodes),
+                tostring(overlaps_found),
+                string.format("%.1f", result.width),
+                string.format("%.1f", result.height),
+            }, ",")
+        end
+        save_text(OUT .. "layout_quality_metrics.txt", table.concat(lines, "\n") .. "\n")
     end)
 end)
 

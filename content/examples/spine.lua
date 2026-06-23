@@ -4,35 +4,36 @@
 
 --- Spine Module: skeleton creation, bones, slots, IK, skins, animations, keyframes, events
 
-local function spine_log(message)
-    lurek.log.info("[spine] " .. message)
-end
 
-local function make_demo_skeleton(name)
-    local skel = lurek.spine.newSkeleton(name)
-    local root = skel:addBone("root", { x = 0, y = 0, rotation = 0, scale_x = 1, scale_y = 1 })
-    local torso = skel:addChildBone("torso", root, { x = 0, y = -12 })
-    local slot = skel:addSlot("torso_slot", torso, "torso_idle")
-    return skel, root, torso, slot
-end
 
-local function make_walk_animation(name, duration)
-    local anim = lurek.spine.newSkeletonAnimation(name or "walk", duration or 1.0)
-    anim:addKeyframe(0, "x", 0.0, 0.0)
-    anim:addKeyframe(0, "x", duration or 1.0, 10.0)
-    return anim
-end
 
-local function example_print_log(...)
-    local parts = {}
-    for i = 1, select("#", ...) do
-        parts[i] = tostring(select(i, ...))
-    end
-    lurek.log.info(table.concat(parts, " "))
-end
 
 --@api: lurek.spine.newSkeleton
 do
+    local function spine_log(message)
+        lurek.log.info("[spine] " .. message)
+    end
+    local function make_demo_skeleton(name)
+        local skel = lurek.spine.newSkeleton(name)
+        local root = skel:addBone("root", { x = 0, y = 0, rotation = 0, scale_x = 1, scale_y = 1 })
+        local torso = skel:addChildBone("torso", root, { x = 0, y = -12 })
+        local slot = skel:addSlot("torso_slot", torso, "torso_idle")
+        return skel, root, torso, slot
+    end
+    local function make_walk_animation(name, duration)
+        local anim = lurek.spine.newSkeletonAnimation(name or "walk", duration or 1.0)
+        anim:addKeyframe(0, "x", 0.0, 0.0)
+        anim:addKeyframe(0, "x", duration or 1.0, 10.0)
+        return anim
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local skel, root, torso, slot = make_demo_skeleton("hero")
     local type_name = skel:type()
     local bones = skel:boneCount()
@@ -42,6 +43,30 @@ end
 
 --@api: LSkeleton:addBone
 do
+    local function spine_log(message)
+        lurek.log.info("[spine] " .. message)
+    end
+    local function make_demo_skeleton(name)
+        local skel = lurek.spine.newSkeleton(name)
+        local root = skel:addBone("root", { x = 0, y = 0, rotation = 0, scale_x = 1, scale_y = 1 })
+        local torso = skel:addChildBone("torso", root, { x = 0, y = -12 })
+        local slot = skel:addSlot("torso_slot", torso, "torso_idle")
+        return skel, root, torso, slot
+    end
+    local function make_walk_animation(name, duration)
+        local anim = lurek.spine.newSkeletonAnimation(name or "walk", duration or 1.0)
+        anim:addKeyframe(0, "x", 0.0, 0.0)
+        anim:addKeyframe(0, "x", duration or 1.0, 10.0)
+        return anim
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local skel = lurek.spine.newSkeleton("character")
     local root = skel:addBone("root", { x = 0, y = 0, rotation = 0, scale_x = 1, scale_y = 1 })
     local chest = skel:addBone("chest", { x = 0, y = -12, rotation = 0.1 })
@@ -53,6 +78,30 @@ end
 
 --@api: LSkeleton:addChildBone
 do
+    local function spine_log(message)
+        lurek.log.info("[spine] " .. message)
+    end
+    local function make_demo_skeleton(name)
+        local skel = lurek.spine.newSkeleton(name)
+        local root = skel:addBone("root", { x = 0, y = 0, rotation = 0, scale_x = 1, scale_y = 1 })
+        local torso = skel:addChildBone("torso", root, { x = 0, y = -12 })
+        local slot = skel:addSlot("torso_slot", torso, "torso_idle")
+        return skel, root, torso, slot
+    end
+    local function make_walk_animation(name, duration)
+        local anim = lurek.spine.newSkeletonAnimation(name or "walk", duration or 1.0)
+        anim:addKeyframe(0, "x", 0.0, 0.0)
+        anim:addKeyframe(0, "x", duration or 1.0, 10.0)
+        return anim
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local skel = lurek.spine.newSkeleton("character")
     local root = skel:addBone("root", { x = 0, y = 0, rotation = 0, scale_x = 1, scale_y = 1 })
     local spine_bone = skel:addChildBone("spine", root, { x = 0, y = -20 })
@@ -64,6 +113,30 @@ end
 
 --@api: LSkeleton:addSlot
 do
+    local function spine_log(message)
+        lurek.log.info("[spine] " .. message)
+    end
+    local function make_demo_skeleton(name)
+        local skel = lurek.spine.newSkeleton(name)
+        local root = skel:addBone("root", { x = 0, y = 0, rotation = 0, scale_x = 1, scale_y = 1 })
+        local torso = skel:addChildBone("torso", root, { x = 0, y = -12 })
+        local slot = skel:addSlot("torso_slot", torso, "torso_idle")
+        return skel, root, torso, slot
+    end
+    local function make_walk_animation(name, duration)
+        local anim = lurek.spine.newSkeletonAnimation(name or "walk", duration or 1.0)
+        anim:addKeyframe(0, "x", 0.0, 0.0)
+        anim:addKeyframe(0, "x", duration or 1.0, 10.0)
+        return anim
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local skel = lurek.spine.newSkeleton("slotted")
     local bone = skel:addBone("torso", { y = -10 })
     local body_slot = skel:addSlot("body_slot", bone, "body_image")
@@ -75,6 +148,30 @@ end
 
 --@api: LSkeleton:addIKConstraint
 do
+    local function spine_log(message)
+        lurek.log.info("[spine] " .. message)
+    end
+    local function make_demo_skeleton(name)
+        local skel = lurek.spine.newSkeleton(name)
+        local root = skel:addBone("root", { x = 0, y = 0, rotation = 0, scale_x = 1, scale_y = 1 })
+        local torso = skel:addChildBone("torso", root, { x = 0, y = -12 })
+        local slot = skel:addSlot("torso_slot", torso, "torso_idle")
+        return skel, root, torso, slot
+    end
+    local function make_walk_animation(name, duration)
+        local anim = lurek.spine.newSkeletonAnimation(name or "walk", duration or 1.0)
+        anim:addKeyframe(0, "x", 0.0, 0.0)
+        anim:addKeyframe(0, "x", duration or 1.0, 10.0)
+        return anim
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local skel = lurek.spine.newSkeleton("ik_demo")
     local root = skel:addBone("root")
     local upper = skel:addChildBone("upper_arm", root, { x = 20 })
@@ -84,6 +181,30 @@ end
 
 --@api: LSkeleton:setIKTarget
 do
+    local function spine_log(message)
+        lurek.log.info("[spine] " .. message)
+    end
+    local function make_demo_skeleton(name)
+        local skel = lurek.spine.newSkeleton(name)
+        local root = skel:addBone("root", { x = 0, y = 0, rotation = 0, scale_x = 1, scale_y = 1 })
+        local torso = skel:addChildBone("torso", root, { x = 0, y = -12 })
+        local slot = skel:addSlot("torso_slot", torso, "torso_idle")
+        return skel, root, torso, slot
+    end
+    local function make_walk_animation(name, duration)
+        local anim = lurek.spine.newSkeletonAnimation(name or "walk", duration or 1.0)
+        anim:addKeyframe(0, "x", 0.0, 0.0)
+        anim:addKeyframe(0, "x", duration or 1.0, 10.0)
+        return anim
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local skel = lurek.spine.newSkeleton("ik_demo")
     local root = skel:addBone("root")
     local upper = skel:addChildBone("upper_arm", root, { x = 20 })
@@ -95,6 +216,30 @@ end
 
 --@api: LSkeleton:addSkin
 do
+    local function spine_log(message)
+        lurek.log.info("[spine] " .. message)
+    end
+    local function make_demo_skeleton(name)
+        local skel = lurek.spine.newSkeleton(name)
+        local root = skel:addBone("root", { x = 0, y = 0, rotation = 0, scale_x = 1, scale_y = 1 })
+        local torso = skel:addChildBone("torso", root, { x = 0, y = -12 })
+        local slot = skel:addSlot("torso_slot", torso, "torso_idle")
+        return skel, root, torso, slot
+    end
+    local function make_walk_animation(name, duration)
+        local anim = lurek.spine.newSkeletonAnimation(name or "walk", duration or 1.0)
+        anim:addKeyframe(0, "x", 0.0, 0.0)
+        anim:addKeyframe(0, "x", duration or 1.0, 10.0)
+        return anim
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local skel, _, torso, _ = make_demo_skeleton("skinned")
     skel:addSkin("default")
     skel:setSkinMapping("default", "torso_slot", "torso_idle")
@@ -105,6 +250,30 @@ end
 
 --@api: LSkeleton:setSkin
 do
+    local function spine_log(message)
+        lurek.log.info("[spine] " .. message)
+    end
+    local function make_demo_skeleton(name)
+        local skel = lurek.spine.newSkeleton(name)
+        local root = skel:addBone("root", { x = 0, y = 0, rotation = 0, scale_x = 1, scale_y = 1 })
+        local torso = skel:addChildBone("torso", root, { x = 0, y = -12 })
+        local slot = skel:addSlot("torso_slot", torso, "torso_idle")
+        return skel, root, torso, slot
+    end
+    local function make_walk_animation(name, duration)
+        local anim = lurek.spine.newSkeletonAnimation(name or "walk", duration or 1.0)
+        anim:addKeyframe(0, "x", 0.0, 0.0)
+        anim:addKeyframe(0, "x", duration or 1.0, 10.0)
+        return anim
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local skel, _, _, _ = make_demo_skeleton("skinned")
     skel:addSkin("default")
     skel:addSkin("warrior")
@@ -116,6 +285,30 @@ end
 
 --@api: LSkeleton:setSkinMapping
 do
+    local function spine_log(message)
+        lurek.log.info("[spine] " .. message)
+    end
+    local function make_demo_skeleton(name)
+        local skel = lurek.spine.newSkeleton(name)
+        local root = skel:addBone("root", { x = 0, y = 0, rotation = 0, scale_x = 1, scale_y = 1 })
+        local torso = skel:addChildBone("torso", root, { x = 0, y = -12 })
+        local slot = skel:addSlot("torso_slot", torso, "torso_idle")
+        return skel, root, torso, slot
+    end
+    local function make_walk_animation(name, duration)
+        local anim = lurek.spine.newSkeletonAnimation(name or "walk", duration or 1.0)
+        anim:addKeyframe(0, "x", 0.0, 0.0)
+        anim:addKeyframe(0, "x", duration or 1.0, 10.0)
+        return anim
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local skel = lurek.spine.newSkeleton("skinned")
     local body = skel:addBone("body")
     skel:addSlot("body_slot", body, "default_body")
@@ -128,6 +321,30 @@ end
 
 --@api: LSkeleton:getSkin
 do
+    local function spine_log(message)
+        lurek.log.info("[spine] " .. message)
+    end
+    local function make_demo_skeleton(name)
+        local skel = lurek.spine.newSkeleton(name)
+        local root = skel:addBone("root", { x = 0, y = 0, rotation = 0, scale_x = 1, scale_y = 1 })
+        local torso = skel:addChildBone("torso", root, { x = 0, y = -12 })
+        local slot = skel:addSlot("torso_slot", torso, "torso_idle")
+        return skel, root, torso, slot
+    end
+    local function make_walk_animation(name, duration)
+        local anim = lurek.spine.newSkeletonAnimation(name or "walk", duration or 1.0)
+        anim:addKeyframe(0, "x", 0.0, 0.0)
+        anim:addKeyframe(0, "x", duration or 1.0, 10.0)
+        return anim
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local skel, _, _, _ = make_demo_skeleton("skinned")
     skel:addSkin("default")
     skel:addSkin("warrior")
@@ -140,6 +357,30 @@ end
 
 --@api: LSkeleton:addAnimation
 do
+    local function spine_log(message)
+        lurek.log.info("[spine] " .. message)
+    end
+    local function make_demo_skeleton(name)
+        local skel = lurek.spine.newSkeleton(name)
+        local root = skel:addBone("root", { x = 0, y = 0, rotation = 0, scale_x = 1, scale_y = 1 })
+        local torso = skel:addChildBone("torso", root, { x = 0, y = -12 })
+        local slot = skel:addSlot("torso_slot", torso, "torso_idle")
+        return skel, root, torso, slot
+    end
+    local function make_walk_animation(name, duration)
+        local anim = lurek.spine.newSkeletonAnimation(name or "walk", duration or 1.0)
+        anim:addKeyframe(0, "x", 0.0, 0.0)
+        anim:addKeyframe(0, "x", duration or 1.0, 10.0)
+        return anim
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local skel, _, _, _ = make_demo_skeleton("animated")
     local idle = make_walk_animation("idle", 1.0)
     local timelines = idle:getTimelineCount()
@@ -151,6 +392,30 @@ end
 
 --@api: LSkeleton:playAnimation
 do
+    local function spine_log(message)
+        lurek.log.info("[spine] " .. message)
+    end
+    local function make_demo_skeleton(name)
+        local skel = lurek.spine.newSkeleton(name)
+        local root = skel:addBone("root", { x = 0, y = 0, rotation = 0, scale_x = 1, scale_y = 1 })
+        local torso = skel:addChildBone("torso", root, { x = 0, y = -12 })
+        local slot = skel:addSlot("torso_slot", torso, "torso_idle")
+        return skel, root, torso, slot
+    end
+    local function make_walk_animation(name, duration)
+        local anim = lurek.spine.newSkeletonAnimation(name or "walk", duration or 1.0)
+        anim:addKeyframe(0, "x", 0.0, 0.0)
+        anim:addKeyframe(0, "x", duration or 1.0, 10.0)
+        return anim
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local skel = lurek.spine.newSkeleton("animated")
     skel:addBone("root")
     skel:addAnimation(lurek.spine.newSkeletonAnimation("idle", 1.0))
@@ -161,6 +426,30 @@ end
 
 --@api: LSkeleton:stopAnimation
 do
+    local function spine_log(message)
+        lurek.log.info("[spine] " .. message)
+    end
+    local function make_demo_skeleton(name)
+        local skel = lurek.spine.newSkeleton(name)
+        local root = skel:addBone("root", { x = 0, y = 0, rotation = 0, scale_x = 1, scale_y = 1 })
+        local torso = skel:addChildBone("torso", root, { x = 0, y = -12 })
+        local slot = skel:addSlot("torso_slot", torso, "torso_idle")
+        return skel, root, torso, slot
+    end
+    local function make_walk_animation(name, duration)
+        local anim = lurek.spine.newSkeletonAnimation(name or "walk", duration or 1.0)
+        anim:addKeyframe(0, "x", 0.0, 0.0)
+        anim:addKeyframe(0, "x", duration or 1.0, 10.0)
+        return anim
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local skel = lurek.spine.newSkeleton("animated")
     skel:addBone("root")
     skel:addAnimation(lurek.spine.newSkeletonAnimation("idle", 1.0))
@@ -171,6 +460,30 @@ end
 
 --@api: LSkeleton:getAnimationTime
 do
+    local function spine_log(message)
+        lurek.log.info("[spine] " .. message)
+    end
+    local function make_demo_skeleton(name)
+        local skel = lurek.spine.newSkeleton(name)
+        local root = skel:addBone("root", { x = 0, y = 0, rotation = 0, scale_x = 1, scale_y = 1 })
+        local torso = skel:addChildBone("torso", root, { x = 0, y = -12 })
+        local slot = skel:addSlot("torso_slot", torso, "torso_idle")
+        return skel, root, torso, slot
+    end
+    local function make_walk_animation(name, duration)
+        local anim = lurek.spine.newSkeletonAnimation(name or "walk", duration or 1.0)
+        anim:addKeyframe(0, "x", 0.0, 0.0)
+        anim:addKeyframe(0, "x", duration or 1.0, 10.0)
+        return anim
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local skel = lurek.spine.newSkeleton("animated")
     skel:addBone("root")
     skel:addAnimation(lurek.spine.newSkeletonAnimation("idle", 1.0))
@@ -180,6 +493,30 @@ end
 
 --@api: LSkeleton:blendAnimation
 do
+    local function spine_log(message)
+        lurek.log.info("[spine] " .. message)
+    end
+    local function make_demo_skeleton(name)
+        local skel = lurek.spine.newSkeleton(name)
+        local root = skel:addBone("root", { x = 0, y = 0, rotation = 0, scale_x = 1, scale_y = 1 })
+        local torso = skel:addChildBone("torso", root, { x = 0, y = -12 })
+        local slot = skel:addSlot("torso_slot", torso, "torso_idle")
+        return skel, root, torso, slot
+    end
+    local function make_walk_animation(name, duration)
+        local anim = lurek.spine.newSkeletonAnimation(name or "walk", duration or 1.0)
+        anim:addKeyframe(0, "x", 0.0, 0.0)
+        anim:addKeyframe(0, "x", duration or 1.0, 10.0)
+        return anim
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local skel = lurek.spine.newSkeleton("animated")
     skel:addBone("root")
     skel:addAnimation(lurek.spine.newSkeletonAnimation("idle", 1.0))
@@ -194,6 +531,30 @@ end
 
 --@api: LSkeleton:findBone
 do
+    local function spine_log(message)
+        lurek.log.info("[spine] " .. message)
+    end
+    local function make_demo_skeleton(name)
+        local skel = lurek.spine.newSkeleton(name)
+        local root = skel:addBone("root", { x = 0, y = 0, rotation = 0, scale_x = 1, scale_y = 1 })
+        local torso = skel:addChildBone("torso", root, { x = 0, y = -12 })
+        local slot = skel:addSlot("torso_slot", torso, "torso_idle")
+        return skel, root, torso, slot
+    end
+    local function make_walk_animation(name, duration)
+        local anim = lurek.spine.newSkeletonAnimation(name or "walk", duration or 1.0)
+        anim:addKeyframe(0, "x", 0.0, 0.0)
+        anim:addKeyframe(0, "x", duration or 1.0, 10.0)
+        return anim
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local skel = lurek.spine.newSkeleton("query")
     skel:addBone("root", { x = 100, y = 200 })
     skel:addBone("arm", { x = 30, y = 0 })
@@ -204,6 +565,30 @@ end
 
 --@api: LSkeleton:findSlot
 do
+    local function spine_log(message)
+        lurek.log.info("[spine] " .. message)
+    end
+    local function make_demo_skeleton(name)
+        local skel = lurek.spine.newSkeleton(name)
+        local root = skel:addBone("root", { x = 0, y = 0, rotation = 0, scale_x = 1, scale_y = 1 })
+        local torso = skel:addChildBone("torso", root, { x = 0, y = -12 })
+        local slot = skel:addSlot("torso_slot", torso, "torso_idle")
+        return skel, root, torso, slot
+    end
+    local function make_walk_animation(name, duration)
+        local anim = lurek.spine.newSkeletonAnimation(name or "walk", duration or 1.0)
+        anim:addKeyframe(0, "x", 0.0, 0.0)
+        anim:addKeyframe(0, "x", duration or 1.0, 10.0)
+        return anim
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local skel = lurek.spine.newSkeleton("query")
     local arm = skel:addBone("arm", { x = 30, y = 0 })
     skel:addSlot("arm_slot", arm, "arm_img")
@@ -215,6 +600,30 @@ end
 
 --@api: LSkeleton:setPosition
 do
+    local function spine_log(message)
+        lurek.log.info("[spine] " .. message)
+    end
+    local function make_demo_skeleton(name)
+        local skel = lurek.spine.newSkeleton(name)
+        local root = skel:addBone("root", { x = 0, y = 0, rotation = 0, scale_x = 1, scale_y = 1 })
+        local torso = skel:addChildBone("torso", root, { x = 0, y = -12 })
+        local slot = skel:addSlot("torso_slot", torso, "torso_idle")
+        return skel, root, torso, slot
+    end
+    local function make_walk_animation(name, duration)
+        local anim = lurek.spine.newSkeletonAnimation(name or "walk", duration or 1.0)
+        anim:addKeyframe(0, "x", 0.0, 0.0)
+        anim:addKeyframe(0, "x", duration or 1.0, 10.0)
+        return anim
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local skel, root, _, _ = make_demo_skeleton("query")
     skel:setPosition(200, 300)
     skel:updateWorldTransforms()
@@ -225,6 +634,30 @@ end
 
 --@api: LSkeleton:getBoneWorld
 do
+    local function spine_log(message)
+        lurek.log.info("[spine] " .. message)
+    end
+    local function make_demo_skeleton(name)
+        local skel = lurek.spine.newSkeleton(name)
+        local root = skel:addBone("root", { x = 0, y = 0, rotation = 0, scale_x = 1, scale_y = 1 })
+        local torso = skel:addChildBone("torso", root, { x = 0, y = -12 })
+        local slot = skel:addSlot("torso_slot", torso, "torso_idle")
+        return skel, root, torso, slot
+    end
+    local function make_walk_animation(name, duration)
+        local anim = lurek.spine.newSkeletonAnimation(name or "walk", duration or 1.0)
+        anim:addKeyframe(0, "x", 0.0, 0.0)
+        anim:addKeyframe(0, "x", duration or 1.0, 10.0)
+        return anim
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local skel = lurek.spine.newSkeleton("query")
     local root = skel:addBone("root", { x = 100, y = 200 })
     skel:updateWorldTransforms()
@@ -234,6 +667,30 @@ end
 
 --@api: LSkeleton:updateWorldTransforms
 do
+    local function spine_log(message)
+        lurek.log.info("[spine] " .. message)
+    end
+    local function make_demo_skeleton(name)
+        local skel = lurek.spine.newSkeleton(name)
+        local root = skel:addBone("root", { x = 0, y = 0, rotation = 0, scale_x = 1, scale_y = 1 })
+        local torso = skel:addChildBone("torso", root, { x = 0, y = -12 })
+        local slot = skel:addSlot("torso_slot", torso, "torso_idle")
+        return skel, root, torso, slot
+    end
+    local function make_walk_animation(name, duration)
+        local anim = lurek.spine.newSkeletonAnimation(name or "walk", duration or 1.0)
+        anim:addKeyframe(0, "x", 0.0, 0.0)
+        anim:addKeyframe(0, "x", duration or 1.0, 10.0)
+        return anim
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local skel, root, torso, _ = make_demo_skeleton("query")
     skel:setPosition(100, 200)
     skel:updateWorldTransforms()
@@ -244,6 +701,30 @@ end
 
 --@api: LSkeleton:updateAnimation
 do
+    local function spine_log(message)
+        lurek.log.info("[spine] " .. message)
+    end
+    local function make_demo_skeleton(name)
+        local skel = lurek.spine.newSkeleton(name)
+        local root = skel:addBone("root", { x = 0, y = 0, rotation = 0, scale_x = 1, scale_y = 1 })
+        local torso = skel:addChildBone("torso", root, { x = 0, y = -12 })
+        local slot = skel:addSlot("torso_slot", torso, "torso_idle")
+        return skel, root, torso, slot
+    end
+    local function make_walk_animation(name, duration)
+        local anim = lurek.spine.newSkeletonAnimation(name or "walk", duration or 1.0)
+        anim:addKeyframe(0, "x", 0.0, 0.0)
+        anim:addKeyframe(0, "x", duration or 1.0, 10.0)
+        return anim
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local skel = lurek.spine.newSkeleton("frame_loop")
     skel:addBone("root")
     local anim = lurek.spine.newSkeletonAnimation("walk", 1.0)
@@ -260,6 +741,30 @@ end
 
 --@api: LSkeleton:drawToImage
 do
+    local function spine_log(message)
+        lurek.log.info("[spine] " .. message)
+    end
+    local function make_demo_skeleton(name)
+        local skel = lurek.spine.newSkeleton(name)
+        local root = skel:addBone("root", { x = 0, y = 0, rotation = 0, scale_x = 1, scale_y = 1 })
+        local torso = skel:addChildBone("torso", root, { x = 0, y = -12 })
+        local slot = skel:addSlot("torso_slot", torso, "torso_idle")
+        return skel, root, torso, slot
+    end
+    local function make_walk_animation(name, duration)
+        local anim = lurek.spine.newSkeletonAnimation(name or "walk", duration or 1.0)
+        anim:addKeyframe(0, "x", 0.0, 0.0)
+        anim:addKeyframe(0, "x", duration or 1.0, 10.0)
+        return anim
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local skel = lurek.spine.newSkeleton("render_test")
     local root = skel:addBone("root", { x = 64, y = 64 })
     skel:addChildBone("body", root, { y = -20 })
@@ -270,6 +775,30 @@ end
 
 --@api: lurek.spine.newSkeletonAnimation
 do
+    local function spine_log(message)
+        lurek.log.info("[spine] " .. message)
+    end
+    local function make_demo_skeleton(name)
+        local skel = lurek.spine.newSkeleton(name)
+        local root = skel:addBone("root", { x = 0, y = 0, rotation = 0, scale_x = 1, scale_y = 1 })
+        local torso = skel:addChildBone("torso", root, { x = 0, y = -12 })
+        local slot = skel:addSlot("torso_slot", torso, "torso_idle")
+        return skel, root, torso, slot
+    end
+    local function make_walk_animation(name, duration)
+        local anim = lurek.spine.newSkeletonAnimation(name or "walk", duration or 1.0)
+        anim:addKeyframe(0, "x", 0.0, 0.0)
+        anim:addKeyframe(0, "x", duration or 1.0, 10.0)
+        return anim
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local anim = lurek.spine.newSkeletonAnimation("walk_cycle", 0.8)
     anim:addKeyframe(0, "x", 0.0, 0.0)
     anim:addKeyframe(0, "x", 0.8, 12.0)
@@ -281,6 +810,30 @@ end
 
 --@api: LSkeletonAnimation:addKeyframe
 do
+    local function spine_log(message)
+        lurek.log.info("[spine] " .. message)
+    end
+    local function make_demo_skeleton(name)
+        local skel = lurek.spine.newSkeleton(name)
+        local root = skel:addBone("root", { x = 0, y = 0, rotation = 0, scale_x = 1, scale_y = 1 })
+        local torso = skel:addChildBone("torso", root, { x = 0, y = -12 })
+        local slot = skel:addSlot("torso_slot", torso, "torso_idle")
+        return skel, root, torso, slot
+    end
+    local function make_walk_animation(name, duration)
+        local anim = lurek.spine.newSkeletonAnimation(name or "walk", duration or 1.0)
+        anim:addKeyframe(0, "x", 0.0, 0.0)
+        anim:addKeyframe(0, "x", duration or 1.0, 10.0)
+        return anim
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local anim = lurek.spine.newSkeletonAnimation("bob", 1.0)
     anim:addKeyframe(0, "y", 0.0, 0)
     anim:addKeyframe(0, "y", 1.0, 0, "ease_in")
@@ -292,6 +845,30 @@ end
 
 --@api: LSkeletonAnimation:addEventKey
 do
+    local function spine_log(message)
+        lurek.log.info("[spine] " .. message)
+    end
+    local function make_demo_skeleton(name)
+        local skel = lurek.spine.newSkeleton(name)
+        local root = skel:addBone("root", { x = 0, y = 0, rotation = 0, scale_x = 1, scale_y = 1 })
+        local torso = skel:addChildBone("torso", root, { x = 0, y = -12 })
+        local slot = skel:addSlot("torso_slot", torso, "torso_idle")
+        return skel, root, torso, slot
+    end
+    local function make_walk_animation(name, duration)
+        local anim = lurek.spine.newSkeletonAnimation(name or "walk", duration or 1.0)
+        anim:addKeyframe(0, "x", 0.0, 0.0)
+        anim:addKeyframe(0, "x", duration or 1.0, 10.0)
+        return anim
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local anim = lurek.spine.newSkeletonAnimation("attack", 0.5)
     anim:addEventKey(0.2, "whoosh", 1)
     anim:addEventKey(0.3, "hit", 2)
@@ -303,6 +880,30 @@ end
 
 --@api: LSkeletonAnimation:getEvents
 do
+    local function spine_log(message)
+        lurek.log.info("[spine] " .. message)
+    end
+    local function make_demo_skeleton(name)
+        local skel = lurek.spine.newSkeleton(name)
+        local root = skel:addBone("root", { x = 0, y = 0, rotation = 0, scale_x = 1, scale_y = 1 })
+        local torso = skel:addChildBone("torso", root, { x = 0, y = -12 })
+        local slot = skel:addSlot("torso_slot", torso, "torso_idle")
+        return skel, root, torso, slot
+    end
+    local function make_walk_animation(name, duration)
+        local anim = lurek.spine.newSkeletonAnimation(name or "walk", duration or 1.0)
+        anim:addKeyframe(0, "x", 0.0, 0.0)
+        anim:addKeyframe(0, "x", duration or 1.0, 10.0)
+        return anim
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local anim = lurek.spine.newSkeletonAnimation("attack", 0.5)
     anim:addEventKey(0.2, "whoosh", 1)
     anim:addEventKey(0.3, "hit", 2)
@@ -315,6 +916,30 @@ end
 
 --@api: LSkeletonAnimation:reverse
 do
+    local function spine_log(message)
+        lurek.log.info("[spine] " .. message)
+    end
+    local function make_demo_skeleton(name)
+        local skel = lurek.spine.newSkeleton(name)
+        local root = skel:addBone("root", { x = 0, y = 0, rotation = 0, scale_x = 1, scale_y = 1 })
+        local torso = skel:addChildBone("torso", root, { x = 0, y = -12 })
+        local slot = skel:addSlot("torso_slot", torso, "torso_idle")
+        return skel, root, torso, slot
+    end
+    local function make_walk_animation(name, duration)
+        local anim = lurek.spine.newSkeletonAnimation(name or "walk", duration or 1.0)
+        anim:addKeyframe(0, "x", 0.0, 0.0)
+        anim:addKeyframe(0, "x", duration or 1.0, 10.0)
+        return anim
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local anim = lurek.spine.newSkeletonAnimation("swing", 0.6)
     anim:addKeyframe(0, "rotation", 0.0, 0)
     anim:addKeyframe(0, "rotation", 0.6, 0)
@@ -324,6 +949,30 @@ end
 
 --@api: lurek.spine.animationFromJson
 do
+    local function spine_log(message)
+        lurek.log.info("[spine] " .. message)
+    end
+    local function make_demo_skeleton(name)
+        local skel = lurek.spine.newSkeleton(name)
+        local root = skel:addBone("root", { x = 0, y = 0, rotation = 0, scale_x = 1, scale_y = 1 })
+        local torso = skel:addChildBone("torso", root, { x = 0, y = -12 })
+        local slot = skel:addSlot("torso_slot", torso, "torso_idle")
+        return skel, root, torso, slot
+    end
+    local function make_walk_animation(name, duration)
+        local anim = lurek.spine.newSkeletonAnimation(name or "walk", duration or 1.0)
+        anim:addKeyframe(0, "x", 0.0, 0.0)
+        anim:addKeyframe(0, "x", duration or 1.0, 10.0)
+        return anim
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local jsonData = '{"name":"idle_bounce","duration":1.2,"timelines":[{"bone":0,"property":"y","keys":[{"time":0,"value":0},{"time":1.2,"value":0}]}]}'
     local anim = lurek.spine.animationFromJson(jsonData)
     local timelines = anim and anim:getTimelineCount() or -1
@@ -335,6 +984,30 @@ end
 
 --@api: lurek.spine.skeletonFromJson
 do
+    local function spine_log(message)
+        lurek.log.info("[spine] " .. message)
+    end
+    local function make_demo_skeleton(name)
+        local skel = lurek.spine.newSkeleton(name)
+        local root = skel:addBone("root", { x = 0, y = 0, rotation = 0, scale_x = 1, scale_y = 1 })
+        local torso = skel:addChildBone("torso", root, { x = 0, y = -12 })
+        local slot = skel:addSlot("torso_slot", torso, "torso_idle")
+        return skel, root, torso, slot
+    end
+    local function make_walk_animation(name, duration)
+        local anim = lurek.spine.newSkeletonAnimation(name or "walk", duration or 1.0)
+        anim:addKeyframe(0, "x", 0.0, 0.0)
+        anim:addKeyframe(0, "x", duration or 1.0, 10.0)
+        return anim
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
         local jsonData = [[
         {
             "skeleton": {"name": "example_import"},
@@ -369,6 +1042,30 @@ end
 
 --@api: LSkeleton:boneCount
 do
+    local function spine_log(message)
+        lurek.log.info("[spine] " .. message)
+    end
+    local function make_demo_skeleton(name)
+        local skel = lurek.spine.newSkeleton(name)
+        local root = skel:addBone("root", { x = 0, y = 0, rotation = 0, scale_x = 1, scale_y = 1 })
+        local torso = skel:addChildBone("torso", root, { x = 0, y = -12 })
+        local slot = skel:addSlot("torso_slot", torso, "torso_idle")
+        return skel, root, torso, slot
+    end
+    local function make_walk_animation(name, duration)
+        local anim = lurek.spine.newSkeletonAnimation(name or "walk", duration or 1.0)
+        anim:addKeyframe(0, "x", 0.0, 0.0)
+        anim:addKeyframe(0, "x", duration or 1.0, 10.0)
+        return anim
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local skel = lurek.spine.newSkeleton("hero")
     skel:addBone("root", {})
     skel:addBone("arm", {})
@@ -380,6 +1077,30 @@ end
 
 --@api: LSkeleton:slotCount
 do
+    local function spine_log(message)
+        lurek.log.info("[spine] " .. message)
+    end
+    local function make_demo_skeleton(name)
+        local skel = lurek.spine.newSkeleton(name)
+        local root = skel:addBone("root", { x = 0, y = 0, rotation = 0, scale_x = 1, scale_y = 1 })
+        local torso = skel:addChildBone("torso", root, { x = 0, y = -12 })
+        local slot = skel:addSlot("torso_slot", torso, "torso_idle")
+        return skel, root, torso, slot
+    end
+    local function make_walk_animation(name, duration)
+        local anim = lurek.spine.newSkeletonAnimation(name or "walk", duration or 1.0)
+        anim:addKeyframe(0, "x", 0.0, 0.0)
+        anim:addKeyframe(0, "x", duration or 1.0, 10.0)
+        return anim
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local skel = lurek.spine.newSkeleton("hero")
     local arm = skel:addBone("arm", {})
     skel:addSlot("arm_slot", arm, nil)
@@ -391,6 +1112,30 @@ end
 
 --@api: LSkeleton:type
 do
+    local function spine_log(message)
+        lurek.log.info("[spine] " .. message)
+    end
+    local function make_demo_skeleton(name)
+        local skel = lurek.spine.newSkeleton(name)
+        local root = skel:addBone("root", { x = 0, y = 0, rotation = 0, scale_x = 1, scale_y = 1 })
+        local torso = skel:addChildBone("torso", root, { x = 0, y = -12 })
+        local slot = skel:addSlot("torso_slot", torso, "torso_idle")
+        return skel, root, torso, slot
+    end
+    local function make_walk_animation(name, duration)
+        local anim = lurek.spine.newSkeletonAnimation(name or "walk", duration or 1.0)
+        anim:addKeyframe(0, "x", 0.0, 0.0)
+        anim:addKeyframe(0, "x", duration or 1.0, 10.0)
+        return anim
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local skel, _, _, _ = make_demo_skeleton("hero")
     local type_name = skel:type()
     local is_skeleton = skel:typeOf("LSkeleton")
@@ -400,6 +1145,30 @@ end
 
 --@api: LSkeleton:typeOf
 do
+    local function spine_log(message)
+        lurek.log.info("[spine] " .. message)
+    end
+    local function make_demo_skeleton(name)
+        local skel = lurek.spine.newSkeleton(name)
+        local root = skel:addBone("root", { x = 0, y = 0, rotation = 0, scale_x = 1, scale_y = 1 })
+        local torso = skel:addChildBone("torso", root, { x = 0, y = -12 })
+        local slot = skel:addSlot("torso_slot", torso, "torso_idle")
+        return skel, root, torso, slot
+    end
+    local function make_walk_animation(name, duration)
+        local anim = lurek.spine.newSkeletonAnimation(name or "walk", duration or 1.0)
+        anim:addKeyframe(0, "x", 0.0, 0.0)
+        anim:addKeyframe(0, "x", duration or 1.0, 10.0)
+        return anim
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local skel, _, _, _ = make_demo_skeleton("hero")
     local is_skeleton = skel:typeOf("LSkeleton")
     local is_object = skel:typeOf("Object")
@@ -409,6 +1178,30 @@ end
 
 --@api: LSkeletonAnimation:getDuration
 do
+    local function spine_log(message)
+        lurek.log.info("[spine] " .. message)
+    end
+    local function make_demo_skeleton(name)
+        local skel = lurek.spine.newSkeleton(name)
+        local root = skel:addBone("root", { x = 0, y = 0, rotation = 0, scale_x = 1, scale_y = 1 })
+        local torso = skel:addChildBone("torso", root, { x = 0, y = -12 })
+        local slot = skel:addSlot("torso_slot", torso, "torso_idle")
+        return skel, root, torso, slot
+    end
+    local function make_walk_animation(name, duration)
+        local anim = lurek.spine.newSkeletonAnimation(name or "walk", duration or 1.0)
+        anim:addKeyframe(0, "x", 0.0, 0.0)
+        anim:addKeyframe(0, "x", duration or 1.0, 10.0)
+        return anim
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local anim = lurek.spine.newSkeletonAnimation("run", 0.8)
     anim:addKeyframe(0, "x", 0.0, 0.0)
     anim:addKeyframe(0, "x", 0.8, 12.0)
@@ -419,6 +1212,30 @@ end
 
 --@api: LSkeletonAnimation:getTimelineCount
 do
+    local function spine_log(message)
+        lurek.log.info("[spine] " .. message)
+    end
+    local function make_demo_skeleton(name)
+        local skel = lurek.spine.newSkeleton(name)
+        local root = skel:addBone("root", { x = 0, y = 0, rotation = 0, scale_x = 1, scale_y = 1 })
+        local torso = skel:addChildBone("torso", root, { x = 0, y = -12 })
+        local slot = skel:addSlot("torso_slot", torso, "torso_idle")
+        return skel, root, torso, slot
+    end
+    local function make_walk_animation(name, duration)
+        local anim = lurek.spine.newSkeletonAnimation(name or "walk", duration or 1.0)
+        anim:addKeyframe(0, "x", 0.0, 0.0)
+        anim:addKeyframe(0, "x", duration or 1.0, 10.0)
+        return anim
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local anim = lurek.spine.newSkeletonAnimation("run", 0.8)
     anim:addKeyframe(0, "rotation", 0.0, 0.0, "linear")
     anim:addKeyframe(0, "rotation", 0.8, 15.0, "ease_in_out")
@@ -429,6 +1246,30 @@ end
 
 --@api: LSkeletonAnimation:poseAt
 do
+    local function spine_log(message)
+        lurek.log.info("[spine] " .. message)
+    end
+    local function make_demo_skeleton(name)
+        local skel = lurek.spine.newSkeleton(name)
+        local root = skel:addBone("root", { x = 0, y = 0, rotation = 0, scale_x = 1, scale_y = 1 })
+        local torso = skel:addChildBone("torso", root, { x = 0, y = -12 })
+        local slot = skel:addSlot("torso_slot", torso, "torso_idle")
+        return skel, root, torso, slot
+    end
+    local function make_walk_animation(name, duration)
+        local anim = lurek.spine.newSkeletonAnimation(name or "walk", duration or 1.0)
+        anim:addKeyframe(0, "x", 0.0, 0.0)
+        anim:addKeyframe(0, "x", duration or 1.0, 10.0)
+        return anim
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local anim = lurek.spine.newSkeletonAnimation("run", 0.8)
     anim:addKeyframe(0, "rotation", 0.0, 0.0, "linear")
     anim:addKeyframe(0, "rotation", 0.8, 15.0, "linear")
@@ -441,6 +1282,30 @@ end
 
 --@api: LSkeletonAnimation:type
 do
+    local function spine_log(message)
+        lurek.log.info("[spine] " .. message)
+    end
+    local function make_demo_skeleton(name)
+        local skel = lurek.spine.newSkeleton(name)
+        local root = skel:addBone("root", { x = 0, y = 0, rotation = 0, scale_x = 1, scale_y = 1 })
+        local torso = skel:addChildBone("torso", root, { x = 0, y = -12 })
+        local slot = skel:addSlot("torso_slot", torso, "torso_idle")
+        return skel, root, torso, slot
+    end
+    local function make_walk_animation(name, duration)
+        local anim = lurek.spine.newSkeletonAnimation(name or "walk", duration or 1.0)
+        anim:addKeyframe(0, "x", 0.0, 0.0)
+        anim:addKeyframe(0, "x", duration or 1.0, 10.0)
+        return anim
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local anim = lurek.spine.newSkeletonAnimation("run", 0.8)
     anim:addKeyframe(0, "x", 0.0, 0.0)
     local type_name = anim:type()
@@ -451,6 +1316,30 @@ end
 
 --@api: LSkeletonAnimation:typeOf
 do
+    local function spine_log(message)
+        lurek.log.info("[spine] " .. message)
+    end
+    local function make_demo_skeleton(name)
+        local skel = lurek.spine.newSkeleton(name)
+        local root = skel:addBone("root", { x = 0, y = 0, rotation = 0, scale_x = 1, scale_y = 1 })
+        local torso = skel:addChildBone("torso", root, { x = 0, y = -12 })
+        local slot = skel:addSlot("torso_slot", torso, "torso_idle")
+        return skel, root, torso, slot
+    end
+    local function make_walk_animation(name, duration)
+        local anim = lurek.spine.newSkeletonAnimation(name or "walk", duration or 1.0)
+        anim:addKeyframe(0, "x", 0.0, 0.0)
+        anim:addKeyframe(0, "x", duration or 1.0, 10.0)
+        return anim
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local anim = lurek.spine.newSkeletonAnimation("run", 0.8)
     local is_anim = anim:typeOf("LSkeletonAnimation")
     local is_object = anim:typeOf("Object")

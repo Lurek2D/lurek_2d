@@ -4,7 +4,7 @@
 
 ## TL;DR
 
-- Runs grid-based HUD minimaps with fog-of-war, custom markers, raycaster overlays, and camera tracking.
+- Runs grid-based HUD minimaps with fog-of-war inputs, custom markers, passive render snapshots, and camera tracking.
 
 ## General Info
 
@@ -19,7 +19,7 @@
 ## Summary
 
 - The `minimap` module is the HUD-scale map surface for users who want world state, fog, markers, and view tracking to become a compact readable overlay.
-- Core minimap state, render helpers, and adapters from province or raycaster data work together so the same module can represent several kinds of world information in one small map display.
+- Core minimap state, render helpers, and adapters from province, tilefield, visibility, or render snapshot data work together so the same module can represent several kinds of world information in one small map display.
 - Fog, owner colors, overlays, tracked objects, and camera-aware view markers matter because a minimap is not only a tiny texture: it is a summarized navigation and awareness tool for the player.
 - The module is useful wherever a project needs strategic orientation, local awareness, or debug-style map inspection without switching to a full map screen.
 - Marker and layer support are especially important because a minimap often needs to combine several categories of information at once: player position, objectives, faction territory, danger, or discovered landmarks.
@@ -36,14 +36,13 @@ This module primarily collaborates with `camera`, `image`, `province`, `raycaste
 - Owning tier: `Feature Systems`
 - Plugin tier: `tier_2_plugin`
 - Lua binding owner: `src/lua_api/minimap_api.rs`
-- Referenced engine modules: `camera`, `image`, `province`, `raycaster`, `render`, `runtime`
+- Referenced engine modules: `camera`, `image`, `province`, `render`, `runtime`
 
 ## Imports
 
 - `camera`: Imports or references `src/camera/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
 - `image`: Imports or references `src/image/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
 - `province`: Imports or references `src/province/`. Dependency stays inside `Feature Systems` and should remain acyclic.
-- `raycaster`: Imports or references `src/raycaster/`. Dependency stays inside `Feature Systems` and should remain acyclic.
 - `render`: Imports or references `src/render/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
 - `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Feature Systems` into `Core Runtime`.
 
@@ -66,12 +65,12 @@ This module primarily collaborates with `camera`, `image`, `province`, `raycaste
 
 ### mod.rs
 
-- `src/minimap/mod.rs` is the module index for the minimap subsystem, covering state, render helpers, types, and adapters.
-- It declares the core `minimap` model, province adapter, renderer bridge, and raycaster overlay as separate files.
-- This file also reexports `Minimap`, overlay sampling helpers, and shared minimap types so callers avoid deep paths.
-- No runtime minimap state lives here; its job is to define the public boundary and keep subsystem ownership visible.
-- Read this index first when tracing minimap features, because it shows where data, rendering, and map import split.
-- Changes here affect module reachability and public surface, not minimap behavior, storage, or per-frame update rules.
+- Indexes the passive minimap subsystem, naming the model, renderer, province adapter, and type owners.
+- Reexports `Minimap` plus layer, marker, fog, ping, overlay, error, and validation data contracts.
+- Keeps minimap ownership scoped to visualization of supplied terrain, fog, light, and overlay inputs only.
+- Declares no runtime state here; concrete storage, render buffers, and import adapters live in sibling files.
+- Guides agents toward the correct owner before changing ingestion, rendering, validation, or overlay behavior.
+- Changes here affect module reachability and public symbol routing, not gameplay LOS, lighting, or movement.
 
 ### province_adapter.rs
 
@@ -79,16 +78,6 @@ This module primarily collaborates with `camera`, `image`, `province`, `raycaste
 - It owns the translation layer between `ProvinceRegistry` data and `Minimap`, while clipping writes to shared bounds.
 - Terrain ids, visibility states, and political colors are copied here so province rules stay out of minimap core.
 - Read this file when province snapshots, fog mapping, or terrain palette import behavior for minimaps needs to change.
-
-### raycaster_overlay.rs
-
-- Owns the raycaster overlay owner for the minimap subsystem and keeps its rules local to this file.
-- Keeps minimap data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
-- Defines how raycaster overlay data is validated, transformed, or stored before neighboring systems use it.
-- Owns minimap behavior with explicit state, validation, and crate-local integration boundaries.
-- Keeps public crate helpers focused on raycaster overlay behavior while Lua registration stays elsewhere.
-- Documents the boundary where minimap code accepts inputs, reports errors, or updates state.
-- Use this file when changing raycaster overlay defaults, lifecycle handling, validation, or data ownership.
 
 ### render.rs
 
@@ -272,6 +261,9 @@ This module primarily collaborates with `camera`, `image`, `province`, `raycaste
 
 ## Notes
 
+- `minimap` is a passive compact visualization layer. It should not compute movement, line-of-sight, line-of-action, or tile lighting.
+- For tilefield-driven games, feed minimap terrain/fog/overlay data from `LTileField:exportProfileLayer`, `LTileField:exportBlockLayer`, `LTileField:exportLightLayer`, and `LTileVisibility:*` outputs.
+- Existing raycaster or tilemap helpers are passive adapters; they should not become gameplay authorities for blockers, visibility, or lighting.
 - Construction is strict: zero grid dimensions, zero display dimensions, overflowed cell counts, and oversized display buffers are rejected before the minimap is created.
 - Bulk terrain and fog loads use exact-length validation on the Lua-facing API so stale cells are not silently mixed with fresh data.
 - Grid/display transforms require finite coordinates, a finite positive zoom, and positive display dimensions; invalid transform state returns nils for `screenToGrid` and `gridToScreen` instead of leaking NaN or Inf into callers.

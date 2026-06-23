@@ -1,9 +1,10 @@
-//! Implements the core NavGrid A* search used by higher-level pathfinding features across the engine runtime.
-//! Owns heap nodes, octile and Manhattan heuristics, unit-size neighbor expansion, and parent reconstruction logic.
-//! Supports early termination with partial paths, then offers Bresenham line-of-sight checks and path smoothing.
-//! Provides the solver boundary between raw NavGrid movement rules and callers that need an ordered route result.
-//! This file is where diagonal policy, per-tile costs, and max-node budget semantics are coordinated together.
-//! Open this owner before changing dependent path systems when the bug affects baseline grid path quality itself.
+//! Implements core `NavGrid` A* search used by higher-level pathfinding features across the runtime.
+//! Owns heap nodes, octile and Manhattan heuristics, unit-size neighbor expansion, and route recovery.
+//! Supports early termination with partial paths while respecting diagonal policy, costs, and node budgets.
+//! Provides local Bresenham clearance checks only for path smoothing, not visibility or action semantics.
+//! Receives movement data from grids or adapters and never owns tilefield channels beyond movement costs.
+//! Returns ordered route results for callers while keeping async queues, HPA graphs, and navmeshes separate.
+//! Open this owner when baseline grid route quality changes, not for fog, lighting, raycasting, or minimaps.
 
 use crate::runtime::log_messages::{AT01, AT02, AT03};
 
@@ -238,7 +239,14 @@ fn reconstruct(came_from: &[u32], w: u32, start: (u32, u32), end: (u32, u32)) ->
     path
 }
 /// Return true when a straight Bresenham line from `(x1,y1)` to `(x2,y2)` crosses no blocked cells.
-pub fn line_of_sight(grid: &NavGrid, x1: u32, y1: u32, x2: u32, y2: u32, unit_size: u32) -> bool {
+pub(crate) fn line_of_sight(
+    grid: &NavGrid,
+    x1: u32,
+    y1: u32,
+    x2: u32,
+    y2: u32,
+    unit_size: u32,
+) -> bool {
     let us = unit_size.max(1);
     let mut sx = x1 as i32;
     let mut sy = y1 as i32;

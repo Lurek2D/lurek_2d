@@ -30,8 +30,8 @@ end
 - Start with `lurek.charts.defaultPalette` when exploring this module.
 - Start with `lurek.charts.newArea` when exploring this module.
 - Start with `lurek.charts.newBar` when exploring this module.
-- Start with `lurek.charts.newHeatmap` when exploring this module.
-- Start with `lurek.charts.newHistogram` when exploring this module.
+- Start with `lurek.charts.newBoxPlot` when exploring this module.
+- Start with `lurek.charts.newBubble` when exploring this module.
 
 ## API Reference
 
@@ -149,6 +149,111 @@ do
     local height = chart:getHeight()
     lurek.log.info("bar chart created=" .. tostring(chart ~= nil))
     lurek.log.info("bar chart size=" .. tostring(width) .. "x" .. tostring(height))
+end
+```
+
+---
+
+### `lurek.charts.newBoxPlot`
+
+Creates a new boxplot chart userdata instance.
+
+```lua
+lurek.charts.newBoxPlot(config)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `config?` | table | Parameter value for this chart operation. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LBoxPlotChart](#lboxplotchart) | New boxplot chart userdata. |
+
+**Example**
+
+```lua
+do
+    local chart = lurek.charts.newBoxPlot({ width = 320, height = 180, title = "Latency Spread" })
+    chart:addSeries("latency", { 10, 12, 14, 20, 24, 28, 60 })
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("boxplot created=" .. tostring(chart ~= nil))
+    lurek.log.info("boxplot size=" .. tostring(width) .. "x" .. tostring(height))
+end
+```
+
+---
+
+### `lurek.charts.newBubble`
+
+Creates a new bubble chart userdata instance.
+
+```lua
+lurek.charts.newBubble(config)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `config?` | table | Parameter value for this chart operation. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LBubbleChart](#lbubblechart) | New bubble chart userdata. |
+
+**Example**
+
+```lua
+do
+    local chart = lurek.charts.newBubble({ width = 320, height = 180, title = "City Map" })
+    chart:addSeries("cities", { { 1, 2, 10 }, { 2, 3, 20 }, { 3, 2, 12 } })
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("bubble created=" .. tostring(chart ~= nil))
+    lurek.log.info("bubble size=" .. tostring(width) .. "x" .. tostring(height))
+end
+```
+
+---
+
+### `lurek.charts.newCandlestick`
+
+Creates a new candlestick chart userdata instance.
+
+```lua
+lurek.charts.newCandlestick(config)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `config?` | table | Parameter value for this chart operation. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LCandlestickChart](#lcandlestickchart) | New candlestick chart userdata. |
+
+**Example**
+
+```lua
+do
+    local chart = lurek.charts.newCandlestick({ width = 320, height = 180, title = "OHLC" })
+    chart:appendCandle("Mon", 10, 14, 9, 13)
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("candlestick chart created=" .. tostring(chart ~= nil))
+    lurek.log.info("candlestick size=" .. tostring(width) .. "x" .. tostring(height))
 end
 ```
 
@@ -297,6 +402,42 @@ end
 
 ---
 
+### `lurek.charts.newRadar`
+
+Creates a new radar chart userdata instance.
+
+```lua
+lurek.charts.newRadar(config)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `config?` | table | Parameter value for this chart operation. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LRadarChart](#lradarchart) | New radar chart userdata. |
+
+**Example**
+
+```lua
+do
+    local chart = lurek.charts.newRadar({ width = 320, height = 220, title = "Unit Stats" })
+    chart:setAxes({ "speed", "power", "range", "cost" })
+    chart:addSeries("Scout", { 5, 2, 4, 3 })
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("radar created=" .. tostring(chart ~= nil))
+    lurek.log.info("radar size=" .. tostring(width) .. "x" .. tostring(height))
+end
+```
+
+---
+
 ### `lurek.charts.newScatter`
 
 Creates a new scatter plot userdata instance.
@@ -327,6 +468,42 @@ do
     local height = chart:getHeight()
     lurek.log.info("scatter chart created=" .. tostring(chart ~= nil))
     lurek.log.info("scatter chart size=" .. tostring(width) .. "x" .. tostring(height))
+end
+```
+
+---
+
+### `lurek.charts.newTreemap`
+
+Creates a new treemap chart userdata instance.
+
+```lua
+lurek.charts.newTreemap(config)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `config?` | table | Parameter value for this chart operation. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LTreemapChart](#ltreemapchart) | New treemap chart userdata. |
+
+**Example**
+
+```lua
+do
+    local chart = lurek.charts.newTreemap({ width = 320, height = 220, title = "Budget" })
+    chart:addItem("Rendering", 45)
+    chart:addItem("Audio", 18)
+    local width = chart:getWidth()
+    local height = chart:getHeight()
+    lurek.log.info("treemap created=" .. tostring(chart ~= nil))
+    lurek.log.info("treemap size=" .. tostring(width) .. "x" .. tostring(height))
 end
 ```
 
@@ -379,11 +556,16 @@ end
 
 - [LAreaChart](#lareachart)
 - [LBarChart](#lbarchart)
+- [LBoxPlotChart](#lboxplotchart)
+- [LBubbleChart](#lbubblechart)
+- [LCandlestickChart](#lcandlestickchart)
 - [LHeatmapChart](#lheatmapchart)
 - [LHistogramChart](#lhistogramchart)
 - [LLineChart](#llinechart)
 - [LPieChart](#lpiechart)
+- [LRadarChart](#lradarchart)
 - [LScatterPlot](#lscatterplot)
+- [LTreemapChart](#ltreemapchart)
 
 ## LAreaChart
 
@@ -1607,6 +1789,1249 @@ do
     local isArea = chart:typeOf("LAreaChart")
     lurek.log.info("typeOf LBarChart=" .. tostring(isBar))
     lurek.log.info("typeOf LAreaChart=" .. tostring(isArea))
+end
+```
+
+---
+
+## LBoxPlotChart
+
+### Type Fields
+
+*No documented fields for this handle.*
+
+### Type Methods
+
+#### `LBoxPlotChart:addSeries`
+
+Adds or replaces a named distribution sample series.
+
+```lua
+LBoxPlotChart:addSeries(name, values, color)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | any |  |
+| `values` | any |  |
+| `color?` | any |  |
+
+**Example**
+
+```lua
+do
+    local chart = lurek.charts.newBoxPlot({ width = 320, height = 180 })
+    chart:addSeries("train", { 10, 12, 14, 20, 24, 28, 60 })
+    chart:addSeries("valid", { 11, 13, 18, 22, 30, 42 })
+    local _, _, pixels = chart:render()
+    example_print_log("boxplot series bytes = " .. #pixels)
+    example_print_log("boxplot width = " .. chart:getWidth())
+end
+```
+
+---
+
+#### `LBoxPlotChart:appendValue`
+
+Appends one numeric sample to a named distribution.
+
+```lua
+LBoxPlotChart:appendValue(name, value, color)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | any |  |
+| `value` | any |  |
+| `color?` | any |  |
+
+**Example**
+
+```lua
+do
+    local chart = lurek.charts.newBoxPlot({ width = 320, height = 180 })
+    chart:appendValue("latency", 10)
+    chart:appendValue("latency", 14)
+    chart:appendValue("latency", 28)
+    local _, _, pixels = chart:render()
+    example_print_log("boxplot append bytes = " .. #pixels)
+    example_print_log("boxplot type = " .. chart:type())
+end
+```
+
+---
+
+#### `LBoxPlotChart:clear`
+
+Clears all chart data and cached chart state.
+
+```lua
+LBoxPlotChart:clear()
+```
+
+**Example**
+
+```lua
+do
+    local type_name = "LBoxPlotChart"
+    chart_common_example(
+        "boxplot",
+        "clear",
+        type_name
+    )
+end
+```
+
+---
+
+#### `LBoxPlotChart:draw`
+
+Draws the chart at world or screen coordinates using optional transform options.
+
+```lua
+LBoxPlotChart:draw(x, y, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Draw X coordinate. |
+| `y` | number | Draw Y coordinate. |
+| `opts?` | table | Optional render transform options. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| nil | Return value produced by this chart operation. |
+
+**Example**
+
+```lua
+do
+    local type_name = "LBoxPlotChart"
+    chart_common_example(
+        "boxplot",
+        "draw",
+        type_name
+    )
+end
+```
+
+---
+
+#### `LBoxPlotChart:drawToImage`
+
+Draws the rendered chart into an existing image.
+
+```lua
+LBoxPlotChart:drawToImage(target)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `target` | userdata | ImageData target to receive chart pixels. |
+
+**Example**
+
+```lua
+do
+    local type_name = "LBoxPlotChart"
+    chart_common_example(
+        "boxplot",
+        "drawToImage",
+        type_name
+    )
+end
+```
+
+---
+
+#### `LBoxPlotChart:getHeight`
+
+Returns the configured chart height in pixels.
+
+```lua
+LBoxPlotChart:getHeight()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Configured chart height in pixels. |
+
+**Example**
+
+```lua
+do
+    local type_name = "LBoxPlotChart"
+    chart_common_example(
+        "boxplot",
+        "getHeight",
+        type_name
+    )
+end
+```
+
+---
+
+#### `LBoxPlotChart:getWidth`
+
+Returns the configured chart width in pixels.
+
+```lua
+LBoxPlotChart:getWidth()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Configured chart width in pixels. |
+
+**Example**
+
+```lua
+do
+    local type_name = "LBoxPlotChart"
+    chart_common_example(
+        "boxplot",
+        "getWidth",
+        type_name
+    )
+end
+```
+
+---
+
+#### `LBoxPlotChart:render`
+
+Renders the chart into raw RGBA image bytes.
+
+```lua
+LBoxPlotChart:render()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Width; height; and RGBA image bytes for the rendered chart. (value 1). |
+| number | Width; height; and RGBA image bytes for the rendered chart. (value 2). |
+| string | Width; height; and RGBA image bytes for the rendered chart. (value 3). |
+
+**Example**
+
+```lua
+do
+    local type_name = "LBoxPlotChart"
+    chart_common_example(
+        "boxplot",
+        "render",
+        type_name
+    )
+end
+```
+
+---
+
+#### `LBoxPlotChart:renderImage`
+
+Renders the chart into a new [LImage](render.md#limage) userdata.
+
+```lua
+LBoxPlotChart:renderImage()
+```
+
+**Example**
+
+```lua
+do
+    local type_name = "LBoxPlotChart"
+    chart_common_example(
+        "boxplot",
+        "renderImage",
+        type_name
+    )
+end
+```
+
+---
+
+#### `LBoxPlotChart:setShowLegend`
+
+Controls whether the chart legend is rendered.
+
+```lua
+LBoxPlotChart:setShowLegend(value)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `value` | boolean | True to show the legend. |
+
+**Example**
+
+```lua
+do
+    local type_name = "LBoxPlotChart"
+    chart_common_example(
+        "boxplot",
+        "setShowLegend",
+        type_name
+    )
+end
+```
+
+---
+
+#### `LBoxPlotChart:setTitle`
+
+Sets the chart title text shown in rendered output.
+
+```lua
+LBoxPlotChart:setTitle(title)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `title` | string | New chart title. |
+
+**Example**
+
+```lua
+do
+    local type_name = "LBoxPlotChart"
+    chart_common_example(
+        "boxplot",
+        "setTitle",
+        type_name
+    )
+end
+```
+
+---
+
+#### `LBoxPlotChart:type`
+
+Returns the runtime userdata type name for this chart.
+
+```lua
+LBoxPlotChart:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Runtime userdata type name. |
+
+**Example**
+
+```lua
+do
+    local type_name = "LBoxPlotChart"
+    chart_common_example(
+        "boxplot",
+        "type",
+        type_name
+    )
+end
+```
+
+---
+
+#### `LBoxPlotChart:typeOf`
+
+Checks whether a type name matches this chart userdata.
+
+```lua
+LBoxPlotChart:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Type name to check. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the supplied type name matches this chart userdata. |
+
+**Example**
+
+```lua
+do
+    local type_name = "LBoxPlotChart"
+    chart_common_example(
+        "boxplot",
+        "typeOf",
+        type_name
+    )
+end
+```
+
+---
+
+## LBubbleChart
+
+### Type Fields
+
+*No documented fields for this handle.*
+
+### Type Methods
+
+#### `LBubbleChart:addSeries`
+
+Adds or replaces a weighted point series from `{x, y, size}` rows.
+
+```lua
+LBubbleChart:addSeries(name, data, color)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | any |  |
+| `data` | any |  |
+| `color?` | any |  |
+
+**Example**
+
+```lua
+do
+    local chart = lurek.charts.newBubble({ width = 320, height = 180 })
+    chart:addSeries("cities", { { 1, 2, 10 }, { 2, 3, 20 }, { 3, 2, 12 } })
+    local _, _, pixels = chart:render()
+    example_print_log("bubble series bytes = " .. #pixels)
+    example_print_log("bubble width = " .. chart:getWidth())
+end
+```
+
+---
+
+#### `LBubbleChart:appendPoint`
+
+Appends one weighted point to a named bubble series.
+
+```lua
+LBubbleChart:appendPoint(name, x, y, size, color)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | any |  |
+| `x` | any |  |
+| `y` | any |  |
+| `size` | any |  |
+| `color?` | any |  |
+
+**Example**
+
+```lua
+do
+    local chart = lurek.charts.newBubble({ width = 320, height = 180 })
+    chart:appendPoint("cities", 1, 2, 10)
+    chart:appendPoint("cities", 2, 3, 20)
+    local _, _, pixels = chart:render()
+    example_print_log("bubble append bytes = " .. #pixels)
+    example_print_log("bubble type = " .. chart:type())
+end
+```
+
+---
+
+#### `LBubbleChart:clear`
+
+Clears all chart data and cached chart state.
+
+```lua
+LBubbleChart:clear()
+```
+
+**Example**
+
+```lua
+do
+    local type_name = "LBubbleChart"
+    chart_common_example(
+        "bubble",
+        "clear",
+        type_name
+    )
+end
+```
+
+---
+
+#### `LBubbleChart:draw`
+
+Draws the chart at world or screen coordinates using optional transform options.
+
+```lua
+LBubbleChart:draw(x, y, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Draw X coordinate. |
+| `y` | number | Draw Y coordinate. |
+| `opts?` | table | Optional render transform options. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| nil | Return value produced by this chart operation. |
+
+**Example**
+
+```lua
+do
+    local type_name = "LBubbleChart"
+    chart_common_example(
+        "bubble",
+        "draw",
+        type_name
+    )
+end
+```
+
+---
+
+#### `LBubbleChart:drawToImage`
+
+Draws the rendered chart into an existing image.
+
+```lua
+LBubbleChart:drawToImage(target)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `target` | userdata | ImageData target to receive chart pixels. |
+
+**Example**
+
+```lua
+do
+    local type_name = "LBubbleChart"
+    chart_common_example(
+        "bubble",
+        "drawToImage",
+        type_name
+    )
+end
+```
+
+---
+
+#### `LBubbleChart:getHeight`
+
+Returns the configured chart height in pixels.
+
+```lua
+LBubbleChart:getHeight()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Configured chart height in pixels. |
+
+**Example**
+
+```lua
+do
+    local type_name = "LBubbleChart"
+    chart_common_example(
+        "bubble",
+        "getHeight",
+        type_name
+    )
+end
+```
+
+---
+
+#### `LBubbleChart:getWidth`
+
+Returns the configured chart width in pixels.
+
+```lua
+LBubbleChart:getWidth()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Configured chart width in pixels. |
+
+**Example**
+
+```lua
+do
+    local type_name = "LBubbleChart"
+    chart_common_example(
+        "bubble",
+        "getWidth",
+        type_name
+    )
+end
+```
+
+---
+
+#### `LBubbleChart:render`
+
+Renders the chart into raw RGBA image bytes.
+
+```lua
+LBubbleChart:render()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Width; height; and RGBA image bytes for the rendered chart. (value 1). |
+| number | Width; height; and RGBA image bytes for the rendered chart. (value 2). |
+| string | Width; height; and RGBA image bytes for the rendered chart. (value 3). |
+
+**Example**
+
+```lua
+do
+    local type_name = "LBubbleChart"
+    chart_common_example(
+        "bubble",
+        "render",
+        type_name
+    )
+end
+```
+
+---
+
+#### `LBubbleChart:renderImage`
+
+Renders the chart into a new [LImage](render.md#limage) userdata.
+
+```lua
+LBubbleChart:renderImage()
+```
+
+**Example**
+
+```lua
+do
+    local type_name = "LBubbleChart"
+    chart_common_example(
+        "bubble",
+        "renderImage",
+        type_name
+    )
+end
+```
+
+---
+
+#### `LBubbleChart:setRadiusRange`
+
+Sets the minimum and maximum bubble radius in pixels.
+
+```lua
+LBubbleChart:setRadiusRange(min, max)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `min` | any |  |
+| `max` | any |  |
+
+**Example**
+
+```lua
+do
+    local chart = lurek.charts.newBubble({ width = 320, height = 180 })
+    chart:setRadiusRange(3, 18)
+    chart:addSeries("cities", { { 1, 2, 10 }, { 2, 3, 20 }, { 3, 2, 12 } })
+    local _, _, pixels = chart:render()
+    example_print_log("bubble radius bytes = " .. #pixels)
+    example_print_log("bubble height = " .. chart:getHeight())
+end
+```
+
+---
+
+#### `LBubbleChart:setShowLegend`
+
+Controls whether the chart legend is rendered.
+
+```lua
+LBubbleChart:setShowLegend(value)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `value` | boolean | True to show the legend. |
+
+**Example**
+
+```lua
+do
+    local type_name = "LBubbleChart"
+    chart_common_example(
+        "bubble",
+        "setShowLegend",
+        type_name
+    )
+end
+```
+
+---
+
+#### `LBubbleChart:setTitle`
+
+Sets the chart title text shown in rendered output.
+
+```lua
+LBubbleChart:setTitle(title)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `title` | string | New chart title. |
+
+**Example**
+
+```lua
+do
+    local type_name = "LBubbleChart"
+    chart_common_example(
+        "bubble",
+        "setTitle",
+        type_name
+    )
+end
+```
+
+---
+
+#### `LBubbleChart:type`
+
+Returns the runtime userdata type name for this chart.
+
+```lua
+LBubbleChart:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Runtime userdata type name. |
+
+**Example**
+
+```lua
+do
+    local type_name = "LBubbleChart"
+    chart_common_example(
+        "bubble",
+        "type",
+        type_name
+    )
+end
+```
+
+---
+
+#### `LBubbleChart:typeOf`
+
+Checks whether a type name matches this chart userdata.
+
+```lua
+LBubbleChart:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Type name to check. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the supplied type name matches this chart userdata. |
+
+**Example**
+
+```lua
+do
+    local type_name = "LBubbleChart"
+    chart_common_example(
+        "bubble",
+        "typeOf",
+        type_name
+    )
+end
+```
+
+---
+
+## LCandlestickChart
+
+### Type Fields
+
+*No documented fields for this handle.*
+
+### Type Methods
+
+#### `LCandlestickChart:appendCandle`
+
+Appends one labeled OHLC candle to the end of the current candlestick stream.
+
+```lua
+LCandlestickChart:appendCandle(label, open, high, low, close)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `label` | any |  |
+| `open` | any |  |
+| `high` | any |  |
+| `low` | any |  |
+| `close` | any |  |
+
+**Example**
+
+```lua
+do
+    local chart = lurek.charts.newCandlestick({ width = 320, height = 180 })
+    chart:appendCandle("Mon", 10, 14, 9, 13)
+    chart:appendCandle("Tue", 13, 16, 12, 15)
+    local _, _, pixels = chart:render()
+    example_print_log("append candle bytes = " .. #pixels)
+    example_print_log("append candle width = " .. chart:getWidth())
+end
+```
+
+---
+
+#### `LCandlestickChart:clear`
+
+Clears all chart data and cached chart state.
+
+```lua
+LCandlestickChart:clear()
+```
+
+**Example**
+
+```lua
+do
+    local type_name = "LCandlestickChart"
+    chart_common_example(
+        "candlestick",
+        "clear",
+        type_name
+    )
+end
+```
+
+---
+
+#### `LCandlestickChart:draw`
+
+Draws the chart at world or screen coordinates using optional transform options.
+
+```lua
+LCandlestickChart:draw(x, y, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Draw X coordinate. |
+| `y` | number | Draw Y coordinate. |
+| `opts?` | table | Optional render transform options. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| nil | Return value produced by this chart operation. |
+
+**Example**
+
+```lua
+do
+    local type_name = "LCandlestickChart"
+    chart_common_example(
+        "candlestick",
+        "draw",
+        type_name
+    )
+end
+```
+
+---
+
+#### `LCandlestickChart:drawToImage`
+
+Draws the rendered chart into an existing image.
+
+```lua
+LCandlestickChart:drawToImage(target)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `target` | userdata | ImageData target to receive chart pixels. |
+
+**Example**
+
+```lua
+do
+    local type_name = "LCandlestickChart"
+    chart_common_example(
+        "candlestick",
+        "drawToImage",
+        type_name
+    )
+end
+```
+
+---
+
+#### `LCandlestickChart:getHeight`
+
+Returns the configured chart height in pixels.
+
+```lua
+LCandlestickChart:getHeight()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Configured chart height in pixels. |
+
+**Example**
+
+```lua
+do
+    local type_name = "LCandlestickChart"
+    chart_common_example(
+        "candlestick",
+        "getHeight",
+        type_name
+    )
+end
+```
+
+---
+
+#### `LCandlestickChart:getWidth`
+
+Returns the configured chart width in pixels.
+
+```lua
+LCandlestickChart:getWidth()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Configured chart width in pixels. |
+
+**Example**
+
+```lua
+do
+    local type_name = "LCandlestickChart"
+    chart_common_example(
+        "candlestick",
+        "getWidth",
+        type_name
+    )
+end
+```
+
+---
+
+#### `LCandlestickChart:render`
+
+Renders the chart into raw RGBA image bytes.
+
+```lua
+LCandlestickChart:render()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Width; height; and RGBA image bytes for the rendered chart. (value 1). |
+| number | Width; height; and RGBA image bytes for the rendered chart. (value 2). |
+| string | Width; height; and RGBA image bytes for the rendered chart. (value 3). |
+
+**Example**
+
+```lua
+do
+    local type_name = "LCandlestickChart"
+    chart_common_example(
+        "candlestick",
+        "render",
+        type_name
+    )
+end
+```
+
+---
+
+#### `LCandlestickChart:renderImage`
+
+Renders the chart into a new [LImage](render.md#limage) userdata.
+
+```lua
+LCandlestickChart:renderImage()
+```
+
+**Example**
+
+```lua
+do
+    local type_name = "LCandlestickChart"
+    chart_common_example(
+        "candlestick",
+        "renderImage",
+        type_name
+    )
+end
+```
+
+---
+
+#### `LCandlestickChart:setCandles`
+
+Replaces all OHLC candles from table rows with open/high/low/close fields or values 1..4.
+
+```lua
+LCandlestickChart:setCandles(candles)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `candles` | any |  |
+
+**Example**
+
+```lua
+do
+    local chart = lurek.charts.newCandlestick({ width = 320, height = 180 })
+    chart:setCandles({
+        { label = "Mon", open = 10, high = 14, low = 9, close = 13 },
+        { label = "Tue", open = 13, high = 16, low = 12, close = 15 },
+    })
+    local _, _, pixels = chart:render()
+    example_print_log("candles bytes = " .. #pixels)
+    example_print_log("candles height = " .. chart:getHeight())
+end
+```
+
+---
+
+#### `LCandlestickChart:setColors`
+
+Sets up/down candle colors.
+
+```lua
+LCandlestickChart:setColors(up, down)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `up` | any |  |
+| `down` | any |  |
+
+**Example**
+
+```lua
+do
+    local chart = lurek.charts.newCandlestick({ width = 320, height = 180 })
+    chart:setColors({ 0.1, 0.8, 0.2, 1.0 }, { 0.9, 0.1, 0.1, 1.0 })
+    chart:appendCandle("Mon", 10, 14, 9, 13)
+    local _, _, pixels = chart:render()
+    example_print_log("colored candle bytes = " .. #pixels)
+    example_print_log("colored candle type = " .. chart:type())
+end
+```
+
+---
+
+#### `LCandlestickChart:setShowLegend`
+
+Controls whether the chart legend is rendered.
+
+```lua
+LCandlestickChart:setShowLegend(value)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `value` | boolean | True to show the legend. |
+
+**Example**
+
+```lua
+do
+    local type_name = "LCandlestickChart"
+    chart_common_example(
+        "candlestick",
+        "setShowLegend",
+        type_name
+    )
+end
+```
+
+---
+
+#### `LCandlestickChart:setTitle`
+
+Sets the chart title text shown in rendered output.
+
+```lua
+LCandlestickChart:setTitle(title)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `title` | string | New chart title. |
+
+**Example**
+
+```lua
+do
+    local type_name = "LCandlestickChart"
+    chart_common_example(
+        "candlestick",
+        "setTitle",
+        type_name
+    )
+end
+```
+
+---
+
+#### `LCandlestickChart:type`
+
+Returns the runtime userdata type name for this chart.
+
+```lua
+LCandlestickChart:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Runtime userdata type name. |
+
+**Example**
+
+```lua
+do
+    local type_name = "LCandlestickChart"
+    chart_common_example(
+        "candlestick",
+        "type",
+        type_name
+    )
+end
+```
+
+---
+
+#### `LCandlestickChart:typeOf`
+
+Checks whether a type name matches this chart userdata.
+
+```lua
+LCandlestickChart:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Type name to check. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the supplied type name matches this chart userdata. |
+
+**Example**
+
+```lua
+do
+    local type_name = "LCandlestickChart"
+    chart_common_example(
+        "candlestick",
+        "typeOf",
+        type_name
+    )
 end
 ```
 
@@ -4126,6 +5551,453 @@ end
 
 ---
 
+## LRadarChart
+
+### Type Fields
+
+*No documented fields for this handle.*
+
+### Type Methods
+
+#### `LRadarChart:addSeries`
+
+Adds or replaces a named radar series.
+
+```lua
+LRadarChart:addSeries(name, values, color)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | any |  |
+| `values` | any |  |
+| `color?` | any |  |
+
+**Example**
+
+```lua
+do
+    local chart = lurek.charts.newRadar({ width = 320, height = 220 })
+    chart:setAxes({ "speed", "power", "range", "cost" })
+    chart:addSeries("Scout", { 5, 2, 4, 3 })
+    chart:addSeries("Tank", { 2, 5, 2, 4 })
+    local _, _, pixels = chart:render()
+    example_print_log("radar series bytes = " .. #pixels)
+    example_print_log("radar type = " .. chart:type())
+end
+```
+
+---
+
+#### `LRadarChart:clear`
+
+Clears all chart data and cached chart state.
+
+```lua
+LRadarChart:clear()
+```
+
+**Example**
+
+```lua
+do
+    local type_name = "LRadarChart"
+    chart_common_example(
+        "radar",
+        "clear",
+        type_name
+    )
+end
+```
+
+---
+
+#### `LRadarChart:clearMaxValue`
+
+Clears the explicit maximum radial value.
+
+```lua
+LRadarChart:clearMaxValue()
+```
+
+**Example**
+
+```lua
+do
+    local chart = lurek.charts.newRadar({ width = 320, height = 220 })
+    chart:setMaxValue(10)
+    chart:clearMaxValue()
+    chart:setAxes({ "speed", "power", "range", "cost" })
+    chart:addSeries("Scout", { 5, 2, 4, 3 })
+    local _, _, pixels = chart:render()
+    example_print_log("radar clear max bytes = " .. #pixels)
+    example_print_log("radar width = " .. chart:getWidth())
+end
+```
+
+---
+
+#### `LRadarChart:draw`
+
+Draws the chart at world or screen coordinates using optional transform options.
+
+```lua
+LRadarChart:draw(x, y, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Draw X coordinate. |
+| `y` | number | Draw Y coordinate. |
+| `opts?` | table | Optional render transform options. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| nil | Return value produced by this chart operation. |
+
+**Example**
+
+```lua
+do
+    local type_name = "LRadarChart"
+    chart_common_example(
+        "radar",
+        "draw",
+        type_name
+    )
+end
+```
+
+---
+
+#### `LRadarChart:drawToImage`
+
+Draws the rendered chart into an existing image.
+
+```lua
+LRadarChart:drawToImage(target)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `target` | userdata | ImageData target to receive chart pixels. |
+
+**Example**
+
+```lua
+do
+    local type_name = "LRadarChart"
+    chart_common_example(
+        "radar",
+        "drawToImage",
+        type_name
+    )
+end
+```
+
+---
+
+#### `LRadarChart:getHeight`
+
+Returns the configured chart height in pixels.
+
+```lua
+LRadarChart:getHeight()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Configured chart height in pixels. |
+
+**Example**
+
+```lua
+do
+    local type_name = "LRadarChart"
+    chart_common_example(
+        "radar",
+        "getHeight",
+        type_name
+    )
+end
+```
+
+---
+
+#### `LRadarChart:getWidth`
+
+Returns the configured chart width in pixels.
+
+```lua
+LRadarChart:getWidth()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Configured chart width in pixels. |
+
+**Example**
+
+```lua
+do
+    local type_name = "LRadarChart"
+    chart_common_example(
+        "radar",
+        "getWidth",
+        type_name
+    )
+end
+```
+
+---
+
+#### `LRadarChart:render`
+
+Renders the chart into raw RGBA image bytes.
+
+```lua
+LRadarChart:render()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Width; height; and RGBA image bytes for the rendered chart. (value 1). |
+| number | Width; height; and RGBA image bytes for the rendered chart. (value 2). |
+| string | Width; height; and RGBA image bytes for the rendered chart. (value 3). |
+
+**Example**
+
+```lua
+do
+    local type_name = "LRadarChart"
+    chart_common_example(
+        "radar",
+        "render",
+        type_name
+    )
+end
+```
+
+---
+
+#### `LRadarChart:renderImage`
+
+Renders the chart into a new [LImage](render.md#limage) userdata.
+
+```lua
+LRadarChart:renderImage()
+```
+
+**Example**
+
+```lua
+do
+    local type_name = "LRadarChart"
+    chart_common_example(
+        "radar",
+        "renderImage",
+        type_name
+    )
+end
+```
+
+---
+
+#### `LRadarChart:setAxes`
+
+Replaces radar axis labels.
+
+```lua
+LRadarChart:setAxes(axes)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `axes` | any |  |
+
+**Example**
+
+```lua
+do
+    local chart = lurek.charts.newRadar({ width = 320, height = 220 })
+    chart:setAxes({ "speed", "power", "range", "cost" })
+    chart:addSeries("Scout", { 5, 2, 4, 3 })
+    local _, _, pixels = chart:render()
+    example_print_log("radar axes bytes = " .. #pixels)
+    example_print_log("radar width = " .. chart:getWidth())
+end
+```
+
+---
+
+#### `LRadarChart:setMaxValue`
+
+Sets the explicit maximum radial value.
+
+```lua
+LRadarChart:setMaxValue(value)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `value` | any |  |
+
+**Example**
+
+```lua
+do
+    local chart = lurek.charts.newRadar({ width = 320, height = 220 })
+    chart:setAxes({ "speed", "power", "range", "cost" })
+    chart:setMaxValue(10)
+    chart:addSeries("Scout", { 5, 2, 4, 3 })
+    local _, _, pixels = chart:render()
+    example_print_log("radar max bytes = " .. #pixels)
+    example_print_log("radar height = " .. chart:getHeight())
+end
+```
+
+---
+
+#### `LRadarChart:setShowLegend`
+
+Controls whether the chart legend is rendered.
+
+```lua
+LRadarChart:setShowLegend(value)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `value` | boolean | True to show the legend. |
+
+**Example**
+
+```lua
+do
+    local type_name = "LRadarChart"
+    chart_common_example(
+        "radar",
+        "setShowLegend",
+        type_name
+    )
+end
+```
+
+---
+
+#### `LRadarChart:setTitle`
+
+Sets the chart title text shown in rendered output.
+
+```lua
+LRadarChart:setTitle(title)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `title` | string | New chart title. |
+
+**Example**
+
+```lua
+do
+    local type_name = "LRadarChart"
+    chart_common_example(
+        "radar",
+        "setTitle",
+        type_name
+    )
+end
+```
+
+---
+
+#### `LRadarChart:type`
+
+Returns the runtime userdata type name for this chart.
+
+```lua
+LRadarChart:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Runtime userdata type name. |
+
+**Example**
+
+```lua
+do
+    local type_name = "LRadarChart"
+    chart_common_example(
+        "radar",
+        "type",
+        type_name
+    )
+end
+```
+
+---
+
+#### `LRadarChart:typeOf`
+
+Checks whether a type name matches this chart userdata.
+
+```lua
+LRadarChart:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Type name to check. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the supplied type name matches this chart userdata. |
+
+**Example**
+
+```lua
+do
+    local type_name = "LRadarChart"
+    chart_common_example(
+        "radar",
+        "typeOf",
+        type_name
+    )
+end
+```
+
+---
+
 ## LScatterPlot
 
 ### Type Fields
@@ -4861,6 +6733,401 @@ do
     local isPie = chart:typeOf("LPieChart")
     lurek.log.info("typeOf LScatterPlot=" .. tostring(isScatter))
     lurek.log.info("typeOf LPieChart=" .. tostring(isPie))
+end
+```
+
+---
+
+## LTreemapChart
+
+### Type Fields
+
+*No documented fields for this handle.*
+
+### Type Methods
+
+#### `LTreemapChart:addItem`
+
+Adds one weighted treemap item.
+
+```lua
+LTreemapChart:addItem(label, value, color)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `label` | any |  |
+| `value` | any |  |
+| `color?` | any |  |
+
+**Example**
+
+```lua
+do
+    local chart = lurek.charts.newTreemap({ width = 320, height = 220 })
+    chart:addItem("Rendering", 45)
+    chart:addItem("Audio", 18)
+    chart:addItem("Input", 12)
+    local _, _, pixels = chart:render()
+    example_print_log("treemap add bytes = " .. #pixels)
+    example_print_log("treemap width = " .. chart:getWidth())
+end
+```
+
+---
+
+#### `LTreemapChart:clear`
+
+Clears all chart data and cached chart state.
+
+```lua
+LTreemapChart:clear()
+```
+
+**Example**
+
+```lua
+do
+    local type_name = "LTreemapChart"
+    chart_common_example(
+        "treemap",
+        "clear",
+        type_name
+    )
+end
+```
+
+---
+
+#### `LTreemapChart:draw`
+
+Draws the chart at world or screen coordinates using optional transform options.
+
+```lua
+LTreemapChart:draw(x, y, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Draw X coordinate. |
+| `y` | number | Draw Y coordinate. |
+| `opts?` | table | Optional render transform options. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| nil | Return value produced by this chart operation. |
+
+**Example**
+
+```lua
+do
+    local type_name = "LTreemapChart"
+    chart_common_example(
+        "treemap",
+        "draw",
+        type_name
+    )
+end
+```
+
+---
+
+#### `LTreemapChart:drawToImage`
+
+Draws the rendered chart into an existing image.
+
+```lua
+LTreemapChart:drawToImage(target)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `target` | userdata | ImageData target to receive chart pixels. |
+
+**Example**
+
+```lua
+do
+    local type_name = "LTreemapChart"
+    chart_common_example(
+        "treemap",
+        "drawToImage",
+        type_name
+    )
+end
+```
+
+---
+
+#### `LTreemapChart:getHeight`
+
+Returns the configured chart height in pixels.
+
+```lua
+LTreemapChart:getHeight()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Configured chart height in pixels. |
+
+**Example**
+
+```lua
+do
+    local type_name = "LTreemapChart"
+    chart_common_example(
+        "treemap",
+        "getHeight",
+        type_name
+    )
+end
+```
+
+---
+
+#### `LTreemapChart:getWidth`
+
+Returns the configured chart width in pixels.
+
+```lua
+LTreemapChart:getWidth()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Configured chart width in pixels. |
+
+**Example**
+
+```lua
+do
+    local type_name = "LTreemapChart"
+    chart_common_example(
+        "treemap",
+        "getWidth",
+        type_name
+    )
+end
+```
+
+---
+
+#### `LTreemapChart:render`
+
+Renders the chart into raw RGBA image bytes.
+
+```lua
+LTreemapChart:render()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Width; height; and RGBA image bytes for the rendered chart. (value 1). |
+| number | Width; height; and RGBA image bytes for the rendered chart. (value 2). |
+| string | Width; height; and RGBA image bytes for the rendered chart. (value 3). |
+
+**Example**
+
+```lua
+do
+    local type_name = "LTreemapChart"
+    chart_common_example(
+        "treemap",
+        "render",
+        type_name
+    )
+end
+```
+
+---
+
+#### `LTreemapChart:renderImage`
+
+Renders the chart into a new [LImage](render.md#limage) userdata.
+
+```lua
+LTreemapChart:renderImage()
+```
+
+**Example**
+
+```lua
+do
+    local type_name = "LTreemapChart"
+    chart_common_example(
+        "treemap",
+        "renderImage",
+        type_name
+    )
+end
+```
+
+---
+
+#### `LTreemapChart:setItems`
+
+Replaces weighted treemap items from label/value rows or fields.
+
+```lua
+LTreemapChart:setItems(items)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `items` | any |  |
+
+**Example**
+
+```lua
+do
+    local chart = lurek.charts.newTreemap({ width = 320, height = 220 })
+    chart:setItems({
+        { label = "Rendering", value = 45 },
+        { label = "Audio", value = 18 },
+        { label = "Input", value = 12 },
+    })
+    local _, _, pixels = chart:render()
+    example_print_log("treemap items bytes = " .. #pixels)
+    example_print_log("treemap type = " .. chart:type())
+end
+```
+
+---
+
+#### `LTreemapChart:setShowLegend`
+
+Controls whether the chart legend is rendered.
+
+```lua
+LTreemapChart:setShowLegend(value)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `value` | boolean | True to show the legend. |
+
+**Example**
+
+```lua
+do
+    local type_name = "LTreemapChart"
+    chart_common_example(
+        "treemap",
+        "setShowLegend",
+        type_name
+    )
+end
+```
+
+---
+
+#### `LTreemapChart:setTitle`
+
+Sets the chart title text shown in rendered output.
+
+```lua
+LTreemapChart:setTitle(title)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `title` | string | New chart title. |
+
+**Example**
+
+```lua
+do
+    local type_name = "LTreemapChart"
+    chart_common_example(
+        "treemap",
+        "setTitle",
+        type_name
+    )
+end
+```
+
+---
+
+#### `LTreemapChart:type`
+
+Returns the runtime userdata type name for this chart.
+
+```lua
+LTreemapChart:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Runtime userdata type name. |
+
+**Example**
+
+```lua
+do
+    local type_name = "LTreemapChart"
+    chart_common_example(
+        "treemap",
+        "type",
+        type_name
+    )
+end
+```
+
+---
+
+#### `LTreemapChart:typeOf`
+
+Checks whether a type name matches this chart userdata.
+
+```lua
+LTreemapChart:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Type name to check. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the supplied type name matches this chart userdata. |
+
+**Example**
+
+```lua
+do
+    local type_name = "LTreemapChart"
+    chart_common_example(
+        "treemap",
+        "typeOf",
+        type_name
+    )
 end
 ```
 

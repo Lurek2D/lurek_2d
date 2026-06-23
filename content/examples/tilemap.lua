@@ -2,37 +2,38 @@
 -- Auto-generated from content/examples2/tilemap_*.lua by tools/fix/merge_examples2_into_examples.py
 -- Run: cargo run -- content/examples/tilemap.lua
 
-local function tilemap_log(message)
-    lurek.log.info("[tilemap] " .. message)
-end
 
-local tilemap_log_count = 0
-local tilemap_log_limit = 96
 
-local function example_print_log(...)
-    tilemap_log_count = tilemap_log_count + 1
-    if tilemap_log_count > tilemap_log_limit then
-        return
-    end
-    local parts = {}
-    for i = 1, select("#", ...) do
-        parts[i] = tostring(select(i, ...))
-    end
-    tilemap_log(table.concat(parts, " "))
-end
 
 --- Tilemap Module Part 1: map creation, layers, tiles, tilesets, solids, viewport
 
-local function example_print_log(...)
-    local parts = {}
-    for i = 1, select("#", ...) do
-        parts[i] = tostring(select(i, ...))
-    end
-    lurek.log.info(table.concat(parts, " "))
-end
 
 --@api: lurek.tilemap.newTileMap
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LTileMap
     local map = lurek.tilemap.newTileMap(32, 32)
     example_print_log("type = " .. map:type())
@@ -44,6 +45,30 @@ end
 
 --@api: LTileMap:addLayer
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LTileMap
     local map = lurek.tilemap.newTileMap(32, 32)
     local ground = map:addLayer("ground", 50, 50)
@@ -56,6 +81,30 @@ end
 
 --@api: LTileMap:tryAddLayer
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.tilemap.newTileMap(32, 32, 8, { maxLayers = 1 })
     local first, first_err = map:tryAddLayer("ground", 2, 2)
     local second, second_err = map:tryAddLayer("props", 2, 2)
@@ -65,6 +114,30 @@ end
 
 --@api: LTileMap:getLayerName
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LTileMap
     local map = lurek.tilemap.newTileMap(32, 32)
     map:addLayer("terrain", 40, 30)
@@ -76,6 +149,30 @@ end
 
 --@api: LTileMap:getLayerCount
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LTileMap
     local map = lurek.tilemap.newTileMap(32, 32)
     map:addLayer("terrain", 40, 30)
@@ -87,6 +184,30 @@ end
 
 --@api: LTileMap:setTile
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.tilemap.newTileMap(32, 32)
     local layer = map:addLayer("main", 10, 10)
     map:setTile(layer, 3, 4, 5)
@@ -96,6 +217,30 @@ end
 
 --@api: LTileMap:trySetTile
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.tilemap.newTileMap(32, 32)
     local layer = map:addLayer("main", 10, 10)
     local ok, err = map:trySetTile(layer, 11, 1, 7)
@@ -105,6 +250,30 @@ end
 
 --@api: LTileMap:getTile
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.tilemap.newTileMap(32, 32)
     local layer = map:addLayer("main", 10, 10)
     map:setTile(layer, 3, 4, 5)
@@ -114,6 +283,30 @@ end
 
 --@api: LTileMap:tryGetTile
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.tilemap.newTileMap(32, 32)
     map:addLayer("main", 10, 10)
     local gid, err = map:tryGetTile(2, 1, 1)
@@ -123,6 +316,30 @@ end
 
 --@api: LTileMap:getDiagnostics
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.tilemap.newTileMap(32, 32)
     local layer = map:addLayer("main", 10, 10)
     map:trySetTile(layer, 11, 1, 7)
@@ -134,6 +351,30 @@ end
 
 --@api: LTileMap:clearTile
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.tilemap.newTileMap(32, 32)
     local layer = map:addLayer("main", 10, 10)
     map:setTile(layer, 3, 4, 5)
@@ -144,6 +385,30 @@ end
 
 --@api: LTileMap:fill
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.tilemap.newTileMap(32, 32)
     local layer = map:addLayer("ground", 20, 20)
     map:fill(layer, 3)
@@ -153,6 +418,30 @@ end
 
 --@api: LTileMap:findTilesByGid
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.tilemap.newTileMap(32, 32)
     local layer = map:addLayer("main", 10, 10)
 
@@ -170,6 +459,30 @@ end
 
 --@api: lurek.tilemap.newTileSet
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LTileSet
     local ts = lurek.tilemap.newTileSet(1, 64, 8, 32, 32)
     example_print_log("type = " .. ts:type())
@@ -180,6 +493,30 @@ end
 
 --@api: LTileSet:isSolid
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LTileSet
     local ts = lurek.tilemap.newTileSet(1, 32, 8, 32, 32)
     ts:setSolid(1, true)
@@ -190,6 +527,30 @@ end
 
 --@api: LTileSet:setSolid
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LTileSet
     local ts = lurek.tilemap.newTileSet(1, 32, 8, 32, 32)
     ts:setSolid(1, true)
@@ -202,6 +563,30 @@ end
 
 --@api: LTileSet:getQuad
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ts = lurek.tilemap.newTileSet(1, 16, 4, 32, 32)
     local q1 = ts:getQuad(1)
     example_print_log("tile 1: x=" .. q1.x .. " y=" .. q1.y .. " w=" .. q1.width .. " h=" .. q1.height)
@@ -211,6 +596,30 @@ end
 
 --@api: LTileSet:setAnimation
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ts = lurek.tilemap.newTileSet(1, 32, 8, 16, 16)
     ts:setAnimation(1, {
         { tileid = 1, duration = 200 },
@@ -230,6 +639,30 @@ end
 
 --@api: LTileSet:getAnimation
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ts = lurek.tilemap.newTileSet(1, 32, 8, 16, 16)
     ts:setAnimation(1, {
         { tileid = 1, duration = 200 },
@@ -249,6 +682,30 @@ end
 
 --@api: LTileMap:addTileSet
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.tilemap.newTileMap(32, 32)
     local terrain = lurek.tilemap.newTileSet(1, 64, 8, 32, 32)
     local objects = lurek.tilemap.newTileSet(65, 32, 8, 32, 32)
@@ -260,6 +717,30 @@ end
 
 --@api: LTileMap:getTileSet
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.tilemap.newTileMap(32, 32)
     local terrain = lurek.tilemap.newTileSet(1, 64, 8, 32, 32)
     local objects = lurek.tilemap.newTileSet(65, 32, 8, 32, 32)
@@ -272,6 +753,30 @@ end
 
 --@api: LTileMap:getTileSetCount
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.tilemap.newTileMap(32, 32)
     local terrain = lurek.tilemap.newTileSet(1, 64, 8, 32, 32)
     local objects = lurek.tilemap.newTileSet(65, 32, 8, 32, 32)
@@ -283,6 +788,30 @@ end
 
 --@api: LTileMap:isSolid
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.tilemap.newTileMap(32, 32)
     local ts = lurek.tilemap.newTileSet(1, 16, 4, 32, 32)
     ts:setSolid(1, true)
@@ -298,6 +827,30 @@ end
 
 --@api: LTileMap:rectOverlapsSolid
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.tilemap.newTileMap(32, 32)
     local ts = lurek.tilemap.newTileSet(1, 16, 4, 32, 32)
     ts:setSolid(1, true)
@@ -314,6 +867,30 @@ end
 
 --@api: LTileMap:setViewport
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.tilemap.newTileMap(32, 32)
     map:addLayer("ground", 100, 100)
     map:setViewport(0, 0, 800, 600)
@@ -323,6 +900,30 @@ end
 
 --@api: LTileMap:getViewport
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.tilemap.newTileMap(32, 32)
     map:addLayer("ground", 100, 100)
     map:setViewport(0, 0, 800, 600)
@@ -332,6 +933,30 @@ end
 
 --@api: LTileMap:render
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.tilemap.newTileMap(32, 32)
     map:addLayer("ground", 100, 100)
     map:setViewport(0, 0, 800, 600)
@@ -344,6 +969,30 @@ end
 
 --@api: LTileMap:worldToTile
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LTileMap
     local map = lurek.tilemap.newTileMap(32, 32)
     map:addLayer("main", 20, 20)
@@ -355,6 +1004,30 @@ end
 
 --@api: LTileMap:tryWorldToTile
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.tilemap.newTileMap(32, 32)
     map:addLayer("main", 20, 20)
     local tx, ty = map:tryWorldToTile(64, 32)
@@ -365,6 +1038,30 @@ end
 
 --@api: LTileMap:tileToWorld
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LTileMap
     local map = lurek.tilemap.newTileMap(32, 32)
     map:addLayer("main", 20, 20)
@@ -376,6 +1073,30 @@ end
 
 --@api: LTileMap:setLayerVisible
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LTileMap
     local map = lurek.tilemap.newTileMap(32, 32)
     map:addLayer("background", 20, 20)
@@ -389,6 +1110,30 @@ end
 
 --@api: LTileMap:getLayerVisible
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LTileMap
     local map = lurek.tilemap.newTileMap(32, 32)
     map:addLayer("background", 20, 20)
@@ -401,6 +1146,30 @@ end
 
 --@api: LTileMap:setLayerColor
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.tilemap.newTileMap(32, 32)
     map:addLayer("tinted", 10, 10)
     map:setLayerColor(1, 0.8, 0.5, 0.5, 0.9)
@@ -410,6 +1179,30 @@ end
 
 --@api: LTileMap:getLayerColor
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.tilemap.newTileMap(32, 32)
     map:addLayer("tinted", 10, 10)
     map:setLayerColor(1, 0.8, 0.5, 0.5, 0.9)
@@ -419,6 +1212,30 @@ end
 
 --@api: LTileMap:setLayerOffset
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.tilemap.newTileMap(32, 32)
     map:addLayer("shifted", 10, 10)
     map:setLayerOffset(1, 16, 8)
@@ -428,6 +1245,30 @@ end
 
 --@api: LTileMap:getLayerOffset
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.tilemap.newTileMap(32, 32)
     map:addLayer("shifted", 10, 10)
     map:setLayerOffset(1, 16, 8)
@@ -437,6 +1278,30 @@ end
 
 --@api: LTileMap:setLayerParallax
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.tilemap.newTileMap(32, 32)
     map:addLayer("background", 40, 30)
     map:setLayerParallax(1, 0.5, 0.5)
@@ -446,6 +1311,30 @@ end
 
 --@api: LTileMap:getLayerParallax
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.tilemap.newTileMap(32, 32)
     map:addLayer("background", 40, 30)
     map:setLayerParallax(1, 0.5, 0.5)
@@ -457,6 +1346,30 @@ end
 
 --@api: LTileSet:setAutoTileRule
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LTileSet
     local ts = lurek.tilemap.newTileSet(1, 32, 8, 16, 16)
     ts:setAutoTileRule("grass", 0, 1)
@@ -468,6 +1381,30 @@ end
 
 --@api: LTileSet:getAutoTileId
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ts = lurek.tilemap.newTileSet(1, 32, 8, 16, 16)
     ts:setAutoTileRule("grass", 0, 1)
     ts:setAutoTileRule("grass", 15, 16)
@@ -477,6 +1414,30 @@ end
 
 --@api: LTileSet:setAutoTileRule8
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LTileSet
     local ts = lurek.tilemap.newTileSet(1, 256, 16, 16, 16)
     ts:setAutoTileRule8("wall", 0, 1)
@@ -488,6 +1449,30 @@ end
 
 --@api: LTileSet:getAutoTileId8
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LTileSet
     local ts = lurek.tilemap.newTileSet(1, 256, 16, 16, 16)
     ts:setAutoTileRule8("wall", 255, 48)
@@ -500,6 +1485,30 @@ end
 
 --@api: LTileSet:setAutoTileMode
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ts = lurek.tilemap.newTileSet(1, 64, 8, 16, 16)
     ts:setAutoTileRule8("shore", 255, 8)
     ts:setAutoTileMode("shore", "matchCornersAndSides")
@@ -509,6 +1518,30 @@ end
 
 --@api: LTileSet:getAutoTileMode
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ts = lurek.tilemap.newTileSet(1, 64, 8, 16, 16)
     local default_mode = ts:getAutoTileMode("grass")
     ts:setAutoTileMode("grass", "matchSides")
@@ -519,6 +1552,30 @@ end
 
 --@api: lurek.tilemap.getAutoTileFormats
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local formats = lurek.tilemap.getAutoTileFormats()
     for _, format in ipairs(formats) do
         if format.name == "rpgmaker48" or format.name == "minimal16" then
@@ -529,6 +1586,30 @@ end
 
 --@api: lurek.tilemap.newAutoTileSheet
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local blob = lurek.tilemap.newAutoTileSheet(16, 16, "blob47")
     example_print_log("blob47 layout = " .. blob:getLayout())
     example_print_log("blob47 tile count = " .. blob:getTileCount())
@@ -541,6 +1622,30 @@ end
 
 --@api: LAutoTileSheet:applyToTileSet
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sheet = lurek.tilemap.newAutoTileSheet(16, 16, "blob47")
     local ts = lurek.tilemap.newTileSet(1, 64, 8, 16, 16)
 
@@ -555,6 +1660,30 @@ end
 
 --@api: LAutoTileSheet:getBitmaskForTile
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LAutoTileSheet
     local sheet = lurek.tilemap.newAutoTileSheet(16, 16, "minimal16")
     local bitmask = sheet:getBitmaskForTile(3)
@@ -565,6 +1694,30 @@ end
 
 --@api: LAutoTileSheet:getTileForBitmask
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LAutoTileSheet
     local sheet = lurek.tilemap.newAutoTileSheet(16, 16, "minimal16")
     local tile = sheet:getTileForBitmask(7)
@@ -575,6 +1728,30 @@ end
 
 --@api: LAutoTileSheet:getQuad
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LAutoTileSheet
     local sheet = lurek.tilemap.newAutoTileSheet(32, 32, "composite48")
     example_print_log("composite48 count = " .. sheet:getTileCount())
@@ -585,6 +1762,30 @@ end
 
 --@api: LTileMap:applyAutoTile
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.tilemap.newTileMap(16, 16)
     local ts = lurek.tilemap.newTileSet(1, 32, 8, 16, 16)
     local sheet = lurek.tilemap.newAutoTileSheet(16, 16, "minimal16")
@@ -603,6 +1804,30 @@ end
 
 --@api: LTileMap:applyAutoTile8
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.tilemap.newTileMap(16, 16)
     local ts = lurek.tilemap.newTileSet(1, 256, 16, 16, 16)
 
@@ -622,6 +1847,30 @@ end
 
 --@api: LTileMap:applyAutoTileAt
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.tilemap.newTileMap(16, 16)
     local ts = lurek.tilemap.newTileSet(1, 32, 8, 16, 16)
     local sheet = lurek.tilemap.newAutoTileSheet(16, 16, "minimal16")
@@ -637,6 +1886,30 @@ end
 
 --@api: LTileMap:applyAutoTile8At
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.tilemap.newTileMap(16, 16)
     local ts = lurek.tilemap.newTileSet(1, 32, 8, 16, 16)
     local sheet = lurek.tilemap.newAutoTileSheet(16, 16, "minimal16")
@@ -652,6 +1925,30 @@ end
 
 --@api: LTileMap:applyAutoTileMode
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.tilemap.newTileMap(16, 16)
     local ts = lurek.tilemap.newTileSet(1, 64, 8, 16, 16)
     ts:setAutoTileMode("shore", "matchCornersAndSides")
@@ -669,6 +1966,30 @@ end
 
 --@api: LTileMap:applyAutoTileModeAt
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.tilemap.newTileMap(16, 16)
     local ts = lurek.tilemap.newTileSet(1, 32, 8, 16, 16)
     ts:setAutoTileMode("corner", "matchCorners")
@@ -686,6 +2007,30 @@ end
 
 --@api: LTileMap:sweepRect
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.tilemap.newTileMap(32, 32)
     local ts = lurek.tilemap.newTileSet(1, 16, 4, 32, 32)
     ts:setSolid(1, true)
@@ -703,6 +2048,30 @@ end
 
 --@api: LTileMap:onTileEnter
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.tilemap.newTileMap(32, 32)
     local layer = map:addLayer("triggers", 10, 10)
     map:setTile(layer, 3, 3, 5)
@@ -712,6 +2081,30 @@ end
 
 --@api: LTileMap:onTileExit
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.tilemap.newTileMap(32, 32)
     local layer = map:addLayer("triggers", 10, 10)
     map:setTile(layer, 3, 3, 5)
@@ -721,6 +2114,30 @@ end
 
 --@api: LTileMap:onTileStep
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.tilemap.newTileMap(32, 32)
     local layer = map:addLayer("triggers", 10, 10)
     map:setTile(layer, 3, 3, 5)
@@ -730,6 +2147,30 @@ end
 
 --@api: LTileMap:checkEntities
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.tilemap.newTileMap(32, 32)
     local layer = map:addLayer("events", 10, 10)
     map:setTile(layer, 2, 2, 3)
@@ -745,6 +2186,30 @@ end
 
 --@api: LTileMap:fireTileExit
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.tilemap.newTileMap(32, 32)
     local layer = map:addLayer("events", 10, 10)
     map:setTile(layer, 2, 2, 3)
@@ -760,6 +2225,30 @@ end
 
 --@api: LTileMap:fireTileStep
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.tilemap.newTileMap(32, 32)
     local layer = map:addLayer("events", 10, 10)
     map:setTile(layer, 2, 2, 3)
@@ -775,6 +2264,30 @@ end
 
 --@api: LTileMap:tileTypeIndex
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.tilemap.newTileMap(32, 32)
     local layer = map:addLayer("terrain", 5, 5)
 
@@ -792,6 +2305,30 @@ end
 
 --@api: LTileMap:toNavGrid
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.tilemap.newTileMap(32, 32)
     local ts = lurek.tilemap.newTileSet(1, 8, 4, 32, 32)
     ts:setSolid(1, true)
@@ -809,6 +2346,30 @@ end
 
 --@api: LTileMap:setTileTint
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.tilemap.newTileMap(32, 32)
     local layer = map:addLayer("tinted", 10, 10)
 
@@ -823,6 +2384,30 @@ end
 
 --@api: LTileMap:trySetTileTint
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.tilemap.newTileMap(32, 32)
     local layer = map:addLayer("tinted", 10, 10)
     map:setTile(layer, 1, 1, 1)
@@ -833,6 +2418,30 @@ end
 
 --@api: LTileMap:setOrientation
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LTileMap
     local map = lurek.tilemap.newTileMap(32, 32)
     map:addLayer("main", 10, 10)
@@ -844,6 +2453,30 @@ end
 
 --@api: LTileMap:getOrientation
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LTileMap
     local map = lurek.tilemap.newTileMap(32, 32)
     map:addLayer("main", 10, 10)
@@ -856,6 +2489,30 @@ end
 
 --@api: LTileMap:drawToImage
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.tilemap.newTileMap(16, 16)
     local layer = map:addLayer("simple", 8, 8)
     map:fill(layer, 1)
@@ -866,6 +2523,30 @@ end
 
 --@api: LTileMap:update
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.tilemap.newTileMap(32, 32)
     map:addLayer("animated", 10, 10)
 
@@ -880,6 +2561,30 @@ end
 
 --@api: lurek.tilemap.toScreenHex
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sx, sy = lurek.tilemap.toScreenHex(2, 3, 32)
     local q, r = lurek.tilemap.fromScreenHex(sx, sy, 32)
     local distance = lurek.tilemap.hexDistance(2, 3, q, r)
@@ -890,6 +2595,30 @@ end
 
 --@api: lurek.tilemap.hexDistance
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local d = lurek.tilemap.hexDistance(0, 0, 3, 2)
     example_print_log("hex distance (0,0) to (3,2) = " .. d)
     d = lurek.tilemap.hexDistance(1, 1, 1, 1)
@@ -900,6 +2629,30 @@ end
 
 --@api: lurek.tilemap.hexNeighbors
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function hexCoords(cell)
         return cell.q or cell[1], cell.r or cell[2]
     end
@@ -914,6 +2667,30 @@ end
 
 --@api: lurek.tilemap.hexRing
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function hexCoords(cell)
         return cell.q or cell[1], cell.r or cell[2]
     end
@@ -928,6 +2705,30 @@ end
 
 --@api: lurek.tilemap.hexArea
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local area = lurek.tilemap.hexArea(0, 0, 1)
     example_print_log("area radius 1: " .. #area .. " cells")
     local bigArea = lurek.tilemap.hexArea(5, 5, 3)
@@ -938,6 +2739,30 @@ end
 
 --@api: lurek.tilemap.hexSpiral
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function hexCoords(cell)
         return cell.q or cell[1], cell.r or cell[2]
     end
@@ -950,6 +2775,30 @@ end
 
 --@api: lurek.tilemap.hexLine
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function hexCoords(cell)
         return cell.q or cell[1], cell.r or cell[2]
     end
@@ -964,6 +2813,30 @@ end
 
 --@api: lurek.tilemap.hexRound
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local q, r = lurek.tilemap.hexRound(2.3, 1.7)
     example_print_log("round(2.3, 1.7) = " .. q .. ", " .. r)
     q, r = lurek.tilemap.hexRound(-0.4, 0.6)
@@ -974,6 +2847,30 @@ end
 
 --@api: lurek.tilemap.hexRotate
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local q, r = lurek.tilemap.hexRotate(2, 0, 0, 0, 1)
     example_print_log("(2,0) rotated 60deg CW around origin = " .. q .. ", " .. r)
     q, r = lurek.tilemap.hexRotate(2, 0, 0, 0, 3)
@@ -984,6 +2881,30 @@ end
 
 --@api: lurek.tilemap.hexReflect
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local q, r = lurek.tilemap.hexReflect(3, 1, 0, 0, "q")
     example_print_log("reflect (3,1) across q axis = " .. q .. ", " .. r)
     q, r = lurek.tilemap.hexReflect(2, -1, 0, 0, "r")
@@ -994,6 +2915,30 @@ end
 
 --@api: lurek.tilemap.toScreenIso
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sx, sy = lurek.tilemap.toScreenIso(3, 5, 64, 32)
     local tx, ty = lurek.tilemap.fromScreenIso(sx, sy, 64, 32)
     local direction = lurek.tilemap.isoDirectionName(lurek.tilemap.isoDirectionFromAngle(45))
@@ -1004,6 +2949,30 @@ end
 
 --@api: lurek.tilemap.isoDirectionFromAngle
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dir = lurek.tilemap.isoDirectionFromAngle(45)
     local name = lurek.tilemap.isoDirectionName(dir)
     local rotated = lurek.tilemap.isoRotate(dir, 1)
@@ -1014,6 +2983,30 @@ end
 
 --@api: lurek.tilemap.loadTMX
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tmxData = [[<?xml version="1.0" encoding="UTF-8"?> <map version="1.10" orientation="orthogonal" width="4" height="4" tilewidth="32" tileheight="32"> <layer name="ground" width="4" height="4"> <data encoding="csv">1,1,1,1,1,2,2,1,1,2,2,1,1,1,1,1</data> </layer> </map>]]
     local result, err = lurek.tilemap.loadTMX(tmxData)
     if result then
@@ -1032,6 +3025,30 @@ end
 
 --@api: lurek.tilemap.fromLDtk
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ldtkJson = '{"levels":[{"identifier":"Level_0","layerInstances":[]}]}'
     local map, err = lurek.tilemap.fromLDtk(ldtkJson)
     if map then
@@ -1054,6 +3071,30 @@ end
 
 --@api: lurek.tilemap.FLOOR
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local part_count = lurek.tilemap.OBJECT - lurek.tilemap.FLOOR + 1
     local object_offset = lurek.tilemap.OBJECT - lurek.tilemap.FLOOR
     example_print_log("FLOOR = " .. lurek.tilemap.FLOOR)
@@ -1064,6 +3105,30 @@ end
 
 --@api: lurek.tilemap.NORTH_WALL
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local wall_dir = lurek.tilemap.isoDirectionName(lurek.tilemap.isoRotate(1, 0))
     local north_part = lurek.tilemap.NORTH_WALL
     example_print_log("NORTH_WALL = " .. lurek.tilemap.NORTH_WALL)
@@ -1074,6 +3139,30 @@ end
 
 --@api: lurek.tilemap.WEST_WALL
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local west_dir = lurek.tilemap.isoDirectionName(lurek.tilemap.isoRotate(1, 3))
     local west_part = lurek.tilemap.WEST_WALL
     example_print_log("WEST_WALL = " .. lurek.tilemap.WEST_WALL)
@@ -1084,6 +3173,30 @@ end
 
 --@api: lurek.tilemap.OBJECT
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local object_part = lurek.tilemap.OBJECT
     local floor_part = lurek.tilemap.FLOOR
     example_print_log("OBJECT = " .. lurek.tilemap.OBJECT)
@@ -1095,6 +3208,30 @@ end
 
 --@api: lurek.tilemap.newChunkMap
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LChunkMap
     local cm = lurek.tilemap.newChunkMap(16)
     example_print_log("type = " .. cm:type())
@@ -1105,6 +3242,30 @@ end
 
 --@api: LChunkMap:setTile
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LChunkMap
     local cm = lurek.tilemap.newChunkMap(16)
     cm:setTile(10, 20, 5)
@@ -1116,6 +3277,30 @@ end
 
 --@api: LChunkMap:getTile
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LChunkMap
     local cm = lurek.tilemap.newChunkMap(16)
     cm:setTile(10, 20, 5)
@@ -1127,6 +3312,30 @@ end
 
 --@api: LChunkMap:clearTile
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cm = lurek.tilemap.newChunkMap(16)
     cm:setTile(10, 20, 5)
     cm:clearTile(10, 20)
@@ -1136,6 +3345,30 @@ end
 
 --@api: LChunkMap:fillRect
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cm = lurek.tilemap.newChunkMap(16)
     cm:fillRect(0, 0, 10, 10, 3)
     example_print_log("filled 11x11 area with gid=3")
@@ -1145,6 +3378,30 @@ end
 
 --@api: LChunkMap:loadChunk
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function chunkCoords(cell)
         return cell.cx or cell[1], cell.cy or cell[2]
     end
@@ -1161,6 +3418,30 @@ end
 
 --@api: LChunkMap:unloadChunk
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cm = lurek.tilemap.newChunkMap(16) ; cm:loadChunk(0, 0)
     cm:loadChunk(1, 0)
     cm:unloadChunk(1, 0)
@@ -1170,6 +3451,30 @@ end
 
 --@api: LChunkMap:getLoadedChunks
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function chunkCoords(cell)
         return cell.cx or cell[1], cell.cy or cell[2]
     end
@@ -1186,6 +3491,30 @@ end
 
 --@api: LChunkMap:chunkTileRange
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cm = lurek.tilemap.newChunkMap(16)
     local minX, minY, maxX, maxY = cm:chunkTileRange(2, 3)
     example_print_log("chunk (2,3) covers tiles:")
@@ -1195,6 +3524,30 @@ end
 
 --@api: LChunkMap:getChunksInView
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function chunkCoords(cell)
         return cell.cx or cell[1], cell.cy or cell[2]
     end
@@ -1210,6 +3563,30 @@ end
 
 --@api: lurek.tilemap.newIsoMap
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local iso = lurek.tilemap.newIsoMap(20, 20, 64, 32, 16)
     example_print_log("type = " .. iso:type())
     example_print_log("size = " .. iso:getWidth() .. "x" .. iso:getHeight())
@@ -1219,6 +3596,30 @@ end
 
 --@api: LIsoMap:addLevel
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LIsoMap
     local iso = lurek.tilemap.newIsoMap(10, 10, 64, 32, 16, 4)
     local lvl = iso:addLevel()
@@ -1230,6 +3631,30 @@ end
 
 --@api: LIsoMap:getLevelCount
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LIsoMap
     local iso = lurek.tilemap.newIsoMap(10, 10, 64, 32, 16, 4)
     local lvl = iso:addLevel()
@@ -1240,6 +3665,30 @@ end
 
 --@api: LIsoMap:setTilePart
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local iso = lurek.tilemap.newIsoMap(10, 10, 64, 32, 16, 4)
     iso:addLevel()
     iso:setTilePart(1, 3, 4, 1, 5)
@@ -1249,6 +3698,30 @@ end
 
 --@api: LIsoMap:getTilePart
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local iso = lurek.tilemap.newIsoMap(10, 10, 64, 32, 16, 4)
     iso:addLevel()
     iso:setTilePart(1, 3, 4, 1, 5)
@@ -1258,6 +3731,30 @@ end
 
 --@api: LIsoMap:fillLevel
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LIsoMap
     local iso = lurek.tilemap.newIsoMap(8, 8, 64, 32, 16)
     iso:addLevel()
@@ -1269,6 +3766,30 @@ end
 
 --@api: LIsoMap:isLevelVisible
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LIsoMap
     local iso = lurek.tilemap.newIsoMap(8, 8, 64, 32, 16)
     iso:addLevel()
@@ -1281,6 +3802,30 @@ end
 
 --@api: LIsoMap:setLevelVisible
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LIsoMap
     local iso = lurek.tilemap.newIsoMap(8, 8, 64, 32, 16)
     iso:addLevel()
@@ -1294,6 +3839,30 @@ end
 
 --@api: LIsoMap:screenToTile
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local iso = lurek.tilemap.newIsoMap(10, 10, 64, 32, 16)
     iso:setOrigin(400, 100)
     local sx, sy = iso:tileToScreen(3, 2, 1)
@@ -1303,6 +3872,30 @@ end
 
 --@api: LIsoMap:tileToScreen
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LIsoMap
     local iso = lurek.tilemap.newIsoMap(10, 10, 64, 32, 16)
     iso:setOrigin(400, 100)
@@ -1314,6 +3907,30 @@ end
 
 --@api: LIsoMap:setOrigin
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LIsoMap
     local iso = lurek.tilemap.newIsoMap(10, 10, 64, 32, 16)
     iso:setOrigin(400, 100)
@@ -1324,6 +3941,30 @@ end
 
 --@api: LIsoMap:setPartOrder
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LIsoMap
     local iso = lurek.tilemap.newIsoMap(5, 5, 64, 32, 16, 4)
     iso:setPartOrder({ 3, 2, 1, 0 })
@@ -1335,6 +3976,30 @@ end
 
 --@api: LIsoMap:getPartOrder
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local iso = lurek.tilemap.newIsoMap(5, 5, 64, 32, 16, 4) ; local order = iso:getPartOrder()
     example_print_log("default part order: " .. #order .. " entries")
     iso:setPartOrder({ 3, 2, 1, 0 })
@@ -1344,6 +4009,30 @@ end
 
 --@api: lurek.tilemap.newLargeMapRenderer
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LLargeMapRenderer
     local lmr = lurek.tilemap.newLargeMapRenderer(32, 32)
     example_print_log("type = " .. lmr:type())
@@ -1354,6 +4043,30 @@ end
 
 --@api: LLargeMapRenderer:setMapData
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function buildLargeMapData(width, height, value_mod)
         local data = {}
         for y = 1, height do
@@ -1374,6 +4087,30 @@ end
 
 --@api: LLargeMapRenderer:getMapSize
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function buildLargeMapData(width, height, value_mod)
         local data = {}
         for y = 1, height do
@@ -1394,6 +4131,30 @@ end
 
 --@api: LLargeMapRenderer:getTile
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function buildLargeMapData(width, height, value_mod)
         local data = {}
         for y = 1, height do
@@ -1414,6 +4175,30 @@ end
 
 --@api: LLargeMapRenderer:setTile
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function buildLargeMapData(width, height, value_mod)
         local data = {}
         for y = 1, height do
@@ -1434,6 +4219,30 @@ end
 
 --@api: LLargeMapRenderer:setCamera
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function buildLargeMapData(width, height, value_mod)
         local data = {}
         for y = 1, height do
@@ -1454,6 +4263,30 @@ end
 
 --@api: LLargeMapRenderer:setViewport
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function buildLargeMapData(width, height, value_mod)
         local data = {}
         for y = 1, height do
@@ -1474,6 +4307,30 @@ end
 
 --@api: LLargeMapRenderer:getVisibleChunks
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function buildLargeMapData(width, height, value_mod)
         local data = {}
         for y = 1, height do
@@ -1494,6 +4351,30 @@ end
 
 --@api: LLargeMapRenderer:getTotalChunks
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function buildLargeMapData(width, height, value_mod)
         local data = {}
         for y = 1, height do
@@ -1514,6 +4395,30 @@ end
 
 --@api: LLargeMapRenderer:setLodEnabled
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local lmr = lurek.tilemap.newLargeMapRenderer(16, 16) ; example_print_log("LOD enabled = " .. tostring(lmr:isLodEnabled()))
     lmr:setLodEnabled(true)
     example_print_log("after enable = " .. tostring(lmr:isLodEnabled()))
@@ -1523,6 +4428,30 @@ end
 
 --@api: LLargeMapRenderer:isLodEnabled
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local lmr = lurek.tilemap.newLargeMapRenderer(16, 16) ; example_print_log("LOD enabled = " .. tostring(lmr:isLodEnabled()))
     lmr:setLodEnabled(true)
     example_print_log("after enable = " .. tostring(lmr:isLodEnabled()))
@@ -1532,6 +4461,30 @@ end
 
 --@api: LLargeMapRenderer:setLodThresholds
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local lmr = lurek.tilemap.newLargeMapRenderer(16, 16) ; example_print_log("LOD enabled = " .. tostring(lmr:isLodEnabled()))
     lmr:setLodEnabled(true)
     example_print_log("after enable = " .. tostring(lmr:isLodEnabled()))
@@ -1541,6 +4494,30 @@ end
 
 --@api: LLargeMapRenderer:invalidateAll
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local lmr = lurek.tilemap.newLargeMapRenderer(32, 32) ; lmr:setChunkSize(32)
     example_print_log("chunk size = " .. lmr:getChunkSize()) ; lmr:setTilesetColumns(16)
     example_print_log("tileset columns = " .. lmr:getTilesetColumns()) ; lmr:invalidateChunk(0, 0)
@@ -1550,6 +4527,30 @@ end
 
 --@api: LLargeMapRenderer:invalidateChunk
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local lmr = lurek.tilemap.newLargeMapRenderer(32, 32) ; lmr:setChunkSize(32)
     example_print_log("chunk size = " .. lmr:getChunkSize()) ; lmr:setTilesetColumns(16)
     example_print_log("tileset columns = " .. lmr:getTilesetColumns()) ; lmr:invalidateChunk(0, 0)
@@ -1559,6 +4560,30 @@ end
 
 --@api: LLargeMapRenderer:setChunkSize
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local lmr = lurek.tilemap.newLargeMapRenderer(32, 32) ; lmr:setChunkSize(32)
     example_print_log("chunk size = " .. lmr:getChunkSize()) ; lmr:setTilesetColumns(16)
     example_print_log("tileset columns = " .. lmr:getTilesetColumns()) ; lmr:invalidateChunk(0, 0)
@@ -1568,6 +4593,30 @@ end
 
 --@api: LLargeMapRenderer:setTilesetColumns
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local lmr = lurek.tilemap.newLargeMapRenderer(32, 32) ; lmr:setChunkSize(32)
     example_print_log("chunk size = " .. lmr:getChunkSize()) ; lmr:setTilesetColumns(16)
     example_print_log("tileset columns = " .. lmr:getTilesetColumns()) ; lmr:invalidateChunk(0, 0)
@@ -1577,6 +4626,30 @@ end
 
 --@api: lurek.tilemap.newMapBlock
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local block = lurek.tilemap.newMapBlock(8, 8, 2, 2) ; example_print_log("type = " .. block:type())
     local w, h = block:getDimensions() ; example_print_log("dimensions = " .. w .. "x" .. h)
     example_print_log("layers = " .. block:getLayerCount()) ; example_print_log("segment size = " .. block:getSegmentSize())
@@ -1586,6 +4659,30 @@ end
 
 --@api: lurek.tilemap.newMapGroup
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local group = lurek.tilemap.newMapGroup("dungeon") ; example_print_log("type = " .. group:type()) ; example_print_log("name = " .. group:getName())
     local b1 = lurek.tilemap.newMapBlock(4, 4) ; b1:setName("corridor") ; local b2 = lurek.tilemap.newMapBlock(4, 4)
     b2:setName("room") ; group:addBlock(b1)
@@ -1595,6 +4692,30 @@ end
 
 --@api: lurek.tilemap.newMapScript
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local script = lurek.tilemap.newMapScript() ; example_print_log("type = " .. script:type())
     script:addStep({ type = "fillArea", gid = 1, x = 0, y = 0, w = 4, h = 4 })
     script:addStep({ type = "placeRandom", gid = 5, count = 2 })
@@ -1604,6 +4725,30 @@ end
 
 --@api: lurek.tilemap.newMapGen
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local group = lurek.tilemap.newMapGroup("caves") ; local block = lurek.tilemap.newMapBlock(4, 4) ; block:setName("open")
     block:setTile(1, 1, 1, 1) ; block:setTile(1, 2, 2, 1) ; group:addBlock(block)
     local script = lurek.tilemap.newMapScript() ; script:addStep({ type = "fillArea", gid = 1, x = 0, y = 0, w = 4, h = 4 }) ; group:addScript(script)
@@ -1613,6 +4758,30 @@ end
 
 --@api: LMapGen:generate
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local group = lurek.tilemap.newMapGroup("caves") ; local block = lurek.tilemap.newMapBlock(4, 4) ; block:setName("open")
     block:setTile(1, 1, 1, 1) ; block:setTile(1, 2, 2, 1) ; group:addBlock(block)
     local script = lurek.tilemap.newMapScript() ; script:addStep({ type = "fillArea", gid = 1, x = 0, y = 0, w = 4, h = 4 })
@@ -1624,6 +4793,30 @@ end
 
 --@api: LTileMap:getChunkSize
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tm = lurek.tilemap.newTileMap(16, 16, 8)
     local cs = tm:getChunkSize()
     local tw, th = tm:getTileDimensions()
@@ -1633,6 +4826,30 @@ end
 
 --@api: LTileMap:getTileDimensions
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tm = lurek.tilemap.newTileMap(16, 16, 8)
     local tw, th = tm:getTileDimensions()
     local chunk = tm:getChunkSize()
@@ -1642,6 +4859,30 @@ end
 
 --@api: LTileMap:getTileHeight
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tm = lurek.tilemap.newTileMap(16, 16, 8)
     local th2 = tm:getTileHeight()
     local tw2 = tm:getTileWidth()
@@ -1651,6 +4892,30 @@ end
 
 --@api: LTileMap:getTileWidth
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tm = lurek.tilemap.newTileMap(16, 16, 8)
     local tw2 = tm:getTileWidth()
     local th2 = tm:getTileHeight()
@@ -1660,6 +4925,30 @@ end
 
 --@api: LTileMap:type
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tm = lurek.tilemap.newTileMap(16, 16, 8)
     local tw, th = tm:getTileDimensions()
     example_print_log("type=" .. tm:type())
@@ -1669,6 +4958,30 @@ end
 
 --@api: LTileMap:typeOf
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tm = lurek.tilemap.newTileMap(16, 16, 8)
     local is_map = tm:typeOf("LTileMap")
     local is_object = tm:typeOf("LObject")
@@ -1679,6 +4992,30 @@ end
 
 --@api: lurek.tilemap.fromScreenHex
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local hx, hy = lurek.tilemap.fromScreenHex(80, 40, 32)
     local sx, sy = lurek.tilemap.toScreenHex(hx, hy, 32)
     local dist = lurek.tilemap.hexDistance(hx, hy, hx, hy)
@@ -1689,6 +5026,30 @@ end
 
 --@api: lurek.tilemap.fromScreenIso
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ix, iy = lurek.tilemap.fromScreenIso(128, 64, 32, 16)
     local sx, sy = lurek.tilemap.toScreenIso(ix, iy, 32, 16)
     local dir = lurek.tilemap.isoDirectionFromAngle(0)
@@ -1699,6 +5060,30 @@ end
 
 --@api: lurek.tilemap.isoDirectionName
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local name = lurek.tilemap.isoDirectionName(1)
     local rotated = lurek.tilemap.isoRotate(1, 1)
     local rotated_name = lurek.tilemap.isoDirectionName(rotated)
@@ -1709,6 +5094,30 @@ end
 
 --@api: lurek.tilemap.isoRotate
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rotated = lurek.tilemap.isoRotate(1, 2)
     local label = lurek.tilemap.isoDirectionName(rotated)
     local reset = lurek.tilemap.isoRotate(rotated, 2)
@@ -1721,6 +5130,30 @@ end
 
 --@api: LTileSet:getColumns
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ts = lurek.tilemap.newTileSet(1, 16, 4, 16, 16, 1, 0)
     local count = ts:getTileCount()
     example_print_log("columns=" .. ts:getColumns())
@@ -1730,6 +5163,30 @@ end
 
 --@api: LTileSet:getFirstGid
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ts = lurek.tilemap.newTileSet(1, 16, 4, 16, 16, 1, 0)
     local columns = ts:getColumns()
     example_print_log("firstGid=" .. ts:getFirstGid())
@@ -1739,6 +5196,30 @@ end
 
 --@api: LTileSet:getMargin
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ts = lurek.tilemap.newTileSet(1, 16, 4, 16, 16, 1, 0)
     local spacing = ts:getSpacing()
     local width = ts:getTileWidth()
@@ -1749,6 +5230,30 @@ end
 
 --@api: LTileSet:getSpacing
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ts = lurek.tilemap.newTileSet(1, 16, 4, 16, 16, 1, 0)
     local margin = ts:getMargin()
     local height = ts:getTileHeight()
@@ -1759,6 +5264,30 @@ end
 
 --@api: LTileSet:getTileCount
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ts = lurek.tilemap.newTileSet(1, 16, 4, 16, 16, 1, 0)
     local columns = ts:getColumns()
     local first_gid = ts:getFirstGid()
@@ -1769,6 +5298,30 @@ end
 
 --@api: LTileSet:getTileDimensions
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ts = lurek.tilemap.newTileSet(1, 16, 4, 16, 16, 1, 0)
     local tw, th = ts:getTileDimensions()
     local quad = ts:getQuad(1)
@@ -1778,6 +5331,30 @@ end
 
 --@api: LTileSet:getTileHeight
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ts = lurek.tilemap.newTileSet(1, 16, 4, 16, 16, 1, 0)
     local tw = ts:getTileWidth()
     local count = ts:getTileCount()
@@ -1788,6 +5365,30 @@ end
 
 --@api: LTileSet:getTileWidth
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ts = lurek.tilemap.newTileSet(1, 16, 4, 16, 16, 1, 0)
     local th = ts:getTileHeight()
     local count = ts:getTileCount()
@@ -1798,6 +5399,30 @@ end
 
 --@api: LTileSet:type
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ts = lurek.tilemap.newTileSet(1, 16, 4, 16, 16, 1, 0)
     local count = ts:getTileCount()
     local columns = ts:getColumns()
@@ -1808,6 +5433,30 @@ end
 
 --@api: LTileSet:typeOf
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ts = lurek.tilemap.newTileSet(1, 16, 4, 16, 16, 1, 0)
     local is_tileset = ts:typeOf("LTileSet")
     local is_object = ts:typeOf("LObject")
@@ -1818,6 +5467,30 @@ end
 
 --@api: LAutoTileSheet:getLayout
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sheet = lurek.tilemap.newAutoTileSheet(16, 16, "blob47")
     local layout = sheet:getLayout()
     local count = sheet:getTileCount()
@@ -1828,6 +5501,30 @@ end
 
 --@api: LAutoTileSheet:getDefaultMode
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sides = lurek.tilemap.newAutoTileSheet(16, 16, "minimal16")
     local rpg = lurek.tilemap.newAutoTileSheet(16, 16, "rpgmaker48")
     local sides_mode = sides:getDefaultMode()
@@ -1838,6 +5535,30 @@ end
 
 --@api: LAutoTileSheet:getTileCount
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sheet = lurek.tilemap.newAutoTileSheet(16, 16, "blob47")
     local count = sheet:getTileCount()
     local layout = sheet:getLayout()
@@ -1848,6 +5569,30 @@ end
 
 --@api: LAutoTileSheet:getTileHeight
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sheet = lurek.tilemap.newAutoTileSheet(16, 16, "blob47")
     local h = sheet:getTileHeight()
     local w = sheet:getTileWidth()
@@ -1858,6 +5603,30 @@ end
 
 --@api: LAutoTileSheet:getTileWidth
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sheet = lurek.tilemap.newAutoTileSheet(32, 32, "minimal16")
     local w = sheet:getTileWidth()
     local h = sheet:getTileHeight()
@@ -1868,6 +5637,30 @@ end
 
 --@api: LAutoTileSheet:type
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sheet = lurek.tilemap.newAutoTileSheet(32, 32, "minimal16")
     local t = sheet:type()
     local layout = sheet:getLayout()
@@ -1878,6 +5671,30 @@ end
 
 --@api: LAutoTileSheet:typeOf
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sheet = lurek.tilemap.newAutoTileSheet(32, 32, "minimal16")
     local ok = sheet:typeOf("LAutoTileSheet")
     local as_object = sheet:typeOf("LObject")
@@ -1888,6 +5705,30 @@ end
 
 --@api: LChunkMap:getChunkSize
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cm = lurek.tilemap.newChunkMap(32)
     local sz = cm:getChunkSize()
     local loaded = cm:getLoadedChunks()
@@ -1897,6 +5738,30 @@ end
 
 --@api: LChunkMap:type
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cm = lurek.tilemap.newChunkMap(32)
     local t = cm:type()
     local sz = cm:getChunkSize()
@@ -1907,6 +5772,30 @@ end
 
 --@api: LChunkMap:typeOf
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cm = lurek.tilemap.newChunkMap(32)
     local ok = cm:typeOf("LChunkMap")
     local as_object = cm:typeOf("LObject")
@@ -1917,6 +5806,30 @@ end
 
 --@api: LIsoMap:getHeight
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local iso = lurek.tilemap.newIsoMap(20, 15, 64, 32, 16, 4)
     local h = iso:getHeight()
     local w = iso:getWidth()
@@ -1926,6 +5839,30 @@ end
 
 --@api: LIsoMap:getLevelHeight
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local iso = lurek.tilemap.newIsoMap(20, 15, 64, 32, 16, 4)
     local lh = iso:getLevelHeight()
     local parts = iso:getPartCount()
@@ -1935,6 +5872,30 @@ end
 
 --@api: LIsoMap:getPartCount
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local iso = lurek.tilemap.newIsoMap(20, 15, 64, 32, 16, 4)
     local pc = iso:getPartCount()
     local lh = iso:getLevelHeight()
@@ -1944,6 +5905,30 @@ end
 
 --@api: LIsoMap:getTileHeight
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local iso = lurek.tilemap.newIsoMap(10, 10, 64, 32, 16, 4)
     local th = iso:getTileHeight()
     local tw = iso:getTileWidth()
@@ -1953,6 +5938,30 @@ end
 
 --@api: LIsoMap:getTileWidth
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local iso = lurek.tilemap.newIsoMap(10, 10, 64, 32, 16, 4)
     local tw = iso:getTileWidth()
     local th = iso:getTileHeight()
@@ -1962,6 +5971,30 @@ end
 
 --@api: LIsoMap:getWidth
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local iso = lurek.tilemap.newIsoMap(10, 10, 64, 32, 16, 4)
     local w = iso:getWidth()
     local h = iso:getHeight()
@@ -1971,6 +6004,30 @@ end
 
 --@api: LIsoMap:type
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local iso = lurek.tilemap.newIsoMap(8, 8, 32, 16, 8, 2)
     local t = iso:type()
     local w = iso:getWidth()
@@ -1981,6 +6038,30 @@ end
 
 --@api: LIsoMap:typeOf
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local iso = lurek.tilemap.newIsoMap(8, 8, 32, 16, 8, 2)
     local ok = iso:typeOf("LIsoMap")
     local as_object = iso:typeOf("LObject")
@@ -1991,6 +6072,30 @@ end
 
 --@api: LLargeMapRenderer:getChunkSize
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
     local cs = lmr:getChunkSize()
     local cols = lmr:getTilesetColumns()
@@ -2000,6 +6105,30 @@ end
 
 --@api: LLargeMapRenderer:getTilesetColumns
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
     local cols = lmr:getTilesetColumns()
     local chunk = lmr:getChunkSize()
@@ -2009,6 +6138,30 @@ end
 
 --@api: LLargeMapRenderer:type
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
     local t = lmr:type()
     local chunk = lmr:getChunkSize()
@@ -2019,6 +6172,30 @@ end
 
 --@api: LLargeMapRenderer:typeOf
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local lmr = lurek.tilemap.newLargeMapRenderer(32, 32)
     local ok = lmr:typeOf("LLargeMapRenderer")
     local as_object = lmr:typeOf("LObject")
@@ -2029,6 +6206,30 @@ end
 
 --@api: LMapGen:type
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local group = lurek.tilemap.newMapGroup("dungeon") ; local mb = lurek.tilemap.newMapBlock(8, 8, 1, 2)
     group:addBlock(mb)
     local gen = lurek.tilemap.newMapGen(group, "small", 4)
@@ -2038,6 +6239,30 @@ end
 
 --@api: LMapGen:typeOf
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local group = lurek.tilemap.newMapGroup("dungeon") ; local mb = lurek.tilemap.newMapBlock(8, 8, 1, 2)
     group:addBlock(mb)
     local gen = lurek.tilemap.newMapGen(group, "small", 4)
@@ -2047,6 +6272,30 @@ end
 
 --@api: LMapScript:getStepCount.2
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local script = lurek.tilemap.newMapScript()
     script:addStep({type = "fillArea", gid = 1, x = 0, y = 0, w = 8, h = 8})
     script:addStep({type = "fillRect", x = 1, y = 1, w = 4, h = 4, gid = 2})
@@ -2057,6 +6306,30 @@ end
 
 --@api: lurek.tilemap.syncMinimap
 do
+    local function tilemap_log(message)
+        lurek.log.info("[tilemap] " .. message)
+    end
+    local tilemap_log_count = 0
+    local tilemap_log_limit = 96
+    local function example_print_log(...)
+        tilemap_log_count = tilemap_log_count + 1
+        if tilemap_log_count > tilemap_log_limit then
+            return
+        end
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        tilemap_log(table.concat(parts, " "))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tilemap = lurek.tilemap.newTileMap(16, 16, 32)
     local minimap = lurek.minimap.newMinimap(16, 16)
 

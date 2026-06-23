@@ -4,39 +4,40 @@
 
 --- Scene Module Part 1: scene creation, stack management, registration, shared data, lifecycle
 
-local function scene_log(message)
-    lurek.log.info("[scene] " .. message)
-end
 
-local function list_has(list, needle)
-    for _, value in ipairs(list or {}) do
-        if value == needle then
-            return true
-        end
-    end
-    return false
-end
 
-local function make_named_scene(name, extra)
-    local scene = lurek.scene.new({ name = name })
-    if extra then
-        for key, value in pairs(extra) do
-            scene[key] = value
-        end
-    end
-    return scene
-end
 
-local function example_print_log(...)
-    local parts = {}
-    for i = 1, select("#", ...) do
-        parts[i] = tostring(select(i, ...))
-    end
-    lurek.log.info(table.concat(parts, " "))
-end
 
 --@api: lurek.scene.new
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.scene.clear()
     local enter_count = 0
     local menu_scene = lurek.scene.new({ name = "menu", enter = function(self, params) self.mode = params.mode; enter_count = enter_count + 1 end, draw = function() end })
@@ -49,6 +50,34 @@ end
 
 --@api: lurek.scene.define
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local GameplayFactory = lurek.scene.define({
         name = "gameplay",
         level = 0,
@@ -71,6 +100,34 @@ end
 
 --@api: lurek.scene.push
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.scene.clear()
     local title_scene = make_named_scene("title", { enter = function(self, params) self.selected_slot = params.slot end })
     lurek.scene.push(title_scene, nil, nil, nil, { slot = 2 })
@@ -83,6 +140,34 @@ end
 
 --@api: lurek.scene.switchTo
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sceneA = lurek.scene.new({
         name = "level1",
         enter = function()
@@ -111,6 +196,34 @@ end
 
 --@api: lurek.scene.registerScene
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.scene.clear()
     local menu_scene = make_named_scene("mainMenu")
     lurek.scene.registerScene("mainMenu", menu_scene)
@@ -122,6 +235,34 @@ end
 
 --@api: lurek.scene.setData
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.scene.clear()
     lurek.scene.setData("selectedLevel", 5)
     lurek.scene.setData("entryScene", "hangar")
@@ -133,6 +274,34 @@ end
 
 --@api: lurek.scene.popTo
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local base = lurek.scene.new({ name = "base" })
     local mid = lurek.scene.new({ name = "middle" })
     local top = lurek.scene.new({ name = "top" })
@@ -152,6 +321,34 @@ end
 
 --@api: lurek.scene.transitions.fade
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local fade = lurek.scene.transitions.fade(0.5)
     local default_fade = lurek.scene.transitions.fade()
     lurek.scene.clear()
@@ -164,6 +361,34 @@ end
 
 --@api: lurek.scene.transitions.slide
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local slide = lurek.scene.transitions.slide("right", 0.4)
     local default_slide = lurek.scene.transitions.slide()
     lurek.scene.clear()
@@ -176,6 +401,34 @@ end
 
 --@api: lurek.scene.transitions.iris
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local iris = lurek.scene.transitions.iris(0.6)
     local default_iris = lurek.scene.transitions.iris()
     lurek.scene.clear()
@@ -188,6 +441,34 @@ end
 
 --@api: lurek.scene.transitions.wipe
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local wipe = lurek.scene.transitions.wipe(0.5)
     local default_wipe = lurek.scene.transitions.wipe()
     lurek.scene.clear()
@@ -200,6 +481,34 @@ end
 
 --@api: lurek.scene.getTransitionTypes
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local types = lurek.scene.getTransitionTypes()
     local has_fade = list_has(types, "fade")
     local has_zoom = list_has(types, "zoom")
@@ -210,6 +519,34 @@ end
 
 --@api: lurek.scene.queueTransition
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.scene.clear()
     lurek.scene.push(lurek.scene.new({ name = "base" }))
     lurek.scene.queueTransition("fade", 0.2)
@@ -223,6 +560,34 @@ end
 
 --@api: lurek.scene.pushOverlay
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.scene.clear()
     local gameScene = lurek.scene.new({ name = "game" })
     local pauseOverlay = lurek.scene.new({ name = "pause" })
@@ -237,6 +602,34 @@ end
 
 --@api: lurek.scene.preload
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local loadCount = 0
     lurek.scene.clear()
     lurek.scene.preload("heavyLevel", function()
@@ -252,6 +645,34 @@ end
 
 --@api: lurek.scene.getActiveScenes
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.scene.clear()
     lurek.scene.push(lurek.scene.new({ name = "base" }))
     lurek.scene.push(lurek.scene.new({ name = "mid" }))
@@ -264,6 +685,34 @@ end
 
 --@api: lurek.scene.serializeScene
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.scene.clear()
     local menu = lurek.scene.new({ name = "menu" })
     local game = lurek.scene.new({ name = "game" })
@@ -284,6 +733,34 @@ end
 
 --@api: lurek.scene.newDepthSorter
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sorter = lurek.scene.newDepthSorter()
     example_print_log("type = " .. sorter:type() .. " is LDepthSorter = " .. tostring(sorter:typeOf("LDepthSorter")))
     sorter:add(function()
@@ -299,6 +776,34 @@ end
 
 --@api: LDepthSorter:addObject
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sorter = lurek.scene.newDepthSorter()
     local obj1 = { depth = 3, drawSorted = function(self) example_print_log("draw obj at depth " .. self.depth) end }
     local obj2 = { depth = 1, drawSorted = function(self) example_print_log("draw obj at depth " .. self.depth) end }
@@ -310,6 +815,34 @@ end
 
 --@api: LDepthSorter:sort
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sorter = lurek.scene.newDepthSorter()
     sorter:add(function()
         example_print_log("sorted callback")
@@ -324,6 +857,34 @@ end
 
 --@api: LDepthSorter:clear
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sorter = lurek.scene.newDepthSorter()
     sorter:add(function()
         example_print_log("queued callback")
@@ -335,6 +896,34 @@ end
 
 --@api: LDepthSorter:setStable
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sorter = lurek.scene.newDepthSorter()
     sorter:setStable(true)
     example_print_log("stable = " .. tostring(sorter:isStable()))
@@ -344,6 +933,34 @@ end
 
 --@api: LDepthSorter:isStable
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sorter = lurek.scene.newDepthSorter()
     local before = sorter:isStable()
     sorter:setStable(true)
@@ -356,6 +973,34 @@ end
 
 --@api: lurek.scene.processLate
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local lateCount = 0
     local physCount = 0
     local scene = lurek.scene.new({
@@ -376,6 +1021,34 @@ end
 --- Scene Part 2: full scene module API coverage
 --@api: lurek.scene.clear
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.scene.clear()
     lurek.scene.push(lurek.scene.new({ name = "main_scene" }))
     lurek.scene.push(lurek.scene.new({ name = "pause_scene" }))
@@ -388,6 +1061,34 @@ end
 
 --@api: lurek.scene.clearQueuedTransitions
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.scene.clear()
     lurek.scene.push(lurek.scene.new({ name = "main_scene" }))
     lurek.scene.queueTransition("fade", 0.25, "linear")
@@ -399,6 +1100,34 @@ end
 
 --@api: lurek.scene.deserializeScene
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.scene.clear()
     lurek.scene.setData("score", 42)
     local snapshot = lurek.scene.serializeScene()
@@ -410,6 +1139,34 @@ end
 
 --@api: lurek.scene.draw
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local draws = 0
     lurek.scene.clear()
     lurek.scene.push(lurek.scene.new({ name = "draw_scene", draw = function() draws = draws + 1 end }))
@@ -420,6 +1177,34 @@ end
 
 --@api: lurek.scene.getCurrent
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.scene.clear()
     lurek.scene.push(lurek.scene.new({ name = "main_scene" }))
     local current = lurek.scene.getCurrent()
@@ -429,6 +1214,34 @@ end
 
 --@api: lurek.scene.getCurrentLayer
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.scene.clear()
     lurek.scene.push(lurek.scene.new({ name = "main_scene" }))
     lurek.scene.setCurrentLayer(12)
@@ -438,6 +1251,34 @@ end
 
 --@api: lurek.scene.getData
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.scene.clear()
     lurek.scene.setData("score", 42)
     lurek.scene.setData("checkpoint", "hangar")
@@ -449,6 +1290,34 @@ end
 
 --@api: lurek.scene.getQueuedTransitionCount
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.scene.clear()
     lurek.scene.push(lurek.scene.new({ name = "main_scene" }))
     lurek.scene.queueTransition("fade", 0.25, "linear")
@@ -458,6 +1327,34 @@ end
 
 --@api: lurek.scene.getRegistered
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.scene.clear()
     lurek.scene.registerScene("main_scene", lurek.scene.new({ name = "main_scene" }))
     local scene = lurek.scene.getRegistered("main_scene")
@@ -469,6 +1366,34 @@ end
 
 --@api: lurek.scene.getRegisteredNames
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.scene.clear()
     lurek.scene.registerScene("main_scene", lurek.scene.new({ name = "main_scene" }))
     lurek.scene.registerScene("pause_scene", lurek.scene.new({ name = "pause_scene" }))
@@ -479,6 +1404,34 @@ end
 
 --@api: lurek.scene.getStackSize
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.scene.clear()
     lurek.scene.push(lurek.scene.new({ name = "main_scene" }))
     lurek.scene.pushOverlay(lurek.scene.new({ name = "pause_overlay" }), "fade", 0.2)
@@ -491,6 +1444,34 @@ end
 
 --@api: lurek.scene.getTransitionProgress
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.scene.clear()
     lurek.scene.push(lurek.scene.new({ name = "base_scene" }))
     lurek.scene.switchTo(lurek.scene.new({ name = "next_scene" }), "fade", 0.25, "linear")
@@ -500,6 +1481,34 @@ end
 
 --@api: lurek.scene.getTransitionProgressEased
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.scene.clear()
     lurek.scene.push(lurek.scene.new({ name = "base_scene" }))
     lurek.scene.switchTo(lurek.scene.new({ name = "next_scene" }), "fade", 0.25, "linear")
@@ -509,6 +1518,34 @@ end
 
 --@api: lurek.scene.hasData
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.scene.clear()
     lurek.scene.setData("score", 42)
     local has_score = lurek.scene.hasData("score")
@@ -519,6 +1556,34 @@ end
 
 --@api: lurek.scene.hasRegistered
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.scene.clear()
     lurek.scene.registerScene("main_scene", lurek.scene.new({ name = "main_scene" }))
     local has_main = lurek.scene.hasRegistered("main_scene")
@@ -529,6 +1594,34 @@ end
 
 --@api: lurek.scene.isEmpty
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.scene.clear()
     lurek.scene.push(lurek.scene.new({ name = "main_scene" }))
     example_print_log("before clear = " .. tostring(lurek.scene.isEmpty()))
@@ -538,6 +1631,34 @@ end
 
 --@api: lurek.scene.isOverlay
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.scene.clear()
     lurek.scene.push(lurek.scene.new({ name = "main_scene" }))
     lurek.scene.pushOverlay(lurek.scene.new({ name = "pause_overlay" }), "fade", 0.2)
@@ -547,6 +1668,34 @@ end
 
 --@api: lurek.scene.isPreloaded
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.scene.clear()
     lurek.scene.preload("main_scene", function()
         lurek.scene.registerScene("main_scene", lurek.scene.new({ name = "main_scene" }))
@@ -560,6 +1709,34 @@ end
 
 --@api: lurek.scene.isTransitioning
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.scene.clear()
     lurek.scene.push(lurek.scene.new({ name = "base_scene" }))
     lurek.scene.switchTo(lurek.scene.new({ name = "next_scene" }), "fade", 0.25, "linear")
@@ -569,6 +1746,34 @@ end
 
 --@api: lurek.scene.pop
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.scene.clear()
     lurek.scene.push(lurek.scene.new({ name = "first_scene" }))
     lurek.scene.push(lurek.scene.new({ name = "second_scene" }))
@@ -579,6 +1784,34 @@ end
 
 --@api: lurek.scene.pushPreloaded
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.scene.clear()
     lurek.scene.preload("main_scene", function()
         lurek.scene.registerScene("main_scene", lurek.scene.new({ name = "main_scene" }))
@@ -592,6 +1825,34 @@ end
 
 --@api: LDepthSorter:add
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ds = lurek.scene.newDepthSorter()
     ds:add(function()
         example_print_log("draw circle A")
@@ -606,6 +1867,34 @@ end
 
 --@api: LDepthSorter:flush
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ds = lurek.scene.newDepthSorter()
     ds:add(function()
         example_print_log("flush callback A")
@@ -620,6 +1909,34 @@ end
 
 --@api: LDepthSorter:getCount
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ds = lurek.scene.newDepthSorter()
     ds:add(function()
         example_print_log("count callback")
@@ -633,6 +1950,34 @@ end
 
 --@api: LDepthSorter:type
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ds = lurek.scene.newDepthSorter()
     local type_name = ds:type()
     local is_sorter = ds:typeOf("LDepthSorter")
@@ -643,6 +1988,34 @@ end
 
 --@api: LDepthSorter:typeOf
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ds = lurek.scene.newDepthSorter()
     local is_sorter = ds:typeOf("LDepthSorter")
     local is_object = ds:typeOf("Object")
@@ -653,6 +2026,34 @@ end
 
 --@api: lurek.scene.newScene
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.scene.clear()
     local scene = lurek.scene.newScene({ name = "test_new", enter = function(self, params) self.spawn = params.spawn end })
     lurek.scene.push(scene, nil, nil, nil, { spawn = "dock" })
@@ -664,6 +2065,34 @@ end
 
 --@api: lurek.scene.process
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.scene.clear()
     local processCount = 0
     local scene = lurek.scene.new({
@@ -681,6 +2110,34 @@ end
 
 --@api: lurek.scene.processPhysics
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.scene.clear()
     local physicsCount = 0
     local scene = lurek.scene.new({
@@ -698,6 +2155,34 @@ end
 
 --@api: lurek.scene.removeData
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.scene.clear()
     lurek.scene.setData("_test_key", 42)
     example_print_log("before remove = " .. tostring(lurek.scene.hasData("_test_key")))
@@ -707,6 +2192,34 @@ end
 
 --@api: lurek.scene.render
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.scene.clear()
     local renderCount = 0
     lurek.scene.push(lurek.scene.new({ render = function() renderCount = renderCount + 1 end }))
@@ -717,6 +2230,34 @@ end
 
 --@api: lurek.scene.renderUi
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.scene.clear()
     local uiCount = 0
     lurek.scene.push(lurek.scene.new({ render_ui = function() uiCount = uiCount + 1 end }))
@@ -727,6 +2268,34 @@ end
 
 --@api: lurek.scene.setCurrentLayer
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.scene.clear()
     lurek.scene.push(lurek.scene.new({ name = "layer_scene" }))
     local ok = lurek.scene.setCurrentLayer(8)
@@ -737,6 +2306,34 @@ end
 
 --@api: lurek.scene.unregisterScene
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.scene.clear()
     lurek.scene.registerScene("_tmp_unreg", lurek.scene.new({ name = "_tmp_unreg" }))
     example_print_log("before unregister = " .. tostring(lurek.scene.hasRegistered("_tmp_unreg")))
@@ -746,6 +2343,34 @@ end
 
 --@api: lurek.scene.getRenderActiveScenes
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.scene.clear()
     lurek.scene.push(lurek.scene.new({ name = "base" }))
     lurek.scene.pushOverlay(lurek.scene.new({ name = "overlay" }))
@@ -757,6 +2382,34 @@ end
 
 --@api: lurek.scene.setProcessEnabled
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.scene.clear()
     lurek.scene.push(lurek.scene.new({ name = "main_scene" }))
     local disabled = lurek.scene.setProcessEnabled(nil, false)
@@ -769,6 +2422,34 @@ end
 
 --@api: lurek.scene.setPhysicsEnabled
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.scene.clear()
     lurek.scene.push(lurek.scene.new({ name = "main_scene" }))
     lurek.scene.setPhysicsEnabled(nil, false)
@@ -780,6 +2461,34 @@ end
 
 --@api: lurek.scene.setLateEnabled
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.scene.clear()
     lurek.scene.push(lurek.scene.new({ name = "main_scene" }))
     lurek.scene.setLateEnabled(nil, false)
@@ -791,6 +2500,34 @@ end
 
 --@api: lurek.scene.setUpdateEnabled
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.scene.clear()
     lurek.scene.push(lurek.scene.new({ name = "main_scene" }))
     lurek.scene.setUpdateEnabled(nil, false)
@@ -802,6 +2539,34 @@ end
 
 --@api: lurek.scene.isProcessEnabled
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.scene.clear()
     lurek.scene.push(lurek.scene.new({ name = "main_scene" }))
     local before = lurek.scene.isProcessEnabled()
@@ -815,6 +2580,34 @@ end
 
 --@api: lurek.scene.isPhysicsEnabled
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.scene.clear()
     lurek.scene.push(lurek.scene.new({ name = "main_scene" }))
     local before = lurek.scene.isPhysicsEnabled()
@@ -828,6 +2621,34 @@ end
 
 --@api: lurek.scene.isLateEnabled
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.scene.clear()
     lurek.scene.push(lurek.scene.new({ name = "main_scene" }))
     local before = lurek.scene.isLateEnabled()
@@ -841,6 +2662,34 @@ end
 
 --@api: lurek.scene.isUpdateEnabled
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.scene.clear()
     lurek.scene.push(lurek.scene.new({ name = "main_scene" }))
     local before = lurek.scene.isUpdateEnabled()
@@ -854,6 +2703,34 @@ end
 
 --@api: lurek.scene.update
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     -- update advances transitions and dispatches the update callback to the top scene
     lurek.scene.clear()
     local s = lurek.scene.new({ name = "update_test" })
@@ -865,6 +2742,34 @@ end
 
 --@api: lurek.scene.depth
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.scene.clear()
     local d0 = lurek.scene.depth()
     lurek.scene.push(lurek.scene.new({ name = "d1" }))
@@ -875,6 +2780,34 @@ end
 
 --@api: lurek.scene.newObjectContainer
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local container = lurek.scene.newObjectContainer()
 
     local player = {
@@ -913,6 +2846,34 @@ end
 
 --@api: LSceneObjectContainer:add
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local container = lurek.scene.newObjectContainer()
     local obj = { id = "player", layer = 2 }
     container:add(obj)
@@ -924,6 +2885,34 @@ end
 
 --@api: LSceneObjectContainer:clear
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local container = lurek.scene.newObjectContainer()
     container:add({ id = "background", layer = 1 })
     container:add({ id = "player", layer = 2 })
@@ -936,6 +2925,34 @@ end
 
 --@api: LSceneObjectContainer:draw
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local container = lurek.scene.newObjectContainer()
     local draws = 0
     container:add({ id = "background", layer = 1, draw = function() draws = draws + 1 end })
@@ -947,6 +2964,34 @@ end
 
 --@api: LSceneObjectContainer:getByLayer
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local container = lurek.scene.newObjectContainer()
     container:add({ id = "background", layer = 1 })
     container:add({ id = "player", layer = 3 })
@@ -959,6 +3004,34 @@ end
 
 --@api: LSceneObjectContainer:getCount
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local container = lurek.scene.newObjectContainer()
     container:add({ id = "background", layer = 1 })
     container:add({ id = "player", layer = 2 })
@@ -970,6 +3043,34 @@ end
 
 --@api: LSceneObjectContainer:getObjects
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local container = lurek.scene.newObjectContainer()
     container:add({ id = "player", layer = 2 })
     container:add({ id = "background", layer = 1 })
@@ -982,6 +3083,34 @@ end
 
 --@api: LSceneObjectContainer:has
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local container = lurek.scene.newObjectContainer()
     local obj = { id = "player", layer = 1 }
     container:add(obj)
@@ -993,6 +3122,34 @@ end
 
 --@api: LSceneObjectContainer:remove
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local container = lurek.scene.newObjectContainer()
     local obj = { layer = 1 }
     container:add(obj)
@@ -1002,6 +3159,34 @@ end
 
 --@api: LSceneObjectContainer:type
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local container = lurek.scene.newObjectContainer()
     local type_name = container:type()
     local matches = container:typeOf("LSceneObjectContainer")
@@ -1012,6 +3197,34 @@ end
 
 --@api: LSceneObjectContainer:typeOf
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local container = lurek.scene.newObjectContainer()
     local matches = container:typeOf("LSceneObjectContainer")
     local sorter = container:typeOf("LDepthSorter")
@@ -1022,6 +3235,34 @@ end
 
 --@api: LSceneObjectContainer:update
 do
+    local function scene_log(message)
+        lurek.log.info("[scene] " .. message)
+    end
+    local function list_has(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function make_named_scene(name, extra)
+        local scene = lurek.scene.new({ name = name })
+        if extra then
+            for key, value in pairs(extra) do
+                scene[key] = value
+            end
+        end
+        return scene
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local container = lurek.scene.newObjectContainer()
     local ticks = 0
     container:add({

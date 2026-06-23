@@ -1,14 +1,203 @@
 //! Registers the `lurek.visibility` Lua API for visibility userdata, queries, and visibility-side validation.
 
+use super::tilefield_api::LuaTileField;
 use super::SharedState;
-use crate::visibility::{FogConfig, TileFov, VisibilityEvent, VisibilityFlags, VisibilityGrid};
+use crate::tilefield::{CellCoord, TileChannel};
+use crate::visibility::{
+    FogConfig, TileFov, TileVisibility, VisibilityEvent, VisibilityFlags, VisibilityGrid,
+};
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
 
+fn visibility_lua_err(api: &str, err: impl std::fmt::Display) -> LuaError {
+    LuaError::RuntimeError(format!("lurek.visibility.{api}: {err}"))
+}
+
+fn one_based_visibility(value: u32, label: &str) -> LuaResult<u32> {
+    value
+        .checked_sub(1)
+        .ok_or_else(|| LuaError::RuntimeError(format!("lurek.visibility: {label} must be >= 1")))
+}
+
+fn visibility_coord_from_table(table: LuaTable, api: &str) -> LuaResult<CellCoord> {
+    let x: u32 = table.get("x").map_err(|e| visibility_lua_err(api, e))?;
+    let y: u32 = table.get("y").map_err(|e| visibility_lua_err(api, e))?;
+    let z: Option<u32> = table.get("z").map_err(|e| visibility_lua_err(api, e))?;
+    Ok(CellCoord {
+        x: one_based_visibility(x, "x")?,
+        y: one_based_visibility(y, "y")?,
+        z: one_based_visibility(z.unwrap_or(1), "z")?,
+    })
+}
+
+fn visibility_channel(opts: &LuaTable, default: &str, api: &str) -> LuaResult<TileChannel> {
+    let name = opts
+        .get::<_, Option<String>>("channel")
+        .map_err(|e| visibility_lua_err(api, e))?
+        .unwrap_or_else(|| default.to_string());
+    TileChannel::parse(&name).map_err(|e| visibility_lua_err(api, e))
+}
+
+fn visibility_cells_to_lua<'lua>(
+    lua: &'lua Lua,
+    cells: Vec<CellCoord>,
+) -> LuaResult<LuaTable<'lua>> {
+    let table = lua.create_table()?;
+    for (i, coord) in cells.into_iter().enumerate() {
+        let row = lua.create_table()?;
+        row.set("x", coord.x + 1)?;
+        row.set("y", coord.y + 1)?;
+        row.set("z", coord.z + 1)?;
+        table.set(i + 1, row)?;
+    }
+    Ok(table)
+}
+
 /// Lua-side wrapper for a visibility grid instance.
 struct LuaVisibilityGrid {
     inner: RefCell<VisibilityGrid>,
+}
+
+/// Lua-side wrapper for per-player tile visibility/action masks.
+struct LuaTileVisibility {
+    field: Rc<RefCell<crate::tilefield::TileField>>,
+    inner: RefCell<TileVisibility>,
+}
+
+impl LuaUserData for LuaTileVisibility {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- computeVisible --
+        /// Computes one player's current visible mask from a tilefield origin.
+        methods.add_method(
+            "computeVisible",
+            |_, this, (player, opts): (String, LuaTable)| {
+                let origin = visibility_coord_from_table(
+                    opts.get("origin")?,
+                    "LTileVisibility.computeVisible",
+                )?;
+                let range: u32 = opts
+                    .get("range")
+                    .map_err(|e| visibility_lua_err("LTileVisibility.computeVisible", e))?;
+                let channel =
+                    visibility_channel(&opts, "vision", "LTileVisibility.computeVisible")?;
+                let field = this.field.borrow();
+                this.inner
+                    .borrow_mut()
+                    .compute_visible(&field, &player, origin, range, channel)
+                    .map_err(|e| visibility_lua_err("LTileVisibility.computeVisible", e))
+            },
+        );
+
+        // -- computeAction --
+        /// Computes one player's current action mask from a tilefield origin.
+        methods.add_method(
+            "computeAction",
+            |_, this, (player, opts): (String, LuaTable)| {
+                let origin = visibility_coord_from_table(
+                    opts.get("origin")?,
+                    "LTileVisibility.computeAction",
+                )?;
+                let range: u32 = opts
+                    .get("range")
+                    .map_err(|e| visibility_lua_err("LTileVisibility.computeAction", e))?;
+                let channel = visibility_channel(&opts, "action", "LTileVisibility.computeAction")?;
+                let field = this.field.borrow();
+                this.inner
+                    .borrow_mut()
+                    .compute_action(&field, &player, origin, range, channel)
+                    .map_err(|e| visibility_lua_err("LTileVisibility.computeAction", e))
+            },
+        );
+
+        // -- isVisible --
+        /// Returns whether a one-based cell is currently visible for a player.
+        methods.add_method(
+            "isVisible",
+            |_, this, (player, x, y, z): (String, u32, u32, Option<u32>)| {
+                let coord = CellCoord {
+                    x: one_based_visibility(x, "x")?,
+                    y: one_based_visibility(y, "y")?,
+                    z: one_based_visibility(z.unwrap_or(1), "z")?,
+                };
+                Ok(this.inner.borrow().is_visible(&player, coord))
+            },
+        );
+
+        // -- isExplored --
+        /// Returns whether a one-based cell has been explored for a player.
+        methods.add_method(
+            "isExplored",
+            |_, this, (player, x, y, z): (String, u32, u32, Option<u32>)| {
+                let coord = CellCoord {
+                    x: one_based_visibility(x, "x")?,
+                    y: one_based_visibility(y, "y")?,
+                    z: one_based_visibility(z.unwrap_or(1), "z")?,
+                };
+                Ok(this.inner.borrow().is_explored(&player, coord))
+            },
+        );
+
+        // -- canActOn --
+        /// Returns whether a one-based cell is currently actionable for a player.
+        methods.add_method(
+            "canActOn",
+            |_, this, (player, x, y, z): (String, u32, u32, Option<u32>)| {
+                let coord = CellCoord {
+                    x: one_based_visibility(x, "x")?,
+                    y: one_based_visibility(y, "y")?,
+                    z: one_based_visibility(z.unwrap_or(1), "z")?,
+                };
+                Ok(this.inner.borrow().can_act_on(&player, coord))
+            },
+        );
+
+        // -- visibleCells --
+        /// Returns all currently visible cells for a player, optionally filtered to a level.
+        methods.add_method(
+            "visibleCells",
+            |lua, this, (player, z): (String, Option<u32>)| {
+                let level = z.map(|v| one_based_visibility(v, "z")).transpose()?;
+                visibility_cells_to_lua(lua, this.inner.borrow().visible_cells(&player, level))
+            },
+        );
+
+        // -- actionCells --
+        /// Returns all currently actionable cells for a player, optionally filtered to a level.
+        methods.add_method(
+            "actionCells",
+            |lua, this, (player, z): (String, Option<u32>)| {
+                let level = z.map(|v| one_based_visibility(v, "z")).transpose()?;
+                visibility_cells_to_lua(lua, this.inner.borrow().action_cells(&player, level))
+            },
+        );
+
+        // -- clearPlayer --
+        /// Clears current, explored, and action masks for one player.
+        methods.add_method("clearPlayer", |_, this, player: String| {
+            this.inner
+                .borrow_mut()
+                .clear_player(&player)
+                .map_err(|e| visibility_lua_err("LTileVisibility.clearPlayer", e))
+        });
+
+        // -- clearAll --
+        /// Clears current, explored, and action masks for all players.
+        methods.add_method("clearAll", |_, this, ()| {
+            this.inner.borrow_mut().clear_all();
+            Ok(())
+        });
+
+        // -- type --
+        /// Returns the Lua-visible type name for this tile visibility handle.
+        methods.add_method("type", |_, _, ()| Ok("LTileVisibility"));
+
+        // -- typeOf --
+        /// Returns whether this handle matches a supported type name.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "LTileVisibility" || name == "LObject")
+        });
+    }
 }
 
 impl LuaUserData for LuaVisibilityGrid {
@@ -272,6 +461,107 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
                 blocker_key: RefCell::new(None),
             })
         })?,
+    )?;
+
+    // -- newTileVisibility --
+    /// Creates per-player tile visibility/action masks backed by a tilefield.
+    /// @param | field | LTileField | Source tilefield.
+    /// @param | opts | table | `{players={...}, rememberExplored=true?}`.
+    /// @return | LTileVisibility | New tile visibility handle.
+    tbl.set(
+        "newTileVisibility",
+        lua.create_function(|_, (field_ud, opts): (LuaAnyUserData, LuaTable)| {
+            let field_ud = field_ud.borrow::<LuaTileField>()?;
+            let players_tbl: LuaTable = opts.get("players")?;
+            let mut players = Vec::new();
+            for player in players_tbl.sequence_values::<String>() {
+                players.push(player?);
+            }
+            if players.is_empty() {
+                return Err(visibility_lua_err(
+                    "newTileVisibility",
+                    "players must contain at least one id",
+                ));
+            }
+            let remember = opts
+                .get::<_, Option<bool>>("rememberExplored")?
+                .unwrap_or(true);
+            let (width, height, levels) = field_ud.inner.borrow().size();
+            Ok(LuaTileVisibility {
+                field: field_ud.inner.clone(),
+                inner: RefCell::new(TileVisibility::new(
+                    width, height, levels, players, remember,
+                )),
+            })
+        })?,
+    )?;
+
+    // -- lineOfSight --
+    /// Returns whether two tilefield cells have a clear sight line.
+    /// @param | field | LTileField | Tilefield to query.
+    /// @param | from | table | One-based `{x,y,z?}` start.
+    /// @param | to | table | One-based `{x,y,z?}` target.
+    /// @param | opts | table? | Optional `{channel="vision"}`.
+    /// @return | boolean | True when clear.
+    tbl.set(
+        "lineOfSight",
+        lua.create_function(
+            |_,
+             (field_ud, from_tbl, to_tbl, opts): (
+                LuaAnyUserData,
+                LuaTable,
+                LuaTable,
+                Option<LuaTable>,
+            )| {
+                let field_ud = field_ud.borrow::<LuaTileField>()?;
+                let from = visibility_coord_from_table(from_tbl, "lineOfSight")?;
+                let to = visibility_coord_from_table(to_tbl, "lineOfSight")?;
+                let channel = match opts {
+                    Some(opts) => visibility_channel(&opts, "vision", "lineOfSight")?,
+                    None => TileChannel::Vision,
+                };
+                let result = field_ud
+                    .inner
+                    .borrow()
+                    .clear_line(from, to, channel)
+                    .map_err(|e| visibility_lua_err("lineOfSight", e));
+                result
+            },
+        )?,
+    )?;
+
+    // -- lineOfAction --
+    /// Returns whether two tilefield cells have a clear action line.
+    /// @param | field | LTileField | Tilefield to query.
+    /// @param | from | table | One-based `{x,y,z?}` start.
+    /// @param | to | table | One-based `{x,y,z?}` target.
+    /// @param | opts | table? | Optional `{channel="action"}`.
+    /// @return | boolean | True when clear.
+    tbl.set(
+        "lineOfAction",
+        lua.create_function(
+            |_,
+             (field_ud, from_tbl, to_tbl, opts): (
+                LuaAnyUserData,
+                LuaTable,
+                LuaTable,
+                Option<LuaTable>,
+            )| {
+                let field_ud = field_ud.borrow::<LuaTileField>()?;
+                let from = visibility_coord_from_table(from_tbl, "lineOfAction")?;
+                let to = visibility_coord_from_table(to_tbl, "lineOfAction")?;
+                let channel = match opts {
+                    Some(opts) => visibility_channel(&opts, "action", "lineOfAction")?,
+                    None => TileChannel::Action,
+                };
+                let result = field_ud
+                    .inner
+                    .borrow()
+                    .clear_line(from, to, channel)
+                    .map_err(|e| visibility_lua_err("lineOfAction", e));
+                result
+            },
+        )?,
     )?;
 
     lurek.set("visibility", tbl)?;

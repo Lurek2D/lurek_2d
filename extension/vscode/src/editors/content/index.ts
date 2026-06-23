@@ -1,10 +1,11 @@
 import type { EditorContent } from "./types.js";
-import { databaseContent, localizationContent, inputMapperContent, testRunnerContent, globalAutoloadContent, assetManifestContent } from "./tableContent.js";
-import { tileMapContent, pixelArtContent, voxelContent, provinceContent, navMeshContent, tilesetContent } from "./gridContent.js";
-import { graphContent, dialogContent, questTreeContent, sceneFlowContent, aiBehaviorContent, visualShaderContent, soundDspContent, worldMapContent, networkTopologyContent } from "./nodeContent.js";
-import { timelineContent, spriteAnimContent, skeletonRiggingContent } from "./timelineContent.js";
-import { particleContent, postfxContent, procMapContent, shaderPreviewContent, fontPreviewContent, audioMixerContent, colorPaletteContent, physicsMaterialsContent, lightingContent, profilerContent, globeContent } from "./previewContent.js";
+import { localizationContent, inputMapperContent, testRunnerContent, globalAutoloadContent, assetManifestContent } from "./tableContent.js";
+import { navMeshContent, tilesetContent } from "./gridContent.js";
+import { questTreeContent, visualShaderContent, soundDspContent, worldMapContent, networkTopologyContent } from "./nodeContent.js";
+import { timelineContent, spriteAnimContent } from "./timelineContent.js";
+import { postfxContent, shaderPreviewContent, fontPreviewContent, audioMixerContent, colorPaletteContent, physicsMaterialsContent, lightingContent, profilerContent } from "./previewContent.js";
 import { entityContent, guiWidgetContent, guiThemeContent, tilemapScriptContent, apiReferenceContent, projectExportContent } from "./documentContent.js";
+import { aiBehaviorContent, databaseContent, dialogContent, globeContent, graphContent, particleContent, pixelArtContent, procMapContent, provinceContent, sceneFlowContent, skeletonRiggingContent, tileMapContent, voxelContent } from "./professionalContent.js";
 
 function fallbackContent(editorId: string): EditorContent {
   return {

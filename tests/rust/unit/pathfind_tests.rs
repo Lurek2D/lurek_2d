@@ -237,19 +237,6 @@ mod iso_grid_tests {
     }
 
     #[test]
-    fn line_of_sight_clear_on_open_grid() {
-        let g = IsoGrid::new(5, 5);
-        assert!(g.line_of_sight((0, 0), (4, 4)));
-    }
-
-    #[test]
-    fn line_of_sight_blocked_by_cell() {
-        let mut g = IsoGrid::new(5, 5);
-        g.set_blocked(2, 2, true);
-        assert!(!g.line_of_sight((0, 0), (4, 4)));
-    }
-
-    #[test]
     fn center_cell_has_four_neighbors() {
         let g = IsoGrid::new(5, 5);
         let n = g.neighbors(2, 2);

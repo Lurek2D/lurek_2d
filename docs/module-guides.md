@@ -69,6 +69,7 @@ Callbacks: [Runtime callbacks](api/callbacks.md)
 | [SVG](modules/svg.md) | `lurek.svg` | The svg module is the engine surface for scalable vector artwork, aimed at users who want SVG-style content to stay editable and resolution-independent for as long as possible. |
 | [Terminal](modules/terminal.md) | `lurek.terminal` | The terminal module is the engine's character-grid interface surface for users who want text-mode displays, debug consoles, command panels, or roguelike-style presentation. |
 | [Thread](modules/thread.md) | `lurek.thread` | The thread module is the isolated-concurrency surface for projects that want background Lua work without violating the engine's VM and runtime-safety rules. |
+| [Tilefield](modules/tilefield.md) | `lurek.tilefield` | Coordinates exposed to Lua are one-based x, y, z; Rust storage is zero-based. |
 | [Tilemap](modules/tilemap.md) | `lurek.tilemap` | The tilemap module is the engine's full grid-world framework for users who want tile-based spaces to be authored, generated, rendered, queried, and traversed through one reusable system rather than through several disconnected helpers. |
 | [Timer](modules/timer.md) | `lurek.timer` | The timer module is the shared time-management surface for users who need clocks, delayed callbacks, repeating work, and timing queries to behave consistently. |
 | [Tween](modules/tween.md) | `lurek.tween` | The tween module is the engine's interpolation and motion-sequencing surface for users who want values to change over time without hand-writing frame-by-frame update loops. |

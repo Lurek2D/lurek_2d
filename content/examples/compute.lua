@@ -2,23 +2,24 @@
 -- Auto-generated from content/examples2/compute_*.lua by tools/fix/merge_examples2_into_examples.py
 -- Run: cargo run -- content/examples/compute.lua
 
-local function compute_log(message)
-    lurek.log.info("[compute] " .. message)
-end
 
-local function shape_text(array)
-    local shape = array:getShape()
-    local parts = {}
-    for i = 1, #shape do
-        parts[i] = tostring(shape[i])
-    end
-    return table.concat(parts, "x")
-end
 
 --- Compute Module Part 1: Array Creation, Element Access, Shape, Arithmetic, Comparisons
 
 --@api: lurek.compute.newArray
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local spawn_weights = lurek.compute.newArray({4, 4}, "float32")
     spawn_weights:set(1, 1, 0.25)
     spawn_weights:set(4, 4, 0.75)
@@ -28,6 +29,18 @@ end
 
 --@api: lurek.compute.zeros
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local occupancy = lurek.compute.zeros({3, 3})
     occupancy:set(2, 2, 1)
     local shape = shape_text(occupancy)
@@ -37,6 +50,18 @@ end
 
 --@api: lurek.compute.ones
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local flood_mask = lurek.compute.ones({2, 5}, "float32")
     local total = flood_mask:sum()
     local shape = shape_text(flood_mask)
@@ -46,6 +71,18 @@ end
 
 --@api: lurek.compute.range
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local frame_marks = lurek.compute.range(0, 10, 2, "float32")
     local shape = shape_text(frame_marks)
     local total = frame_marks:getSize()
@@ -55,6 +92,18 @@ end
 
 --@api: lurek.compute.fromTable
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local loot_table = lurek.compute.fromTable({5, 8, 13, 21, 34, 55}, {2, 3})
     local shape = shape_text(loot_table)
     local rare_slot = loot_table:get(2, 2)
@@ -64,6 +113,18 @@ end
 
 --@api: lurek.compute.gaussianKernel
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local blur_kernel = lurek.compute.gaussianKernel(5, 1.0)
     local center = blur_kernel:get(3, 3)
     local total = blur_kernel:sum()
@@ -73,6 +134,18 @@ end
 
 --@api: lurek.compute.rotate2dMatrix
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local facing_turn = lurek.compute.rotate2dMatrix(math.pi / 4)
     local row_x = facing_turn:get(1, 1)
     local row_y = facing_turn:get(1, 2)
@@ -82,6 +155,18 @@ end
 
 --@api: lurek.compute.affine2d
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local camera_move = lurek.compute.affine2d(10, 20, 0, 1, 1)
     local point = lurek.compute.fromTable({0, 0}, {1, 2})
     local moved = camera_move:transformPoints(point)
@@ -91,6 +176,18 @@ end
 
 --@api: lurek.compute.fft
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local samples = {1, 0, -1, 0}
     local spectrum = lurek.compute.fft(samples)
     local bin = spectrum[2]
@@ -100,6 +197,18 @@ end
 
 --@api: lurek.compute.ifft
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local original = {1, 0, -1, 0}
     local spectrum = lurek.compute.fft(original)
     local rebuilt = lurek.compute.ifft(spectrum)
@@ -110,6 +219,18 @@ end
 
 --@api: lurek.compute.fftMagnitude
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local samples = {1, 0, -1, 0}
     local magnitudes = lurek.compute.fftMagnitude(samples)
     local peak = math.max(magnitudes[1], magnitudes[2], magnitudes[3], magnitudes[4])
@@ -119,6 +240,18 @@ end
 
 --@api: lurek.compute.getParThreshold
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local threshold = lurek.compute.getParThreshold()
     local matrix = lurek.compute.newArray({32, 32})
     local size = matrix:getSize()
@@ -128,6 +261,18 @@ end
 
 --@api: lurek.compute.setParThreshold
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local previous = lurek.compute.getParThreshold()
     local old_value = lurek.compute.setParThreshold(1024)
     local current = lurek.compute.getParThreshold()
@@ -137,6 +282,18 @@ end
 
 --@api: LArray:getShape
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local visibility = lurek.compute.newArray({3, 4})
     visibility:set(1, 1, 1)
     local shape = visibility:getShape()
@@ -146,6 +303,18 @@ end
 
 --@api: LArray:getDimensions
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local voxel_costs = lurek.compute.newArray({2, 3, 4})
     voxel_costs:set(2, 3, 4, 9)
     local dims = voxel_costs:getDimensions()
@@ -155,6 +324,18 @@ end
 
 --@api: LArray:getSize
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local chunk_cells = lurek.compute.newArray({5, 5})
     chunk_cells:set(3, 3, 7)
     local size = chunk_cells:getSize()
@@ -164,6 +345,18 @@ end
 
 --@api: LArray:getDataType
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local heat_values = lurek.compute.newArray({2, 2}, "float32")
     heat_values:set(1, 2, 0.5)
     local dtype = heat_values:getDataType()
@@ -173,6 +366,18 @@ end
 
 --@api: LArray:isOnGPU
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local nav_buffer = lurek.compute.ones({4, 4})
     nav_buffer:set(2, 3, 4)
     local on_gpu = nav_buffer:isOnGPU()
@@ -182,6 +387,18 @@ end
 
 --@api: LArray:get
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local damage_table = lurek.compute.fromTable({10, 20, 30, 40}, {2, 2})
     local melee = damage_table:get(1, 2)
     local ranged = damage_table:get(2, 1)
@@ -191,6 +408,18 @@ end
 
 --@api: LArray:set
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local threat_map = lurek.compute.zeros({3, 3})
     threat_map:set(2, 2, 99)
     threat_map:set(2, 3, 42)
@@ -200,6 +429,18 @@ end
 
 --@api: LArray:toTable
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local patrol_route = lurek.compute.fromTable({1, 2, 3}, {3})
     local steps = patrol_route:toTable()
     local first = steps[1]
@@ -209,6 +450,18 @@ end
 
 --@api: LArray:reshape
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local encounter_stream = lurek.compute.fromTable({1, 2, 3, 4, 5, 6}, {6})
     local encounter_grid = encounter_stream:reshape({2, 3})
     local shape = shape_text(encounter_grid)
@@ -218,6 +471,18 @@ end
 
 --@api: LArray:clone
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local source_weights = lurek.compute.ones({3, 3})
     local tuned_weights = source_weights:clone()
     tuned_weights:set(1, 1, 5)
@@ -227,6 +492,18 @@ end
 
 --@api: LArray:transpose
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local room_links = lurek.compute.fromTable({1, 2, 3, 4, 5, 6}, {2, 3})
     local reversed_links = room_links:transpose()
     local shape = shape_text(reversed_links)
@@ -236,6 +513,18 @@ end
 
 --@api: LArray:fill
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local fog_layer = lurek.compute.newArray({3, 3})
     fog_layer:fill(7)
     local center = fog_layer:get(2, 2)
@@ -245,6 +534,18 @@ end
 
 --@api: LArray:addInplace
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local base_cost = lurek.compute.ones({3, 3})
     local swamp_penalty = lurek.compute.ones({3, 3})
     base_cost:addInplace(swamp_penalty)
@@ -254,6 +555,18 @@ end
 
 --@api: LArray:subInplace
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local stamina_pool = lurek.compute.fromTable({5, 5, 5, 5}, {2, 2})
     local drain = lurek.compute.ones({2, 2})
     stamina_pool:subInplace(drain)
@@ -263,6 +576,18 @@ end
 
 --@api: LArray:mulInplace
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local reward_grid = lurek.compute.fromTable({2, 3, 4, 5}, {2, 2})
     local combo_boost = lurek.compute.fromTable({10, 10, 10, 10}, {2, 2})
     reward_grid:mulInplace(combo_boost)
@@ -272,6 +597,18 @@ end
 
 --@api: LArray:divInplace
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local frame_times = lurek.compute.fromTable({10, 20, 30, 40}, {2, 2})
     local sample_counts = lurek.compute.fromTable({2, 4, 5, 8}, {2, 2})
     frame_times:divInplace(sample_counts)
@@ -281,6 +618,18 @@ end
 
 --@api: LArray:add
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local threat_scores = lurek.compute.fromTable({1, 2, 3}, {3})
     local danger_bonus = threat_scores:add(10)
     local original = threat_scores:get(1)
@@ -290,6 +639,18 @@ end
 
 --@api: LArray:sub
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local health_bar = lurek.compute.fromTable({10, 20, 30}, {3})
     local after_hit = health_bar:sub(5)
     local middle = after_hit:get(2)
@@ -299,6 +660,18 @@ end
 
 --@api: LArray:mul
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local combo_hits = lurek.compute.fromTable({2, 3, 4}, {3})
     local scaled_hits = combo_hits:mul(3)
     local second = scaled_hits:get(2)
@@ -308,6 +681,18 @@ end
 
 --@api: LArray:div
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local damage_ticks = lurek.compute.fromTable({10, 20, 30}, {3})
     local normalized = damage_ticks:div(10)
     local first = normalized:get(1)
@@ -317,6 +702,18 @@ end
 
 --@api: LArray:pow
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local distance_ring = lurek.compute.fromTable({2, 3, 4}, {3})
     local falloff = distance_ring:pow(2)
     local second = falloff:get(2)
@@ -326,6 +723,18 @@ end
 
 --@api: LArray:sqrt
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local area_values = lurek.compute.fromTable({4, 9, 16}, {3})
     local side_lengths = area_values:sqrt()
     local first = side_lengths:get(1)
@@ -335,6 +744,18 @@ end
 
 --@api: LArray:abs
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local recoil_offsets = lurek.compute.fromTable({-3, -1, 2}, {3})
     local absolute_offsets = recoil_offsets:abs()
     local first = absolute_offsets:get(1)
@@ -344,6 +765,18 @@ end
 
 --@api: LArray:neg
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local knockback = lurek.compute.fromTable({5, -3, 0}, {3})
     local reversed = knockback:neg()
     local first = reversed:get(1)
@@ -353,6 +786,18 @@ end
 
 --@api: LArray:clamp
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local audio_levels = lurek.compute.fromTable({-5, 0, 3, 10, 15}, {5})
     local safe_levels = audio_levels:clamp(0, 10)
     local low = safe_levels:get(1)
@@ -362,6 +807,18 @@ end
 
 --@api: LArray:eq
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local tile_ids = lurek.compute.fromTable({1, 2, 3, 2, 1}, {5})
     local door_mask = tile_ids:eq(2)
     local left = door_mask:get(2)
@@ -371,6 +828,18 @@ end
 
 --@api: LArray:neq
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local terrain_ids = lurek.compute.fromTable({1, 2, 3}, {3})
     local moving_mask = terrain_ids:neq(2)
     local first = moving_mask:get(1)
@@ -380,6 +849,18 @@ end
 
 --@api: LArray:gt
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local aggro = lurek.compute.fromTable({1, 5, 10}, {3})
     local alerted = aggro:gt(4)
     local second = alerted:get(2)
@@ -389,6 +870,18 @@ end
 
 --@api: LArray:lt
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local stamina = lurek.compute.fromTable({1, 5, 10}, {3})
     local low_mask = stamina:lt(6)
     local first = low_mask:get(1)
@@ -398,6 +891,18 @@ end
 
 --@api: LArray:gte
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local loot_rarity = lurek.compute.fromTable({1, 5, 10}, {3})
     local rare_mask = loot_rarity:gte(5)
     local second = rare_mask:get(2)
@@ -407,6 +912,18 @@ end
 
 --@api: LArray:lte
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local cooldowns = lurek.compute.fromTable({1, 5, 10}, {3})
     local ready_mask = cooldowns:lte(5)
     local first = ready_mask:get(1)
@@ -416,6 +933,18 @@ end
 
 --@api: LArray:threshold
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local light_probe = lurek.compute.fromTable({0.1, 0.5, 0.9}, {3})
     local lit_mask = light_probe:threshold(0.4)
     local first = lit_mask:get(1)
@@ -425,6 +954,18 @@ end
 
 --@api: LArray:where
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local daytime = lurek.compute.fromTable({10, 20, 30}, {3})
     local nighttime = lurek.compute.fromTable({-1, -2, -3}, {3})
     local visible = daytime:gt(15)
@@ -434,6 +975,18 @@ end
 
 --@api: LArray:countNonZero
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local occupancy = lurek.compute.fromTable({0, 1, 0, 2, 3}, {5})
     local count = occupancy:countNonZero()
     local total = occupancy:getSize()
@@ -443,6 +996,18 @@ end
 
 --@api: LArray:argmin
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local travel_cost = lurek.compute.fromTable({5, 1, 8, 3}, {4})
     local best = travel_cost:argmin()
     local values = travel_cost:toTable()
@@ -452,6 +1017,18 @@ end
 
 --@api: LArray:argmax
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local reward_score = lurek.compute.fromTable({5, 1, 8, 3}, {4})
     local best = reward_score:argmax()
     local values = reward_score:toTable()
@@ -461,6 +1038,18 @@ end
 
 --@api: LArray:any
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local trigger_mask = lurek.compute.fromTable({0, 0, 1}, {3})
     local any_active = trigger_mask:any()
     local all_active = trigger_mask:all()
@@ -472,6 +1061,18 @@ end
 
 --@api: LArray:all
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local alive_party = lurek.compute.fromTable({1, 2, 3}, {3})
     local all_alive = alive_party:all()
     local members = alive_party:getSize()
@@ -481,6 +1082,18 @@ end
 
 --@api: LArray:sum
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local wave_counts = lurek.compute.fromTable({1, 2, 3, 4}, {4})
     local total = wave_counts:sum()
     local average = wave_counts:mean()
@@ -490,6 +1103,18 @@ end
 
 --@api: LArray:mean
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local frame_times = lurek.compute.fromTable({2, 4, 6, 8}, {4})
     local average = frame_times:mean()
     local low = frame_times:min()
@@ -499,6 +1124,18 @@ end
 
 --@api: LArray:min
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local route_costs = lurek.compute.fromTable({7, 2, 9, 1}, {4})
     local best = route_costs:min()
     local index = route_costs:argmin()
@@ -508,6 +1145,18 @@ end
 
 --@api: LArray:max
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local threat_spikes = lurek.compute.fromTable({7, 2, 9, 1}, {4})
     local peak = threat_spikes:max()
     local index = threat_spikes:argmax()
@@ -517,6 +1166,18 @@ end
 
 --@api: LArray:matmul
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local basis = lurek.compute.fromTable({1, 2, 3, 4}, {2, 2})
     local transform = lurek.compute.fromTable({5, 6, 7, 8}, {2, 2})
     local combined = basis:matmul(transform)
@@ -526,6 +1187,18 @@ end
 
 --@api: LArray:dot
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local input_x = lurek.compute.fromTable({1, 2, 3}, {3})
     local input_w = lurek.compute.fromTable({4, 5, 6}, {3})
     local score = input_x:dot(input_w)
@@ -535,6 +1208,18 @@ end
 
 --@api: LArray:bitwiseAnd
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local flags_a = lurek.compute.fromTable({0xFF, 0x0F, 0xAA}, {3}, "int32")
     local flags_b = lurek.compute.fromTable({0x0F, 0x0F, 0x55}, {3}, "int32")
     local overlap = flags_a:bitwiseAnd(flags_b)
@@ -544,6 +1229,18 @@ end
 
 --@api: LArray:bitwiseOr
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local room_a = lurek.compute.fromTable({0xF0, 0x0F}, {2}, "int32")
     local room_b = lurek.compute.fromTable({0x0F, 0xF0}, {2}, "int32")
     local merged = room_a:bitwiseOr(room_b)
@@ -553,6 +1250,18 @@ end
 
 --@api: LArray:bitwiseXor
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local old_state = lurek.compute.fromTable({0xFF, 0x00}, {2}, "int32")
     local new_state = lurek.compute.fromTable({0x0F, 0x0F}, {2}, "int32")
     local changed = old_state:bitwiseXor(new_state)
@@ -562,6 +1271,18 @@ end
 
 --@api: LArray:bitwiseNot
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local solid_mask = lurek.compute.fromTable({0, 255}, {2}, "int32")
     local walkable_mask = solid_mask:bitwiseNot()
     local first = walkable_mask:get(1)
@@ -571,6 +1292,18 @@ end
 
 --@api: LArray:bitwiseLShift
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local palette_bits = lurek.compute.fromTable({1, 2, 4}, {3}, "int32")
     local boosted = palette_bits:bitwiseLShift(2)
     local first = boosted:get(1)
@@ -580,6 +1313,18 @@ end
 
 --@api: LArray:bitwiseRShift
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local packed_color = lurek.compute.fromTable({8, 16, 32}, {3}, "int32")
     local unpacked = packed_color:bitwiseRShift(2)
     local first = unpacked:get(1)
@@ -589,6 +1334,18 @@ end
 
 --@api: LArray:convolve2D
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local lightmap = lurek.compute.zeros({5, 5})
     lightmap:set(3, 3, 1)
     local blur = lurek.compute.gaussianKernel(3, 1.0)
@@ -598,6 +1355,18 @@ end
 
 --@api: LArray:dilate
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local obstacle = lurek.compute.zeros({5, 5})
     obstacle:set(3, 3, 1)
     local clearance = obstacle:dilate(1)
@@ -607,6 +1376,18 @@ end
 
 --@api: LArray:erode
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local floor = lurek.compute.ones({5, 5})
     floor:set(1, 1, 0)
     local trimmed = floor:erode(1)
@@ -616,6 +1397,18 @@ end
 
 --@api: LArray:floodFill
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local region = lurek.compute.zeros({5, 5})
     region:set(1, 1, 1)
     region:set(1, 2, 1)
@@ -625,6 +1418,18 @@ end
 
 --@api: LArray:getRegion
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local dungeon = lurek.compute.range(1, 17, 1):reshape({4, 4})
     local room = dungeon:getRegion(2, 2, 2, 2)
     local shape = shape_text(room)
@@ -634,6 +1439,18 @@ end
 
 --@api: LArray:setRegion
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local minimap = lurek.compute.zeros({4, 4})
     local room_patch = lurek.compute.ones({2, 2})
     minimap:setRegion(2, 2, room_patch)
@@ -643,6 +1460,18 @@ end
 
 --@api: LArray:cumsum
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local xp_gains = lurek.compute.fromTable({1, 2, 3, 4}, {4})
     local total_xp = xp_gains:cumsum()
     local fourth = total_xp:get(4)
@@ -652,6 +1481,18 @@ end
 
 --@api: LArray:diff
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local lap_times = lurek.compute.fromTable({1, 3, 6, 10}, {4})
     local deltas = lap_times:diff()
     local first = deltas:get(1)
@@ -661,6 +1502,18 @@ end
 
 --@api: LArray:histogram
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local loot_rolls = lurek.compute.fromTable({1, 2, 3, 4, 5, 6, 7, 8}, {8})
     local bins = loot_rolls:histogram(4)
     local first = bins[1].count
@@ -670,6 +1523,18 @@ end
 
 --@api: LArray:percentile
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local damage_log = lurek.compute.range(1, 100, 1)
     local median = damage_log:percentile(50)
     local upper = damage_log:percentile(90)
@@ -679,6 +1544,18 @@ end
 
 --@api: LArray:covariance
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local effort = lurek.compute.fromTable({1, 2, 3, 4, 5}, {5})
     local reward = lurek.compute.fromTable({2, 4, 6, 8, 10}, {5})
     local cov = effort:covariance(reward)
@@ -688,6 +1565,18 @@ end
 
 --@api: LArray:pearsonCorr
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local effort = lurek.compute.fromTable({1, 2, 3, 4, 5}, {5})
     local reward = lurek.compute.fromTable({2, 4, 6, 8, 10}, {5})
     local corr = effort:pearsonCorr(reward)
@@ -697,6 +1586,18 @@ end
 
 --@api: LArray:normalizeRange
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local light_levels = lurek.compute.fromTable({0, 50, 100}, {3})
     local normalized = light_levels:normalizeRange(0, 1)
     local middle = normalized:get(2)
@@ -706,6 +1607,18 @@ end
 
 --@api: LArray:zscore
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local enemy_speeds = lurek.compute.fromTable({2, 4, 4, 4, 5, 5, 7, 9}, {8})
     local zscores = enemy_speeds:zscore()
     local first = zscores:get(1)
@@ -715,6 +1628,18 @@ end
 
 --@api: LArray:convolve1d
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local signal = lurek.compute.fromTable({0, 1, 2, 3, 4}, {5})
     local kernel = lurek.compute.fromTable({1, 0, -1}, {3})
     local gradient = signal:convolve1d(kernel)
@@ -724,6 +1649,18 @@ end
 
 --@api: LArray:correlate1d
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local signal = lurek.compute.fromTable({0, 0, 1, 0, 0}, {5})
     local template = lurek.compute.fromTable({1}, {1})
     local match = signal:correlate1d(template)
@@ -733,6 +1670,18 @@ end
 
 --@api: LArray:normalizeVec
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local move_input = lurek.compute.fromTable({3, 4}, {2})
     local unit = move_input:normalizeVec()
     local x = unit:get(1)
@@ -742,6 +1691,18 @@ end
 
 --@api: LArray:outer
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local row = lurek.compute.fromTable({1, 2, 3}, {3})
     local col = lurek.compute.fromTable({4, 5}, {2})
     local score_grid = row:outer(col)
@@ -751,6 +1712,18 @@ end
 
 --@api: LArray:cross2d
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local facing = lurek.compute.fromTable({1, 0}, {2})
     local target = lurek.compute.fromTable({0, 1}, {2})
     local cross = facing:cross2d(target)
@@ -760,6 +1733,18 @@ end
 
 --@api: LArray:transformPoints
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local world_from_local = lurek.compute.affine2d(10, 20, 0, 1, 1)
     local corners = lurek.compute.fromTable({0, 0, 5, 5}, {2, 2})
     local world_points = world_from_local:transformPoints(corners)
@@ -769,6 +1754,18 @@ end
 
 --@api: LArray:sobel
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local heightfield = lurek.compute.zeros({5, 5})
     heightfield:set(3, 3, 1)
     local gradient = heightfield:sobel()
@@ -778,6 +1775,18 @@ end
 
 --@api: LArray:linsolve
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local matrix = lurek.compute.fromTable({2, 1, 5, 7}, {2, 2})
     local rhs = lurek.compute.fromTable({11, 13}, {2})
     local solution = matrix:linsolve(rhs)
@@ -787,6 +1796,18 @@ end
 
 --@api: LArray:luDecompose
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local matrix = lurek.compute.fromTable({4, 3, 6, 3}, {2, 2})
     local lu = matrix:luDecompose()
     local perm0 = lu.perm[1]
@@ -796,6 +1817,18 @@ end
 
 --@api: LArray:eigenPower
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local covariance = lurek.compute.fromTable({2, 1, 1, 2}, {2, 2})
     local dominant = covariance:eigenPower(100, 1e-6)
     local value = dominant.value
@@ -805,6 +1838,18 @@ end
 
 --@api: LArray:map
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local base_damage = lurek.compute.fromTable({1, 4, 9}, {3})
     local doubled = base_damage:map(function(x) return x * 2 end)
     local second = doubled:get(2)
@@ -814,6 +1859,18 @@ end
 
 --@api: LArray:eval
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local base_damage = lurek.compute.fromTable({1, 2, 3}, {3})
     local scripted = base_damage:eval("x * x + 1")
     local second = scripted:get(2)
@@ -823,6 +1880,18 @@ end
 
 --@api: LArray:reduce
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local rewards = lurek.compute.fromTable({1, 2, 3, 4}, {4})
     local total = rewards:reduce(function(acc, v) return acc + v end, 0)
     local mean = rewards:mean()
@@ -832,6 +1901,18 @@ end
 
 --@api: LArray:scan
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local combo_hits = lurek.compute.fromTable({1, 2, 3, 4}, {4})
     local running = combo_hits:scan(function(acc, v) return acc + v end, 0)
     local second = running:get(2)
@@ -841,6 +1922,18 @@ end
 
 --@api: LArray:type
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local scratch = lurek.compute.ones({2, 2})
     scratch:set(1, 2, 3)
     local type_name = scratch:type()
@@ -850,6 +1943,18 @@ end
 
 --@api: LArray:typeOf
 do
+    local function compute_log(message)
+        lurek.log.info("[compute] " .. message)
+    end
+    local function shape_text(array)
+        local shape = array:getShape()
+        local parts = {}
+        for i = 1, #shape do
+            parts[i] = tostring(shape[i])
+        end
+        return table.concat(parts, "x")
+    end
+
     local scratch = lurek.compute.ones({2, 2})
     scratch:set(2, 1, 4)
     local is_array = scratch:typeOf("LArray")

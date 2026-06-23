@@ -138,6 +138,86 @@ describe("Evidence: lurek.charts visual outputs", function()
         )
         write_text(OUT .. "charts_nearest_trace.json", json)
     end)
+
+    -- Does: Renders candlestick, boxplot, bubble, radar, and treemap charts with multi-series or high-variance data through their public chart APIs.
+    -- Shows: The PNG artifacts should make each newly added chart type visually reviewable: OHLC direction, quartiles/outliers, weighted bubble radius, radar axes, and treemap area partitioning.
+    -- Artifact: tests/artifacts/current/charts/charts_candlestick_volatile_ohlc.png, charts_boxplot_latency_spread.png, charts_bubble_market_risk.png, charts_radar_unit_comparison.png, charts_treemap_budget_breakdown.png
+    -- Why: These chart families cover common analytical visuals whose correctness is primarily visual, so complex evidence needs to prove more than constructor and byte-output coverage.
+    it("PNG: advanced chart type gallery", function()
+        local candlestick = lurek.charts.newCandlestick({
+            width = 420,
+            height = 260,
+            title = "Volatile OHLC",
+            xLabel = "session",
+            yLabel = "price",
+            showLegend = true,
+        })
+        candlestick:setColors({ 0.18, 0.72, 0.42, 1 }, { 0.88, 0.22, 0.24, 1 })
+        candlestick:setCandles({
+            { label = "S1", open = 100, high = 112, low = 96, close = 108 },
+            { label = "S2", open = 108, high = 116, low = 103, close = 105 },
+            { label = "S3", open = 105, high = 121, low = 101, close = 118 },
+            { label = "S4", open = 118, high = 124, low = 109, close = 111 },
+            { label = "S5", open = 111, high = 119, low = 107, close = 117 },
+            { label = "S6", open = 117, high = 128, low = 113, close = 126 },
+        })
+        save_png(candlestick:renderImage(), OUT .. "charts_candlestick_volatile_ohlc.png")
+
+        local boxplot = lurek.charts.newBoxPlot({
+            width = 420,
+            height = 260,
+            title = "Latency Spread",
+            xLabel = "region",
+            yLabel = "ms",
+            showLegend = true,
+        })
+        boxplot:addSeries("edge", { 11, 12, 13, 13, 14, 16, 18, 21, 45 })
+        boxplot:addSeries("core", { 19, 21, 22, 24, 25, 29, 31, 34, 62 })
+        boxplot:addSeries("archive", { 31, 34, 36, 38, 42, 48, 54, 67, 91 })
+        save_png(boxplot:renderImage(), OUT .. "charts_boxplot_latency_spread.png")
+
+        local bubble = lurek.charts.newBubble({
+            width = 420,
+            height = 260,
+            title = "Market Risk",
+            xLabel = "growth",
+            yLabel = "margin",
+            showLegend = true,
+        })
+        bubble:setRadiusRange(4, 24)
+        bubble:addSeries("stable", { { 2, 7, 12 }, { 3.4, 8.2, 18 }, { 4.6, 7.5, 16 }, { 5.3, 8.8, 24 } })
+        bubble:addSeries("volatile", { { 6.2, 4.1, 28 }, { 7.5, 5.3, 36 }, { 8.4, 3.8, 32 }, { 9.2, 6.1, 46 } })
+        save_png(bubble:renderImage(), OUT .. "charts_bubble_market_risk.png")
+
+        local radar = lurek.charts.newRadar({
+            width = 420,
+            height = 300,
+            title = "Unit Comparison",
+            showLegend = true,
+        })
+        radar:setAxes({ "speed", "power", "range", "armor", "cost", "vision" })
+        radar:setMaxValue(10)
+        radar:addSeries("scout", { 9, 3, 6, 2, 4, 8 })
+        radar:addSeries("tank", { 4, 9, 5, 10, 8, 3 })
+        radar:addSeries("ranger", { 6, 6, 9, 4, 6, 7 })
+        save_png(radar:renderImage(), OUT .. "charts_radar_unit_comparison.png")
+
+        local treemap = lurek.charts.newTreemap({
+            width = 420,
+            height = 280,
+            title = "Budget Breakdown",
+            showLegend = true,
+        })
+        treemap:setItems({
+            { label = "render", value = 38 },
+            { label = "audio", value = 14 },
+            { label = "physics", value = 22 },
+            { label = "tools", value = 18 },
+            { label = "docs", value = 8 },
+            { label = "tests", value = 16 },
+        })
+        save_png(treemap:renderImage(), OUT .. "charts_treemap_budget_breakdown.png")
+    end)
 end)
 
 test_summary()

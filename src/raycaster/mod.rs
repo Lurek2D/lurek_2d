@@ -4,7 +4,7 @@
 //! `projection.rs`, `depth_buffer.rs`, and `sprite_projection.rs` own screen-space math and occlusion data.
 //! `doors.rs`, `wall_feature.rs`, and `heightmap.rs` hold cell state that changes how blocking tiles render.
 //! `build_scene.rs`, `draw.rs`, and `render.rs` translate ray hits into either CPU pixels or engine render commands.
-//! Visibility, segment, and grid-motion helpers stay here so gameplay queries can reuse the camera model.
+//! Visibility-polygon, segment, and picking helpers stay render-facing and do not own tile gameplay semantics.
 //! Change this file when the public raycaster symbol map moves; change siblings when behavior or data rules change.
 
 /// Raycaster scene construction from camera and world grid.
@@ -19,8 +19,6 @@ pub mod depth_buffer;
 pub mod doors;
 /// High-level draw call assembly for a full raycasted frame.
 pub mod draw;
-/// Grid-aligned player movement helpers.
-pub mod grid_motion;
 /// Variable floor/ceiling height map.
 pub mod heightmap;
 /// Level rendering helpers for multi-level raycaster.
@@ -59,7 +57,6 @@ pub use column_batch::{ColumnBatch, ColumnData};
 pub use dda::Raycaster2D;
 pub use depth_buffer::DepthBuffer;
 pub use doors::{Door, DoorDirection, DoorManager, DoorState};
-pub use grid_motion::{dir4_delta, try_move, GridMoveAction};
 pub use heightmap::HeightMap;
 pub use level_render::{compute_hole_visibility, LevelRenderConfig, TileHighlight};
 pub use lighting::{apply_lit_shade, compute_lighting, PointLight};

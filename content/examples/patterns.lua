@@ -2,29 +2,30 @@
 -- Auto-generated from content/examples2/patterns_*.lua by tools/fix/merge_examples2_into_examples.py
 -- Run: cargo run -- content/examples/patterns.lua
 
-local function patterns_log(message)
-    lurek.log.info("[patterns.example] " .. tostring(message))
-end
 
-local patterns_last_state_dt = 0
 
-local function patterns_record_state_update(dt)
-    patterns_last_state_dt = dt
-    patterns_log("tick idle = " .. dt)
-end
 
 --- Patterns Module Part 1: service locator, object pool, factory, strategy
 
-local function example_print_log(...)
-    local parts = {}
-    for i = 1, select("#", ...) do
-        parts[i] = tostring(select(i, ...))
-    end
-    lurek.log.info(table.concat(parts, " "))
-end
 
 --@api: lurek.patterns.newServiceLocator
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local services = lurek.patterns.newServiceLocator()
     services:provide("audio", {volume = 0.8, muted = false})
     services:provide("input", {keyboard = true, mouse = true})
@@ -35,6 +36,22 @@ end
 
 --@api: LServiceLocator:provide
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local services = lurek.patterns.newServiceLocator()
     services:provide("renderer", {backend = "wgpu", vsync = true})
     services:provide("ui", {scale = 1.25})
@@ -45,6 +62,22 @@ end
 
 --@api: LServiceLocator:locate
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local services = lurek.patterns.newServiceLocator()
     services:provide("audio", {volume = 0.8, muted = false})
     local audio = services:locate("audio")
@@ -54,6 +87,22 @@ end
 
 --@api: LServiceLocator:has
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local services = lurek.patterns.newServiceLocator()
     services:provide("input", {keyboard = true, gamepad = true})
     local has_input = services:has("input")
@@ -65,6 +114,22 @@ end
 
 --@api: LServiceLocator:getServices
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local services = lurek.patterns.newServiceLocator()
     services:provide("renderer", {backend = "wgpu"})
     services:provide("audio", {volume = 1.0})
@@ -75,6 +140,22 @@ end
 
 --@api: LServiceLocator:remove
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local services = lurek.patterns.newServiceLocator()
     services:provide("save", {slot = 1})
     services:remove("save")
@@ -84,6 +165,22 @@ end
 
 --@api: LServiceLocator:clearAll
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local services = lurek.patterns.newServiceLocator()
     services:provide("renderer", {backend = "wgpu"})
     services:provide("audio", {volume = 0.6})
@@ -94,6 +191,22 @@ end
 
 --@api: lurek.patterns.newObjectPool
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local pool = lurek.patterns.newObjectPool()
     pool:add({id = 1, active = false})
     pool:add({id = 2, active = false})
@@ -105,6 +218,22 @@ end
 
 --@api: LObjectPool:add
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local pool = lurek.patterns.newObjectPool()
     pool:add({id = 1, active = false})
     pool:add({id = 2, active = false})
@@ -114,6 +243,22 @@ end
 
 --@api: LObjectPool:acquire
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local pool = lurek.patterns.newObjectPool()
     pool:add({id = 1, active = false})
     pool:add({id = 2, active = false})
@@ -124,6 +269,22 @@ end
 
 --@api: LObjectPool:release
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local pool = lurek.patterns.newObjectPool()
     pool:add({id = 1, active = false})
     pool:add({id = 2, active = false})
@@ -135,6 +296,22 @@ end
 
 --@api: LObjectPool:clearAll
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local pool = lurek.patterns.newObjectPool()
     pool:add({id = 1})
     pool:add({id = 2})
@@ -145,6 +322,22 @@ end
 
 --@api: lurek.patterns.newFactory
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local factory = lurek.patterns.newFactory()
     factory:register("enemy", function(hp)
         return {type = "enemy", hp = hp or 100}
@@ -156,6 +349,22 @@ end
 
 --@api: LFactory:register
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local factory = lurek.patterns.newFactory()
     factory:register("enemy", function(hp)
         return {type = "enemy", hp = hp or 100}
@@ -166,6 +375,22 @@ end
 
 --@api: LFactory:has
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local factory = lurek.patterns.newFactory()
     factory:register("bullet", function(speed)
         return {type = "bullet", speed = speed or 300}
@@ -176,6 +401,22 @@ end
 
 --@api: LFactory:create
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local factory = lurek.patterns.newFactory()
     factory:register("bullet", function(speed)
         return {type = "bullet", speed = speed or 300}
@@ -187,6 +428,22 @@ end
 
 --@api: LFactory:getTypes
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local factory = lurek.patterns.newFactory()
     factory:register("enemy", function()
         return {type = "enemy"}
@@ -201,6 +458,22 @@ end
 
 --@api: LFactory:alias
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local factory = lurek.patterns.newFactory()
     factory:register("goblin", function()
         return {type = "goblin", hp = 30}
@@ -213,6 +486,22 @@ end
 
 --@api: LFactory:remove
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local factory = lurek.patterns.newFactory()
     factory:register("goblin", function()
         return {type = "goblin"}
@@ -224,6 +513,22 @@ end
 
 --@api: LFactory:clearAll
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local factory = lurek.patterns.newFactory()
     factory:register("enemy", function()
         return {type = "enemy"}
@@ -238,6 +543,22 @@ end
 
 --@api: lurek.patterns.newStrategy
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local strat = lurek.patterns.newStrategy()
     strat:register("attack", function(target)
         return "attack " .. target
@@ -252,6 +573,22 @@ end
 
 --@api: LStrategy:register
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local strat = lurek.patterns.newStrategy()
     strat:register("attack", function(target)
         return "attack " .. target
@@ -265,6 +602,22 @@ end
 
 --@api: LStrategy:set
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local strat = lurek.patterns.newStrategy()
     strat:register("attack", function(target)
         return "attack " .. target
@@ -279,6 +632,22 @@ end
 
 --@api: LStrategy:execute
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local strat = lurek.patterns.newStrategy()
     strat:register("attack", function(target)
         return "attack " .. target
@@ -293,6 +662,22 @@ end
 
 --@api: LStrategy:has
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local strat = lurek.patterns.newStrategy()
     strat:register("fast", function()
         return "fast"
@@ -306,6 +691,22 @@ end
 
 --@api: LStrategy:names
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local strat = lurek.patterns.newStrategy()
     strat:register("fast", function()
         return "fast"
@@ -320,6 +721,22 @@ end
 
 --@api: LStrategy:remove
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local strat = lurek.patterns.newStrategy()
     strat:register("fast", function()
         return "fast"
@@ -334,6 +751,22 @@ end
 
 --@api: LStrategy:clear
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local strat = lurek.patterns.newStrategy()
     strat:register("fast", function()
         return "fast"
@@ -350,6 +783,22 @@ end
 
 --@api: lurek.patterns.newSimpleState
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local fsm = lurek.patterns.newSimpleState()
     fsm:addState("idle", {
         enter = function()
@@ -366,6 +815,22 @@ end
 
 --@api: LSimpleState:addState
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local fsm = lurek.patterns.newSimpleState()
     fsm:addState("idle")
     fsm:addState("walk")
@@ -381,6 +846,22 @@ end
 
 --@api: LSimpleState:transitionTo
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local fsm = lurek.patterns.newSimpleState()
     fsm:addState("idle")
     fsm:addState("walk")
@@ -396,6 +877,22 @@ end
 
 --@api: LSimpleState:getCurrent
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local fsm = lurek.patterns.newSimpleState()
     fsm:addState("idle")
     fsm:addState("pause")
@@ -410,6 +907,22 @@ end
 
 --@api: LSimpleState:hasState
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local fsm = lurek.patterns.newSimpleState()
     fsm:addState("menu")
     fsm:addState("game")
@@ -419,6 +932,22 @@ end
 
 --@api: LSimpleState:getStates
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local fsm = lurek.patterns.newSimpleState()
     fsm:addState("menu")
     fsm:addState("game")
@@ -429,6 +958,22 @@ end
 
 --@api: LSimpleState:clearAll
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local fsm = lurek.patterns.newSimpleState()
     fsm:addState("menu")
     fsm:addState("game")
@@ -439,6 +984,22 @@ end
 
 --@api: lurek.patterns.newCommandStack
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cmds = lurek.patterns.newCommandStack(10)
     local value = 1
     cmds:execute("add", function()
@@ -457,6 +1018,22 @@ end
 
 --@api: LCommandStack:execute
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cmds = lurek.patterns.newCommandStack(10)
     local value = 1
     cmds:execute("add", function()
@@ -475,6 +1052,22 @@ end
 
 --@api: LCommandStack:undo
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cmds = lurek.patterns.newCommandStack(10)
     local value = 1
     cmds:execute("add", function()
@@ -494,6 +1087,22 @@ end
 
 --@api: LCommandStack:redo
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cmds = lurek.patterns.newCommandStack(10)
     local value = 1
     cmds:execute("add", function()
@@ -514,6 +1123,22 @@ end
 
 --@api: LCommandStack:canUndo
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cmds = lurek.patterns.newCommandStack()
     cmds:execute("step1", function()
     end, function()
@@ -527,6 +1152,22 @@ end
 
 --@api: LCommandStack:canRedo
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cmds = lurek.patterns.newCommandStack()
     cmds:execute("step1", function()
     end, function()
@@ -541,6 +1182,22 @@ end
 
 --@api: LCommandStack:getCurrentName
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cmds = lurek.patterns.newCommandStack()
     cmds:execute("step1", function()
     end, function()
@@ -554,6 +1211,22 @@ end
 
 --@api: LCommandStack:getHistorySize
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cmds = lurek.patterns.newCommandStack()
     cmds:execute("step1", function()
     end, function()
@@ -567,6 +1240,22 @@ end
 
 --@api: LCommandStack:clearAll
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cmds = lurek.patterns.newCommandStack()
     cmds:execute("step1", function()
     end, function()
@@ -581,6 +1270,22 @@ end
 
 --@api: lurek.patterns.newBehaviorTree
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bt = lurek.patterns.newBehaviorTree()
     local root = bt:addSequence("root")
     local check = bt:addLeaf("check")
@@ -600,6 +1305,22 @@ end
 
 --@api: LBehaviorTree:addSequence
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bt = lurek.patterns.newBehaviorTree()
     local root = bt:addSequence("root")
     local check = bt:addLeaf("check")
@@ -614,6 +1335,22 @@ end
 
 --@api: LBehaviorTree:addSelector
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bt = lurek.patterns.newBehaviorTree()
     local root = bt:addSelector("root")
     local check = bt:addLeaf("check")
@@ -633,6 +1370,22 @@ end
 
 --@api: LBehaviorTree:addLeaf
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bt = lurek.patterns.newBehaviorTree()
     local root = bt:addSequence("root")
     local act = bt:addLeaf("act")
@@ -647,6 +1400,22 @@ end
 
 --@api: LBehaviorTree:setLeaf
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bt = lurek.patterns.newBehaviorTree()
     local root = bt:addSequence("root")
     local act = bt:addLeaf("act")
@@ -662,6 +1431,22 @@ end
 
 --@api: LBehaviorTree:tick
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bt = lurek.patterns.newBehaviorTree()
     local root = bt:addSequence("root")
     local act = bt:addLeaf("act")
@@ -676,6 +1461,22 @@ end
 
 --@api: LBehaviorTree:resetState
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bt = lurek.patterns.newBehaviorTree()
     local root = bt:addSequence("root")
     local act = bt:addLeaf("act")
@@ -691,6 +1492,22 @@ end
 
 --@api: LBehaviorTree:addParallel
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bt = lurek.patterns.newBehaviorTree()
     local root = bt:addParallel(2, "root")
     local a = bt:addLeaf("a")
@@ -710,6 +1527,22 @@ end
 
 --@api: LBehaviorTree:addInverter
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bt = lurek.patterns.newBehaviorTree()
     local root = bt:addInverter("invert")
     local check = bt:addLeaf("check")
@@ -724,6 +1557,22 @@ end
 
 --@api: LBehaviorTree:addRepeat
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bt = lurek.patterns.newBehaviorTree()
     local root = bt:addRepeat(2, "repeat")
     local step = bt:addLeaf("step")
@@ -740,6 +1589,22 @@ end
 
 --@api: LBehaviorTree:clearAll
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bt = lurek.patterns.newBehaviorTree()
     local root = bt:addSelector("root")
     local idle = bt:addLeaf("idle")
@@ -752,6 +1617,22 @@ end
 
 --@api: lurek.patterns.newBlackboard
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bb = lurek.patterns.newBlackboard("game_state")
     bb:set("health", 100)
     bb:set("mode", "idle")
@@ -761,6 +1642,22 @@ end
 
 --@api: LBlackboard:set
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bb = lurek.patterns.newBlackboard("game_state")
     bb:set("score", 10)
     bb:set("score", 20)
@@ -770,6 +1667,22 @@ end
 
 --@api: LBlackboard:get
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bb = lurek.patterns.newBlackboard("game_state")
     bb:set("weapon", "sword")
     bb:set("ammo", 12)
@@ -781,6 +1694,22 @@ end
 
 --@api: LBlackboard:has
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bb = lurek.patterns.newBlackboard("game_state")
     bb:set("alive", true)
     bb:set("stance", "guard")
@@ -792,6 +1721,22 @@ end
 
 --@api: LBlackboard:keys
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bb = lurek.patterns.newBlackboard("game_state")
     bb:set("health", 100)
     bb:set("weapon", "sword")
@@ -802,6 +1747,22 @@ end
 
 --@api: LBlackboard:watch
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bb = lurek.patterns.newBlackboard("game_state")
     local watch_id = bb:watch("score", function(key, value)
         example_print_log(key .. " = " .. tostring(value))
@@ -814,6 +1775,22 @@ end
 
 --@api: LBlackboard:unwatch
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bb = lurek.patterns.newBlackboard("game_state")
     local watch_id = bb:watch("score", function(key, value)
         example_print_log(key .. " = " .. tostring(value))
@@ -826,6 +1803,22 @@ end
 
 --@api: LBlackboard:getRevision
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bb = lurek.patterns.newBlackboard("game_state")
     bb:set("score", 10)
     bb:set("score", 20)
@@ -835,6 +1828,22 @@ end
 
 --@api: LBlackboard:snapshot
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bb = lurek.patterns.newBlackboard("game_state")
     bb:set("score", 42)
     bb:set("weapon", "sword")
@@ -845,6 +1854,22 @@ end
 
 --@api: LBlackboard:clear
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bb = lurek.patterns.newBlackboard("game_state")
     bb:set("score", 42)
     example_print_log("before = " .. tostring(bb:has("score")))
@@ -854,6 +1879,22 @@ end
 
 --@api: LBlackboard:clearAll
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bb = lurek.patterns.newBlackboard("game_state")
     bb:set("score", 42)
     bb:set("weapon", "sword")
@@ -866,6 +1907,22 @@ end
 
 --@api: lurek.patterns.newObserver
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local obs = lurek.patterns.newObserver("player_stats")
     local id = obs:subscribe("hp", function(key, value)
         example_print_log(key .. " = " .. tostring(value))
@@ -877,6 +1934,22 @@ end
 
 --@api: LObserver:set
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local obs = lurek.patterns.newObserver("player_stats")
     local id = obs:subscribe("hp", function(key, value)
         example_print_log(key .. " = " .. tostring(value))
@@ -889,6 +1962,22 @@ end
 
 --@api: LObserver:get
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local obs = lurek.patterns.newObserver("player_stats")
     obs:set("hp", 90)
     obs:set("armor", 12)
@@ -900,6 +1989,22 @@ end
 
 --@api: LObserver:subscribe
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local obs = lurek.patterns.newObserver("player_stats")
     local id = obs:subscribe("hp", function(key, value)
         example_print_log(key .. " = " .. tostring(value))
@@ -911,6 +2016,22 @@ end
 
 --@api: LObserver:unsubscribe
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local obs = lurek.patterns.newObserver("player_stats")
     local id = obs:subscribe("hp", function(key, value)
         example_print_log(key .. " = " .. tostring(value))
@@ -922,6 +2043,22 @@ end
 
 --@api: LObserver:getCount
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local obs = lurek.patterns.newObserver("player_stats")
     obs:subscribe("score", function(key, value)
         example_print_log(key .. " = " .. tostring(value))
@@ -933,6 +2070,22 @@ end
 
 --@api: lurek.patterns.newEventBus
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bus = lurek.patterns.newEventBus("game_events")
     local id = bus:on("damage", function(amount, source)
         example_print_log("damage = " .. tostring(amount) .. " from " .. tostring(source))
@@ -944,6 +2097,22 @@ end
 
 --@api: LEventBus:on
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bus = lurek.patterns.newEventBus("game_events")
     local id = bus:on("damage", function(amount, source)
         example_print_log("damage = " .. tostring(amount) .. " from " .. tostring(source))
@@ -955,6 +2124,22 @@ end
 
 --@api: LEventBus:emit
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bus = lurek.patterns.newEventBus("game_events")
     local id = bus:on("damage", function(amount, source)
         example_print_log("damage = " .. tostring(amount) .. " from " .. tostring(source))
@@ -966,6 +2151,22 @@ end
 
 --@api: LEventBus:off
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bus = lurek.patterns.newEventBus("game_events")
     local id = bus:on("damage", function(amount)
         example_print_log("damage = " .. tostring(amount))
@@ -977,6 +2178,22 @@ end
 
 --@api: LEventBus:getListenerCount
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bus = lurek.patterns.newEventBus("game_events")
     bus:on("spawn", function(id)
         example_print_log("spawn = " .. tostring(id))
@@ -990,6 +2207,22 @@ end
 
 --@api: LEventBus:getEvents
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bus = lurek.patterns.newEventBus("game_events")
     bus:on("spawn", function(id)
         example_print_log("spawn = " .. tostring(id))
@@ -1004,6 +2237,22 @@ end
 
 --@api: LEventBus:clear
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bus = lurek.patterns.newEventBus("game_events")
     bus:on("spawn", function(id)
         example_print_log("spawn = " .. tostring(id))
@@ -1015,6 +2264,22 @@ end
 
 --@api: LEventBus:clearAll
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bus = lurek.patterns.newEventBus("game_events")
     bus:on("spawn", function(id)
         example_print_log("spawn = " .. tostring(id))
@@ -1029,6 +2294,22 @@ end
 
 --@api: lurek.patterns.newMediator
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local med = lurek.patterns.newMediator()
     local id = med:on("ui", function(msg, data)
         example_print_log(msg .. " = " .. tostring(data))
@@ -1040,6 +2321,22 @@ end
 
 --@api: LMediator:on
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local med = lurek.patterns.newMediator()
     local id = med:on("ui", function(msg, data)
         example_print_log(msg .. " = " .. tostring(data))
@@ -1051,6 +2348,22 @@ end
 
 --@api: LMediator:send
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local med = lurek.patterns.newMediator()
     local id = med:on("ui", function(msg, data)
         example_print_log(msg .. " = " .. tostring(data))
@@ -1062,6 +2375,22 @@ end
 
 --@api: LMediator:off
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local med = lurek.patterns.newMediator()
     local id = med:on("ui", function(msg, data)
         example_print_log(msg .. " = " .. tostring(data))
@@ -1073,6 +2402,22 @@ end
 
 --@api: LMediator:broadcast
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local med = lurek.patterns.newMediator()
     med:on("audio", function(msg)
         example_print_log("audio = " .. tostring(msg))
@@ -1087,6 +2432,22 @@ end
 
 --@api: LMediator:channels
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local med = lurek.patterns.newMediator()
     med:on("audio", function(msg)
         example_print_log("audio = " .. tostring(msg))
@@ -1101,6 +2462,22 @@ end
 
 --@api: LMediator:handlerCount
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local med = lurek.patterns.newMediator()
     med:on("audio", function(msg)
         example_print_log("audio = " .. tostring(msg))
@@ -1114,6 +2491,22 @@ end
 
 --@api: LMediator:removeChannel
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local med = lurek.patterns.newMediator()
     med:on("audio", function(msg)
         example_print_log("audio = " .. tostring(msg))
@@ -1125,6 +2518,22 @@ end
 
 --@api: LMediator:clear
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local med = lurek.patterns.newMediator()
     med:on("audio", function(msg)
         example_print_log("audio = " .. tostring(msg))
@@ -1139,6 +2548,22 @@ end
 
 --@api: lurek.patterns.newDebounce
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local db = lurek.patterns.newDebounce(0.5)
     db:onFire(function()
         example_print_log("debounce fired")
@@ -1151,6 +2576,22 @@ end
 
 --@api: LDebounce:trigger
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local db = lurek.patterns.newDebounce(0.5)
     db:onFire(function()
         example_print_log("debounce fired")
@@ -1163,6 +2604,22 @@ end
 
 --@api: LDebounce:update
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local db = lurek.patterns.newDebounce(0.5)
     db:onFire(function()
         example_print_log("debounce fired")
@@ -1175,6 +2632,22 @@ end
 
 --@api: LDebounce:onFire
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local db = lurek.patterns.newDebounce(0.5)
     db:onFire(function()
         example_print_log("debounce fired")
@@ -1187,6 +2660,22 @@ end
 
 --@api: LDebounce:cancel
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local db = lurek.patterns.newDebounce(1.0)
     db:onFire(function()
         example_print_log("debounce fired")
@@ -1200,6 +2689,22 @@ end
 
 --@api: LDebounce:isPending
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local db = lurek.patterns.newDebounce(1.0)
     db:onFire(function()
         example_print_log("debounce fired")
@@ -1212,6 +2717,22 @@ end
 
 --@api: LDebounce:getFireCount
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local db = lurek.patterns.newDebounce(0.3)
     db:onFire(function()
         example_print_log("debounce fired")
@@ -1224,6 +2745,22 @@ end
 
 --@api: lurek.patterns.newThrottle
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local th = lurek.patterns.newThrottle(0.2)
     local fires = 0
     th:onFire(function()
@@ -1238,6 +2775,22 @@ end
 
 --@api: LThrottle:onFire
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local th = lurek.patterns.newThrottle(0.2)
     local fires = 0
     th:onFire(function()
@@ -1251,6 +2804,22 @@ end
 
 --@api: LThrottle:update
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local th = lurek.patterns.newThrottle(0.2)
     local fires = 0
     th:onFire(function()
@@ -1264,6 +2833,22 @@ end
 
 --@api: LThrottle:getFireCount
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local th = lurek.patterns.newThrottle(0.2)
     th:onFire(function()
         example_print_log("throttle fired")
@@ -1276,6 +2861,22 @@ end
 
 --@api: LThrottle:reset
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local th = lurek.patterns.newThrottle(1.0)
     th:onFire(function()
         example_print_log("throttle fired")
@@ -1288,6 +2889,22 @@ end
 
 --@api: LThrottle:setEnabled
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local th = lurek.patterns.newThrottle(1.0)
     th:onFire(function()
         example_print_log("throttle fired")
@@ -1300,6 +2917,22 @@ end
 
 --@api: LThrottle:getProgress
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local th = lurek.patterns.newThrottle(1.0)
     th:onFire(function()
         example_print_log("throttle fired")
@@ -1312,6 +2945,22 @@ end
 
 --@api: lurek.patterns.newFunnel
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local funnel = lurek.patterns.newFunnel(1.0, 5, "damage_log")
     funnel:onFlush(function(entries)
         example_print_log("flushed = " .. #entries)
@@ -1325,6 +2974,22 @@ end
 
 --@api: LFunnel:push
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local funnel = lurek.patterns.newFunnel(1.0, 5, "damage_log")
     funnel:onFlush(function(entries)
         example_print_log("flushed = " .. #entries)
@@ -1338,6 +3003,22 @@ end
 
 --@api: LFunnel:update
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local funnel = lurek.patterns.newFunnel(1.0, 5, "damage_log")
     funnel:onFlush(function(entries)
         example_print_log("flushed = " .. #entries)
@@ -1351,6 +3032,22 @@ end
 
 --@api: LFunnel:onFlush
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local funnel = lurek.patterns.newFunnel(1.0, 5, "damage_log")
     funnel:onFlush(function(entries)
         example_print_log("flushed = " .. #entries)
@@ -1364,6 +3061,22 @@ end
 
 --@api: LFunnel:flush
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local funnel = lurek.patterns.newFunnel(5.0, 0, "damage_log")
     funnel:onFlush(function(entries)
         example_print_log("flushed = " .. #entries)
@@ -1377,6 +3090,22 @@ end
 
 --@api: LFunnel:discard
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local funnel = lurek.patterns.newFunnel(5.0, 0, "damage_log")
     funnel:onFlush(function(entries)
         example_print_log("flushed = " .. #entries)
@@ -1390,6 +3119,22 @@ end
 
 --@api: LFunnel:pendingCount
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local funnel = lurek.patterns.newFunnel(5.0, 0, "damage_log")
     funnel:onFlush(function(entries)
         example_print_log("flushed = " .. #entries)
@@ -1402,6 +3147,22 @@ end
 
 --@api: LFunnel:getFlushCount
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local funnel = lurek.patterns.newFunnel(5.0, 0, "damage_log")
     funnel:onFlush(function(entries)
         example_print_log("flushed = " .. #entries)
@@ -1417,6 +3178,22 @@ end
 
 --@api: lurek.patterns.newGraph
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.patterns.newGraph(true)
     local a = g:addNode("A", {cost = 10})
     local b = g:addNode("B", {cost = 5})
@@ -1427,6 +3204,22 @@ end
 
 --@api: LPatternGraph:addNode
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.patterns.newGraph(true)
     local a = g:addNode("A", {cost = 10})
     local b = g:addNode("B", {cost = 5})
@@ -1437,6 +3230,22 @@ end
 
 --@api: LPatternGraph:addEdge
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.patterns.newGraph(true)
     local a = g:addNode("A")
     local b = g:addNode("B")
@@ -1447,6 +3256,22 @@ end
 
 --@api: LPatternGraph:nodeCount
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.patterns.newGraph(true)
     local a = g:addNode("A")
     local b = g:addNode("B")
@@ -1457,6 +3282,22 @@ end
 
 --@api: LPatternGraph:edgeCount
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.patterns.newGraph(true)
     local a = g:addNode("A")
     local b = g:addNode("B")
@@ -1467,6 +3308,22 @@ end
 
 --@api: LPatternGraph:bfs
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.patterns.newGraph(true)
     local a = g:addNode("start")
     local b = g:addNode("mid")
@@ -1480,6 +3337,22 @@ end
 
 --@api: LPatternGraph:dfs
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.patterns.newGraph(true)
     local a = g:addNode("start")
     local b = g:addNode("mid")
@@ -1493,6 +3366,22 @@ end
 
 --@api: LPatternGraph:isConnected
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.patterns.newGraph(true)
     local a = g:addNode("start")
     local b = g:addNode("mid")
@@ -1505,6 +3394,22 @@ end
 
 --@api: LPatternGraph:neighbors
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.patterns.newGraph(true)
     local a = g:addNode("start")
     local b = g:addNode("mid")
@@ -1518,6 +3423,22 @@ end
 
 --@api: LPatternGraph:hasNode
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.patterns.newGraph(true)
     local a = g:addNode("start")
     local b = g:addNode("mid")
@@ -1528,6 +3449,22 @@ end
 
 --@api: LPatternGraph:getNodeValue
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.patterns.newGraph()
     local a = g:addNode("room", {size = 10})
     local b = g:addNode("hall")
@@ -1539,6 +3476,22 @@ end
 
 --@api: LPatternGraph:removeNode
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.patterns.newGraph()
     local a = g:addNode("room", {size = 10})
     local b = g:addNode("hall")
@@ -1550,6 +3503,22 @@ end
 
 --@api: LPatternGraph:removeEdge
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.patterns.newGraph()
     local a = g:addNode("room")
     local b = g:addNode("hall")
@@ -1561,6 +3530,22 @@ end
 
 --@api: LPatternGraph:clearAll
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local g = lurek.patterns.newGraph()
     local a = g:addNode("room")
     local b = g:addNode("hall")
@@ -1572,6 +3557,22 @@ end
 
 --@api: lurek.patterns.newList
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local list = lurek.patterns.newList()
     list:add("alpha")
     list:add("beta")
@@ -1582,6 +3583,22 @@ end
 
 --@api: LList:add
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local list = lurek.patterns.newList()
     list:add("alpha")
     list:add("beta")
@@ -1592,6 +3609,22 @@ end
 
 --@api: LList:get
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local list = lurek.patterns.newList()
     list:add("alpha")
     list:add("beta")
@@ -1602,6 +3635,22 @@ end
 
 --@api: LList:len
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local list = lurek.patterns.newList()
     list:add("alpha")
     list:add("beta")
@@ -1612,6 +3661,22 @@ end
 
 --@api: LList:remove
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local list = lurek.patterns.newList()
     list:add("alpha")
     list:add("beta")
@@ -1623,6 +3688,22 @@ end
 
 --@api: LList:indexOf
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local list = lurek.patterns.newList()
     list:add("alpha")
     list:add("beta")
@@ -1633,6 +3714,22 @@ end
 
 --@api: LList:push
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local list = lurek.patterns.newList()
     list:push("a")
     list:push("b")
@@ -1643,6 +3740,22 @@ end
 
 --@api: LList:pop
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local list = lurek.patterns.newList()
     list:push("a")
     list:push("b")
@@ -1654,6 +3767,22 @@ end
 
 --@api: LList:insert
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local list = lurek.patterns.newList()
     list:push("a")
     list:push("c")
@@ -1664,6 +3793,22 @@ end
 
 --@api: LList:set
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local list = lurek.patterns.newList()
     list:push("a")
     list:push("b")
@@ -1674,6 +3819,22 @@ end
 
 --@api: LList:shift
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local list = lurek.patterns.newList()
     list:push("a")
     list:push("b")
@@ -1685,6 +3846,22 @@ end
 
 --@api: LList:unshift
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local list = lurek.patterns.newList()
     list:push("b")
     list:push("c")
@@ -1695,6 +3872,22 @@ end
 
 --@api: LList:contains
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local list = lurek.patterns.newList()
     list:push("a")
     list:push("b")
@@ -1705,6 +3898,22 @@ end
 
 --@api: LList:reverse
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local list = lurek.patterns.newList()
     list:push("a")
     list:push("b")
@@ -1716,6 +3925,22 @@ end
 
 --@api: LList:toArray
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local list = lurek.patterns.newList()
     list:push("a")
     list:push("b")
@@ -1727,6 +3952,22 @@ end
 
 --@api: LList:isEmpty
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local list = lurek.patterns.newList()
     local before = list:isEmpty()
     list:push("a")
@@ -1738,6 +3979,22 @@ end
 
 --@api: lurek.patterns.newMap
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.patterns.newMap()
     map:set("name", "hero")
     map:set("level", 5)
@@ -1747,6 +4004,22 @@ end
 
 --@api: LMap:set
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.patterns.newMap()
     map:set("name", "hero")
     map:set("level", 5)
@@ -1756,6 +4029,22 @@ end
 
 --@api: LMap:get
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.patterns.newMap()
     map:set("name", "hero")
     map:set("level", 5)
@@ -1765,6 +4054,22 @@ end
 
 --@api: LMap:has
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.patterns.newMap()
     map:set("name", "hero")
     map:set("level", 5)
@@ -1774,6 +4079,22 @@ end
 
 --@api: LMap:remove
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.patterns.newMap()
     map:set("name", "hero")
     map:set("class", "warrior")
@@ -1784,6 +4105,22 @@ end
 
 --@api: LMap:keys
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.patterns.newMap()
     map:set("name", "hero")
     map:set("level", 5)
@@ -1794,6 +4131,22 @@ end
 
 --@api: LMap:values
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.patterns.newMap()
     map:set("name", "hero")
     map:set("level", 5)
@@ -1804,6 +4157,22 @@ end
 
 --@api: LMap:len
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.patterns.newMap()
     map:set("name", "hero")
     map:set("level", 5)
@@ -1813,6 +4182,22 @@ end
 
 --@api: LMap:entries
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.patterns.newMap()
     map:set("a", 1)
     map:set("b", 2)
@@ -1823,6 +4208,22 @@ end
 
 --@api: LMap:merge
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local m1 = lurek.patterns.newMap()
     local m2 = lurek.patterns.newMap()
     m1:set("a", 1)
@@ -1834,6 +4235,22 @@ end
 
 --@api: LMap:isEmpty
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.patterns.newMap()
     local before = map:isEmpty()
     map:set("a", 1)
@@ -1845,6 +4262,22 @@ end
 
 --@api: LMap:clear
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local map = lurek.patterns.newMap()
     map:set("a", 1)
     map:set("b", 2)
@@ -1855,6 +4288,22 @@ end
 
 --@api: lurek.patterns.newSet
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local set = lurek.patterns.newSet()
     set:add("fire")
     set:add("ice")
@@ -1864,6 +4313,22 @@ end
 
 --@api: LSet:add
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local set = lurek.patterns.newSet()
     set:add("fire")
     set:add("ice")
@@ -1873,6 +4338,22 @@ end
 
 --@api: LSet:has
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local set = lurek.patterns.newSet()
     set:add("fire")
     set:add("ice")
@@ -1882,6 +4363,22 @@ end
 
 --@api: LSet:remove
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local set = lurek.patterns.newSet()
     set:add("fire")
     set:add("ice")
@@ -1892,6 +4389,22 @@ end
 
 --@api: LSet:len
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local set = lurek.patterns.newSet()
     set:add("fire")
     set:add("ice")
@@ -1902,6 +4415,22 @@ end
 
 --@api: LSet:toArray
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local set = lurek.patterns.newSet()
     set:add("fire")
     set:add("ice")
@@ -1912,6 +4441,22 @@ end
 
 --@api: LSet:union
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local a = lurek.patterns.newSet()
     local b = lurek.patterns.newSet()
     a:add("x")
@@ -1925,6 +4470,22 @@ end
 
 --@api: LSet:intersection
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local a = lurek.patterns.newSet()
     local b = lurek.patterns.newSet()
     a:add("x")
@@ -1938,6 +4499,22 @@ end
 
 --@api: LSet:isEmpty
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local set = lurek.patterns.newSet()
     local before = set:isEmpty()
     set:add("x")
@@ -1949,6 +4526,22 @@ end
 
 --@api: LSet:clear
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local set = lurek.patterns.newSet()
     set:add("x")
     set:add("y")
@@ -1959,6 +4552,22 @@ end
 
 --@api: lurek.patterns.newStack
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local st = lurek.patterns.newStack(100)
     st:push("first")
     st:push("second")
@@ -1968,6 +4577,22 @@ end
 
 --@api: LStack:push
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local st = lurek.patterns.newStack(100)
     st:push("first")
     st:push("second")
@@ -1977,6 +4602,22 @@ end
 
 --@api: LStack:pop
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local st = lurek.patterns.newStack(100)
     st:push("first")
     st:push("second")
@@ -1987,6 +4628,22 @@ end
 
 --@api: LStack:peek
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local st = lurek.patterns.newStack(100)
     st:push("first")
     st:push("second")
@@ -1996,6 +4653,22 @@ end
 
 --@api: LStack:len
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local st = lurek.patterns.newStack(100)
     st:push("first")
     st:push("second")
@@ -2005,6 +4678,22 @@ end
 
 --@api: LStack:isEmpty
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local st = lurek.patterns.newStack(100)
     local before = st:isEmpty()
     st:push("first")
@@ -2016,6 +4705,22 @@ end
 
 --@api: LStack:pushBottom
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local st = lurek.patterns.newStack(5)
     st:push("a")
     st:push("b")
@@ -2026,6 +4731,22 @@ end
 
 --@api: LStack:popBottom
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local st = lurek.patterns.newStack(5)
     st:push("a")
     st:push("b")
@@ -2037,6 +4758,22 @@ end
 
 --@api: LStack:peekBottom
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local st = lurek.patterns.newStack(5)
     st:push("a")
     st:push("b")
@@ -2047,6 +4784,22 @@ end
 
 --@api: LStack:peekAt
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local st = lurek.patterns.newStack(5)
     st:push("a")
     st:push("b")
@@ -2057,6 +4810,22 @@ end
 
 --@api: LStack:insertAt
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local st = lurek.patterns.newStack(5)
     st:push("a")
     st:push("c")
@@ -2067,6 +4836,22 @@ end
 
 --@api: LStack:removeAt
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local st = lurek.patterns.newStack(5)
     st:push("a")
     st:push("b")
@@ -2078,6 +4863,22 @@ end
 
 --@api: LStack:popMany
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local st = lurek.patterns.newStack(5)
     st:push("a")
     st:push("b")
@@ -2089,6 +4890,22 @@ end
 
 --@api: LStack:moveWithin
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local st = lurek.patterns.newStack(5)
     st:push("a")
     st:push("b")
@@ -2101,6 +4918,22 @@ end
 
 --@api: LStack:isFull
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local st = lurek.patterns.newStack(2)
     st:push("a")
     st:push("b")
@@ -2110,6 +4943,22 @@ end
 
 --@api: LStack:clear
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local st = lurek.patterns.newStack(5)
     st:push("a")
     st:push("b")
@@ -2120,6 +4969,22 @@ end
 
 --@api: LStack:toArray
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local st = lurek.patterns.newStack(5)
     st:push("a")
     st:push("b")
@@ -2131,6 +4996,22 @@ end
 
 --@api: lurek.patterns.newQueue
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local q = lurek.patterns.newQueue(10)
     q:enqueue("msg1")
     q:enqueue("msg2")
@@ -2140,6 +5021,22 @@ end
 
 --@api: LQueue:enqueue
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local q = lurek.patterns.newQueue(10)
     q:enqueue("msg1")
     q:enqueue("msg2")
@@ -2149,6 +5046,22 @@ end
 
 --@api: LQueue:dequeue
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local q = lurek.patterns.newQueue(10)
     q:enqueue("msg1")
     q:enqueue("msg2")
@@ -2159,6 +5072,22 @@ end
 
 --@api: LQueue:front
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local q = lurek.patterns.newQueue(10)
     q:enqueue("msg1")
     q:enqueue("msg2")
@@ -2168,6 +5097,22 @@ end
 
 --@api: LQueue:back
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local q = lurek.patterns.newQueue(10)
     q:enqueue("msg1")
     q:enqueue("msg2")
@@ -2177,6 +5122,22 @@ end
 
 --@api: LQueue:len
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local q = lurek.patterns.newQueue(10)
     q:enqueue("msg1")
     q:enqueue("msg2")
@@ -2186,6 +5147,22 @@ end
 
 --@api: LQueue:isEmpty
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local q = lurek.patterns.newQueue(10)
     local before = q:isEmpty()
     q:enqueue("msg1")
@@ -2197,6 +5174,22 @@ end
 
 --@api: LQueue:enqueueFront
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local q = lurek.patterns.newQueue(5)
     q:enqueue("a")
     q:enqueue("b")
@@ -2207,6 +5200,22 @@ end
 
 --@api: LQueue:dequeueBack
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local q = lurek.patterns.newQueue(5)
     q:enqueue("a")
     q:enqueue("b")
@@ -2218,6 +5227,22 @@ end
 
 --@api: LQueue:insertAt
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local q = lurek.patterns.newQueue(5)
     q:enqueue("a")
     q:enqueue("c")
@@ -2228,6 +5253,22 @@ end
 
 --@api: LQueue:removeAt
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local q = lurek.patterns.newQueue(5)
     q:enqueue("a")
     q:enqueue("b")
@@ -2239,6 +5280,22 @@ end
 
 --@api: LQueue:peekAt
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local q = lurek.patterns.newQueue(5)
     q:enqueue("a")
     q:enqueue("b")
@@ -2249,6 +5306,22 @@ end
 
 --@api: LQueue:isFull
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local q = lurek.patterns.newQueue(2)
     q:enqueue("a")
     q:enqueue("b")
@@ -2258,6 +5331,22 @@ end
 
 --@api: LQueue:clear
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local q = lurek.patterns.newQueue(5)
     q:enqueue("a")
     q:enqueue("b")
@@ -2268,6 +5357,22 @@ end
 
 --@api: LQueue:toArray
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local q = lurek.patterns.newQueue(5)
     q:enqueue("a")
     q:enqueue("b")
@@ -2279,6 +5384,22 @@ end
 
 --@api: lurek.patterns.newPriorityQueue
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local pq = lurek.patterns.newPriorityQueue("tasks")
     pq:push(1, "low_task", "low")
     pq:push(10, "high_task", "high")
@@ -2288,6 +5409,22 @@ end
 
 --@api: LPriorityQueue:push
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local pq = lurek.patterns.newPriorityQueue("tasks")
     pq:push(1, "low_task", "low")
     pq:push(10, "high_task", "high")
@@ -2297,6 +5434,22 @@ end
 
 --@api: LPriorityQueue:pop
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local pq = lurek.patterns.newPriorityQueue("tasks")
     pq:push(1, "low_task", "low")
     pq:push(10, "high_task", "high")
@@ -2307,6 +5460,22 @@ end
 
 --@api: LPriorityQueue:peek
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local pq = lurek.patterns.newPriorityQueue("tasks")
     pq:push(1, "low_task", "low")
     pq:push(10, "high_task", "high")
@@ -2316,6 +5485,22 @@ end
 
 --@api: LPriorityQueue:len
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local pq = lurek.patterns.newPriorityQueue("tasks")
     pq:push(1, "low_task", "low")
     pq:push(10, "high_task", "high")
@@ -2325,6 +5510,22 @@ end
 
 --@api: LPriorityQueue:isEmpty
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local pq = lurek.patterns.newPriorityQueue("tasks")
     local before = pq:isEmpty()
     pq:push(10, "high_task", "high")
@@ -2336,6 +5537,22 @@ end
 
 --@api: LPriorityQueue:clearAll
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local pq = lurek.patterns.newPriorityQueue("tasks")
     pq:push(1, "low_task", "low")
     pq:push(10, "high_task", "high")
@@ -2346,6 +5563,22 @@ end
 
 --@api: lurek.patterns.newRing
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ring = lurek.patterns.newRing(5, "fps_samples")
     ring:push(60)
     ring:push(58)
@@ -2356,6 +5589,22 @@ end
 
 --@api: LRing:push
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ring = lurek.patterns.newRing(5, "fps_samples")
     ring:push(60)
     ring:push(58)
@@ -2366,6 +5615,22 @@ end
 
 --@api: LRing:len
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ring = lurek.patterns.newRing(5, "fps_samples")
     ring:push(60)
     ring:push(58)
@@ -2376,6 +5641,22 @@ end
 
 --@api: LRing:latest
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ring = lurek.patterns.newRing(5, "fps_samples")
     ring:push(60)
     ring:push(58)
@@ -2387,6 +5668,22 @@ end
 
 --@api: LRing:isFull
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ring = lurek.patterns.newRing(3, "fps_samples")
     ring:push(60)
     ring:push(58)
@@ -2397,6 +5694,22 @@ end
 
 --@api: LRing:sum
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ring = lurek.patterns.newRing(5, "fps_samples")
     ring:push(60)
     ring:push(58)
@@ -2407,6 +5720,22 @@ end
 
 --@api: LRing:average
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ring = lurek.patterns.newRing(5, "fps_samples")
     ring:push(60)
     ring:push(58)
@@ -2417,6 +5746,22 @@ end
 
 --@api: LRing:toArray
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ring = lurek.patterns.newRing(5, "fps_samples")
     ring:push(60)
     ring:push(58)
@@ -2428,6 +5773,22 @@ end
 
 --@api: LRing:clear
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ring = lurek.patterns.newRing(5, "fps_samples")
     ring:push(60)
     ring:push(58)
@@ -2438,6 +5799,22 @@ end
 
 --@api: lurek.patterns.newWeightedRandom
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local wr = lurek.patterns.newWeightedRandom()
     wr:add(10, "common", "common_loot")
     wr:add(3, "rare", "rare_loot")
@@ -2447,6 +5824,22 @@ end
 
 --@api: LWeightedRandom:add
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local wr = lurek.patterns.newWeightedRandom()
     wr:add(10, "common", "common_loot")
     wr:add(3, "rare", "rare_loot")
@@ -2456,6 +5849,22 @@ end
 
 --@api: LWeightedRandom:pick
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local wr = lurek.patterns.newWeightedRandom()
     wr:add(10, "common", "common_loot")
     wr:add(3, "rare", "rare_loot")
@@ -2465,6 +5874,22 @@ end
 
 --@api: LWeightedRandom:pickN
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local wr = lurek.patterns.newWeightedRandom()
     wr:add(10, "common", "common_loot")
     wr:add(3, "rare", "rare_loot")
@@ -2476,6 +5901,22 @@ end
 
 --@api: LWeightedRandom:len
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local wr = lurek.patterns.newWeightedRandom()
     wr:add(10, "common", "common_loot")
     wr:add(3, "rare", "rare_loot")
@@ -2485,6 +5926,22 @@ end
 
 --@api: LWeightedRandom:totalWeight
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local wr = lurek.patterns.newWeightedRandom()
     wr:add(10, "common", "common_loot")
     wr:add(3, "rare", "rare_loot")
@@ -2494,6 +5951,22 @@ end
 
 --@api: LWeightedRandom:remove
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local wr = lurek.patterns.newWeightedRandom()
     local id = wr:add(5, "item_a")
     wr:add(5, "item_b")
@@ -2504,6 +5977,22 @@ end
 
 --@api: LWeightedRandom:setWeight
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local wr = lurek.patterns.newWeightedRandom()
     local id = wr:add(5, "item_a")
     wr:add(5, "item_b")
@@ -2514,6 +6003,22 @@ end
 
 --@api: LWeightedRandom:getRevision
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local wr = lurek.patterns.newWeightedRandom()
     local id = wr:add(5, "item_a")
     wr:setWeight(id, 20)
@@ -2523,6 +6028,22 @@ end
 
 --@api: LWeightedRandom:isEmpty
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local wr = lurek.patterns.newWeightedRandom()
     local before = wr:isEmpty()
     wr:add(5, "item_a")
@@ -2534,6 +6055,22 @@ end
 
 --@api: LWeightedRandom:clearAll
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local wr = lurek.patterns.newWeightedRandom()
     wr:add(5, "item_a")
     wr:add(5, "item_b")
@@ -2544,6 +6081,22 @@ end
 
 --@api: lurek.patterns.newRelationshipManager
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     -- Deprecated alias kept for compatibility. Prefer lurek.ecs.newRelationshipManager().
     local rm = lurek.patterns.newRelationshipManager()
     rm:setValue(1, 2, 50)
@@ -2558,6 +6111,22 @@ end
 
 --@api: LBehaviorTree:addChild
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bt = lurek.patterns.newBehaviorTree()
     local seq = bt:addSequence("root_seq")
     local check = bt:addLeaf("check")
@@ -2577,6 +6146,22 @@ end
 
 --@api: LBehaviorTree:nodeCount
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bt = lurek.patterns.newBehaviorTree()
     local seq = bt:addSequence("root_seq")
     local check = bt:addLeaf("check")
@@ -2596,6 +6181,22 @@ end
 
 --@api: LBehaviorTree:setRoot
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bt = lurek.patterns.newBehaviorTree()
     local seq = bt:addSequence("root_seq")
     local check = bt:addLeaf("check")
@@ -2615,6 +6216,22 @@ end
 
 --@api: LList:clear
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local list = lurek.patterns.newList()
     list:add(1)
     list:add(2)
@@ -2626,6 +6243,22 @@ end
 
 --@api: LObjectPool:getActiveCount
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local pool = lurek.patterns.newObjectPool()
     pool:add({id = 1})
     pool:add({id = 2})
@@ -2636,6 +6269,22 @@ end
 
 --@api: LObjectPool:getAvailableCount
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local pool = lurek.patterns.newObjectPool()
     pool:add({id = 1})
     pool:add({id = 2})
@@ -2646,6 +6295,22 @@ end
 
 --@api: LObjectPool:getTotalCount
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local pool = lurek.patterns.newObjectPool()
     pool:add({id = 1})
     pool:add({id = 2})
@@ -2655,6 +6320,22 @@ end
 
 --@api: LSimpleState:update
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local fsm = lurek.patterns.newSimpleState()
     patterns_last_state_dt = 0
     fsm:addState("idle", { update = patterns_record_state_update })
@@ -2668,6 +6349,22 @@ end
 
 --@api: LStrategy:getCurrent
 do
+    local function patterns_log(message)
+        lurek.log.info("[patterns.example] " .. tostring(message))
+    end
+    local patterns_last_state_dt = 0
+    local function patterns_record_state_update(dt)
+        patterns_last_state_dt = dt
+        patterns_log("tick idle = " .. dt)
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local strat = lurek.patterns.newStrategy()
     strat:register("attack", function()
         return "attacking"

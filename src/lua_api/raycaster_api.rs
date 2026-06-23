@@ -1,28 +1,27 @@
 //! Registers the `lurek.raycaster` Lua API for raycast scenes, textures, level parsing, and raycaster userdata.
 
+use super::tilefield_api::LuaTileField;
 use super::SharedState;
 use crate::color::Color;
-use crate::image::ImageData;
 use crate::lua_api::physics_api::LuaBody;
 use crate::lua_api::render_api::LuaImage;
 #[cfg(feature = "obj-loader")]
 use crate::lua_api::render_api::LuaObjModel;
-use crate::minimap::{build_minimap_tile_window, compute_tile_light, reveal_cells_from_rays};
 use crate::raycaster::lighting::{apply_global_light, apply_lit_shade};
 use crate::raycaster::sprite_manager::SpriteManager;
 #[cfg(feature = "obj-loader")]
 use crate::raycaster::SceneAdapterModel;
 use crate::raycaster::{
-    compute_lighting, dir4_delta, distance_shade, project_column, try_move,
-    DirectionalSpriteTextures, DoorDirection, DoorManager, DoorState, EntityPickResult,
-    GridMoveAction, HeightMap, LevelSprite, ModelMesh, MultiLevelGrid, PickResult, PickSurface,
-    PointLight, RayHit, Raycaster2D, RaycasterBuildStats, RaycasterLevel, RaycasterScene,
-    SceneAdapter, SceneAdapterLight, SceneAdapterSprite, SceneBuildParams, SceneTransform,
-    ScreenPickParams, WallFeature, WallFeatureKind, WorldSprite,
+    compute_lighting, distance_shade, project_column, DirectionalSpriteTextures, DoorDirection,
+    DoorManager, DoorState, EntityPickResult, HeightMap, LevelSprite, ModelMesh, MultiLevelGrid,
+    PickResult, PickSurface, PointLight, RayHit, Raycaster2D, RaycasterBuildStats, RaycasterLevel,
+    RaycasterScene, SceneAdapter, SceneAdapterLight, SceneAdapterSprite, SceneBuildParams,
+    SceneTransform, ScreenPickParams, WallFeature, WallFeatureKind, WorldSprite,
 };
 #[cfg(feature = "obj-loader")]
 use crate::render::obj_loader::Vec3;
 use crate::runtime::resource_keys::TextureKey;
+use crate::tilefield::{CellCoord, TileChannel};
 use mlua::prelude::*;
 use slotmap::Key;
 use std::cell::RefCell;
@@ -474,18 +473,9 @@ fn parse_point_lights(value: LuaValue, api_name: &str) -> LuaResult<Vec<PointLig
             for pair in tbl.sequence_values::<LuaValue>() {
                 match pair? {
                     LuaValue::Table(lt) => out.push(parse_point_light_table(&lt, api_name)?),
-                    LuaValue::UserData(ud) => {
-                        let light = ud.borrow::<LuaPointLight>().map_err(|_| {
-                            LuaError::RuntimeError(format!(
-                                "{}: lights[] entries must be tables or LPointLight userdata",
-                                api_name
-                            ))
-                        })?;
-                        out.push(light.inner.clone());
-                    }
                     _ => {
                         return Err(LuaError::RuntimeError(format!(
-                            "{}: lights[] entries must be tables or LPointLight userdata",
+                            "{}: lights[] entries must be light tables",
                             api_name
                         )));
                     }
@@ -558,6 +548,64 @@ fn parse_door_direction(api_name: &str, value: &str) -> LuaResult<DoorDirection>
     }
 }
 
+fn parse_wall_feature_payload(feature_tbl: &LuaTable, api_name: &str) -> LuaResult<WallFeature> {
+    let kind = feature_tbl.get::<_, String>("kind").map_err(|e| {
+        LuaError::RuntimeError(format!("{}: feature.kind is required ({})", api_name, e))
+    })?;
+    match kind.as_str() {
+        "half" | "half_height" => {
+            let height = feature_tbl.get::<_, f32>("height").map_err(|e| {
+                LuaError::RuntimeError(format!(
+                    "{}: feature.height is required for half walls ({})",
+                    api_name, e
+                ))
+            })?;
+            Ok(WallFeature::half_height(height))
+        }
+        "window" => {
+            let sill_height = feature_tbl.get::<_, f32>("sill_height").map_err(|e| {
+                LuaError::RuntimeError(format!(
+                    "{}: feature.sill_height is required for windows ({})",
+                    api_name, e
+                ))
+            })?;
+            let lintel_height = feature_tbl.get::<_, f32>("lintel_height").map_err(|e| {
+                LuaError::RuntimeError(format!(
+                    "{}: feature.lintel_height is required for windows ({})",
+                    api_name, e
+                ))
+            })?;
+            Ok(WallFeature::window(
+                sill_height,
+                lintel_height,
+                feature_tbl.get::<_, Option<f32>>("alpha")?.unwrap_or(0.35),
+            ))
+        }
+        "door" => {
+            let direction = parse_door_direction(
+                &format!("{}: feature.direction", api_name),
+                &feature_tbl.get::<_, String>("direction").map_err(|e| {
+                    LuaError::RuntimeError(format!(
+                        "{}: feature.direction is required for doors ({})",
+                        api_name, e
+                    ))
+                })?,
+            )?;
+            Ok(WallFeature::door(
+                direction,
+                feature_tbl
+                    .get::<_, Option<f32>>("open_amount")?
+                    .unwrap_or(0.0),
+                feature_tbl.get::<_, Option<f32>>("alpha")?.unwrap_or(1.0),
+            ))
+        }
+        _ => Err(LuaError::RuntimeError(format!(
+            "{}: feature.kind must be \"half\", \"half_height\", \"window\", or \"door\"",
+            api_name
+        ))),
+    }
+}
+
 fn parse_wall_feature_descriptor(
     feature_tbl: &LuaTable,
     api_name: &str,
@@ -575,66 +623,7 @@ fn parse_wall_feature_descriptor(
             api_name, e
         ))
     })?;
-    let kind = feature_tbl.get::<_, String>("kind").map_err(|e| {
-        LuaError::RuntimeError(format!(
-            "{}: wall_features[].kind is required ({})",
-            api_name, e
-        ))
-    })?;
-    let feature = match kind.as_str() {
-        "half" | "half_height" => {
-            let height = feature_tbl.get::<_, f32>("height").map_err(|e| {
-                LuaError::RuntimeError(format!(
-                    "{}: wall_features[].height is required for half walls ({})",
-                    api_name, e
-                ))
-            })?;
-            WallFeature::half_height(height)
-        }
-        "window" => {
-            let sill_height = feature_tbl.get::<_, f32>("sill_height").map_err(|e| {
-                LuaError::RuntimeError(format!(
-                    "{}: wall_features[].sill_height is required for windows ({})",
-                    api_name, e
-                ))
-            })?;
-            let lintel_height = feature_tbl.get::<_, f32>("lintel_height").map_err(|e| {
-                LuaError::RuntimeError(format!(
-                    "{}: wall_features[].lintel_height is required for windows ({})",
-                    api_name, e
-                ))
-            })?;
-            WallFeature::window(
-                sill_height,
-                lintel_height,
-                feature_tbl.get::<_, Option<f32>>("alpha")?.unwrap_or(0.35),
-            )
-        }
-        "door" => {
-            let direction = parse_door_direction(
-                &format!("{}: wall_features[].direction", api_name),
-                &feature_tbl.get::<_, String>("direction").map_err(|e| {
-                    LuaError::RuntimeError(format!(
-                        "{}: wall_features[].direction is required for doors ({})",
-                        api_name, e
-                    ))
-                })?,
-            )?;
-            WallFeature::door(
-                direction,
-                feature_tbl
-                    .get::<_, Option<f32>>("open_amount")?
-                    .unwrap_or(0.0),
-                feature_tbl.get::<_, Option<f32>>("alpha")?.unwrap_or(1.0),
-            )
-        }
-        _ => {
-            return Err(LuaError::RuntimeError(format!(
-            "{}: wall_features[].kind must be \"half\", \"half_height\", \"window\", or \"door\"",
-            api_name
-        )))
-        }
-    };
+    let feature = parse_wall_feature_payload(feature_tbl, api_name)?;
     Ok((x, y, feature))
 }
 
@@ -1353,98 +1342,6 @@ impl LuaUserData for LuaHeightMap {
         });
     }
 }
-/// Lua-visible point light that illuminates nearby raycaster tiles and sprites with colored light and falloff.
-#[derive(Clone)]
-pub struct LuaPointLight {
-    inner: PointLight,
-}
-impl LuaUserData for LuaPointLight {
-    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
-        // -- x --
-        /// Returns the X world position of this light.
-        /// @return | number | X coordinate.
-        methods.add_method("x", |_, this, ()| Ok(this.inner.x));
-        // -- y --
-        /// Returns the Y world position of this light.
-        /// @return | number | Y coordinate.
-        methods.add_method("y", |_, this, ()| Ok(this.inner.y));
-        // -- level --
-        /// Returns the optional multilevel slice index that owns this light.
-        /// @return | integer | Level index, or nil when this light is global across levels.
-        methods.add_method("level", |_, this, ()| Ok(this.inner.level_index));
-        // -- radius --
-        /// Returns the light's falloff radius in world units.
-        /// @return | number | Radius.
-        methods.add_method("radius", |_, this, ()| Ok(this.inner.radius));
-        // -- intensity --
-        /// Returns the brightness multiplier of this light.
-        /// @return | number | Intensity.
-        methods.add_method("intensity", |_, this, ()| Ok(this.inner.intensity));
-        // -- color --
-        /// Returns the RGB color components of this light.
-        /// @return | number | Red channel (0.0..1.0).
-        /// @return | number | Green channel (0.0..1.0).
-        /// @return | number | Blue channel (0.0..1.0).
-        methods.add_method("color", |_, this, ()| {
-            Ok((
-                this.inner.color[0],
-                this.inner.color[1],
-                this.inner.color[2],
-            ))
-        });
-        // -- set --
-        /// Overwrites all properties of this point light in a single call.
-        /// @param | x | number | New X world position.
-        /// @param | y | number | New Y world position.
-        /// @param | r | number | Red color channel (0.0..1.0).
-        /// @param | g | number | Green color channel (0.0..1.0).
-        /// @param | b | number | Blue color channel (0.0..1.0).
-        /// @param | radius | number | Falloff radius in world units.
-        /// @param | intensity | number | Brightness multiplier.
-        /// @param | level | integer? | Optional multilevel slice index that owns this light.
-        methods.add_method_mut(
-            "set",
-            |_,
-             this,
-             (x, y, r, g, b, radius, intensity, level): (
-                f32,
-                f32,
-                f32,
-                f32,
-                f32,
-                f32,
-                f32,
-                Option<usize>,
-            )| {
-                this.inner.x = x;
-                this.inner.y = y;
-                this.inner.color = [r, g, b];
-                this.inner.radius = radius;
-                this.inner.intensity = intensity;
-                this.inner.level_index = level;
-                Ok(())
-            },
-        );
-        // -- setLevel --
-        /// Updates the optional multilevel slice index that owns this light.
-        /// @param | level | integer? | Level index, or nil to let this light affect every level.
-        methods.add_method_mut("setLevel", |_, this, level: Option<usize>| {
-            this.inner.level_index = level;
-            Ok(())
-        });
-        // -- type --
-        /// Returns the type name of this object ("LPointLight").
-        /// @return | string | Type name string.
-        methods.add_method("type", |_, _, ()| Ok("LPointLight"));
-        // -- typeOf --
-        /// Checks whether this object matches the given type name.
-        /// @param | name | string | Type name to test against.
-        /// @return | boolean | True if this object is of the given type.
-        methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LPointLight" || name == "LObject")
-        });
-    }
-}
 /// Lua-visible raycaster map that holds cell data, per-cell textures, and provides raycasting,.
 /// collision, and scene-building operations for first-person dungeon-crawler rendering.
 pub struct LuaRaycaster {
@@ -1482,56 +1379,19 @@ impl LuaUserData for LuaRaycaster {
         methods.add_method("getCell", |_, this, (x, y): (u32, u32)| {
             Ok(this.inner.get_cell(x, y))
         });
-        // -- setHalfWallCell --
-        /// Attaches a half-height wall feature to a blocking cell.
+        // -- setWallFeatureCell --
+        /// Attaches a render-only wall feature descriptor to a blocking cell.
         /// @param | x | integer | Grid column.
         /// @param | y | integer | Grid row.
-        /// @param | height | number | Solid wall height from floor, 0.0..1.0.
+        /// @param | feature | table | Feature table {kind="half"|"window"|"door", ...}.
         methods.add_method_mut(
-            "setHalfWallCell",
-            |_, this, (x, y, height): (u32, u32, f32)| {
-                this.inner
-                    .set_wall_feature(x, y, WallFeature::half_height(height));
-                Ok(())
-            },
-        );
-        // -- setWindowCell --
-        /// Attaches a window feature to a blocking cell, leaving a visible opening between sill and lintel.
-        /// @param | x | integer | Grid column.
-        /// @param | y | integer | Grid row.
-        /// @param | sillHeight | number | Bottom of the opening from the floor, 0.0..1.0.
-        /// @param | lintelHeight | number | Top of the opening from the floor, 0.0..1.0.
-        /// @param | alpha | number? | Wall alpha multiplier for the solid bands.
-        methods.add_method_mut(
-            "setWindowCell",
-            |_, this, (x, y, sill_height, lintel_height, alpha): (u32, u32, f32, f32, Option<f32>)| {
-                this.inner.set_wall_feature(
-                    x,
-                    y,
-                    WallFeature::window(sill_height, lintel_height, alpha.unwrap_or(0.35)),
-                );
-                Ok(())
-            },
-        );
-        // -- setDoorCell --
-        /// Attaches a sliding door feature to a blocking cell.
-        /// @param | x | integer | Grid column.
-        /// @param | y | integer | Grid row.
-        /// @param | direction | string | "horizontal" or "vertical".
-        /// @param | openAmount | number | Door open amount, 0.0..1.0.
-        /// @param | alpha | number? | Optional alpha multiplier.
-        methods.add_method_mut(
-            "setDoorCell",
-            |_, this, (x, y, dir_str, open_amount, alpha): (u32, u32, String, f32, Option<f32>)| {
-                let dir = parse_door_direction(
-                    "lurek.raycaster.LRaycaster.setDoorCell(direction)",
-                    &dir_str,
+            "setWallFeatureCell",
+            |_, this, (x, y, feature_tbl): (u32, u32, LuaTable)| {
+                let feature = parse_wall_feature_payload(
+                    &feature_tbl,
+                    "lurek.raycaster.LRaycaster:setWallFeatureCell",
                 )?;
-                this.inner.set_wall_feature(
-                    x,
-                    y,
-                    WallFeature::door(dir, open_amount, alpha.unwrap_or(1.0)),
-                );
+                this.inner.set_wall_feature(x, y, feature);
                 Ok(())
             },
         );
@@ -1628,7 +1488,7 @@ impl LuaUserData for LuaRaycaster {
         /// Returns true if the grid cell is a solid wall (non-zero value).
         /// @param | x | integer | Grid column.
         /// @param | y | integer | Grid row.
-        /// @return | boolean | True if cell blocks movement and rays.
+        /// @return | boolean | True if the cell blocks render rays.
         methods.add_method("isBlocked", |_, this, (x, y): (u32, u32)| {
             Ok(this.inner.is_blocked(x, y))
         });
@@ -1787,83 +1647,6 @@ impl LuaUserData for LuaRaycaster {
                 Ok(LuaValue::Nil)
             }
         });
-        // -- isWalkBlocked --
-        /// Returns true if the cell blocks walking (solid wall OR blocked lowered-floor cell).
-        /// @param | x | integer | Grid column.
-        /// @param | y | integer | Grid row.
-        /// @return | boolean | True if the cell cannot be walked through.
-        methods.add_method("isWalkBlocked", |_, this, (x, y): (u32, u32)| {
-            Ok(this.inner.is_blocked(x, y)
-                || this
-                    .lowered_floor_cells
-                    .get(&(x, y))
-                    .map(|cell| cell.blocked)
-                    .unwrap_or(false))
-        });
-        // -- tryMove --
-        /// Attempts to move from (px,py) by (dx,dy) with wall-slide collision. Returns the final position.
-        /// @param | px | number | Current X position in world space.
-        /// @param | py | number | Current Y position in world space.
-        /// @param | dx | number | Desired X movement delta.
-        /// @param | dy | number | Desired Y movement delta.
-        /// @return | number | Final X position.
-        /// @return | number | Final Y position.
-        /// @return | boolean | Whether any movement occurred.
-        methods.add_method(
-            "tryMove",
-            |_, this, (px, py, dx, dy): (f32, f32, f32, f32)| {
-                let width = this.inner.width();
-                let height = this.inner.height();
-                let (nx, ny, moved) = try_move(width, height, px, py, dx, dy, |x, y| {
-                    this.inner.is_blocked(x, y)
-                        || this
-                            .lowered_floor_cells
-                            .get(&(x, y))
-                            .map(|cell| cell.blocked)
-                            .unwrap_or(false)
-                });
-                Ok((nx, ny, moved))
-            },
-        );
-        // -- gridMove --
-        /// Performs a discrete grid-step movement in one of 4 cardinal directions with collision.
-        /// Used for tile-by-tile dungeon crawlers.
-        /// @param | px | number | Current X position.
-        /// @param | py | number | Current Y position.
-        /// @param | dir | integer | Facing direction 1..4 (1=N, 2=E, 3=S, 4=W).
-        /// @param | action | string | Movement action: "forward", "back", "left", or "right".
-        /// @param | step | number | Step distance in world units (typically 1.0).
-        /// @return | number | Final X position.
-        /// @return | number | Final Y position.
-        /// @return | boolean | Whether the move succeeded.
-        methods.add_method(
-            "gridMove",
-            |_, this, (px, py, dir, action, step): (f32, f32, u8, String, f32)| {
-                let parsed = GridMoveAction::parse(action.as_str()).ok_or_else(|| {
-                    LuaError::RuntimeError(
-                        "lurek.raycaster.gridMove: action must be one of 'forward', 'back', 'left', 'right'"
-                            .to_string(),
-                    )
-                })?;
-                if !(1..=4).contains(&dir) {
-                    return Err(LuaError::RuntimeError(
-                        "lurek.raycaster.gridMove: dir must be in range 1..4".to_string(),
-                    ));
-                }
-                let (dx, dy) = dir4_delta(dir, parsed, step);
-                let width = this.inner.width();
-                let height = this.inner.height();
-                let (nx, ny, moved) = try_move(width, height, px, py, dx, dy, |x, y| {
-                    this.inner.is_blocked(x, y)
-                        || this
-                            .lowered_floor_cells
-                            .get(&(x, y))
-                            .map(|cell| cell.blocked)
-                            .unwrap_or(false)
-                });
-                Ok((nx, ny, moved))
-            },
-        );
         // -- castRay --
         /// Casts a single ray from (ox,oy) at the given angle and returns hit info or nil.
         /// @param | ox | number | Ray origin X.
@@ -1936,173 +1719,6 @@ impl LuaUserData for LuaRaycaster {
                     .inner
                     .cast_rays_flat(ox, oy, angle, fov, count, max_dist);
                 lua.create_sequence_from(flat)
-            },
-        );
-        // -- lineOfSight --
-        /// Tests whether there is a clear line of sight between two world points (no walls in between).
-        /// @param | x1 | number | Start X.
-        /// @param | y1 | number | Start Y.
-        /// @param | x2 | number | End X.
-        /// @param | y2 | number | End Y.
-        /// @return | boolean | True if the path is unobstructed.
-        methods.add_method(
-            "lineOfSight",
-            |_, this, (x1, y1, x2, y2): (f32, f32, f32, f32)| {
-                Ok(this.inner.line_of_sight(x1, y1, x2, y2))
-            },
-        );
-        // -- revealCellsFromRays --
-        /// Casts rays across the FOV and returns a list of grid cells that are visible (for fog-of-war).
-        /// @param | ox | number | Ray origin X.
-        /// @param | oy | number | Ray origin Y.
-        /// @param | angle | number | Center angle in radians.
-        /// @param | fov | number | Field of view in radians.
-        /// @param | count | integer | Number of rays.
-        /// @param | maxDist | number | Maximum ray distance.
-        /// @param | step | number? | Walk step along each ray (default 0.2).
-        /// @return | table | Array of {x, y} tables representing revealed grid cells.
-        /// @field | x | number | X.
-        /// @field | y | number | Y.
-        methods.add_method(
-            "revealCellsFromRays",
-            |lua,
-             this,
-             (ox, oy, angle, fov, count, max_dist, step): (
-                f32,
-                f32,
-                f32,
-                f32,
-                u32,
-                f32,
-                Option<f32>,
-            )| {
-                let cells = reveal_cells_from_rays(
-                    &this.inner,
-                    ox,
-                    oy,
-                    angle,
-                    fov,
-                    count,
-                    max_dist,
-                    step.unwrap_or(0.2),
-                );
-                let out = lua.create_table()?;
-                for (i, (x, y)) in cells.iter().enumerate() {
-                    let row = lua.create_table()?;
-                    /// The 'x' field value exposed to Lua scripts.
-                    row.set("x", *x)?;
-                    /// The 'y' field value exposed to Lua scripts.
-                    row.set("y", *y)?;
-                    out.set(i + 1, row)?;
-                }
-                Ok(out)
-            },
-        );
-        // -- computeTileLight --
-        /// Computes the combined lighting color at a tile from ambient and point lights, accounting for walls.
-        /// @param | x | integer | Tile grid column.
-        /// @param | y | integer | Tile grid row.
-        /// @param | ambient | number | Base ambient light level (0.0..1.0).
-        /// @param | lights | table? | Array of point-light tables {x, y, radius, r?, g?, b?, color?, intensity?, level?} or LPointLight userdata values.
-        /// @return | number | Red light channel.
-        /// @return | number | Green light channel.
-        /// @return | number | Blue light channel.
-        /// @return | number | Average luminance.
-        methods.add_method(
-            "computeTileLight",
-            |_, this, (x, y, ambient, lights_tbl): (u32, u32, f32, LuaValue)| {
-                let lights = parse_point_lights(lights_tbl, "lurek.raycaster.computeTileLight")?;
-                let rgb = compute_tile_light(&this.inner, x, y, ambient, &lights);
-                let luma = ((rgb[0] + rgb[1] + rgb[2]) / 3.0).clamp(0.0, 1.0);
-                Ok((rgb[0], rgb[1], rgb[2], luma))
-            },
-        );
-        // -- buildMinimapWindow --
-        /// Generates a grid of minimap tile samples around a center point with lighting info.
-        /// Useful for rendering a lit minimap overlay.
-        /// @param | centerX | number | Center X in world coordinates.
-        /// @param | centerY | number | Center Y in world coordinates.
-        /// @param | radius | integer | Tile radius around the center to sample.
-        /// @param | ambient | number | Ambient light level (0.0..1.0).
-        /// @param | lights | table? | Array of point-light tables or LPointLight userdata values.
-        /// @return | table | Array of {x, y, blocked, visible, r, g, b, luma} tables.
-        /// @field | x | number | X.
-        /// @field | y | number | Y.
-        /// @field | blocked | boolean | Blocked.
-        /// @field | visible | boolean | Visible.
-        /// @field | r | number | R.
-        /// @field | g | number | G.
-        /// @field | b | number | B.
-        /// @field | luma | number | Luma.
-        methods.add_method(
-            "buildMinimapWindow",
-            |lua,
-             this,
-             (center_x, center_y, radius, ambient, lights_tbl):
-                 (f32, f32, u32, f32, LuaValue)| {
-                let lights = parse_point_lights(lights_tbl, "lurek.raycaster.buildMinimapWindow")?;
-                let samples =
-                    build_minimap_tile_window(&this.inner, center_x, center_y, radius, ambient, &lights);
-                let out = lua.create_table()?;
-                for (i, s) in samples.iter().enumerate() {
-                    let row = lua.create_table()?;
-                    /// The 'x' field value exposed to Lua scripts.
-                    row.set("x", s.x)?;
-                    /// The 'y' field value exposed to Lua scripts.
-                    row.set("y", s.y)?;
-                    /// Performs the 'blocked' operation.
-                    row.set("blocked", s.blocked)?;
-                    /// Performs the 'visible' operation.
-                    row.set("visible", s.visible)?;
-                    /// The 'r' field value exposed to Lua scripts.
-                    row.set("r", s.light[0])?;
-                    /// The 'g' field value exposed to Lua scripts.
-                    row.set("g", s.light[1])?;
-                    /// The 'b' field value exposed to Lua scripts.
-                    row.set("b", s.light[2])?;
-                    /// Performs the 'luma' operation.
-                    row.set("luma", s.luma)?;
-                    out.set(i + 1, row)?;
-                }
-                Ok(out)
-            },
-        );
-        // -- extractMinimap --
-        /// Extracts a pixel minimap image centered on the player from this raycaster map.
-        /// @param | playerX | number | Player x position in world space.
-        /// @param | playerY | number | Player y position in world space.
-        /// @param | playerAngle | number | Player facing angle in radians.
-        /// @param | viewRadius | integer | Visible tile radius around the player.
-        /// @param | cellSize | integer | Pixel size of each minimap cell.
-        /// @return | LImageData | Image data containing the extracted minimap.
-        methods.add_method(
-            "extractMinimap",
-            |_,
-             this,
-             (player_x, player_y, player_angle, view_radius, cell_size): (
-                f32,
-                f32,
-                f32,
-                u32,
-                u32,
-            )| {
-                let (pixels, width, height) = crate::minimap::try_extract_minimap(
-                    &this.inner,
-                    player_x,
-                    player_y,
-                    player_angle,
-                    view_radius,
-                    cell_size.max(1),
-                    [70, 75, 92, 255],
-                    [20, 24, 30, 255],
-                    [255, 220, 90, 255],
-                )
-                .map_err(|err| {
-                    LuaError::runtime(format!("lurek.raycaster.extractMinimap: {err}"))
-                })?;
-                let img =
-                    ImageData::from_bytes(width, height, pixels).map_err(LuaError::runtime)?;
-                Ok(img)
             },
         );
         // -- setWallAlpha --
@@ -2286,23 +1902,6 @@ impl LuaUserData for LuaRaycaster {
                 Ok(img)
             },
         );
-        // -- drawLineOfSight --
-        /// Renders a debug image showing the line-of-sight ray between two world points.
-        /// @param | ax | number | Start X.
-        /// @param | ay | number | Start Y.
-        /// @param | bx | number | End X.
-        /// @param | by | number | End Y.
-        /// @param | scale | integer | Pixels per grid cell.
-        /// @return | LImageData | Raw image data for this view.
-        methods.add_method(
-            "drawLineOfSight",
-            |_, this, (ax, ay, bx, by, scale): (f32, f32, f32, f32, u32)| {
-                let img = this
-                    .inner
-                    .draw_line_of_sight_to_image(ax, ay, bx, by, scale);
-                Ok(img)
-            },
-        );
         // -- drawCameraSweep --
         /// Renders multiple frames of a rotating camera sweep as a single combined image.
         /// @param | x | number | Camera X position.
@@ -2404,7 +2003,9 @@ impl LuaUserData for LuaRaycaster {
                                 params.player_y + params.player_angle.sin(),
                             );
                             let wall_at = |cx: i32, cy: i32| -> bool {
-                                cx < 0 || cy < 0 || this.inner.blocks_light_at(cx as u32, cy as u32)
+                                cx < 0
+                                    || cy < 0
+                                    || this.inner.blocks_render_light_at(cx as u32, cy as u32)
                             };
                             for pair in tbl.sequence_values::<LuaTable>() {
                                 let mt = pair?;
@@ -2551,7 +2152,7 @@ impl LuaUserData for LuaRaycaster {
                         params.player_y + params.player_angle.sin(),
                     );
                     let wall_at = |cx: i32, cy: i32| -> bool {
-                        cx < 0 || cy < 0 || this.inner.blocks_light_at(cx as u32, cy as u32)
+                        cx < 0 || cy < 0 || this.inner.blocks_render_light_at(cx as u32, cy as u32)
                     };
                     for pair in models_tbl.sequence_values::<LuaTable>() {
                         let mt = pair?;
@@ -2634,7 +2235,7 @@ impl LuaUserData for LuaRaycaster {
         /// Builds a complete textured raycaster scene for GPU rendering. Stores the output internally.
         /// for the renderer to consume on the next frame. Returns the number of quads generated.
         /// @param | params | table | Scene params {px, py, angle, fov, rays, max_dist, screen_w, screen_h, ambient?, shade_dist?, floor_r/g/b?, ceiling_r/g/b?, camera_height?, horizon_offset?}.
-        /// @param | lights | table? | Array of point-light tables {x, y, radius, r?, g?, b?, color?, intensity?, level?} or LPointLight userdata values.
+        /// @param | lights | table? | Array of render light tables {x, y, radius, r?, g?, b?, color?, intensity?, level?}.
         /// @param | sprites | table|LSpriteManager? | Array of sprite tables {x, y, texture?, size?, front_texture?, right_texture?, back_texture?, left_texture?, angle?} or an LSpriteManager with integer/LImage textures.
         /// @param | wallTextures | table? | Map of cell_value -> texture for wall surfaces.
         /// @return | integer | Total number of quads in the built scene.
@@ -2738,7 +2339,7 @@ impl LuaUserData for LuaRaycaster {
                         params.player_y + params.player_angle.sin(),
                     );
                     let wall_at = |cx: i32, cy: i32| -> bool {
-                        cx < 0 || cy < 0 || this.inner.blocks_light_at(cx as u32, cy as u32)
+                        cx < 0 || cy < 0 || this.inner.blocks_render_light_at(cx as u32, cy as u32)
                     };
                     for pair in models_tbl.sequence_values::<LuaTable>() {
                         let mt = pair?;
@@ -2777,7 +2378,7 @@ impl LuaUserData for LuaRaycaster {
         /// Builds a textured raycaster scene with additional 3D .obj model instances projected into the view.
         /// Extends buildScene with a models array for placing 3D props in the dungeon.
         /// @param | params | table | Scene params (same as buildScene).
-        /// @param | lights | table? | Array of point-light tables or LPointLight userdata values.
+        /// @param | lights | table? | Array of render light tables.
         /// @param | sprites | table|LSpriteManager? | Array of sprite tables with billboard or 4-direction textures, or an LSpriteManager with integer/LImage textures.
         /// @param | wallTextures | table? | Map of cell_value -> texture.
         /// @param | models | table? | Array of model instance tables {model, x, y, rotation?, yaw?, z?, scale?}.
@@ -2843,7 +2444,9 @@ impl LuaUserData for LuaRaycaster {
                                 params.ambient_light
                             };
                             let wall_at = |cx: i32, cy: i32| -> bool {
-                                cx < 0 || cy < 0 || this.inner.blocks_light_at(cx as u32, cy as u32)
+                                cx < 0
+                                    || cy < 0
+                                    || this.inner.blocks_render_light_at(cx as u32, cy as u32)
                             };
                             if let Some(model_mesh) = project_model_instance(
                                 &mt,
@@ -2915,70 +2518,24 @@ impl LuaUserData for LuaMultiLevelGrid {
             let level = active_multilevel_level(&grid, "lurek.raycaster.LMultiLevelGrid:getCell")?;
             Ok(level.get_wall(x as usize, y as usize))
         });
-        // -- setHalfWallCell --
-        /// Attaches a half-height wall feature to a blocking cell on the active level.
+        // -- setWallFeatureCell --
+        /// Attaches a render-only wall feature descriptor to a blocking cell on the active level.
         /// @param | x | integer | Grid column.
         /// @param | y | integer | Grid row.
-        /// @param | height | number | Solid wall height from floor, 0.0..1.0.
+        /// @param | feature | table | Feature table {kind="half"|"window"|"door", ...}.
         methods.add_method_mut(
-            "setHalfWallCell",
-            |_, this, (x, y, height): (u32, u32, f32)| {
-                let mut grid = this.inner.borrow_mut();
-                let level = active_multilevel_level_mut(
-                    &mut grid,
-                    "lurek.raycaster.LMultiLevelGrid:setHalfWallCell",
-                )?;
-                level.set_wall_feature(x as usize, y as usize, WallFeature::half_height(height));
-                Ok(())
-            },
-        );
-        // -- setWindowCell --
-        /// Attaches a window feature to a blocking cell on the active level, leaving a visible opening between sill and lintel.
-        /// @param | x | integer | Grid column.
-        /// @param | y | integer | Grid row.
-        /// @param | sillHeight | number | Bottom of the opening from the floor, 0.0..1.0.
-        /// @param | lintelHeight | number | Top of the opening from the floor, 0.0..1.0.
-        /// @param | alpha | number? | Wall alpha multiplier for the solid bands.
-        methods.add_method_mut(
-            "setWindowCell",
-            |_, this, (x, y, sill_height, lintel_height, alpha): (u32, u32, f32, f32, Option<f32>)| {
-                let mut grid = this.inner.borrow_mut();
-                let level = active_multilevel_level_mut(
-                    &mut grid,
-                    "lurek.raycaster.LMultiLevelGrid:setWindowCell",
-                )?;
-                level.set_wall_feature(
-                    x as usize,
-                    y as usize,
-                    WallFeature::window(sill_height, lintel_height, alpha.unwrap_or(0.35)),
-                );
-                Ok(())
-            },
-        );
-        // -- setDoorCell --
-        /// Attaches a sliding door feature to a blocking cell on the active level.
-        /// @param | x | integer | Grid column.
-        /// @param | y | integer | Grid row.
-        /// @param | direction | string | "horizontal" or "vertical".
-        /// @param | openAmount | number | Door open amount, 0.0..1.0.
-        /// @param | alpha | number? | Optional alpha multiplier.
-        methods.add_method_mut(
-            "setDoorCell",
-            |_, this, (x, y, dir_str, open_amount, alpha): (u32, u32, String, f32, Option<f32>)| {
-                let dir = parse_door_direction(
-                    "lurek.raycaster.LMultiLevelGrid:setDoorCell(direction)",
-                    &dir_str,
+            "setWallFeatureCell",
+            |_, this, (x, y, feature_tbl): (u32, u32, LuaTable)| {
+                let feature = parse_wall_feature_payload(
+                    &feature_tbl,
+                    "lurek.raycaster.LMultiLevelGrid:setWallFeatureCell",
                 )?;
                 let mut grid = this.inner.borrow_mut();
                 let level = active_multilevel_level_mut(
                     &mut grid,
-                    "lurek.raycaster.LMultiLevelGrid:setDoorCell",
+                    "lurek.raycaster.LMultiLevelGrid:setWallFeatureCell",
                 )?;
-                level.set_wall_feature(
-                    x as usize,
-                    y as usize,
-                    WallFeature::door(dir, open_amount, alpha.unwrap_or(1.0)),
-                );
+                level.set_wall_feature(x as usize, y as usize, feature);
                 Ok(())
             },
         );
@@ -3382,7 +2939,7 @@ impl LuaUserData for LuaMultiLevelGrid {
         // -- buildScene --
         /// Builds a textured multilevel raycaster scene from this persistent world and stores it for rendering.
         /// @param | params | table | Scene params for the current camera.
-        /// @param | lights | table? | Array of point-light tables or LPointLight userdata values.
+        /// @param | lights | table? | Array of render light tables.
         /// @param | sprites | table|LSpriteManager? | Array of level sprite tables or an LSpriteManager.
         /// @param | wallTextures | table? | Map of cell_value -> texture for wall surfaces.
         /// @return | integer | Total number of quads in the built scene.
@@ -3500,7 +3057,7 @@ impl LuaUserData for LuaMultiLevelGrid {
                                 let wall_at = |cx: i32, cy: i32| -> bool {
                                     cx < 0
                                         || cy < 0
-                                        || raycaster.blocks_light_at(cx as u32, cy as u32)
+                                        || raycaster.blocks_render_light_at(cx as u32, cy as u32)
                                 };
                                 let mut meshes = Vec::new();
                                 for mt in level_models {
@@ -3644,7 +3201,8 @@ impl LuaUserData for LuaMultiLevelGrid {
                                         let wall_at = |cx: i32, cy: i32| -> bool {
                                             cx < 0
                                                 || cy < 0
-                                                || raycaster.blocks_light_at(cx as u32, cy as u32)
+                                                || raycaster
+                                                    .blocks_render_light_at(cx as u32, cy as u32)
                                         };
                                         let mut meshes = Vec::new();
                                         for mt in level_models {
@@ -3831,7 +3389,7 @@ impl LuaUserData for LuaMultiLevelGrid {
                                 let wall_at = |cx: i32, cy: i32| -> bool {
                                     cx < 0
                                         || cy < 0
-                                        || raycaster.blocks_light_at(cx as u32, cy as u32)
+                                        || raycaster.blocks_render_light_at(cx as u32, cy as u32)
                                 };
                                 let mut meshes = Vec::new();
                                 for mt in level_models {
@@ -5115,7 +4673,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                                         let wall_at = |cx: i32, cy: i32| -> bool {
                                             cx < 0
                                                 || cy < 0
-                                                || raycaster.blocks_light_at(cx as u32, cy as u32)
+                                                || raycaster.blocks_render_light_at(cx as u32, cy as u32)
                                         };
                                         let mut meshes = Vec::new();
                                         for mt in level_models {
@@ -5313,7 +4871,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                                 let wall_at = |cx: i32, cy: i32| -> bool {
                                     cx < 0
                                         || cy < 0
-                                        || raycaster.blocks_light_at(cx as u32, cy as u32)
+                                        || raycaster.blocks_render_light_at(cx as u32, cy as u32)
                                 };
                                 let mut meshes = Vec::new();
                                 for mt in level_models {
@@ -5407,7 +4965,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// Builds a multilevel raycaster scene from a stack of plain Lua level tables.
     /// @param | params | table | Scene params plus optional active_level.
     /// @param | levels | table|LMultiLevelGrid | Array of level tables or a persistent LMultiLevelGrid.
-    /// @param | lights | table? | Array of point-light tables or LPointLight userdata values.
+    /// @param | lights | table? | Array of render light tables.
     /// @param | sprites | table|LSpriteManager? | Array of sprite tables {x, y, texture?, size?, level?, front_texture?, right_texture?, back_texture?, left_texture?, angle?} or an LSpriteManager whose sprites use their own optional level indices and default to active_level.
     /// @param | wallTextures | table? | Map of cell_value -> texture for wall surfaces.
     /// @param | models | table? | Array of model instance tables {model, x, y, level?, rotation?, yaw?, z?, scale?}; instances default to `active_level`.
@@ -5505,7 +5063,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                                     let wall_at = |cx: i32, cy: i32| -> bool {
                                         cx < 0
                                             || cy < 0
-                                            || raycaster.blocks_light_at(cx as u32, cy as u32)
+                                            || raycaster.blocks_render_light_at(cx as u32, cy as u32)
                                     };
                                     let mut meshes = Vec::new();
                                     for mt in level_models {
@@ -5551,6 +5109,102 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 }
                 let quad_count = scene.quad_count();
                 s.borrow_mut().raycaster_output = Some(scene);
+                Ok(quad_count)
+            },
+        )?,
+    )?;
+    // -- buildMultiLevelSceneFromField --
+    /// Builds a multilevel raycaster scene from a tilefield blocker channel.
+    /// @param | params | table | Scene params plus optional active_level.
+    /// @param | field | LTileField | Source tilefield.
+    /// @param | opts | table? | Options with `wallChannel` (default `vision`).
+    /// @param | lights | table? | Optional raycaster point lights.
+    /// @param | sprites | table|LSpriteManager? | Optional raycaster sprites.
+    /// @param | wallTextures | table? | Map of cell_value -> texture for wall surfaces.
+    /// @return | integer | Total number of quads in the built scene.
+    let build_field_state = state.clone();
+    tbl.set(
+        "buildMultiLevelSceneFromField",
+        lua.create_function(
+            move |_lua,
+                  (params_tbl, field_ud, opts_tbl, lights_tbl, sprites_tbl, wall_tex_tbl): (
+                LuaTable,
+                LuaAnyUserData,
+                Option<LuaTable>,
+                LuaValue,
+                LuaValue,
+                LuaValue,
+            )| {
+                let params = parse_scene_build_params(
+                    &params_tbl,
+                    "lurek.raycaster.buildMultiLevelSceneFromField",
+                )?;
+                let active_level = parse_active_level(&params_tbl)?;
+                let channel_name = match &opts_tbl {
+                    Some(opts) => opts
+                        .get::<_, Option<String>>("wallChannel")?
+                        .unwrap_or_else(|| "vision".to_string()),
+                    None => "vision".to_string(),
+                };
+                let wall_channel = TileChannel::parse(&channel_name).map_err(|err| {
+                    LuaError::RuntimeError(format!(
+                        "lurek.raycaster.buildMultiLevelSceneFromField: {err}"
+                    ))
+                })?;
+                let field_ud = field_ud.borrow::<LuaTileField>()?;
+                let field = field_ud.inner.borrow();
+                let (width, height, levels) = field.size();
+                if active_level >= levels as usize {
+                    return Err(LuaError::RuntimeError(format!(
+                        "lurek.raycaster.buildMultiLevelSceneFromField: active_level {} is out of range for {} levels",
+                        active_level,
+                        levels
+                    )));
+                }
+                let lights = parse_point_lights(
+                    lights_tbl,
+                    "lurek.raycaster.buildMultiLevelSceneFromField",
+                )?;
+                let sprites = parse_level_sprites(
+                    sprites_tbl,
+                    "lurek.raycaster.buildMultiLevelSceneFromField",
+                    active_level,
+                )?;
+                let wall_tex_map = parse_wall_texture_map(
+                    wall_tex_tbl,
+                    "lurek.raycaster.buildMultiLevelSceneFromField",
+                )?;
+
+                let mut grid = MultiLevelGrid::new();
+                for z in 0..levels {
+                    let mut level = RaycasterLevel::new(width as usize, height as usize);
+                    level.floor_offset = z as f32;
+                    level.ceiling_height = z as f32 + 1.0;
+                    for y in 0..height {
+                        for x in 0..width {
+                            let idx = (y * width + x) as usize;
+                            level.walls[idx] = if field.blocks(CellCoord { x, y, z }, wall_channel) {
+                                1
+                            } else {
+                                0
+                            };
+                        }
+                    }
+                    grid.add_level(level);
+                }
+                grid.set_active_level(active_level);
+                let scene = RaycasterScene::build_multilevel(
+                    &grid,
+                    &params,
+                    &lights,
+                    &sprites,
+                    &|_, cell_value| wall_tex_map.get(&cell_value).copied(),
+                    &|_, _, _| None,
+                    &|_, _, _| None,
+                    &|_, _, _| None,
+                );
+                let quad_count = scene.quad_count();
+                build_field_state.borrow_mut().raycaster_output = Some(scene);
                 Ok(quad_count)
             },
         )?,
@@ -5646,7 +5300,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                                 let wall_at = |cx: i32, cy: i32| -> bool {
                                     cx < 0
                                         || cy < 0
-                                        || raycaster.blocks_light_at(cx as u32, cy as u32)
+                                        || raycaster.blocks_render_light_at(cx as u32, cy as u32)
                                 };
                                 let mut meshes = Vec::new();
                                 for mt in level_models {
@@ -5780,44 +5434,6 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 inner: Rc::new(RefCell::new(HeightMap::new(w, h))),
             })
         })?,
-    )?;
-    // -- newPointLight --
-    /// Creates a new point light with position, color, radius, and intensity.
-    /// @param | x | number | World X position.
-    /// @param | y | number | World Y position.
-    /// @param | r | number | Red channel (0.0..1.0).
-    /// @param | g | number | Green channel (0.0..1.0).
-    /// @param | b | number | Blue channel (0.0..1.0).
-    /// @param | radius | number | Light falloff radius in world units.
-    /// @param | intensity | number | Brightness multiplier.
-    /// @param | level | integer? | Optional multilevel slice index that owns this light.
-    /// @return | LPointLight | A new point light instance.
-    tbl.set(
-        "newPointLight",
-        lua.create_function(
-            |_,
-             (x, y, r, g, b, radius, intensity, level): (
-                f32,
-                f32,
-                f32,
-                f32,
-                f32,
-                f32,
-                f32,
-                Option<usize>,
-            )| {
-                Ok(LuaPointLight {
-                    inner: PointLight {
-                        x,
-                        y,
-                        level_index: level,
-                        radius,
-                        intensity,
-                        color: [r, g, b],
-                    },
-                })
-            },
-        )?,
     )?;
     // -- newSpriteManager --
     /// Creates a new sprite manager for tracking and projecting billboard sprites.

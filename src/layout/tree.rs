@@ -1,5 +1,5 @@
 //! `src/layout/tree.rs` lays out rooted hierarchies by recursively placing children and centering parents over spans.
-//! It owns deterministic tree traversal, cycle fallback handling, horizontal extent growth, and depth-based y placement.
+//! It owns deterministic traversal, cycle fallback handling, subtree spans, and depth-based y placement.
 //! Shared `LayoutConfig` spacing rules are applied here so hierarchy outputs stay compatible with other layout modes.
 //! This file is the hierarchy-specific algorithm boundary; it does not own shared types or post-layout alignment passes.
 //! Read it when parent-child ordering, subtree spacing, root fallback behavior, or tree coordinate rules need changes.
@@ -14,31 +14,44 @@ pub fn layout_tree(
     root: NodeId,
     config: &LayoutConfig,
 ) -> LayoutResult {
-    let widths: HashMap<NodeId, f64> = nodes.iter().map(|n| (n.id, n.width)).collect();
+    if nodes.is_empty() {
+        return LayoutResult::new(Vec::new());
+    }
+
+    let node_map: HashMap<NodeId, &LayoutNode> = nodes.iter().map(|n| (n.id, n)).collect();
     let mut ordered_ids: Vec<NodeId> = nodes.iter().map(|n| n.id).collect();
     ordered_ids.sort_unstable();
     ordered_ids.dedup();
 
     let mut traversal_roots = Vec::new();
-    if widths.contains_key(&root) {
+    if node_map.contains_key(&root) {
         traversal_roots.push(root);
     }
     traversal_roots.extend(ordered_ids.iter().copied().filter(|id| *id != root));
 
     let mut positions: HashMap<NodeId, (f64, f64)> = HashMap::new();
+    let mut spans = HashMap::new();
+    let mut span_visiting = HashSet::new();
+    let max_h = nodes.iter().map(node_height).fold(1.0, f64::max);
+    let level_gap = max_h + config.v_spacing.max(0.0);
     let mut x_offset = config.margin;
-    let mut visiting = HashSet::new();
+    let mut place_visiting = HashSet::new();
     let mut state = TreeLayoutState {
         x_offset: &mut x_offset,
         children,
-        widths: &widths,
+        node_map: &node_map,
         config,
+        level_gap,
+        spans: &mut spans,
         positions: &mut positions,
-        visiting: &mut visiting,
+        span_visiting: &mut span_visiting,
+        place_visiting: &mut place_visiting,
     };
 
     for node_id in traversal_roots {
-        state.assign_positions(node_id, 0);
+        let span = state.compute_span(node_id);
+        state.assign_positions(node_id, 0, *state.x_offset, span);
+        *state.x_offset += span + config.h_spacing.max(0.0);
     }
 
     let result_nodes: Vec<LayoutNode> = nodes
@@ -62,61 +75,88 @@ pub fn layout_tree(
 struct TreeLayoutState<'a> {
     x_offset: &'a mut f64,
     children: &'a HashMap<NodeId, Vec<NodeId>>,
-    widths: &'a HashMap<NodeId, f64>,
+    node_map: &'a HashMap<NodeId, &'a LayoutNode>,
     config: &'a LayoutConfig,
+    level_gap: f64,
+    spans: &'a mut HashMap<NodeId, f64>,
     positions: &'a mut HashMap<NodeId, (f64, f64)>,
-    visiting: &'a mut HashSet<NodeId>,
+    span_visiting: &'a mut HashSet<NodeId>,
+    place_visiting: &'a mut HashSet<NodeId>,
 }
 
 impl TreeLayoutState<'_> {
-    /// Recursively assign positions, treating cycle edges as deterministic leaf fallbacks.
-    fn assign_positions(&mut self, node_id: NodeId, depth: usize) -> f64 {
-        if let Some((x, _)) = self.positions.get(&node_id).copied() {
-            return x;
+    /// Compute subtree span, treating cycle edges as leaf fallbacks.
+    fn compute_span(&mut self, node_id: NodeId) -> f64 {
+        if let Some(span) = self.spans.get(&node_id).copied() {
+            return span;
         }
-
-        let y = self.config.margin + depth as f64 * self.config.v_spacing;
-        if !self.visiting.insert(node_id) {
-            return self.place_leaf(node_id, y);
-        }
-
-        let mut kids = self.children.get(&node_id).cloned().unwrap_or_default();
-        kids.retain(|child| *child != node_id);
-        kids.sort_unstable();
-        kids.dedup();
-
-        let x = if kids.is_empty() {
-            self.place_leaf(node_id, y)
-        } else {
-            let mut child_positions = Vec::with_capacity(kids.len());
-            for child in kids {
-                child_positions.push(self.assign_positions(child, depth + 1));
-            }
-
-            if child_positions.is_empty() {
-                self.place_leaf(node_id, y)
-            } else {
-                let center_x =
-                    (child_positions[0] + child_positions[child_positions.len() - 1]) / 2.0;
-                self.positions.insert(node_id, (center_x, y));
-                center_x
-            }
+        let Some(node) = self.node_map.get(&node_id).copied() else {
+            return 1.0;
         };
-
-        self.visiting.remove(&node_id);
-        x
+        if !self.span_visiting.insert(node_id) {
+            return node_width(node);
+        }
+        let kids = self.valid_children(node_id);
+        let child_span = if kids.is_empty() {
+            0.0
+        } else {
+            let mut sum = 0.0;
+            for child in &kids {
+                sum += self.compute_span(*child);
+            }
+            sum + self.config.h_spacing.max(0.0) * kids.len().saturating_sub(1) as f64
+        };
+        let span = node_width(node).max(child_span);
+        self.span_visiting.remove(&node_id);
+        self.spans.insert(node_id, span);
+        span
     }
 
-    /// Place one node as a leaf and advance the horizontal cursor.
-    fn place_leaf(&mut self, node_id: NodeId, y: f64) -> f64 {
-        if let Some((x, _)) = self.positions.get(&node_id).copied() {
-            return x;
+    /// Recursively assign positions inside the precomputed subtree span.
+    fn assign_positions(&mut self, node_id: NodeId, depth: usize, left: f64, span: f64) {
+        if self.positions.contains_key(&node_id) {
+            return;
         }
-
-        let node_width = self.widths.get(&node_id).copied().unwrap_or(1.0);
-        let x = *self.x_offset;
+        let Some(node) = self.node_map.get(&node_id).copied() else {
+            return;
+        };
+        if !self.place_visiting.insert(node_id) {
+            self.place_node(node_id, left, depth, node);
+            return;
+        }
+        let y = self.config.margin + depth as f64 * self.level_gap;
+        let x = left + (span - node_width(node)).max(0.0) * 0.5;
         self.positions.insert(node_id, (x, y));
-        *self.x_offset += node_width + self.config.h_spacing;
-        x
+
+        let kids = self.valid_children(node_id);
+        if !kids.is_empty() {
+            let total_child_span = kids
+                .iter()
+                .map(|child| self.spans.get(child).copied().unwrap_or(1.0))
+                .sum::<f64>()
+                + self.config.h_spacing.max(0.0) * kids.len().saturating_sub(1) as f64;
+            let mut child_left = left + (span - total_child_span).max(0.0) * 0.5;
+            for child in kids {
+                let child_span = self.spans.get(&child).copied().unwrap_or(1.0);
+                self.assign_positions(child, depth + 1, child_left, child_span);
+                child_left += child_span + self.config.h_spacing.max(0.0);
+            }
+        }
+        self.place_visiting.remove(&node_id);
+    }
+
+    /// Place one node as a deterministic leaf fallback.
+    fn place_node(&mut self, node_id: NodeId, left: f64, depth: usize, _node: &LayoutNode) {
+        let y = self.config.margin + depth as f64 * self.level_gap;
+        let x = left;
+        self.positions.insert(node_id, (x, y));
+    }
+
+    fn valid_children(&self, node_id: NodeId) -> Vec<NodeId> {
+        let mut kids = self.children.get(&node_id).cloned().unwrap_or_default();
+        kids.retain(|child| *child != node_id && self.node_map.contains_key(child));
+        kids.sort_unstable();
+        kids.dedup();
+        kids
     }
 }

@@ -181,6 +181,30 @@ export function renderEditorHtml(spec: EditorSpec, persistedState?: Record<strin
   const specJson = escapeScriptJson(JSON.stringify(spec));
   const stateJson = escapeScriptJson(JSON.stringify(persistedState ?? {}));
   const behaviorJson = escapeScriptJson(JSON.stringify(EDITOR_BEHAVIOR_PROFILES));
+  const content = getEditorContent(spec.id);
+  const isProfessionalPanel = spec.id === "pixelArt" || spec.id === "database" || spec.id === "dialog" || spec.id === "procMap" || spec.id === "tileMap" || spec.id === "sceneFlow" || spec.id === "particle" || spec.id === "skeletonRigging" || spec.id === "globe" || spec.id === "province" || spec.id === "aiBehavior" || spec.id === "graph" || spec.id === "voxel";
+
+  if (isProfessionalPanel) {
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data:; style-src 'nonce-${nonce}'; script-src 'nonce-${nonce}';">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${escapeHtml(spec.title)}</title>
+  <style nonce="${nonce}">${content.styles}</style>
+</head>
+<body>
+  ${content.workspaceHtml}
+  <script nonce="${nonce}">
+    const SPEC = JSON.parse(${JSON.stringify(specJson)});
+    const PERSISTED_STATE = JSON.parse(${JSON.stringify(stateJson)});
+    const EDITOR_BEHAVIORS = JSON.parse(${JSON.stringify(behaviorJson)});
+    ${content.script}
+  </script>
+</body>
+</html>`;
+  }
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -189,13 +213,13 @@ export function renderEditorHtml(spec: EditorSpec, persistedState?: Record<strin
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data:; style-src 'nonce-${nonce}'; script-src 'nonce-${nonce}';">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${escapeHtml(spec.title)}</title>
-  <style nonce="${nonce}">${sharedStyles()}${getEditorContent(spec.id).styles}</style>
+  <style nonce="${nonce}">${sharedStyles()}${content.styles}</style>
 </head>
 <body>
   <div class="editor-shell" data-editor-id="${escapeAttr(spec.id)}">
     ${renderToolbar(spec)}
     ${renderToolRail(spec.tools)}
-    <main class="workspace ${spec.workspace}-workspace">${getEditorContent(spec.id).workspaceHtml}</main>
+    <main class="workspace ${spec.workspace}-workspace">${content.workspaceHtml}</main>
     ${renderInspector(spec.inspector, spec)}
     ${renderBottomPanel(spec)}
     ${renderStatusBar(spec)}
@@ -205,7 +229,7 @@ export function renderEditorHtml(spec: EditorSpec, persistedState?: Record<strin
     const SPEC = JSON.parse(${JSON.stringify(specJson)});
     const PERSISTED_STATE = JSON.parse(${JSON.stringify(stateJson)});
     const EDITOR_BEHAVIORS = JSON.parse(${JSON.stringify(behaviorJson)});
-    ${getEditorContent(spec.id).script}
+    ${content.script}
   </script>
 </body>
 </html>`;

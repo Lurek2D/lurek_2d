@@ -1,7 +1,7 @@
-//! This file owns `Raycaster2D`, the grid-backed DDA engine that stores wall cells and answers ray or LOS queries.
+//! This file owns `Raycaster2D`, the grid-backed DDA engine that stores wall cells and answers render ray queries.
 //! It stores map dimensions, row-major cells, wall alpha overrides, wall features, and synchronized door feature state.
 //! Core casting methods produce single hits, layered transparent hits, fan casts, and packed ray buffers from one model.
-//! Visibility helpers reuse the same blocking rules for line of sight, so lighting and AI stay aligned with rendering.
+//! Render visibility helpers reuse the same blocking rules so lighting and screen picking stay aligned with rendering.
 //! Door synchronization translates `DoorManager` openness into wall features without replacing underlying tile identity.
 //! Sprite and floor helpers project billboards and sample floor rows with the same camera conventions as wall casting.
 //! Safe setters ignore invalid writes, and out-of-range reads fall back predictably for tools and runtime probes.
@@ -25,12 +25,12 @@ pub struct Raycaster2D {
     cells: Vec<u32>,
     /// Per-tile-type alpha overrides for transparent walls; default 1.0 (opaque).
     wall_alphas: HashMap<u8, f32>,
-    /// Per-cell wall feature descriptors used by rendering and gameplay queries.
+    /// Per-cell wall feature descriptors used by rendering, picking, and ray probes.
     wall_features: HashMap<(u32, u32), WallFeature>,
     /// Door cells last synchronized from a `DoorManager`.
     synced_door_cells: HashSet<(u32, u32)>,
 }
-/// Core DDA grid map implementation with ray-casting, visibility, and projection methods.
+/// Core DDA grid map implementation with ray-casting, render visibility, and projection methods.
 impl Raycaster2D {
     /// Create a new empty grid of `width × height` open cells.
     pub fn new(width: u32, height: u32) -> Self {
@@ -72,11 +72,11 @@ impl Raycaster2D {
         self.wall_features
             .get(&(x, y))
             .copied()
-            .map(|feature| feature.blocks_movement())
+            .map(|feature| feature.blocks_ray_hit())
             .unwrap_or(true)
     }
-    /// Return true when cell `(x, y)` stops line of sight.
-    pub fn blocks_visibility_at(&self, x: u32, y: u32) -> bool {
+    /// Return true when cell `(x, y)` stops render visibility probes.
+    pub fn blocks_render_visibility_at(&self, x: u32, y: u32) -> bool {
         let cell = self.get_cell(x, y);
         if cell == 0 {
             return false;
@@ -84,11 +84,11 @@ impl Raycaster2D {
         self.wall_features
             .get(&(x, y))
             .copied()
-            .map(|feature| feature.blocks_visibility())
+            .map(|feature| feature.blocks_render_visibility())
             .unwrap_or_else(|| self.get_wall_alpha(cell as u8) >= 1.0)
     }
-    /// Return true when cell `(x, y)` stops tile-level light propagation.
-    pub fn blocks_light_at(&self, x: u32, y: u32) -> bool {
+    /// Return true when cell `(x, y)` stops render light sampling.
+    pub fn blocks_render_light_at(&self, x: u32, y: u32) -> bool {
         let cell = self.get_cell(x, y);
         if cell == 0 {
             return false;
@@ -96,7 +96,7 @@ impl Raycaster2D {
         self.wall_features
             .get(&(x, y))
             .copied()
-            .map(|feature| feature.blocks_light())
+            .map(|feature| feature.blocks_render_light())
             .unwrap_or_else(|| self.get_wall_alpha(cell as u8) >= 1.0)
     }
     /// Return the map width in tiles.
@@ -232,7 +232,7 @@ impl Raycaster2D {
             if cell > 0 {
                 if self
                     .wall_feature(map_x as u32, map_y as u32)
-                    .is_some_and(|feature| !feature.blocks_movement())
+                    .is_some_and(|feature| !feature.blocks_ray_hit())
                 {
                     continue;
                 }
@@ -313,7 +313,7 @@ impl Raycaster2D {
                 if cell > 0 {
                     if self
                         .wall_feature(map_x as u32, map_y as u32)
-                        .is_some_and(|feature| !feature.blocks_movement())
+                        .is_some_and(|feature| !feature.blocks_ray_hit())
                     {
                         continue;
                     }
@@ -354,7 +354,7 @@ impl Raycaster2D {
                 if cell > 0 {
                     if self
                         .wall_feature(map_x as u32, map_y as u32)
-                        .is_some_and(|feature| !feature.blocks_movement())
+                        .is_some_and(|feature| !feature.blocks_ray_hit())
                     {
                         continue;
                     }
@@ -443,71 +443,6 @@ impl Raycaster2D {
             flat.push(if h.hit { 1.0 } else { 0.0 });
         }
         flat
-    }
-    /// Return true if the straight-line path from `(x1,y1)` to `(x2,y2)` contains no solid cell.
-    pub fn line_of_sight(&self, x1: f32, y1: f32, x2: f32, y2: f32) -> bool {
-        let dx = x2 - x1;
-        let dy = y2 - y1;
-        let dist = (dx * dx + dy * dy).sqrt();
-        if dist < 1e-6 {
-            return true;
-        }
-        let dir_x = dx / dist;
-        let dir_y = dy / dist;
-        let mut map_x = x1.floor() as i32;
-        let mut map_y = y1.floor() as i32;
-        let end_x = x2.floor() as i32;
-        let end_y = y2.floor() as i32;
-        let delta_dist_x = if dir_x.abs() < 1e-10 {
-            f32::MAX
-        } else {
-            (1.0 / dir_x).abs()
-        };
-        let delta_dist_y = if dir_y.abs() < 1e-10 {
-            f32::MAX
-        } else {
-            (1.0 / dir_y).abs()
-        };
-        let (step_x, mut side_dist_x) = if dir_x < 0.0 {
-            (-1, (x1 - map_x as f32) * delta_dist_x)
-        } else {
-            (1, (map_x as f32 + 1.0 - x1) * delta_dist_x)
-        };
-        let (step_y, mut side_dist_y) = if dir_y < 0.0 {
-            (-1, (y1 - map_y as f32) * delta_dist_y)
-        } else {
-            (1, (map_y as f32 + 1.0 - y1) * delta_dist_y)
-        };
-        loop {
-            if map_x == end_x && map_y == end_y {
-                return true;
-            }
-            if side_dist_x < side_dist_y {
-                side_dist_x += delta_dist_x;
-                map_x += step_x;
-            } else {
-                side_dist_y += delta_dist_y;
-                map_y += step_y;
-            }
-            if map_x < 0 || map_y < 0 || map_x >= self.width as i32 || map_y >= self.height as i32 {
-                return true;
-            }
-            let cell = self.cells[(map_y as u32 * self.width + map_x as u32) as usize];
-            if cell > 0 {
-                if !self.blocks_visibility_at(map_x as u32, map_y as u32) {
-                    continue;
-                }
-                let perp = if side_dist_x - delta_dist_x < side_dist_y - delta_dist_y {
-                    side_dist_x - delta_dist_x
-                } else {
-                    side_dist_y - delta_dist_y
-                };
-                if perp >= dist {
-                    return true;
-                }
-                return false;
-            }
-        }
     }
     /// Project world sprite at `(sx, sy)` onto the screen given player position and orientation; return a `SpriteProjection`.
     #[allow(clippy::too_many_arguments)]

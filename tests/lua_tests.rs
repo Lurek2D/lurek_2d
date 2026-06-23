@@ -395,6 +395,11 @@ fn lua_evidence_tilemap_evidence() {
 }
 
 #[test]
+fn lua_evidence_tilefield_evidence() {
+    run_lua_test("evidence/test_tilefield_evidence.lua");
+}
+
+#[test]
 fn lua_evidence_terminal_evidence() {
     run_lua_test("evidence/test_terminal_evidence.lua");
 }
@@ -730,6 +735,14 @@ fn lua_golden_tilemap_golden() {
 }
 
 #[test]
+fn lua_golden_tilefield_golden() {
+    run_lua_golden_test(
+        "golden/test_tilefield_golden.lua",
+        &["evidence/test_tilefield_evidence.lua"],
+    );
+}
+
+#[test]
 fn lua_golden_terminal_golden() {
     run_lua_golden_test(
         "golden/test_terminal_golden.lua",
@@ -971,6 +984,36 @@ fn lua_integration_tilemap_camera_integration() {
 #[test]
 fn lua_integration_tilemap_pathfind_integration() {
     run_lua_test("integration/test_tilemap_pathfind_integration.lua");
+}
+
+#[test]
+fn lua_integration_tilefield_pathfind_integration() {
+    run_lua_test("integration/test_tilefield_pathfind_integration.lua");
+}
+
+#[test]
+fn lua_integration_tilefield_visibility_integration() {
+    run_lua_test("integration/test_tilefield_visibility_integration.lua");
+}
+
+#[test]
+fn lua_integration_tilefield_raycaster_integration() {
+    run_lua_test("integration/test_tilefield_raycaster_integration.lua");
+}
+
+#[test]
+fn lua_integration_tilefield_minimap_integration() {
+    run_lua_test("integration/test_tilefield_minimap_integration.lua");
+}
+
+#[test]
+fn lua_integration_tilefield_systems_integration() {
+    run_lua_test("integration/test_tilefield_systems_integration.lua");
+}
+
+#[test]
+fn lua_integration_procgen_tilefield_integration() {
+    run_lua_test("integration/test_procgen_tilefield_integration.lua");
 }
 
 #[test]
@@ -1231,6 +1274,11 @@ fn lua_stress_thread_stress() {
 #[test]
 fn lua_stress_tilemap_stress() {
     run_lua_test("stress/test_tilemap_stress.lua");
+}
+
+#[test]
+fn lua_stress_tilefield_stress() {
+    run_lua_test("stress/test_tilefield_stress.lua");
 }
 
 #[test]
@@ -1586,6 +1634,11 @@ fn lua_unit_thread_unit() {
 #[test]
 fn lua_unit_tilemap_unit() {
     run_lua_test("unit/test_tilemap_unit.lua");
+}
+
+#[test]
+fn lua_unit_tilefield_unit() {
+    run_lua_test("unit/test_tilefield_unit.lua");
 }
 
 #[test]

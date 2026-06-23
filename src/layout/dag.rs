@@ -1,5 +1,5 @@
 //! `src/layout/dag.rs` lays out directed graphs in layers so flow direction, rank order, and dependency reading stay clear.
-//! It owns layer assignment, cyclic fallback placement, barycenter-based crossing reduction, and per-layer coordinates.
+//! It owns layer assignment, cyclic fallback placement, barycenter ordering, and centered per-layer coordinates.
 //! Shared `LayoutConfig` spacing and margins are applied here so DAG results align with the rest of the layout module.
 //! This file is the layered-graph algorithm boundary; it does not own shared types, force simulation, or tree recursion.
 //! Read it when rank construction, crossing reduction, deterministic fallback, or DAG coordinate rules need changes.
@@ -119,7 +119,11 @@ fn reduce_crossings(layers: &[Vec<NodeId>], edges: &[LayoutEdge]) -> Vec<Vec<Nod
             })
             .collect();
 
-        barycenters.sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap_or(std::cmp::Ordering::Equal));
+        barycenters.sort_by(|a, b| {
+            a.1.partial_cmp(&b.1)
+                .unwrap_or(std::cmp::Ordering::Equal)
+                .then_with(|| a.0.cmp(&b.0))
+        });
         result[i] = barycenters.into_iter().map(|(id, _)| id).collect();
     }
 
@@ -134,20 +138,42 @@ fn assign_coordinates(
 ) -> Vec<LayoutNode> {
     let node_map: HashMap<NodeId, &LayoutNode> = nodes.iter().map(|n| (n.id, n)).collect();
     let mut result = Vec::new();
+    let mut layer_widths = Vec::with_capacity(layers.len());
+    let mut layer_heights = Vec::with_capacity(layers.len());
+
+    for layer in layers {
+        let mut width = 0.0f64;
+        let mut height = 1.0f64;
+        let mut count = 0usize;
+        for &node_id in layer {
+            if let Some(&node) = node_map.get(&node_id) {
+                width += node_width(node);
+                height = height.max(node_height(node));
+                count += 1;
+            }
+        }
+        if count > 1 {
+            width += config.h_spacing.max(0.0) * (count - 1) as f64;
+        }
+        layer_widths.push(width);
+        layer_heights.push(height);
+    }
+    let max_layer_width = layer_widths.iter().copied().fold(0.0, f64::max);
+    let mut y = config.margin;
 
     for (layer_idx, layer) in layers.iter().enumerate() {
-        let y = config.margin + layer_idx as f64 * config.v_spacing;
-        let mut x = config.margin;
+        let mut x = config.margin + (max_layer_width - layer_widths[layer_idx]).max(0.0) * 0.5;
 
         for &node_id in layer {
             if let Some(&original) = node_map.get(&node_id) {
                 let mut node = original.clone();
                 node.x = x;
-                node.y = y;
-                x += node.width + config.h_spacing;
+                node.y = y + (layer_heights[layer_idx] - node_height(&node)) * 0.5;
+                x += node_width(&node) + config.h_spacing.max(0.0);
                 result.push(node);
             }
         }
+        y += layer_heights[layer_idx] + config.v_spacing.max(0.0);
     }
 
     result

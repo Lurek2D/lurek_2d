@@ -2,22 +2,23 @@
 -- Auto-generated from content/examples2/particle_*.lua by tools/fix/merge_examples2_into_examples.py
 -- Run: cargo run -- content/examples/particle.lua
 
-local function particle_log(message)
-    lurek.log.info("[particle.example] " .. tostring(message))
-end
 
 --- Particle Module Part 1: system creation, presets, basic config
 
-local function example_print_log(...)
-    local parts = {}
-    for i = 1, select("#", ...) do
-        parts[i] = tostring(select(i, ...))
-    end
-    lurek.log.info(table.concat(parts, " "))
-end
 
 --@api: lurek.particle.newSystem
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem({
         seed = 42,
         maxParticles = 128,
@@ -32,6 +33,17 @@ end
 
 --@api: lurek.particle.newPreset
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local fire = lurek.particle.newPreset("fire")
     fire:setPosition(160, 220)
     fire:setEmissionRate(48)
@@ -42,6 +54,17 @@ end
 
 --@api: lurek.particle.fromTOML
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local path = "save/particle_example.toml"
     lurek.filesystem.write(path, "seed = 42\nmax_particles = 96\nemission_rate = 18.0\nlifetime_min = 0.2\nlifetime_max = 0.8\n")
 
@@ -52,6 +75,17 @@ end
 
 --@api: LParticleSystem:setBufferSize
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setEmissionRate(60)
     ps:setBufferSize(1024)
@@ -61,6 +95,17 @@ end
 
 --@api: LParticleSystem:getBufferSize
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setEmissionRate(90)
     ps:setBufferSize(1024)
@@ -71,6 +116,17 @@ end
 
 --@api: LParticleSystem:setPosition
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setEmissionRate(20)
     ps:setPosition(100, 200)
@@ -81,6 +137,17 @@ end
 
 --@api: LParticleSystem:getPosition
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setOffset(12, -4)
     ps:setPosition(100, 200)
@@ -91,6 +158,17 @@ end
 
 --@api: LParticleSystem:moveTo
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setPosition(40, 60)
     ps:moveTo(300, 400)
@@ -101,6 +179,17 @@ end
 
 --@api: LParticleSystem:setEmissionRate
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setBufferSize(256)
     ps:setEmissionRate(100)
@@ -111,6 +200,17 @@ end
 
 --@api: LParticleSystem:getEmissionRate
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setParticleLifetime(0.2, 0.8)
     ps:setEmissionRate(100)
@@ -121,6 +221,17 @@ end
 
 --@api: LParticleSystem:setParticleLifetime
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setEmissionRate(32)
     ps:setParticleLifetime(0.5, 3.0)
@@ -131,6 +242,17 @@ end
 
 --@api: LParticleSystem:getParticleLifetime
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setSpeed(20, 80)
     ps:setParticleLifetime(0.5, 3.0)
@@ -141,6 +263,17 @@ end
 
 --@api: LParticleSystem:setEmitterLifetime
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setEmissionRate(18)
     ps:setEmitterLifetime(5.0)
@@ -151,6 +284,17 @@ end
 
 --@api: LParticleSystem:getEmitterLifetime
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setPosition(320, 180)
     ps:setEmitterLifetime(5.0)
@@ -161,6 +305,17 @@ end
 
 --@api: LParticleSystem:setSpeed
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setDirection(-math.pi / 2)
     ps:setSpeed(50, 200)
@@ -171,6 +326,17 @@ end
 
 --@api: LParticleSystem:getSpeed
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setSpread(math.pi / 12)
     ps:setSpeed(50, 200)
@@ -181,6 +347,17 @@ end
 
 --@api: LParticleSystem:setDirection
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setSpread(math.pi / 10)
     ps:setDirection(math.pi / 2)
@@ -191,6 +368,17 @@ end
 
 --@api: LParticleSystem:getDirection
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setSpeed(40, 60)
     ps:setDirection(math.pi / 2)
@@ -201,6 +389,17 @@ end
 
 --@api: LParticleSystem:setSpread
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setDirection(0.0)
     ps:setSpread(math.pi / 6)
@@ -211,6 +410,17 @@ end
 
 --@api: LParticleSystem:getSpread
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setEmissionRate(24)
     ps:setSpread(math.pi / 6)
@@ -221,6 +431,17 @@ end
 
 --@api: LParticleSystem:setGravity
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setSpeed(60, 90)
     ps:setGravity(0, 200)
@@ -231,6 +452,17 @@ end
 
 --@api: LParticleSystem:getGravity
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setParticleLifetime(0.5, 1.5)
     ps:setGravity(0, 200)
@@ -241,6 +473,17 @@ end
 
 --@api: LParticleSystem:setSizes
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setSizes(4, 2, 1)
 
@@ -251,6 +494,17 @@ end
 
 --@api: LParticleSystem:getSizes
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setSizes(4, 2, 1)
 
@@ -261,6 +515,17 @@ end
 
 --@api: LParticleSystem:setSizeVariation
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setSizes(4, 2, 1)
     ps:setSizeVariation(0.3)
@@ -271,6 +536,17 @@ end
 
 --@api: LParticleSystem:getSizeVariation
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setSizes(4, 2, 1)
     ps:setSizeVariation(0.3)
@@ -281,6 +557,17 @@ end
 
 --@api: LParticleSystem:setColors
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setColors({1, 0.5, 0, 1}, {1, 0, 0, 0})
 
@@ -291,6 +578,17 @@ end
 
 --@api: LParticleSystem:getColors
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setColors({1, 0.5, 0, 1}, {1, 0, 0, 0})
 
@@ -303,6 +601,17 @@ end
 
 --@api: LParticleSystem:start
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem({
         emissionRate = 100,
         lifetimeMin = 1.0,
@@ -316,6 +625,17 @@ end
 
 --@api: LParticleSystem:stop
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem({
         emissionRate = 100,
         lifetimeMin = 1.0,
@@ -330,6 +650,17 @@ end
 
 --@api: LParticleSystem:isActive
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setEmissionRate(80)
     ps:start()
@@ -341,6 +672,17 @@ end
 
 --@api: LParticleSystem:isStopped
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setEmissionRate(80)
     ps:start()
@@ -351,6 +693,17 @@ end
 
 --@api: LParticleSystem:pause
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setEmissionRate(50)
     ps:start()
@@ -361,6 +714,17 @@ end
 
 --@api: LParticleSystem:resume
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setEmissionRate(50)
     ps:start()
@@ -373,6 +737,17 @@ end
 
 --@api: LParticleSystem:isPaused
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setEmissionRate(50)
     ps:start()
@@ -383,6 +758,17 @@ end
 
 --@api: LParticleSystem:emit
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem({
         maxParticles = 512,
     })
@@ -396,6 +782,17 @@ end
 
 --@api: LParticleSystem:warmUp
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newPreset("rain")
     ps:start()
     ps:warmUp(2.0)
@@ -406,6 +803,17 @@ end
 
 --@api: LParticleSystem:update
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem({
         emissionRate = 200,
         maxParticles = 1024,
@@ -426,6 +834,17 @@ end
 
 --@api: LParticleSystem:render
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem({
         emissionRate = 200,
         maxParticles = 1024,
@@ -448,6 +867,17 @@ end
 
 --@api: LParticleSystem:reset
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setEmissionRate(100)
     ps:start()
@@ -460,6 +890,17 @@ end
 
 --@api: LParticleSystem:clone
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem({
         maxParticles = 256,
         emissionRate = 75,
@@ -474,6 +915,17 @@ end
 
 --@api: LParticleSystem:isEmpty
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem({
         maxParticles = 10,
     })
@@ -486,6 +938,17 @@ end
 
 --@api: LParticleSystem:isFull
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem({
         maxParticles = 10,
     })
@@ -496,6 +959,17 @@ end
 
 --@api: LParticleSystem:count
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem({
         maxParticles = 10,
     })
@@ -506,6 +980,17 @@ end
 
 --@api: LParticleSystem:getCount
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem({
         maxParticles = 10,
     })
@@ -516,6 +1001,17 @@ end
 
 --@api: LParticleSystem:release
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setEmissionRate(12)
     ps:emit(5)
@@ -526,6 +1022,17 @@ end
 
 --@api: LParticleSystem:type
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setEmissionRate(16)
     local type_name = ps:type()
@@ -536,6 +1043,17 @@ end
 
 --@api: LParticleSystem:typeOf
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setEmissionRate(8)
     local particle = ps:typeOf("LParticleSystem")
@@ -546,6 +1064,17 @@ end
 
 --@api: LParticleSystem:setLinearAcceleration
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setSpeed(30, 60)
     ps:setLinearAcceleration(-10, 50, 10, 100)
@@ -556,6 +1085,17 @@ end
 
 --@api: LParticleSystem:getLinearAcceleration
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setDirection(-math.pi / 2)
     ps:setLinearAcceleration(-10, 50, 10, 100)
@@ -566,6 +1106,17 @@ end
 
 --@api: LParticleSystem:setLinearDamping
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setSpeed(120, 180)
     ps:setLinearDamping(0.1, 0.5)
@@ -576,6 +1127,17 @@ end
 
 --@api: LParticleSystem:getLinearDamping
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setParticleLifetime(0.6, 1.2)
     ps:setLinearDamping(0.1, 0.5)
@@ -586,6 +1148,17 @@ end
 
 --@api: LParticleSystem:setRadialAcceleration
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setPosition(320, 240)
     ps:setRadialAcceleration(-50, 50)
@@ -596,6 +1169,17 @@ end
 
 --@api: LParticleSystem:getRadialAcceleration
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setSpread(math.pi * 2)
     ps:setRadialAcceleration(-50, 50)
@@ -606,6 +1190,17 @@ end
 
 --@api: LParticleSystem:setTangentialAcceleration
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setDirection(0.0)
     ps:setTangentialAcceleration(-20, 20)
@@ -616,6 +1211,17 @@ end
 
 --@api: LParticleSystem:getTangentialAcceleration
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setPosition(128, 96)
     ps:setTangentialAcceleration(-20, 20)
@@ -628,6 +1234,17 @@ end
 
 --@api: LParticleSystem:addAttractor
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem({
         maxParticles = 512,
         emissionRate = 100,
@@ -643,6 +1260,17 @@ end
 
 --@api: LParticleSystem:getAttractorCount
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem({
         maxParticles = 512,
         emissionRate = 100,
@@ -655,6 +1283,17 @@ end
 
 --@api: LParticleSystem:clearAttractors
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem({
         maxParticles = 512,
         emissionRate = 100,
@@ -669,6 +1308,17 @@ end
 
 --@api: LParticleSystem:addSubEmitter
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem({
         maxParticles = 256,
     })
@@ -685,6 +1335,17 @@ end
 
 --@api: LParticleSystem:addSubSystem
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem({
         maxParticles = 256,
     })
@@ -702,6 +1363,17 @@ end
 
 --@api: LParticleSystem:subSystemCount
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem({
         maxParticles = 256,
     })
@@ -718,6 +1390,17 @@ end
 
 --@api: LParticleSystem:setEmissionArea
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setEmissionArea("uniform", 100, 50)
 
@@ -731,6 +1414,17 @@ end
 
 --@api: LParticleSystem:getEmissionArea
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setDirection(math.pi / 3)
     ps:setEmissionArea("uniform", 100, 50)
@@ -741,6 +1435,17 @@ end
 
 --@api: LParticleSystem:setRotation
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setShape("spark")
     ps:setRotation(0, math.pi * 2)
@@ -751,6 +1456,17 @@ end
 
 --@api: LParticleSystem:getRotation
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setSpin(-1, 1)
     ps:setRotation(0, math.pi * 2)
@@ -761,6 +1477,17 @@ end
 
 --@api: LParticleSystem:setSpin
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setRotation(0, math.pi)
     ps:setSpin(-3, 3)
@@ -771,6 +1498,17 @@ end
 
 --@api: LParticleSystem:getSpin
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setShape("ring")
     ps:setSpin(-3, 3)
@@ -781,6 +1519,17 @@ end
 
 --@api: LParticleSystem:setSpinVariation
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setSpin(-2, 2)
     ps:setSpinVariation(0.5)
@@ -791,6 +1540,17 @@ end
 
 --@api: LParticleSystem:getSpinVariation
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setRotation(0, 0.5)
     ps:setSpinVariation(0.5)
@@ -801,6 +1561,17 @@ end
 
 --@api: LParticleSystem:setRelativeRotation
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setShape("spark")
     ps:setRelativeRotation(true)
@@ -811,6 +1582,17 @@ end
 
 --@api: LParticleSystem:hasRelativeRotation
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setDirection(math.pi / 4)
     ps:setRelativeRotation(true)
@@ -821,6 +1603,17 @@ end
 
 --@api: LParticleSystem:setInsertMode
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setInsertMode("top")
 
@@ -831,6 +1624,17 @@ end
 
 --@api: LParticleSystem:getInsertMode
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setBufferSize(32)
     ps:setInsertMode("bottom")
@@ -841,6 +1645,17 @@ end
 
 --@api: LParticleSystem:setOffset
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setPosition(200, 120)
     ps:setOffset(16, 16)
@@ -851,6 +1666,17 @@ end
 
 --@api: LParticleSystem:getOffset
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setDirection(math.pi / 2)
     ps:setOffset(16, 16)
@@ -861,6 +1687,17 @@ end
 
 --@api: LParticleSystem:setShape
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setSizes(6, 2)
     ps:setShape("circle")
@@ -871,6 +1708,17 @@ end
 
 --@api: LParticleSystem:getShape
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setSpinVariation(0.25)
     ps:setShape("circle")
@@ -881,6 +1729,17 @@ end
 
 --@api: LParticleSystem:setFlipbook
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setShape("square")
     ps:setFlipbook(4, 4, 12)
@@ -891,6 +1750,17 @@ end
 
 --@api: LParticleSystem:getFlipbook
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setEmissionRate(30)
     ps:setFlipbook(4, 4, 12)
@@ -901,6 +1771,17 @@ end
 
 --@api: LParticleSystem:setBounds
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setBounds(0, 800, 0, 600, 0.5)
 
@@ -911,6 +1792,17 @@ end
 
 --@api: LParticleSystem:clearBounds
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     ps:setBounds(0, 800, 0, 600, 0.5)
 
@@ -921,6 +1813,17 @@ end
 
 --@api: LParticleSystem:setCustomEmissionShape
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem()
     local step = 0
 
@@ -938,6 +1841,17 @@ end
 
 --@api: LParticleSystem:setOnDeathBatch
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem({
         maxParticles = 64,
         emissionRate = 0,
@@ -957,6 +1871,17 @@ end
 
 --@api: LParticleSystem:drawToImage
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newPreset("sparks")
     ps:setPosition(64, 64)
     ps:emit(20)
@@ -968,6 +1893,17 @@ end
 
 --@api: LParticleSystem:toImage
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newPreset("sparks")
     ps:setPosition(64, 64)
     ps:emit(20)
@@ -979,6 +1915,17 @@ end
 
 --@api: LParticleSystem:drawExplosionToImage
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newPreset("fire")
     ps:setPosition(64, 64)
     ps:emit(20)
@@ -991,6 +1938,17 @@ end
 
 --@api: LParticleSystem:drawRainToImage
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newPreset("rain")
     ps:setPosition(64, 64)
     ps:emit(20)
@@ -1003,6 +1961,17 @@ end
 
 --@api: LParticleSystem:drawSparkTrailToImage
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newPreset("sparks")
     ps:setPosition(64, 64)
     ps:emit(20)
@@ -1015,6 +1984,17 @@ end
 
 --@api: LParticleSystem:drawOverImage
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newPreset("sparks")
     ps:setPosition(64, 64)
     ps:emit(20)
@@ -1029,6 +2009,17 @@ end
 
 --@api: LParticleSystem:paintOnto
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newPreset("fire")
     ps:setPosition(32, 32)
     ps:emit(12)
@@ -1042,6 +2033,17 @@ end
 
 --@api: lurek.particle.drawLifecycleToImage
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local snapshots = {
         { 0, 0 },
         { 5, 12 },
@@ -1054,6 +2056,17 @@ end
 
 --@api: lurek.particle.newTrail
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local trail = lurek.particle.newTrail(2.0, 8)
     trail:pushPoint(0, 0)
     trail:pushPoint(24, 12)
@@ -1064,6 +2077,17 @@ end
 
 --@api: LTrail:pushPoint
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local trail = lurek.particle.newTrail(3.0, 5)
     trail:pushPoint(0, 0)
     trail:pushPoint(10, 5)
@@ -1075,6 +2099,17 @@ end
 
 --@api: LTrail:getPointCount
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local trail = lurek.particle.newTrail(3.0, 5)
     trail:pushPoint(0, 0)
     trail:pushPoint(10, 5)
@@ -1086,6 +2121,17 @@ end
 
 --@api: LTrail:clear
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local trail = lurek.particle.newTrail(3.0, 5)
     trail:pushPoint(0, 0)
     trail:pushPoint(10, 5)
@@ -1098,6 +2144,17 @@ end
 
 --@api: LTrail:update
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local trail = lurek.particle.newTrail(3.0, 5)
     trail:pushPoint(0, 0)
     trail:pushPoint(10, 5)
@@ -1109,6 +2166,17 @@ end
 
 --@api: LTrail:setWidth
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local trail = lurek.particle.newTrail(1.0, 4)
     trail:pushPoint(0, 0)
     trail:setWidth(10, 2)
@@ -1119,6 +2187,17 @@ end
 
 --@api: LTrail:getWidth
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local trail = lurek.particle.newTrail(1.0, 4)
     trail:pushPoint(0, 0)
     trail:setWidth(10, 2)
@@ -1129,6 +2208,17 @@ end
 
 --@api: LTrail:setLifetime
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local trail = lurek.particle.newTrail(1.0, 4)
     trail:pushPoint(0, 0)
     trail:setLifetime(5.0)
@@ -1139,6 +2229,17 @@ end
 
 --@api: LTrail:getLifetime
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local trail = lurek.particle.newTrail(1.0, 4)
     trail:pushPoint(4, 2)
     trail:setLifetime(5.0)
@@ -1149,6 +2250,17 @@ end
 
 --@api: LTrail:setHeadColor
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local trail = lurek.particle.newTrail(2.0, 6)
     trail:setHeadColor(1, 1, 0, 1)
     trail:pushPoint(0, 0)
@@ -1159,6 +2271,17 @@ end
 
 --@api: LTrail:setTailColor
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local trail = lurek.particle.newTrail(2.0, 6)
     trail:setTailColor(1, 0, 0, 0)
     trail:pushPoint(0, 0)
@@ -1169,6 +2292,17 @@ end
 
 --@api: LTrail:setMinDistance
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local trail = lurek.particle.newTrail(2.0, 6)
     trail:setMinDistance(3)
     trail:pushPoint(0, 0)
@@ -1180,6 +2314,17 @@ end
 
 --@api: LTrail:drawToImage
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local trail = lurek.particle.newTrail(1.0, 4)
     trail:pushPoint(0, 0)
     trail:pushPoint(50, 25)
@@ -1190,6 +2335,17 @@ end
 
 --@api: LTrail:typeOf
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local trail = lurek.particle.newTrail(1.0, 4)
     trail:pushPoint(0, 0)
     local is_trail = trail:typeOf("LTrail")
@@ -1202,6 +2358,17 @@ end
 
 --@api: LParticleSystem:clearCollidesWithPhysics
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem({
         maxParticles = 200,
     })
@@ -1216,6 +2383,17 @@ end
 
 --@api: LParticleSystem:hasCollidesWithPhysics
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem({
         maxParticles = 200,
     })
@@ -1228,6 +2406,17 @@ end
 
 --@api: LParticleSystem:setCollidesWithPhysics
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem({
         maxParticles = 200,
     })
@@ -1240,6 +2429,17 @@ end
 
 --@api: LTrail:type
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local trail = lurek.particle.newTrail(1.5, 8.0)
     trail:pushPoint(0, 0)
     trail:setWidth(8.0, 2.0)
@@ -1250,6 +2450,17 @@ end
 
 --@api: LParticleSystem:getStats
 do
+    local function particle_log(message)
+        lurek.log.info("[particle.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ps = lurek.particle.newSystem({ emissionRate = 40, maxParticles = 32, lifetimeMin = 2.0, lifetimeMax = 2.0 })
     ps:addAttractor(32, 32, 80, 64)
     ps:setBounds(64, -64, 48, -48, 0.5)

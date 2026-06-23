@@ -145,6 +145,8 @@ pub mod system_api;
 pub mod terminal_api;
 /// Exposes the `lurek.thread` binding module.
 pub mod thread_api;
+/// Exposes the `lurek.tilefield` binding module.
+pub mod tilefield_api;
 /// Exposes the `lurek.tilemap` binding module.
 pub mod tilemap_api;
 /// Exposes the `lurek.timer` binding module.

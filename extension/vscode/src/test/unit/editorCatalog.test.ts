@@ -33,6 +33,7 @@ function findExtensionRoot(): string {
 const EXTENSION_ROOT = findExtensionRoot();
 const SRC_ROOT = path.join(EXTENSION_ROOT, "src");
 const EDITORS_ROOT = path.join(SRC_ROOT, "editors");
+const PROFESSIONAL_EDITOR_IDS = new Set(["pixelArt", "database", "dialog", "procMap", "tileMap", "sceneFlow", "particle", "skeletonRigging", "globe", "province", "aiBehavior", "graph", "voxel"]);
 
 function readManifest(): ExtensionManifest {
   const packagePath = path.join(EXTENSION_ROOT, "package.json");
@@ -157,6 +158,18 @@ suite("Editor catalog", () => {
     for (const editor of EDITOR_CATALOG) {
       const html = renderEditorHtml(editor);
       assert.ok(html.includes("Content-Security-Policy"), `${editor.id} is missing CSP.`);
+      if (PROFESSIONAL_EDITOR_IDS.has(editor.id)) {
+        assert.ok(html.includes("class=\"pro-editor"), `${editor.id} is missing professional editor shell.`);
+        assert.ok(html.includes("class=\"pro-topbar\""), `${editor.id} is missing professional top action bar.`);
+        assert.ok(html.includes("class=\"side-panel left-panel\""), `${editor.id} is missing professional left parameter panel.`);
+        assert.ok(html.includes("class=\"side-panel right-panel\""), `${editor.id} is missing professional right properties panel.`);
+        assert.ok(html.includes("class=\"icon-button"), `${editor.id} is missing professional icon buttons.`);
+        assert.ok(html.includes("class=\"tooltip\""), `${editor.id} is missing icon button tooltips.`);
+        assert.ok(html.includes("Generated Output"), `${editor.id} is missing generated output panel.`);
+        assert.ok(html.includes("postMessage"), `${editor.id} is missing backend webview messaging.`);
+        assert.ok(!html.includes("http://") && !html.includes("https://"), `${editor.id} should not load external resources.`);
+        continue;
+      }
       assert.ok(html.includes("class=\"toolbar\""), `${editor.id} is missing top toolbar.`);
       assert.ok(html.includes("class=\"tool-rail\""), `${editor.id} is missing left tool rail.`);
       assert.ok(html.includes("class=\"workspace"), `${editor.id} is missing central workspace.`);

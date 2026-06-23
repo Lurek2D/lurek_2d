@@ -281,6 +281,9 @@ pub struct ModulesConfig {
     pub overlay: bool,
     /// Enable tilemap module.
     pub tilemap: bool,
+    /// Enable tilefield module.
+    #[serde(default = "default_true")]
+    pub tilefield: bool,
     /// Enable scene module.
     pub scene: bool,
     /// Enable save module.
@@ -519,6 +522,7 @@ impl Default for Config {
                 effect: true,
                 overlay: true,
                 tilemap: true,
+                tilefield: true,
                 scene: true,
                 save: true,
                 ecs: true,

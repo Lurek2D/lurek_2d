@@ -184,6 +184,9 @@
     "current_artifacts": [
       "tests/artifacts/current/charts/charts_area_layered_usage.png",
       "tests/artifacts/current/charts/charts_bar_category_revenue.png",
+      "tests/artifacts/current/charts/charts_boxplot_latency_spread.png",
+      "tests/artifacts/current/charts/charts_bubble_market_risk.png",
+      "tests/artifacts/current/charts/charts_candlestick_volatile_ohlc.png",
       "tests/artifacts/current/charts/charts_dataframe_heatmap.png",
       "tests/artifacts/current/charts/charts_dataframe_histogram.png",
       "tests/artifacts/current/charts/charts_dataframe_line.png",
@@ -193,7 +196,9 @@
       "tests/artifacts/current/charts/charts_line_revenue_trend.png",
       "tests/artifacts/current/charts/charts_nearest_trace.json",
       "tests/artifacts/current/charts/charts_pie_market_share.png",
-      "tests/artifacts/current/charts/charts_scatter_player_scores.png"
+      "tests/artifacts/current/charts/charts_radar_unit_comparison.png",
+      "tests/artifacts/current/charts/charts_scatter_player_scores.png",
+      "tests/artifacts/current/charts/charts_treemap_budget_breakdown.png"
     ],
     "evidence_tests": [
       "tests/lua/evidence/test_charts_evidence.lua"
@@ -594,6 +599,7 @@
       "tests/artifacts/baselines/layout/layout_center_in_area.png",
       "tests/artifacts/baselines/layout/layout_dag_pipeline.png",
       "tests/artifacts/baselines/layout/layout_force_cluster.png",
+      "tests/artifacts/baselines/layout/layout_quality_metrics.txt",
       "tests/artifacts/baselines/layout/layout_snap_to_grid.png",
       "tests/artifacts/baselines/layout/layout_tree_hierarchy.png",
       "tests/artifacts/baselines/ui/layout_dashboard_compact_960x540.png",
@@ -611,9 +617,15 @@
     ],
     "current_artifacts": [
       "tests/artifacts/current/layout/layout_center_in_area.png",
+      "tests/artifacts/current/layout/layout_circular_cycle_network.png",
       "tests/artifacts/current/layout/layout_dag_pipeline.png",
       "tests/artifacts/current/layout/layout_force_cluster.png",
+      "tests/artifacts/current/layout/layout_grid_inventory_matrix.png",
+      "tests/artifacts/current/layout/layout_quality_metrics.txt",
+      "tests/artifacts/current/layout/layout_radial_service_topology.png",
       "tests/artifacts/current/layout/layout_snap_to_grid.png",
+      "tests/artifacts/current/layout/layout_spiral_large_unordered.png",
+      "tests/artifacts/current/layout/layout_stress_distance_network.png",
       "tests/artifacts/current/layout/layout_tree_hierarchy.png",
       "tests/artifacts/current/ui/layout_dashboard_compact_960x540.png",
       "tests/artifacts/current/ui/layout_dashboard_desktop_1280x720.png",
@@ -1051,10 +1063,8 @@
       "tests/artifacts/baselines/raycaster/raycaster_depth_columns_vs_view.png",
       "tests/artifacts/baselines/raycaster/raycaster_feature_walls_view_pick.png",
       "tests/artifacts/baselines/raycaster/raycaster_floor_ceiling_pick_uv.png",
-      "tests/artifacts/baselines/raycaster/raycaster_los_wall_window_door.png",
-      "tests/artifacts/baselines/raycaster/raycaster_minimap_reveal_lighting.png",
       "tests/artifacts/baselines/raycaster/raycaster_multilevel_hole_pick.png",
-      "tests/artifacts/baselines/raycaster/raycaster_topdown_reveal_fov.png",
+      "tests/artifacts/baselines/raycaster/raycaster_topdown_cast_rays.png",
       "tests/artifacts/baselines/raycaster/raycaster_transparent_layered_hits.png"
     ],
     "current_artifacts": [
@@ -1063,10 +1073,8 @@
       "tests/artifacts/current/raycaster/raycaster_depth_columns_vs_view.png",
       "tests/artifacts/current/raycaster/raycaster_feature_walls_view_pick.png",
       "tests/artifacts/current/raycaster/raycaster_floor_ceiling_pick_uv.png",
-      "tests/artifacts/current/raycaster/raycaster_los_wall_window_door.png",
-      "tests/artifacts/current/raycaster/raycaster_minimap_reveal_lighting.png",
       "tests/artifacts/current/raycaster/raycaster_multilevel_hole_pick.png",
-      "tests/artifacts/current/raycaster/raycaster_topdown_reveal_fov.png",
+      "tests/artifacts/current/raycaster/raycaster_topdown_cast_rays.png",
       "tests/artifacts/current/raycaster/raycaster_transparent_layered_hits.png"
     ],
     "evidence_tests": [
@@ -1261,6 +1269,28 @@
     ],
     "golden_tests": [
       "tests/lua/golden/test_terminal_golden.lua"
+    ]
+  },
+  "tilefield": {
+    "baseline_artifacts": [
+      "tests/artifacts/baselines/tilefield/tilefield_channels.png",
+      "tests/artifacts/baselines/tilefield/tilefield_lighting_multilevel.png",
+      "tests/artifacts/baselines/tilefield/tilefield_lighting_values.txt",
+      "tests/artifacts/baselines/tilefield/tilefield_raycaster_input.png",
+      "tests/artifacts/baselines/tilefield/tilefield_visibility_action_players.png"
+    ],
+    "current_artifacts": [
+      "tests/artifacts/current/tilefield/tilefield_channels.png",
+      "tests/artifacts/current/tilefield/tilefield_lighting_multilevel.png",
+      "tests/artifacts/current/tilefield/tilefield_lighting_values.txt",
+      "tests/artifacts/current/tilefield/tilefield_raycaster_input.png",
+      "tests/artifacts/current/tilefield/tilefield_visibility_action_players.png"
+    ],
+    "evidence_tests": [
+      "tests/lua/evidence/test_tilefield_evidence.lua"
+    ],
+    "golden_tests": [
+      "tests/lua/golden/test_tilefield_golden.lua"
     ]
   },
   "tilemap": {

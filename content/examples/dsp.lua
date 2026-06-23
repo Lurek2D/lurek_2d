@@ -1,12 +1,13 @@
 --- DSP Processing Example
 --- Demonstrates offline audio processing, normalization, and visualization using lurek.dsp.
 
-local function dsp_log(message)
-    lurek.log.info("[dsp.example] " .. tostring(message))
-end
 
 --@api: lurek.dsp.newEffectParams
 do
+    local function dsp_log(message)
+        lurek.log.info("[dsp.example] " .. tostring(message))
+    end
+
     local params = lurek.dsp.newEffectParams("reverb", 0.7, 0.4, 0.2)
     dsp_log("effect params type=" .. type(params))
     dsp_log("effect=" .. tostring(params.type))
@@ -17,6 +18,10 @@ end
 
 --@api: lurek.dsp.processOffline
 do
+    local function dsp_log(message)
+        lurek.log.info("[dsp.example] " .. tostring(message))
+    end
+
     local input = "content/examples/assets/audio/sample_click.wav"
     local output = "save/_fs_tests/dsp_processed.wav"
     local effects = {
@@ -32,6 +37,10 @@ end
 
 --@api: lurek.dsp.normalize
 do
+    local function dsp_log(message)
+        lurek.log.info("[dsp.example] " .. tostring(message))
+    end
+
     local input = "content/examples/assets/audio/sample_tone.wav"
     local output = "save/_fs_tests/dsp_normalized.wav"
     local ok = lurek.dsp.normalize(input, output, 0.9)
@@ -43,6 +52,10 @@ end
 
 --@api: lurek.dsp.waveformToPng
 do
+    local function dsp_log(message)
+        lurek.log.info("[dsp.example] " .. tostring(message))
+    end
+
     local input = "content/examples/assets/audio/sample_loop.wav"
     local output = "save/_fs_tests/dsp_waveform.png"
     local ok = lurek.dsp.waveformToPng(input, output, 256, 64)
@@ -54,6 +67,10 @@ end
 
 --@api: lurek.dsp.spectrogramToPng
 do
+    local function dsp_log(message)
+        lurek.log.info("[dsp.example] " .. tostring(message))
+    end
+
     local input = "content/examples/assets/audio/sample_loop.wav"
     local output = "save/_fs_tests/dsp_spectrogram.png"
     local ok = lurek.dsp.spectrogramToPng(input, output, 256, 128)
@@ -65,6 +82,10 @@ end
 
 --@api: lurek.dsp.addEffectToBus
 do
+    local function dsp_log(message)
+        lurek.log.info("[dsp.example] " .. tostring(message))
+    end
+
     lurek.audio.newBus("dsp_bus_fx")
     local id = lurek.dsp.addEffectToBus("dsp_bus_fx", "lowpass", {value=2000.0})
     local second_id = lurek.dsp.addEffectToBus("dsp_bus_fx", "highpass", {value=180.0})
@@ -75,6 +96,10 @@ end
 
 --@api: lurek.dsp.removeEffectFromBus
 do
+    local function dsp_log(message)
+        lurek.log.info("[dsp.example] " .. tostring(message))
+    end
+
     lurek.audio.newBus("dsp_bus_rm")
     local id = lurek.dsp.addEffectToBus("dsp_bus_rm", "lowpass", {value=2000.0})
     local ok = lurek.dsp.removeEffectFromBus("dsp_bus_rm", id)
@@ -87,6 +112,10 @@ end
 
 --@api: lurek.dsp.setEffectParam
 do
+    local function dsp_log(message)
+        lurek.log.info("[dsp.example] " .. tostring(message))
+    end
+
     lurek.audio.newBus("dsp_bus_param")
     local id = lurek.dsp.addEffectToBus("dsp_bus_param", "lowpass", {value=2000.0})
     local ok = lurek.dsp.setEffectParam("dsp_bus_param", id, "cutoff", 1000.0)
@@ -97,6 +126,10 @@ end
 
 --@api: lurek.dsp.analyzeFft
 do
+    local function dsp_log(message)
+        lurek.log.info("[dsp.example] " .. tostring(message))
+    end
+
     local sd = lurek.dsp.newSynthWave("sine", 440, 0.1, 44100, 0.8)
     local result = lurek.dsp.analyzeFft(sd, 64)
     dsp_log("analyzeFft bins=" .. tostring(#result))
@@ -106,6 +139,10 @@ end
 
 --@api: lurek.dsp.analyzePeak
 do
+    local function dsp_log(message)
+        lurek.log.info("[dsp.example] " .. tostring(message))
+    end
+
     local sd = lurek.dsp.newSynthWave("sine", 440, 0.1, 44100, 0.8)
     local peak = lurek.dsp.analyzePeak(sd)
     local rms = lurek.dsp.analyzeRms(sd)
@@ -116,6 +153,10 @@ end
 
 --@api: lurek.dsp.analyzeRms
 do
+    local function dsp_log(message)
+        lurek.log.info("[dsp.example] " .. tostring(message))
+    end
+
     local sd = lurek.dsp.newSynthWave("sine", 440, 0.1, 44100, 0.8)
     local rms = lurek.dsp.analyzeRms(sd)
     local peak = lurek.dsp.analyzePeak(sd)
@@ -126,6 +167,10 @@ end
 
 --@api: lurek.dsp.applyBandpass
 do
+    local function dsp_log(message)
+        lurek.log.info("[dsp.example] " .. tostring(message))
+    end
+
     local sd = lurek.dsp.newSynthWave("sine", 440, 0.1, 44100, 0.8)
     lurek.dsp.applyBandpass(sd, 500.0, 2000.0)
     local peak = lurek.dsp.analyzePeak(sd)
@@ -136,6 +181,10 @@ end
 
 --@api: lurek.dsp.applyGain
 do
+    local function dsp_log(message)
+        lurek.log.info("[dsp.example] " .. tostring(message))
+    end
+
     local sd = lurek.dsp.newSynthWave("sine", 440, 0.1, 44100, 0.8)
     lurek.dsp.applyGain(sd, 0.5)
     dsp_log("applyGain sampleCount=" .. tostring(sd:getSampleCount()))
@@ -145,6 +194,10 @@ end
 
 --@api: lurek.dsp.applyHighpass
 do
+    local function dsp_log(message)
+        lurek.log.info("[dsp.example] " .. tostring(message))
+    end
+
     local sd = lurek.dsp.newSynthWave("sine", 440, 0.1, 44100, 0.8)
     lurek.dsp.applyHighpass(sd, 2000.0)
     dsp_log("applyHighpass sampleCount=" .. tostring(sd:getSampleCount()))
@@ -154,6 +207,10 @@ end
 
 --@api: lurek.dsp.applyLowpass
 do
+    local function dsp_log(message)
+        lurek.log.info("[dsp.example] " .. tostring(message))
+    end
+
     local sd = lurek.dsp.newSynthWave("sine", 440, 0.1, 44100, 0.8)
     lurek.dsp.applyLowpass(sd, 1000.0)
     dsp_log("applyLowpass sampleCount=" .. tostring(sd:getSampleCount()))
@@ -163,6 +220,10 @@ end
 
 --@api: lurek.dsp.newSineWave
 do
+    local function dsp_log(message)
+        lurek.log.info("[dsp.example] " .. tostring(message))
+    end
+
     local sd = lurek.dsp.newSineWave(440, 0.01, 44100, 0.5)
     dsp_log("newSineWave type=" .. type(sd))
     dsp_log("sampleCount=" .. tostring(sd:getSampleCount()))
@@ -172,6 +233,10 @@ end
 
 --@api: lurek.dsp.newSquareWave
 do
+    local function dsp_log(message)
+        lurek.log.info("[dsp.example] " .. tostring(message))
+    end
+
     local sd = lurek.dsp.newSquareWave(440, 0.01, 44100, 0.5)
     dsp_log("newSquareWave type=" .. type(sd))
     dsp_log("sampleCount=" .. tostring(sd:getSampleCount()))
@@ -181,6 +246,10 @@ end
 
 --@api: lurek.dsp.newSawtoothWave
 do
+    local function dsp_log(message)
+        lurek.log.info("[dsp.example] " .. tostring(message))
+    end
+
     local sd = lurek.dsp.newSawtoothWave(440, 0.01, 44100, 0.5)
     dsp_log("newSawtoothWave type=" .. type(sd))
     dsp_log("sampleCount=" .. tostring(sd:getSampleCount()))
@@ -190,6 +259,10 @@ end
 
 --@api: lurek.dsp.newTriangleWave
 do
+    local function dsp_log(message)
+        lurek.log.info("[dsp.example] " .. tostring(message))
+    end
+
     local sd = lurek.dsp.newTriangleWave(440, 0.01, 44100, 0.5)
     dsp_log("newTriangleWave type=" .. type(sd))
     dsp_log("sampleCount=" .. tostring(sd:getSampleCount()))
@@ -199,6 +272,10 @@ end
 
 --@api: lurek.dsp.newWhiteNoise
 do
+    local function dsp_log(message)
+        lurek.log.info("[dsp.example] " .. tostring(message))
+    end
+
     local sd = lurek.dsp.newWhiteNoise(0.01, 44100, 0.5, 42)
     dsp_log("newWhiteNoise type=" .. type(sd))
     dsp_log("sampleCount=" .. tostring(sd:getSampleCount()))
@@ -208,6 +285,10 @@ end
 
 --@api: lurek.dsp.newSynthWave
 do
+    local function dsp_log(message)
+        lurek.log.info("[dsp.example] " .. tostring(message))
+    end
+
     local sd = lurek.dsp.newSynthWave("sine", 440, 0.01, 44100, 0.5, nil)
     dsp_log("newSynthWave type=" .. type(sd))
     dsp_log("sampleCount=" .. tostring(sd:getSampleCount()))
@@ -217,6 +298,10 @@ end
 
 --@api: lurek.dsp.newLevelDetector
 do
+    local function dsp_log(message)
+        lurek.log.info("[dsp.example] " .. tostring(message))
+    end
+
     local det = lurek.dsp.newLevelDetector({ clipThreshold = 0.99 })
     det:process_sample(0.5)
     det:process_sample(-0.5)
@@ -232,6 +317,10 @@ end
 
 --@api: LLevelDetector:process_sample
 do
+    local function dsp_log(message)
+        lurek.log.info("[dsp.example] " .. tostring(message))
+    end
+
     local det = lurek.dsp.newLevelDetector({})
     det:process_sample(0.8)
     det:process_sample(-0.3)
@@ -241,6 +330,10 @@ end
 
 --@api: LLevelDetector:process
 do
+    local function dsp_log(message)
+        lurek.log.info("[dsp.example] " .. tostring(message))
+    end
+
     local det = lurek.dsp.newLevelDetector({})
     local sd = lurek.audio.newSoundData(44100, 44100, 1)
     local result = det:process(sd)
@@ -250,6 +343,10 @@ end
 
 --@api: LLevelDetector:get_rms
 do
+    local function dsp_log(message)
+        lurek.log.info("[dsp.example] " .. tostring(message))
+    end
+
     local det = lurek.dsp.newLevelDetector({})
     det:process_sample(0.5)
     local rms = det:get_rms()
@@ -259,6 +356,10 @@ end
 
 --@api: LLevelDetector:get_peak
 do
+    local function dsp_log(message)
+        lurek.log.info("[dsp.example] " .. tostring(message))
+    end
+
     local det = lurek.dsp.newLevelDetector({})
     det:process_sample(0.9)
     local peak = det:get_peak()
@@ -268,6 +369,10 @@ end
 
 --@api: LLevelDetector:to_db
 do
+    local function dsp_log(message)
+        lurek.log.info("[dsp.example] " .. tostring(message))
+    end
+
     local det = lurek.dsp.newLevelDetector({})
     local db = det:to_db(0.5)
     det:process_sample(0.5)
@@ -278,6 +383,10 @@ end
 
 --@api: LLevelDetector:reset
 do
+    local function dsp_log(message)
+        lurek.log.info("[dsp.example] " .. tostring(message))
+    end
+
     local det = lurek.dsp.newLevelDetector({})
     det:process_sample(0.7)
     det:reset()
@@ -287,6 +396,10 @@ end
 
 --@api: lurek.dsp.newSpectrumAnalyzer
 do
+    local function dsp_log(message)
+        lurek.log.info("[dsp.example] " .. tostring(message))
+    end
+
     local sa = lurek.dsp.newSpectrumAnalyzer({ size = 64 })
     sa:setSize(32)
     local sd = lurek.audio.newSoundData(44100, 44100, 1)
@@ -296,6 +409,10 @@ end
 
 --@api: LSpectrumAnalyzer:setSize
 do
+    local function dsp_log(message)
+        lurek.log.info("[dsp.example] " .. tostring(message))
+    end
+
     local sa = lurek.dsp.newSpectrumAnalyzer({ size = 64 })
     sa:setSize(128)
     local sd = lurek.audio.newSoundData(44100, 44100, 1)
@@ -305,6 +422,10 @@ end
 
 --@api: LSpectrumAnalyzer:analyze
 do
+    local function dsp_log(message)
+        lurek.log.info("[dsp.example] " .. tostring(message))
+    end
+
     local sa = lurek.dsp.newSpectrumAnalyzer({ size = 32 })
     local sd = lurek.dsp.newSineWave(440, 0.01, 44100, 0.8)
     local bins = sa:analyze(sd)
@@ -314,6 +435,10 @@ end
 
 --@api: lurek.dsp.newWaveform
 do
+    local function dsp_log(message)
+        lurek.log.info("[dsp.example] " .. tostring(message))
+    end
+
     local waveform_name = "sawtooth"
     local wf = lurek.dsp.newWaveform(waveform_name)
     local sd = wf:render(220, 0.01, 44100, 0.5)
@@ -325,6 +450,10 @@ end
 
 --@api: LWaveform:type
 do
+    local function dsp_log(message)
+        lurek.log.info("[dsp.example] " .. tostring(message))
+    end
+
     local wf = lurek.dsp.newWaveform("square")
     local waveform_type = wf:type()
     local preview = wf:render(330, 0.01, 44100, 0.4)
@@ -335,6 +464,10 @@ end
 
 --@api: LWaveform:render
 do
+    local function dsp_log(message)
+        lurek.log.info("[dsp.example] " .. tostring(message))
+    end
+
     local wf = lurek.dsp.newWaveform("triangle")
     local sd = wf:render(330, 0.01, 44100, 0.6)
     dsp_log("render waveform=" .. tostring(wf:type()))
@@ -345,6 +478,10 @@ end
 
 --@api: lurek.dsp.newAdsrEnvelope
 do
+    local function dsp_log(message)
+        lurek.log.info("[dsp.example] " .. tostring(message))
+    end
+
     local env = lurek.dsp.newAdsrEnvelope(0.01, 0.01, 0.8, 0.05)
     env:trigger_on()
     local s = env:next_sample()
@@ -358,6 +495,10 @@ end
 
 --@api: LAdsrEnvelope:trigger_on
 do
+    local function dsp_log(message)
+        lurek.log.info("[dsp.example] " .. tostring(message))
+    end
+
     local env = lurek.dsp.newAdsrEnvelope(0.01, 0.01, 0.8, 0.05)
     env:trigger_on()
     local first_sample = env:next_sample()
@@ -369,6 +510,10 @@ end
 
 --@api: LAdsrEnvelope:trigger_off
 do
+    local function dsp_log(message)
+        lurek.log.info("[dsp.example] " .. tostring(message))
+    end
+
     local env = lurek.dsp.newAdsrEnvelope(0.01, 0.01, 0.8, 0.05)
     env:trigger_on()
     local attack_sample = env:next_sample()
@@ -381,6 +526,10 @@ end
 
 --@api: LAdsrEnvelope:next_sample
 do
+    local function dsp_log(message)
+        lurek.log.info("[dsp.example] " .. tostring(message))
+    end
+
     local env = lurek.dsp.newAdsrEnvelope(0.005, 0.01, 0.7, 0.05)
     env:trigger_on()
     local s1 = env:next_sample()
@@ -390,6 +539,10 @@ end
 
 --@api: LAdsrEnvelope:is_idle
 do
+    local function dsp_log(message)
+        lurek.log.info("[dsp.example] " .. tostring(message))
+    end
+
     local env = lurek.dsp.newAdsrEnvelope(0.01, 0.01, 0.8, 0.05)
     local before = env:is_idle()
     env:trigger_on()
@@ -403,6 +556,10 @@ end
 
 --@api: LAdsrEnvelope:apply
 do
+    local function dsp_log(message)
+        lurek.log.info("[dsp.example] " .. tostring(message))
+    end
+
     local env = lurek.dsp.newAdsrEnvelope(0.01, 0.01, 0.8, 0.05)
     env:trigger_on()
     local sd = lurek.audio.newSoundData(44100, 44100, 1)
@@ -412,6 +569,10 @@ end
 
 --@api: lurek.dsp.newSynthesizer
 do
+    local function dsp_log(message)
+        lurek.log.info("[dsp.example] " .. tostring(message))
+    end
+
     local synth = lurek.dsp.newSynthesizer()
     synth:setWaveform("triangle")
     local env = lurek.dsp.newAdsrEnvelope(0.01, 0.01, 0.8, 0.02)
@@ -424,6 +585,10 @@ end
 
 --@api: LSynthesizer:setWaveform
 do
+    local function dsp_log(message)
+        lurek.log.info("[dsp.example] " .. tostring(message))
+    end
+
     local synth = lurek.dsp.newSynthesizer()
     synth:setWaveform("sawtooth")
     local rendered = synth:render(440, 0.01, 44100, 0.5)
@@ -435,6 +600,10 @@ end
 
 --@api: LSynthesizer:setEnvelope
 do
+    local function dsp_log(message)
+        lurek.log.info("[dsp.example] " .. tostring(message))
+    end
+
     local synth = lurek.dsp.newSynthesizer()
     local env = lurek.dsp.newAdsrEnvelope(0.01, 0.02, 0.7, 0.03)
     synth:setEnvelope(env)
@@ -444,6 +613,10 @@ end
 
 --@api: LSynthesizer:render
 do
+    local function dsp_log(message)
+        lurek.log.info("[dsp.example] " .. tostring(message))
+    end
+
     local synth = lurek.dsp.newSynthesizer()
     synth:setWaveform("sine")
     local sd = synth:render(330, 0.01, 44100, 0.5)
@@ -453,6 +626,10 @@ end
 
 --@api: LSynthesizer:generate
 do
+    local function dsp_log(message)
+        lurek.log.info("[dsp.example] " .. tostring(message))
+    end
+
     local synth = lurek.dsp.newSynthesizer()
     local envelope = lurek.dsp.newAdsrEnvelope(0.005, 0.02, 0.6, 0.03)
     synth:setEnvelope(envelope)
@@ -465,6 +642,10 @@ end
 
 --@api: lurek.dsp.newNode
 do
+    local function dsp_log(message)
+        lurek.log.info("[dsp.example] " .. tostring(message))
+    end
+
     local node = lurek.dsp.newNode("lowpass")
     dsp_log("newNode type=" .. node:type())
     node:setParam("cutoff", 1000.0)
@@ -474,6 +655,10 @@ end
 
 --@api: LDspNode:type
 do
+    local function dsp_log(message)
+        lurek.log.info("[dsp.example] " .. tostring(message))
+    end
+
     local node = lurek.dsp.newNode("gain")
     local node_type = node:type()
     node:setParam("gain", 0.75)
@@ -484,6 +669,10 @@ end
 
 --@api: LDspNode:setParam
 do
+    local function dsp_log(message)
+        lurek.log.info("[dsp.example] " .. tostring(message))
+    end
+
     local node = lurek.dsp.newNode("lowpass")
     node:setParam("cutoff", 800.0)
     node:setParam("q", 0.5)
@@ -494,6 +683,10 @@ end
 
 --@api: LDspNode:getParam
 do
+    local function dsp_log(message)
+        lurek.log.info("[dsp.example] " .. tostring(message))
+    end
+
     local node = lurek.dsp.newNode("gain")
     node:setParam("gain", 0.7)
     local gain_value = node:getParam("gain")
@@ -504,6 +697,10 @@ end
 
 --@api: lurek.dsp.newGraph
 do
+    local function dsp_log(message)
+        lurek.log.info("[dsp.example] " .. tostring(message))
+    end
+
     local g = lurek.dsp.newGraph()
     local n1 = lurek.dsp.newNode("lowpass")
     local n2 = lurek.dsp.newNode("gain")
@@ -522,6 +719,10 @@ end
 
 --@api: LDspGraph:addNode
 do
+    local function dsp_log(message)
+        lurek.log.info("[dsp.example] " .. tostring(message))
+    end
+
     local g = lurek.dsp.newGraph()
     local lowpass_id = g:addNode(lurek.dsp.newNode("lowpass"))
     local gain_id = g:addNode(lurek.dsp.newNode("gain"))
@@ -535,6 +736,10 @@ end
 
 --@api: LDspGraph:connect
 do
+    local function dsp_log(message)
+        lurek.log.info("[dsp.example] " .. tostring(message))
+    end
+
     local g = lurek.dsp.newGraph()
     local id1 = g:addNode(lurek.dsp.newNode("lowpass"))
     local id2 = g:addNode(lurek.dsp.newNode("gain"))
@@ -544,6 +749,10 @@ end
 
 --@api: LDspGraph:disconnect
 do
+    local function dsp_log(message)
+        lurek.log.info("[dsp.example] " .. tostring(message))
+    end
+
     local g = lurek.dsp.newGraph()
     local id1 = g:addNode(lurek.dsp.newNode("lowpass"))
     local id2 = g:addNode(lurek.dsp.newNode("gain"))
@@ -554,6 +763,10 @@ end
 
 --@api: LDspGraph:process
 do
+    local function dsp_log(message)
+        lurek.log.info("[dsp.example] " .. tostring(message))
+    end
+
     local g = lurek.dsp.newGraph()
     g:addNode(lurek.dsp.newNode("lowpass"))
     local sd = lurek.audio.newSoundData(44100, 44100, 1)
@@ -564,6 +777,10 @@ end
 
 --@api: LDspGraph:clear
 do
+    local function dsp_log(message)
+        lurek.log.info("[dsp.example] " .. tostring(message))
+    end
+
     -- Build a small graph, process audio through it, then clear it.
     -- After clear() the graph can be reused with fresh nodes.
     local g = lurek.dsp.newGraph()

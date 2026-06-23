@@ -2,11 +2,11 @@
 
 ## Purpose
 
-Runs grid-based HUD minimaps with fog-of-war, custom markers, raycaster overlays, and camera tracking.
+Runs grid-based HUD minimaps with fog-of-war inputs, custom markers, passive render snapshots, and camera tracking.
 
 ## When To Use
 
-- Core minimap state, render helpers, and adapters from province or raycaster data work together so the same module can represent several kinds of world information in one small map display.
+- Core minimap state, render helpers, and adapters from province, tilefield, visibility, or render snapshot data work together so the same module can represent several kinds of world information in one small map display.
 - Fog, owner colors, overlays, tracked objects, and camera-aware view markers matter because a minimap is not only a tiny texture: it is a summarized navigation and awareness tool for the player.
 - The module is useful wherever a project needs strategic orientation, local awareness, or debug-style map inspection without switching to a full map screen.
 
@@ -35,7 +35,7 @@ end
 ## Summary
 
 - The `minimap` module is the HUD-scale map surface for users who want world state, fog, markers, and view tracking to become a compact readable overlay.
-- Core minimap state, render helpers, and adapters from province or raycaster data work together so the same module can represent several kinds of world information in one small map display.
+- Core minimap state, render helpers, and adapters from province, tilefield, visibility, or render snapshot data work together so the same module can represent several kinds of world information in one small map display.
 - Fog, owner colors, overlays, tracked objects, and camera-aware view markers matter because a minimap is not only a tiny texture: it is a summarized navigation and awareness tool for the player.
 - The module is useful wherever a project needs strategic orientation, local awareness, or debug-style map inspection without switching to a full map screen.
 - Marker and layer support are especially important because a minimap often needs to combine several categories of information at once: player position, objectives, faction territory, danger, or discovered landmarks.

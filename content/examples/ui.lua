@@ -4,16 +4,17 @@
 
 --- UI Module Part 1: core widgets (button, label, panel) and base LUiWidget operations
 
-local function example_print_log(...)
-    local parts = {}
-    for i = 1, select("#", ...) do
-        parts[i] = tostring(select(i, ...))
-    end
-    lurek.log.info(table.concat(parts, " "))
-end
 
 --@api: lurek.ui.newButton
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LButton
     local btn = lurek.ui.newButton("Click Me")
     example_print_log("type = " .. btn:type())
@@ -24,6 +25,14 @@ end
 
 --@api: LButton:setOnClick
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LButton
     local btn = lurek.ui.newButton("Submit")
     btn:setOnClick(function()
@@ -35,6 +44,14 @@ end
 
 --@api: lurek.ui.newLabel
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local lbl = lurek.ui.newLabel("Hello, World!")
     example_print_log("type = " .. lbl:type())
     example_print_log("text = " .. lbl:getText())
@@ -44,6 +61,14 @@ end
 
 --@api: lurek.ui.newPanel
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LPanel
     local panel = lurek.ui.newPanel()
     example_print_log("type = " .. panel:type())
@@ -54,6 +79,14 @@ end
 
 --@api: LUiWidget:setPosition
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LButton
     local btn = lurek.ui.newButton("Pos Test")
     btn:setPosition(100, 50)
@@ -64,6 +97,14 @@ end
 
 --@api: LUiWidget:getPosition
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LButton
     local btn = lurek.ui.newButton("Pos Test")
     btn:setPosition(100, 50)
@@ -74,6 +115,14 @@ end
 
 --@api: LUiWidget:setSize
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LPanel
     local panel = lurek.ui.newPanel()
     panel:setSize(300, 200)
@@ -84,6 +133,14 @@ end
 
 --@api: LUiWidget:getSize
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LPanel
     local panel = lurek.ui.newPanel()
     panel:setSize(300, 200)
@@ -94,6 +151,14 @@ end
 
 --@api: LUiWidget:getRect
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local btn = lurek.ui.newButton("Bounds")
     btn:setPosition(50, 30)
     btn:setSize(120, 40)
@@ -103,6 +168,14 @@ end
 
 --@api: LUiWidget:isVisible
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LLabel
     local lbl = lurek.ui.newLabel("Toggle Me")
     example_print_log("visible = " .. tostring(lbl:isVisible()))
@@ -113,6 +186,14 @@ end
 
 --@api: LUiWidget:setVisible
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LLabel
     local lbl = lurek.ui.newLabel("Toggle Me")
     lbl:setVisible(false)
@@ -123,6 +204,14 @@ end
 
 --@api: LUiWidget:isEnabled
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LButton
     local btn = lurek.ui.newButton("Action")
     example_print_log("enabled = " .. tostring(btn:isEnabled()))
@@ -133,6 +222,14 @@ end
 
 --@api: LUiWidget:setEnabled
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LButton
     local btn = lurek.ui.newButton("Action")
     btn:setEnabled(false)
@@ -143,6 +240,14 @@ end
 
 --@api: LUiWidget:getAlpha
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local panel = lurek.ui.newPanel()
     example_print_log("alpha = " .. panel:getAlpha())
     panel:setAlpha(0.5)
@@ -152,6 +257,14 @@ end
 
 --@api: LUiWidget:setAlpha
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local panel = lurek.ui.newPanel()
     example_print_log("alpha = " .. panel:getAlpha())
     panel:setAlpha(0.5)
@@ -161,6 +274,14 @@ end
 
 --@api: LUiWidget:animateAlpha
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local btn = lurek.ui.newButton("Fade")
     btn:setAlpha(1.0)
     btn:animateAlpha(0.0, 0.5)
@@ -172,6 +293,14 @@ end
 
 --@api: LUiWidget:fadeIn
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LLabel
     local lbl = lurek.ui.newLabel("Fading")
     lbl:setAlpha(0)
@@ -182,6 +311,14 @@ end
 
 --@api: LUiWidget:fadeOut
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LLabel
     local lbl = lurek.ui.newLabel("Fading")
     lbl:fadeOut()
@@ -192,6 +329,14 @@ end
 
 --@api: LUiWidget:animatePosition
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local panel = lurek.ui.newPanel()
     panel:setPosition(0, 0)
     panel:animatePosition(200, 100, 0.5)
@@ -201,6 +346,14 @@ end
 
 --@api: LUiWidget:slideIn
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local panel = lurek.ui.newPanel()
     panel:cancelAnimations()
     panel:slideIn(300, 0)
@@ -211,6 +364,14 @@ end
 
 --@api: LUiWidget:slideOut
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local panel = lurek.ui.newPanel()
     panel:setVisible(true)
     panel:setPosition(40, 20)
@@ -222,6 +383,14 @@ end
 
 --@api: LUiWidget:setId
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local btn = lurek.ui.newButton("Info")
     btn:setId("info_button")
     btn:setTooltip("Click for more information")
@@ -231,6 +400,14 @@ end
 
 --@api: LUiWidget:getId
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local btn = lurek.ui.newButton("Info")
     btn:setId("info_button")
     btn:setTooltip("Click for more information")
@@ -240,6 +417,14 @@ end
 
 --@api: LUiWidget:setTooltip
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local btn = lurek.ui.newButton("Info")
     btn:setId("info_button")
     btn:setTooltip("Click for more information")
@@ -249,6 +434,14 @@ end
 
 --@api: LUiWidget:getTooltip
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local btn = lurek.ui.newButton("Info")
     btn:setId("info_button")
     btn:setTooltip("Click for more information")
@@ -258,6 +451,14 @@ end
 
 --@api: LUiWidget:setZOrder
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local front = lurek.ui.newPanel()
     local back = lurek.ui.newPanel()
     front:setZOrder(10)
@@ -268,6 +469,14 @@ end
 
 --@api: LUiWidget:getZOrder
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local front = lurek.ui.newPanel()
     local back = lurek.ui.newPanel()
     front:setZOrder(10)
@@ -278,6 +487,14 @@ end
 
 --@api: LUiWidget:containsPoint
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local btn = lurek.ui.newButton("Hit Test")
     btn:setPosition(50, 50)
     btn:setSize(100, 40)
@@ -287,6 +504,14 @@ end
 
 --@api: LUiWidget:getState
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LButton
     local btn = lurek.ui.newButton("State")
     local state = btn:getState()
@@ -297,6 +522,14 @@ end
 
 --@api: lurek.ui.getRoot
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local root = lurek.ui.getRoot()
     example_print_log("root = " .. tostring(root))
     example_print_log("widget count = " .. lurek.ui.getWidgetCount())
@@ -306,6 +539,14 @@ end
 
 --@api: lurek.ui.update
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local before = lurek.ui.getWidgetCount()
     lurek.ui.update(1 / 60)
     lurek.ui.draw()
@@ -318,6 +559,14 @@ end
 
 --@api: lurek.ui.newLayout
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local row = lurek.ui.newLayout("horizontal")
     example_print_log("type = " .. row:type())
     example_print_log("direction = " .. row:getDirection())
@@ -331,6 +580,14 @@ end
 
 --@api: LLayout:setDirection
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LLayout
     local grid = lurek.ui.newLayout("grid")
     grid:setDirection("vertical")
@@ -341,6 +598,14 @@ end
 
 --@api: LLayout:setColumns
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LLayout
     local grid = lurek.ui.newLayout("grid")
     grid:setColumns(3)
@@ -351,6 +616,14 @@ end
 
 --@api: LLayout:setAlign
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local layout = lurek.ui.newLayout("horizontal")
     layout:setAlign("center")
     example_print_log("align = " .. layout:getAlign())
@@ -360,6 +633,14 @@ end
 
 --@api: LLayout:getAlign
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local layout = lurek.ui.newLayout("horizontal")
     layout:setAlign("center")
     example_print_log("align = " .. layout:getAlign())
@@ -369,6 +650,14 @@ end
 
 --@api: LLayout:setJustify
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local layout = lurek.ui.newLayout("horizontal")
     layout:setJustify("space-between")
     example_print_log("justify = " .. layout:getJustify())
@@ -378,6 +667,14 @@ end
 
 --@api: LLayout:getJustify
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local layout = lurek.ui.newLayout("horizontal")
     layout:setJustify("space-between")
     example_print_log("justify = " .. layout:getJustify())
@@ -387,6 +684,14 @@ end
 
 --@api: LLayout:setWrap
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LLayout
     local layout = lurek.ui.newLayout("horizontal")
     example_print_log("wrap = " .. tostring(layout:getWrap()))
@@ -397,6 +702,14 @@ end
 
 --@api: LLayout:getWrap
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LLayout
     local layout = lurek.ui.newLayout("horizontal")
     example_print_log("wrap = " .. tostring(layout:getWrap()))
@@ -407,6 +720,14 @@ end
 
 --@api: LUiWidget:addChild
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local layout = lurek.ui.newLayout("vertical")
     local btn1 = lurek.ui.newButton("First")
     local btn2 = lurek.ui.newButton("Second")
@@ -421,6 +742,14 @@ end
 
 --@api: LUiWidget:removeChild
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local layout = lurek.ui.newLayout("vertical")
     local btn1 = lurek.ui.newButton("First")
     local btn2 = lurek.ui.newButton("Second")
@@ -435,6 +764,14 @@ end
 
 --@api: LUiWidget:getChildCount
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local layout = lurek.ui.newLayout("vertical")
     local btn1 = lurek.ui.newButton("First")
     local btn2 = lurek.ui.newButton("Second")
@@ -449,6 +786,14 @@ end
 
 --@api: LUiWidget:getChildren
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local panel = lurek.ui.newPanel()
     panel:addChild(lurek.ui.newLabel("A"))
     panel:addChild(lurek.ui.newLabel("B"))
@@ -459,6 +804,14 @@ end
 
 --@api: LUiWidget:setMargin
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local btn = lurek.ui.newButton("Margin")
     btn:setMargin(10, 20, 10, 20)
     local top, right, bottom, left = btn:getMargin()
@@ -470,6 +823,14 @@ end
 
 --@api: LUiWidget:getMargin
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local btn = lurek.ui.newButton("Margin")
     btn:setMargin(10, 20, 10, 20)
     local top, right, bottom, left = btn:getMargin()
@@ -481,6 +842,14 @@ end
 
 --@api: LUiWidget:setPadding
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LPanel
     local panel = lurek.ui.newPanel()
     panel:setPadding(8, 16, 8, 16)
@@ -491,6 +860,14 @@ end
 
 --@api: LUiWidget:getPadding
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LPanel
     local panel = lurek.ui.newPanel()
     panel:setPadding(8, 16, 8, 16)
@@ -501,6 +878,14 @@ end
 
 --@api: LUiWidget:setFlexGrow
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local row = lurek.ui.newLayout("horizontal")
     local left = lurek.ui.newPanel()
     local right = lurek.ui.newPanel()
@@ -514,6 +899,14 @@ end
 
 --@api: LUiWidget:getFlexGrow
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local row = lurek.ui.newLayout("horizontal")
     local left = lurek.ui.newPanel()
     local right = lurek.ui.newPanel()
@@ -527,6 +920,14 @@ end
 
 --@api: LUiWidget:setFlexShrink
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local btn = lurek.ui.newButton("Shrinkable")
     btn:setFlexShrink(0)
     example_print_log("shrink = " .. btn:getFlexShrink())
@@ -536,6 +937,14 @@ end
 
 --@api: LUiWidget:getFlexShrink
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local btn = lurek.ui.newButton("Shrinkable")
     btn:setFlexShrink(0)
     example_print_log("shrink = " .. btn:getFlexShrink())
@@ -545,6 +954,14 @@ end
 
 --@api: LUiWidget:setMinSize
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local panel = lurek.ui.newPanel()
     panel:setMinSize(100, 50)
     local minW, minH = panel:getMinSize()
@@ -556,6 +973,14 @@ end
 
 --@api: LUiWidget:getMinSize
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local panel = lurek.ui.newPanel()
     panel:setMinSize(100, 50)
     local minW, minH = panel:getMinSize()
@@ -567,6 +992,14 @@ end
 
 --@api: LUiWidget:setMaxSize
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local panel = lurek.ui.newPanel()
     panel:setMinSize(100, 50)
     local minW, minH = panel:getMinSize()
@@ -578,6 +1011,14 @@ end
 
 --@api: LUiWidget:getMaxSize
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local panel = lurek.ui.newPanel()
     panel:setMinSize(100, 50)
     local minW, minH = panel:getMinSize()
@@ -589,6 +1030,14 @@ end
 
 --@api: LUiWidget:setAnchor
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local btn = lurek.ui.newButton("Anchored")
     btn:setAnchor(10, 10, 10, nil)
     example_print_log("anchors applied")
@@ -599,6 +1048,14 @@ end
 
 --@api: LUiWidget:setAnchorCenter
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local btn = lurek.ui.newButton("Anchored")
     btn:setAnchor(10, 10, 10, nil)
     example_print_log("anchors applied")
@@ -609,6 +1066,14 @@ end
 
 --@api: LUiWidget:clearAnchor
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local btn = lurek.ui.newButton("Anchored")
     btn:setAnchor(10, 10, 10, nil)
     example_print_log("anchors applied")
@@ -619,6 +1084,14 @@ end
 
 --@api: lurek.ui.newDockPanel
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dock = lurek.ui.newDockPanel()
     local header = lurek.ui.newPanel()
     local sidebar = lurek.ui.newPanel()
@@ -637,6 +1110,14 @@ end
 
 --@api: LDockPanel:undock
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dock = lurek.ui.newDockPanel()
     local footer = lurek.ui.newPanel()
     dock:addChild(footer)
@@ -648,6 +1129,14 @@ end
 
 --@api: lurek.ui.newSplitPanel
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local split = lurek.ui.newSplitPanel("horizontal")
     local left = lurek.ui.newPanel()
     local right = lurek.ui.newPanel()
@@ -663,6 +1152,14 @@ end
 
 --@api: lurek.ui.newScrollPanel
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local scroll = lurek.ui.newScrollPanel()
     example_print_log("type = " .. scroll:type())
     scroll:setContentSize(1200, 2000)
@@ -677,6 +1174,14 @@ end
 
 --@api: LScrollPanel:setScrollSpeed
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LScrollPanel
     local scroll = lurek.ui.newScrollPanel()
     scroll:setScrollSpeed(30)
@@ -687,6 +1192,14 @@ end
 
 --@api: LScrollPanel:getScrollSpeed
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LScrollPanel
     local scroll = lurek.ui.newScrollPanel()
     scroll:setScrollSpeed(30)
@@ -697,6 +1210,14 @@ end
 
 --@api: LUiWidget:findById
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local root = lurek.ui.newLayout("vertical")
     local btn = lurek.ui.newButton("Find Me")
     btn:setId("target_btn")
@@ -709,6 +1230,14 @@ end
 
 --@api: lurek.ui.newTextInput
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local input = lurek.ui.newTextInput()
     example_print_log("type = " .. input:type())
     example_print_log("text = '" .. input:getText() .. "'")
@@ -718,6 +1247,14 @@ end
 
 --@api: LTextInput:setPlaceholder
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LTextInput
     local input = lurek.ui.newTextInput()
     input:setPlaceholder("Enter your name...")
@@ -728,6 +1265,14 @@ end
 
 --@api: LTextInput:getPlaceholder
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LTextInput
     local input = lurek.ui.newTextInput()
     input:setPlaceholder("Enter your name...")
@@ -738,6 +1283,14 @@ end
 
 --@api: LTextInput:setMaxLength
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local input = lurek.ui.newTextInput()
     input:setMaxLength(50)
     input:setText("Short text")
@@ -748,6 +1301,14 @@ end
 
 --@api: LTextInput:getCursorPosition
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local input = lurek.ui.newTextInput()
     input:setMaxLength(50)
     input:setText("Short text")
@@ -758,6 +1319,14 @@ end
 
 --@api: LTextInput:setSubmitOnEnter
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local input = lurek.ui.newTextInput()
     input:setSubmitOnEnter(false)
     input:setText("Confirm name")
@@ -767,6 +1336,14 @@ end
 
 --@api: LTextInput:getSubmitOnEnter
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local input = lurek.ui.newTextInput()
     input:setSubmitOnEnter(false)
     example_print_log("submit_on_enter = " .. tostring(input:getSubmitOnEnter()))
@@ -776,6 +1353,14 @@ end
 
 --@api: lurek.ui.newCheckbox
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LCheckbox
     local cb = lurek.ui.newCheckbox("Enable Sound")
     example_print_log("type = " .. cb:type())
@@ -786,6 +1371,14 @@ end
 
 --@api: LCheckbox:setChecked
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cb = lurek.ui.newCheckbox("Option A")
     cb:setChecked(true)
     example_print_log("checked = " .. tostring(cb:isChecked()))
@@ -797,6 +1390,14 @@ end
 
 --@api: LCheckbox:setText
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cb = lurek.ui.newCheckbox("Option A")
     cb:setChecked(true)
     example_print_log("checked = " .. tostring(cb:isChecked()))
@@ -808,6 +1409,14 @@ end
 
 --@api: LCheckbox:setOnChange
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LCheckbox
     local cb = lurek.ui.newCheckbox("Fullscreen")
     cb:setOnChange(function()
@@ -818,6 +1427,14 @@ end
 
 --@api: lurek.ui.newSlider
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local slider = lurek.ui.newSlider(0, 100)
     example_print_log("type = " .. slider:type())
     example_print_log("min = " .. slider:getMin())
@@ -827,6 +1444,14 @@ end
 
 --@api: LSlider:setValue
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local slider = lurek.ui.newSlider(0, 1)
     slider:setStep(0.1)
     slider:setValue(0.5)
@@ -837,6 +1462,14 @@ end
 
 --@api: LSlider:setStep
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local slider = lurek.ui.newSlider(0, 1)
     slider:setStep(0.1)
     slider:setValue(0.5)
@@ -847,6 +1480,14 @@ end
 
 --@api: LSlider:setRange
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local slider = lurek.ui.newSlider(0, 10)
     slider:setValue(5)
     example_print_log("before: " .. slider:getMin() .. " to " .. slider:getMax() .. " val=" .. slider:getValue())
@@ -856,6 +1497,14 @@ end
 
 --@api: lurek.ui.newSpinBox
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local spin = lurek.ui.newSpinBox(1, 99)
     example_print_log("type = " .. spin:type())
     example_print_log("value = " .. spin:getValue())
@@ -865,6 +1514,14 @@ end
 
 --@api: LSpinBox:increment
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local spin = lurek.ui.newSpinBox(0, 100)
     spin:setValue(10)
     spin:setStep(5)
@@ -877,6 +1534,14 @@ end
 
 --@api: LSpinBox:decrement
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local spin = lurek.ui.newSpinBox(0, 100)
     spin:setValue(10)
     spin:setStep(5)
@@ -889,6 +1554,14 @@ end
 
 --@api: LSpinBox:setStep
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local spin = lurek.ui.newSpinBox(0, 100)
     spin:setValue(10)
     spin:setStep(5)
@@ -901,6 +1574,14 @@ end
 
 --@api: LSpinBox:setRange
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LSpinBox
     local spin = lurek.ui.newSpinBox(0, 10)
     spin:setValue(8)
@@ -911,6 +1592,14 @@ end
 
 --@api: lurek.ui.newSwitch
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LSwitch
     local sw = lurek.ui.newSwitch(false)
     example_print_log("type = " .. sw:type())
@@ -921,6 +1610,14 @@ end
 
 --@api: LSwitch:setOn
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sw = lurek.ui.newSwitch(true)
     example_print_log("initial = " .. tostring(sw:isOn()))
     sw:toggle()
@@ -931,6 +1628,14 @@ end
 
 --@api: LSwitch:toggle
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sw = lurek.ui.newSwitch(true)
     example_print_log("initial = " .. tostring(sw:isOn()))
     sw:toggle()
@@ -941,6 +1646,14 @@ end
 
 --@api: lurek.ui.newComboBox
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LComboBox
     local combo = lurek.ui.newComboBox()
     example_print_log("type = " .. combo:type())
@@ -951,6 +1664,14 @@ end
 
 --@api: LComboBox:addItem
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local combo = lurek.ui.newComboBox()
     combo:addItem("Easy")
     combo:addItem("Normal")
@@ -963,6 +1684,14 @@ end
 
 --@api: LComboBox:getItem
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local combo = lurek.ui.newComboBox()
     combo:addItem("Easy")
     combo:addItem("Normal")
@@ -975,6 +1704,14 @@ end
 
 --@api: LComboBox:getItemCount
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local combo = lurek.ui.newComboBox()
     combo:addItem("Easy")
     combo:addItem("Normal")
@@ -987,6 +1724,14 @@ end
 
 --@api: LComboBox:getSelectedIndex
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local combo = lurek.ui.newComboBox()
     combo:addItem("Red")
     combo:addItem("Green")
@@ -1002,6 +1747,14 @@ end
 
 --@api: LComboBox:getSelectedItem
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local combo = lurek.ui.newComboBox()
     combo:addItem("Red")
     combo:addItem("Green")
@@ -1017,6 +1770,14 @@ end
 
 --@api: LComboBox:clearItems
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local combo = lurek.ui.newComboBox()
     combo:addItem("Red")
     combo:addItem("Green")
@@ -1032,6 +1793,14 @@ end
 
 --@api: LComboBox:setMaxVisibleItems
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local combo = lurek.ui.newComboBox()
     combo:addItem("Easy")
     combo:addItem("Normal")
@@ -1044,6 +1813,14 @@ end
 
 --@api: LComboBox:getMaxVisibleItems
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local combo = lurek.ui.newComboBox()
     combo:setMaxVisibleItems(3)
     example_print_log("max visible = " .. combo:getMaxVisibleItems())
@@ -1053,6 +1830,14 @@ end
 
 --@api: lurek.ui.setFocus
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local input = lurek.ui.newTextInput()
     lurek.ui.setFocus(input)
     local focused = lurek.ui.getFocus()
@@ -1064,6 +1849,14 @@ end
 
 --@api: lurek.ui.focusNext
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local a = lurek.ui.newTextInput()
     local b = lurek.ui.newTextInput()
     local c = lurek.ui.newTextInput()
@@ -1078,6 +1871,14 @@ end
 
 --@api: lurek.ui.newList
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LListBox
     local list = lurek.ui.newList()
     example_print_log("type = " .. list:type())
@@ -1088,6 +1889,14 @@ end
 
 --@api: LListBox:addItem
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local list = lurek.ui.newList()
     list:addItem("Sword")
     list:addItem("Shield")
@@ -1100,6 +1909,14 @@ end
 
 --@api: LListBox:getItem
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local list = lurek.ui.newList()
     list:addItem("Sword")
     list:addItem("Shield")
@@ -1112,6 +1929,14 @@ end
 
 --@api: LListBox:getItemCount
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local list = lurek.ui.newList()
     list:addItem("Sword")
     list:addItem("Shield")
@@ -1124,6 +1949,14 @@ end
 
 --@api: LListBox:setSelectedIndex
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local list = lurek.ui.newList()
     list:addItem("Option A")
     list:addItem("Option B")
@@ -1136,6 +1969,14 @@ end
 
 --@api: LListBox:getSelectedIndex
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local list = lurek.ui.newList()
     list:addItem("Option A")
     list:addItem("Option B")
@@ -1148,6 +1989,14 @@ end
 
 --@api: LListBox:removeItem
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local list = lurek.ui.newList()
     list:addItem("First")
     list:addItem("Second")
@@ -1162,6 +2011,14 @@ end
 
 --@api: LListBox:clearItems
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local list = lurek.ui.newList()
     list:addItem("First")
     list:addItem("Second")
@@ -1176,6 +2033,14 @@ end
 
 --@api: LListBox:setItemHeight
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local list = lurek.ui.newList()
     list:addItem("First")
     list:addItem("Second")
@@ -1190,6 +2055,14 @@ end
 
 --@api: lurek.ui.newMenuBar
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LMenuBar
     local bar = lurek.ui.newMenuBar()
     example_print_log("type = " .. bar:type())
@@ -1200,6 +2073,14 @@ end
 
 --@api: lurek.ui.newMenuItem
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local item = lurek.ui.newMenuItem("File")
     example_print_log("type = " .. item:type())
     example_print_log("text = " .. item:getText())
@@ -1209,6 +2090,14 @@ end
 
 --@api: LMenuItem:setText
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LMenuItem
     local item = lurek.ui.newMenuItem("Toggle Grid")
     item:setOnClick(function()
@@ -1222,6 +2111,14 @@ end
 
 --@api: LMenuItem:setOnClick
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LMenuItem
     local item = lurek.ui.newMenuItem("Toggle Grid")
     item:setOnClick(function()
@@ -1235,6 +2132,14 @@ end
 
 --@api: LMenuItem:setChecked
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LMenuItem
     local item = lurek.ui.newMenuItem("Toggle Grid")
     item:setOnClick(function()
@@ -1248,6 +2153,14 @@ end
 
 --@api: LMenuItem:isChecked
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LMenuItem
     local item = lurek.ui.newMenuItem("Toggle Grid")
     item:setOnClick(function()
@@ -1261,6 +2174,14 @@ end
 
 --@api: LMenuItem:addSubItem
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local fileMenu = lurek.ui.newMenuItem("File")
     local openItem = lurek.ui.newMenuItem("Open")
     openItem:setShortcut("Ctrl+O")
@@ -1276,6 +2197,14 @@ end
 
 --@api: LMenuItem:getSubItems
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local fileMenu = lurek.ui.newMenuItem("File")
     local openItem = lurek.ui.newMenuItem("Open")
     openItem:setShortcut("Ctrl+O")
@@ -1291,6 +2220,14 @@ end
 
 --@api: LMenuBar:addMenu
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bar = lurek.ui.newMenuBar()
     local fileMenu = lurek.ui.newMenuItem("File")
     local editMenu = lurek.ui.newMenuItem("Edit")
@@ -1305,6 +2242,14 @@ end
 
 --@api: LMenuBar:getMenuCount
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bar = lurek.ui.newMenuBar()
     local fileMenu = lurek.ui.newMenuItem("File")
     local editMenu = lurek.ui.newMenuItem("Edit")
@@ -1319,6 +2264,14 @@ end
 
 --@api: LMenuBar:getMenus
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bar = lurek.ui.newMenuBar()
     local fileMenu = lurek.ui.newMenuItem("File")
     local editMenu = lurek.ui.newMenuItem("Edit")
@@ -1333,6 +2286,14 @@ end
 
 --@api: LMenuBar:removeMenu
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bar = lurek.ui.newMenuBar()
     local m = lurek.ui.newMenuItem("Tools")
     bar:addMenu(m._idx)
@@ -1344,6 +2305,14 @@ end
 
 --@api: lurek.ui.newTabBar
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LTabBar
     local tabs = lurek.ui.newTabBar()
     example_print_log("type = " .. tabs:type())
@@ -1354,6 +2323,14 @@ end
 
 --@api: LTabBar:addTab
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tabs = lurek.ui.newTabBar()
     tabs:addTab("General")
     tabs:addTab("Graphics")
@@ -1366,6 +2343,14 @@ end
 
 --@api: LTabBar:getTab
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tabs = lurek.ui.newTabBar()
     tabs:addTab("General")
     tabs:addTab("Graphics")
@@ -1378,6 +2363,14 @@ end
 
 --@api: LTabBar:getTabCount
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tabs = lurek.ui.newTabBar()
     tabs:addTab("General")
     tabs:addTab("Graphics")
@@ -1390,6 +2383,14 @@ end
 
 --@api: LTabBar:setActiveTab
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tabs = lurek.ui.newTabBar()
     tabs:addTab("Home")
     tabs:addTab("Settings")
@@ -1403,6 +2404,14 @@ end
 
 --@api: LTabBar:getActiveTab
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tabs = lurek.ui.newTabBar()
     tabs:addTab("Home")
     tabs:addTab("Settings")
@@ -1416,6 +2425,14 @@ end
 
 --@api: LTabBar:removeTab
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tabs = lurek.ui.newTabBar()
     tabs:addTab("Home")
     tabs:addTab("Settings")
@@ -1429,6 +2446,14 @@ end
 
 --@api: lurek.ui.newAccordion
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LAccordion
     local acc = lurek.ui.newAccordion()
     example_print_log("type = " .. acc:type())
@@ -1439,6 +2464,14 @@ end
 
 --@api: LAccordion:addSection
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local acc = lurek.ui.newAccordion()
     acc:addSection("Player Stats")
     acc:addSection("Inventory")
@@ -1450,6 +2483,14 @@ end
 
 --@api: LAccordion:getSectionCount
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local acc = lurek.ui.newAccordion()
     acc:addSection("Player Stats")
     acc:addSection("Inventory")
@@ -1461,6 +2502,14 @@ end
 
 --@api: LAccordion:getSectionTitle
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local acc = lurek.ui.newAccordion()
     acc:addSection("Player Stats")
     acc:addSection("Inventory")
@@ -1472,6 +2521,14 @@ end
 
 --@api: LAccordion:toggleSection
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local acc = lurek.ui.newAccordion()
     acc:addSection("A")
     acc:addSection("B")
@@ -1487,6 +2544,14 @@ end
 
 --@api: LAccordion:isSectionExpanded
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local acc = lurek.ui.newAccordion()
     acc:addSection("A")
     acc:addSection("B")
@@ -1502,6 +2567,14 @@ end
 
 --@api: LAccordion:setExclusive
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local acc = lurek.ui.newAccordion()
     acc:addSection("A")
     acc:addSection("B")
@@ -1517,6 +2590,14 @@ end
 
 --@api: lurek.ui.newDialog
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local modal = lurek.ui.newDialog("Quest Reward")
     modal:setPosition(120, 100)
     modal:setSize(320, 220)
@@ -1565,6 +2646,14 @@ end
 
 --@api: lurek.ui.newWindow
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local win = lurek.ui.newWindow("Editor")
     win:setDraggable(true)
     win:setResizable(true)
@@ -1589,6 +2678,14 @@ end
 
 --@api: lurek.ui.newToolbar
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tb = lurek.ui.newToolbar("horizontal")
     tb:addButton("save", "Save file")
     example_print_log("orientation:", tb:getOrientation())
@@ -1598,6 +2695,14 @@ end
 
 --@api: lurek.ui.newStatusBar
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sb = lurek.ui.newStatusBar()
     sb:addSection("Ready", 150)
     example_print_log("section count:", sb:getSectionCount())
@@ -1607,6 +2712,14 @@ end
 
 --@api: lurek.ui.newProgressBar
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bar = lurek.ui.newProgressBar(0, 100)
     bar:setValue(35)
     example_print_log("value:", bar:getValue())
@@ -1616,6 +2729,14 @@ end
 
 --@api: lurek.ui.newImageWidget
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local img = lurek.ui.newImageWidget()
     img:setScaleMode("fit")
     example_print_log("scale mode:", img:getScaleMode())
@@ -1626,6 +2747,14 @@ end
 
 --@api: lurek.ui.newNinePatch
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local np = lurek.ui.newNinePatch()
     np:setImageDimensions(128, 128)
     np:setInsets(16, 16, 16, 16)
@@ -1635,6 +2764,14 @@ end
 
 --@api: lurek.ui.newBadge
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local badge = lurek.ui.newBadge(5)
     example_print_log("count:", badge:getCount())
     example_print_log("display:", badge:getDisplayText())
@@ -1644,6 +2781,14 @@ end
 
 --@api: lurek.ui.newSpacer
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sp = lurek.ui.newSpacer(20, 10)
     sp:setSize(40, 20)
     local w, h = sp:getSize()
@@ -1653,6 +2798,14 @@ end
 
 --@api: lurek.ui.newSeparator
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sep = lurek.ui.newSeparator(false)
     example_print_log("is vertical:", sep:isVertical())
     sep:setThickness(2)
@@ -1662,6 +2815,14 @@ end
 
 --@api: lurek.ui.newColorPicker
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cp = lurek.ui.newColorPicker()
     cp:setColor(0.8, 0.2, 0.5, 1.0)
     local r, g, b, a = cp:getColor()
@@ -1672,6 +2833,14 @@ end
 
 --@api: lurek.ui.newRadioButton
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rb1 = lurek.ui.newRadioButton("Small", "size_group")
     local rb2 = lurek.ui.newRadioButton("Medium", "size_group")
     local rb3 = lurek.ui.newRadioButton("Large", "size_group")
@@ -1684,6 +2853,14 @@ end
 
 --@api: lurek.ui.newTreeView
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tree = lurek.ui.newTreeView()
     local root = tree:addNode("Project")
     tree:addNode("main.lua", root)
@@ -1693,6 +2870,14 @@ end
 
 --@api: lurek.ui.newToast
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local toast = lurek.ui.newToast("File saved!", 2.5)
     example_print_log("message:", toast:getMessage())
     example_print_log("duration:", toast:getDuration())
@@ -1704,6 +2889,14 @@ end
 
 --@api: lurek.ui.newTooltipPanel
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local btn = lurek.ui.newButton("Hover me")
     local tip = lurek.ui.newTooltipPanel("Click to submit form")
     tip:setDelay(0.5)
@@ -1717,6 +2910,14 @@ end
 
 --@api: lurek.ui.newTheme
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local theme = lurek.ui.newTheme()
     theme:setStyle("button", "normal", { bg_r = 0.2, bg_g = 0.2, bg_b = 0.3, bg_a = 1.0, fg_r = 1.0, fg_g = 1.0, fg_b = 1.0, fg_a = 1.0, })
     theme:setStyle("button", "hovered", { bg_r = 0.3, bg_g = 0.3, bg_b = 0.5, bg_a = 1.0, })
@@ -1727,6 +2928,14 @@ end
 
 --@api: lurek.ui.setTheme
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local theme = lurek.ui.newTheme()
     theme:setStyle("button", "normal", { bg_r = 0.2, bg_g = 0.2, bg_b = 0.3, bg_a = 1.0, fg_r = 1.0, fg_g = 1.0, fg_b = 1.0, fg_a = 1.0, })
     theme:setStyle("button", "hovered", { bg_r = 0.3, bg_g = 0.3, bg_b = 0.5, bg_a = 1.0, })
@@ -1737,6 +2946,14 @@ end
 
 --@api: lurek.ui.getTheme
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local theme = lurek.ui.newTheme()
     theme:setStyle("button", "normal", { bg_r = 0.2, bg_g = 0.2, bg_b = 0.3, bg_a = 1.0, fg_r = 1.0, fg_g = 1.0, fg_b = 1.0, fg_a = 1.0, })
     theme:setStyle("button", "hovered", { bg_r = 0.3, bg_g = 0.3, bg_b = 0.5, bg_a = 1.0, })
@@ -1747,6 +2964,14 @@ end
 
 --@api: lurek.ui.getFocus
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local btn1 = lurek.ui.newButton("First")
     local btn2 = lurek.ui.newButton("Second")
     lurek.ui.setFocus(btn1)
@@ -1761,6 +2986,14 @@ end
 
 --@api: lurek.ui.focusPrev
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local btn1 = lurek.ui.newButton("First")
     local btn2 = lurek.ui.newButton("Second")
     lurek.ui.setFocus(btn1)
@@ -1775,6 +3008,14 @@ end
 
 --@api: lurek.ui.clearFocus
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local btn1 = lurek.ui.newButton("First")
     local btn2 = lurek.ui.newButton("Second")
     lurek.ui.setFocus(btn1)
@@ -1789,6 +3030,14 @@ end
 
 --@api: lurek.ui.beginDrag
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local source = lurek.ui.newPanel()
     local target = lurek.ui.newPanel()
     lurek.ui.beginDrag(source)
@@ -1799,6 +3048,14 @@ end
 
 --@api: lurek.ui.getActiveDrag
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local source = lurek.ui.newPanel()
     local target = lurek.ui.newPanel()
     lurek.ui.beginDrag(source)
@@ -1809,6 +3066,14 @@ end
 
 --@api: lurek.ui.dropOn
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local source = lurek.ui.newPanel()
     local target = lurek.ui.newPanel()
     lurek.ui.beginDrag(source)
@@ -1821,6 +3086,14 @@ end
 
 --@api: LAccordion:isExclusive
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local acc = lurek.ui.newAccordion()
     example_print_log("type=" .. acc:type())
     acc:addSection("Section A")
@@ -1837,6 +3110,14 @@ end
 
 --@api: LColorPicker:getColor
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cp = lurek.ui.newColorPicker()
     example_print_log("type=" .. cp:type())
     cp:setColor(1.0, 0.5, 0.0, 1.0)
@@ -1854,6 +3135,14 @@ end
 
 --@api: LColorPicker:getColorMode
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cp = lurek.ui.newColorPicker()
     example_print_log("type=" .. cp:type())
     cp:setColor(1.0, 0.5, 0.0, 1.0)
@@ -1869,6 +3158,14 @@ end
 
 --@api: LColorPicker:getShowAlpha
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cp = lurek.ui.newColorPicker()
     example_print_log("type=" .. cp:type())
     cp:setColor(1.0, 0.5, 0.0, 1.0)
@@ -1884,6 +3181,14 @@ end
 
 --@api: LColorPicker:setColor
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cp = lurek.ui.newColorPicker()
     example_print_log("type=" .. cp:type())
     cp:setColor(1.0, 0.5, 0.0, 1.0)
@@ -1899,6 +3204,14 @@ end
 
 --@api: LColorPicker:setColorMode
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cp = lurek.ui.newColorPicker()
     example_print_log("type=" .. cp:type())
     cp:setColor(1.0, 0.5, 0.0, 1.0)
@@ -1914,6 +3227,14 @@ end
 
 --@api: LColorPicker:setOnChange
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cp = lurek.ui.newColorPicker()
     example_print_log("type=" .. cp:type())
     cp:setColor(1.0, 0.5, 0.0, 1.0)
@@ -1929,6 +3250,14 @@ end
 
 --@api: LColorPicker:setShowAlpha
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cp = lurek.ui.newColorPicker()
     example_print_log("type=" .. cp:type())
     cp:setColor(1.0, 0.5, 0.0, 1.0)
@@ -1944,6 +3273,14 @@ end
 
 --@api: LProgressBar:getMax
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local pb = lurek.ui.newProgressBar(0, 100)
     example_print_log("type=" .. pb:type())
     example_print_log("min=" .. pb:getMin())
@@ -1957,6 +3294,14 @@ end
 
 --@api: LProgressBar:getMin
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local pb = lurek.ui.newProgressBar(0, 100)
     example_print_log("type=" .. pb:type())
     example_print_log("min=" .. pb:getMin())
@@ -1970,6 +3315,14 @@ end
 
 --@api: LProgressBar:getProgress
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local pb = lurek.ui.newProgressBar(0, 100)
     example_print_log("type=" .. pb:type())
     example_print_log("min=" .. pb:getMin())
@@ -1983,6 +3336,14 @@ end
 
 --@api: LProgressBar:getValue
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local pb = lurek.ui.newProgressBar(0, 100)
     example_print_log("type=" .. pb:type())
     example_print_log("min=" .. pb:getMin())
@@ -1996,6 +3357,14 @@ end
 
 --@api: LProgressBar:setRange
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local pb = lurek.ui.newProgressBar(0, 100)
     example_print_log("type=" .. pb:type())
     example_print_log("min=" .. pb:getMin())
@@ -2009,6 +3378,14 @@ end
 
 --@api: LProgressBar:setValue
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local pb = lurek.ui.newProgressBar(0, 100)
     example_print_log("type=" .. pb:type())
     example_print_log("min=" .. pb:getMin())
@@ -2024,6 +3401,14 @@ end
 
 --@api: LStatusBar:addSection
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sb = lurek.ui.newStatusBar()
     example_print_log("type=" .. sb:type())
     sb:addSection("Ready", 120)
@@ -2036,6 +3421,14 @@ end
 
 --@api: LStatusBar:getSectionCount
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sb = lurek.ui.newStatusBar()
     example_print_log("type=" .. sb:type())
     sb:addSection("Ready", 120)
@@ -2048,6 +3441,14 @@ end
 
 --@api: LStatusBar:getSectionText
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sb = lurek.ui.newStatusBar()
     example_print_log("type=" .. sb:type())
     sb:addSection("Ready", 120)
@@ -2060,6 +3461,14 @@ end
 
 --@api: LStatusBar:setSectionText
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sb = lurek.ui.newStatusBar()
     example_print_log("type=" .. sb:type())
     sb:addSection("Ready", 120)
@@ -2072,6 +3481,14 @@ end
 
 --@api: LToolbar:addButton
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bar = lurek.ui.newToolbar("horizontal")
     bar:addButton("btn_save", "Save file")
     example_print_log("btn=" .. tostring(bar:getButton("btn_save") ~= nil))
@@ -2081,6 +3498,14 @@ end
 
 --@api: LToolbar:addSeparator
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bar = lurek.ui.newToolbar("horizontal")
     bar:addButton("btn_save", "Save file")
     bar:addSeparator()
@@ -2091,6 +3516,14 @@ end
 --@api: LToolbar:getButton
 
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bar = lurek.ui.newToolbar("horizontal")
     bar:addButton("btn_save", "Save file")
     local btn = bar:getButton("btn_save")
@@ -2100,6 +3533,14 @@ end
 
 --@api: LToolbar:getOrientation
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bar = lurek.ui.newToolbar("horizontal")
     example_print_log("orientation=" .. bar:getOrientation())
     example_print_log("toolbar orientation = " .. bar:getOrientation())
@@ -2109,6 +3550,14 @@ end
 
 --@api: LToolbar:isButtonToggled
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bar = lurek.ui.newToolbar("horizontal")
     bar:addButton("btn_save", "Save file")
     example_print_log("toggled=" .. tostring(bar:isButtonToggled("btn_save")))
@@ -2118,6 +3567,14 @@ end
 
 --@api: LToolbar:setButtonEnabled
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bar = lurek.ui.newToolbar("horizontal")
     bar:addButton("btn_open", "Open file")
     bar:setButtonEnabled("btn_open", false)
@@ -2127,6 +3584,14 @@ end
 
 --@api: LToolbar:setButtonToggled
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bar = lurek.ui.newToolbar("horizontal")
     bar:addButton("btn_save", "Save file")
     bar:setButtonToggled("btn_save", true)
@@ -2136,6 +3601,14 @@ end
 
 --@api: LToolbar:setOrientation
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bar = lurek.ui.newToolbar("horizontal")
     bar:setOrientation("vertical")
     example_print_log("orientation_after=" .. bar:getOrientation())
@@ -2145,6 +3618,14 @@ end
 
 --@api: lurek.ui.addToast
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.ui.addToast({ message = "File saved successfully", duration = 3.0, type = "info" })
     example_print_log("toast added")
     local layout = lurek.ui.loadLayout({ type = "panel", children = {} })
@@ -2154,6 +3635,14 @@ end
 
 --@api: lurek.ui.loadLayout
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.ui.addToast({ message = "File saved successfully", duration = 3.0, type = "info" })
     example_print_log("toast added")
     local layout = lurek.ui.loadLayout({
@@ -2170,6 +3659,14 @@ end
 
 --@api: lurek.ui.setAutoInput
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.ui.setAutoInput(true)
     local enabled = lurek.ui.hasAutoInput()
     lurek.ui.setAutoInput(false)
@@ -2180,6 +3677,14 @@ end
 
 --@api: lurek.ui.hasAutoInput
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.ui.setAutoInput(true)
     local enabled = lurek.ui.hasAutoInput()
     lurek.ui.setAutoInput(false)
@@ -2190,6 +3695,14 @@ end
 
 --@api: lurek.ui.setAutoUpdate
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.ui.setAutoUpdate(true)
     local enabled = lurek.ui.hasAutoUpdate()
     lurek.ui.setAutoUpdate(false)
@@ -2200,6 +3713,14 @@ end
 
 --@api: lurek.ui.hasAutoUpdate
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.ui.setAutoUpdate(true)
     local enabled = lurek.ui.hasAutoUpdate()
     lurek.ui.setAutoUpdate(false)
@@ -2212,6 +3733,14 @@ end
 
 --@api: LBadge:getCount
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local badge = lurek.ui.newBadge(3)
     example_print_log("type=" .. badge:type())
     example_print_log("count=" .. badge:getCount())
@@ -2223,6 +3752,14 @@ end
 
 --@api: LBadge:getDisplayText
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local badge = lurek.ui.newBadge(3)
     example_print_log("type=" .. badge:type())
     example_print_log("count=" .. badge:getCount())
@@ -2234,6 +3771,14 @@ end
 
 --@api: LBadge:setCount
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local badge = lurek.ui.newBadge(3)
     example_print_log("type=" .. badge:type())
     example_print_log("count=" .. badge:getCount())
@@ -2245,6 +3790,14 @@ end
 
 --@api: LDockPanel:dock
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dp = lurek.ui.newDockPanel()
     local child = lurek.ui.newPanel()
     example_print_log("type=" .. dp:type())
@@ -2259,6 +3812,14 @@ end
 
 --@api: LDockPanel:getDockedCount
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dp = lurek.ui.newDockPanel()
     example_print_log("type=" .. dp:type())
     local child = lurek.ui.newPanel()
@@ -2273,6 +3834,14 @@ end
 
 --@api: LDockPanel:getSplitSize
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dp = lurek.ui.newDockPanel()
     example_print_log("type=" .. dp:type())
     local child = lurek.ui.newPanel()
@@ -2287,6 +3856,14 @@ end
 
 --@api: LDockPanel:setSplitSize
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dp = lurek.ui.newDockPanel()
     example_print_log("type=" .. dp:type())
     local child = lurek.ui.newPanel()
@@ -2301,6 +3878,14 @@ end
 
 --@api: LImageWidget:getScaleMode
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local iw = lurek.ui.newImageWidget()
     example_print_log("type=" .. iw:type())
     example_print_log("scale_mode=" .. tostring(iw:getScaleMode()))
@@ -2313,6 +3898,14 @@ end
 
 --@api: LImageWidget:getTint
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local iw = lurek.ui.newImageWidget()
     example_print_log("type=" .. iw:type())
     example_print_log("scale_mode=" .. tostring(iw:getScaleMode()))
@@ -2325,6 +3918,14 @@ end
 
 --@api: LImageWidget:setScaleMode
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local iw = lurek.ui.newImageWidget()
     example_print_log("type=" .. iw:type())
     example_print_log("scale_mode=" .. tostring(iw:getScaleMode()))
@@ -2337,6 +3938,14 @@ end
 
 --@api: LImageWidget:setTint
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local iw = lurek.ui.newImageWidget()
     example_print_log("type=" .. iw:type())
     example_print_log("scale_mode=" .. tostring(iw:getScaleMode()))
@@ -2349,6 +3958,14 @@ end
 
 --@api: LNinePatch:getImageDimensions
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local np = lurek.ui.newNinePatch()
     example_print_log("type=" .. np:type())
     np:setImageDimensions(64, 64)
@@ -2363,6 +3980,14 @@ end
 
 --@api: LNinePatch:getInsets
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local np = lurek.ui.newNinePatch()
     example_print_log("type=" .. np:type())
     np:setImageDimensions(64, 64)
@@ -2377,6 +4002,14 @@ end
 
 --@api: LNinePatch:getSlices
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local np = lurek.ui.newNinePatch()
     example_print_log("type=" .. np:type())
     np:setImageDimensions(64, 64)
@@ -2391,6 +4024,14 @@ end
 
 --@api: LNinePatch:setImageDimensions
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local np = lurek.ui.newNinePatch()
     example_print_log("type=" .. np:type())
     np:setImageDimensions(64, 64)
@@ -2405,6 +4046,14 @@ end
 
 --@api: LNinePatch:setInsets
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local np = lurek.ui.newNinePatch()
     example_print_log("type=" .. np:type())
     np:setImageDimensions(64, 64)
@@ -2419,6 +4068,14 @@ end
 
 --@api: LRadioButton:getGroup
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rb1 = lurek.ui.newRadioButton("Option A", "opt_group")
     local rb2 = lurek.ui.newRadioButton("Option B", "opt_group")
     example_print_log("type=" .. rb1:type())
@@ -2431,6 +4088,14 @@ end
 
 --@api: LRadioButton:getText
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rb1 = lurek.ui.newRadioButton("Option A", "opt_group")
     local rb2 = lurek.ui.newRadioButton("Option B", "opt_group")
     example_print_log("type=" .. rb1:type())
@@ -2443,6 +4108,14 @@ end
 
 --@api: LRadioButton:isSelected
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rb1 = lurek.ui.newRadioButton("Option A", "opt_group")
     local rb2 = lurek.ui.newRadioButton("Option B", "opt_group")
     example_print_log("type=" .. rb1:type())
@@ -2455,6 +4128,14 @@ end
 
 --@api: LRadioButton:setGroup
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rb1 = lurek.ui.newRadioButton("Option A", "opt_group")
     local rb2 = lurek.ui.newRadioButton("Option B", "opt_group")
     example_print_log("type=" .. rb1:type())
@@ -2467,6 +4148,14 @@ end
 
 --@api: LSpinBox:getValue
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sb = lurek.ui.newSpinBox(1, 10)
     example_print_log("type=" .. sb:type())
     sb:setValue(5)
@@ -2481,6 +4170,14 @@ end
 
 --@api: LSpinBox:setValue
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sb = lurek.ui.newSpinBox(1, 10)
     example_print_log("type=" .. sb:type())
     sb:setValue(5)
@@ -2495,6 +4192,14 @@ end
 
 --@api: LSplitPanel:getFirstChild
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sp = lurek.ui.newSplitPanel("horizontal")
     local first = lurek.ui.newPanel()
     local second = lurek.ui.newPanel()
@@ -2516,6 +4221,14 @@ end
 
 --@api: LSplitPanel:getMinPanelSize
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sp = lurek.ui.newSplitPanel("horizontal")
     example_print_log("type=" .. sp:type())
     example_print_log("orientation=" .. sp:getOrientation())
@@ -2535,6 +4248,14 @@ end
 
 --@api: LSplitPanel:getOrientation
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sp = lurek.ui.newSplitPanel("horizontal")
     example_print_log("type=" .. sp:type())
     example_print_log("orientation=" .. sp:getOrientation())
@@ -2554,6 +4275,14 @@ end
 
 --@api: LSplitPanel:getSecondChild
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sp = lurek.ui.newSplitPanel("horizontal")
     example_print_log("type=" .. sp:type())
     example_print_log("orientation=" .. sp:getOrientation())
@@ -2573,6 +4302,14 @@ end
 
 --@api: LSplitPanel:getSplitPosition
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sp = lurek.ui.newSplitPanel("horizontal")
     example_print_log("type=" .. sp:type())
     example_print_log("orientation=" .. sp:getOrientation())
@@ -2592,6 +4329,14 @@ end
 
 --@api: LSplitPanel:setFirstChild
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sp = lurek.ui.newSplitPanel("horizontal")
     example_print_log("type=" .. sp:type())
     example_print_log("orientation=" .. sp:getOrientation())
@@ -2611,6 +4356,14 @@ end
 
 --@api: LSplitPanel:setMinPanelSize
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sp = lurek.ui.newSplitPanel("horizontal")
     example_print_log("type=" .. sp:type())
     example_print_log("orientation=" .. sp:getOrientation())
@@ -2630,6 +4383,14 @@ end
 
 --@api: LSplitPanel:setOrientation
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sp = lurek.ui.newSplitPanel("horizontal")
     example_print_log("type=" .. sp:type())
     example_print_log("orientation=" .. sp:getOrientation())
@@ -2649,6 +4410,14 @@ end
 
 --@api: LSplitPanel:setSecondChild
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sp = lurek.ui.newSplitPanel("horizontal")
     example_print_log("type=" .. sp:type())
     example_print_log("orientation=" .. sp:getOrientation())
@@ -2668,6 +4437,14 @@ end
 
 --@api: LSplitPanel:setSplitPosition
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sp = lurek.ui.newSplitPanel("horizontal")
     example_print_log("type=" .. sp:type())
     example_print_log("orientation=" .. sp:getOrientation())
@@ -2687,6 +4464,14 @@ end
 
 --@api: LSwitch:isOn
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sw = lurek.ui.newSwitch(false)
     example_print_log("type=" .. sw:type())
     example_print_log("is_on=" .. tostring(sw:isOn()))
@@ -2697,6 +4482,14 @@ end
 
 --@api: LSwitch:setOnChange
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sw = lurek.ui.newSwitch(false)
     example_print_log("type=" .. sw:type())
     example_print_log("is_on=" .. tostring(sw:isOn()))
@@ -2707,6 +4500,14 @@ end
 
 --@api: LGuiTable:addColumn
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tbl = lurek.ui.newTable()
     example_print_log("type=" .. tbl:type())
     tbl:addColumn("Name")
@@ -2723,6 +4524,14 @@ end
 
 --@api: LGuiTable:addRow
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tbl = lurek.ui.newTable()
     example_print_log("type=" .. tbl:type())
     tbl:addColumn("Name")
@@ -2740,6 +4549,14 @@ end
 
 --@api: LGuiTable:clearRows
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tbl = lurek.ui.newTable()
     tbl:setRows({ { "Food", 420 }, { "Rent", 1200 } })
     tbl:setSelectedRow(1)
@@ -2749,6 +4566,14 @@ end
 
 --@api: LGuiTable:setRows
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tbl = lurek.ui.newTable()
     local count = tbl:setRows({ { "Income", 3200 }, { "Savings", 640 } })
     example_print_log("setRows=" .. count .. ", first=" .. tostring(tbl:getCell(1, 1)))
@@ -2758,6 +4583,14 @@ end
 
 --@api: LGuiTable:setDataFrame
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local df = lurek.dataframe.fromRows({ "category", "amount" }, { { "Food", 420 }, { "Rent", 1200 } })
     local tbl = lurek.ui.newTable()
     local count = tbl:setDataFrame(df, { columns = { "category", "amount" }, maxRows = 2 })
@@ -2767,6 +4600,14 @@ end
 
 --@api: LGuiTable:getCell
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tbl = lurek.ui.newTable()
     example_print_log("type=" .. tbl:type())
     tbl:addColumn("Name")
@@ -2784,6 +4625,14 @@ end
 
 --@api: LGuiTable:getColumnCount
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tbl = lurek.ui.newTable()
     example_print_log("type=" .. tbl:type())
     tbl:addColumn("Name")
@@ -2801,6 +4650,14 @@ end
 
 --@api: LGuiTable:getRowCount
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tbl = lurek.ui.newTable()
     example_print_log("type=" .. tbl:type())
     tbl:addColumn("Name")
@@ -2818,6 +4675,14 @@ end
 
 --@api: LGuiTable:getSelectedRow
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tbl = lurek.ui.newTable()
     example_print_log("type=" .. tbl:type())
     tbl:addColumn("Name")
@@ -2835,6 +4700,14 @@ end
 
 --@api: LGuiTable:setCell
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tbl = lurek.ui.newTable()
     example_print_log("type=" .. tbl:type())
     tbl:addColumn("Name")
@@ -2852,6 +4725,14 @@ end
 
 --@api: LGuiTable:setSelectedRow
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tbl = lurek.ui.newTable()
     example_print_log("type=" .. tbl:type())
     tbl:addColumn("Name")
@@ -2869,6 +4750,14 @@ end
 
 --@api: lurek.ui.newTable
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tbl = lurek.ui.newTable()
     example_print_log("type=" .. tbl:type())
     tbl:addColumn("Name")
@@ -2886,6 +4775,14 @@ end
 
 --@api: LToast:getDuration
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local toast = lurek.ui.newToast("File saved", 3.0)
     example_print_log("type=" .. toast:type())
     example_print_log("msg=" .. toast:getMessage())
@@ -2900,6 +4797,14 @@ end
 
 --@api: LToast:getMessage
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local toast = lurek.ui.newToast("File saved", 3.0)
     example_print_log("type=" .. toast:type())
     example_print_log("msg=" .. toast:getMessage())
@@ -2914,6 +4819,14 @@ end
 
 --@api: LToast:getProgress
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local toast = lurek.ui.newToast("File saved", 3.0)
     example_print_log("type=" .. toast:type())
     example_print_log("msg=" .. toast:getMessage())
@@ -2928,6 +4841,14 @@ end
 
 --@api: LToast:isExpired
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local toast = lurek.ui.newToast("File saved", 3.0)
     example_print_log("type=" .. toast:type())
     example_print_log("msg=" .. toast:getMessage())
@@ -2942,6 +4863,14 @@ end
 
 --@api: LToast:setDuration
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local toast = lurek.ui.newToast("File saved", 3.0)
     example_print_log("type=" .. toast:type())
     example_print_log("msg=" .. toast:getMessage())
@@ -2956,6 +4885,14 @@ end
 
 --@api: LToast:setMessage
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local toast = lurek.ui.newToast("File saved", 3.0)
     example_print_log("type=" .. toast:type())
     example_print_log("msg=" .. toast:getMessage())
@@ -2970,6 +4907,14 @@ end
 
 --@api: LTooltipPanel:getDelay
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ttp = lurek.ui.newTooltipPanel("Hover info")
     example_print_log("type=" .. ttp:type())
     example_print_log("text=" .. ttp:getText())
@@ -2981,6 +4926,14 @@ end
 
 --@api: LTooltipPanel:getText
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ttp = lurek.ui.newTooltipPanel("Hover info")
     example_print_log("type=" .. ttp:type())
     example_print_log("text=" .. ttp:getText())
@@ -2992,6 +4945,14 @@ end
 
 --@api: LTooltipPanel:setDelay
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ttp = lurek.ui.newTooltipPanel("Hover info")
     example_print_log("type=" .. ttp:type())
     example_print_log("text=" .. ttp:getText())
@@ -3003,6 +4964,14 @@ end
 
 --@api: LTooltipPanel:setText
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ttp = lurek.ui.newTooltipPanel("Hover info")
     example_print_log("type=" .. ttp:type())
     example_print_log("text=" .. ttp:getText())
@@ -3014,6 +4983,14 @@ end
 
 --@api: LTreeView:addNode
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tv = lurek.ui.newTreeView()
     local root = tv:addNode("Root", nil)
     local child = tv:addNode("Child C", root)
@@ -3023,6 +5000,14 @@ end
 
 --@api: LTreeView:clearNodes
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tv = lurek.ui.newTreeView()
     local root = tv:addNode("Root", nil)
     tv:addNode("Child A", root)
@@ -3032,6 +5017,14 @@ end
 
 --@api: LTreeView:collapseAll
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tv = lurek.ui.newTreeView()
     local root = tv:addNode("Root", nil)
     tv:addNode("Child A", root)
@@ -3042,6 +5035,14 @@ end
 
 --@api: LTreeView:collapseNode
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tv = lurek.ui.newTreeView()
     local root = tv:addNode("Root", nil)
     tv:expandNode(root)
@@ -3051,6 +5052,14 @@ end
 
 --@api: LTreeView:expandAll
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tv = lurek.ui.newTreeView()
     local root = tv:addNode("Root", nil)
     tv:addNode("Child A", root)
@@ -3060,6 +5069,14 @@ end
 
 --@api: LTreeView:expandNode
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tv = lurek.ui.newTreeView()
     local root = tv:addNode("Root", nil)
     tv:expandNode(root)
@@ -3069,6 +5086,14 @@ end
 
 --@api: LTreeView:getChildNodes
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tv = lurek.ui.newTreeView()
     local root = tv:addNode("Root", nil)
     tv:addNode("Child A", root)
@@ -3079,6 +5104,14 @@ end
 
 --@api: LTreeView:getNodeCount
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tv = lurek.ui.newTreeView()
     local root = tv:addNode("Root", nil)
     tv:addNode("Child A", root)
@@ -3088,6 +5121,14 @@ end
 
 --@api: LTreeView:getNodeDepth
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tv = lurek.ui.newTreeView()
     local root = tv:addNode("Root", nil)
     local child1 = tv:addNode("Child A", root)
@@ -3097,6 +5138,14 @@ end
 
 --@api: LTreeView:getNodeText
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tv = lurek.ui.newTreeView()
     local root = tv:addNode("Root", nil)
     local child1 = tv:addNode("Child A", root)
@@ -3106,6 +5155,14 @@ end
 
 --@api: LTreeView:getParentNode
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tv = lurek.ui.newTreeView()
     local root = tv:addNode("Root", nil)
     local child1 = tv:addNode("Child A", root)
@@ -3115,6 +5172,14 @@ end
 
 --@api: LTreeView:getSelectedNode
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tv = lurek.ui.newTreeView()
     local root = tv:addNode("Root", nil)
     local child1 = tv:addNode("Child A", root)
@@ -3124,6 +5189,14 @@ end
 
 --@api: LTreeView:isExpanded
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tv = lurek.ui.newTreeView()
     local root = tv:addNode("Root", nil)
     tv:expandAll()
@@ -3133,6 +5206,14 @@ end
 
 --@api: LTreeView:isNodeExpanded
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tv = lurek.ui.newTreeView()
     local root = tv:addNode("Root", nil)
     tv:expandNode(root)
@@ -3142,6 +5223,14 @@ end
 
 --@api: LTreeView:removeNode
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tv = lurek.ui.newTreeView()
     local root = tv:addNode("Root", nil)
     tv:addNode("Child A", root)
@@ -3152,6 +5241,14 @@ end
 
 --@api: LTreeView:setNodeIcon
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tv = lurek.ui.newTreeView()
     local root = tv:addNode("Root", nil)
     local child1 = tv:addNode("Child A", root)
@@ -3161,6 +5258,14 @@ end
 
 --@api: LTreeView:setNodeText
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tv = lurek.ui.newTreeView()
     local root = tv:addNode("Root", nil)
     local child1 = tv:addNode("Child A", root)
@@ -3170,6 +5275,14 @@ end
 
 --@api: LTreeView:setSelectedNode
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tv = lurek.ui.newTreeView()
     local root = tv:addNode("Root", nil)
     local child1 = tv:addNode("Child A", root)
@@ -3179,6 +5292,14 @@ end
 
 --@api: LTreeView:toggleNode
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tv = lurek.ui.newTreeView()
     local root = tv:addNode("Root", nil)
     tv:addNode("Child A", root)
@@ -3189,6 +5310,14 @@ end
 
 --@api: LAccordion:getSectionTitle.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local acc = lurek.ui.newAccordion()
     acc:addSection("Chapter 1")
     acc:addSection("Chapter 2")
@@ -3199,6 +5328,14 @@ end
 
 --@api: LAccordion:getSectionTitle.3
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local acc = lurek.ui.newAccordion()
     acc:addSection("Chapter 1")
     acc:addSection("Chapter 2")
@@ -3209,6 +5346,14 @@ end
 
 --@api: LAccordion:getSectionTitle.4
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local acc = lurek.ui.newAccordion()
     acc:addSection("Chapter 1")
     acc:addSection("Chapter 2")
@@ -3219,6 +5364,14 @@ end
 
 --@api: LAccordion:isSectionExpanded.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local acc = lurek.ui.newAccordion()
     acc:addSection("A")
     acc:setExclusive(true)
@@ -3229,6 +5382,14 @@ end
 
 --@api: LAccordion:isSectionExpanded.3
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local acc = lurek.ui.newAccordion()
     acc:addSection("A")
     acc:setExclusive(true)
@@ -3239,6 +5400,14 @@ end
 
 --@api: LAccordion:isSectionExpanded.4
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local acc = lurek.ui.newAccordion()
     acc:addSection("A")
     acc:setExclusive(true)
@@ -3249,6 +5418,14 @@ end
 
 --@api: LAccordion:toggleSection.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local acc = lurek.ui.newAccordion()
     acc:addSection("Toggle me")
     local newState = acc:toggleSection(1)
@@ -3260,6 +5437,14 @@ end
 
 --@api: LAccordion:toggleSection.3
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local acc = lurek.ui.newAccordion()
     acc:addSection("Toggle me")
     local newState = acc:toggleSection(1)
@@ -3271,6 +5456,14 @@ end
 
 --@api: LAccordion:toggleSection.4
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local acc = lurek.ui.newAccordion()
     acc:addSection("Toggle me")
     local newState = acc:toggleSection(1)
@@ -3282,6 +5475,14 @@ end
 
 --@api: LBadge:setCount.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local badge = lurek.ui.newBadge(0)
     badge:setCount(42)
     local btn = lurek.ui.newButton("Click me")
@@ -3292,6 +5493,14 @@ end
 
 --@api: LButton:getText
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local badge = lurek.ui.newBadge(0)
     badge:setCount(42)
     local btn = lurek.ui.newButton("Click me")
@@ -3302,6 +5511,14 @@ end
 
 --@api: LButton:setText
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local badge = lurek.ui.newBadge(0)
     badge:setCount(42)
     local btn = lurek.ui.newButton("Click me")
@@ -3312,6 +5529,14 @@ end
 
 --@api: LCheckbox:getText
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cb = lurek.ui.newCheckbox("Enable feature")
     local t = cb:getText()
     cb:setChecked(true)
@@ -3321,6 +5546,14 @@ end
 
 --@api: LCheckbox:isChecked
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cb = lurek.ui.newCheckbox("Enable feature")
     local t = cb:getText()
     cb:setChecked(true)
@@ -3330,6 +5563,14 @@ end
 
 --@api: LCheckbox:isChecked.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cb = lurek.ui.newCheckbox("Enable feature")
     local t = cb:getText()
     cb:setChecked(true)
@@ -3339,6 +5580,14 @@ end
 
 --@api: LCheckbox:setText.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cb = lurek.ui.newCheckbox("old")
     cb:setText("new label")
     example_print_log("checkbox setText ok")
@@ -3348,6 +5597,14 @@ end
 
 --@api: LColorPicker:getShowAlpha.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cp = lurek.ui.newColorPicker()
     cp:setColor(1.0, 0.5, 0.25, 1.0)
     local r, g, b, a = cp:getColor()
@@ -3358,6 +5615,14 @@ end
 
 --@api: LColorPicker:getShowAlpha.3
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cp = lurek.ui.newColorPicker()
     cp:setColor(1.0, 0.5, 0.25, 1.0)
     local r, g, b, a = cp:getColor()
@@ -3368,6 +5633,14 @@ end
 
 --@api: LColorPicker:getShowAlpha.4
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cp = lurek.ui.newColorPicker()
     cp:setColor(1.0, 0.5, 0.25, 1.0)
     local r, g, b, a = cp:getColor()
@@ -3378,6 +5651,14 @@ end
 
 --@api: LColorPicker:setColorMode.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cp = lurek.ui.newColorPicker()
     cp:setColor(0.2, 0.8, 0.4, 1.0)
     cp:setColorMode("hsv")
@@ -3388,6 +5669,14 @@ end
 
 --@api: LColorPicker:setColorMode.3
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cp = lurek.ui.newColorPicker()
     cp:setColor(0.2, 0.8, 0.4, 1.0)
     cp:setColorMode("hsv")
@@ -3398,6 +5687,14 @@ end
 
 --@api: LColorPicker:setColorMode.4
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cp = lurek.ui.newColorPicker()
     cp:setColor(0.2, 0.8, 0.4, 1.0)
     cp:setColorMode("hsv")
@@ -3408,6 +5705,14 @@ end
 
 --@api: LColorPicker:setShowAlpha.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cp = lurek.ui.newColorPicker()
     cp:setShowAlpha(false)
     local cb = lurek.ui.newComboBox()
@@ -3420,6 +5725,14 @@ end
 
 --@api: LColorPicker:setShowAlpha.3
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cp = lurek.ui.newColorPicker()
     cp:setShowAlpha(false)
     local cb = lurek.ui.newComboBox()
@@ -3432,6 +5745,14 @@ end
 
 --@api: LColorPicker:setShowAlpha.4
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cp = lurek.ui.newColorPicker()
     cp:setShowAlpha(false)
     local cb = lurek.ui.newComboBox()
@@ -3444,6 +5765,14 @@ end
 
 --@api: LComboBox:getSelectedIndex.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cb = lurek.ui.newComboBox()
     cb:addItem("First")
     cb:addItem("Second")
@@ -3457,6 +5786,14 @@ end
 
 --@api: LComboBox:getSelectedIndex.3
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cb = lurek.ui.newComboBox()
     cb:addItem("First")
     cb:addItem("Second")
@@ -3470,6 +5807,14 @@ end
 
 --@api: LComboBox:getSelectedIndex.4
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cb = lurek.ui.newComboBox()
     cb:addItem("First")
     cb:addItem("Second")
@@ -3483,6 +5828,14 @@ end
 
 --@api: LComboBox:removeItem.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cb = lurek.ui.newComboBox()
     cb:addItem("Alpha")
     cb:addItem("Beta")
@@ -3494,6 +5847,14 @@ end
 
 --@api: LComboBox:removeItem
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cb = lurek.ui.newComboBox()
     cb:addItem("Alpha")
     cb:addItem("Beta")
@@ -3505,6 +5866,14 @@ end
 
 --@api: LComboBox:setSelectedIndex
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cb = lurek.ui.newComboBox()
     cb:addItem("Alpha")
     cb:addItem("Beta")
@@ -3516,6 +5885,14 @@ end
 
 --@api: LDialog:addButton
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dlg = lurek.ui.newDialog("Info")
     local btnIdx = dlg:addButton("OK")
     local content = dlg:getContent()
@@ -3526,6 +5903,14 @@ end
 
 --@api: LDialog:close
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dlg = lurek.ui.newDialog("Info")
     local btnIdx = dlg:addButton("OK")
     local content = dlg:getContent()
@@ -3536,6 +5921,14 @@ end
 
 --@api: LDialog:getContent
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dlg = lurek.ui.newDialog("Info")
     local btnIdx = dlg:addButton("OK")
     local content = dlg:getContent()
@@ -3546,6 +5939,14 @@ end
 
 --@api: LDialog:getTitle
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dlg = lurek.ui.newDialog("My Dialog")
     local title = dlg:getTitle()
     dlg:setModal(true)
@@ -3556,6 +5957,14 @@ end
 
 --@api: LDialog:isModal
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dlg = lurek.ui.newDialog("My Dialog")
     local title = dlg:getTitle()
     dlg:setModal(true)
@@ -3566,6 +5975,14 @@ end
 
 --@api: LDialog:isOpen
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dlg = lurek.ui.newDialog("My Dialog")
     local title = dlg:getTitle()
     dlg:setModal(true)
@@ -3576,6 +5993,14 @@ end
 
 --@api: LDialog:open
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dlg = lurek.ui.newDialog("Setup")
     dlg:setModal(false)
     dlg:setContent(nil)
@@ -3586,6 +6011,14 @@ end
 
 --@api: LDialog:setContent
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dlg = lurek.ui.newDialog("Setup")
     dlg:setModal(false)
     dlg:setContent(nil)
@@ -3596,6 +6029,14 @@ end
 
 --@api: LDialog:setModal
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dlg = lurek.ui.newDialog("Setup")
     dlg:setModal(false)
     dlg:setContent(nil)
@@ -3606,6 +6047,14 @@ end
 
 --@api: LDialog:setOnClose
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dlg = lurek.ui.newDialog("Old")
     dlg:setTitle("New Title")
     dlg:setOnClose(function(idx) example_print_log("closed", idx) end)
@@ -3616,6 +6065,14 @@ end
 
 --@api: LDialog:setTitle
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dlg = lurek.ui.newDialog("Old")
     dlg:setTitle("New Title")
     dlg:setOnClose(function(idx) example_print_log("closed", idx) end)
@@ -3626,6 +6083,14 @@ end
 
 --@api: LDialog:setTitle.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dlg = lurek.ui.newDialog("Old")
     dlg:setTitle("New Title")
     dlg:setOnClose(function(idx) example_print_log("closed", idx) end)
@@ -3636,6 +6101,14 @@ end
 
 --@api: LDialog:addAction
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dlg = lurek.ui.newDialog("Actions")
     local idx = dlg:addAction("Apply", nil, "default", true)
     dlg:setDefaultAction(idx)
@@ -3645,6 +6118,14 @@ end
 
 --@api: LDialog:centerInViewport
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dlg = lurek.ui.newDialog("Center")
     dlg:setCenterOnOpen(false)
     dlg:centerInViewport()
@@ -3654,6 +6135,14 @@ end
 
 --@api: LDialog:getCancelAction
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dlg = lurek.ui.newDialog("Cancel")
     local idx = dlg:addAction("Cancel", nil, "cancel", true)
     dlg:setCancelAction(idx)
@@ -3663,6 +6152,14 @@ end
 
 --@api: LDialog:getDefaultAction
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dlg = lurek.ui.newDialog("Default")
     local idx = dlg:addAction("Confirm", nil, "default", true)
     dlg:setDefaultAction(idx)
@@ -3672,6 +6169,14 @@ end
 
 --@api: LDialog:setDefaultAction
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dlg = lurek.ui.newDialog("Default Setter")
     local idx = dlg:addAction("Confirm", nil, "default", true)
     dlg:setDefaultAction(idx)
@@ -3681,6 +6186,14 @@ end
 
 --@api: LDialog:getCenterOnOpen
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dlg = lurek.ui.newDialog("Center Flag")
     dlg:setCenterOnOpen(false)
     example_print_log("centerOnOpen:", dlg:getCenterOnOpen())
@@ -3690,6 +6203,14 @@ end
 
 --@api: LDialog:getDismissOnOutsideClick
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dlg = lurek.ui.newDialog("Dismiss Flag")
     dlg:setDismissOnOutsideClick(true)
     example_print_log("dismissOnOutsideClick:", dlg:getDismissOnOutsideClick())
@@ -3699,6 +6220,14 @@ end
 
 --@api: LDialog:getFooter
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dlg = lurek.ui.newDialog("Footer")
     local footer = lurek.ui.newPanel()
     dlg:setFooter(footer._idx)
@@ -3708,6 +6237,14 @@ end
 
 --@api: LDialog:getMaxSize
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dlg = lurek.ui.newDialog("Max")
     dlg:setMaxSize(420, 260)
     local w, h = dlg:getMaxSize()
@@ -3717,6 +6254,14 @@ end
 
 --@api: LDialog:getMinSize
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dlg = lurek.ui.newDialog("Min")
     dlg:setMinSize(220, 140)
     local w, h = dlg:getMinSize()
@@ -3726,6 +6271,14 @@ end
 
 --@api: LDialog:isCloseable
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dlg = lurek.ui.newDialog("Closeable")
     example_print_log("isCloseable:", dlg:isCloseable())
     example_print_log("dialog title = " .. dlg:getTitle())
@@ -3735,6 +6288,14 @@ end
 
 --@api: LDialog:isDraggable
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dlg = lurek.ui.newDialog("Draggable")
     example_print_log("isDraggable:", dlg:isDraggable())
     example_print_log("dialog title = " .. dlg:getTitle())
@@ -3744,6 +6305,14 @@ end
 
 --@api: LDialog:isResizable
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dlg = lurek.ui.newDialog("Resizable")
     example_print_log("isResizable:", dlg:isResizable())
     example_print_log("dialog title = " .. dlg:getTitle())
@@ -3753,6 +6322,14 @@ end
 
 --@api: LDialog:setCloseable
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dlg = lurek.ui.newDialog("Closeable Setter")
     dlg:setCloseable(false)
     example_print_log("setCloseable:", false)
@@ -3762,6 +6339,14 @@ end
 
 --@api: LDialog:setDraggable
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dlg = lurek.ui.newDialog("Draggable Setter")
     dlg:setDraggable(true)
     example_print_log("setDraggable:", true)
@@ -3771,6 +6356,14 @@ end
 
 --@api: LDialog:setResizable
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dlg = lurek.ui.newDialog("Resizable Setter")
     dlg:setResizable(true)
     example_print_log("setResizable:", true)
@@ -3780,6 +6373,14 @@ end
 
 --@api: LDialog:setFooter
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dlg = lurek.ui.newDialog("Footer Setter")
     local footer = lurek.ui.newLayout("horizontal")
     dlg:setFooter(footer._idx)
@@ -3789,6 +6390,14 @@ end
 
 --@api: LDialog:setMaxSize
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dlg = lurek.ui.newDialog("Max Size")
     dlg:setMaxSize(480, 320)
     example_print_log("setMaxSize:", 480, 320)
@@ -3798,6 +6407,14 @@ end
 
 --@api: LDialog:setMinSize
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dlg = lurek.ui.newDialog("Min Size")
     dlg:setMinSize(200, 120)
     example_print_log("setMinSize:", 200, 120)
@@ -3807,6 +6424,14 @@ end
 
 --@api: LDialog:setDismissOnOutsideClick
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dlg = lurek.ui.newDialog("Dismiss")
     dlg:setModal(false)
     dlg:setDismissOnOutsideClick(true)
@@ -3816,6 +6441,14 @@ end
 
 --@api: LDialog:setCenterOnOpen
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dlg = lurek.ui.newDialog("Center Setter")
     dlg:setCenterOnOpen(false)
     example_print_log("setCenterOnOpen ok")
@@ -3825,6 +6458,14 @@ end
 
 --@api: LDialog:setCancelAction
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dlg = lurek.ui.newDialog("Cancel Setter")
     local idx = dlg:addAction("Abort", nil, "cancel", true)
     dlg:setCancelAction(idx)
@@ -3834,6 +6475,14 @@ end
 
 --@api: LDockPanel:getSplitSize.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dp = lurek.ui.newDockPanel()
     local cnt = dp:getDockedCount()
     dp:setSplitSize("left", 200)
@@ -3843,6 +6492,14 @@ end
 
 --@api: LDockPanel:getSplitSize.3
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dp = lurek.ui.newDockPanel()
     local cnt = dp:getDockedCount()
     dp:setSplitSize("left", 200)
@@ -3852,6 +6509,14 @@ end
 
 --@api: LDockPanel:getSplitSize.4
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dp = lurek.ui.newDockPanel()
     local cnt = dp:getDockedCount()
     dp:setSplitSize("left", 200)
@@ -3861,6 +6526,14 @@ end
 
 --@api: LDockPanel:undock.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dp = lurek.ui.newDockPanel()
     local dockedCount = dp:getDockedCount()
     dp:undock(0)
@@ -3870,6 +6543,14 @@ end
 
 --@api: LDockPanel:undock.3
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dp = lurek.ui.newDockPanel()
     local dockedCount = dp:getDockedCount()
     dp:undock(0)
@@ -3879,6 +6560,14 @@ end
 
 --@api: LDockPanel:undock.4
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dp = lurek.ui.newDockPanel()
     local dockedCount = dp:getDockedCount()
     dp:undock(0)
@@ -3888,6 +6577,14 @@ end
 
 --@api: LTable:addColumn
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tbl = lurek.ui.newTable()
     tbl:addColumn("Name", 100)
     tbl:addColumn("Value", 80)
@@ -3899,6 +6596,14 @@ end
 
 --@api: LTable:getSelectedRow
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tbl = lurek.ui.newTable()
     tbl:addColumn("Col1")
     tbl:addColumn("Col2")
@@ -3912,6 +6617,14 @@ end
 
 --@api: LTable:getSelectedRow.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tbl = lurek.ui.newTable()
     tbl:addColumn("Col1")
     tbl:addColumn("Col2")
@@ -3925,6 +6638,14 @@ end
 
 --@api: LTable:getSelectedRow.3
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tbl = lurek.ui.newTable()
     tbl:addColumn("Col1")
     tbl:addColumn("Col2")
@@ -3938,6 +6659,14 @@ end
 
 --@api: LGuiTable:isSortable
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tbl = lurek.ui.newTable()
     tbl:addColumn("ID")
     tbl:addRow({"1"})
@@ -3949,6 +6678,14 @@ end
 
 --@api: LTable:setCell
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tbl = lurek.ui.newTable()
     tbl:addColumn("ID")
     tbl:addRow({"1"})
@@ -3960,6 +6697,14 @@ end
 
 --@api: LGuiTable:setOnSelect
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tbl = lurek.ui.newTable()
     tbl:addColumn("ID")
     tbl:addRow({"1"})
@@ -3971,6 +6716,14 @@ end
 
 --@api: LTable:setSortable
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tbl = lurek.ui.newTable()
     tbl:addColumn("X")
     tbl:addRow({"row1"})
@@ -3984,6 +6737,14 @@ end
 
 --@api: LGuiTable:setSortable
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tbl = lurek.ui.newTable()
     tbl:setPosition(20, 420)
     tbl:setSize(220, 90)
@@ -4001,6 +6762,14 @@ end
 
 --@api: LGuiWindow:getTitle
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tbl = lurek.ui.newTable()
     tbl:addColumn("X")
     tbl:addRow({"row1"})
@@ -4014,6 +6783,14 @@ end
 
 --@api: LGuiWindow:isCloseable
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local win = lurek.ui.newWindow("Test Win")
     local closeable = win:isCloseable()
     local draggable = win:isDraggable()
@@ -4023,6 +6800,14 @@ end
 
 --@api: LGuiWindow:isDraggable
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local win = lurek.ui.newWindow("Test Win")
     local closeable = win:isCloseable()
     local draggable = win:isDraggable()
@@ -4032,6 +6817,14 @@ end
 
 --@api: LGuiWindow:isResizable
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local win = lurek.ui.newWindow("Test Win")
     local closeable = win:isCloseable()
     local draggable = win:isDraggable()
@@ -4041,6 +6834,14 @@ end
 
 --@api: LGuiWindow:setCloseable
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local win = lurek.ui.newWindow("Config")
     win:setCloseable(true)
     win:setDraggable(true)
@@ -4050,6 +6851,14 @@ end
 
 --@api: LGuiWindow:setDraggable
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local win = lurek.ui.newWindow("Config")
     win:setCloseable(true)
     win:setDraggable(true)
@@ -4059,6 +6868,14 @@ end
 
 --@api: LGuiWindow:setOnClose
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local win = lurek.ui.newWindow("Config")
     win:setCloseable(true)
     win:setDraggable(true)
@@ -4068,6 +6885,14 @@ end
 
 --@api: LGuiWindow:setResizable
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local win = lurek.ui.newWindow("Old")
     win:setResizable(false)
     win:setTitle("New Title")
@@ -4078,6 +6903,14 @@ end
 
 --@api: LGuiWindow:setTitle
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local win = lurek.ui.newWindow("Old")
     win:setResizable(false)
     win:setTitle("New Title")
@@ -4088,6 +6921,14 @@ end
 
 --@api: LWindow:setResizable
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local win = lurek.ui.newWindow("Old")
     win:setResizable(false)
     win:setTitle("New Title")
@@ -4098,6 +6939,14 @@ end
 
 --@api: LImageWidget:scaleMode
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local iw = lurek.ui.newImageWidget()
     iw:setTint(1.0, 0.5, 0.25, 1.0)
     local r, g, b, a = iw:getTint()
@@ -4107,6 +6956,14 @@ end
 
 --@api: LImageWidget:setScaleMode.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local iw = lurek.ui.newImageWidget()
     iw:setTint(1.0, 0.5, 0.25, 1.0)
     local r, g, b, a = iw:getTint()
@@ -4116,6 +6973,14 @@ end
 
 --@api: LImageWidget:setScaleMode.3
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local iw = lurek.ui.newImageWidget()
     iw:setTint(1.0, 0.5, 0.25, 1.0)
     local r, g, b, a = iw:getTint()
@@ -4125,6 +6990,14 @@ end
 
 --@api: LLabel:getText
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local lbl = lurek.ui.newLabel("Hello")
     lbl:setText("World")
     local layout = lurek.ui.newLayout("horizontal")
@@ -4134,6 +7007,14 @@ end
 
 --@api: LLabel:setText
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local lbl = lurek.ui.newLabel("Hello")
     lbl:setText("World")
     local layout = lurek.ui.newLayout("horizontal")
@@ -4143,6 +7024,14 @@ end
 
 --@api: LLabel:setText.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local lbl = lurek.ui.newLabel("Hello")
     lbl:setText("World")
     local layout = lurek.ui.newLayout("horizontal")
@@ -4152,6 +7041,14 @@ end
 
 --@api: LLayout:getDirection
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local layout = lurek.ui.newLayout("vertical")
     local dir = layout:getDirection()
     local justify = layout:getJustify()
@@ -4161,6 +7058,14 @@ end
 
 --@api: LLayout:getSpacing.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local layout = lurek.ui.newLayout("vertical")
     local dir = layout:getDirection()
     local justify = layout:getJustify()
@@ -4170,6 +7075,14 @@ end
 
 --@api: LLayout:getSpacing
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local layout = lurek.ui.newLayout("vertical")
     local dir = layout:getDirection()
     local justify = layout:getJustify()
@@ -4179,6 +7092,14 @@ end
 
 --@api: LLayout:setColumns.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local layout = lurek.ui.newLayout("grid")
     local wrap = layout:getWrap()
     layout:setAlign("center")
@@ -4188,6 +7109,14 @@ end
 
 --@api: LLayout:setColumns.3
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local layout = lurek.ui.newLayout("grid")
     local wrap = layout:getWrap()
     layout:setAlign("center")
@@ -4197,6 +7126,14 @@ end
 
 --@api: LLayout:setColumns.4
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local layout = lurek.ui.newLayout("grid")
     local wrap = layout:getWrap()
     layout:setAlign("center")
@@ -4206,6 +7143,14 @@ end
 
 --@api: LLayout:setSpacing.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local layout = lurek.ui.newLayout("horizontal")
     layout:setDirection("vertical")
     layout:setJustify("center")
@@ -4215,6 +7160,14 @@ end
 
 --@api: LLayout:setSpacing.3
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local layout = lurek.ui.newLayout("horizontal")
     layout:setDirection("vertical")
     layout:setJustify("center")
@@ -4224,6 +7177,14 @@ end
 
 --@api: LLayout:setSpacing
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local layout = lurek.ui.newLayout("horizontal")
     layout:setDirection("vertical")
     layout:setJustify("center")
@@ -4233,6 +7194,14 @@ end
 
 --@api: LLayout:setWrap.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local layout = lurek.ui.newLayout("horizontal")
     layout:setWrap(true)
     example_print_log("setWrap ok")
@@ -4242,6 +7211,14 @@ end
 
 --@api: LLayout:setWrap.3
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local layout = lurek.ui.newLayout("horizontal")
     layout:setWrap(true)
     example_print_log("setWrap ok")
@@ -4251,6 +7228,14 @@ end
 
 --@api: LList:clearItems
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local lb = lurek.ui.newList()
     lb:addItem("Apple")
     lb:addItem("Banana")
@@ -4262,6 +7247,14 @@ end
 
 --@api: LList:clearItems.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local lb = lurek.ui.newList()
     lb:addItem("Apple")
     lb:addItem("Banana")
@@ -4273,6 +7266,14 @@ end
 
 --@api: LList:removeItem
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local lb = lurek.ui.newList()
     lb:addItem("X")
     lb:addItem("Y")
@@ -4286,6 +7287,14 @@ end
 
 --@api: LList:removeItem.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local lb = lurek.ui.newList()
     lb:addItem("X")
     lb:addItem("Y")
@@ -4299,6 +7308,14 @@ end
 
 --@api: LList:removeItem.3
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local lb = lurek.ui.newList()
     lb:addItem("X")
     lb:addItem("Y")
@@ -4312,6 +7329,14 @@ end
 
 --@api: LList:setItemHeight
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local lb = lurek.ui.newList()
     lb:setItemHeight(20)
     lb:addItem("Item")
@@ -4324,6 +7349,14 @@ end
 
 --@api: LList:setSelectedIndex
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local lb = lurek.ui.newList()
     lb:setItemHeight(20)
     lb:addItem("Item")
@@ -4336,6 +7369,14 @@ end
 
 --@api: LList:setSelectedIndex.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local lb = lurek.ui.newList()
     lb:setItemHeight(20)
     lb:addItem("Item")
@@ -4348,6 +7389,14 @@ end
 
 --@api: LMenuBar:removeMenu.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mb = lurek.ui.newMenuBar()
     local mi1 = lurek.ui.newMenuItem("Edit")
     local mi2 = lurek.ui.newMenuItem("View")
@@ -4361,6 +7410,14 @@ end
 
 --@api: LMenuBar:removeMenu.3
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mb = lurek.ui.newMenuBar()
     local mi1 = lurek.ui.newMenuItem("Edit")
     local mi2 = lurek.ui.newMenuItem("View")
@@ -4374,6 +7431,14 @@ end
 
 --@api: LMenuBar:removeMenu.4
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mb = lurek.ui.newMenuBar()
     local mi1 = lurek.ui.newMenuItem("Edit")
     local mi2 = lurek.ui.newMenuItem("View")
@@ -4387,6 +7452,14 @@ end
 
 --@api: LMenuItem:getShortcut.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mi = lurek.ui.newMenuItem("Tools")
     local sub1 = lurek.ui.newMenuItem("Options")
     mi:addSubItem(sub1._idx)
@@ -4398,6 +7471,14 @@ end
 
 --@api: LMenuItem:getShortcut
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mi = lurek.ui.newMenuItem("Tools")
     local sub1 = lurek.ui.newMenuItem("Options")
     mi:addSubItem(sub1._idx)
@@ -4409,6 +7490,14 @@ end
 
 --@api: LMenuItem:getShortcut.3
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mi = lurek.ui.newMenuItem("Tools")
     local sub1 = lurek.ui.newMenuItem("Options")
     mi:addSubItem(sub1._idx)
@@ -4420,6 +7509,14 @@ end
 
 --@api: LMenuItem:getText
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mi = lurek.ui.newMenuItem("Enable")
     local t = mi:getText()
     mi:setChecked(true)
@@ -4430,6 +7527,14 @@ end
 
 --@api: LMenuItem:setChecked.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mi = lurek.ui.newMenuItem("Enable")
     local t = mi:getText()
     mi:setChecked(true)
@@ -4440,6 +7545,14 @@ end
 
 --@api: LMenuItem:setChecked.3
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mi = lurek.ui.newMenuItem("Enable")
     local t = mi:getText()
     mi:setChecked(true)
@@ -4450,6 +7563,14 @@ end
 
 --@api: LMenuItem:setOnClick.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mi = lurek.ui.newMenuItem("Old")
     mi:setOnClick(function(idx) example_print_log("menu clicked", idx) end)
     mi:setShortcut("Alt+F4")
@@ -4459,6 +7580,14 @@ end
 
 --@api: LMenuItem:setShortcut
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mi = lurek.ui.newMenuItem("Old")
     mi:setOnClick(function(idx) example_print_log("menu clicked", idx) end)
     mi:setShortcut("Alt+F4")
@@ -4468,6 +7597,14 @@ end
 
 --@api: LMenuItem:setOnClick.3
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mi = lurek.ui.newMenuItem("Old")
     mi:setOnClick(function(idx) example_print_log("menu clicked", idx) end)
     mi:setShortcut("Alt+F4")
@@ -4477,6 +7614,14 @@ end
 
 --@api: LNinePatch:getSlices.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local np = lurek.ui.newNinePatch()
     np:setImageDimensions(64, 64)
     local w, h = np:getImageDimensions()
@@ -4488,6 +7633,14 @@ end
 
 --@api: LNinePatch:getSlices.3
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local np = lurek.ui.newNinePatch()
     np:setImageDimensions(64, 64)
     local w, h = np:getImageDimensions()
@@ -4499,6 +7652,14 @@ end
 
 --@api: LNinePatch:getSlices.4
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local np = lurek.ui.newNinePatch()
     np:setImageDimensions(64, 64)
     local w, h = np:getImageDimensions()
@@ -4510,6 +7671,14 @@ end
 
 --@api: LNinePatch:getInsets.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local np = lurek.ui.newNinePatch()
     np:setImageDimensions(32, 32)
     np:setInsets(4, 4, 4, 4)
@@ -4522,6 +7691,14 @@ end
 
 --@api: LNinePatch:getInsets.3
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local np = lurek.ui.newNinePatch()
     np:setImageDimensions(32, 32)
     np:setInsets(4, 4, 4, 4)
@@ -4534,6 +7711,14 @@ end
 
 --@api: LPanel:getTitle
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local np = lurek.ui.newNinePatch()
     np:setImageDimensions(32, 32)
     np:setInsets(4, 4, 4, 4)
@@ -4546,6 +7731,14 @@ end
 
 --@api: LPanel:setScrollable
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local panel = lurek.ui.newPanel()
     panel:setScrollable(true)
     panel:setTitle("Data")
@@ -4555,6 +7748,14 @@ end
 
 --@api: LPanel:setTitle
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local panel = lurek.ui.newPanel()
     panel:setScrollable(true)
     panel:setTitle("Data")
@@ -4564,6 +7765,14 @@ end
 
 --@api: LProgressBar:getProgress.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local pb = lurek.ui.newProgressBar(0, 100)
     local mn = pb:getMin()
     local mx = pb:getMax()
@@ -4574,6 +7783,14 @@ end
 
 --@api: LProgressBar:getProgress.3
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local pb = lurek.ui.newProgressBar(0, 100)
     local mn = pb:getMin()
     local mx = pb:getMax()
@@ -4584,6 +7801,14 @@ end
 
 --@api: LProgressBar:getProgress.4
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local pb = lurek.ui.newProgressBar(0, 100)
     local mn = pb:getMin()
     local mx = pb:getMax()
@@ -4594,6 +7819,14 @@ end
 
 --@api: LProgressBar:setRange.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local pb = lurek.ui.newProgressBar(0, 200)
     pb:setValue(100)
     local v = pb:getValue()
@@ -4604,6 +7837,14 @@ end
 
 --@api: LProgressBar:setRange.3
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local pb = lurek.ui.newProgressBar(0, 200)
     pb:setValue(100)
     local v = pb:getValue()
@@ -4614,6 +7855,14 @@ end
 
 --@api: LProgressBar:setRange.4
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local pb = lurek.ui.newProgressBar(0, 200)
     pb:setValue(100)
     local v = pb:getValue()
@@ -4624,6 +7873,14 @@ end
 
 --@api: LRadioButton:isSelected.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rb = lurek.ui.newRadioButton("Option A", "group1")
     local grp = rb:getGroup()
     local t = rb:getText()
@@ -4633,6 +7890,14 @@ end
 
 --@api: LRadioButton:isSelected.3
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rb = lurek.ui.newRadioButton("Option A", "group1")
     local grp = rb:getGroup()
     local t = rb:getText()
@@ -4642,6 +7907,14 @@ end
 
 --@api: LRadioButton:isSelected.4
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rb = lurek.ui.newRadioButton("Option A", "group1")
     local grp = rb:getGroup()
     local t = rb:getText()
@@ -4651,6 +7924,14 @@ end
 
 --@api: LRadioButton:setSelected.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rb = lurek.ui.newRadioButton("B", "g1")
     rb:setGroup("g2")
     rb:setSelected(true)
@@ -4661,6 +7942,14 @@ end
 
 --@api: LRadioButton:setOnChange
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rb = lurek.ui.newRadioButton("B", "g1")
     rb:setGroup("g2")
     rb:setSelected(true)
@@ -4671,6 +7960,14 @@ end
 
 --@api: LRadioButton:setSelected
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rb = lurek.ui.newRadioButton("B", "g1")
     rb:setGroup("g2")
     rb:setSelected(true)
@@ -4681,6 +7978,14 @@ end
 
 --@api: LRadioButton:setText
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rb = lurek.ui.newRadioButton("original", "group_test")
     rb:setText("updated")
     example_print_log("LRadioButton setText:", rb:getText())
@@ -4690,6 +7995,14 @@ end
 
 --@api: LScrollBar:getContentSize
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sb = lurek.ui.newScrollBar(true)
     local cs = sb:getContentSize()
     local pos = sb:getScrollPosition()
@@ -4699,6 +8012,14 @@ end
 
 --@api: LScrollBar:getScrollPosition
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sb = lurek.ui.newScrollBar(true)
     local cs = sb:getContentSize()
     local pos = sb:getScrollPosition()
@@ -4708,6 +8029,14 @@ end
 
 --@api: LScrollBar:getViewSize
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sb = lurek.ui.newScrollBar(true)
     local cs = sb:getContentSize()
     local pos = sb:getScrollPosition()
@@ -4717,6 +8046,14 @@ end
 
 --@api: LScrollBar:isVertical
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sb = lurek.ui.newScrollBar(false)
     local vert = sb:isVertical()
     sb:setContentSize(500)
@@ -4727,6 +8064,14 @@ end
 
 --@api: LScrollBar:setContentSize
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sb = lurek.ui.newScrollBar(false)
     local vert = sb:isVertical()
     sb:setContentSize(500)
@@ -4737,6 +8082,14 @@ end
 
 --@api: LScrollBar:setOnChange
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sb = lurek.ui.newScrollBar(false)
     local vert = sb:isVertical()
     sb:setContentSize(500)
@@ -4747,6 +8100,14 @@ end
 
 --@api: LScrollBar:setScrollPosition
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sb = lurek.ui.newScrollBar(true)
     sb:setContentSize(800)
     sb:setViewSize(200)
@@ -4759,6 +8120,14 @@ end
 
 --@api: LScrollBar:setViewSize
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sb = lurek.ui.newScrollBar(true)
     sb:setContentSize(800)
     sb:setViewSize(200)
@@ -4771,6 +8140,14 @@ end
 
 --@api: LScrollPanel:getContentSize
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sb = lurek.ui.newScrollBar(true)
     sb:setContentSize(800)
     sb:setViewSize(200)
@@ -4783,6 +8160,14 @@ end
 
 --@api: LScrollPanel:getMaxScroll
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sp = lurek.ui.newScrollPanel()
     local mx, my = sp:getMaxScroll()
     local px, py = sp:getScrollPosition()
@@ -4792,6 +8177,14 @@ end
 
 --@api: LScrollPanel:getScrollPosition
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sp = lurek.ui.newScrollPanel()
     local mx, my = sp:getMaxScroll()
     local px, py = sp:getScrollPosition()
@@ -4801,6 +8194,14 @@ end
 
 --@api: LScrollPanel:getScrollSpeed.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sp = lurek.ui.newScrollPanel()
     local mx, my = sp:getMaxScroll()
     local px, py = sp:getScrollPosition()
@@ -4810,6 +8211,14 @@ end
 
 --@api: LScrollPanel:setContentSize
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sp = lurek.ui.newScrollPanel()
     sp:setContentSize(800, 600)
     local cw, ch = sp:getContentSize()
@@ -4822,6 +8231,14 @@ end
 
 --@api: LScrollPanel:setScrollPosition
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sp = lurek.ui.newScrollPanel()
     sp:setContentSize(800, 600)
     local cw, ch = sp:getContentSize()
@@ -4834,6 +8251,14 @@ end
 
 --@api: LScrollPanel:getScrollSpeed.3
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sp = lurek.ui.newScrollPanel()
     sp:setContentSize(800, 600)
     local cw, ch = sp:getContentSize()
@@ -4846,6 +8271,14 @@ end
 
 --@api: LSeparator:getThickness
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sep = lurek.ui.newSeparator(true)
     local vert = sep:isVertical()
     local thick = sep:getThickness()
@@ -4856,6 +8289,14 @@ end
 
 --@api: LSeparator:isVertical
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sep = lurek.ui.newSeparator(true)
     local vert = sep:isVertical()
     local thick = sep:getThickness()
@@ -4866,6 +8307,14 @@ end
 
 --@api: LSeparator:setThickness
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sep = lurek.ui.newSeparator(true)
     local vert = sep:isVertical()
     local thick = sep:getThickness()
@@ -4876,6 +8325,14 @@ end
 
 --@api: LSeparator:setVertical
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sep = lurek.ui.newSeparator(false)
     sep:setVertical(true)
     local sl = lurek.ui.newSlider(0, 100)
@@ -4886,6 +8343,14 @@ end
 
 --@api: LSlider:getMax
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sep = lurek.ui.newSeparator(false)
     sep:setVertical(true)
     local sl = lurek.ui.newSlider(0, 100)
@@ -4896,6 +8361,14 @@ end
 
 --@api: LSlider:getMin
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sep = lurek.ui.newSeparator(false)
     sep:setVertical(true)
     local sl = lurek.ui.newSlider(0, 100)
@@ -4906,6 +8379,14 @@ end
 
 --@api: LSlider:getValue
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sl = lurek.ui.newSlider(0, 50)
     sl:setRange(0, 100)
     local mx = sl:getMax()
@@ -4917,6 +8398,14 @@ end
 
 --@api: LSlider:getValue.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sl = lurek.ui.newSlider(0, 50)
     sl:setRange(0, 100)
     local mx = sl:getMax()
@@ -4928,6 +8417,14 @@ end
 
 --@api: LSlider:getValue.3
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sl = lurek.ui.newSlider(0, 50)
     sl:setRange(0, 100)
     local mx = sl:getMax()
@@ -4939,6 +8436,14 @@ end
 
 --@api: LSlider:getValue.5
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sl = lurek.ui.newSlider(0, 10)
     sl:setValue(7)
     local v = sl:getValue()
@@ -4951,6 +8456,14 @@ end
 
 --@api: LSlider:getValue.6
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sl = lurek.ui.newSlider(0, 10)
     sl:setValue(7)
     local v = sl:getValue()
@@ -4963,6 +8476,14 @@ end
 
 --@api: LSlider:getValue.4
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sl = lurek.ui.newSlider(0, 10)
     sl:setValue(7)
     local v = sl:getValue()
@@ -4975,6 +8496,14 @@ end
 
 --@api: LSpinBox:getValue.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sb = lurek.ui.newSpinBox(0, 100)
     sb:setValue(10)
     sb:increment()
@@ -4987,6 +8516,14 @@ end
 
 --@api: LSpinBox:getValue.3
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sb = lurek.ui.newSpinBox(0, 100)
     sb:setValue(10)
     sb:increment()
@@ -4999,6 +8536,14 @@ end
 
 --@api: LSpinBox:getValue.4
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sb = lurek.ui.newSpinBox(0, 100)
     sb:setValue(10)
     sb:increment()
@@ -5011,6 +8556,14 @@ end
 
 --@api: LSpinBox:getValue.5
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sb = lurek.ui.newSpinBox(1, 100)
     sb:setValue(42)
     local v = sb:getValue()
@@ -5023,6 +8576,14 @@ end
 
 --@api: LSplitPanel:getMinPanelSize.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sp = lurek.ui.newSplitPanel("horizontal")
     local fc = sp:getFirstChild()
     local sc = sp:getSecondChild()
@@ -5033,6 +8594,14 @@ end
 
 --@api: LSplitPanel:getMinPanelSize.3
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sp = lurek.ui.newSplitPanel("horizontal")
     local fc = sp:getFirstChild()
     local sc = sp:getSecondChild()
@@ -5043,6 +8612,14 @@ end
 
 --@api: LSplitPanel:getMinPanelSize.4
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sp = lurek.ui.newSplitPanel("horizontal")
     local fc = sp:getFirstChild()
     local sc = sp:getSecondChild()
@@ -5053,6 +8630,14 @@ end
 
 --@api: LSplitPanel:getSplitPosition.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sp = lurek.ui.newSplitPanel("vertical")
     local lbl = lurek.ui.newLabel("left")
     local btn = lurek.ui.newButton("right")
@@ -5065,6 +8650,14 @@ end
 
 --@api: LSplitPanel:getSplitPosition.3
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sp = lurek.ui.newSplitPanel("vertical")
     local lbl = lurek.ui.newLabel("left")
     local btn = lurek.ui.newButton("right")
@@ -5077,6 +8670,14 @@ end
 
 --@api: LSplitPanel:getSplitPosition.4
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sp = lurek.ui.newSplitPanel("vertical")
     local lbl = lurek.ui.newLabel("left")
     local btn = lurek.ui.newButton("right")
@@ -5089,6 +8690,14 @@ end
 
 --@api: LSplitPanel:setSecondChild.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sp = lurek.ui.newSplitPanel("horizontal")
     sp:setOrientation("vertical")
     local ori = sp:getOrientation()
@@ -5101,6 +8710,14 @@ end
 
 --@api: LSplitPanel:setSecondChild.3
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sp = lurek.ui.newSplitPanel("horizontal")
     sp:setOrientation("vertical")
     local ori = sp:getOrientation()
@@ -5113,6 +8730,14 @@ end
 
 --@api: LSplitPanel:setSecondChild.4
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sp = lurek.ui.newSplitPanel("horizontal")
     sp:setOrientation("vertical")
     local ori = sp:getOrientation()
@@ -5125,6 +8750,14 @@ end
 
 --@api: LSplitPanel:getSplitPosition.5
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sp = lurek.ui.newSplitPanel("horizontal")
     sp:setSplitPosition(200)
     local pos = sp:getSplitPosition()
@@ -5136,6 +8769,14 @@ end
 
 --@api: LSplitPanel:getSplitPosition.6
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sp = lurek.ui.newSplitPanel("horizontal")
     sp:setSplitPosition(200)
     local pos = sp:getSplitPosition()
@@ -5147,6 +8788,14 @@ end
 
 --@api: LSplitPanel:getSplitPosition.7
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sp = lurek.ui.newSplitPanel("horizontal")
     sp:setSplitPosition(200)
     local pos = sp:getSplitPosition()
@@ -5158,6 +8807,14 @@ end
 
 --@api: LStatusBar:setSectionCount
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sb = lurek.ui.newStatusBar()
     sb:setSectionCount(3)
     local cnt = sb:getSectionCount()
@@ -5169,6 +8826,14 @@ end
 
 --@api: LStatusBar:setSectionText.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sb = lurek.ui.newStatusBar()
     sb:setSectionCount(3)
     local cnt = sb:getSectionCount()
@@ -5180,6 +8845,14 @@ end
 
 --@api: LStatusBar:setSectionText.3
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sb = lurek.ui.newStatusBar()
     sb:setSectionCount(3)
     local cnt = sb:getSectionCount()
@@ -5191,6 +8864,14 @@ end
 
 --@api: LStatusBar:setSectionWidget
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sb = lurek.ui.newStatusBar()
     sb:setSectionCount(2)
     local lbl = lurek.ui.newLabel("status")
@@ -5203,6 +8884,14 @@ end
 
 --@api: LStatusBar:setSectionWidget.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sb = lurek.ui.newStatusBar()
     sb:setSectionCount(2)
     local lbl = lurek.ui.newLabel("status")
@@ -5215,6 +8904,14 @@ end
 
 --@api: LStatusBar:setSectionWidget.3
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sb = lurek.ui.newStatusBar()
     sb:setSectionCount(2)
     local lbl = lurek.ui.newLabel("status")
@@ -5227,6 +8924,14 @@ end
 
 --@api: LSwitch:isOn.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sw = lurek.ui.newSwitch(false)
     sw:toggle()
     local on = sw:isOn()
@@ -5239,6 +8944,14 @@ end
 
 --@api: LSwitch:isOn.3
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sw = lurek.ui.newSwitch(false)
     sw:toggle()
     local on = sw:isOn()
@@ -5251,6 +8964,14 @@ end
 
 --@api: LSwitch:isOn.4
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sw = lurek.ui.newSwitch(false)
     sw:toggle()
     local on = sw:isOn()
@@ -5263,6 +8984,14 @@ end
 
 --@api: LTabBar:getTabCount.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tb = lurek.ui.newTabBar()
     tb:addTab("Alpha")
     tb:addTab("Beta")
@@ -5276,6 +9005,14 @@ end
 
 --@api: LTabBar:getTabCount.3
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tb = lurek.ui.newTabBar()
     tb:addTab("Alpha")
     tb:addTab("Beta")
@@ -5289,6 +9026,14 @@ end
 
 --@api: LTabBar:getTabCount.4
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tb = lurek.ui.newTabBar()
     tb:addTab("Alpha")
     tb:addTab("Beta")
@@ -5302,6 +9047,14 @@ end
 
 --@api: LTabBar:getActiveTab.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tb = lurek.ui.newTabBar()
     tb:addTab("First")
     tb:addTab("Second")
@@ -5314,6 +9067,14 @@ end
 
 --@api: LTextInput:setText
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ti = lurek.ui.newTextInput()
     ti:setText("hello")
     local txt = ti:getText()
@@ -5325,6 +9086,14 @@ end
 
 --@api: LTextInput:getCursorPosition.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ti = lurek.ui.newTextInput()
     ti:setText("hello")
     local txt = ti:getText()
@@ -5336,6 +9105,14 @@ end
 
 --@api: LTextInput:getText
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ti = lurek.ui.newTextInput()
     ti:setText("hello")
     local txt = ti:getText()
@@ -5347,6 +9124,14 @@ end
 
 --@api: LTextInput:isFocused
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ti = lurek.ui.newTextInput()
     ti:setPlaceholder("Search...")
     local ph = ti:getPlaceholder()
@@ -5357,6 +9142,14 @@ end
 
 --@api: LTextInput:isFocused.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ti = lurek.ui.newTextInput()
     ti:setPlaceholder("Search...")
     local ph = ti:getPlaceholder()
@@ -5367,6 +9160,14 @@ end
 
 --@api: LTextInput:isFocused.3
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ti = lurek.ui.newTextInput()
     ti:setPlaceholder("Search...")
     local ph = ti:getPlaceholder()
@@ -5377,6 +9178,14 @@ end
 
 --@api: LTextInput:getText.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ti = lurek.ui.newTextInput()
     ti:setText("sample input")
     local txt = ti:getText()
@@ -5388,6 +9197,14 @@ end
 
 --@api: LTheme:setStyle
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ti = lurek.ui.newTextInput()
     ti:setText("sample input")
     local txt = ti:getText()
@@ -5399,6 +9216,14 @@ end
 
 --@api: LTheme:type
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ti = lurek.ui.newTextInput()
     ti:setText("sample input")
     local txt = ti:getText()
@@ -5410,6 +9235,14 @@ end
 
 --@api: LTheme:typeOf
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local th = lurek.ui.newTheme()
     local ok = th:typeOf("LTheme")
     local toast = lurek.ui.newToast("Level up!", 3.0)
@@ -5420,6 +9253,14 @@ end
 
 --@api: LTheme:typeOf.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local th = lurek.ui.newTheme()
     local ok = th:typeOf("LTheme")
     local toast = lurek.ui.newToast("Level up!", 3.0)
@@ -5430,6 +9271,14 @@ end
 
 --@api: LTheme:typeOf.3
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local th = lurek.ui.newTheme()
     local ok = th:typeOf("LTheme")
     local toast = lurek.ui.newToast("Level up!", 3.0)
@@ -5440,6 +9289,14 @@ end
 
 --@api: LToast:getDuration.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local toast = lurek.ui.newToast("Achievement unlocked", 2.0)
     local prog = toast:getProgress()
     local exp = toast:isExpired()
@@ -5450,6 +9307,14 @@ end
 
 --@api: LToast:getDuration.3
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local toast = lurek.ui.newToast("Achievement unlocked", 2.0)
     local prog = toast:getProgress()
     local exp = toast:isExpired()
@@ -5460,6 +9325,14 @@ end
 
 --@api: LToast:getDuration.4
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local toast = lurek.ui.newToast("Achievement unlocked", 2.0)
     local prog = toast:getProgress()
     local exp = toast:isExpired()
@@ -5470,6 +9343,14 @@ end
 
 --@api: LToast:getMessage.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local toast = lurek.ui.newToast("old message", 2.0)
     toast:setMessage("new message")
     local msg = toast:getMessage()
@@ -5482,6 +9363,14 @@ end
 
 --@api: LToast:getMessage.3
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local toast = lurek.ui.newToast("old message", 2.0)
     toast:setMessage("new message")
     local msg = toast:getMessage()
@@ -5494,6 +9383,14 @@ end
 
 --@api: LToast:getMessage.4
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local toast = lurek.ui.newToast("old message", 2.0)
     toast:setMessage("new message")
     local msg = toast:getMessage()
@@ -5506,6 +9403,14 @@ end
 
 --@api: LToolbar:addSpacer
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tb = lurek.ui.newToolbar("horizontal")
     tb:addButton("cut", "Cut")
     tb:addSpacer(10)
@@ -5517,6 +9422,14 @@ end
 
 --@api: LToolbar:getButton.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tb = lurek.ui.newToolbar("horizontal")
     tb:addButton("cut", "Cut")
     tb:addSpacer(10)
@@ -5528,6 +9441,14 @@ end
 
 --@api: LToolbar:getButton.3
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tb = lurek.ui.newToolbar("horizontal")
     tb:addButton("cut", "Cut")
     tb:addSpacer(10)
@@ -5539,6 +9460,14 @@ end
 
 --@api: LToolbar:setButtonEnabled.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tb = lurek.ui.newToolbar("horizontal")
     tb:addButton("bold", "Bold")
     tb:setButtonToggled("bold", true)
@@ -5549,6 +9478,14 @@ end
 
 --@api: LToolbar:setButtonEnabled.3
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tb = lurek.ui.newToolbar("horizontal")
     tb:addButton("bold", "Bold")
     tb:setButtonToggled("bold", true)
@@ -5559,6 +9496,14 @@ end
 
 --@api: LToolbar:setButtonEnabled.4
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tb = lurek.ui.newToolbar("horizontal")
     tb:addButton("bold", "Bold")
     tb:setButtonToggled("bold", true)
@@ -5569,6 +9514,14 @@ end
 
 --@api: LToolbar:getOrientation.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tb = lurek.ui.newToolbar("horizontal")
     tb:setOrientation("vertical")
     local ori = tb:getOrientation()
@@ -5580,6 +9533,14 @@ end
 
 --@api: LToolbar:getOrientation.3
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tb = lurek.ui.newToolbar("horizontal")
     tb:setOrientation("vertical")
     local ori = tb:getOrientation()
@@ -5591,6 +9552,14 @@ end
 
 --@api: LTooltipPanel:getTarget
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tb = lurek.ui.newToolbar("horizontal")
     tb:setOrientation("vertical")
     local ori = tb:getOrientation()
@@ -5602,6 +9571,14 @@ end
 
 --@api: LTooltipPanel:setTarget.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tp = lurek.ui.newTooltipPanel("initial tip")
     local txt = tp:getText()
     tp:setDelay(0.5)
@@ -5613,6 +9590,14 @@ end
 
 --@api: LTooltipPanel:setTarget.3
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tp = lurek.ui.newTooltipPanel("initial tip")
     local txt = tp:getText()
     tp:setDelay(0.5)
@@ -5624,6 +9609,14 @@ end
 
 --@api: LTooltipPanel:setTarget
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tp = lurek.ui.newTooltipPanel("initial tip")
     local txt = tp:getText()
     tp:setDelay(0.5)
@@ -5635,6 +9628,14 @@ end
 
 --@api: LTooltipPanel:setDelay.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tp = lurek.ui.newTooltipPanel("old tip")
     tp:setText("new tooltip text")
     local txt = tp:getText()
@@ -5646,6 +9647,14 @@ end
 
 --@api: LTreeView:getNodeCount.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tv = lurek.ui.newTreeView()
     local n1 = tv:addNode("Root", nil)
     local n2 = tv:addNode("Child", n1)
@@ -5657,6 +9666,14 @@ end
 
 --@api: LTreeView:getNodeCount.3
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tv = lurek.ui.newTreeView()
     local n1 = tv:addNode("Root", nil)
     local n2 = tv:addNode("Child", n1)
@@ -5668,6 +9685,14 @@ end
 
 --@api: LTreeView:getNodeCount.4
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tv = lurek.ui.newTreeView()
     local n1 = tv:addNode("Root", nil)
     local n2 = tv:addNode("Child", n1)
@@ -5679,6 +9704,14 @@ end
 
 --@api: LTreeView:getNodeCount.5
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tv = lurek.ui.newTreeView()
     local n1 = tv:addNode("Animals", nil)
     local n2 = tv:addNode("Mammals", n1)
@@ -5692,6 +9725,14 @@ end
 
 --@api: LTreeView:getNodeCount.6
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tv = lurek.ui.newTreeView()
     local n1 = tv:addNode("Animals", nil)
     local n2 = tv:addNode("Mammals", n1)
@@ -5705,6 +9746,14 @@ end
 
 --@api: LTreeView:getNodeCount.7
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tv = lurek.ui.newTreeView()
     local n1 = tv:addNode("Animals", nil)
     local n2 = tv:addNode("Mammals", n1)
@@ -5718,6 +9767,14 @@ end
 
 --@api: LTreeView:getNodeDepth.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tv = lurek.ui.newTreeView()
     local r = tv:addNode("Root", nil)
     local c1 = tv:addNode("Child1", r)
@@ -5730,6 +9787,14 @@ end
 
 --@api: LTreeView:getNodeDepth.3
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tv = lurek.ui.newTreeView()
     local r = tv:addNode("Root", nil)
     local c1 = tv:addNode("Child1", r)
@@ -5742,6 +9807,14 @@ end
 
 --@api: LTreeView:getNodeDepth.4
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tv = lurek.ui.newTreeView()
     local r = tv:addNode("Root", nil)
     local c1 = tv:addNode("Child1", r)
@@ -5754,6 +9827,14 @@ end
 
 --@api: LTreeView:getSelectedNode.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tv = lurek.ui.newTreeView()
     local r = tv:addNode("Root", nil)
     local c = tv:addNode("Child", r)
@@ -5765,6 +9846,14 @@ end
 
 --@api: LTreeView:getSelectedNode.3
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tv = lurek.ui.newTreeView()
     local r = tv:addNode("Root", nil)
     local c = tv:addNode("Child", r)
@@ -5776,6 +9865,14 @@ end
 
 --@api: LTreeView:getSelectedNode.4
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tv = lurek.ui.newTreeView()
     local r = tv:addNode("Root", nil)
     local c = tv:addNode("Child", r)
@@ -5787,6 +9884,14 @@ end
 
 --@api: LTreeView:getNodeCount.8
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tv = lurek.ui.newTreeView()
     local r = tv:addNode("Root", nil)
     local c = tv:addNode("Child", r)
@@ -5800,6 +9905,14 @@ end
 
 --@api: LTreeView:getNodeCount.9
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tv = lurek.ui.newTreeView()
     local r = tv:addNode("Root", nil)
     local c = tv:addNode("Child", r)
@@ -5813,6 +9926,14 @@ end
 
 --@api: LTreeView:getNodeCount.10
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tv = lurek.ui.newTreeView()
     local r = tv:addNode("Root", nil)
     local c = tv:addNode("Child", r)
@@ -5826,6 +9947,14 @@ end
 
 --@api: LTreeView:setNodeIcon.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tv = lurek.ui.newTreeView()
     local r = tv:addNode("old text", nil)
     tv:setNodeText(r, "new text")
@@ -5838,6 +9967,14 @@ end
 
 --@api: LTreeView:setNodeIcon.3
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tv = lurek.ui.newTreeView()
     local r = tv:addNode("old text", nil)
     tv:setNodeText(r, "new text")
@@ -5850,6 +9987,14 @@ end
 
 --@api: LTreeView:setNodeIcon.4
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tv = lurek.ui.newTreeView()
     local r = tv:addNode("old text", nil)
     tv:setNodeText(r, "new text")
@@ -5862,6 +10007,14 @@ end
 
 --@api: LTreeView:toggleNode.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tv = lurek.ui.newTreeView()
     local r = tv:addNode("Root", nil)
     tv:addNode("Child", r)
@@ -5876,6 +10029,14 @@ end
 
 --@api: lurek.ui.newCustomWidget
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.ui.newCustomWidget({width=100, height=50})
     local child = lurek.ui.newLabel("label")
     w:addChild(child)
@@ -5887,6 +10048,14 @@ end
 
 --@api: LCustomWidget:addChild
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.ui.newCustomWidget({width=100, height=50})
     local child = lurek.ui.newLabel("label")
     w:addChild(child)
@@ -5898,6 +10067,14 @@ end
 
 --@api: LCustomWidget:getChildCount
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.ui.newCustomWidget({width=100, height=50})
     local child = lurek.ui.newLabel("label")
     w:addChild(child)
@@ -5909,6 +10086,14 @@ end
 
 --@api: LUiWidget:attachToEntity
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.ui.newCustomWidget({width=80, height=40})
     w:attachToEntity(1)
     w:animateAlpha(0.0, 1.0, false)
@@ -5921,6 +10106,14 @@ end
 
 --@api: LUiWidget:bind
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.ui.newCustomWidget({width=80, height=40})
     w:attachToEntity(1)
     w:animateAlpha(0.0, 1.0, false)
@@ -5933,6 +10126,14 @@ end
 
 --@api: LUiWidget:cancelAnimations
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.ui.newCustomWidget({width=80, height=40})
     w:attachToEntity(1)
     w:animateAlpha(0.0, 1.0, false)
@@ -5945,6 +10146,14 @@ end
 
 --@api: LCustomWidget:setAnchor
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.ui.newCustomWidget({width=100, height=50})
     w:setAnchor(0, 0, 1, 0)
     w:clearAnchor()
@@ -5957,6 +10166,14 @@ end
 
 --@api: LCustomWidget:detachFromEntity
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.ui.newCustomWidget({width=100, height=50})
     w:setAnchor(0, 0, 1, 0)
     w:clearAnchor()
@@ -5969,6 +10186,14 @@ end
 
 --@api: LUiWidget:detachFromEntity
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.ui.newCustomWidget({width=100, height=50})
     w:setAnchor(0, 0, 1, 0)
     w:clearAnchor()
@@ -5981,6 +10206,14 @@ end
 
 --@api: LCustomWidget:setId
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.ui.newCustomWidget({width=100, height=50})
     w:setId("my-panel")
     w:fadeOut()
@@ -5994,6 +10227,14 @@ end
 
 --@api: LCustomWidget:findById
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.ui.newCustomWidget({width=100, height=50})
     w:setId("my-panel")
     w:fadeOut()
@@ -6007,6 +10248,14 @@ end
 
 --@api: LCustomWidget:findById.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.ui.newCustomWidget({width=100, height=50})
     w:setId("my-panel")
     w:fadeOut()
@@ -6020,6 +10269,14 @@ end
 
 --@api: LCustomWidget:setAlpha
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.ui.newCustomWidget({width=100, height=50})
     w:setAlpha(0.75)
     local alpha = w:getAlpha()
@@ -6032,6 +10289,14 @@ end
 
 --@api: LCustomWidget:getChildren
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.ui.newCustomWidget({width=100, height=50})
     w:setAlpha(0.75)
     local alpha = w:getAlpha()
@@ -6044,6 +10309,14 @@ end
 
 --@api: LCustomWidget:getChildren.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.ui.newCustomWidget({width=100, height=50})
     w:setAlpha(0.75)
     local alpha = w:getAlpha()
@@ -6056,6 +10329,14 @@ end
 
 --@api: LCustomWidget:setFlexGrow
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.ui.newCustomWidget({width=100, height=50})
     w:setFlexGrow(2)
     local grow = w:getFlexGrow()
@@ -6068,6 +10349,14 @@ end
 
 --@api: LCustomWidget:getId
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.ui.newCustomWidget({width=100, height=50})
     w:setFlexGrow(2)
     local grow = w:getFlexGrow()
@@ -6080,6 +10369,14 @@ end
 
 --@api: LCustomWidget:getId.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.ui.newCustomWidget({width=100, height=50})
     w:setFlexGrow(2)
     local grow = w:getFlexGrow()
@@ -6092,6 +10389,14 @@ end
 
 --@api: LCustomWidget:setMargin
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.ui.newCustomWidget({width=100, height=50})
     w:setMargin(4, 8, 4, 8)
     local mt, mr, mb, ml = w:getMargin()
@@ -6104,6 +10409,14 @@ end
 
 --@api: LCustomWidget:getMinSize
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.ui.newCustomWidget({width=100, height=50})
     w:setMargin(4, 8, 4, 8)
     local mt, mr, mb, ml = w:getMargin()
@@ -6116,6 +10429,14 @@ end
 
 --@api: LCustomWidget:getMinSize.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.ui.newCustomWidget({width=100, height=50})
     w:setMargin(4, 8, 4, 8)
     local mt, mr, mb, ml = w:getMargin()
@@ -6128,6 +10449,14 @@ end
 
 --@api: LCustomWidget:setPadding
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.ui.newCustomWidget({width=100, height=50})
     w:setPadding(5, 5, 5, 5)
     local pt, pr, pb, pl = w:getPadding()
@@ -6139,6 +10468,14 @@ end
 
 --@api: LCustomWidget:getRect
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.ui.newCustomWidget({width=100, height=50})
     w:setPadding(5, 5, 5, 5)
     local pt, pr, pb, pl = w:getPadding()
@@ -6150,6 +10487,14 @@ end
 
 --@api: LCustomWidget:getRect.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.ui.newCustomWidget({width=100, height=50})
     w:setPadding(5, 5, 5, 5)
     local pt, pr, pb, pl = w:getPadding()
@@ -6161,6 +10506,14 @@ end
 
 --@api: LCustomWidget:setSize
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.ui.newCustomWidget({width=120, height=60})
     w:setSize(150, 80)
     local sw, sh = w:getSize()
@@ -6172,6 +10525,14 @@ end
 
 --@api: LCustomWidget:getTooltip
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.ui.newCustomWidget({width=120, height=60})
     w:setSize(150, 80)
     local sw, sh = w:getSize()
@@ -6183,6 +10544,14 @@ end
 
 --@api: LCustomWidget:getTooltip.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.ui.newCustomWidget({width=120, height=60})
     w:setSize(150, 80)
     local sw, sh = w:getSize()
@@ -6194,6 +10563,14 @@ end
 
 --@api: LCustomWidget:setZOrder
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.ui.newCustomWidget({width=100, height=50})
     w:setZOrder(5)
     local z = w:getZOrder()
@@ -6205,6 +10582,14 @@ end
 
 --@api: LUiWidget:isAnimating
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.ui.newCustomWidget({width=100, height=50})
     w:setZOrder(5)
     local z = w:getZOrder()
@@ -6216,6 +10601,14 @@ end
 
 --@api: LCustomWidget:setEnabled
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.ui.newCustomWidget({width=100, height=50})
     w:setZOrder(5)
     local z = w:getZOrder()
@@ -6227,6 +10620,14 @@ end
 
 --@api: LCustomWidget:isVisible
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.ui.newCustomWidget({width=100, height=50})
     local vis = w:isVisible()
     w:setVisible(false)
@@ -6240,6 +10641,14 @@ end
 
 --@api: LCustomWidget:getAlpha
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.ui.newCustomWidget({width=100, height=50})
     local vis = w:isVisible()
     w:setVisible(false)
@@ -6253,6 +10662,14 @@ end
 
 --@api: LCustomWidget:getAlpha.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.ui.newCustomWidget({width=100, height=50})
     local vis = w:isVisible()
     w:setVisible(false)
@@ -6266,6 +10683,14 @@ end
 
 --@api: LCustomWidget:isEnabled
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.ui.newCustomWidget({width=100, height=50})
     w:setAnchor(0, 0, 1, 1)
     w:clearAnchor()
@@ -6278,6 +10703,14 @@ end
 
 --@api: LCustomWidget:setEnabled.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.ui.newCustomWidget({width=100, height=50})
     w:setAnchor(0, 0, 1, 1)
     w:clearAnchor()
@@ -6290,6 +10723,14 @@ end
 
 --@api: LCustomWidget:setEnabled.3
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.ui.newCustomWidget({width=100, height=50})
     w:setAnchor(0, 0, 1, 1)
     w:clearAnchor()
@@ -6302,6 +10743,14 @@ end
 
 --@api: LCustomWidget:getId.3
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.ui.newCustomWidget({width=100, height=50})
     w:setFlexGrow(3)
     local fg = w:getFlexGrow()
@@ -6314,6 +10763,14 @@ end
 
 --@api: LCustomWidget:getId.4
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.ui.newCustomWidget({width=100, height=50})
     w:setFlexGrow(3)
     local fg = w:getFlexGrow()
@@ -6326,6 +10783,14 @@ end
 
 --@api: LCustomWidget:getId.5
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.ui.newCustomWidget({width=100, height=50})
     w:setFlexGrow(3)
     local fg = w:getFlexGrow()
@@ -6338,6 +10803,14 @@ end
 
 --@api: LCustomWidget:getMinSize.3
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.ui.newCustomWidget({width=100, height=50})
     w:setMargin(2, 4, 2, 4)
     local mt = w:getMargin()
@@ -6350,6 +10823,14 @@ end
 
 --@api: LCustomWidget:getMinSize.4
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.ui.newCustomWidget({width=100, height=50})
     w:setMargin(2, 4, 2, 4)
     local mt = w:getMargin()
@@ -6362,6 +10843,14 @@ end
 
 --@api: LCustomWidget:getMinSize.5
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.ui.newCustomWidget({width=100, height=50})
     w:setMargin(2, 4, 2, 4)
     local mt = w:getMargin()
@@ -6374,6 +10863,14 @@ end
 
 --@api: LUiWidget:setOnChange
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.ui.newCustomWidget({width=100, height=50})
     w:setOnChange(function() example_print_log("changed") end)
     w:setOnClick(function() example_print_log("clicked") end)
@@ -6385,6 +10882,14 @@ end
 
 --@api: LUiWidget:setOnClick
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.ui.newCustomWidget({width=100, height=50})
     w:setOnChange(function() example_print_log("changed") end)
     w:setOnClick(function() example_print_log("clicked") end)
@@ -6396,6 +10901,14 @@ end
 
 --@api: LUiWidget:setOnDraw
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.ui.newCustomWidget({width=100, height=50})
     w:setOnChange(function() example_print_log("changed") end)
     w:setOnClick(function() example_print_log("clicked") end)
@@ -6407,6 +10920,14 @@ end
 
 --@api: LCustomWidget:getSize
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.ui.newCustomWidget({width=100, height=50})
     w:setPadding(6, 6, 6, 6)
     local pt = w:getPadding()
@@ -6419,6 +10940,14 @@ end
 
 --@api: LCustomWidget:getSize.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.ui.newCustomWidget({width=100, height=50})
     w:setPadding(6, 6, 6, 6)
     local pt = w:getPadding()
@@ -6431,6 +10960,14 @@ end
 
 --@api: LCustomWidget:getSize.3
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.ui.newCustomWidget({width=100, height=50})
     w:setPadding(6, 6, 6, 6)
     local pt = w:getPadding()
@@ -6443,6 +10980,14 @@ end
 
 --@api: LCustomWidget:setTooltip
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.ui.newCustomWidget({width=100, height=50})
     w:setTooltip("my tooltip")
     local tip = w:getTooltip()
@@ -6455,6 +11000,14 @@ end
 
 --@api: LCustomWidget:getZOrder
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.ui.newCustomWidget({width=100, height=50})
     w:setTooltip("my tooltip")
     local tip = w:getTooltip()
@@ -6467,6 +11020,14 @@ end
 
 --@api: LCustomWidget:getZOrder.2
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.ui.newCustomWidget({width=100, height=50})
     w:setTooltip("my tooltip")
     local tip = w:getTooltip()
@@ -6479,6 +11040,14 @@ end
 
 --@api: LCustomWidget:slideIn
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.ui.newCustomWidget({width=100, height=50})
     w:slideIn(0, -50)
     w:slideOut(0, 50)
@@ -6490,6 +11059,14 @@ end
 
 --@api: LCustomWidget:unbind
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.ui.newCustomWidget({width=100, height=50})
     w:slideIn(0, -50)
     w:slideOut(0, 50)
@@ -6501,6 +11078,14 @@ end
 
 --@api: LUiWidget:type
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.ui.newCustomWidget({width=100, height=50})
     w:slideIn(0, -50)
     w:slideOut(0, 50)
@@ -6512,6 +11097,14 @@ end
 
 --@api: LUiWidget:typeOf
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.ui.newCustomWidget({width=80, height=40})
     w:bind("click")
     w:unbind()
@@ -6523,6 +11116,14 @@ end
 
 --@api: LUiWidget:unbind
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.ui.newCustomWidget({width=80, height=40})
     w:bind("click")
     w:unbind()
@@ -6534,6 +11135,14 @@ end
 
 --@api: lurek.ui.draw
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.ui.newCustomWidget({width=80, height=40})
     lurek.ui.beginDrag(w)
     lurek.ui.endDrag()
@@ -6544,6 +11153,14 @@ end
 
 --@api: lurek.ui.drawToImage
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local img = lurek.ui.drawToImage(320, 240)
     local w = lurek.ui.newCustomWidget({width=80, height=40})
     lurek.ui.beginDrag(w)
@@ -6554,6 +11171,14 @@ end
 
 --@api: lurek.ui.endDrag
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local img = lurek.ui.drawToImage(320, 240)
     local w = lurek.ui.newCustomWidget({width=80, height=40})
     lurek.ui.beginDrag(w)
@@ -6564,6 +11189,14 @@ end
 
 --@api: lurek.ui.flushCache
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.ui.flushCache()
     lurek.ui.focusPrev()
     local drag = lurek.ui.getActiveDrag()
@@ -6574,6 +11207,14 @@ end
 
 --@api: lurek.ui.getToastCount
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.ui.clearFocus()
     local foc = lurek.ui.getFocus()
     local theme = lurek.ui.getTheme()
@@ -6584,6 +11225,14 @@ end
 
 --@api: lurek.ui.getWidgetCount
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cnt = lurek.ui.getWidgetCount()
     lurek.ui.keypressed("escape")
     local layout = lurek.ui.loadLayoutFile("content/examples/assets/layouts/sample_main_menu.toml")
@@ -6593,6 +11242,14 @@ end
 
 --@api: lurek.ui.keypressed
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cnt = lurek.ui.getWidgetCount()
     lurek.ui.keypressed("escape")
     local layout = lurek.ui.loadLayoutFile("content/examples/assets/layouts/sample_main_menu.toml")
@@ -6602,6 +11259,14 @@ end
 
 --@api: lurek.ui.loadLayoutFile
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cnt = lurek.ui.getWidgetCount()
     lurek.ui.keypressed("escape")
     local layout = lurek.ui.loadLayoutFile("content/examples/assets/layouts/sample_main_menu.toml")
@@ -6611,6 +11276,14 @@ end
 
 --@api: lurek.ui.loadLayoutGameFile
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ok, result = pcall(function()
         return lurek.ui.loadLayoutGameFile("content/examples/assets/layouts/sample_main_menu.toml")
     end)
@@ -6621,6 +11294,14 @@ end
 
 --@api: lurek.ui.mousemoved
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local slider = lurek.ui.newSlider(0, 100)
     slider:setPosition(20, 520)
     slider:setSize(200, 20)
@@ -6634,6 +11315,14 @@ end
 
 --@api: lurek.ui.mousepressed
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tabs = lurek.ui.newTabBar()
     tabs:setPosition(20, 560)
     tabs:setSize(240, 28)
@@ -6649,6 +11338,14 @@ end
 
 --@api: lurek.ui.mousereleased
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local combo = lurek.ui.newComboBox()
     combo:setPosition(20, 600)
     combo:setSize(160, 28)
@@ -6666,6 +11363,14 @@ end
 
 --@api: LCustomWidget:UNKNOWN
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.ui.newCustomWidget({width=100, height=50})
     local layout = lurek.ui.newLayout("row")
     local sb = lurek.ui.newScrollBar(true)
@@ -6675,6 +11380,14 @@ end
 
 --@api: lurek.ui.newScrollBar
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local w = lurek.ui.newCustomWidget({width=100, height=50})
     local layout = lurek.ui.newLayout("row")
     local sb = lurek.ui.newScrollBar(true)
@@ -6684,6 +11397,14 @@ end
 
 --@api: lurek.ui.parseWidgetState
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local th = lurek.ui.newTheme()
     local state = lurek.ui.parseWidgetState("normal")
     local result = lurek.ui.renderToImage(320, 240, "save/ui_render.png")
@@ -6694,6 +11415,14 @@ end
 
 --@api: lurek.ui.renderToImage
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local th = lurek.ui.newTheme()
     local state = lurek.ui.parseWidgetState("normal")
     local result = lurek.ui.renderToImage(320, 240, "save/ui_render.png")
@@ -6704,6 +11433,14 @@ end
 
 --@api: lurek.ui.setDefaultTheme
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local th = lurek.ui.newTheme()
     lurek.ui.setTheme(th)
     lurek.ui.setDefaultTheme()
@@ -6714,6 +11451,14 @@ end
 
 --@api: lurek.ui.setViewport
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local th = lurek.ui.newTheme()
     lurek.ui.setTheme(th)
     lurek.ui.setDefaultTheme()
@@ -6724,6 +11469,14 @@ end
 
 --@api: lurek.ui.textinput
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.ui.textinput("hello")
     lurek.ui.textinput(" world")
     lurek.ui.update_bindings({dt=0.016})
@@ -6734,6 +11487,14 @@ end
 
 --@api: lurek.ui.update_bindings
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.ui.textinput("hello")
     lurek.ui.textinput(" world")
     lurek.ui.update_bindings({dt=0.016})
@@ -6744,6 +11505,14 @@ end
 
 --@api: lurek.ui.wheelmoved
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local panel = lurek.ui.newScrollPanel()
     panel:setPosition(300, 520)
     panel:setSize(120, 70)
@@ -6757,6 +11526,14 @@ end
 
 --@api: LTextInput:setPosition
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local input = lurek.ui.newTextInput()
     input:setPosition(20, 650)
     input:setSize(160, 28)
@@ -6771,6 +11548,14 @@ end
 
 --@api: LToolbar:setPosition
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local toolbar = lurek.ui.newToolbar("horizontal")
     toolbar:setPosition(220, 650)
     toolbar:setSize(120, 32)
@@ -6785,6 +11570,14 @@ end
 
 --@api: LRadioButton:setPosition
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cash = lurek.ui.newRadioButton("Cash", "payment_kind")
     cash:setPosition(370, 650)
     cash:setSize(100, 24)
@@ -6802,6 +11595,14 @@ end
 
 --@api: LScrollBar:setPosition
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local bar = lurek.ui.newScrollBar(true)
     bar:setPosition(500, 650)
     bar:setSize(20, 100)
@@ -6818,6 +11619,14 @@ end
 
 --@api: LWindow:setPosition
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local win = lurek.ui.newWindow("Inspector")
     win:setPosition(550, 650)
     win:setSize(150, 90)
@@ -6831,6 +11640,14 @@ end
 
 --@api: LDialog:setPosition
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dialog = lurek.ui.newDialog("Confirm")
     dialog:setCenterOnOpen(false)
     dialog:setPosition(720, 650)
@@ -6845,6 +11662,14 @@ end
 
 --@api: LUiWidget:setMouseFilter
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     -- Sets the mouse filter mode on a panel. "ignore" passes events to underlying widgets,
     -- useful for decorative overlays or transparent layout containers.
     local panel = lurek.ui.newPanel()
@@ -6856,6 +11681,14 @@ end
 
 --@api: LUiWidget:getMouseFilter
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     -- Retrieves the current mouse filter behavior of a widget.
     local panel = lurek.ui.newPanel()
     panel:setMouseFilter("pass")
@@ -6866,6 +11699,14 @@ end
 
 --@api: LUiWidget:setStyleClass
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     -- Assigns a custom style class to a widget. If defined in the active theme,
     -- the button will use "primary" colors and metrics instead of default ones.
     local btn = lurek.ui.newButton("Submit")
@@ -6877,6 +11718,14 @@ end
 
 --@api: LUiWidget:getStyleClass
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     -- Retrieves the currently assigned style class of a widget, or an empty string if none.
     local btn = lurek.ui.newButton("Cancel")
     btn:setStyleClass("danger")
@@ -6887,6 +11736,14 @@ end
 
 --@api: LUiWidget:setAlign
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     -- Configures the flexbox cross-axis alignment. "center" aligns children
     -- vertically in a horizontal layout.
     local layout = lurek.ui.newLayout("horizontal")
@@ -6898,6 +11755,14 @@ end
 
 --@api: LUiWidget:getAlign
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     -- Gets the current flexbox alignment property.
     local layout = lurek.ui.newLayout("horizontal")
     layout:setAlign("stretch")
@@ -6908,6 +11773,14 @@ end
 
 --@api: LUiWidget:setJustify
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     -- Configures the flexbox main-axis justification. "space-between" spreads
     -- children to edges.
     local layout = lurek.ui.newLayout("horizontal")
@@ -6919,6 +11792,14 @@ end
 
 --@api: LUiWidget:getJustify
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     -- Gets the current flexbox justification property.
     local layout = lurek.ui.newLayout("horizontal")
     layout:setJustify("end")
@@ -6929,6 +11810,14 @@ end
 
 --@api: LTable:clearRows
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     -- Removes all rows from a GUI table without deleting its column definitions.
     local tbl = lurek.ui.newTable()
     tbl:addColumn("Name")
@@ -6939,6 +11828,14 @@ end
 
 --@api: LTable:setRows
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     -- Bulk-replaces all current rows with the provided list of row data.
     local tbl = lurek.ui.newTable()
     tbl:addColumn("Score")
@@ -6949,6 +11846,14 @@ end
 
 --@api: lurek.ui.setFont
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     -- Example for setFont
     local widget = lurek.ui.newButton("Test Widget")
     widget:setText("Using setFont")
@@ -6959,6 +11864,14 @@ end
 
 --@api: lurek.ui.getFont
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     -- Example for getFont
     local widget = lurek.ui.newButton("Test Widget")
     widget:setText("Using getFont")
@@ -6969,6 +11882,14 @@ end
 
 --@api: lurek.ui.clearFont
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     -- Example for clearFont
     local widget = lurek.ui.newButton("Test Widget")
     widget:setText("Using clearFont")
@@ -6979,6 +11900,14 @@ end
 
 --@api: lurek.ui.getWidgetFont
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     -- Example for getWidgetFont
     local widget = lurek.ui.newButton("Test Widget")
     widget:setText("Using getWidgetFont")
@@ -6989,6 +11918,14 @@ end
 
 --@api: lurek.ui.updateBindings
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     -- Example for updateBindings
     local widget = lurek.ui.newButton("Test Widget")
     widget:setText("Using updateBindings")
@@ -6999,6 +11936,14 @@ end
 
 --@api: LUiWidget:setFont
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     -- Example for setFont
     local widget = lurek.ui.newButton("Test Widget")
     widget:setText("Using setFont")
@@ -7009,6 +11954,14 @@ end
 
 --@api: LUiWidget:clearFont
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     -- Example for clearFont
     local widget = lurek.ui.newButton("Test Widget")
     widget:setText("Using clearFont")
@@ -7019,6 +11972,14 @@ end
 
 --@api: LUiWidget:setBindKey
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     -- Example for setBindKey
     local widget = lurek.ui.newButton("Test Widget")
     widget:setText("Using setBindKey")
@@ -7029,6 +11990,14 @@ end
 
 --@api: LUiWidget:setTextWrap
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local lbl = lurek.ui.newLabel("This is a long text that can wrap")
     lbl:setTextWrap(true)
     example_print_log("label text = " .. lbl:getText())
@@ -7038,6 +12007,14 @@ end
 
 --@api: LUiWidget:setTextEllipsis
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local lbl = lurek.ui.newLabel("This is a very long one-line text")
     lbl:setTextEllipsis(true)
     example_print_log("label text = " .. lbl:getText())
@@ -7047,6 +12024,14 @@ end
 
 --@api: LUiWidget:setTextVAlign
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local lbl = lurek.ui.newLabel("Centered")
     lbl:setTextVAlign("middle")
     example_print_log("label text = " .. lbl:getText())
@@ -7056,6 +12041,14 @@ end
 
 --@api: LUiWidget:setTextAlign
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local lbl = lurek.ui.newLabel("Right aligned")
     lbl:setTextAlign("right")
     example_print_log("label text = " .. lbl:getText())
@@ -7065,6 +12058,14 @@ end
 
 --@api: LUiWidget:getTextAlign
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local lbl = lurek.ui.newLabel("Aligned")
     lbl:setTextAlign("center")
     example_print_log("textAlign=" .. lbl:getTextAlign())
@@ -7074,6 +12075,14 @@ end
 
 --@api: LUiWidget:setFocusable
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local btn = lurek.ui.newButton("Focusable")
     btn:setFocusable(true)
     example_print_log("button text = " .. btn:getText())
@@ -7083,6 +12092,14 @@ end
 
 --@api: LUiWidget:setTabIndex
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local btn = lurek.ui.newButton("Tab")
     btn:setTabIndex(10)
     example_print_log("button text = " .. btn:getText())
@@ -7092,6 +12109,14 @@ end
 
 --@api: LUiWidget:setFocusGroup
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local btn = lurek.ui.newButton("Group")
     btn:setFocusGroup("menu")
     example_print_log("button text = " .. btn:getText())
@@ -7101,6 +12126,14 @@ end
 
 --@api: LUiWidget:setFocusNeighbor
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local a = lurek.ui.newButton("A")
     local b = lurek.ui.newButton("B")
     a:setFocusNeighbor("right", b._idx)
@@ -7110,6 +12143,14 @@ end
 
 --@api: LUiWidget:setRole
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local btn = lurek.ui.newButton("Save")
     btn:setRole("button")
     example_print_log("button text = " .. btn:getText())
@@ -7119,6 +12160,14 @@ end
 
 --@api: LUiWidget:setAriaName
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local btn = lurek.ui.newButton("Save")
     btn:setAriaName("Save game")
     example_print_log("button text = " .. btn:getText())
@@ -7128,6 +12177,14 @@ end
 
 --@api: LUiWidget:getRole
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local btn = lurek.ui.newButton("Save")
     btn:setRole("button")
     example_print_log("button role = " .. btn:getRole())
@@ -7137,6 +12194,14 @@ end
 
 --@api: LUiWidget:getAriaName
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local btn = lurek.ui.newButton("Save")
     btn:setAriaName("Save game")
     example_print_log("aria name = " .. btn:getAriaName())
@@ -7146,6 +12211,14 @@ end
 
 --@api: LUiWidget:setLabelFor
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local label = lurek.ui.newLabel("Name")
     local input = lurek.ui.newTextInput()
     label:setLabelFor(input._idx)
@@ -7155,6 +12228,14 @@ end
 
 --@api: LUiWidget:getLabelFor
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local label = lurek.ui.newLabel("Email")
     local input = lurek.ui.newTextInput()
     label:setLabelFor(input._idx)
@@ -7164,6 +12245,14 @@ end
 
 --@api: lurek.ui.getStyleToken
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local spacing = lurek.ui.getStyleToken("spacing_md")
     local color = lurek.ui.getStyleToken("color_primary")
     example_print_log("spacing_md=" .. tostring(spacing))
@@ -7174,6 +12263,14 @@ end
 
 --@api: lurek.ui.focusNeighbor
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local a = lurek.ui.newButton("A")
     local b = lurek.ui.newButton("B")
     a:setFocusNeighbor("right", b._idx)
@@ -7184,6 +12281,14 @@ end
 
 --@api: lurek.ui.clear
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local root = lurek.ui.getRoot()
     if root then
         lurek.ui.clear()
@@ -7193,6 +12298,14 @@ end
 
 --@api: lurek.ui.getAccessibilityTree
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.ui.clear()
     local label = lurek.ui.newLabel("Name")
     local input = lurek.ui.newTextInput()
@@ -7205,6 +12318,14 @@ end
 
 --@api: lurek.ui.validateUx
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.ui.clear()
     lurek.ui.setViewport(100, 100)
     local dialog = lurek.ui.newDialog("Confirm")
@@ -7220,6 +12341,14 @@ end
 
 --@api: lurek.ui.focusDirection
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local a = lurek.ui.newButton("A")
     local b = lurek.ui.newButton("B")
     a:setFocusNeighbor("right", b._idx)
@@ -7230,6 +12359,14 @@ end
 
 --@api: lurek.ui.updateResolution
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.ui.setBaseResolution(1280, 720)
     local before = lurek.ui.getScaleFactor()
     lurek.ui.updateResolution(1920, 1080)
@@ -7240,6 +12377,14 @@ end
 
 --@api: lurek.ui.setBaseResolution
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.ui.setBaseResolution(1280, 720)
     local base_scale = lurek.ui.getScaleFactor()
     lurek.ui.updateResolution(1920, 1080)
@@ -7250,6 +12395,14 @@ end
 
 --@api: lurek.ui.getScaleFactor
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.ui.setBaseResolution(1280, 720)
     local base_scale = lurek.ui.getScaleFactor()
     lurek.ui.updateResolution(1920, 1080)
@@ -7260,6 +12413,14 @@ end
 
 --@api: lurek.ui.visibleRange
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local list = lurek.ui.newList()
     local x, y = lurek.ui.visibleRange(list, 50, 20.0)
     example_print_log("lurek.ui.visibleRange x=" .. x .. " y=" .. y)
@@ -7269,6 +12430,14 @@ end
 
 --@api: lurek.ui.animateScale
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local btn = lurek.ui.newButton("Scale")
     lurek.ui.animateScale(btn._idx, 1.0, 1.0, 1.2, 1.2, 0.3)
     example_print_log("lurek.ui.animateScale ok")
@@ -7278,6 +12447,14 @@ end
 
 --@api: lurek.ui.animateRotation
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local img = lurek.ui.newPanel()
     lurek.ui.animateRotation(img._idx, 0, 360, 1.0)
     example_print_log("lurek.ui.animateRotation ok")
@@ -7287,6 +12464,14 @@ end
 
 --@api: lurek.ui.animateColor
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local lbl = lurek.ui.newLabel("Hello")
     lurek.ui.animateColor(lbl._idx, {r=1,g=1,b=1,a=1}, {r=1,g=0.5,b=0,a=1}, 0.5)
     example_print_log("lurek.ui.animateColor ok")

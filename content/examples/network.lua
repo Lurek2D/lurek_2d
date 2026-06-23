@@ -2,22 +2,23 @@
 -- Auto-generated from content/examples2/network_*.lua by tools/fix/merge_examples2_into_examples.py
 -- Run: cargo run -- content/examples/network.lua
 
-local function network_log(message)
-    lurek.log.info("[network.example] " .. tostring(message))
-end
 
 --- Network Module Part 1: LNetworkHost — server, client, peer management
 
-local function example_print_log(...)
-    local parts = {}
-    for i = 1, select("#", ...) do
-        parts[i] = tostring(select(i, ...))
-    end
-    lurek.log.info(table.concat(parts, " "))
-end
 
 --@api: lurek.network.newServer
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local server = lurek.network.newServer({port = 7777, maxPeers = 16, channels = 2})
     local limits = server:getBandwidthLimit()
     local metrics = server:getMetrics()
@@ -29,6 +30,17 @@ end
 
 --@api: lurek.network.newClient
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local server = lurek.network.newServer({port = 7778, maxPeers = 4, channels = 2})
     local client = lurek.network.newClient({addr = "127.0.0.1:7778", channels = 2, data = 21})
     example_print_log("role=" .. client:getRole())
@@ -39,6 +51,17 @@ end
 
 --@api: lurek.network.newHost
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local host = lurek.network.newHost({addr = "0.0.0.0:8888", maxPeers = 32, channels = 4})
     local metrics = host:getMetrics()
     local limits = host:getBandwidthLimit()
@@ -50,6 +73,17 @@ end
 
 --@api: LNetworkHost:connect
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function wait_for_event(host, expected_type, max_attempts)
         max_attempts = max_attempts or 8
         for _ = 1, max_attempts do
@@ -74,6 +108,17 @@ end
 
 --@api: LNetworkHost:service
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function connect_pair(port, channels)
         local server = lurek.network.newServer({port = port, maxPeers = 4, channels = channels or 2})
         local client = lurek.network.newClient({addr = "127.0.0.1:" .. port, channels = channels or 2, data = 99})
@@ -129,6 +174,17 @@ end
 
 --@api: LNetworkHost:send
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function connect_pair(port, channels)
         local server = lurek.network.newServer({port = port, maxPeers = 4, channels = channels or 2})
         local client = lurek.network.newClient({addr = "127.0.0.1:" .. port, channels = channels or 2, data = 99})
@@ -199,6 +255,17 @@ end
 
 --@api: LNetworkHost:broadcast
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function connect_pair(port, channels)
         local server = lurek.network.newServer({port = port, maxPeers = 4, channels = channels or 2})
         local client = lurek.network.newClient({addr = "127.0.0.1:" .. port, channels = channels or 2, data = 99})
@@ -269,6 +336,17 @@ end
 
 --@api: LNetworkHost:getConnectedPeerCount
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function connect_pair(port, channels)
         local server = lurek.network.newServer({port = port, maxPeers = 4, channels = channels or 2})
         local client = lurek.network.newClient({addr = "127.0.0.1:" .. port, channels = channels or 2, data = 99})
@@ -323,6 +401,17 @@ end
 
 --@api: LNetworkHost:getConnectedPeerIds
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function connect_pair(port, channels)
         local server = lurek.network.newServer({port = port, maxPeers = 4, channels = channels or 2})
         local client = lurek.network.newClient({addr = "127.0.0.1:" .. port, channels = channels or 2, data = 99})
@@ -379,6 +468,17 @@ end
 
 --@api: LNetworkHost:getPeerState
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function connect_pair(port, channels)
         local server = lurek.network.newServer({port = port, maxPeers = 4, channels = channels or 2})
         local client = lurek.network.newClient({addr = "127.0.0.1:" .. port, channels = channels or 2, data = 99})
@@ -433,6 +533,17 @@ end
 
 --@api: LNetworkHost:getPeerAddress
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function connect_pair(port, channels)
         local server = lurek.network.newServer({port = port, maxPeers = 4, channels = channels or 2})
         local client = lurek.network.newClient({addr = "127.0.0.1:" .. port, channels = channels or 2, data = 99})
@@ -487,6 +598,17 @@ end
 
 --@api: LNetworkHost:getRoundTripTime
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function connect_pair(port, channels)
         local server = lurek.network.newServer({port = port, maxPeers = 4, channels = channels or 2})
         local client = lurek.network.newClient({addr = "127.0.0.1:" .. port, channels = channels or 2, data = 99})
@@ -543,6 +665,17 @@ end
 
 --@api: LNetworkHost:getPeerStats
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function connect_pair(port, channels)
         local server = lurek.network.newServer({port = port, maxPeers = 4, channels = channels or 2})
         local client = lurek.network.newClient({addr = "127.0.0.1:" .. port, channels = channels or 2, data = 99})
@@ -599,6 +732,17 @@ end
 
 --@api: LNetworkHost:setBandwidthLimit
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local server = lurek.network.newServer({port = 7783, maxPeers = 4})
     server:setBandwidthLimit(100000, 50000)
     local limits = server:getBandwidthLimit()
@@ -609,6 +753,17 @@ end
 
 --@api: LNetworkHost:getBandwidthLimit
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local server = lurek.network.newServer({port = 7789, maxPeers = 4})
     server:setBandwidthLimit(64000, 32000)
     local bw = server:getBandwidthLimit()
@@ -619,6 +774,17 @@ end
 
 --@api: LNetworkHost:setChannelLimit
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local host = lurek.network.newHost({addr = "0.0.0.0:7790", maxPeers = 2, channels = 1})
     local before = host:getChannelLimit()
     host:setChannelLimit(4)
@@ -631,6 +797,17 @@ end
 
 --@api: LNetworkHost:disconnect
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function connect_pair(port, channels)
         local server = lurek.network.newServer({port = port, maxPeers = 4, channels = channels or 2})
         local client = lurek.network.newClient({addr = "127.0.0.1:" .. port, channels = channels or 2, data = 99})
@@ -701,6 +878,17 @@ end
 
 --@api: LNetworkHost:disconnectLater
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function connect_pair(port, channels)
         local server = lurek.network.newServer({port = port, maxPeers = 4, channels = channels or 2})
         local client = lurek.network.newClient({addr = "127.0.0.1:" .. port, channels = channels or 2, data = 99})
@@ -773,6 +961,17 @@ end
 
 --@api: LNetworkHost:disconnectNow
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function connect_pair(port, channels)
         local server = lurek.network.newServer({port = port, maxPeers = 4, channels = channels or 2})
         local client = lurek.network.newClient({addr = "127.0.0.1:" .. port, channels = channels or 2, data = 99})
@@ -843,6 +1042,17 @@ end
 
 --@api: LNetworkHost:flush
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function connect_pair(port, channels)
         local server = lurek.network.newServer({port = port, maxPeers = 4, channels = channels or 2})
         local client = lurek.network.newClient({addr = "127.0.0.1:" .. port, channels = channels or 2, data = 99})
@@ -913,6 +1123,17 @@ end
 
 --@api: LNetworkHost:ping
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function connect_pair(port, channels)
         local server = lurek.network.newServer({port = port, maxPeers = 4, channels = channels or 2})
         local client = lurek.network.newClient({addr = "127.0.0.1:" .. port, channels = channels or 2, data = 99})
@@ -970,6 +1191,17 @@ end
 
 --@api: LNetworkHost:resetPeer
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function connect_pair(port, channels)
         local server = lurek.network.newServer({port = port, maxPeers = 4, channels = channels or 2})
         local client = lurek.network.newClient({addr = "127.0.0.1:" .. port, channels = channels or 2, data = 99})
@@ -1030,6 +1262,17 @@ end
 
 --@api: lurek.network.newRuntime
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rt = lurek.network.newRuntime()
     local metrics = rt:getMetrics()
     local status = rt:getAuthStatus()
@@ -1041,6 +1284,17 @@ end
 
 --@api: LNetworkRuntime:httpGet
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rt = lurek.network.newRuntime()
     local req_id = rt:httpGet("http://127.0.0.1:1/status", {Accept = "text/plain"})
     example_print_log("request_id=" .. req_id)
@@ -1050,6 +1304,17 @@ end
 
 --@api: LNetworkRuntime:httpPost
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rt = lurek.network.newRuntime()
     local req_id = rt:httpPost("http://127.0.0.1:1/data", '{"key":"value"}', {["Content-Type"] = "application/json"})
     example_print_log("request_id=" .. req_id)
@@ -1059,6 +1324,17 @@ end
 
 --@api: LNetworkRuntime:httpRequest
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rt = lurek.network.newRuntime()
     local req_id = rt:httpRequest({url = "http://127.0.0.1:1/resource", method = "PUT", body = "updated data", timeout = 0.01})
     example_print_log("request_id=" .. req_id)
@@ -1068,6 +1344,17 @@ end
 
 --@api: LNetworkRuntime:poll
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rt = lurek.network.newRuntime()
     rt:httpGet("http://127.0.0.1:1/poll")
     local events = rt:poll()
@@ -1077,6 +1364,17 @@ end
 
 --@api: LNetworkRuntime:tcpConnect
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rt = lurek.network.newRuntime()
     local id = rt:tcpConnect("127.0.0.1:9")
     example_print_log("tcp_id=" .. id)
@@ -1086,6 +1384,17 @@ end
 
 --@api: LNetworkRuntime:tcpSend
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rt = lurek.network.newRuntime()
     local id = rt:tcpConnect("127.0.0.1:9")
     rt:tcpSend(id, "PING\n")
@@ -1096,6 +1405,17 @@ end
 
 --@api: LNetworkRuntime:tcpClose
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rt = lurek.network.newRuntime()
     local id = rt:tcpConnect("127.0.0.1:9")
     rt:tcpClose(id)
@@ -1106,6 +1426,17 @@ end
 
 --@api: LNetworkRuntime:wsConnect
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rt = lurek.network.newRuntime()
     local id = rt:wsConnect("ws://127.0.0.1:1/game")
     example_print_log("ws_id=" .. id)
@@ -1115,6 +1446,17 @@ end
 
 --@api: LNetworkRuntime:wsSend
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rt = lurek.network.newRuntime()
     local id = rt:wsConnect("ws://127.0.0.1:1/game")
     rt:wsSend(id, '{"action":"join","room":"lobby"}')
@@ -1125,6 +1467,17 @@ end
 
 --@api: LNetworkRuntime:wsClose
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rt = lurek.network.newRuntime()
     local id = rt:wsConnect("ws://127.0.0.1:1/game")
     rt:wsClose(id)
@@ -1135,6 +1488,17 @@ end
 
 --@api: lurek.network.createRoom
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local room = lurek.network.createRoom("Arena", "player1", 8)
     local joined = lurek.network.joinRoom(room.id)
     local left = lurek.network.leaveRoom(room.id)
@@ -1144,6 +1508,17 @@ end
 
 --@api: lurek.network.createLobby
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local lobby = lurek.network.createLobby("My Game", 7777, 1, 4)
     local found = lurek.network.discoverLobbies(10)
     local room = lurek.network.createRoom("My Game staging", "host-A", 4)
@@ -1154,6 +1529,17 @@ end
 
 --@api: lurek.network.pack
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local data = {hp = 100, pos = {x = 10.5, y = 20.3}, name = "Hero"}
     local packed = lurek.network.pack(data)
     local unpacked = lurek.network.unpack(packed)
@@ -1163,6 +1549,17 @@ end
 
 --@api: lurek.network.syncEntity
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local function connect_pair(port, channels)
         local server = lurek.network.newServer({port = port, maxPeers = 4, channels = channels or 2})
         local client = lurek.network.newClient({addr = "127.0.0.1:" .. port, channels = channels or 2, data = 99})
@@ -1234,6 +1631,17 @@ end
 
 --@api: lurek.network.predictLinear
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local snapshot = {id = 1, tick = 10, x = 10, y = 20, vx = 5, vy = 0}
     local predicted = lurek.network.predictLinear(snapshot, 0.016)
     local auth = {id = 1, tick = 11, x = 10.3, y = 20, vx = 5, vy = 0}
@@ -1244,6 +1652,17 @@ end
 
 --@api: lurek.network.newRelayTicket
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local token = lurek.network.newRelayTicket("room_abc", "peer_42")
     local ticket = lurek.network.parseRelayTicket(token)
     local packed = lurek.network.pack({ room = ticket.room_id, peer = ticket.peer_id })
@@ -1254,6 +1673,17 @@ end
 
 --@api: lurek.network.makePunchProbe
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local probe = lurek.network.makePunchProbe("peer_99")
     local peer_id = lurek.network.parsePunchProbe(probe)
     local relay = lurek.network.newRelayTicket("room_probe", peer_id)
@@ -1266,6 +1696,17 @@ end
 
 --@api: LNetworkHost:destroy
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local host = lurek.network.newHost({addr = "0.0.0.0:0", maxPeers = 4, channels = 2})
     local before = host:isDestroyed()
     local role = host:getRole()
@@ -1277,6 +1718,17 @@ end
 
 --@api: LNetworkHost:getAddress
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local host = lurek.network.newHost({addr = "0.0.0.0:0", maxPeers = 4, channels = 2})
     local addr = host:getAddress()
     local role = host:getRole()
@@ -1288,6 +1740,17 @@ end
 
 --@api: LNetworkHost:getChannelLimit
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local host = lurek.network.newHost({addr = "0.0.0.0:0", maxPeers = 4, channels = 2})
     local channels = host:getChannelLimit()
     local peers = host:getPeerLimit()
@@ -1299,6 +1762,17 @@ end
 
 --@api: LNetworkHost:getPeerLimit
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local host = lurek.network.newHost({addr = "0.0.0.0:0", maxPeers = 4, channels = 2})
     local peers = host:getPeerLimit()
     local channels = host:getChannelLimit()
@@ -1310,6 +1784,17 @@ end
 
 --@api: LNetworkHost:getRole
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local host = lurek.network.newHost({addr = "0.0.0.0:0", maxPeers = 4, channels = 2})
     local role = host:getRole()
     local typeName = host:type()
@@ -1321,6 +1806,17 @@ end
 
 --@api: LNetworkHost:isClient
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local server = lurek.network.newServer({port = 7798, maxPeers = 4, channels = 2})
     local client = lurek.network.newClient({addr = "127.0.0.1:7798", channels = 2})
     example_print_log("is_client=" .. tostring(client:isClient()))
@@ -1330,6 +1826,17 @@ end
 
 --@api: LNetworkHost:isDestroyed
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local host = lurek.network.newHost({addr = "0.0.0.0:0", maxPeers = 4, channels = 2})
     local before = host:isDestroyed()
     local role = host:getRole()
@@ -1341,6 +1848,17 @@ end
 
 --@api: LNetworkHost:isServer
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local server = lurek.network.newServer({port = 7799, maxPeers = 4, channels = 2})
     local role = server:getRole()
     local isServer = server:isServer()
@@ -1352,6 +1870,17 @@ end
 
 --@api: LNetworkHost:type
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local host = lurek.network.newHost({addr = "0.0.0.0:0", maxPeers = 4, channels = 2})
     local typeName = host:type()
     local role = host:getRole()
@@ -1363,6 +1892,17 @@ end
 
 --@api: LNetworkHost:typeOf
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local host = lurek.network.newHost({addr = "0.0.0.0:0", maxPeers = 4, channels = 2})
     local isHost = host:typeOf("LNetworkHost")
     local isObject = host:typeOf("LObject")
@@ -1374,6 +1914,17 @@ end
 
 --@api: LNetworkRuntime:shutdown
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rt = lurek.network.newRuntime()
     local typeName = rt:type()
     local status = rt:getAuthStatus()
@@ -1385,6 +1936,17 @@ end
 
 --@api: LNetworkRuntime:type
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rt = lurek.network.newRuntime()
     local typeName = rt:type()
     local status = rt:getAuthStatus()
@@ -1396,6 +1958,17 @@ end
 
 --@api: LNetworkRuntime:typeOf
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rt = lurek.network.newRuntime()
     local isRuntime = rt:typeOf("LNetworkRuntime")
     local isObject = rt:typeOf("LObject")
@@ -1407,6 +1980,17 @@ end
 
 --@api: lurek.network.discoverLobbies
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.network.createLobby("Discovery", 7788, 1, 4)
     local lobbies = lurek.network.discoverLobbies(10)
     local room = lurek.network.createRoom("Discovery staging", "host-discovery", 4)
@@ -1417,6 +2001,17 @@ end
 
 --@api: lurek.network.joinRoom
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local room = lurek.network.createRoom("Joinable", "host-B", 4)
     local joined = lurek.network.joinRoom(room.id)
     local players = lurek.network.getPlayerList(room.id)
@@ -1427,6 +2022,17 @@ end
 
 --@api: lurek.network.leaveRoom
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local room = lurek.network.createRoom("Leavable", "host-C", 4)
     lurek.network.joinRoom(room.id)
     local left = lurek.network.leaveRoom(room.id)
@@ -1436,6 +2042,17 @@ end
 
 --@api: lurek.network.listRooms
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rooms = lurek.network.listRooms()
     local room = lurek.network.createRoom("Listed", "host-D", 3)
     rooms = lurek.network.listRooms()
@@ -1445,6 +2062,17 @@ end
 
 --@api: lurek.network.parsePunchProbe
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local probe = lurek.network.makePunchProbe("peer_parse")
     local peer_id = lurek.network.parsePunchProbe(probe)
     local relay = lurek.network.newRelayTicket("room_parse_probe", peer_id)
@@ -1455,6 +2083,17 @@ end
 
 --@api: lurek.network.parseRelayTicket
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local token = lurek.network.newRelayTicket("room_parse", "peer_parse")
     local ticket = lurek.network.parseRelayTicket(token)
     local packed = lurek.network.pack({ room = ticket.room_id, peer = ticket.peer_id })
@@ -1465,6 +2104,17 @@ end
 
 --@api: lurek.network.reconcileSnapshot
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local pred = {id = 3, tick = 20, x = 10, y = 10, vx = 1, vy = 0}
     local auth = {id = 3, tick = 21, x = 12, y = 11, vx = 1, vy = 0}
     local result = lurek.network.reconcileSnapshot(pred, auth, 0.5)
@@ -1474,6 +2124,17 @@ end
 
 --@api: lurek.network.unpack
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local raw = lurek.network.pack({ id = 1, data = "hello" })
     local msg = lurek.network.unpack(raw)
     local packedSnapshot = lurek.network.pack({ id = msg.id, tag = "chat", body = msg.data })
@@ -1484,6 +2145,17 @@ end
 
 --@api: lurek.network.sseConnect
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LSseStream
     local stream = lurek.network.sseConnect("http://127.0.0.1:1/events", function(ev)
         example_print_log("event=" .. tostring(ev.event) .. " data=" .. ev.data)
@@ -1498,6 +2170,17 @@ end
 
 --@api: lurek.network.sseCollect
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local events = lurek.network.sseCollect("http://127.0.0.1:1/events", 1, 0.01)
     local count = #events
     local firstEvent = events[1]
@@ -1510,6 +2193,17 @@ end
 
 --@api: LSseStream:next
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LSseStream
     local stream = lurek.network.sseConnect("http://127.0.0.1:1/events", function(_ev) end)
     local ev = stream:next()
@@ -1521,6 +2215,17 @@ end
 
 --@api: LSseStream:close
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LSseStream
     local stream = lurek.network.sseConnect("http://127.0.0.1:1/events", function(_ev) end)
     local wasOpen = stream:isOpen()
@@ -1533,6 +2238,17 @@ end
 
 --@api: LSseStream:isOpen
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LSseStream
     local stream = lurek.network.sseConnect("http://127.0.0.1:1/events", function(_ev) end)
     local open = stream:isOpen()
@@ -1545,6 +2261,17 @@ end
 
 --@api: LSseStream:type
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LSseStream
     local stream = lurek.network.sseConnect("http://127.0.0.1:1/events", function(_ev) end)
     local typeName = stream:type()
@@ -1557,6 +2284,17 @@ end
 
 --@api: LSseStream:typeOf
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     ---@type LSseStream
     local stream = lurek.network.sseConnect("http://127.0.0.1:1/events", function(_ev) end)
     local isStream = stream:typeOf("LSseStream")
@@ -1569,6 +2307,17 @@ end
 
 --@api: LNetworkRuntime:httpJson
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rt = lurek.network.newRuntime()
     local ok, response = pcall(function()
         return rt:httpJson("http://127.0.0.1:1/api", '{"key":"value"}')
@@ -1580,6 +2329,17 @@ end
 
 --@api: LNetworkRuntime:httpStream
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rt = lurek.network.newRuntime()
     local ok, response = pcall(function()
         return rt:httpStream("http://127.0.0.1:1/stream")
@@ -1591,6 +2351,17 @@ end
 
 --@api: LNetworkRuntime:authBootstrap
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rt = lurek.network.newRuntime()
     local ok, id = pcall(function()
         return rt:authBootstrap("http://127.0.0.1:1/auth", '{"user":"test"}', "http://127.0.0.1:1/refresh")
@@ -1602,6 +2373,17 @@ end
 
 --@api: LNetworkRuntime:getAuthToken
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rt = lurek.network.newRuntime()
     local token = rt:getAuthToken()
     local status = rt:getAuthStatus()
@@ -1613,6 +2395,17 @@ end
 
 --@api: LNetworkRuntime:getAuthStatus
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rt = lurek.network.newRuntime()
     local status = rt:getAuthStatus()
     local token = rt:getAuthToken()
@@ -1624,6 +2417,17 @@ end
 
 --@api: LNetworkRuntime:authCancel
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rt = lurek.network.newRuntime()
     local before = rt:getAuthStatus()
     rt:authCancel()
@@ -1636,6 +2440,17 @@ end
 
 --@api: LNetworkRuntime:matchmakeStart
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rt = lurek.network.newRuntime()
     local ok, id = pcall(function()
         return rt:matchmakeStart("http://127.0.0.1:1/match", '{"game_mode":"ranked"}')
@@ -1647,6 +2462,17 @@ end
 
 --@api: LNetworkRuntime:matchmakeCancel
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rt = lurek.network.newRuntime()
     local before = rt:getMetrics()
     rt:matchmakeCancel(1)
@@ -1658,6 +2484,17 @@ end
 
 --@api: LNetworkHost:registerLease
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local host = lurek.network.newHost({ port = 0 })
     local token = host:registerLease(1, 30)
     local peer = host:getLeasePeer(token)
@@ -1669,6 +2506,17 @@ end
 
 --@api: LNetworkHost:getLeasePeer
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local host = lurek.network.newHost({ port = 0 })
     local token = host:registerLease(2, 30)
     local peer_id = host:getLeasePeer(token)
@@ -1678,6 +2526,17 @@ end
 
 --@api: LNetworkHost:renewLease
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local host = lurek.network.newHost({ port = 0 })
     local token = host:registerLease(3, 30)
     local success = host:renewLease(token, 60)
@@ -1687,6 +2546,17 @@ end
 
 --@api: LNetworkHost:clearLease
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local host = lurek.network.newHost({ port = 0 })
     local token = host:registerLease(4, 30)
     host:clearLease(token)
@@ -1696,6 +2566,17 @@ end
 
 --@api: LNetworkHost:getMetrics
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local host = lurek.network.newHost({ port = 0 })
     local metrics = host:getMetrics()
     local role = host:getRole()
@@ -1707,6 +2588,17 @@ end
 
 --@api: LNetworkRuntime:getMetrics
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local rt = lurek.network.newRuntime()
     local metrics = rt:getMetrics()
     local status = rt:getAuthStatus()
@@ -1718,6 +2610,17 @@ end
 
 --@api: lurek.network.packSnapshot
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local snapshot = {
         type = "full",
         tick = 100,
@@ -1731,6 +2634,17 @@ end
 
 --@api: lurek.network.unpackSnapshot
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local snapshot = {
         type = "delta",
         tick = 101,
@@ -1748,6 +2662,17 @@ end
 
 --@api: lurek.network.reconcileWithPolicy
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local pred = { id = 1, tick = 10, x = 10.0, y = 0.0, vx = 0.0, vy = 0.0 }
     local auth = { id = 1, tick = 10, x = 12.0, y = 0.0, vx = 1.0, vy = 2.0 }
     local result = lurek.network.reconcileWithPolicy(pred, auth, 0.5, 0.2, 5.0)
@@ -1758,6 +2683,17 @@ end
 
 --@api: lurek.network.setReady
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.network.setReady("game_room", 1, true)
     lurek.network.setReady("game_room", 2, false)
     local players = lurek.network.getPlayerList("game_room")
@@ -1768,6 +2704,17 @@ end
 
 --@api: lurek.network.isAllReady
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.network.setReady("lobby_room", 1, true)
     lurek.network.setReady("lobby_room", 2, true)
     local all_ready = lurek.network.isAllReady("lobby_room")
@@ -1779,6 +2726,17 @@ end
 
 --@api: lurek.network.getRoom
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.network.setReady("session_room", 1, true)
     lurek.network.setReady("session_room", 2, false)
     local room = lurek.network.getRoom("session_room")
@@ -1789,6 +2747,17 @@ end
 
 --@api: lurek.network.getPlayerList
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.network.setReady("match_room", 1, true)
     lurek.network.setReady("match_room", 3, true)
     lurek.network.setReady("match_room", 2, false)
@@ -1801,6 +2770,17 @@ end
 
 --@api: lurek.network.newRpc
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local host = lurek.network.newHost({ addr = "127.0.0.1:0" })
     local ok, rpc = pcall(function()
         return lurek.network.newRpc(host, 0, 30.0)
@@ -1817,6 +2797,17 @@ end
 
 --@api: lurek.network.newNetState
 do
+    local function network_log(message)
+        lurek.log.info("[network.example] " .. tostring(message))
+    end
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local host = lurek.network.newHost({ addr = "127.0.0.1:0" })
     local ok, state = pcall(function()
         return lurek.network.newNetState(host, { authority = true })

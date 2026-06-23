@@ -762,6 +762,7 @@ def extract_lua_functions(api_file: Path) -> List[LuaFunction]:
     current_impl_type: Optional[str] = None
     current_widget_type: Optional[str] = None
     brace_depth = 0
+    macro_depth = 0
     table_namespaces = _collect_table_namespaces(lines)
 
     type_names = {}
@@ -833,6 +834,7 @@ def extract_lua_functions(api_file: Path) -> List[LuaFunction]:
     method_multiline_re = re.compile(r'methods\.add_method(?:_mut)?\(\s*$')
     method_function_multiline_re = re.compile(r'methods\.add_function\(\s*$')
     dispatch_arith_multiline_re = re.compile(r'dispatch_arith!\(\s*$')
+    basic_chart_macro_re = re.compile(r'add_basic_chart_methods!\(\s*methods\s*,\s*"(\w+)"')
     impl_re = re.compile(
         r'^\s*impl(?:<[^>]*>)?\s+(?:(?:(?:\w+::)*(?:LuaUserData|UserData))\s+for\s+)?(\w+)'
     )
@@ -847,9 +849,118 @@ def extract_lua_functions(api_file: Path) -> List[LuaFunction]:
                 return _collect_docstring_above(lines, idx2)
         return None
 
+    def _append_basic_chart_methods(owner: str, line_no: int) -> None:
+        """Expand chart-common method macros into concrete Lua API entries."""
+        common_methods = [
+            (
+                "clear",
+                "Clears all chart data and cached chart state.",
+                "",
+            ),
+            (
+                "setTitle",
+                "Sets the chart title text shown in rendered output.\n\n@param | title | string | New chart title.",
+                "(title)",
+            ),
+            (
+                "setShowLegend",
+                "Controls whether the chart legend is rendered.\n\n@param | value | boolean | True to show the legend.",
+                "(value)",
+            ),
+            (
+                "render",
+                "Renders the chart into raw RGBA image bytes.\n\n@return | integer, integer, string | Width, height, and RGBA image bytes for the rendered chart.",
+                "()",
+            ),
+            (
+                "renderImage",
+                "Renders the chart into a new LImage userdata.",
+                "()",
+            ),
+            (
+                "drawToImage",
+                "Draws the rendered chart into an existing image.\n\n@param | target | userdata | ImageData target to receive chart pixels.",
+                "(target)",
+            ),
+            (
+                "draw",
+                "Draws the chart at world or screen coordinates using optional transform options.\n\n@param | x | number | Draw X coordinate.\n@param | y | number | Draw Y coordinate.\n@param | opts | table? | Optional render transform options.\n@return | nil | Return value produced by this chart operation.",
+                "(x, y, opts)",
+            ),
+            (
+                "getWidth",
+                "Returns the configured chart width in pixels.\n\n@return | integer | Configured chart width in pixels.",
+                "()",
+            ),
+            (
+                "getHeight",
+                "Returns the configured chart height in pixels.\n\n@return | integer | Configured chart height in pixels.",
+                "()",
+            ),
+            (
+                "type",
+                "Returns the runtime userdata type name for this chart.\n\n@return | string | Runtime userdata type name.",
+                "()",
+            ),
+            (
+                "typeOf",
+                "Checks whether a type name matches this chart userdata.\n\n@param | name | string | Type name to check.\n@return | boolean | True when the supplied type name matches this chart userdata.",
+                "(name)",
+            ),
+        ]
+        for func_name, docstring, inferred in common_methods:
+            desc = _first_desc_line(docstring)
+            params, returns = _extract_params_returns(docstring)
+            functions.append(LuaFunction(
+                module=module,
+                name=func_name,
+                lua_name=f"{owner}:{func_name}",
+                owner_type=owner,
+                description=desc,
+                full_doc=docstring,
+                params=params,
+                returns=returns,
+                line=line_no,
+                file=rel_path,
+                kind="method",
+                inferred_sig=inferred,
+                typed_params=_merge_typed_params_with_inferred(
+                    _parse_tagged_params(docstring), inferred
+                ),
+                inferred_return=_parse_tagged_return(docstring)[0],
+                return_description=_parse_tagged_return(docstring)[1],
+            ))
+
     i = 0
     while i < len(lines):
         stripped = lines[i].strip()
+
+        if macro_depth > 0:
+            if not stripped.startswith("//"):
+                macro_depth += stripped.count("{") - stripped.count("}")
+                if macro_depth <= 0:
+                    macro_depth = 0
+            i += 1
+            continue
+
+        if re.match(r"^\s*macro_rules!\s+\w+\s*{", stripped):
+            macro_depth = stripped.count("{") - stripped.count("}")
+            if macro_depth <= 0:
+                macro_depth = 0
+            i += 1
+            continue
+
+        if "add_basic_chart_methods!" in stripped:
+            macro_call = stripped
+            lookahead = i
+            while ");" not in macro_call and lookahead + 1 < len(lines):
+                lookahead += 1
+                macro_call += " " + lines[lookahead].strip()
+            basic_chart_m = basic_chart_macro_re.search(macro_call)
+            if basic_chart_m:
+                _append_basic_chart_methods(basic_chart_m.group(1), i + 1)
+            i = lookahead + 1
+            continue
 
         if not stripped.startswith("//"):
             brace_depth += stripped.count("{") - stripped.count("}")

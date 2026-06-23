@@ -8,16 +8,17 @@
 -- ==========================================================================
 
 -- Quick validation (simplest usage)
-local function example_print_log(...)
-    local parts = {}
-    for i = 1, select("#", ...) do
-        parts[i] = tostring(select(i, ...))
-    end
-    lurek.log.info(table.concat(parts, " "))
-end
 
 --@api: lurek.validator.newEngine
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local eng = lurek.validator.newEngine("content/examples")
     local before = eng:ruleCount()
     eng:addApiRule()
@@ -28,6 +29,14 @@ end
 
 --@api: lurek.validator.validate
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local report = lurek.validator.validate("content/examples")
     example_print_log("lurek.validator.validate files_checked=" .. report.files_checked)
     example_print_log("errors=" .. report.error_count)
@@ -37,6 +46,14 @@ end
 
 --@api: lurek.validator.validateFile
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local report = lurek.validator.validateFile("content/examples/math.lua")
     example_print_log("lurek.validator.validateFile files_checked=" .. report.files_checked)
     example_print_log("warnings=" .. report.warning_count)
@@ -46,6 +63,14 @@ end
 
 --@api: LValidationEngine:addAssetRule
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local eng = lurek.validator.newEngine("content/examples")
     local before = eng:ruleCount()
     eng:addAssetRule("assets")
@@ -56,6 +81,14 @@ end
 
 --@api: LValidationEngine:addImportRule
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local eng = lurek.validator.newEngine("content/examples")
     local before = eng:ruleCount()
     eng:addImportRule({ "content/examples", "library" })
@@ -66,6 +99,14 @@ end
 
 --@api: LValidationEngine:addApiRule
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local eng = lurek.validator.newEngine("content/examples")
     local before = eng:ruleCount()
     eng:addApiRule()
@@ -77,6 +118,14 @@ end
 
 --@api: LValidationEngine:addPatternRule
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local eng = lurek.validator.newEngine("content/examples")
     eng:addPatternRule("no_print", "print\\(", "Use lurek.log instead of print()", "warning")
     local report = eng:runFile("content/examples/math.lua")
@@ -87,6 +136,14 @@ end
 
 --@api: LValidationEngine:addRequiredRule
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local eng = lurek.validator.newEngine("content/examples")
     eng:addRequiredRule("must_use_lurek", "lurek\\.", "Expected at least one lurek.* call")
     local report = eng:runFile("content/examples/math.lua")
@@ -97,6 +154,14 @@ end
 
 --@api: LValidationEngine:loadTomlRules
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local eng = lurek.validator.newEngine("content/examples")
     eng:loadTomlRules("docs/templates/validator_rules.toml")
     local report = eng:runFile("content/examples/math.lua")
@@ -107,6 +172,14 @@ end
 
 --@api: LValidationEngine:run
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local eng = lurek.validator.newEngine("content/examples")
     eng:addApiRule()
     local report = eng:run()
@@ -116,6 +189,14 @@ end
 
 --@api: LValidationEngine:runFile
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local eng = lurek.validator.newEngine("content/examples")
     eng:addApiRule()
     local report = eng:runFile("content/examples/math.lua")
@@ -125,6 +206,14 @@ end
 
 --@api: LValidationEngine:ruleCount
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local eng = lurek.validator.newEngine("content/examples")
     eng:addApiRule()
     eng:addAssetRule("assets")

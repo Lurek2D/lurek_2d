@@ -21,6 +21,8 @@
 - One file per module.
 - One `-- @api:` marker per public API.
 - One `do ... end` block per marker.
+- Each block is standalone; duplicate setup inside the block instead of relying on helpers, constants, or state outside it.
+- Example files must not contain top-level Lua code outside marker-owned blocks.
 - The block should show one concrete usage pattern, not every edge case.
 - The full file must run in Lurek without errors.
 - No `-- TODO:` stubs are allowed in committed examples.

@@ -94,7 +94,7 @@ impl HexGrid {
         None
     }
     /// Return true when every hex on the straight line from `from` to `to` is passable.
-    pub fn line_of_sight(&self, from: (u32, u32), to: (u32, u32)) -> bool {
+    fn line_of_sight(&self, from: (u32, u32), to: (u32, u32)) -> bool {
         let line = self.hex_line(from, to);
         for cell in &line {
             if self.is_blocked(cell.0, cell.1) {

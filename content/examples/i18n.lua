@@ -4,58 +4,59 @@
 
 --- i18n Module: localization, translation, number/date formatting
 
-local function i18n_log(message)
-    lurek.log.info("[i18n] " .. message)
-end
 
-local function has_value(list, needle)
-    for _, value in ipairs(list or {}) do
-        if value == needle then
-            return true
-        end
-    end
-    return false
-end
 
-local function seed_catalog()
-    lurek.i18n.offChange()
-    for _, locale in ipairs({ "en", "pl", "fr", "ar", "runtime_ui", "tmp_i18n", "cov_en", "cov_pl" }) do
-        lurek.i18n.unloadTable(locale)
-    end
-    lurek.i18n.loadTable("en", {
-        menu = { start = "Start game", quit = "Quit" },
-        hud = {
-            coins = { one = "{count} coin", other = "{count} coins" },
-            quest = "Quest: {name}",
-            score = "Score {score}",
-        },
-        dialog = {
-            greeting = "Hello {name}",
-            tip = "Press {key} to interact",
-        },
-        ui = { ok = "OK", cancel = "Cancel" },
-        title = "Captain {name}",
-    })
-    lurek.i18n.loadTable("pl", {
-        menu = { start = "Start game PL" },
-        hud = { quest = "Quest PL: {name}" },
-        ui = { ok = "OK PL" },
-    })
-    lurek.i18n.loadTable("fr", {
-        menu = { start = "Demarrer" },
-        ui = { ok = "Daccord" },
-    })
-    lurek.i18n.loadTable("ar", {
-        menu = { start = "Start game AR" },
-        dialog = { greeting = "Hello AR {name}" },
-    })
-    lurek.i18n.setBase("en")
-    lurek.i18n.setFallbacks({ "en" })
-    lurek.i18n.setLanguage("en")
-end
 
 --@api: lurek.i18n.loadTable
 do
+    local function i18n_log(message)
+        lurek.log.info("[i18n] " .. message)
+    end
+    local function has_value(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function seed_catalog()
+        lurek.i18n.offChange()
+        for _, locale in ipairs({ "en", "pl", "fr", "ar", "runtime_ui", "tmp_i18n", "cov_en", "cov_pl" }) do
+            lurek.i18n.unloadTable(locale)
+        end
+        lurek.i18n.loadTable("en", {
+            menu = { start = "Start game", quit = "Quit" },
+            hud = {
+                coins = { one = "{count} coin", other = "{count} coins" },
+                quest = "Quest: {name}",
+                score = "Score {score}",
+            },
+            dialog = {
+                greeting = "Hello {name}",
+                tip = "Press {key} to interact",
+            },
+            ui = { ok = "OK", cancel = "Cancel" },
+            title = "Captain {name}",
+        })
+        lurek.i18n.loadTable("pl", {
+            menu = { start = "Start game PL" },
+            hud = { quest = "Quest PL: {name}" },
+            ui = { ok = "OK PL" },
+        })
+        lurek.i18n.loadTable("fr", {
+            menu = { start = "Demarrer" },
+            ui = { ok = "Daccord" },
+        })
+        lurek.i18n.loadTable("ar", {
+            menu = { start = "Start game AR" },
+            dialog = { greeting = "Hello AR {name}" },
+        })
+        lurek.i18n.setBase("en")
+        lurek.i18n.setFallbacks({ "en" })
+        lurek.i18n.setLanguage("en")
+    end
+
     seed_catalog()
     local had_en = lurek.i18n.hasLanguage("en")
     lurek.i18n.loadTable("runtime_ui", { menu = { resume = "Resume run" }, ui = { apply = "Apply" } })
@@ -66,6 +67,54 @@ end
 
 --@api: lurek.i18n.unloadTable
 do
+    local function i18n_log(message)
+        lurek.log.info("[i18n] " .. message)
+    end
+    local function has_value(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function seed_catalog()
+        lurek.i18n.offChange()
+        for _, locale in ipairs({ "en", "pl", "fr", "ar", "runtime_ui", "tmp_i18n", "cov_en", "cov_pl" }) do
+            lurek.i18n.unloadTable(locale)
+        end
+        lurek.i18n.loadTable("en", {
+            menu = { start = "Start game", quit = "Quit" },
+            hud = {
+                coins = { one = "{count} coin", other = "{count} coins" },
+                quest = "Quest: {name}",
+                score = "Score {score}",
+            },
+            dialog = {
+                greeting = "Hello {name}",
+                tip = "Press {key} to interact",
+            },
+            ui = { ok = "OK", cancel = "Cancel" },
+            title = "Captain {name}",
+        })
+        lurek.i18n.loadTable("pl", {
+            menu = { start = "Start game PL" },
+            hud = { quest = "Quest PL: {name}" },
+            ui = { ok = "OK PL" },
+        })
+        lurek.i18n.loadTable("fr", {
+            menu = { start = "Demarrer" },
+            ui = { ok = "Daccord" },
+        })
+        lurek.i18n.loadTable("ar", {
+            menu = { start = "Start game AR" },
+            dialog = { greeting = "Hello AR {name}" },
+        })
+        lurek.i18n.setBase("en")
+        lurek.i18n.setFallbacks({ "en" })
+        lurek.i18n.setLanguage("en")
+    end
+
     seed_catalog()
     lurek.i18n.loadTable("tmp_i18n", { debug = { label = "Debug overlay" } })
     local loaded = lurek.i18n.hasLanguage("tmp_i18n")
@@ -76,6 +125,54 @@ end
 
 --@api: lurek.i18n.loadString
 do
+    local function i18n_log(message)
+        lurek.log.info("[i18n] " .. message)
+    end
+    local function has_value(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function seed_catalog()
+        lurek.i18n.offChange()
+        for _, locale in ipairs({ "en", "pl", "fr", "ar", "runtime_ui", "tmp_i18n", "cov_en", "cov_pl" }) do
+            lurek.i18n.unloadTable(locale)
+        end
+        lurek.i18n.loadTable("en", {
+            menu = { start = "Start game", quit = "Quit" },
+            hud = {
+                coins = { one = "{count} coin", other = "{count} coins" },
+                quest = "Quest: {name}",
+                score = "Score {score}",
+            },
+            dialog = {
+                greeting = "Hello {name}",
+                tip = "Press {key} to interact",
+            },
+            ui = { ok = "OK", cancel = "Cancel" },
+            title = "Captain {name}",
+        })
+        lurek.i18n.loadTable("pl", {
+            menu = { start = "Start game PL" },
+            hud = { quest = "Quest PL: {name}" },
+            ui = { ok = "OK PL" },
+        })
+        lurek.i18n.loadTable("fr", {
+            menu = { start = "Demarrer" },
+            ui = { ok = "Daccord" },
+        })
+        lurek.i18n.loadTable("ar", {
+            menu = { start = "Start game AR" },
+            dialog = { greeting = "Hello AR {name}" },
+        })
+        lurek.i18n.setBase("en")
+        lurek.i18n.setFallbacks({ "en" })
+        lurek.i18n.setLanguage("en")
+    end
+
     seed_catalog()
     local json = '{"menu":{"credits":"Credits"},"hud":{"banner":"Mission {name}"}}'
     lurek.i18n.loadString("runtime_ui", json, "json")
@@ -87,6 +184,54 @@ end
 
 --@api: lurek.i18n.setLanguage
 do
+    local function i18n_log(message)
+        lurek.log.info("[i18n] " .. message)
+    end
+    local function has_value(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function seed_catalog()
+        lurek.i18n.offChange()
+        for _, locale in ipairs({ "en", "pl", "fr", "ar", "runtime_ui", "tmp_i18n", "cov_en", "cov_pl" }) do
+            lurek.i18n.unloadTable(locale)
+        end
+        lurek.i18n.loadTable("en", {
+            menu = { start = "Start game", quit = "Quit" },
+            hud = {
+                coins = { one = "{count} coin", other = "{count} coins" },
+                quest = "Quest: {name}",
+                score = "Score {score}",
+            },
+            dialog = {
+                greeting = "Hello {name}",
+                tip = "Press {key} to interact",
+            },
+            ui = { ok = "OK", cancel = "Cancel" },
+            title = "Captain {name}",
+        })
+        lurek.i18n.loadTable("pl", {
+            menu = { start = "Start game PL" },
+            hud = { quest = "Quest PL: {name}" },
+            ui = { ok = "OK PL" },
+        })
+        lurek.i18n.loadTable("fr", {
+            menu = { start = "Demarrer" },
+            ui = { ok = "Daccord" },
+        })
+        lurek.i18n.loadTable("ar", {
+            menu = { start = "Start game AR" },
+            dialog = { greeting = "Hello AR {name}" },
+        })
+        lurek.i18n.setBase("en")
+        lurek.i18n.setFallbacks({ "en" })
+        lurek.i18n.setLanguage("en")
+    end
+
     seed_catalog()
     local before = lurek.i18n.t("menu.start")
     lurek.i18n.setLanguage("pl")
@@ -97,6 +242,54 @@ end
 
 --@api: lurek.i18n.getLanguage
 do
+    local function i18n_log(message)
+        lurek.log.info("[i18n] " .. message)
+    end
+    local function has_value(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function seed_catalog()
+        lurek.i18n.offChange()
+        for _, locale in ipairs({ "en", "pl", "fr", "ar", "runtime_ui", "tmp_i18n", "cov_en", "cov_pl" }) do
+            lurek.i18n.unloadTable(locale)
+        end
+        lurek.i18n.loadTable("en", {
+            menu = { start = "Start game", quit = "Quit" },
+            hud = {
+                coins = { one = "{count} coin", other = "{count} coins" },
+                quest = "Quest: {name}",
+                score = "Score {score}",
+            },
+            dialog = {
+                greeting = "Hello {name}",
+                tip = "Press {key} to interact",
+            },
+            ui = { ok = "OK", cancel = "Cancel" },
+            title = "Captain {name}",
+        })
+        lurek.i18n.loadTable("pl", {
+            menu = { start = "Start game PL" },
+            hud = { quest = "Quest PL: {name}" },
+            ui = { ok = "OK PL" },
+        })
+        lurek.i18n.loadTable("fr", {
+            menu = { start = "Demarrer" },
+            ui = { ok = "Daccord" },
+        })
+        lurek.i18n.loadTable("ar", {
+            menu = { start = "Start game AR" },
+            dialog = { greeting = "Hello AR {name}" },
+        })
+        lurek.i18n.setBase("en")
+        lurek.i18n.setFallbacks({ "en" })
+        lurek.i18n.setLanguage("en")
+    end
+
     seed_catalog()
     lurek.i18n.setLanguage("pl")
     local current = lurek.i18n.getLanguage()
@@ -107,6 +300,54 @@ end
 
 --@api: lurek.i18n.getLanguages
 do
+    local function i18n_log(message)
+        lurek.log.info("[i18n] " .. message)
+    end
+    local function has_value(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function seed_catalog()
+        lurek.i18n.offChange()
+        for _, locale in ipairs({ "en", "pl", "fr", "ar", "runtime_ui", "tmp_i18n", "cov_en", "cov_pl" }) do
+            lurek.i18n.unloadTable(locale)
+        end
+        lurek.i18n.loadTable("en", {
+            menu = { start = "Start game", quit = "Quit" },
+            hud = {
+                coins = { one = "{count} coin", other = "{count} coins" },
+                quest = "Quest: {name}",
+                score = "Score {score}",
+            },
+            dialog = {
+                greeting = "Hello {name}",
+                tip = "Press {key} to interact",
+            },
+            ui = { ok = "OK", cancel = "Cancel" },
+            title = "Captain {name}",
+        })
+        lurek.i18n.loadTable("pl", {
+            menu = { start = "Start game PL" },
+            hud = { quest = "Quest PL: {name}" },
+            ui = { ok = "OK PL" },
+        })
+        lurek.i18n.loadTable("fr", {
+            menu = { start = "Demarrer" },
+            ui = { ok = "Daccord" },
+        })
+        lurek.i18n.loadTable("ar", {
+            menu = { start = "Start game AR" },
+            dialog = { greeting = "Hello AR {name}" },
+        })
+        lurek.i18n.setBase("en")
+        lurek.i18n.setFallbacks({ "en" })
+        lurek.i18n.setLanguage("en")
+    end
+
     seed_catalog()
     lurek.i18n.loadTable("runtime_ui", { menu = { credits = "Credits" } })
     local languages = lurek.i18n.getLanguages()
@@ -117,6 +358,54 @@ end
 
 --@api: lurek.i18n.hasLanguage
 do
+    local function i18n_log(message)
+        lurek.log.info("[i18n] " .. message)
+    end
+    local function has_value(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function seed_catalog()
+        lurek.i18n.offChange()
+        for _, locale in ipairs({ "en", "pl", "fr", "ar", "runtime_ui", "tmp_i18n", "cov_en", "cov_pl" }) do
+            lurek.i18n.unloadTable(locale)
+        end
+        lurek.i18n.loadTable("en", {
+            menu = { start = "Start game", quit = "Quit" },
+            hud = {
+                coins = { one = "{count} coin", other = "{count} coins" },
+                quest = "Quest: {name}",
+                score = "Score {score}",
+            },
+            dialog = {
+                greeting = "Hello {name}",
+                tip = "Press {key} to interact",
+            },
+            ui = { ok = "OK", cancel = "Cancel" },
+            title = "Captain {name}",
+        })
+        lurek.i18n.loadTable("pl", {
+            menu = { start = "Start game PL" },
+            hud = { quest = "Quest PL: {name}" },
+            ui = { ok = "OK PL" },
+        })
+        lurek.i18n.loadTable("fr", {
+            menu = { start = "Demarrer" },
+            ui = { ok = "Daccord" },
+        })
+        lurek.i18n.loadTable("ar", {
+            menu = { start = "Start game AR" },
+            dialog = { greeting = "Hello AR {name}" },
+        })
+        lurek.i18n.setBase("en")
+        lurek.i18n.setFallbacks({ "en" })
+        lurek.i18n.setLanguage("en")
+    end
+
     seed_catalog()
     local has_en = lurek.i18n.hasLanguage("en")
     local has_es = lurek.i18n.hasLanguage("es")
@@ -127,6 +416,54 @@ end
 
 --@api: lurek.i18n.getAvailableLanguages
 do
+    local function i18n_log(message)
+        lurek.log.info("[i18n] " .. message)
+    end
+    local function has_value(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function seed_catalog()
+        lurek.i18n.offChange()
+        for _, locale in ipairs({ "en", "pl", "fr", "ar", "runtime_ui", "tmp_i18n", "cov_en", "cov_pl" }) do
+            lurek.i18n.unloadTable(locale)
+        end
+        lurek.i18n.loadTable("en", {
+            menu = { start = "Start game", quit = "Quit" },
+            hud = {
+                coins = { one = "{count} coin", other = "{count} coins" },
+                quest = "Quest: {name}",
+                score = "Score {score}",
+            },
+            dialog = {
+                greeting = "Hello {name}",
+                tip = "Press {key} to interact",
+            },
+            ui = { ok = "OK", cancel = "Cancel" },
+            title = "Captain {name}",
+        })
+        lurek.i18n.loadTable("pl", {
+            menu = { start = "Start game PL" },
+            hud = { quest = "Quest PL: {name}" },
+            ui = { ok = "OK PL" },
+        })
+        lurek.i18n.loadTable("fr", {
+            menu = { start = "Demarrer" },
+            ui = { ok = "Daccord" },
+        })
+        lurek.i18n.loadTable("ar", {
+            menu = { start = "Start game AR" },
+            dialog = { greeting = "Hello AR {name}" },
+        })
+        lurek.i18n.setBase("en")
+        lurek.i18n.setFallbacks({ "en" })
+        lurek.i18n.setLanguage("en")
+    end
+
     seed_catalog()
     lurek.i18n.loadTable("runtime_ui", { menu = { credits = "Credits" } })
     local languages = lurek.i18n.getAvailableLanguages()
@@ -137,6 +474,54 @@ end
 
 --@api: lurek.i18n.setBase
 do
+    local function i18n_log(message)
+        lurek.log.info("[i18n] " .. message)
+    end
+    local function has_value(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function seed_catalog()
+        lurek.i18n.offChange()
+        for _, locale in ipairs({ "en", "pl", "fr", "ar", "runtime_ui", "tmp_i18n", "cov_en", "cov_pl" }) do
+            lurek.i18n.unloadTable(locale)
+        end
+        lurek.i18n.loadTable("en", {
+            menu = { start = "Start game", quit = "Quit" },
+            hud = {
+                coins = { one = "{count} coin", other = "{count} coins" },
+                quest = "Quest: {name}",
+                score = "Score {score}",
+            },
+            dialog = {
+                greeting = "Hello {name}",
+                tip = "Press {key} to interact",
+            },
+            ui = { ok = "OK", cancel = "Cancel" },
+            title = "Captain {name}",
+        })
+        lurek.i18n.loadTable("pl", {
+            menu = { start = "Start game PL" },
+            hud = { quest = "Quest PL: {name}" },
+            ui = { ok = "OK PL" },
+        })
+        lurek.i18n.loadTable("fr", {
+            menu = { start = "Demarrer" },
+            ui = { ok = "Daccord" },
+        })
+        lurek.i18n.loadTable("ar", {
+            menu = { start = "Start game AR" },
+            dialog = { greeting = "Hello AR {name}" },
+        })
+        lurek.i18n.setBase("en")
+        lurek.i18n.setFallbacks({ "en" })
+        lurek.i18n.setLanguage("en")
+    end
+
     seed_catalog()
     local before = lurek.i18n.getBase()
     lurek.i18n.setBase("pl")
@@ -147,6 +532,54 @@ end
 
 --@api: lurek.i18n.getBase
 do
+    local function i18n_log(message)
+        lurek.log.info("[i18n] " .. message)
+    end
+    local function has_value(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function seed_catalog()
+        lurek.i18n.offChange()
+        for _, locale in ipairs({ "en", "pl", "fr", "ar", "runtime_ui", "tmp_i18n", "cov_en", "cov_pl" }) do
+            lurek.i18n.unloadTable(locale)
+        end
+        lurek.i18n.loadTable("en", {
+            menu = { start = "Start game", quit = "Quit" },
+            hud = {
+                coins = { one = "{count} coin", other = "{count} coins" },
+                quest = "Quest: {name}",
+                score = "Score {score}",
+            },
+            dialog = {
+                greeting = "Hello {name}",
+                tip = "Press {key} to interact",
+            },
+            ui = { ok = "OK", cancel = "Cancel" },
+            title = "Captain {name}",
+        })
+        lurek.i18n.loadTable("pl", {
+            menu = { start = "Start game PL" },
+            hud = { quest = "Quest PL: {name}" },
+            ui = { ok = "OK PL" },
+        })
+        lurek.i18n.loadTable("fr", {
+            menu = { start = "Demarrer" },
+            ui = { ok = "Daccord" },
+        })
+        lurek.i18n.loadTable("ar", {
+            menu = { start = "Start game AR" },
+            dialog = { greeting = "Hello AR {name}" },
+        })
+        lurek.i18n.setBase("en")
+        lurek.i18n.setFallbacks({ "en" })
+        lurek.i18n.setLanguage("en")
+    end
+
     seed_catalog()
     lurek.i18n.setBase("en")
     lurek.i18n.setLanguage("pl")
@@ -158,6 +591,54 @@ end
 
 --@api: lurek.i18n.setFallbacks
 do
+    local function i18n_log(message)
+        lurek.log.info("[i18n] " .. message)
+    end
+    local function has_value(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function seed_catalog()
+        lurek.i18n.offChange()
+        for _, locale in ipairs({ "en", "pl", "fr", "ar", "runtime_ui", "tmp_i18n", "cov_en", "cov_pl" }) do
+            lurek.i18n.unloadTable(locale)
+        end
+        lurek.i18n.loadTable("en", {
+            menu = { start = "Start game", quit = "Quit" },
+            hud = {
+                coins = { one = "{count} coin", other = "{count} coins" },
+                quest = "Quest: {name}",
+                score = "Score {score}",
+            },
+            dialog = {
+                greeting = "Hello {name}",
+                tip = "Press {key} to interact",
+            },
+            ui = { ok = "OK", cancel = "Cancel" },
+            title = "Captain {name}",
+        })
+        lurek.i18n.loadTable("pl", {
+            menu = { start = "Start game PL" },
+            hud = { quest = "Quest PL: {name}" },
+            ui = { ok = "OK PL" },
+        })
+        lurek.i18n.loadTable("fr", {
+            menu = { start = "Demarrer" },
+            ui = { ok = "Daccord" },
+        })
+        lurek.i18n.loadTable("ar", {
+            menu = { start = "Start game AR" },
+            dialog = { greeting = "Hello AR {name}" },
+        })
+        lurek.i18n.setBase("en")
+        lurek.i18n.setFallbacks({ "en" })
+        lurek.i18n.setLanguage("en")
+    end
+
     seed_catalog()
     lurek.i18n.setLanguage("pl")
     lurek.i18n.setFallbacks({ "en", "fr" })
@@ -168,6 +649,54 @@ end
 
 --@api: lurek.i18n.getFallbacks
 do
+    local function i18n_log(message)
+        lurek.log.info("[i18n] " .. message)
+    end
+    local function has_value(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function seed_catalog()
+        lurek.i18n.offChange()
+        for _, locale in ipairs({ "en", "pl", "fr", "ar", "runtime_ui", "tmp_i18n", "cov_en", "cov_pl" }) do
+            lurek.i18n.unloadTable(locale)
+        end
+        lurek.i18n.loadTable("en", {
+            menu = { start = "Start game", quit = "Quit" },
+            hud = {
+                coins = { one = "{count} coin", other = "{count} coins" },
+                quest = "Quest: {name}",
+                score = "Score {score}",
+            },
+            dialog = {
+                greeting = "Hello {name}",
+                tip = "Press {key} to interact",
+            },
+            ui = { ok = "OK", cancel = "Cancel" },
+            title = "Captain {name}",
+        })
+        lurek.i18n.loadTable("pl", {
+            menu = { start = "Start game PL" },
+            hud = { quest = "Quest PL: {name}" },
+            ui = { ok = "OK PL" },
+        })
+        lurek.i18n.loadTable("fr", {
+            menu = { start = "Demarrer" },
+            ui = { ok = "Daccord" },
+        })
+        lurek.i18n.loadTable("ar", {
+            menu = { start = "Start game AR" },
+            dialog = { greeting = "Hello AR {name}" },
+        })
+        lurek.i18n.setBase("en")
+        lurek.i18n.setFallbacks({ "en" })
+        lurek.i18n.setLanguage("en")
+    end
+
     seed_catalog()
     lurek.i18n.setFallbacks({ "pl", "en" })
     local chain = lurek.i18n.getFallbacks()
@@ -178,6 +707,54 @@ end
 
 --@api: lurek.i18n.t
 do
+    local function i18n_log(message)
+        lurek.log.info("[i18n] " .. message)
+    end
+    local function has_value(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function seed_catalog()
+        lurek.i18n.offChange()
+        for _, locale in ipairs({ "en", "pl", "fr", "ar", "runtime_ui", "tmp_i18n", "cov_en", "cov_pl" }) do
+            lurek.i18n.unloadTable(locale)
+        end
+        lurek.i18n.loadTable("en", {
+            menu = { start = "Start game", quit = "Quit" },
+            hud = {
+                coins = { one = "{count} coin", other = "{count} coins" },
+                quest = "Quest: {name}",
+                score = "Score {score}",
+            },
+            dialog = {
+                greeting = "Hello {name}",
+                tip = "Press {key} to interact",
+            },
+            ui = { ok = "OK", cancel = "Cancel" },
+            title = "Captain {name}",
+        })
+        lurek.i18n.loadTable("pl", {
+            menu = { start = "Start game PL" },
+            hud = { quest = "Quest PL: {name}" },
+            ui = { ok = "OK PL" },
+        })
+        lurek.i18n.loadTable("fr", {
+            menu = { start = "Demarrer" },
+            ui = { ok = "Daccord" },
+        })
+        lurek.i18n.loadTable("ar", {
+            menu = { start = "Start game AR" },
+            dialog = { greeting = "Hello AR {name}" },
+        })
+        lurek.i18n.setBase("en")
+        lurek.i18n.setFallbacks({ "en" })
+        lurek.i18n.setLanguage("en")
+    end
+
     seed_catalog()
     lurek.i18n.setLanguage("en")
     local quest = lurek.i18n.t("hud.quest", { name = "Find the relay" })
@@ -188,6 +765,54 @@ end
 
 --@api: lurek.i18n.hasKey
 do
+    local function i18n_log(message)
+        lurek.log.info("[i18n] " .. message)
+    end
+    local function has_value(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function seed_catalog()
+        lurek.i18n.offChange()
+        for _, locale in ipairs({ "en", "pl", "fr", "ar", "runtime_ui", "tmp_i18n", "cov_en", "cov_pl" }) do
+            lurek.i18n.unloadTable(locale)
+        end
+        lurek.i18n.loadTable("en", {
+            menu = { start = "Start game", quit = "Quit" },
+            hud = {
+                coins = { one = "{count} coin", other = "{count} coins" },
+                quest = "Quest: {name}",
+                score = "Score {score}",
+            },
+            dialog = {
+                greeting = "Hello {name}",
+                tip = "Press {key} to interact",
+            },
+            ui = { ok = "OK", cancel = "Cancel" },
+            title = "Captain {name}",
+        })
+        lurek.i18n.loadTable("pl", {
+            menu = { start = "Start game PL" },
+            hud = { quest = "Quest PL: {name}" },
+            ui = { ok = "OK PL" },
+        })
+        lurek.i18n.loadTable("fr", {
+            menu = { start = "Demarrer" },
+            ui = { ok = "Daccord" },
+        })
+        lurek.i18n.loadTable("ar", {
+            menu = { start = "Start game AR" },
+            dialog = { greeting = "Hello AR {name}" },
+        })
+        lurek.i18n.setBase("en")
+        lurek.i18n.setFallbacks({ "en" })
+        lurek.i18n.setLanguage("en")
+    end
+
     seed_catalog()
     lurek.i18n.setLanguage("pl")
     local has_local = lurek.i18n.hasKey("menu.start")
@@ -198,6 +823,54 @@ end
 
 --@api: lurek.i18n.getKeys
 do
+    local function i18n_log(message)
+        lurek.log.info("[i18n] " .. message)
+    end
+    local function has_value(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function seed_catalog()
+        lurek.i18n.offChange()
+        for _, locale in ipairs({ "en", "pl", "fr", "ar", "runtime_ui", "tmp_i18n", "cov_en", "cov_pl" }) do
+            lurek.i18n.unloadTable(locale)
+        end
+        lurek.i18n.loadTable("en", {
+            menu = { start = "Start game", quit = "Quit" },
+            hud = {
+                coins = { one = "{count} coin", other = "{count} coins" },
+                quest = "Quest: {name}",
+                score = "Score {score}",
+            },
+            dialog = {
+                greeting = "Hello {name}",
+                tip = "Press {key} to interact",
+            },
+            ui = { ok = "OK", cancel = "Cancel" },
+            title = "Captain {name}",
+        })
+        lurek.i18n.loadTable("pl", {
+            menu = { start = "Start game PL" },
+            hud = { quest = "Quest PL: {name}" },
+            ui = { ok = "OK PL" },
+        })
+        lurek.i18n.loadTable("fr", {
+            menu = { start = "Demarrer" },
+            ui = { ok = "Daccord" },
+        })
+        lurek.i18n.loadTable("ar", {
+            menu = { start = "Start game AR" },
+            dialog = { greeting = "Hello AR {name}" },
+        })
+        lurek.i18n.setBase("en")
+        lurek.i18n.setFallbacks({ "en" })
+        lurek.i18n.setLanguage("en")
+    end
+
     seed_catalog()
     local keys = lurek.i18n.getKeys()
     local first = keys[1] or "none"
@@ -208,6 +881,54 @@ end
 
 --@api: lurek.i18n.setKey
 do
+    local function i18n_log(message)
+        lurek.log.info("[i18n] " .. message)
+    end
+    local function has_value(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function seed_catalog()
+        lurek.i18n.offChange()
+        for _, locale in ipairs({ "en", "pl", "fr", "ar", "runtime_ui", "tmp_i18n", "cov_en", "cov_pl" }) do
+            lurek.i18n.unloadTable(locale)
+        end
+        lurek.i18n.loadTable("en", {
+            menu = { start = "Start game", quit = "Quit" },
+            hud = {
+                coins = { one = "{count} coin", other = "{count} coins" },
+                quest = "Quest: {name}",
+                score = "Score {score}",
+            },
+            dialog = {
+                greeting = "Hello {name}",
+                tip = "Press {key} to interact",
+            },
+            ui = { ok = "OK", cancel = "Cancel" },
+            title = "Captain {name}",
+        })
+        lurek.i18n.loadTable("pl", {
+            menu = { start = "Start game PL" },
+            hud = { quest = "Quest PL: {name}" },
+            ui = { ok = "OK PL" },
+        })
+        lurek.i18n.loadTable("fr", {
+            menu = { start = "Demarrer" },
+            ui = { ok = "Daccord" },
+        })
+        lurek.i18n.loadTable("ar", {
+            menu = { start = "Start game AR" },
+            dialog = { greeting = "Hello AR {name}" },
+        })
+        lurek.i18n.setBase("en")
+        lurek.i18n.setFallbacks({ "en" })
+        lurek.i18n.setLanguage("en")
+    end
+
     seed_catalog()
     lurek.i18n.setLanguage("en")
     lurek.i18n.setKey("en", "ui.apply", "Apply changes")
@@ -218,6 +939,54 @@ end
 
 --@api: lurek.i18n.keyCount
 do
+    local function i18n_log(message)
+        lurek.log.info("[i18n] " .. message)
+    end
+    local function has_value(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function seed_catalog()
+        lurek.i18n.offChange()
+        for _, locale in ipairs({ "en", "pl", "fr", "ar", "runtime_ui", "tmp_i18n", "cov_en", "cov_pl" }) do
+            lurek.i18n.unloadTable(locale)
+        end
+        lurek.i18n.loadTable("en", {
+            menu = { start = "Start game", quit = "Quit" },
+            hud = {
+                coins = { one = "{count} coin", other = "{count} coins" },
+                quest = "Quest: {name}",
+                score = "Score {score}",
+            },
+            dialog = {
+                greeting = "Hello {name}",
+                tip = "Press {key} to interact",
+            },
+            ui = { ok = "OK", cancel = "Cancel" },
+            title = "Captain {name}",
+        })
+        lurek.i18n.loadTable("pl", {
+            menu = { start = "Start game PL" },
+            hud = { quest = "Quest PL: {name}" },
+            ui = { ok = "OK PL" },
+        })
+        lurek.i18n.loadTable("fr", {
+            menu = { start = "Demarrer" },
+            ui = { ok = "Daccord" },
+        })
+        lurek.i18n.loadTable("ar", {
+            menu = { start = "Start game AR" },
+            dialog = { greeting = "Hello AR {name}" },
+        })
+        lurek.i18n.setBase("en")
+        lurek.i18n.setFallbacks({ "en" })
+        lurek.i18n.setLanguage("en")
+    end
+
     seed_catalog()
     local before = lurek.i18n.keyCount()
     lurek.i18n.setKey("en", "debug.overlay", "Debug overlay")
@@ -228,6 +997,54 @@ end
 
 --@api: lurek.i18n.interpolate
 do
+    local function i18n_log(message)
+        lurek.log.info("[i18n] " .. message)
+    end
+    local function has_value(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function seed_catalog()
+        lurek.i18n.offChange()
+        for _, locale in ipairs({ "en", "pl", "fr", "ar", "runtime_ui", "tmp_i18n", "cov_en", "cov_pl" }) do
+            lurek.i18n.unloadTable(locale)
+        end
+        lurek.i18n.loadTable("en", {
+            menu = { start = "Start game", quit = "Quit" },
+            hud = {
+                coins = { one = "{count} coin", other = "{count} coins" },
+                quest = "Quest: {name}",
+                score = "Score {score}",
+            },
+            dialog = {
+                greeting = "Hello {name}",
+                tip = "Press {key} to interact",
+            },
+            ui = { ok = "OK", cancel = "Cancel" },
+            title = "Captain {name}",
+        })
+        lurek.i18n.loadTable("pl", {
+            menu = { start = "Start game PL" },
+            hud = { quest = "Quest PL: {name}" },
+            ui = { ok = "OK PL" },
+        })
+        lurek.i18n.loadTable("fr", {
+            menu = { start = "Demarrer" },
+            ui = { ok = "Daccord" },
+        })
+        lurek.i18n.loadTable("ar", {
+            menu = { start = "Start game AR" },
+            dialog = { greeting = "Hello AR {name}" },
+        })
+        lurek.i18n.setBase("en")
+        lurek.i18n.setFallbacks({ "en" })
+        lurek.i18n.setLanguage("en")
+    end
+
     local template = "Quest {name}: {count}/{goal}"
     local vars = { name = "Signal Relay", count = "2", goal = "5" }
     local line = lurek.i18n.interpolate(template, vars)
@@ -237,6 +1054,54 @@ end
 
 --@api: lurek.i18n.pluralFor
 do
+    local function i18n_log(message)
+        lurek.log.info("[i18n] " .. message)
+    end
+    local function has_value(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function seed_catalog()
+        lurek.i18n.offChange()
+        for _, locale in ipairs({ "en", "pl", "fr", "ar", "runtime_ui", "tmp_i18n", "cov_en", "cov_pl" }) do
+            lurek.i18n.unloadTable(locale)
+        end
+        lurek.i18n.loadTable("en", {
+            menu = { start = "Start game", quit = "Quit" },
+            hud = {
+                coins = { one = "{count} coin", other = "{count} coins" },
+                quest = "Quest: {name}",
+                score = "Score {score}",
+            },
+            dialog = {
+                greeting = "Hello {name}",
+                tip = "Press {key} to interact",
+            },
+            ui = { ok = "OK", cancel = "Cancel" },
+            title = "Captain {name}",
+        })
+        lurek.i18n.loadTable("pl", {
+            menu = { start = "Start game PL" },
+            hud = { quest = "Quest PL: {name}" },
+            ui = { ok = "OK PL" },
+        })
+        lurek.i18n.loadTable("fr", {
+            menu = { start = "Demarrer" },
+            ui = { ok = "Daccord" },
+        })
+        lurek.i18n.loadTable("ar", {
+            menu = { start = "Start game AR" },
+            dialog = { greeting = "Hello AR {name}" },
+        })
+        lurek.i18n.setBase("en")
+        lurek.i18n.setFallbacks({ "en" })
+        lurek.i18n.setLanguage("en")
+    end
+
     seed_catalog()
     local category_one = lurek.i18n.pluralFor(1)
     local category_many = lurek.i18n.pluralFor(4)
@@ -247,6 +1112,54 @@ end
 
 --@api: lurek.i18n.tGender
 do
+    local function i18n_log(message)
+        lurek.log.info("[i18n] " .. message)
+    end
+    local function has_value(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function seed_catalog()
+        lurek.i18n.offChange()
+        for _, locale in ipairs({ "en", "pl", "fr", "ar", "runtime_ui", "tmp_i18n", "cov_en", "cov_pl" }) do
+            lurek.i18n.unloadTable(locale)
+        end
+        lurek.i18n.loadTable("en", {
+            menu = { start = "Start game", quit = "Quit" },
+            hud = {
+                coins = { one = "{count} coin", other = "{count} coins" },
+                quest = "Quest: {name}",
+                score = "Score {score}",
+            },
+            dialog = {
+                greeting = "Hello {name}",
+                tip = "Press {key} to interact",
+            },
+            ui = { ok = "OK", cancel = "Cancel" },
+            title = "Captain {name}",
+        })
+        lurek.i18n.loadTable("pl", {
+            menu = { start = "Start game PL" },
+            hud = { quest = "Quest PL: {name}" },
+            ui = { ok = "OK PL" },
+        })
+        lurek.i18n.loadTable("fr", {
+            menu = { start = "Demarrer" },
+            ui = { ok = "Daccord" },
+        })
+        lurek.i18n.loadTable("ar", {
+            menu = { start = "Start game AR" },
+            dialog = { greeting = "Hello AR {name}" },
+        })
+        lurek.i18n.setBase("en")
+        lurek.i18n.setFallbacks({ "en" })
+        lurek.i18n.setLanguage("en")
+    end
+
     seed_catalog()
     lurek.i18n.setKey("en", "title", "Captain {name}")
     lurek.i18n.setKey("en", "title.masculine", "Sir {name}")
@@ -257,6 +1170,54 @@ end
 
 --@api: lurek.i18n.categories
 do
+    local function i18n_log(message)
+        lurek.log.info("[i18n] " .. message)
+    end
+    local function has_value(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function seed_catalog()
+        lurek.i18n.offChange()
+        for _, locale in ipairs({ "en", "pl", "fr", "ar", "runtime_ui", "tmp_i18n", "cov_en", "cov_pl" }) do
+            lurek.i18n.unloadTable(locale)
+        end
+        lurek.i18n.loadTable("en", {
+            menu = { start = "Start game", quit = "Quit" },
+            hud = {
+                coins = { one = "{count} coin", other = "{count} coins" },
+                quest = "Quest: {name}",
+                score = "Score {score}",
+            },
+            dialog = {
+                greeting = "Hello {name}",
+                tip = "Press {key} to interact",
+            },
+            ui = { ok = "OK", cancel = "Cancel" },
+            title = "Captain {name}",
+        })
+        lurek.i18n.loadTable("pl", {
+            menu = { start = "Start game PL" },
+            hud = { quest = "Quest PL: {name}" },
+            ui = { ok = "OK PL" },
+        })
+        lurek.i18n.loadTable("fr", {
+            menu = { start = "Demarrer" },
+            ui = { ok = "Daccord" },
+        })
+        lurek.i18n.loadTable("ar", {
+            menu = { start = "Start game AR" },
+            dialog = { greeting = "Hello AR {name}" },
+        })
+        lurek.i18n.setBase("en")
+        lurek.i18n.setFallbacks({ "en" })
+        lurek.i18n.setLanguage("en")
+    end
+
     seed_catalog()
     local cats = lurek.i18n.categories()
     local has_dialog = has_value(cats, "dialog")
@@ -267,6 +1228,54 @@ end
 
 --@api: lurek.i18n.keysInCategory
 do
+    local function i18n_log(message)
+        lurek.log.info("[i18n] " .. message)
+    end
+    local function has_value(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function seed_catalog()
+        lurek.i18n.offChange()
+        for _, locale in ipairs({ "en", "pl", "fr", "ar", "runtime_ui", "tmp_i18n", "cov_en", "cov_pl" }) do
+            lurek.i18n.unloadTable(locale)
+        end
+        lurek.i18n.loadTable("en", {
+            menu = { start = "Start game", quit = "Quit" },
+            hud = {
+                coins = { one = "{count} coin", other = "{count} coins" },
+                quest = "Quest: {name}",
+                score = "Score {score}",
+            },
+            dialog = {
+                greeting = "Hello {name}",
+                tip = "Press {key} to interact",
+            },
+            ui = { ok = "OK", cancel = "Cancel" },
+            title = "Captain {name}",
+        })
+        lurek.i18n.loadTable("pl", {
+            menu = { start = "Start game PL" },
+            hud = { quest = "Quest PL: {name}" },
+            ui = { ok = "OK PL" },
+        })
+        lurek.i18n.loadTable("fr", {
+            menu = { start = "Demarrer" },
+            ui = { ok = "Daccord" },
+        })
+        lurek.i18n.loadTable("ar", {
+            menu = { start = "Start game AR" },
+            dialog = { greeting = "Hello AR {name}" },
+        })
+        lurek.i18n.setBase("en")
+        lurek.i18n.setFallbacks({ "en" })
+        lurek.i18n.setLanguage("en")
+    end
+
     seed_catalog()
     local hud_keys = lurek.i18n.keysInCategory("hud")
     local has_coins = has_value(hud_keys, "hud.coins.one")
@@ -277,6 +1286,54 @@ end
 
 --@api: lurek.i18n.search
 do
+    local function i18n_log(message)
+        lurek.log.info("[i18n] " .. message)
+    end
+    local function has_value(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function seed_catalog()
+        lurek.i18n.offChange()
+        for _, locale in ipairs({ "en", "pl", "fr", "ar", "runtime_ui", "tmp_i18n", "cov_en", "cov_pl" }) do
+            lurek.i18n.unloadTable(locale)
+        end
+        lurek.i18n.loadTable("en", {
+            menu = { start = "Start game", quit = "Quit" },
+            hud = {
+                coins = { one = "{count} coin", other = "{count} coins" },
+                quest = "Quest: {name}",
+                score = "Score {score}",
+            },
+            dialog = {
+                greeting = "Hello {name}",
+                tip = "Press {key} to interact",
+            },
+            ui = { ok = "OK", cancel = "Cancel" },
+            title = "Captain {name}",
+        })
+        lurek.i18n.loadTable("pl", {
+            menu = { start = "Start game PL" },
+            hud = { quest = "Quest PL: {name}" },
+            ui = { ok = "OK PL" },
+        })
+        lurek.i18n.loadTable("fr", {
+            menu = { start = "Demarrer" },
+            ui = { ok = "Daccord" },
+        })
+        lurek.i18n.loadTable("ar", {
+            menu = { start = "Start game AR" },
+            dialog = { greeting = "Hello AR {name}" },
+        })
+        lurek.i18n.setBase("en")
+        lurek.i18n.setFallbacks({ "en" })
+        lurek.i18n.setLanguage("en")
+    end
+
     seed_catalog()
     local results = lurek.i18n.search("Hello", 5)
     local first = results[1]
@@ -287,6 +1344,54 @@ end
 
 --@api: lurek.i18n.buildIndex
 do
+    local function i18n_log(message)
+        lurek.log.info("[i18n] " .. message)
+    end
+    local function has_value(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function seed_catalog()
+        lurek.i18n.offChange()
+        for _, locale in ipairs({ "en", "pl", "fr", "ar", "runtime_ui", "tmp_i18n", "cov_en", "cov_pl" }) do
+            lurek.i18n.unloadTable(locale)
+        end
+        lurek.i18n.loadTable("en", {
+            menu = { start = "Start game", quit = "Quit" },
+            hud = {
+                coins = { one = "{count} coin", other = "{count} coins" },
+                quest = "Quest: {name}",
+                score = "Score {score}",
+            },
+            dialog = {
+                greeting = "Hello {name}",
+                tip = "Press {key} to interact",
+            },
+            ui = { ok = "OK", cancel = "Cancel" },
+            title = "Captain {name}",
+        })
+        lurek.i18n.loadTable("pl", {
+            menu = { start = "Start game PL" },
+            hud = { quest = "Quest PL: {name}" },
+            ui = { ok = "OK PL" },
+        })
+        lurek.i18n.loadTable("fr", {
+            menu = { start = "Demarrer" },
+            ui = { ok = "Daccord" },
+        })
+        lurek.i18n.loadTable("ar", {
+            menu = { start = "Start game AR" },
+            dialog = { greeting = "Hello AR {name}" },
+        })
+        lurek.i18n.setBase("en")
+        lurek.i18n.setFallbacks({ "en" })
+        lurek.i18n.setLanguage("en")
+    end
+
     seed_catalog()
     local index = lurek.i18n.buildIndex()
     local hello_keys = index.hello or {}
@@ -297,6 +1402,54 @@ end
 
 --@api: lurek.i18n.searchIndexed
 do
+    local function i18n_log(message)
+        lurek.log.info("[i18n] " .. message)
+    end
+    local function has_value(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function seed_catalog()
+        lurek.i18n.offChange()
+        for _, locale in ipairs({ "en", "pl", "fr", "ar", "runtime_ui", "tmp_i18n", "cov_en", "cov_pl" }) do
+            lurek.i18n.unloadTable(locale)
+        end
+        lurek.i18n.loadTable("en", {
+            menu = { start = "Start game", quit = "Quit" },
+            hud = {
+                coins = { one = "{count} coin", other = "{count} coins" },
+                quest = "Quest: {name}",
+                score = "Score {score}",
+            },
+            dialog = {
+                greeting = "Hello {name}",
+                tip = "Press {key} to interact",
+            },
+            ui = { ok = "OK", cancel = "Cancel" },
+            title = "Captain {name}",
+        })
+        lurek.i18n.loadTable("pl", {
+            menu = { start = "Start game PL" },
+            hud = { quest = "Quest PL: {name}" },
+            ui = { ok = "OK PL" },
+        })
+        lurek.i18n.loadTable("fr", {
+            menu = { start = "Demarrer" },
+            ui = { ok = "Daccord" },
+        })
+        lurek.i18n.loadTable("ar", {
+            menu = { start = "Start game AR" },
+            dialog = { greeting = "Hello AR {name}" },
+        })
+        lurek.i18n.setBase("en")
+        lurek.i18n.setFallbacks({ "en" })
+        lurek.i18n.setLanguage("en")
+    end
+
     seed_catalog()
     local index = lurek.i18n.buildIndex()
     local matches = lurek.i18n.searchIndexed(index, "hello", 5)
@@ -307,6 +1460,54 @@ end
 
 --@api: lurek.i18n.mergeLocale
 do
+    local function i18n_log(message)
+        lurek.log.info("[i18n] " .. message)
+    end
+    local function has_value(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function seed_catalog()
+        lurek.i18n.offChange()
+        for _, locale in ipairs({ "en", "pl", "fr", "ar", "runtime_ui", "tmp_i18n", "cov_en", "cov_pl" }) do
+            lurek.i18n.unloadTable(locale)
+        end
+        lurek.i18n.loadTable("en", {
+            menu = { start = "Start game", quit = "Quit" },
+            hud = {
+                coins = { one = "{count} coin", other = "{count} coins" },
+                quest = "Quest: {name}",
+                score = "Score {score}",
+            },
+            dialog = {
+                greeting = "Hello {name}",
+                tip = "Press {key} to interact",
+            },
+            ui = { ok = "OK", cancel = "Cancel" },
+            title = "Captain {name}",
+        })
+        lurek.i18n.loadTable("pl", {
+            menu = { start = "Start game PL" },
+            hud = { quest = "Quest PL: {name}" },
+            ui = { ok = "OK PL" },
+        })
+        lurek.i18n.loadTable("fr", {
+            menu = { start = "Demarrer" },
+            ui = { ok = "Daccord" },
+        })
+        lurek.i18n.loadTable("ar", {
+            menu = { start = "Start game AR" },
+            dialog = { greeting = "Hello AR {name}" },
+        })
+        lurek.i18n.setBase("en")
+        lurek.i18n.setFallbacks({ "en" })
+        lurek.i18n.setLanguage("en")
+    end
+
     seed_catalog()
     lurek.i18n.mergeLocale("pl", { ["ui.cancel"] = "Cancel PL", ["ui.apply"] = "Apply PL" })
     lurek.i18n.setLanguage("pl")
@@ -317,6 +1518,54 @@ end
 
 --@api: lurek.i18n.formatNumber
 do
+    local function i18n_log(message)
+        lurek.log.info("[i18n] " .. message)
+    end
+    local function has_value(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function seed_catalog()
+        lurek.i18n.offChange()
+        for _, locale in ipairs({ "en", "pl", "fr", "ar", "runtime_ui", "tmp_i18n", "cov_en", "cov_pl" }) do
+            lurek.i18n.unloadTable(locale)
+        end
+        lurek.i18n.loadTable("en", {
+            menu = { start = "Start game", quit = "Quit" },
+            hud = {
+                coins = { one = "{count} coin", other = "{count} coins" },
+                quest = "Quest: {name}",
+                score = "Score {score}",
+            },
+            dialog = {
+                greeting = "Hello {name}",
+                tip = "Press {key} to interact",
+            },
+            ui = { ok = "OK", cancel = "Cancel" },
+            title = "Captain {name}",
+        })
+        lurek.i18n.loadTable("pl", {
+            menu = { start = "Start game PL" },
+            hud = { quest = "Quest PL: {name}" },
+            ui = { ok = "OK PL" },
+        })
+        lurek.i18n.loadTable("fr", {
+            menu = { start = "Demarrer" },
+            ui = { ok = "Daccord" },
+        })
+        lurek.i18n.loadTable("ar", {
+            menu = { start = "Start game AR" },
+            dialog = { greeting = "Hello AR {name}" },
+        })
+        lurek.i18n.setBase("en")
+        lurek.i18n.setFallbacks({ "en" })
+        lurek.i18n.setLanguage("en")
+    end
+
     seed_catalog()
     lurek.i18n.setLanguage("fr")
     local price = lurek.i18n.formatNumber(12345.678, { decimals = 2 })
@@ -327,6 +1576,54 @@ end
 
 --@api: lurek.i18n.formatDate
 do
+    local function i18n_log(message)
+        lurek.log.info("[i18n] " .. message)
+    end
+    local function has_value(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function seed_catalog()
+        lurek.i18n.offChange()
+        for _, locale in ipairs({ "en", "pl", "fr", "ar", "runtime_ui", "tmp_i18n", "cov_en", "cov_pl" }) do
+            lurek.i18n.unloadTable(locale)
+        end
+        lurek.i18n.loadTable("en", {
+            menu = { start = "Start game", quit = "Quit" },
+            hud = {
+                coins = { one = "{count} coin", other = "{count} coins" },
+                quest = "Quest: {name}",
+                score = "Score {score}",
+            },
+            dialog = {
+                greeting = "Hello {name}",
+                tip = "Press {key} to interact",
+            },
+            ui = { ok = "OK", cancel = "Cancel" },
+            title = "Captain {name}",
+        })
+        lurek.i18n.loadTable("pl", {
+            menu = { start = "Start game PL" },
+            hud = { quest = "Quest PL: {name}" },
+            ui = { ok = "OK PL" },
+        })
+        lurek.i18n.loadTable("fr", {
+            menu = { start = "Demarrer" },
+            ui = { ok = "Daccord" },
+        })
+        lurek.i18n.loadTable("ar", {
+            menu = { start = "Start game AR" },
+            dialog = { greeting = "Hello AR {name}" },
+        })
+        lurek.i18n.setBase("en")
+        lurek.i18n.setFallbacks({ "en" })
+        lurek.i18n.setLanguage("en")
+    end
+
     seed_catalog()
     lurek.i18n.setLanguage("en")
     local iso = lurek.i18n.formatDate(0, "iso")
@@ -337,6 +1634,54 @@ end
 
 --@api: lurek.i18n.onLanguageChange
 do
+    local function i18n_log(message)
+        lurek.log.info("[i18n] " .. message)
+    end
+    local function has_value(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function seed_catalog()
+        lurek.i18n.offChange()
+        for _, locale in ipairs({ "en", "pl", "fr", "ar", "runtime_ui", "tmp_i18n", "cov_en", "cov_pl" }) do
+            lurek.i18n.unloadTable(locale)
+        end
+        lurek.i18n.loadTable("en", {
+            menu = { start = "Start game", quit = "Quit" },
+            hud = {
+                coins = { one = "{count} coin", other = "{count} coins" },
+                quest = "Quest: {name}",
+                score = "Score {score}",
+            },
+            dialog = {
+                greeting = "Hello {name}",
+                tip = "Press {key} to interact",
+            },
+            ui = { ok = "OK", cancel = "Cancel" },
+            title = "Captain {name}",
+        })
+        lurek.i18n.loadTable("pl", {
+            menu = { start = "Start game PL" },
+            hud = { quest = "Quest PL: {name}" },
+            ui = { ok = "OK PL" },
+        })
+        lurek.i18n.loadTable("fr", {
+            menu = { start = "Demarrer" },
+            ui = { ok = "Daccord" },
+        })
+        lurek.i18n.loadTable("ar", {
+            menu = { start = "Start game AR" },
+            dialog = { greeting = "Hello AR {name}" },
+        })
+        lurek.i18n.setBase("en")
+        lurek.i18n.setFallbacks({ "en" })
+        lurek.i18n.setLanguage("en")
+    end
+
     seed_catalog()
     local seen_new = "none"
     local seen_old = "none"
@@ -347,6 +1692,54 @@ end
 
 --@api: lurek.i18n.onChange
 do
+    local function i18n_log(message)
+        lurek.log.info("[i18n] " .. message)
+    end
+    local function has_value(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function seed_catalog()
+        lurek.i18n.offChange()
+        for _, locale in ipairs({ "en", "pl", "fr", "ar", "runtime_ui", "tmp_i18n", "cov_en", "cov_pl" }) do
+            lurek.i18n.unloadTable(locale)
+        end
+        lurek.i18n.loadTable("en", {
+            menu = { start = "Start game", quit = "Quit" },
+            hud = {
+                coins = { one = "{count} coin", other = "{count} coins" },
+                quest = "Quest: {name}",
+                score = "Score {score}",
+            },
+            dialog = {
+                greeting = "Hello {name}",
+                tip = "Press {key} to interact",
+            },
+            ui = { ok = "OK", cancel = "Cancel" },
+            title = "Captain {name}",
+        })
+        lurek.i18n.loadTable("pl", {
+            menu = { start = "Start game PL" },
+            hud = { quest = "Quest PL: {name}" },
+            ui = { ok = "OK PL" },
+        })
+        lurek.i18n.loadTable("fr", {
+            menu = { start = "Demarrer" },
+            ui = { ok = "Daccord" },
+        })
+        lurek.i18n.loadTable("ar", {
+            menu = { start = "Start game AR" },
+            dialog = { greeting = "Hello AR {name}" },
+        })
+        lurek.i18n.setBase("en")
+        lurek.i18n.setFallbacks({ "en" })
+        lurek.i18n.setLanguage("en")
+    end
+
     seed_catalog()
     local transitions = 0
     local last = "none"
@@ -357,6 +1750,54 @@ end
 
 --@api: lurek.i18n.offChange
 do
+    local function i18n_log(message)
+        lurek.log.info("[i18n] " .. message)
+    end
+    local function has_value(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function seed_catalog()
+        lurek.i18n.offChange()
+        for _, locale in ipairs({ "en", "pl", "fr", "ar", "runtime_ui", "tmp_i18n", "cov_en", "cov_pl" }) do
+            lurek.i18n.unloadTable(locale)
+        end
+        lurek.i18n.loadTable("en", {
+            menu = { start = "Start game", quit = "Quit" },
+            hud = {
+                coins = { one = "{count} coin", other = "{count} coins" },
+                quest = "Quest: {name}",
+                score = "Score {score}",
+            },
+            dialog = {
+                greeting = "Hello {name}",
+                tip = "Press {key} to interact",
+            },
+            ui = { ok = "OK", cancel = "Cancel" },
+            title = "Captain {name}",
+        })
+        lurek.i18n.loadTable("pl", {
+            menu = { start = "Start game PL" },
+            hud = { quest = "Quest PL: {name}" },
+            ui = { ok = "OK PL" },
+        })
+        lurek.i18n.loadTable("fr", {
+            menu = { start = "Demarrer" },
+            ui = { ok = "Daccord" },
+        })
+        lurek.i18n.loadTable("ar", {
+            menu = { start = "Start game AR" },
+            dialog = { greeting = "Hello AR {name}" },
+        })
+        lurek.i18n.setBase("en")
+        lurek.i18n.setFallbacks({ "en" })
+        lurek.i18n.setLanguage("en")
+    end
+
     seed_catalog()
     local fired = 0
     lurek.i18n.onChange(function() fired = fired + 1 end)
@@ -368,6 +1809,54 @@ end
 
 --@api: lurek.i18n.isRTL
 do
+    local function i18n_log(message)
+        lurek.log.info("[i18n] " .. message)
+    end
+    local function has_value(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function seed_catalog()
+        lurek.i18n.offChange()
+        for _, locale in ipairs({ "en", "pl", "fr", "ar", "runtime_ui", "tmp_i18n", "cov_en", "cov_pl" }) do
+            lurek.i18n.unloadTable(locale)
+        end
+        lurek.i18n.loadTable("en", {
+            menu = { start = "Start game", quit = "Quit" },
+            hud = {
+                coins = { one = "{count} coin", other = "{count} coins" },
+                quest = "Quest: {name}",
+                score = "Score {score}",
+            },
+            dialog = {
+                greeting = "Hello {name}",
+                tip = "Press {key} to interact",
+            },
+            ui = { ok = "OK", cancel = "Cancel" },
+            title = "Captain {name}",
+        })
+        lurek.i18n.loadTable("pl", {
+            menu = { start = "Start game PL" },
+            hud = { quest = "Quest PL: {name}" },
+            ui = { ok = "OK PL" },
+        })
+        lurek.i18n.loadTable("fr", {
+            menu = { start = "Demarrer" },
+            ui = { ok = "Daccord" },
+        })
+        lurek.i18n.loadTable("ar", {
+            menu = { start = "Start game AR" },
+            dialog = { greeting = "Hello AR {name}" },
+        })
+        lurek.i18n.setBase("en")
+        lurek.i18n.setFallbacks({ "en" })
+        lurek.i18n.setLanguage("en")
+    end
+
     seed_catalog()
     local arabic = lurek.i18n.isRTL("ar")
     lurek.i18n.setLanguage("ar")
@@ -379,6 +1868,54 @@ end
 
 --@api: lurek.i18n.detectLocale
 do
+    local function i18n_log(message)
+        lurek.log.info("[i18n] " .. message)
+    end
+    local function has_value(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function seed_catalog()
+        lurek.i18n.offChange()
+        for _, locale in ipairs({ "en", "pl", "fr", "ar", "runtime_ui", "tmp_i18n", "cov_en", "cov_pl" }) do
+            lurek.i18n.unloadTable(locale)
+        end
+        lurek.i18n.loadTable("en", {
+            menu = { start = "Start game", quit = "Quit" },
+            hud = {
+                coins = { one = "{count} coin", other = "{count} coins" },
+                quest = "Quest: {name}",
+                score = "Score {score}",
+            },
+            dialog = {
+                greeting = "Hello {name}",
+                tip = "Press {key} to interact",
+            },
+            ui = { ok = "OK", cancel = "Cancel" },
+            title = "Captain {name}",
+        })
+        lurek.i18n.loadTable("pl", {
+            menu = { start = "Start game PL" },
+            hud = { quest = "Quest PL: {name}" },
+            ui = { ok = "OK PL" },
+        })
+        lurek.i18n.loadTable("fr", {
+            menu = { start = "Demarrer" },
+            ui = { ok = "Daccord" },
+        })
+        lurek.i18n.loadTable("ar", {
+            menu = { start = "Start game AR" },
+            dialog = { greeting = "Hello AR {name}" },
+        })
+        lurek.i18n.setBase("en")
+        lurek.i18n.setFallbacks({ "en" })
+        lurek.i18n.setLanguage("en")
+    end
+
     local detected = lurek.i18n.detectLocale()
     local chosen = detected or "en"
     local valid = lurek.i18n.validateLocale(chosen)
@@ -388,6 +1925,54 @@ end
 
 --@api: lurek.i18n.validateLocale
 do
+    local function i18n_log(message)
+        lurek.log.info("[i18n] " .. message)
+    end
+    local function has_value(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function seed_catalog()
+        lurek.i18n.offChange()
+        for _, locale in ipairs({ "en", "pl", "fr", "ar", "runtime_ui", "tmp_i18n", "cov_en", "cov_pl" }) do
+            lurek.i18n.unloadTable(locale)
+        end
+        lurek.i18n.loadTable("en", {
+            menu = { start = "Start game", quit = "Quit" },
+            hud = {
+                coins = { one = "{count} coin", other = "{count} coins" },
+                quest = "Quest: {name}",
+                score = "Score {score}",
+            },
+            dialog = {
+                greeting = "Hello {name}",
+                tip = "Press {key} to interact",
+            },
+            ui = { ok = "OK", cancel = "Cancel" },
+            title = "Captain {name}",
+        })
+        lurek.i18n.loadTable("pl", {
+            menu = { start = "Start game PL" },
+            hud = { quest = "Quest PL: {name}" },
+            ui = { ok = "OK PL" },
+        })
+        lurek.i18n.loadTable("fr", {
+            menu = { start = "Demarrer" },
+            ui = { ok = "Daccord" },
+        })
+        lurek.i18n.loadTable("ar", {
+            menu = { start = "Start game AR" },
+            dialog = { greeting = "Hello AR {name}" },
+        })
+        lurek.i18n.setBase("en")
+        lurek.i18n.setFallbacks({ "en" })
+        lurek.i18n.setLanguage("en")
+    end
+
     local en_ok = lurek.i18n.validateLocale("en-US")
     local pl_ok = lurek.i18n.validateLocale("pl_PL")
     local bad_short = lurek.i18n.validateLocale("x")
@@ -397,6 +1982,54 @@ end
 
 --@api: lurek.i18n.localeCoverage
 do
+    local function i18n_log(message)
+        lurek.log.info("[i18n] " .. message)
+    end
+    local function has_value(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function seed_catalog()
+        lurek.i18n.offChange()
+        for _, locale in ipairs({ "en", "pl", "fr", "ar", "runtime_ui", "tmp_i18n", "cov_en", "cov_pl" }) do
+            lurek.i18n.unloadTable(locale)
+        end
+        lurek.i18n.loadTable("en", {
+            menu = { start = "Start game", quit = "Quit" },
+            hud = {
+                coins = { one = "{count} coin", other = "{count} coins" },
+                quest = "Quest: {name}",
+                score = "Score {score}",
+            },
+            dialog = {
+                greeting = "Hello {name}",
+                tip = "Press {key} to interact",
+            },
+            ui = { ok = "OK", cancel = "Cancel" },
+            title = "Captain {name}",
+        })
+        lurek.i18n.loadTable("pl", {
+            menu = { start = "Start game PL" },
+            hud = { quest = "Quest PL: {name}" },
+            ui = { ok = "OK PL" },
+        })
+        lurek.i18n.loadTable("fr", {
+            menu = { start = "Demarrer" },
+            ui = { ok = "Daccord" },
+        })
+        lurek.i18n.loadTable("ar", {
+            menu = { start = "Start game AR" },
+            dialog = { greeting = "Hello AR {name}" },
+        })
+        lurek.i18n.setBase("en")
+        lurek.i18n.setFallbacks({ "en" })
+        lurek.i18n.setLanguage("en")
+    end
+
     seed_catalog()
     lurek.i18n.loadTable("cov_en", { ui = { ok = "OK", cancel = "Cancel" }, hud = { ready = "Ready" } })
     lurek.i18n.loadTable("cov_pl", { ui = { ok = "OK" } })
@@ -408,6 +2041,54 @@ end
 
 --@api: lurek.i18n.getLoadedLocales
 do
+    local function i18n_log(message)
+        lurek.log.info("[i18n] " .. message)
+    end
+    local function has_value(list, needle)
+        for _, value in ipairs(list or {}) do
+            if value == needle then
+                return true
+            end
+        end
+        return false
+    end
+    local function seed_catalog()
+        lurek.i18n.offChange()
+        for _, locale in ipairs({ "en", "pl", "fr", "ar", "runtime_ui", "tmp_i18n", "cov_en", "cov_pl" }) do
+            lurek.i18n.unloadTable(locale)
+        end
+        lurek.i18n.loadTable("en", {
+            menu = { start = "Start game", quit = "Quit" },
+            hud = {
+                coins = { one = "{count} coin", other = "{count} coins" },
+                quest = "Quest: {name}",
+                score = "Score {score}",
+            },
+            dialog = {
+                greeting = "Hello {name}",
+                tip = "Press {key} to interact",
+            },
+            ui = { ok = "OK", cancel = "Cancel" },
+            title = "Captain {name}",
+        })
+        lurek.i18n.loadTable("pl", {
+            menu = { start = "Start game PL" },
+            hud = { quest = "Quest PL: {name}" },
+            ui = { ok = "OK PL" },
+        })
+        lurek.i18n.loadTable("fr", {
+            menu = { start = "Demarrer" },
+            ui = { ok = "Daccord" },
+        })
+        lurek.i18n.loadTable("ar", {
+            menu = { start = "Start game AR" },
+            dialog = { greeting = "Hello AR {name}" },
+        })
+        lurek.i18n.setBase("en")
+        lurek.i18n.setFallbacks({ "en" })
+        lurek.i18n.setLanguage("en")
+    end
+
     seed_catalog()
     lurek.i18n.loadTable("runtime_ui", { menu = { credits = "Credits" } })
     local locales = lurek.i18n.getLoadedLocales()

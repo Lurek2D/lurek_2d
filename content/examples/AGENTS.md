@@ -13,7 +13,9 @@
 - Coverage is 100%: every public Lua API must have exactly one owning example block.
 - One API = one `-- @api:` marker = one runnable `do ... end` block.
 - Each example block must contain at least 5 relevant non-comment code lines inside that `do ... end` body.
-- Do not move shared setup, helper functions, or reusable example logic above the blocks. Keep example code self-contained inside the owning `do ... end`.
+- Treat each API example block as standalone material for generated API pages.
+- Do not put any top-level Lua setup, constants, callbacks, helper functions, helper methods, tables, or reusable logic outside marker-owned `do ... end` blocks.
+- Duplicate setup inside each owning `do ... end` block when needed; never make a block depend on code outside that block.
 - Examples teach usage and context; they are not exhaustive tests and they are not mini games.
 - Keep examples executable, deterministic enough to boot cleanly, and free of TODO stubs.
 - Map every `-- @api:` comment to working code that shows a concrete use case with short prose context.

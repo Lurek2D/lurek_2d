@@ -4,16 +4,17 @@
 
 --- Parallax Module Part 1: layer creation, scroll, visibility, tiling, depth
 
-local function example_print_log(...)
-    local parts = {}
-    for i = 1, select("#", ...) do
-        parts[i] = tostring(select(i, ...))
-    end
-    lurek.log.info(table.concat(parts, " "))
-end
 
 --@api: lurek.parallax.newLayer
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({
         texture = image,
@@ -31,6 +32,14 @@ end
 
 --@api: lurek.parallax.newPresetLayer
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local img = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local far = lurek.parallax.newPresetLayer("far", img)
     local mid = lurek.parallax.newPresetLayer("mid", img)
@@ -40,6 +49,14 @@ end
 
 --@api: LParallaxLayer:setScrollFactor
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({ texture = image })
     layer:setScrollFactor(0.5, 0.2)
@@ -49,6 +66,14 @@ end
 
 --@api: LParallaxLayer:getScrollFactor
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({
         texture = image,
@@ -61,6 +86,14 @@ end
 
 --@api: LParallaxLayer:setOffset
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({ texture = image })
     layer:setOffset(10, -5)
@@ -70,6 +103,14 @@ end
 
 --@api: LParallaxLayer:getOffset
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({
         texture = image,
@@ -82,6 +123,14 @@ end
 
 --@api: LParallaxLayer:setDepth
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({ texture = image })
     example_print_log("depth before = " .. layer:getDepth())
@@ -92,6 +141,14 @@ end
 
 --@api: LParallaxLayer:getDepth
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({
         texture = image,
@@ -102,6 +159,14 @@ end
 
 --@api: LParallaxLayer:setZ
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({ texture = image })
     example_print_log("z before = " .. layer:getZ())
@@ -112,6 +177,14 @@ end
 
 --@api: LParallaxLayer:getZ
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({
         texture = image,
@@ -122,6 +195,14 @@ end
 
 --@api: LParallaxLayer:setVisible
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({ texture = image })
     layer:setVisible(false)
@@ -132,6 +213,14 @@ end
 
 --@api: LParallaxLayer:isVisible
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({
         texture = image,
@@ -142,6 +231,14 @@ end
 
 --@api: LParallaxLayer:setOpacity
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({ texture = image })
     example_print_log("opacity before = " .. layer:getOpacity())
@@ -152,6 +249,14 @@ end
 
 --@api: LParallaxLayer:getOpacity
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({
         texture = image,
@@ -162,6 +267,14 @@ end
 
 --@api: LParallaxLayer:setTiling
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({ texture = image })
     example_print_log("tiling before = " .. tostring(layer:getTiling()))
@@ -172,6 +285,14 @@ end
 
 --@api: LParallaxLayer:getTiling
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({
         texture = image,
@@ -182,6 +303,14 @@ end
 
 --@api: LParallaxLayer:setTileSize
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({
         texture = image,
@@ -195,6 +324,14 @@ end
 
 --@api: LParallaxLayer:setRepeat
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({ texture = image })
     layer:setRepeat(true, false)
@@ -205,6 +342,14 @@ end
 
 --@api: LParallaxLayer:setScale
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({ texture = image })
     layer:setScale(2.0, 2.0)
@@ -215,6 +360,14 @@ end
 
 --@api: LParallaxLayer:setTint
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({ texture = image })
     layer:setTint(1.0, 0.8, 0.6, 1.0)
@@ -224,6 +377,14 @@ end
 
 --@api: LParallaxLayer:getTint
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({
         texture = image,
@@ -238,6 +399,14 @@ end
 
 --@api: LParallaxLayer:setBlendMode
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({ texture = image })
     layer:setBlendMode("add")
@@ -248,6 +417,14 @@ end
 
 --@api: LParallaxLayer:getBlendMode
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({
         texture = image,
@@ -258,6 +435,14 @@ end
 
 --@api: LParallaxLayer:setClamp
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({ texture = image })
     layer:setClamp(-100, -50, 100, 50)
@@ -268,6 +453,14 @@ end
 
 --@api: LParallaxLayer:clearClamp
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({ texture = image })
     layer:setClamp(-100, -50, 100, 50)
@@ -280,6 +473,14 @@ end
 
 --@api: LParallaxLayer:setAutoscroll
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({ texture = image })
     layer:setAutoscroll(20, 0)
@@ -292,6 +493,14 @@ end
 
 --@api: LParallaxLayer:getAutoscroll
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({
         texture = image,
@@ -304,6 +513,14 @@ end
 
 --@api: LParallaxLayer:resetAutoscroll
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({ texture = image })
     layer:setAutoscroll(20, 0)
@@ -316,6 +533,14 @@ end
 
 --@api: LParallaxLayer:setMotionStretch
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({ texture = image })
     layer:setMotionStretch(true, 0.5, 2.0)
@@ -325,6 +550,14 @@ end
 
 --@api: LParallaxLayer:getMotionStretch
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({
         texture = image,
@@ -338,6 +571,14 @@ end
 
 --@api: LParallaxLayer:addEffectPass
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({ texture = image })
     layer:addEffectPass("blur", { radius = 1.5 })
@@ -349,6 +590,14 @@ end
 
 --@api: LParallaxLayer:effectCount
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({ texture = image })
     layer:addEffectPass("blur", { radius = 1.5 })
@@ -360,6 +609,14 @@ end
 
 --@api: LParallaxLayer:clearEffects
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({ texture = image })
     layer:addEffectPass("blur", { radius = 1.5 })
@@ -371,6 +628,14 @@ end
 
 --@api: LParallaxLayer:render
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({ texture = image })
     layer:setAutoscroll(50, 0)
@@ -382,6 +647,14 @@ end
 
 --@api: LParallaxLayer:renderAuto
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({ texture = image })
     layer:setAutoscroll(50, 0)
@@ -393,6 +666,14 @@ end
 
 --@api: LParallaxLayer:update
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({ texture = image })
     layer:setAutoscroll(50, 0)
@@ -404,6 +685,14 @@ end
 
 --@api: lurek.parallax.newSet
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local set = lurek.parallax.newSet("background")
     local layer = lurek.parallax.newLayer({
         texture = lurek.render.newImage("content/examples/assets/images/sample_texture.png"),
@@ -416,6 +705,14 @@ end
 
 --@api: LParallaxSet:addLayer
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local set = lurek.parallax.newSet("scene")
     set:addLayer(lurek.parallax.newLayer({
         texture = lurek.render.newImage("content/examples/assets/images/sample_texture.png"),
@@ -435,6 +732,14 @@ end
 
 --@api: LParallaxSet:layerCount
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local set = lurek.parallax.newSet("scene")
     set:addLayer(lurek.parallax.newLayer({
         texture = lurek.render.newImage("content/examples/assets/images/sample_texture.png"),
@@ -454,6 +759,14 @@ end
 
 --@api: LParallaxSet:removeLayerAt
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local set = lurek.parallax.newSet("scene")
     set:addLayer(lurek.parallax.newLayer({
         texture = lurek.render.newImage("content/examples/assets/images/sample_texture.png"),
@@ -473,6 +786,14 @@ end
 
 --@api: LParallaxSet:getLayerZAt
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local set = lurek.parallax.newSet("sorted")
     set:addLayer(lurek.parallax.newLayer({
         texture = lurek.render.newImage("content/examples/assets/images/sample_texture.png"),
@@ -490,6 +811,14 @@ end
 
 --@api: LParallaxSet:sortByZ
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local set = lurek.parallax.newSet("sorted")
     set:addLayer(lurek.parallax.newLayer({
         texture = lurek.render.newImage("content/examples/assets/images/sample_texture.png"),
@@ -507,6 +836,14 @@ end
 
 --@api: LParallaxSet:setName
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local set = lurek.parallax.newSet("temp")
     set:setName("sky_layers")
     example_print_log("name = " .. set:getName())
@@ -518,6 +855,14 @@ end
 
 --@api: LParallaxSet:getName
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local set = lurek.parallax.newSet("temp")
     example_print_log("initial name = " .. set:getName())
     set:setName("sky_layers")
@@ -528,6 +873,14 @@ end
 
 --@api: LParallaxSet:setVisible
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local set = lurek.parallax.newSet("temp")
     set:setName("sky_layers")
     example_print_log("name = " .. set:getName())
@@ -539,6 +892,14 @@ end
 
 --@api: LParallaxSet:isVisible
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local set = lurek.parallax.newSet("temp")
     example_print_log("visible before = " .. tostring(set:isVisible()))
     set:setVisible(false)
@@ -549,6 +910,14 @@ end
 
 --@api: LParallaxSet:render
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local set = lurek.parallax.newSet("world")
     local layer = lurek.parallax.newLayer({
         texture = lurek.render.newImage("content/examples/assets/images/sample_texture.png"),
@@ -564,6 +933,14 @@ end
 
 --@api: LParallaxSet:renderAuto
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local set = lurek.parallax.newSet("world")
     local layer = lurek.parallax.newLayer({
         texture = lurek.render.newImage("content/examples/assets/images/sample_texture.png"),
@@ -579,6 +956,14 @@ end
 
 --@api: LParallaxSet:update
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local set = lurek.parallax.newSet("world")
     local layer = lurek.parallax.newLayer({
         texture = lurek.render.newImage("content/examples/assets/images/sample_texture.png"),
@@ -596,6 +981,14 @@ end
 
 --@api: LParallaxLayer:type
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local img = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({
         texture = img,
@@ -608,6 +1001,14 @@ end
 
 --@api: LParallaxSet:type
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local set = lurek.parallax.newSet("bg_set")
     local type_name = set:type()
     set:setVisible(true)
@@ -618,6 +1019,14 @@ end
 
 --@api: LParallaxLayer:getStats
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local img = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({ texture = img, z = 3, depth = 0.4, tiling = true })
     layer:setAutoscroll(16, 0)
@@ -630,6 +1039,14 @@ end
 
 --@api: LParallaxSet:getStats
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local img = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local set = lurek.parallax.newSet("stats_set")
     set:addLayer(lurek.parallax.newLayer({ texture = img, z = 1, tiling = true }))

@@ -12,7 +12,7 @@
 - Source path: `src/visibility`
 - Binding: `src/lua_api/visibility_api.rs`
 - Namespace: `lurek.visibility`
-- Lua API surface: `2` functions, `2` types, `27` methods
+- Lua API surface: `5` functions, `3` types, `38` methods
 - User-facing: `true`
 - Plugin tier: `core_keep`
 
@@ -34,11 +34,11 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 - Owning tier: `Platform Services`
 - Plugin tier: `core_keep`
 - Lua binding owner: `src/lua_api/visibility_api.rs`
-- Referenced engine modules: None detected from Rust imports.
+- Referenced engine modules: `tilefield`
 
 ## Imports
 
-- No top-level `crate::<module>` imports were detected in this module's Rust source files.
+- `tilefield`: Imports or references `src/tilefield/`. Cross-group dependency from `Platform Services` into `Feature Systems`.
 
 ## Source Files
 
@@ -114,14 +114,26 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 - It encodes hidden, discovered, visible, and custom levels so reveal logic and fog rendering share one progression model.
 - Open this file when knowledge-level semantics change; event emission and grid storage live in sibling modules.
 
+### tile_visibility.rs
+
+- Owns per-player tile visibility, explored, and action masks backed by one shared `TileField`.
+- Computes visible and actionable cells by asking tilefield for channel-specific line clearance data.
+- Stores independent masks per player so teams can have different current sight, memory, and action reach.
+- Exposes stateless line-of-sight and line-of-action helpers without owning movement or lighting rules.
+- Keeps tilefield as the source for blockers, costs, profiles, and bounds while visibility owns masks only.
+- Change this file when sight/action mask behavior changes, not when pathfinding or tile-light math changes.
+
 
 
 ## Lua API Ref
 
 ### Functions
 
+- `lurek.visibility.lineOfAction(field, from, to, opts?) -> boolean`: Returns whether two tilefield cells have a clear action line.
+- `lurek.visibility.lineOfSight(field, from, to, opts?) -> boolean`: Returns whether two tilefield cells have a clear sight line.
 - `lurek.visibility.new(config) -> LVisibilityGrid`: Create a new visibility grid for shadow-cast computation.
 - `lurek.visibility.newFov(opts) -> LFov`: Creates a new tile-grid shadowcasting FOV for roguelike and stealth games.
+- `lurek.visibility.newTileVisibility(field, opts) -> LTileVisibility`: Creates per-player tile visibility/action masks backed by a tilefield.
 
 ### Callbacks
 
@@ -156,6 +168,28 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 - `LFov:type() -> string`: Returns the Lua-visible type name for this FOV handle.
 - `LFov:typeOf(name) -> boolean`: Returns whether this FOV handle matches the given type name.
 - `LFov:visibleCells() -> table`: Returns an array of `{x, y}` tables for all currently visible cells (one-based).
+
+#### LTileVisibility Type
+
+- Lua-side wrapper for per-player tile visibility/action masks.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LTileVisibility:actionCells(player, z?) -> nil`: Returns all currently actionable cells for a player, optionally filtered to a level.
+- `LTileVisibility:canActOn(player, x, y, z?) -> nil`: Returns whether a one-based cell is currently actionable for a player.
+- `LTileVisibility:clearAll() -> nil`: Clears current, explored, and action masks for all players.
+- `LTileVisibility:clearPlayer(player) -> nil`: Clears current, explored, and action masks for one player.
+- `LTileVisibility:computeAction(player, opts) -> nil`: Computes one player's current action mask from a tilefield origin.
+- `LTileVisibility:computeVisible(player, opts) -> nil`: Computes one player's current visible mask from a tilefield origin.
+- `LTileVisibility:isExplored(player, x, y, z?) -> nil`: Returns whether a one-based cell has been explored for a player.
+- `LTileVisibility:isVisible(player, x, y, z?) -> nil`: Returns whether a one-based cell is currently visible for a player.
+- `LTileVisibility:type() -> nil`: Returns the Lua-visible type name for this tile visibility handle.
+- `LTileVisibility:typeOf(name) -> nil`: Returns whether this handle matches a supported type name.
+- `LTileVisibility:visibleCells(player, z?) -> nil`: Returns all currently visible cells for a player, optionally filtered to a level.
 
 #### LVisibilityGrid Type
 
@@ -202,4 +236,7 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 
 ## Notes
 
-- No additional module-specific notes.
+- `visibility` owns visible, explored, and action masks. These masks are independent from tile lighting and from movement reachability.
+- `lurek.visibility.newTileVisibility(field, opts)` stores separate current visible, explored, and action masks per player id.
+- `lineOfSight(field, from, to, opts)` and `lineOfAction(field, from, to, opts)` intentionally default to different semantic channels: seeing a cell does not imply the actor can perform an action through the same line.
+- `visibility` may consume light data in future policies, but v1 keeps light and visibility separated.

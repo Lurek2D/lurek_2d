@@ -2,12 +2,12 @@
 
 ## TL;DR
 
-- Runs grid-based HUD minimaps with fog-of-war, custom markers, raycaster overlays, and camera tracking.
+- Runs grid-based HUD minimaps with fog-of-war inputs, custom markers, passive render snapshots, and camera tracking.
 
 ## Summary
 
 - The `minimap` module is the HUD-scale map surface for users who want world state, fog, markers, and view tracking to become a compact readable overlay.
-- Core minimap state, render helpers, and adapters from province or raycaster data work together so the same module can represent several kinds of world information in one small map display.
+- Core minimap state, render helpers, and adapters from province, tilefield, visibility, or render snapshot data work together so the same module can represent several kinds of world information in one small map display.
 - Fog, owner colors, overlays, tracked objects, and camera-aware view markers matter because a minimap is not only a tiny texture: it is a summarized navigation and awareness tool for the player.
 - The module is useful wherever a project needs strategic orientation, local awareness, or debug-style map inspection without switching to a full map screen.
 - Marker and layer support are especially important because a minimap often needs to combine several categories of information at once: player position, objectives, faction territory, danger, or discovered landmarks.
@@ -20,6 +20,9 @@ This module primarily collaborates with `camera`, `image`, `province`, `raycaste
 
 ## Notes
 
+- `minimap` is a passive compact visualization layer. It should not compute movement, line-of-sight, line-of-action, or tile lighting.
+- For tilefield-driven games, feed minimap terrain/fog/overlay data from `LTileField:exportProfileLayer`, `LTileField:exportBlockLayer`, `LTileField:exportLightLayer`, and `LTileVisibility:*` outputs.
+- Existing raycaster or tilemap helpers are passive adapters; they should not become gameplay authorities for blockers, visibility, or lighting.
 - Construction is strict: zero grid dimensions, zero display dimensions, overflowed cell counts, and oversized display buffers are rejected before the minimap is created.
 - Bulk terrain and fog loads use exact-length validation on the Lua-facing API so stale cells are not silently mixed with fresh data.
 - Grid/display transforms require finite coordinates, a finite positive zoom, and positive display dimensions; invalid transform state returns nils for `screenToGrid` and `gridToScreen` instead of leaking NaN or Inf into callers.

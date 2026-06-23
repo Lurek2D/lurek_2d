@@ -4,7 +4,6 @@
 
 use lurek2d::camera::Camera2D;
 use lurek2d::minimap::*;
-use lurek2d::raycaster::Raycaster2D;
 use lurek2d::render::renderer::{DrawMode, RenderCommand};
 use lurek2d::runtime::resource_keys::TextureKey;
 use slotmap::KeyData;
@@ -231,61 +230,4 @@ fn build_render_commands_matches_generate_render_commands() {
     let generated_debug: Vec<String> = generated.iter().map(|cmd| format!("{cmd:?}")).collect();
     let built_debug: Vec<String> = built.iter().map(|cmd| format!("{cmd:?}")).collect();
     assert_eq!(generated_debug, built_debug);
-}
-
-#[test]
-fn extract_minimap_rejects_huge_output() {
-    let rc = Raycaster2D::new(16, 16);
-    assert!(matches!(
-        try_extract_minimap(
-            &rc,
-            8.0,
-            8.0,
-            0.0,
-            5_000,
-            4,
-            [255, 255, 255, 255],
-            [50, 50, 50, 255],
-            [255, 0, 0, 255],
-        ),
-        Err(MinimapError::PixelLimitExceeded { .. })
-    ));
-}
-
-#[test]
-fn reveal_cells_from_rays_uses_per_ray_angles() {
-    let rc = Raycaster2D::new(16, 16);
-    let cells = reveal_cells_from_rays(
-        &rc,
-        8.0,
-        8.0,
-        0.0,
-        std::f32::consts::FRAC_PI_2,
-        7,
-        4.0,
-        0.25,
-    );
-    let unique_rows: std::collections::HashSet<u32> = cells.iter().map(|(_, y)| *y).collect();
-
-    assert!(
-        unique_rows.len() > 1,
-        "per-ray endpoints should fan out across multiple rows"
-    );
-}
-
-#[test]
-fn draw_player_arrow_requires_height_and_valid_len() {
-    let mut pixels = vec![0u8; 16 * 16 * 4];
-    try_draw_player_arrow(&mut pixels, 16, 16, 8, 8, 0.0, 6, [255, 0, 0, 255])
-        .expect("valid buffer should draw");
-    let has_red = pixels
-        .chunks(4)
-        .any(|chunk| chunk[0] == 255 && chunk[3] == 255);
-    assert!(has_red);
-
-    let mut bad_pixels = vec![0u8; 16 * 15 * 4];
-    assert!(matches!(
-        try_draw_player_arrow(&mut bad_pixels, 16, 16, 8, 8, 0.0, 6, [255, 0, 0, 255]),
-        Err(MinimapError::InvalidImageBuffer { .. })
-    ));
 }

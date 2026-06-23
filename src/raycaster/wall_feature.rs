@@ -1,7 +1,7 @@
 //! This file owns `WallFeatureKind` and `WallFeature`, the cell-local descriptors for wall behavior refinement.
 //! It models half-height walls, window openings, and sliding doors without changing the base tile map schema.
 //! Constructors clamp feature parameters into safe ranges so tools and scene builders share stable semantics.
-//! Query helpers answer movement, visibility, and light blocking from the same payload used by rendering code.
+//! Query helpers answer render ray and render light blocking from the same payload used by rendering code.
 //! Open this file when per-cell wall behavior changes; door state progression and scene assembly live in siblings.
 
 use super::doors::DoorDirection;
@@ -40,7 +40,7 @@ impl WallFeatureKind {
 /// Full feature payload for one wall cell, including alpha override.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct WallFeature {
-    /// Kind-specific render and collision behavior.
+    /// Kind-specific render behavior.
     pub kind: WallFeatureKind,
     /// Alpha override used for see-through materials such as windows or grates.
     pub alpha: f32,
@@ -86,16 +86,16 @@ impl WallFeature {
         self.alpha
     }
 
-    /// Return true when the feature should stop 2D movement.
-    pub fn blocks_movement(self) -> bool {
+    /// Return true when the feature should stop the primary render ray.
+    pub fn blocks_ray_hit(self) -> bool {
         match self.kind {
             WallFeatureKind::Door { open_amount, .. } => open_amount < 0.95,
             _ => true,
         }
     }
 
-    /// Return true when the feature should stop line of sight.
-    pub fn blocks_visibility(self) -> bool {
+    /// Return true when the feature should stop render visibility probes.
+    pub fn blocks_render_visibility(self) -> bool {
         match self.kind {
             WallFeatureKind::Window { .. } => false,
             WallFeatureKind::Door { open_amount, .. } => open_amount < 0.95,
@@ -103,8 +103,8 @@ impl WallFeature {
         }
     }
 
-    /// Return true when the feature should stop tile-level light propagation.
-    pub fn blocks_light(self) -> bool {
+    /// Return true when the feature should stop render light sampling.
+    pub fn blocks_render_light(self) -> bool {
         match self.kind {
             WallFeatureKind::Window { .. } => false,
             WallFeatureKind::Door { open_amount, .. } => open_amount < 0.95,

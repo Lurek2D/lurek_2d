@@ -1,19 +1,22 @@
 -- content/examples/light.lua
 -- Auto-generated from content/examples2/light_*.lua by tools/fix/merge_examples2_into_examples.py
 -- Run: cargo run -- content/examples/light.lua
+-- lurek.light is the 2D render-light and occluder module. Tile-based gameplay
+-- lighting, sun occlusion, and light blockers live in lurek.tilefield.
 
 --- Light Module Part 1: module functions and LLight class
 
-local function example_print_log(...)
-    local parts = {}
-    for i = 1, select("#", ...) do
-        parts[i] = tostring(select(i, ...))
-    end
-    lurek.log.info(table.concat(parts, " "))
-end
 
 --@api: lurek.light.newLight
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(400, 300, 200)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -23,6 +26,14 @@ end
 
 --@api: lurek.light.setEnabled
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.light.clear()
     lurek.light.newLight(64, 64, 96)
     lurek.light.setEnabled(true)
@@ -33,6 +44,14 @@ end
 
 --@api: lurek.light.setAmbient
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.light.setAmbient(0.1, 0.1, 0.15, 1)
     local r, g, b, a = lurek.light.getAmbient()
     local enabled = lurek.light.isEnabled()
@@ -42,6 +61,14 @@ end
 
 --@api: lurek.light.getLightCount
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.light.clear()
     lurek.light.newLight(0, 0, 100)
     lurek.light.newLight(50, 50, 80)
@@ -51,6 +78,14 @@ end
 
 --@api: lurek.light.getMaxLights
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.light.setMaxLights(128)
     lurek.light.clear()
     lurek.light.newLight(32, 32, 64)
@@ -60,6 +95,14 @@ end
 
 --@api: lurek.light.clear
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.light.newLight(0, 0, 50)
     lurek.light.newLight(40, 20, 70)
     local before = lurek.light.getLightCount()
@@ -69,6 +112,14 @@ end
 
 --@api: lurek.light.advanceFlickers
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(200, 200, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -81,6 +132,14 @@ end
 
 --@api: lurek.light.getGroupCount
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local a = lurek.light.newLight(0, 0, 50)
     local b = lurek.light.newLight(10, 10, 50)
     a:setGroupId(1)
@@ -90,6 +149,14 @@ end
 
 --@api: lurek.light.setGroupColor
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.light.clear()
     local first = lurek.light.newLight(10, 10, 60)
     local second = lurek.light.newLight(30, 20, 60)
@@ -103,6 +170,14 @@ end
 
 --@api: lurek.light.setGroupIntensity
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.light.clear()
     local first = lurek.light.newLight(20, 20, 70)
     local second = lurek.light.newLight(40, 40, 70)
@@ -115,6 +190,14 @@ end
 
 --@api: lurek.light.setGroupEnabled
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.light.clear()
     local first = lurek.light.newLight(20, 20, 70)
     local second = lurek.light.newLight(40, 40, 70)
@@ -127,6 +210,14 @@ end
 
 --@api: lurek.light.getGodRayHints
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.light.clear()
     local light = lurek.light.newLight(120, 90, 160)
     light:setColor(1.0, 0.9, 0.7, 1.0)
@@ -141,6 +232,14 @@ end
 
 --@api: lurek.light.getNormalMapHints
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.light.clear()
     local light = lurek.light.newLight(80, 60, 120)
     light:setColor(1.0, 0.9, 0.7, 1.0)
@@ -155,6 +254,14 @@ end
 
 --@api: lurek.light.syncAmbient
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.light.setAmbient(0.2, 0.25, 0.3, 1.0)
     local r, g, b, a = lurek.light.syncAmbient()
     local enabled = lurek.light.isEnabled()
@@ -164,6 +271,14 @@ end
 
 --@api: LLight:setPosition
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -175,6 +290,14 @@ end
 
 --@api: LLight:getPosition
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -186,6 +309,14 @@ end
 
 --@api: LLight:setRadius
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -196,6 +327,14 @@ end
 
 --@api: LLight:getRadius
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -206,6 +345,14 @@ end
 
 --@api: LLight:setColor
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -217,6 +364,14 @@ end
 
 --@api: LLight:getColor
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -228,6 +383,14 @@ end
 
 --@api: LLight:setIntensity
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -238,6 +401,14 @@ end
 
 --@api: LLight:getIntensity
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -248,6 +419,14 @@ end
 
 --@api: LLight:setEnergy
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -258,6 +437,14 @@ end
 
 --@api: LLight:getEnergy
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -268,6 +455,14 @@ end
 
 --@api: LLight:setLightType
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -278,6 +473,14 @@ end
 
 --@api: LLight:getLightType
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -288,6 +491,14 @@ end
 
 --@api: LLight:setDirection
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -299,6 +510,14 @@ end
 
 --@api: LLight:getDirection
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -310,6 +529,14 @@ end
 
 --@api: LLight:setFalloff
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -320,6 +547,14 @@ end
 
 --@api: LLight:getFalloff
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -330,6 +565,14 @@ end
 
 --@api: LLight:setBlendMode
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -340,6 +583,14 @@ end
 
 --@api: LLight:getBlendMode
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -350,6 +601,14 @@ end
 
 --@api: LLight:setAttenuation
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -361,6 +620,14 @@ end
 
 --@api: LLight:getAttenuation
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -372,6 +639,14 @@ end
 
 --@api: LLight:setInnerAngle
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -384,6 +659,14 @@ end
 
 --@api: LLight:getInnerAngle
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -396,6 +679,14 @@ end
 
 --@api: LLight:setOuterAngle
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -408,6 +699,14 @@ end
 
 --@api: LLight:getOuterAngle
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -420,6 +719,14 @@ end
 
 --@api: LLight:setEnabled
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -430,6 +737,14 @@ end
 
 --@api: LLight:isEnabled
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -440,6 +755,14 @@ end
 
 --@api: LLight:setGroupId
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -450,6 +773,14 @@ end
 
 --@api: LLight:getGroupId
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -460,6 +791,14 @@ end
 
 --@api: LLight:setLightMask
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -470,6 +809,14 @@ end
 
 --@api: LLight:getLightMask
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -480,6 +827,14 @@ end
 
 --@api: LLight:isValid
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -491,6 +846,14 @@ end
 
 --@api: LLight:type
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -501,6 +864,14 @@ end
 
 --@api: LLight:typeOf
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -514,6 +885,14 @@ end
 
 --@api: LLight:setShadowEnabled
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(200, 200, 150)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -524,6 +903,14 @@ end
 
 --@api: LLight:isShadowEnabled
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(200, 200, 150)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -534,6 +921,14 @@ end
 
 --@api: LLight:setShadowColor
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -546,6 +941,14 @@ end
 
 --@api: LLight:getShadowColor
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -558,6 +961,14 @@ end
 
 --@api: LLight:setShadowFilter
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -569,6 +980,14 @@ end
 
 --@api: LLight:getShadowFilter
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -580,6 +999,14 @@ end
 
 --@api: LLight:setShadowSmooth
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -591,6 +1018,14 @@ end
 
 --@api: LLight:getShadowSmooth
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -602,6 +1037,14 @@ end
 
 --@api: LLight:setShadowSoftness
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -613,6 +1056,14 @@ end
 
 --@api: LLight:getShadowSoftness
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -624,6 +1075,14 @@ end
 
 --@api: LLight:setShadowMask
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -634,6 +1093,14 @@ end
 
 --@api: LLight:getShadowMask
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -644,6 +1111,14 @@ end
 
 --@api: LLight:addFlicker
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(100, 100, 80)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -656,6 +1131,14 @@ end
 
 --@api: LLight:setFlicker
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -667,6 +1150,14 @@ end
 
 --@api: LLight:getFlicker
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -678,6 +1169,14 @@ end
 
 --@api: LLight:setFlickerEnabled
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -689,6 +1188,14 @@ end
 
 --@api: LLight:isFlickerEnabled
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -700,6 +1207,14 @@ end
 
 --@api: LLight:setCookie
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -710,6 +1225,14 @@ end
 
 --@api: LLight:getCookie
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -720,6 +1243,14 @@ end
 
 --@api: LLight:clearCookie
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -731,6 +1262,14 @@ end
 
 --@api: LLight:setNormalMap
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -741,6 +1280,14 @@ end
 
 --@api: LLight:getNormalMap
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -751,6 +1298,14 @@ end
 
 --@api: LLight:clearNormalMap
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -762,6 +1317,14 @@ end
 
 --@api: LLight:setNormalStrength
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -772,6 +1335,14 @@ end
 
 --@api: LLight:getNormalStrength
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -782,6 +1353,14 @@ end
 
 --@api: LLight:setVolumetric
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 200)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -792,6 +1371,14 @@ end
 
 --@api: LLight:isVolumetric
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 200)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -802,6 +1389,14 @@ end
 
 --@api: LLight:transitionTo
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -814,6 +1409,14 @@ end
 
 --@api: LLight:updateTransition
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -825,6 +1428,14 @@ end
 
 --@api: LLight:transitionProgress
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -836,6 +1447,14 @@ end
 
 --@api: LLight:stopTransition
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1.0, 0.9, 0.7, 1.0)
     light:setIntensity(1.25)
@@ -847,6 +1466,14 @@ end
 
 --@api: lurek.light.newOccluder
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local verts = {0, 0, 100, 0, 100, 50, 0, 50}
     local occ = lurek.light.newOccluder(verts)
     occ:setPosition(8, 12)
@@ -857,6 +1484,14 @@ end
 
 --@api: LOccluder:setPosition
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local occ = lurek.light.newOccluder({0, 0, 10, 0, 10, 10, 0, 10})
     occ:setPosition(8, 12)
     occ:setOpacity(0.9)
@@ -868,6 +1503,14 @@ end
 
 --@api: LOccluder:getPosition
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local occ = lurek.light.newOccluder({0, 0, 10, 0, 10, 10, 0, 10})
     occ:setPosition(8, 12)
     occ:setOpacity(0.9)
@@ -879,6 +1522,14 @@ end
 
 --@api: LOccluder:setVertices
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local occ = lurek.light.newOccluder({0, 0, 20, 0, 20, 20, 0, 20})
     occ:setPosition(8, 12)
     occ:setOpacity(0.9)
@@ -890,6 +1541,14 @@ end
 
 --@api: LOccluder:getVertices
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local occ = lurek.light.newOccluder({0, 0, 20, 0, 20, 20, 0, 20})
     occ:setPosition(8, 12)
     occ:setOpacity(0.9)
@@ -901,6 +1560,14 @@ end
 
 --@api: LOccluder:setOpacity
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local occ = lurek.light.newOccluder({0, 0, 10, 0, 10, 10, 0, 10})
     occ:setPosition(8, 12)
     occ:setOpacity(0.9)
@@ -911,6 +1578,14 @@ end
 
 --@api: LOccluder:getOpacity
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local occ = lurek.light.newOccluder({0, 0, 10, 0, 10, 10, 0, 10})
     occ:setPosition(8, 12)
     occ:setOpacity(0.9)
@@ -921,6 +1596,14 @@ end
 
 --@api: LOccluder:setEnabled
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local occ = lurek.light.newOccluder({0, 0, 10, 0, 10, 10, 0, 10})
     occ:setPosition(8, 12)
     occ:setOpacity(0.9)
@@ -931,6 +1614,14 @@ end
 
 --@api: LOccluder:isEnabled
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local occ = lurek.light.newOccluder({0, 0, 10, 0, 10, 10, 0, 10})
     occ:setPosition(8, 12)
     occ:setOpacity(0.9)
@@ -941,6 +1632,14 @@ end
 
 --@api: LOccluder:setLightMask
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local occ = lurek.light.newOccluder({0, 0, 10, 0, 10, 10, 0, 10})
     occ:setPosition(8, 12)
     occ:setOpacity(0.9)
@@ -951,6 +1650,14 @@ end
 
 --@api: LOccluder:getLightMask
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local occ = lurek.light.newOccluder({0, 0, 10, 0, 10, 10, 0, 10})
     occ:setPosition(8, 12)
     occ:setOpacity(0.9)
@@ -961,6 +1668,14 @@ end
 
 --@api: LOccluder:isValid
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local occ = lurek.light.newOccluder({0, 0, 10, 0, 10, 10, 0, 10})
     occ:setPosition(8, 12)
     occ:setOpacity(0.9)
@@ -972,6 +1687,14 @@ end
 
 --@api: LOccluder:type
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local occ = lurek.light.newOccluder({0, 0, 10, 0, 10, 10, 0, 10})
     occ:setPosition(8, 12)
     occ:setOpacity(0.9)
@@ -982,6 +1705,14 @@ end
 
 --@api: LOccluder:typeOf
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local occ = lurek.light.newOccluder({0, 0, 10, 0, 10, 10, 0, 10})
     occ:setPosition(8, 12)
     occ:setOpacity(0.9)
@@ -993,6 +1724,14 @@ end
 
 --@api: lurek.light.getOccluderCount
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.light.clear()
     lurek.light.newOccluder({0, 0, 10, 0, 10, 10, 0, 10})
     lurek.light.newOccluder({20, 20, 30, 20, 30, 30, 20, 30})
@@ -1004,6 +1743,14 @@ end
 
 --@api: LLight:remove
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local lt = lurek.light.newLight(200, 300, 150)
     lt:setColor(1.0, 0.85, 0.55, 1.0)
     lt:setIntensity(1.5)
@@ -1014,6 +1761,14 @@ end
 
 --@api: LOccluder:remove
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local vtbl = { 0, 0, 100, 0, 100, 100, 0, 100 }
     local occ = lurek.light.newOccluder(vtbl)
     occ:setPosition(8, 12)
@@ -1026,6 +1781,14 @@ end
 
 --@api: lurek.light.getAmbient
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local r, g, b, a = lurek.light.getAmbient()
     local enabled = lurek.light.isEnabled()
     local count = lurek.light.getLightCount()
@@ -1035,6 +1798,14 @@ end
 
 --@api: lurek.light.isEnabled
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local enabled = lurek.light.isEnabled()
     local count = lurek.light.getLightCount()
     local max_lights = lurek.light.getMaxLights()
@@ -1044,6 +1815,14 @@ end
 
 --@api: lurek.light.setMaxLights
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.light.setMaxLights(64)
     lurek.light.clear()
     lurek.light.newLight(48, 48, 96)
@@ -1053,6 +1832,14 @@ end
 
 --@api: lurek.light.drawToImage
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     lurek.light.clear()
     lurek.light.setAmbient(0.04, 0.04, 0.06, 1.0)
     local light = lurek.light.newLight(200, 72, 180, { shadowEnabled = true, shadowFilter = "pcf5" })

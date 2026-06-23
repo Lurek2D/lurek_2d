@@ -2,16 +2,17 @@
 -- Auto-generated from content/examples2/ai_*.lua by tools/fix/merge_examples2_into_examples.py
 -- Run: cargo run -- content/examples/ai.lua
 
-local function example_print_log(...)
-    local parts = {}
-    for i = 1, select("#", ...) do
-        parts[i] = tostring(select(i, ...))
-    end
-    lurek.log.info(table.concat(parts, " "))
-end
 
 --@api: lurek.ai.newWorld
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   local scout = world:addAgent("scout_preview")
@@ -22,6 +23,14 @@ end
 
 --@api: lurek.ai.newBlackboard
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local bb = lurek.ai.newBlackboard()
   bb:setString("context", "active")
   local bb_size = bb:getSize()
@@ -31,6 +40,14 @@ end
 
 --@api: lurek.ai.newStateMachine
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local fsm = lurek.ai.newStateMachine()
   fsm:addState("idle", {})
   local fsm_type = fsm:type()
@@ -42,6 +59,14 @@ end
 
 --@api: lurek.ai.newBehaviorTree
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local bt = lurek.ai.newBehaviorTree()
   local bt_debug = bt:getDebugState()
   local bt_status = bt:getLastStatus()
@@ -53,6 +78,14 @@ end
 
 --@api: lurek.ai.newSelector
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local sel = lurek.ai.newSelector()
   local node_type = sel:getNodeType()
   local child_count = sel:getChildCount()
@@ -64,6 +97,14 @@ end
 
 --@api: lurek.ai.newSequence
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local seq = lurek.ai.newSequence()
   local node_type = seq:getNodeType()
   local child_count = seq:getChildCount()
@@ -75,6 +116,14 @@ end
 
 --@api: lurek.ai.newParallel
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local par = lurek.ai.newParallel("requireAll", "requireOne")
   local node_type = par:getNodeType()
   local child_count = par:getChildCount()
@@ -86,6 +135,14 @@ end
 
 --@api: lurek.ai.newInverter
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local inv = lurek.ai.newInverter()
   local node_type = inv:getNodeType()
   local child_count = inv:getChildCount()
@@ -96,6 +153,14 @@ end
 
 --@api: lurek.ai.newRepeater
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local rep = lurek.ai.newRepeater(5)
   local node_type = rep:getNodeType()
   local child_count = rep:getChildCount()
@@ -106,6 +171,14 @@ end
 
 --@api: lurek.ai.newSucceeder
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local suc = lurek.ai.newSucceeder()
   local node_type = suc:getNodeType()
   local child_count = suc:getChildCount()
@@ -116,6 +189,14 @@ end
 
 --@api: lurek.ai.newAction
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local act = lurek.ai.newAction(function() return "success" end)
   local node_type = act:getNodeType()
   local child_count = act:getChildCount()
@@ -126,6 +207,14 @@ end
 
 --@api: lurek.ai.newCondition
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local cond = lurek.ai.newCondition(function() return true end)
   local node_type = cond:getNodeType()
   local child_count = cond:getChildCount()
@@ -136,6 +225,14 @@ end
 
 --@api: lurek.ai.newGuard
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local child_action = lurek.ai.newAction(function() return "success" end)
   local guard = lurek.ai.newGuard(function() return true end, child_action)
   local node_type = guard:getNodeType()
@@ -145,6 +242,14 @@ end
 
 --@api: lurek.ai.newSteeringManager
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local steer = lurek.ai.newSteeringManager()
   steer:addSeek(64, 64, 1.0)
   local behavior_count = steer:getBehaviorCount()
@@ -155,6 +260,14 @@ end
 
 --@api: lurek.ai.newUtilityAI
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local util = lurek.ai.newUtilityAI()
   util:addAction("wait", function() return 0.2 end)
   util:addAction("attack", function() return 0.9 end)
@@ -164,6 +277,14 @@ end
 
 --@api: lurek.ai.newDialogueAI
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local dlg = lurek.ai.newDialogueAI()
   dlg:addTopic("greeting", 0.5, nil, nil, "greet_score")
   dlg:setUtilityScore("greet_score", 0.8)
@@ -173,6 +294,14 @@ end
 
 --@api: lurek.ai.newGOAPPlanner
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local goap = lurek.ai.newGOAPPlanner()
   goap:addGoal("idle", 1)
   local goal_count = goap:getGoalCount()
@@ -184,6 +313,14 @@ end
 
 --@api: lurek.ai.newInfluenceMap
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local imap = lurek.ai.newInfluenceMap(32, 32, 16)
   imap:addLayer("debug")
   local map_width = imap:getWidth()
@@ -195,6 +332,14 @@ end
 
 --@api: lurek.ai.newSquad
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local squad = lurek.ai.newSquad("bravo")
   squad:addMember("leader")
   squad:setLeader("leader")
@@ -204,6 +349,14 @@ end
 
 --@api: lurek.ai.newCommandQueue
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local cq = lurek.ai.newCommandQueue()
   cq:enqueue("hold", function() end, { targetX = 0, targetY = 0 })
   local queue_count = cq:getCount()
@@ -214,6 +367,14 @@ end
 
 --@api: lurek.ai.newTraitProfile
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local traits = lurek.ai.newTraitProfile()
   traits:set("discipline", 0.4)
   traits:set("courage", 0.7)
@@ -223,6 +384,14 @@ end
 
 --@api: lurek.ai.newStimulusWorld
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local sw = lurek.ai.newStimulusWorld()
   local stimulus_id = sw:addVisual(0, 0, 0.5, 8.0, "ping")
   local stimulus_count = sw:count()
@@ -233,6 +402,14 @@ end
 
 --@api: lurek.ai.newContextSteering
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local cs = lurek.ai.newContextSteering(8)
   cs:addSeekTarget(0, 0, 1.0)
   local slot_count = cs:slotCount()
@@ -244,6 +421,14 @@ end
 
 --@api: lurek.ai.newNeedSystem
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local needs = lurek.ai.newNeedSystem()
   needs:addNeed("hunger", 0.1, 0.7, 2.0)
   needs:update(2.0)
@@ -253,6 +438,14 @@ end
 
 --@api: lurek.ai.newAIDirector
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local dir = lurek.ai.newAIDirector()
   dir:pushEvent(0.1)
   local current_phase = dir:phase()
@@ -264,6 +457,14 @@ end
 
 --@api: lurek.ai.newHTNDomain
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local htn = lurek.ai.newHTNDomain()
   local domain_type = htn:type()
   local task_count = htn:taskCount()
@@ -273,6 +474,14 @@ end
 
 --@api: lurek.ai.newMCTSEngine
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local mcts = lurek.ai.newMCTSEngine(100, 1.41, 20, 42)
   local get_actions = function(state) return { 1, 2, 3 } end
   local apply = function(state, action) return state + action end
@@ -287,6 +496,14 @@ end
 
 --@api: lurek.ai.newEmotionModel
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local emo = lurek.ai.newEmotionModel()
   emo:add("fear", 0.1, 0.2, 0.3)
   emo:trigger("fear", 0.5)
@@ -296,6 +513,14 @@ end
 
 --@api: lurek.ai.newORCASolver
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local orca = lurek.ai.newORCASolver(1.5)
   orca:addAgent(0, 0, 0.5, 3.0)
   local preview_count = orca:agentCount()
@@ -305,6 +530,14 @@ end
 
 --@api: lurek.ai.newStrategyAI
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local strat = lurek.ai.newStrategyAI(3.0)
   strat:addGoal("expand")
   strat:addTag("economy")
@@ -314,6 +547,14 @@ end
 
 --@api: lurek.ai.newAILod
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local lod = lurek.ai.newAILod()
   local tier_name = lod:tierName(0)
   local tier_index = lod:tierFor(0, 0, 0, 0)
@@ -323,6 +564,14 @@ end
 
 --@api: LAIWorld:addAgent
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   local archer = world:addAgent("archer_01")
@@ -332,6 +581,14 @@ end
 
 --@api: LAIWorld:getAgent
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   world:addAgent("scout_01")
@@ -341,6 +598,14 @@ end
 
 --@api: LAIWorld:removeAgent
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   local temp = world:addAgent("temp_npc")
@@ -350,6 +615,14 @@ end
 
 --@api: LAIWorld:getAgentCount
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   world:addAgent("unit_a")
@@ -361,6 +634,14 @@ end
 
 --@api: LAIWorld:getGlobalBlackboard
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   local gb = world:getGlobalBlackboard()
@@ -371,6 +652,14 @@ end
 
 --@api: LAIWorld:update
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   local npc = world:addAgent("worker")
@@ -385,6 +674,14 @@ end
 
 --@api: LAIWorld:type
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   local t = world:type()
@@ -395,6 +692,14 @@ end
 
 --@api: LAIWorld:typeOf
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   local is_world = world:typeOf("LAIWorld")
@@ -404,6 +709,14 @@ end
 
 --@api: LBot:getName
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   local npc = world:addAgent("knight_03")
@@ -415,6 +728,14 @@ end
 
 --@api: LBot:setPosition
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   local npc = world:addAgent("mover")
@@ -428,6 +749,14 @@ end
 
 --@api: LBot:getPosition
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   local npc = world:addAgent("static_guard")
@@ -440,6 +769,14 @@ end
 
 --@api: LBot:setVelocity
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   local npc = world:addAgent("runner")
@@ -453,6 +790,14 @@ end
 
 --@api: LBot:getVelocity
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   local npc = world:addAgent("idle_npc")
@@ -465,6 +810,14 @@ end
 
 --@api: LBot:setMaxSpeed
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   local npc = world:addAgent("sprinter")
@@ -477,6 +830,14 @@ end
 
 --@api: LBot:getMaxSpeed
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   local npc = world:addAgent("courier")
@@ -490,6 +851,14 @@ end
 
 --@api: LBot:setMaxForce
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   local npc = world:addAgent("tank")
@@ -502,6 +871,14 @@ end
 
 --@api: LBot:getMaxForce
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   local npc = world:addAgent("scout")
@@ -515,6 +892,14 @@ end
 
 --@api: LBot:setPriority
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   local npc = world:addAgent("captain")
@@ -526,6 +911,14 @@ end
 
 --@api: LBot:getPriority
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   local npc = world:addAgent("grunt")
@@ -538,6 +931,14 @@ end
 
 --@api: LBot:setDecisionModel
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   local npc = world:addAgent("worker")
@@ -550,6 +951,14 @@ end
 
 --@api: LBot:getDecisionModel
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   local npc = world:addAgent("farmer")
@@ -562,6 +971,14 @@ end
 
 --@api: LBot:setCustomModel
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   local npc = world:addAgent("thinker")
@@ -576,6 +993,14 @@ end
 
 --@api: LBot:addTag
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   local npc = world:addAgent("guard")
@@ -588,6 +1013,14 @@ end
 
 --@api: LBot:removeTag
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   local npc = world:addAgent("spy")
@@ -601,6 +1034,14 @@ end
 
 --@api: LBot:hasTag
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   local npc = world:addAgent("merchant")
@@ -614,6 +1055,14 @@ end
 
 --@api: LBot:getBlackboard
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   local npc = world:addAgent("ranger")
@@ -627,6 +1076,14 @@ end
 
 --@api: LBot:type
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   local npc = world:addAgent("villager")
@@ -639,6 +1096,14 @@ end
 
 --@api: LBot:typeOf
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   local npc = world:addAgent("knight")
@@ -651,6 +1116,14 @@ end
 
 --@api: LAIBlackboard:setNumber
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local bb = lurek.ai.newBlackboard()
   bb:setString("context", "active")
   local bb_size = bb:getSize()
@@ -662,6 +1135,14 @@ end
 
 --@api: LAIBlackboard:getNumber
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local bb = lurek.ai.newBlackboard()
   bb:setString("context", "active")
   local bb_size = bb:getSize()
@@ -673,6 +1154,14 @@ end
 
 --@api: LAIBlackboard:setBool
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local bb = lurek.ai.newBlackboard()
   bb:setString("context", "active")
   local bb_size = bb:getSize()
@@ -684,6 +1173,14 @@ end
 
 --@api: LAIBlackboard:getBool
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local bb = lurek.ai.newBlackboard()
   bb:setString("context", "active")
   local bb_size = bb:getSize()
@@ -695,6 +1192,14 @@ end
 
 --@api: LAIBlackboard:setString
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local bb = lurek.ai.newBlackboard()
   bb:setString("context", "active")
   local bb_size = bb:getSize()
@@ -706,6 +1211,14 @@ end
 
 --@api: LAIBlackboard:getString
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local bb = lurek.ai.newBlackboard()
   bb:setString("context", "active")
   local bb_size = bb:getSize()
@@ -717,6 +1230,14 @@ end
 
 --@api: LAIBlackboard:has
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local bb = lurek.ai.newBlackboard()
   bb:setString("context", "active")
   local bb_size = bb:getSize()
@@ -728,6 +1249,14 @@ end
 
 --@api: LAIBlackboard:remove
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local bb = lurek.ai.newBlackboard()
   bb:setString("context", "active")
   local bb_size = bb:getSize()
@@ -739,6 +1268,14 @@ end
 
 --@api: LAIBlackboard:clear
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local bb = lurek.ai.newBlackboard()
   bb:setString("context", "active")
   local bb_size = bb:getSize()
@@ -752,6 +1289,14 @@ end
 
 --@api: LAIBlackboard:getKeys
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local bb = lurek.ai.newBlackboard()
   bb:setString("context", "active")
   local bb_size = bb:getSize()
@@ -763,6 +1308,14 @@ end
 
 --@api: LAIBlackboard:getSize
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local bb = lurek.ai.newBlackboard()
   bb:setString("context", "active")
   local bb_size = bb:getSize()
@@ -774,6 +1327,14 @@ end
 
 --@api: LAIBlackboard:type
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local bb = lurek.ai.newBlackboard()
   bb:setString("context", "active")
   local bb_size = bb:getSize()
@@ -784,6 +1345,14 @@ end
 
 --@api: LAIBlackboard:typeOf
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local bb = lurek.ai.newBlackboard()
   bb:setString("context", "active")
   local bb_size = bb:getSize()
@@ -794,6 +1363,14 @@ end
 
 --@api: LStateMachine:addState
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local fsm = lurek.ai.newStateMachine()
   fsm:addState("idle", {})
   local fsm_type = fsm:type()
@@ -805,6 +1382,14 @@ end
 
 --@api: LStateMachine:addTransition
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local fsm = lurek.ai.newStateMachine()
   fsm:addState("idle", {})
   local fsm_type = fsm:type()
@@ -816,6 +1401,14 @@ end
 
 --@api: LStateMachine:setInitialState
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local fsm = lurek.ai.newStateMachine()
   fsm:addState("idle", {})
   local fsm_type = fsm:type()
@@ -828,6 +1421,14 @@ end
 
 --@api: LStateMachine:getCurrentState
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local fsm = lurek.ai.newStateMachine()
   fsm:addState("idle", {})
   local fsm_type = fsm:type()
@@ -840,6 +1441,14 @@ end
 
 --@api: LStateMachine:forceState
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local fsm = lurek.ai.newStateMachine()
   fsm:addState("idle", {})
   local fsm_type = fsm:type()
@@ -853,6 +1462,14 @@ end
 
 --@api: LStateMachine:getTimeInState
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local fsm = lurek.ai.newStateMachine()
   fsm:addState("idle", {})
   local fsm_type = fsm:type()
@@ -864,6 +1481,14 @@ end
 
 --@api: LStateMachine:type
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local fsm = lurek.ai.newStateMachine()
   fsm:addState("idle", {})
   local fsm_type = fsm:type()
@@ -874,6 +1499,14 @@ end
 
 --@api: LStateMachine:typeOf
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local fsm = lurek.ai.newStateMachine()
   fsm:addState("idle", {})
   local fsm_type = fsm:type()
@@ -884,6 +1517,14 @@ end
 
 --@api: LBehaviorTree:getLastStatus
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local bt = lurek.ai.newBehaviorTree()
   local bt_debug = bt:getDebugState()
   local bt_status = bt:getLastStatus()
@@ -894,6 +1535,14 @@ end
 
 --@api: LBehaviorTree:getDebugState
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local bt = lurek.ai.newBehaviorTree()
   local bt_debug = bt:getDebugState()
   local bt_status = bt:getLastStatus()
@@ -905,6 +1554,14 @@ end
 
 --@api: LBehaviorTree:type
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local bt = lurek.ai.newBehaviorTree()
   local bt_debug = bt:getDebugState()
   local bt_status = bt:getLastStatus()
@@ -915,6 +1572,14 @@ end
 
 --@api: LBehaviorTree:typeOf
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local bt = lurek.ai.newBehaviorTree()
   local bt_debug = bt:getDebugState()
   local bt_status = bt:getLastStatus()
@@ -925,6 +1590,14 @@ end
 
 --@api: LBTNode:addChild
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local seq = lurek.ai.newSequence()
   local node_type = seq:getNodeType()
   local child_count = seq:getChildCount()
@@ -935,6 +1608,14 @@ end
 
 --@api: LBTNode:getChildCount
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local sel = lurek.ai.newSelector()
   local node_type = sel:getNodeType()
   local child_count = sel:getChildCount()
@@ -945,6 +1626,14 @@ end
 
 --@api: LBTNode:reset
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local seq = lurek.ai.newSequence()
   local node_type = seq:getNodeType()
   local child_count = seq:getChildCount()
@@ -955,6 +1644,14 @@ end
 
 --@api: LBTNode:setChild
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local inv = lurek.ai.newInverter()
   local node_type = inv:getNodeType()
   local child_count = inv:getChildCount()
@@ -965,6 +1662,14 @@ end
 
 --@api: LBTNode:setCount
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local rep = lurek.ai.newRepeater(3)
   local node_type = rep:getNodeType()
   local child_count = rep:getChildCount()
@@ -975,6 +1680,14 @@ end
 
 --@api: LBTNode:getCount
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local rep = lurek.ai.newRepeater(7)
   local node_type = rep:getNodeType()
   local child_count = rep:getChildCount()
@@ -984,6 +1697,14 @@ end
 
 --@api: LBTNode:setSuccessPolicy
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local par = lurek.ai.newParallel("requireAll", "requireOne")
   local node_type = par:getNodeType()
   local child_count = par:getChildCount()
@@ -994,6 +1715,14 @@ end
 
 --@api: LBTNode:setFailurePolicy
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local par = lurek.ai.newParallel("requireOne", "requireAll")
   local node_type = par:getNodeType()
   local child_count = par:getChildCount()
@@ -1004,6 +1733,14 @@ end
 
 --@api: LBTNode:getNodeType
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local act = lurek.ai.newAction(function() return "success" end)
   local node_type = act:getNodeType()
   local child_count = act:getChildCount()
@@ -1013,6 +1750,14 @@ end
 
 --@api: LBTNode:type
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local node = lurek.ai.newAction(function() return "success" end)
   local node_type = node:getNodeType()
   local child_count = node:getChildCount()
@@ -1023,6 +1768,14 @@ end
 
 --@api: LBTNode:typeOf
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local node = lurek.ai.newSelector()
   local node_type = node:getNodeType()
   local child_count = node:getChildCount()
@@ -1033,6 +1786,14 @@ end
 
 --@api: LSteeringManager:addSeek
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local steer = lurek.ai.newSteeringManager()
   steer:addSeek(64, 64, 1.0)
   local behavior_count = steer:getBehaviorCount()
@@ -1043,6 +1804,14 @@ end
 
 --@api: LSteeringManager:addFlee
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local steer = lurek.ai.newSteeringManager()
   steer:addSeek(64, 64, 1.0)
   local behavior_count = steer:getBehaviorCount()
@@ -1053,6 +1822,14 @@ end
 
 --@api: LSteeringManager:addArrive
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local steer = lurek.ai.newSteeringManager()
   steer:addSeek(64, 64, 1.0)
   local behavior_count = steer:getBehaviorCount()
@@ -1063,6 +1840,14 @@ end
 
 --@api: LSteeringManager:addWander
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local steer = lurek.ai.newSteeringManager()
   steer:addSeek(64, 64, 1.0)
   local behavior_count = steer:getBehaviorCount()
@@ -1073,6 +1858,14 @@ end
 
 --@api: LSteeringManager:addPursue
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local steer = lurek.ai.newSteeringManager()
   steer:addSeek(64, 64, 1.0)
   local behavior_count = steer:getBehaviorCount()
@@ -1084,6 +1877,14 @@ end
 
 --@api: LSteeringManager:addEvade
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local steer = lurek.ai.newSteeringManager()
   steer:addSeek(64, 64, 1.0)
   local behavior_count = steer:getBehaviorCount()
@@ -1095,6 +1896,14 @@ end
 
 --@api: LSteeringManager:addFlock
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local steer = lurek.ai.newSteeringManager()
   steer:addSeek(64, 64, 1.0)
   local behavior_count = steer:getBehaviorCount()
@@ -1107,6 +1916,14 @@ end
 
 --@api: LSteeringManager:setEntity
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local steer = lurek.ai.newSteeringManager()
   steer:addSeek(64, 64, 1.0)
   local behavior_count = steer:getBehaviorCount()
@@ -1116,6 +1933,14 @@ end
 
 --@api: LSteeringManager:removeEntity
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local steer = lurek.ai.newSteeringManager()
   steer:addSeek(64, 64, 1.0)
   local behavior_count = steer:getBehaviorCount()
@@ -1126,6 +1951,14 @@ end
 
 --@api: LSteeringManager:clearEntities
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local steer = lurek.ai.newSteeringManager()
   steer:addSeek(64, 64, 1.0)
   local behavior_count = steer:getBehaviorCount()
@@ -1137,6 +1970,14 @@ end
 
 --@api: LSteeringManager:entityCount
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local steer = lurek.ai.newSteeringManager()
   steer:addSeek(64, 64, 1.0)
   local behavior_count = steer:getBehaviorCount()
@@ -1146,6 +1987,14 @@ end
 
 --@api: LSteeringManager:getBehaviorCount
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local steer = lurek.ai.newSteeringManager()
   steer:addSeek(64, 64, 1.0)
   local behavior_count = steer:getBehaviorCount()
@@ -1157,6 +2006,14 @@ end
 
 --@api: LSteeringManager:setCombineMode
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local steer = lurek.ai.newSteeringManager()
   steer:addSeek(64, 64, 1.0)
   local behavior_count = steer:getBehaviorCount()
@@ -1167,6 +2024,14 @@ end
 
 --@api: LSteeringManager:getCombineMode
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local steer = lurek.ai.newSteeringManager()
   steer:addSeek(64, 64, 1.0)
   local behavior_count = steer:getBehaviorCount()
@@ -1178,6 +2043,14 @@ end
 
 --@api: LSteeringManager:getLastSteering
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local steer = lurek.ai.newSteeringManager()
   steer:addSeek(64, 64, 1.0)
   local behavior_count = steer:getBehaviorCount()
@@ -1189,6 +2062,14 @@ end
 
 --@api: LSteeringManager:calculate
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local steer = lurek.ai.newSteeringManager()
   steer:addSeek(64, 64, 1.0)
   local behavior_count = steer:getBehaviorCount()
@@ -1200,6 +2081,14 @@ end
 
 --@api: LSteeringManager:setPath
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local steer = lurek.ai.newSteeringManager()
   steer:addSeek(64, 64, 1.0)
   local behavior_count = steer:getBehaviorCount()
@@ -1216,6 +2105,14 @@ end
 
 --@api: LSteeringManager:clearPath
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local steer = lurek.ai.newSteeringManager()
   steer:addSeek(64, 64, 1.0)
   local behavior_count = steer:getBehaviorCount()
@@ -1227,6 +2124,14 @@ end
 
 --@api: LSteeringManager:hasPath
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local steer = lurek.ai.newSteeringManager()
   steer:addSeek(64, 64, 1.0)
   local behavior_count = steer:getBehaviorCount()
@@ -1238,6 +2143,14 @@ end
 
 --@api: LSteeringManager:getPathProgress
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local steer = lurek.ai.newSteeringManager()
   steer:addSeek(64, 64, 1.0)
   local behavior_count = steer:getBehaviorCount()
@@ -1248,6 +2161,14 @@ end
 
 --@api: LSteeringManager:type
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local steer = lurek.ai.newSteeringManager()
   steer:addSeek(64, 64, 1.0)
   local behavior_count = steer:getBehaviorCount()
@@ -1258,6 +2179,14 @@ end
 
 --@api: LSteeringManager:typeOf
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local steer = lurek.ai.newSteeringManager()
   steer:addSeek(64, 64, 1.0)
   local behavior_count = steer:getBehaviorCount()
@@ -1268,6 +2197,14 @@ end
 
 --@api: LSteeringManager:setSpatialHashCellSize
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local steer = lurek.ai.newSteeringManager()
   steer:addSeek(64, 64, 1.0)
   local behavior_count = steer:getBehaviorCount()
@@ -1277,6 +2214,14 @@ end
 
 --@api: LSteeringManager:enableSpatialHash
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local steer = lurek.ai.newSteeringManager()
   steer:addSeek(64, 64, 1.0)
   local behavior_count = steer:getBehaviorCount()
@@ -1287,6 +2232,14 @@ end
 
 --@api: LSteeringManager:addCustomBehavior
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local steer = lurek.ai.newSteeringManager()
   steer:addSeek(64, 64, 1.0)
   local behavior_count = steer:getBehaviorCount()
@@ -1297,6 +2250,14 @@ end
 
 --@api: LSteeringManager:applyCustomSteering
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local world_type = world:type()
   local npc = world:addAgent("pusher")
@@ -1313,6 +2274,14 @@ end
 
 --@api: LUtilityAI:addAction
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uai = lurek.ai.newUtilityAI()
   uai:addAction("idle", function() return 0.1 end)
   local chosen_preview = uai:evaluate()
@@ -1323,6 +2292,14 @@ end
 
 --@api: LUtilityAI:evaluate
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uai = lurek.ai.newUtilityAI()
   uai:addAction("idle", function() return 0.1 end)
   local chosen_preview = uai:evaluate()
@@ -1334,6 +2311,14 @@ end
 
 --@api: LUtilityAI:getActionCount
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uai = lurek.ai.newUtilityAI()
   uai:addAction("idle", function() return 0.1 end)
   local chosen_preview = uai:evaluate()
@@ -1345,6 +2330,14 @@ end
 
 --@api: LUtilityAI:getLastAction
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local uai = lurek.ai.newUtilityAI()
   uai:addAction("idle", function() return 0.1 end)
   local chosen_preview = uai:evaluate()
@@ -1357,6 +2350,14 @@ end
 
 --@api: LUtilityAI:addConsideration
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uai = lurek.ai.newUtilityAI()
   uai:addAction("idle", function() return 0.1 end)
   local chosen_preview = uai:evaluate()
@@ -1368,6 +2369,14 @@ end
 
 --@api: LUtilityAI:type
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uai = lurek.ai.newUtilityAI()
   uai:addAction("idle", function() return 0.1 end)
   local chosen_preview = uai:evaluate()
@@ -1377,6 +2386,14 @@ end
 
 --@api: LUtilityAI:typeOf
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local uai = lurek.ai.newUtilityAI()
   uai:addAction("idle", function() return 0.1 end)
   local chosen_preview = uai:evaluate()
@@ -1386,6 +2403,14 @@ end
 
 --@api: LGOAPPlanner:addAction
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local goap = lurek.ai.newGOAPPlanner()
   goap:addGoal("idle", 1)
   local goal_count = goap:getGoalCount()
@@ -1396,6 +2421,14 @@ end
 
 --@api: LGOAPPlanner:setPrecondition
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local goap = lurek.ai.newGOAPPlanner()
   goap:addGoal("idle", 1)
   local goal_count = goap:getGoalCount()
@@ -1406,6 +2439,14 @@ end
 
 --@api: LGOAPPlanner:setEffect
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local goap = lurek.ai.newGOAPPlanner()
   goap:addGoal("idle", 1)
   local goal_count = goap:getGoalCount()
@@ -1416,6 +2457,14 @@ end
 
 --@api: LGOAPPlanner:addGoal
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local goap = lurek.ai.newGOAPPlanner()
   goap:addGoal("idle", 1)
   local goal_count = goap:getGoalCount()
@@ -1426,6 +2475,14 @@ end
 
 --@api: LGOAPPlanner:setGoalState
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local goap = lurek.ai.newGOAPPlanner()
   goap:addGoal("idle", 1)
   local goal_count = goap:getGoalCount()
@@ -1436,6 +2493,14 @@ end
 
 --@api: LGOAPPlanner:plan
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local goap = lurek.ai.newGOAPPlanner()
   goap:addGoal("idle", 1)
   local goal_count = goap:getGoalCount()
@@ -1452,6 +2517,14 @@ end
 
 --@api: LGOAPPlanner:getActionCount
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local goap = lurek.ai.newGOAPPlanner()
   goap:addGoal("idle", 1)
   local goal_count = goap:getGoalCount()
@@ -1462,6 +2535,14 @@ end
 
 --@api: LGOAPPlanner:getGoalCount
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local goap = lurek.ai.newGOAPPlanner()
   goap:addGoal("idle", 1)
   local goal_count = goap:getGoalCount()
@@ -1473,6 +2554,14 @@ end
 
 --@api: LGOAPPlanner:getMaxIterations
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local goap = lurek.ai.newGOAPPlanner()
   goap:addGoal("idle", 1)
   local goal_count = goap:getGoalCount()
@@ -1482,6 +2571,14 @@ end
 
 --@api: LGOAPPlanner:setMaxIterations
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local goap = lurek.ai.newGOAPPlanner()
   goap:addGoal("idle", 1)
   local goal_count = goap:getGoalCount()
@@ -1491,6 +2588,14 @@ end
 
 --@api: LGOAPPlanner:type
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local goap = lurek.ai.newGOAPPlanner()
   goap:addGoal("idle", 1)
   local goal_count = goap:getGoalCount()
@@ -1500,6 +2605,14 @@ end
 
 --@api: LGOAPPlanner:typeOf
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local goap = lurek.ai.newGOAPPlanner()
   goap:addGoal("idle", 1)
   local goal_count = goap:getGoalCount()
@@ -1509,6 +2622,14 @@ end
 
 --@api: LInfluenceMap:addLayer
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local im = lurek.ai.newInfluenceMap(16, 16, 1.0)
   im:addLayer("debug")
   local map_width = im:getWidth()
@@ -1519,6 +2640,14 @@ end
 
 --@api: LInfluenceMap:hasLayer
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local im = lurek.ai.newInfluenceMap(8, 8, 2.0)
   im:addLayer("debug")
   local map_width = im:getWidth()
@@ -1529,6 +2658,14 @@ end
 
 --@api: LInfluenceMap:setInfluence
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local im = lurek.ai.newInfluenceMap(10, 10, 1.0)
   im:addLayer("debug")
   local map_width = im:getWidth()
@@ -1540,6 +2677,14 @@ end
 
 --@api: LInfluenceMap:getInfluence
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local im = lurek.ai.newInfluenceMap(10, 10, 1.0)
   im:addLayer("debug")
   local map_width = im:getWidth()
@@ -1551,6 +2696,14 @@ end
 
 --@api: LInfluenceMap:stampInfluence
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local im = lurek.ai.newInfluenceMap(20, 20, 1.0)
   im:addLayer("debug")
   local map_width = im:getWidth()
@@ -1562,6 +2715,14 @@ end
 
 --@api: LInfluenceMap:propagate
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local im = lurek.ai.newInfluenceMap(10, 10, 1.0)
   im:addLayer("debug")
   local map_width = im:getWidth()
@@ -1574,6 +2735,14 @@ end
 
 --@api: LInfluenceMap:decay
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local im = lurek.ai.newInfluenceMap(8, 8, 1.0)
   im:addLayer("debug")
   local map_width = im:getWidth()
@@ -1586,6 +2755,14 @@ end
 
 --@api: LInfluenceMap:clearLayer
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local im = lurek.ai.newInfluenceMap(8, 8, 1.0)
   im:addLayer("debug")
   local map_width = im:getWidth()
@@ -1598,6 +2775,14 @@ end
 
 --@api: LInfluenceMap:clearAll
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local im = lurek.ai.newInfluenceMap(8, 8, 1.0)
   im:addLayer("debug")
   local map_width = im:getWidth()
@@ -1611,6 +2796,14 @@ end
 
 --@api: LInfluenceMap:getMaxPosition
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local im = lurek.ai.newInfluenceMap(10, 10, 1.0)
   im:addLayer("debug")
   local map_width = im:getWidth()
@@ -1623,6 +2816,14 @@ end
 
 --@api: LInfluenceMap:getMinPosition
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local im = lurek.ai.newInfluenceMap(10, 10, 1.0)
   im:addLayer("debug")
   local map_width = im:getWidth()
@@ -1635,6 +2836,14 @@ end
 
 --@api: LInfluenceMap:queryRect
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local im = lurek.ai.newInfluenceMap(10, 10, 1.0)
   im:addLayer("debug")
   local map_width = im:getWidth()
@@ -1647,6 +2856,14 @@ end
 
 --@api: LInfluenceMap:blend
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local im = lurek.ai.newInfluenceMap(8, 8, 1.0)
   im:addLayer("debug")
   local map_width = im:getWidth()
@@ -1662,6 +2879,14 @@ end
 
 --@api: LInfluenceMap:getWidth
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local im = lurek.ai.newInfluenceMap(16, 12, 2.0)
   im:addLayer("debug")
   local map_width = im:getWidth()
@@ -1671,6 +2896,14 @@ end
 
 --@api: LInfluenceMap:getHeight
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local im = lurek.ai.newInfluenceMap(16, 12, 2.0)
   im:addLayer("debug")
   local map_width = im:getWidth()
@@ -1680,6 +2913,14 @@ end
 
 --@api: LInfluenceMap:getCellSize
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local im = lurek.ai.newInfluenceMap(8, 8, 2.5)
   im:addLayer("debug")
   local map_width = im:getWidth()
@@ -1689,6 +2930,14 @@ end
 
 --@api: LInfluenceMap:type
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local im = lurek.ai.newInfluenceMap(4, 4, 1.0)
   im:addLayer("debug")
   local map_width = im:getWidth()
@@ -1698,6 +2947,14 @@ end
 
 --@api: LInfluenceMap:typeOf
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local im = lurek.ai.newInfluenceMap(4, 4, 1.0)
   im:addLayer("debug")
   local map_width = im:getWidth()
@@ -1707,6 +2964,14 @@ end
 
 --@api: LSquad:getName
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sq = lurek.ai.newSquad("alpha")
   sq:addMember("unit_1")
   local member_count = sq:getMemberCount()
@@ -1716,6 +2981,14 @@ end
 
 --@api: LSquad:addMember
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sq = lurek.ai.newSquad("bravo")
   sq:addMember("unit_1")
   local member_count = sq:getMemberCount()
@@ -1726,6 +2999,14 @@ end
 
 --@api: LSquad:removeMember
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sq = lurek.ai.newSquad("charlie")
   sq:addMember("unit_1")
   local member_count = sq:getMemberCount()
@@ -1737,6 +3018,14 @@ end
 
 --@api: LSquad:getMemberCount
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sq = lurek.ai.newSquad("delta")
   sq:addMember("unit_1")
   local member_count = sq:getMemberCount()
@@ -1748,6 +3037,14 @@ end
 
 --@api: LSquad:getMembers
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sq = lurek.ai.newSquad("echo")
   sq:addMember("unit_1")
   local member_count = sq:getMemberCount()
@@ -1759,6 +3056,14 @@ end
 
 --@api: LSquad:setLeader
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sq = lurek.ai.newSquad("foxtrot")
   sq:addMember("unit_1")
   local member_count = sq:getMemberCount()
@@ -1770,6 +3075,14 @@ end
 
 --@api: LSquad:getLeader
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sq = lurek.ai.newSquad("golf")
   sq:addMember("unit_1")
   local member_count = sq:getMemberCount()
@@ -1781,6 +3094,14 @@ end
 
 --@api: LSquad:setFormation
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local sq = lurek.ai.newSquad("hotel")
   sq:addMember("unit_1")
   local member_count = sq:getMemberCount()
@@ -1795,6 +3116,14 @@ end
 
 --@api: LSquad:getFormation
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sq = lurek.ai.newSquad("recon")
   sq:addMember("unit_1")
   local member_count = sq:getMemberCount()
@@ -1805,6 +3134,14 @@ end
 
 --@api: LSquad:getFormationSpacing
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sq = lurek.ai.newSquad("assault")
   sq:addMember("unit_1")
   local member_count = sq:getMemberCount()
@@ -1815,6 +3152,14 @@ end
 
 --@api: LSquad:getFormationPosition
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local sq = lurek.ai.newSquad("patrol")
   sq:addMember("unit_1")
   local member_count = sq:getMemberCount()
@@ -1828,6 +3173,14 @@ end
 
 --@api: LSquad:getBlackboard
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sq = lurek.ai.newSquad("intel")
   sq:addMember("unit_1")
   local member_count = sq:getMemberCount()
@@ -1838,6 +3191,14 @@ end
 
 --@api: LSquad:type
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sq = lurek.ai.newSquad("test")
   sq:addMember("unit_1")
   local member_count = sq:getMemberCount()
@@ -1847,6 +3208,14 @@ end
 
 --@api: LSquad:typeOf
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sq = lurek.ai.newSquad("test2")
   sq:addMember("unit_1")
   local member_count = sq:getMemberCount()
@@ -1856,6 +3225,14 @@ end
 
 --@api: LCommandQueue:enqueue
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cq = lurek.ai.newCommandQueue()
   cq:enqueue("hold", function() end, { targetX = 0, targetY = 0 })
   local queue_count = cq:getCount()
@@ -1866,6 +3243,14 @@ end
 
 --@api: LCommandQueue:pushFront
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cq = lurek.ai.newCommandQueue()
   cq:enqueue("hold", function() end, { targetX = 0, targetY = 0 })
   local queue_count = cq:getCount()
@@ -1876,6 +3261,14 @@ end
 
 --@api: LCommandQueue:replace
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cq = lurek.ai.newCommandQueue()
   cq:enqueue("hold", function() end, { targetX = 0, targetY = 0 })
   local queue_count = cq:getCount()
@@ -1887,6 +3280,14 @@ end
 
 --@api: LCommandQueue:cancelCurrent
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cq = lurek.ai.newCommandQueue()
   cq:enqueue("hold", function() end, { targetX = 0, targetY = 0 })
   local queue_count = cq:getCount()
@@ -1898,6 +3299,14 @@ end
 
 --@api: LCommandQueue:clear
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cq = lurek.ai.newCommandQueue()
   cq:enqueue("hold", function() end, { targetX = 0, targetY = 0 })
   local queue_count = cq:getCount()
@@ -1909,6 +3318,14 @@ end
 
 --@api: LCommandQueue:getCount
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cq = lurek.ai.newCommandQueue()
   cq:enqueue("hold", function() end, { targetX = 0, targetY = 0 })
   local queue_count = cq:getCount()
@@ -1920,6 +3337,14 @@ end
 
 --@api: LCommandQueue:isEmpty
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cq = lurek.ai.newCommandQueue()
   cq:enqueue("hold", function() end, { targetX = 0, targetY = 0 })
   local queue_count = cq:getCount()
@@ -1930,6 +3355,14 @@ end
 
 --@api: LCommandQueue:getCurrentType
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cq = lurek.ai.newCommandQueue()
   cq:enqueue("hold", function() end, { targetX = 0, targetY = 0 })
   local queue_count = cq:getCount()
@@ -1939,6 +3372,14 @@ end
 
 --@api: LCommandQueue:getCurrentTarget
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cq = lurek.ai.newCommandQueue()
   cq:enqueue("hold", function() end, { targetX = 0, targetY = 0 })
   local queue_count = cq:getCount()
@@ -1949,6 +3390,14 @@ end
 
 --@api: LCommandQueue:type
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cq = lurek.ai.newCommandQueue()
   cq:enqueue("hold", function() end, { targetX = 0, targetY = 0 })
   local queue_count = cq:getCount()
@@ -1958,6 +3407,14 @@ end
 
 --@api: LCommandQueue:typeOf
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cq = lurek.ai.newCommandQueue()
   cq:enqueue("hold", function() end, { targetX = 0, targetY = 0 })
   local queue_count = cq:getCount()
@@ -1967,6 +3424,14 @@ end
 
 --@api: LTraitProfile:set
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tp = lurek.ai.newTraitProfile()
   tp:set("morale", 0.5)
   local morale = tp:get("morale")
@@ -1977,6 +3442,14 @@ end
 
 --@api: LTraitProfile:get
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tp = lurek.ai.newTraitProfile()
   tp:set("morale", 0.5)
   local morale = tp:get("morale")
@@ -1988,6 +3461,14 @@ end
 
 --@api: LTraitProfile:getBase
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tp = lurek.ai.newTraitProfile()
   tp:set("morale", 0.5)
   local morale = tp:get("morale")
@@ -1998,6 +3479,14 @@ end
 
 --@api: LTraitProfile:addModifier
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tp = lurek.ai.newTraitProfile()
   tp:set("morale", 0.5)
   local morale = tp:get("morale")
@@ -2008,6 +3497,14 @@ end
 
 --@api: LTraitProfile:removeModifiers
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local tp = lurek.ai.newTraitProfile()
   tp:set("morale", 0.5)
   local morale = tp:get("morale")
@@ -2020,6 +3517,14 @@ end
 
 --@api: LTraitProfile:update
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tp = lurek.ai.newTraitProfile()
   tp:set("morale", 0.5)
   local morale = tp:get("morale")
@@ -2031,6 +3536,14 @@ end
 
 --@api: LTraitProfile:has
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tp = lurek.ai.newTraitProfile()
   tp:set("morale", 0.5)
   local morale = tp:get("morale")
@@ -2041,6 +3554,14 @@ end
 
 --@api: LTraitProfile:traitCount
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tp = lurek.ai.newTraitProfile()
   tp:set("morale", 0.5)
   local morale = tp:get("morale")
@@ -2052,6 +3573,14 @@ end
 
 --@api: LTraitProfile:archetype
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local tp = lurek.ai.newTraitProfile()
   tp:set("morale", 0.5)
   local morale = tp:get("morale")
@@ -2064,6 +3593,14 @@ end
 
 --@api: LTraitProfile:type
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tp = lurek.ai.newTraitProfile()
   tp:set("morale", 0.5)
   local morale = tp:get("morale")
@@ -2073,6 +3610,14 @@ end
 
 --@api: LTraitProfile:typeOf
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local tp = lurek.ai.newTraitProfile()
   tp:set("morale", 0.5)
   local morale = tp:get("morale")
@@ -2082,6 +3627,14 @@ end
 
 --@api: LStimulusWorld:addVisual
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sw = lurek.ai.newStimulusWorld()
   local stimulus_id = sw:addVisual(0, 0, 0.5, 8.0, "ping")
   local stimulus_count = sw:count()
@@ -2091,6 +3644,14 @@ end
 
 --@api: LStimulusWorld:addAuditory
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sw = lurek.ai.newStimulusWorld()
   local stimulus_id = sw:addVisual(0, 0, 0.5, 8.0, "ping")
   local stimulus_count = sw:count()
@@ -2100,6 +3661,14 @@ end
 
 --@api: LStimulusWorld:remove
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sw = lurek.ai.newStimulusWorld()
   local stimulus_id = sw:addVisual(0, 0, 0.5, 8.0, "ping")
   local stimulus_count = sw:count()
@@ -2110,6 +3679,14 @@ end
 
 --@api: LStimulusWorld:update
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sw = lurek.ai.newStimulusWorld()
   local stimulus_id = sw:addVisual(0, 0, 0.5, 8.0, "ping")
   local stimulus_count = sw:count()
@@ -2120,6 +3697,14 @@ end
 
 --@api: LStimulusWorld:count
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sw = lurek.ai.newStimulusWorld()
   local stimulus_id = sw:addVisual(0, 0, 0.5, 8.0, "ping")
   local stimulus_count = sw:count()
@@ -2130,6 +3715,14 @@ end
 
 --@api: LStimulusWorld:clear
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sw = lurek.ai.newStimulusWorld()
   local stimulus_id = sw:addVisual(0, 0, 0.5, 8.0, "ping")
   local stimulus_count = sw:count()
@@ -2141,6 +3734,14 @@ end
 
 --@api: LStimulusWorld:type
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sw = lurek.ai.newStimulusWorld()
   local stimulus_id = sw:addVisual(0, 0, 0.5, 8.0, "ping")
   local stimulus_count = sw:count()
@@ -2150,6 +3751,14 @@ end
 
 --@api: LStimulusWorld:typeOf
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local sw = lurek.ai.newStimulusWorld()
   local stimulus_id = sw:addVisual(0, 0, 0.5, 8.0, "ping")
   local stimulus_count = sw:count()
@@ -2159,6 +3768,14 @@ end
 
 --@api: LContextSteering:addSeekTarget
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cs = lurek.ai.newContextSteering(8)
   cs:addSeekTarget(0, 0, 1.0)
   local slot_count = cs:slotCount()
@@ -2168,6 +3785,14 @@ end
 
 --@api: LContextSteering:addWander
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cs = lurek.ai.newContextSteering(8)
   cs:addSeekTarget(0, 0, 1.0)
   local slot_count = cs:slotCount()
@@ -2177,6 +3802,14 @@ end
 
 --@api: LContextSteering:addAvoidPoint
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cs = lurek.ai.newContextSteering(8)
   cs:addSeekTarget(0, 0, 1.0)
   local slot_count = cs:slotCount()
@@ -2186,6 +3819,14 @@ end
 
 --@api: LContextSteering:addAvoidBounds
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cs = lurek.ai.newContextSteering(8)
   cs:addSeekTarget(0, 0, 1.0)
   local slot_count = cs:slotCount()
@@ -2195,6 +3836,14 @@ end
 
 --@api: LContextSteering:clearBehaviors
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cs = lurek.ai.newContextSteering(8)
   cs:addSeekTarget(0, 0, 1.0)
   local slot_count = cs:slotCount()
@@ -2206,6 +3855,14 @@ end
 
 --@api: LContextSteering:evaluate
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cs = lurek.ai.newContextSteering(8)
   cs:addSeekTarget(0, 0, 1.0)
   local slot_count = cs:slotCount()
@@ -2217,6 +3874,14 @@ end
 
 --@api: LContextSteering:chosenMagnitude
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cs = lurek.ai.newContextSteering(8)
   cs:addSeekTarget(0, 0, 1.0)
   local slot_count = cs:slotCount()
@@ -2228,6 +3893,14 @@ end
 
 --@api: LContextSteering:slotCount
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cs = lurek.ai.newContextSteering(16)
   cs:addSeekTarget(0, 0, 1.0)
   local slot_count = cs:slotCount()
@@ -2237,6 +3910,14 @@ end
 
 --@api: LContextSteering:type
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cs = lurek.ai.newContextSteering(8)
   cs:addSeekTarget(0, 0, 1.0)
   local slot_count = cs:slotCount()
@@ -2246,6 +3927,14 @@ end
 
 --@api: LContextSteering:typeOf
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local cs = lurek.ai.newContextSteering(8)
   cs:addSeekTarget(0, 0, 1.0)
   local slot_count = cs:slotCount()
@@ -2255,6 +3944,14 @@ end
 
 --@api: LNeedSystem:addNeed
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ns = lurek.ai.newNeedSystem()
   ns:addNeed("rest", 0.1, 0.5, 1.0)
   local urgent_need = ns:mostUrgent()
@@ -2265,6 +3962,14 @@ end
 
 --@api: LNeedSystem:update
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ns = lurek.ai.newNeedSystem()
   ns:addNeed("rest", 0.1, 0.5, 1.0)
   local urgent_need = ns:mostUrgent()
@@ -2276,6 +3981,14 @@ end
 
 --@api: LNeedSystem:mostUrgent
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ns = lurek.ai.newNeedSystem()
   ns:addNeed("rest", 0.1, 0.5, 1.0)
   local urgent_need = ns:mostUrgent()
@@ -2287,6 +4000,14 @@ end
 
 --@api: LNeedSystem:satisfy
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ns = lurek.ai.newNeedSystem()
   ns:addNeed("rest", 0.1, 0.5, 1.0)
   local urgent_need = ns:mostUrgent()
@@ -2300,6 +4021,14 @@ end
 
 --@api: LNeedSystem:valueOf
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ns = lurek.ai.newNeedSystem()
   ns:addNeed("rest", 0.1, 0.5, 1.0)
   local urgent_need = ns:mostUrgent()
@@ -2311,6 +4040,14 @@ end
 
 --@api: LNeedSystem:type
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ns = lurek.ai.newNeedSystem()
   ns:addNeed("rest", 0.1, 0.5, 1.0)
   local urgent_need = ns:mostUrgent()
@@ -2320,6 +4057,14 @@ end
 
 --@api: LNeedSystem:typeOf
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local ns = lurek.ai.newNeedSystem()
   ns:addNeed("rest", 0.1, 0.5, 1.0)
   local urgent_need = ns:mostUrgent()
@@ -2329,6 +4074,14 @@ end
 
 --@api: LAIDirector:pushEvent
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dir = lurek.ai.newAIDirector()
   dir:pushEvent(0.1)
   local current_phase = dir:phase()
@@ -2339,6 +4092,14 @@ end
 
 --@api: LAIDirector:update
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dir = lurek.ai.newAIDirector()
   dir:pushEvent(0.1)
   local current_phase = dir:phase()
@@ -2349,6 +4110,14 @@ end
 
 --@api: LAIDirector:tension
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dir = lurek.ai.newAIDirector()
   dir:pushEvent(0.1)
   local current_phase = dir:phase()
@@ -2358,6 +4127,14 @@ end
 
 --@api: LAIDirector:phase
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dir = lurek.ai.newAIDirector()
   dir:pushEvent(0.1)
   local current_phase = dir:phase()
@@ -2367,6 +4144,14 @@ end
 
 --@api: LAIDirector:spawnRateFactor
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dir = lurek.ai.newAIDirector()
   dir:pushEvent(0.1)
   local current_phase = dir:phase()
@@ -2377,6 +4162,14 @@ end
 
 --@api: LAIDirector:lootFactor
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dir = lurek.ai.newAIDirector()
   dir:pushEvent(0.1)
   local current_phase = dir:phase()
@@ -2387,6 +4180,14 @@ end
 
 --@api: LAIDirector:ambientIntensity
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dir = lurek.ai.newAIDirector()
   dir:pushEvent(0.1)
   local current_phase = dir:phase()
@@ -2397,6 +4198,14 @@ end
 
 --@api: LAIDirector:setTension
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dir = lurek.ai.newAIDirector()
   dir:pushEvent(0.1)
   local current_phase = dir:phase()
@@ -2406,6 +4215,14 @@ end
 
 --@api: LAIDirector:reset
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dir = lurek.ai.newAIDirector()
   dir:pushEvent(0.1)
   local current_phase = dir:phase()
@@ -2416,6 +4233,14 @@ end
 
 --@api: LAIDirector:type
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dir = lurek.ai.newAIDirector()
   dir:pushEvent(0.1)
   local current_phase = dir:phase()
@@ -2425,6 +4250,14 @@ end
 
 --@api: LAIDirector:typeOf
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local dir = lurek.ai.newAIDirector()
   dir:pushEvent(0.1)
   local current_phase = dir:phase()
@@ -2434,6 +4267,14 @@ end
 
 --@api: LHTNDomain:addPrimitive
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local htn = lurek.ai.newHTNDomain()
   local domain_type = htn:type()
   local task_count = htn:taskCount()
@@ -2444,6 +4285,14 @@ end
 
 --@api: LHTNDomain:addCompound
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local htn = lurek.ai.newHTNDomain()
   local domain_type = htn:type()
   local task_count = htn:taskCount()
@@ -2455,6 +4304,14 @@ end
 
 --@api: LHTNDomain:plan
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local htn = lurek.ai.newHTNDomain()
   local domain_type = htn:type()
   local task_count = htn:taskCount()
@@ -2470,6 +4327,14 @@ end
 
 --@api: LHTNDomain:taskCount
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local htn = lurek.ai.newHTNDomain()
   local domain_type = htn:type()
   local task_count = htn:taskCount()
@@ -2480,6 +4345,14 @@ end
 
 --@api: LHTNDomain:type
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local htn = lurek.ai.newHTNDomain()
   local domain_type = htn:type()
   local task_count = htn:taskCount()
@@ -2489,6 +4362,14 @@ end
 
 --@api: LHTNDomain:typeOf
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local htn = lurek.ai.newHTNDomain()
   local domain_type = htn:type()
   local task_count = htn:taskCount()
@@ -2498,6 +4379,14 @@ end
 
 --@api: LMCTSEngine:search
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mcts = lurek.ai.newMCTSEngine(100, 1.4, 10, 42)
   local action = mcts:search(
     1,
@@ -2510,6 +4399,14 @@ end
 
 --@api: LMCTSEngine:type
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mcts = lurek.ai.newMCTSEngine(50, 1.0, 5, 0)
     local simulations = 50
     local exploration = 1.0
@@ -2519,6 +4416,14 @@ end
 
 --@api: LMCTSEngine:typeOf
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local mcts = lurek.ai.newMCTSEngine(50, 1.0, 5, 0)
     local simulations = 50
     local exploration = 1.0
@@ -2528,6 +4433,14 @@ end
 
 --@api: LEmotionModel:add
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local em = lurek.ai.newEmotionModel()
     em:add("joy", 0.3, 0.1, 0.2)
     em:add("anger", 0.0, 0.05, 0.3)
@@ -2538,6 +4451,14 @@ end
 
 --@api: LEmotionModel:trigger
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local em = lurek.ai.newEmotionModel()
     em:add("fear", 0.0, 0.1, 0.2)
     em:trigger("fear", 0.7)
@@ -2548,6 +4469,14 @@ end
 
 --@api: LEmotionModel:get
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local em = lurek.ai.newEmotionModel()
     em:add("sadness", 0.2, 0.05, 0.1)
     em:trigger("sadness", 0.5)
@@ -2557,6 +4486,14 @@ end
 
 --@api: LEmotionModel:dominant
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local em = lurek.ai.newEmotionModel()
   em:add("joy", 0.0, 0.1, 0.1)
     em:add("anger", 0.0, 0.1, 0.1)
@@ -2567,6 +4504,14 @@ end
 
 --@api: LEmotionModel:isActive
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local em = lurek.ai.newEmotionModel()
   em:add("surprise", 0.0, 0.1, 0.5)
     em:trigger("surprise", 0.2)
@@ -2577,6 +4522,14 @@ end
 
 --@api: LEmotionModel:update
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local em = lurek.ai.newEmotionModel()
     em:add("excitement", 0.0, 0.2, 0.1)
     em:trigger("excitement", 1.0)
@@ -2586,6 +4539,14 @@ end
 
 --@api: LEmotionModel:reset
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local em = lurek.ai.newEmotionModel()
     em:add("rage", 0.0, 0.1, 0.2)
     em:trigger("rage", 1.0)
@@ -2595,6 +4556,14 @@ end
 
 --@api: LEmotionModel:type
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local em = lurek.ai.newEmotionModel()
     em:add("joy", 0.1, 0.1, 0.1)
     local dominant = em:dominant()
@@ -2604,6 +4573,14 @@ end
 
 --@api: LEmotionModel:typeOf
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local em = lurek.ai.newEmotionModel()
     em:add("joy", 0.1, 0.1, 0.1)
     local type_name = em:type()
@@ -2613,6 +4590,14 @@ end
 
 --@api: LORCASolver:addAgent
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local orca = lurek.ai.newORCASolver(2.0)
     local idx = orca:addAgent(10.0, 20.0, 0.5, 3.0)
     local count = orca:agentCount()
@@ -2622,6 +4607,14 @@ end
 
 --@api: LORCASolver:setPreferredVelocity
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local orca = lurek.ai.newORCASolver(2.0)
     orca:addAgent(0, 0, 0.5, 5.0)
     orca:setPreferredVelocity(0, 2.0, 1.0)
@@ -2632,6 +4625,14 @@ end
 
 --@api: LORCASolver:setPosition
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local orca = lurek.ai.newORCASolver(2.0)
     orca:addAgent(0, 0, 0.5, 5.0)
     orca:setPosition(0, 5.0, 3.0)
@@ -2642,6 +4643,14 @@ end
 
 --@api: LORCASolver:compute
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local orca = lurek.ai.newORCASolver(1.5)
   orca:addAgent(0, 0, 0.5, 3.0)
   orca:addAgent(5, 0, 0.5, 3.0)
@@ -2653,6 +4662,14 @@ end
 
 --@api: LORCASolver:getSafeVelocity
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local orca = lurek.ai.newORCASolver(1.5)
   orca:addAgent(0, 0, 0.5, 3.0)
     orca:setPreferredVelocity(0, 2.0, 0.0)
@@ -2663,6 +4680,14 @@ end
 
 --@api: LORCASolver:agentCount
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local orca = lurek.ai.newORCASolver(2.0)
     orca:addAgent(0, 0, 1.0, 2.0)
     orca:addAgent(5, 5, 1.0, 2.0)
@@ -2673,6 +4698,14 @@ end
 
 --@api: LORCASolver:type
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local orca = lurek.ai.newORCASolver(1.0)
     orca:addAgent(0, 0, 0.5, 2.0)
     local count = orca:agentCount()
@@ -2682,6 +4715,14 @@ end
 
 --@api: LORCASolver:typeOf
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local orca = lurek.ai.newORCASolver(1.0)
     orca:addAgent(0, 0, 0.5, 2.0)
     local count = orca:agentCount()
@@ -2691,6 +4732,14 @@ end
 
 --@api: LStrategyAI:addGoal
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local strat = lurek.ai.newStrategyAI(5.0)
     strat:addGoal("expand")
     strat:addGoal("defend")
@@ -2700,6 +4749,14 @@ end
 
 --@api: LStrategyAI:addTag
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local strat = lurek.ai.newStrategyAI(3.0)
     strat:addTag("war_declared")
     strat:addTag("low_resources")
@@ -2710,6 +4767,14 @@ end
 
 --@api: LStrategyAI:removeTag
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local strat = lurek.ai.newStrategyAI(3.0)
     strat:addTag("peace")
     strat:removeTag("peace")
@@ -2720,6 +4785,14 @@ end
 
 --@api: LStrategyAI:update
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local strat = lurek.ai.newStrategyAI(1.0)
     strat:addGoal("attack")
     strat:addGoal("retreat")
@@ -2729,6 +4802,14 @@ end
 
 --@api: LStrategyAI:forceEvaluate
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local strat = lurek.ai.newStrategyAI(10.0)
     strat:addGoal("build")
     strat:addGoal("scout")
@@ -2738,6 +4819,14 @@ end
 
 --@api: LStrategyAI:activeGoal
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local strat = lurek.ai.newStrategyAI(1.0)
     strat:addGoal("idle")
     strat:addTag("waiting")
@@ -2748,6 +4837,14 @@ end
 
 --@api: LStrategyAI:timeUntilNext
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local strat = lurek.ai.newStrategyAI(5.0)
     strat:addGoal("wait")
     strat:update(2.0, function() return 1.0 end)
@@ -2758,6 +4855,14 @@ end
 
 --@api: LStrategyAI:type
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local strat = lurek.ai.newStrategyAI(1.0)
     strat:addGoal("idle")
     local active = strat:activeGoal()
@@ -2767,6 +4872,14 @@ end
 
 --@api: LStrategyAI:typeOf
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local strat = lurek.ai.newStrategyAI(1.0)
     strat:addGoal("idle")
     local until_next = strat:timeUntilNext()
@@ -2776,6 +4889,14 @@ end
 
 --@api: LAILod:tierFor
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local lod = lurek.ai.newAILod()
   local tier_name = lod:tierName(0)
   local tier_index = lod:tierFor(0, 0, 0, 0)
@@ -2785,6 +4906,14 @@ end
 
 --@api: LAILod:shouldUpdate
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local lod = lurek.ai.newAILod()
   local tier_name = lod:tierName(0)
   local tier_index = lod:tierFor(0, 0, 0, 0)
@@ -2794,6 +4923,14 @@ end
 
 --@api: LAILod:tierCount
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local lod = lurek.ai.newAILod()
   local tier_name = lod:tierName(0)
   local tier_index = lod:tierFor(0, 0, 0, 0)
@@ -2804,6 +4941,14 @@ end
 
 --@api: LAILod:tierName
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local lod = lurek.ai.newAILod()
   local tier_name = lod:tierName(0)
   local tier_index = lod:tierFor(0, 0, 0, 0)
@@ -2813,6 +4958,14 @@ end
 
 --@api: LAILod:type
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local lod = lurek.ai.newAILod()
   local tier_name = lod:tierName(0)
   local tier_index = lod:tierFor(0, 0, 0, 0)
@@ -2822,6 +4975,14 @@ end
 
 --@api: LAILod:typeOf
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
     local lod = lurek.ai.newAILod()
   local tier_name = lod:tierName(0)
   local tier_index = lod:tierFor(0, 0, 0, 0)
@@ -2832,6 +4993,14 @@ end
 
 --@api: LAIWorld:getLastCallbackErrors
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local world = lurek.ai.newWorld()
   local agent = world:addAgent("callback_probe")
   agent:setCustomModel(function() error("probe failure") end)
@@ -2842,6 +5011,14 @@ end
 
 --@api: LSteeringManager:getLastDiagnostic
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local steer = lurek.ai.newSteeringManager()
   local world = lurek.ai.newWorld()
   local agent = world:addAgent("steer_probe")
@@ -2852,6 +5029,14 @@ end
 
 --@api: LUtilityAI:getLastTrace
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local uai = lurek.ai.newUtilityAI()
   uai:addAction("heal", function() return 0.8 end)
   uai:addConsideration("heal", "low_health", function() return 1.0 end, "linear", 1.0, 0.0, 0.0, 1.0)
@@ -2862,6 +5047,14 @@ end
 
 --@api: LGOAPPlanner:getLastFailureReason
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local goap = lurek.ai.newGOAPPlanner()
   goap:setMaxIterations(1)
   goap:addAction("get_axe", 1.0)
@@ -2878,6 +5071,14 @@ end
 
 --@api: LGOAPPlanner:getLastTrace
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local goap = lurek.ai.newGOAPPlanner()
   goap:plan({}, 4)
   local trace = goap:getLastTrace()
@@ -2888,6 +5089,14 @@ end
 
 --@api: LMCTSEngine:getLastTrace
 do
+    local function example_print_log(...)
+        local parts = {}
+        for i = 1, select("#", ...) do
+            parts[i] = tostring(select(i, ...))
+        end
+        lurek.log.info(table.concat(parts, " "))
+    end
+
   local mcts = lurek.ai.newMCTSEngine(8, 1.4, 4, 42)
   mcts:search(
     1,

@@ -174,67 +174,6 @@ impl Raycaster2D {
         }
         img
     }
-    /// Render a top-down grid with a line-of-sight check between two points into an `ImageData`.
-    #[allow(clippy::too_many_arguments)]
-    pub fn draw_line_of_sight_to_image(
-        &self,
-        ax: f32,
-        ay: f32,
-        bx: f32,
-        by: f32,
-        scale: u32,
-    ) -> crate::image::ImageData {
-        let w = self.width();
-        let h = self.height();
-        let mut img = crate::image::ImageData::new(w * scale, h * scale);
-        img.fill(40, 40, 50, 255);
-        for y in 0..h {
-            for x in 0..w {
-                if self.get_cell(x, y) > 0 {
-                    for py in 0..scale {
-                        for px in 0..scale {
-                            img.set_pixel(x * scale + px, y * scale + py, 120, 120, 130, 255);
-                        }
-                    }
-                }
-            }
-        }
-        let can_see = self.line_of_sight(ax, ay, bx, by);
-        let color = if can_see {
-            (0u8, 255u8, 0u8)
-        } else {
-            (255u8, 0u8, 0u8)
-        };
-        img.draw_line(
-            (ax * scale as f32) as i32,
-            (ay * scale as f32) as i32,
-            (bx * scale as f32) as i32,
-            (by * scale as f32) as i32,
-            color.0,
-            color.1,
-            color.2,
-            200,
-        );
-        img.draw_circle(
-            (ax * scale as f32) as i32,
-            (ay * scale as f32) as i32,
-            4,
-            0,
-            255,
-            255,
-            255,
-        );
-        img.draw_circle(
-            (bx * scale as f32) as i32,
-            (by * scale as f32) as i32,
-            4,
-            255,
-            255,
-            0,
-            255,
-        );
-        img
-    }
     /// Render a multi-frame camera rotation sweep as a tiled atlas into an `ImageData`.
     #[allow(clippy::too_many_arguments)]
     pub fn draw_camera_sweep_to_image(

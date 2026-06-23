@@ -32,7 +32,7 @@ Single registry for all durable tooling under `tools/`.
 - `audit/docstring_audit.py` [audit; durable; mcp:no] - docstring_audit.py -- Audit Lurek2D Lua API docstrings for missing content.
 - `audit/docstring_quality_audit.py` [audit; durable; mcp:no] - Audit docstring quality - identifies files with poor/unclear module documentation.
 - `audit/example_add_missing.py` [audit; durable; mcp:no] - Append stub sections to content/examples/ for uncovered lurek.* API items.
-- `audit/example_coverage.py` [audit; durable; mcp:candidate] - Cross-reference Lua example scripts against the lurek.* Lua API.
+- `audit/example_coverage.py` [audit; durable; mcp:candidate] - Cross-reference Lua example scripts against the lurek.* Lua API and lint standalone marker-owned blocks.
 - `audit/extract_constructors.py` [audit; durable; mcp:no] - Extract all lurek.module.function signatures from docs/api/lurek.lua
 - `audit/gen_coverage_gaps.py` [audit; durable; mcp:no] - gen_coverage_gaps.py Ă˘â‚¬â€ť Generate an API gap report for Lurek2D.
 - `audit/gen_lua_contract_tests.py` [audit; durable; mcp:no] - gen_lua_contract_tests.py Ă˘â‚¬â€ť generate Lua contract smoke tests from lua_api_data.json.

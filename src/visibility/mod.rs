@@ -23,6 +23,8 @@ pub mod owner;
 pub mod shadowcast;
 /// Visibility state enum: Hidden, Discovered, Visible, and custom levels.
 pub mod state;
+/// Per-player tile visibility and action masks backed by tilefield semantics.
+pub mod tile_visibility;
 
 pub use adjacency::AdjacencyProvider;
 pub use cost::DiscoveryCost;
@@ -33,3 +35,4 @@ pub use grid::VisibilityGrid;
 pub use owner::PlayerOwnership;
 pub use shadowcast::TileFov;
 pub use state::VisibilityState;
+pub use tile_visibility::TileVisibility;

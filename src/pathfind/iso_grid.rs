@@ -75,36 +75,6 @@ impl IsoGrid {
         }
         None
     }
-    /// Return true when all cells on the Bresenham line from `from` to `to` are passable.
-    pub fn line_of_sight(&self, from: (u32, u32), to: (u32, u32)) -> bool {
-        let mut x = from.0 as i32;
-        let mut y = from.1 as i32;
-        let tx = to.0 as i32;
-        let ty = to.1 as i32;
-        let dx = (tx - x).abs();
-        let dy = (ty - y).abs();
-        let sx = if x < tx { 1 } else { -1 };
-        let sy = if y < ty { 1 } else { -1 };
-        let mut err = dx - dy;
-        loop {
-            if self.is_blocked_or_oob(x as u32, y as u32) {
-                return false;
-            }
-            if x == tx && y == ty {
-                break;
-            }
-            let e2 = 2 * err;
-            if e2 > -dy {
-                err -= dy;
-                x += sx;
-            }
-            if e2 < dx {
-                err += dx;
-                y += sy;
-            }
-        }
-        true
-    }
     /// Return the 4-directional passable neighbours of `(x, y)`.
     pub fn neighbors(&self, x: u32, y: u32) -> Vec<(u32, u32)> {
         let mut result = Vec::with_capacity(4);

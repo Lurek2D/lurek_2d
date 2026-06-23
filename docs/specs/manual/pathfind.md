@@ -31,7 +31,9 @@ This module primarily collaborates with `flownet`, `image`, `render`, `runtime`.
 
 ## Notes
 
-- No additional module-specific notes.
+- `pathfind` owns movement algorithms, movement range, route search, costs, and reachability. It does not own line-of-sight, line-of-action, lighting, or object-profile semantics.
+- `lurek.pathfind.newNavGridFromField(field, opts)` and `lurek.pathfind.rangeMapFromField(field, opts)` are adapters from `lurek.tilefield`; by default they read the `"move"` channel and movement costs from the field.
+- `newNavGridFromTileMap` remains a compatibility path for projects that want direct tilemap-to-navigation conversion without adopting `tilefield`.
 
 ## Architecture Links
 
